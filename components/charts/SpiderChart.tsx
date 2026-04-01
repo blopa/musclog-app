@@ -33,9 +33,6 @@ export type SpiderChartProps = {
   className?: string;
 };
 
-const DEFAULT_DATA_COLOR = '#00FFA2';
-const DEFAULT_GRID_COLOR = '#1C2623';
-
 /** Angle in degrees for vertex i (0 at top, then clockwise). */
 function vertexAngle(i: number, count: number): number {
   return -90 + (i * 360) / count;
@@ -66,7 +63,7 @@ export function SpiderChart({
   subtitle,
   axes,
   values,
-  dataColor = DEFAULT_DATA_COLOR,
+  dataColor,
   dataFillOpacity = 0.15,
   centerScore,
   centerScoreLabel = 'PTS',
@@ -77,6 +74,9 @@ export function SpiderChart({
   className,
 }: SpiderChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_DATA_COLOR = theme.colors.status.emeraldLight;
+  const DEFAULT_GRID_COLOR = theme.colors.border.dark;
   const n = Math.min(axes.length, values.length, 12);
   if (n === 0) {
     return null;
@@ -87,8 +87,8 @@ export function SpiderChart({
   const maxRadius = size * 0.43; // ~130 for 300
 
   const gridColor = theme.colors?.border?.light ?? DEFAULT_GRID_COLOR;
-  const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
-  const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
+  const mutedColor = theme.colors.text.tertiary;
+  const textPrimary = theme.colors.text.primary;
   const dataColorResolved = dataColor ?? theme.colors?.accent?.primary ?? DEFAULT_DATA_COLOR;
 
   // Concentric grid polygons (outer to inner)
@@ -219,7 +219,7 @@ export function SpiderChart({
                 width: 64,
                 height: 64,
                 borderRadius: 32,
-                backgroundColor: theme.colors?.background?.primary ?? 'rgba(11, 17, 16, 0.8)',
+                backgroundColor: theme.colors.background.primary,
                 borderWidth: 1,
                 borderColor: gridColor,
                 alignItems: 'center',

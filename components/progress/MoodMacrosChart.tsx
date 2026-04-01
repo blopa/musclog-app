@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodMacrosPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { StackedBarLineChart } from '../charts/StackedBarLineChart';
@@ -17,11 +18,17 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
-const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
-
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const moodLabels = [
+    t('progress.mood.poor'),
+    t('progress.mood.low'),
+    t('progress.mood.okay'),
+    t('progress.mood.good'),
+    t('progress.mood.great'),
+  ];
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -85,15 +92,19 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
           theme.colors.macros.fat.bg,
         ]}
         lineColor={theme.colors.status.indigo}
-        leftAxisLabels={['0', `${Math.round(maxTotal / 2)}`, `${Math.round(maxTotal)}`]}
+        leftAxisLabels={[
+          formatInteger(0),
+          formatInteger(Math.round(maxTotal / 2)),
+          formatInteger(Math.round(maxTotal)),
+        ]}
         rightAxisLabels={[
           t('progress.mood.poor'),
           t('progress.mood.okay'),
           t('progress.mood.great'),
         ]}
         xAxisLabels={xAxisLabels}
-        totalFormatter={(total) => `${Math.round(total)}g`}
-        lineFormatter={(v) => MOOD_LABELS[Math.round(v)] ?? v.toFixed(1)}
+        totalFormatter={(total) => `${formatInteger(Math.round(total))}g`}
+        lineFormatter={(v) => moodLabels[Math.round(v)] ?? formatDecimal(v, 1)}
       />
     </ProgressChartSection>
   );

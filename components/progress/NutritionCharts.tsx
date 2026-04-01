@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { DailyNutrition, MetricPoint } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarChart } from '../charts/BarChart';
@@ -24,26 +25,35 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
-const computeLeftAxisLabels = (maxVal: number): string[] => {
-  if (maxVal <= 0) {
-    return ['0'];
-  }
-  const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
-  const niceStep = Math.ceil(maxVal / 4 / magnitude) * magnitude;
-  const labels: string[] = [];
-  for (let i = 0; i <= 5; i++) {
-    const v = i * niceStep;
-    if (v > maxVal * 1.2) {
-      break;
-    }
-    labels.push(v >= 1000 ? `${Math.round(v / 100) / 10}k` : String(Math.round(v)));
-  }
-  return labels;
-};
-
 export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+
+  const computeLeftAxisLabels = useCallback(
+    (maxVal: number): string[] => {
+      if (maxVal <= 0) {
+        return [formatInteger(0)];
+      }
+      const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
+      const niceStep = Math.ceil(maxVal / 4 / magnitude) * magnitude;
+      const labels: string[] = [];
+      for (let i = 0; i <= 5; i++) {
+        const v = i * niceStep;
+        if (v > maxVal * 1.2) {
+          break;
+        }
+        if (v >= 1000) {
+          const kCompact = Math.round(v / 100) / 10;
+          labels.push(`${formatDecimal(kCompact, 1)}k`);
+        } else {
+          labels.push(formatInteger(Math.round(v)));
+        }
+      }
+      return labels;
+    },
+    [formatDecimal, formatInteger]
+  );
   const [view, setView] = useState<NutritionView>('calories');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const frameRef = useRef<number | null>(null);
@@ -157,7 +167,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
             data={nutritionHistory.map((d) => ({ x: d.date, y: d.calories }))}
             height={200}
             barColor={theme.colors.accent.primary}
-            tooltipFormatter={(p) => `${Math.round(p.y)} ${t('progress.kcal')}`}
+            tooltipFormatter={(p) => `${formatInteger(Math.round(p.y))} ${t('progress.kcal')}`}
             xAxisLabels={xAxisLabels}
           />
         );
@@ -196,11 +206,11 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
             ]}
             leftAxisLabels={computeLeftAxisLabels(maxCal)}
             rightAxisLabels={[
-              Math.min(...combinedData.map((d) => d.weight)).toFixed(0),
-              Math.max(...combinedData.map((d) => d.weight)).toFixed(0),
+              formatDecimal(Math.min(...combinedData.map((d) => d.weight)), 0),
+              formatDecimal(Math.max(...combinedData.map((d) => d.weight)), 0),
             ]}
-            stepsFormatter={(v) => `${Math.round(v)} ${t('progress.kcal')}`}
-            heartRateFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
+            stepsFormatter={(v) => `${formatDecimal(Math.round(v), 0)} ${t('progress.kcal')}`}
+            heartRateFormatter={(v) => `${formatDecimal(v, 1)} ${weightLabel}`}
             xAxisLabels={xAxisLabels}
           />
         );
@@ -221,7 +231,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               Math.min(...combinedData.map((d) => d.weight)) * 0.95,
               Math.max(...combinedData.map((d) => d.weight)) * 1.05,
             ]}
-            lineFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
+            lineFormatter={(v) => `${formatDecimal(v, 1)} ${weightLabel}`}
             xAxisLabels={xAxisLabels}
           />
         );

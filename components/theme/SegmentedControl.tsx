@@ -10,7 +10,7 @@ type Option = {
   icon?: ReactNode;
 };
 
-type SegmentedControlVariant = 'clean' | 'elevated' | 'outline' | 'gradient';
+type SegmentedControlVariant = 'elevated' | 'outline' | 'gradient';
 
 type TestSegmentedControlProps = {
   options: Option[];
@@ -23,7 +23,7 @@ export function SegmentedControl({
   options,
   value,
   onValueChange,
-  variant = 'outline',
+  variant = 'elevated',
 }: TestSegmentedControlProps) {
   const theme = useTheme();
   const containerBase = 'flex-row rounded-lg p-1';
@@ -36,8 +36,6 @@ export function SegmentedControl({
         return `${containerBase} bg-bg-cardElevated`;
       case 'outline':
         return `${containerBase} bg-transparent border border-border-light`;
-      case 'clean':
-        return `${containerBase} bg-bg-card`;
       default:
         return `${containerBase} bg-bg-card`;
     }

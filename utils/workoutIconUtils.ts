@@ -22,11 +22,11 @@ export function getWorkoutIcon(icon?: string | null): LucideIcon {
 }
 
 export const WORKOUT_ICON_OPTIONS: { value: WorkoutIconName; label: string }[] = [
-  { value: 'dumbbell', label: 'Dumbbell' },
-  { value: 'target', label: 'Target' },
-  { value: 'zap', label: 'Zap' },
-  { value: 'trophy', label: 'Trophy' },
-  { value: 'activity', label: 'Activity' },
-  { value: 'heart', label: 'Heart' },
-  { value: 'flame', label: 'Flame' },
+  { value: 'dumbbell', label: 'ai.icons.Dumbbell' },
+  { value: 'target', label: 'ai.icons.Target' },
+  { value: 'zap', label: 'ai.icons.Zap' },
+  { value: 'trophy', label: 'ai.icons.Trophy' },
+  { value: 'activity', label: 'ai.icons.Activity' },
+  { value: 'heart', label: 'ai.icons.Heart' },
+  { value: 'flame', label: 'ai.icons.Flame' },
 ];

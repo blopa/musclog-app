@@ -1,5 +1,4 @@
 import convert from 'convert';
-import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
@@ -19,14 +18,17 @@ import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from
 
 import { type EatingPhase } from '../database/models';
 import { UserMetricService } from '../database/services';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
+import { localDayStartMs } from '../utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   ffmiFromWeightHeightAndBodyFat,
 } from '../utils/nutritionCalculator';
 import { displayToKg, kgToDisplay, storedHeightToCm } from '../utils/unitConversion';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
@@ -152,6 +154,7 @@ function MacrosDistributionChart({
 }) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const total = protein + carbs + fats; // Exclude fiber from macro total
   const fiberTotal = total + fiber; // Include fiber for display percentages
   const proteinPercentage = total > 0 ? (protein / total) * 100 : 0;
@@ -182,7 +185,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.protein.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(proteinPercentage)}% {t('food.macros.proteinLegend')}
+            {formatInteger(Math.round(proteinPercentage))}% {t('food.macros.proteinLegend')}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -191,7 +194,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.carbs.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(carbsPercentage)}% {t('food.macros.carbsLegend')}
+            {formatInteger(Math.round(carbsPercentage))}% {t('food.macros.carbsLegend')}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -200,7 +203,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.fat.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(fatsPercentage)}% {t('food.macros.fatLegend')}
+            {formatInteger(Math.round(fatsPercentage))}% {t('food.macros.fatLegend')}
           </Text>
         </View>
         {fiber > 0 ? (
@@ -210,7 +213,7 @@ function MacrosDistributionChart({
               style={{ backgroundColor: theme.colors.macros.fiber.bg }}
             />
             <Text className="text-xs text-text-secondary">
-              {Math.round(fiberPercentage)}% {t('food.macros.fiberLegend')}
+              {formatInteger(Math.round(fiberPercentage))}% {t('food.macros.fiberLegend')}
             </Text>
           </View>
         ) : null}
@@ -231,6 +234,7 @@ export function NutritionGoalsBody({
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
@@ -464,7 +468,7 @@ export function NutritionGoalsBody({
             </Text>
             <View className="flex-row items-baseline gap-2">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {totalCalories.toLocaleString()}
+                {formatInteger(totalCalories)}
               </Text>
               <Text className="text-lg font-semibold uppercase text-accent-primary">
                 {t('food.common.kcal')}
@@ -491,20 +495,17 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <Pressable
-            onPress={() => setIsGoalStartDatePickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
-          >
-            <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
                   style={{ backgroundColor: theme.colors.status.emerald20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
               ) : null}
-              <View className="flex-1">
+              <View className="min-w-0 flex-1">
                 <Text className="font-semibold text-white">
                   {t('nutritionGoals.goalStartDate')}
                 </Text>
@@ -513,27 +514,30 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="flex-shrink flex-row items-center gap-2">
-              <Text className="text-text-secondary" numberOfLines={1}>
-                {goalStartDate != null
-                  ? format(new Date(goalStartDate), 'MMM d, yyyy')
-                  : t('nutritionGoals.goalStartDateToday')}
-              </Text>
+            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 flex-1 overflow-hidden">
+                <DatePickerInput
+                  className="min-w-0 flex-1"
+                  embedded
+                  hideLabel
+                  variant="compact"
+                  dateDisplay="single-line"
+                  showLeadingIcon={!showIcons}
+                  selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
+                  unset={goalStartDate == null}
+                  unsetPlaceholder={t('nutritionGoals.goalStartDateToday')}
+                  onPress={() => setIsGoalStartDatePickerVisible(true)}
+                />
+              </View>
               {goalStartDate != null ? (
-                <Pressable
-                  hitSlop={8}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setGoalStartDate(null);
-                  }}
-                >
+                <Pressable hitSlop={8} onPress={() => setGoalStartDate(null)}>
                   <Text className="text-xs text-accent-primary">
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
                 </Pressable>
               ) : null}
             </View>
-          </Pressable>
+          </View>
         ) : null}
 
         {isGoalStartDatePickerVisible ? (
@@ -542,7 +546,7 @@ export function NutritionGoalsBody({
             onClose={() => setIsGoalStartDatePickerVisible(false)}
             selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
             onDateSelect={(date) => {
-              setGoalStartDate(date.getTime());
+              setGoalStartDate(localDayStartMs(date));
               setIsGoalStartDatePickerVisible(false);
             }}
           />
@@ -561,6 +565,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Beef : undefined}
             iconSize="sm"
             onIncrement={() => setProtein(Math.min(macroMax.protein, protein + 1))}
@@ -572,6 +577,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Wheat : undefined}
             iconSize="sm"
             onIncrement={() => setCarbs(Math.min(macroMax.carbs, carbs + 1))}
@@ -583,6 +589,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Droplet : undefined}
             iconSize="sm"
             onIncrement={() => setFats(Math.min(macroMax.fats, fats + 1))}
@@ -594,6 +601,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Leaf : undefined}
             iconSize="sm"
             onIncrement={() => setFiber(Math.min(macroMax.fiber, fiber + 1))}
@@ -650,6 +658,7 @@ export function NutritionGoalsBody({
                 })}
                 value={targetWeight}
                 unit={units === 'metric' ? 'kg' : 'lbs'}
+                maxFractionDigits={1}
                 icon={showIcons ? Scale : undefined}
                 iconSize="sm"
                 onIncrement={() =>
@@ -699,6 +708,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
                 value={targetBodyFat}
                 unit="%"
+                maxFractionDigits={0}
                 icon={showIcons ? Percent : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
@@ -750,6 +760,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetBMI')}
                 value={targetBMI}
                 unit="index"
+                maxFractionDigits={1}
                 icon={showIcons ? TrendingUp : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
@@ -803,6 +814,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetFFMI')}
                 value={targetFFMI}
                 unit="index"
+                maxFractionDigits={1}
                 icon={showIcons ? Activity : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
@@ -813,47 +825,47 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <Pressable
-            onPress={() => setIsTargetDatePickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
-          >
-            <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
                   style={{ backgroundColor: theme.colors.status.emerald20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
               ) : null}
-              <View className="flex-1">
+              <View className="min-w-0 flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
               </View>
             </View>
-            <View className="flex-shrink flex-row items-center gap-2">
-              <Text className="text-text-secondary" numberOfLines={1}>
-                {targetDate != null
-                  ? format(new Date(targetDate), 'MMM d, yyyy')
-                  : t('nutritionGoals.targetDateNotSet')}
-              </Text>
+            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 flex-1 overflow-hidden">
+                <DatePickerInput
+                  className="min-w-0 flex-1"
+                  embedded
+                  hideLabel
+                  variant="compact"
+                  dateDisplay="single-line"
+                  showLeadingIcon={!showIcons}
+                  selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
+                  unset={targetDate == null}
+                  unsetPlaceholder={t('nutritionGoals.targetDateNotSet')}
+                  onPress={() => setIsTargetDatePickerVisible(true)}
+                />
+              </View>
               {targetDate != null ? (
-                <Pressable
-                  hitSlop={8}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setTargetDate(null);
-                  }}
-                >
+                <Pressable hitSlop={8} onPress={() => setTargetDate(null)}>
                   <Text className="text-xs text-accent-primary">
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
                 </Pressable>
               ) : null}
             </View>
-          </Pressable>
+          </View>
         </View>
 
         {isTargetDatePickerVisible ? (
@@ -862,7 +874,7 @@ export function NutritionGoalsBody({
             onClose={() => setIsTargetDatePickerVisible(false)}
             selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
             onDateSelect={(date) => {
-              setTargetDate(date.getTime());
+              setTargetDate(localDayStartMs(date));
               setIsTargetDatePickerVisible(false);
             }}
           />
@@ -892,6 +904,7 @@ export function NutritionGoalsBody({
           </View>
         ) : null}
       </View>
+      <View pointerEvents="none" style={{ height: theme.spacing.padding['80'] }} />
     </ScrollView>
   );
 }

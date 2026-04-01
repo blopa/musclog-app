@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 
 import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
@@ -30,7 +31,8 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = Math.round((food.calories * amount) / 100);
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const calories = formatRoundedDecimal((food.calories * amount) / 100, 2);
 
   return (
     <View
@@ -115,7 +117,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${Math.round(food.calories)} ${t('common.kcal')}`}
+                  : `${formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -145,7 +147,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroProtein', { value: Math.round((food.protein * amount) / 100) })}
+              {t('foodSearch.macroProtein', {
+                value: formatRoundedDecimal((food.protein * amount) / 100, 2),
+              })}
             </Text>
             <Text
               style={{
@@ -154,7 +158,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroCarbs', { value: Math.round((food.carbs * amount) / 100) })}
+              {t('foodSearch.macroCarbs', {
+                value: formatRoundedDecimal((food.carbs * amount) / 100, 2),
+              })}
             </Text>
             <Text
               style={{
@@ -163,7 +169,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroFat', { value: Math.round((food.fat * amount) / 100) })}
+              {t('foodSearch.macroFat', {
+                value: formatRoundedDecimal((food.fat * amount) / 100, 2),
+              })}
             </Text>
           </View>
         </View>
@@ -182,6 +190,7 @@ function FoodResultCard({
           <StepperInput
             label={t('food.addFoodItemToMeal.amount')}
             value={amount}
+            maxFractionDigits={0}
             onChangeValue={onAmountChange}
             onIncrement={() => onAmountChange(amount + 1)}
             onDecrement={() => onAmountChange(Math.max(0, amount - 1))}
@@ -214,13 +223,12 @@ export function AddFoodItemToMealModal({
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
-  // Fetch foods from database
-  const { foods, isLoading } = useFoods({
+  const { foods, isLoading, isLoadingMore, hasMore, loadMore, totalCount } = useFoods({
     mode: searchQuery.trim() ? 'search' : 'list',
     searchTerm: searchQuery.trim(),
-    getAll: true,
+    initialLimit: 10,
     visible, // avoid loading while modal is hidden
-  }) as { foods: Food[]; isLoading: boolean };
+  });
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
 
@@ -387,6 +395,23 @@ export function AddFoodItemToMealModal({
                 onAmountChange={(val) => updateAmount(food.id, val)}
               />
             ))}
+            {hasMore ? (
+              <View className="py-3">
+                <Button
+                  label={
+                    isLoadingMore
+                      ? t('food.addFoodItemToMeal.loadingMore')
+                      : t('food.addFoodItemToMeal.loadMore')
+                  }
+                  onPress={loadMore}
+                  size="sm"
+                  variant="outline"
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                  width="full"
+                />
+              </View>
+            ) : null}
             <View style={{ height: theme.size['100'] }} />
           </ScrollView>
         )}

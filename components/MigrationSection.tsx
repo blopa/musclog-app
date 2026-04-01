@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useOldDatabaseMigration } from '../hooks/useOldDatabaseMigration';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export const MigrationSection = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const {
     migrationSummary,
     migrationResult,
@@ -24,7 +25,6 @@ export const MigrationSection = () => {
         <Text className="text-lg font-bold text-text-primary">{t('settings.migration.title')}</Text>
       </View>
       <Text className="text-sm text-text-secondary">{t('settings.migration.description')}</Text>
-
       <View className="flex-row gap-2">
         <Pressable
           className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
@@ -64,58 +64,86 @@ export const MigrationSection = () => {
           </Text>
         </Pressable>
       </View>
-
       {migrationSummary ? (
         <View className="rounded-lg border border-border-light bg-bg-primary p-3">
           <Text className="mb-2 text-sm font-bold text-text-primary">
             {t('settings.migration.summary')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.fitnessGoals')}:{' '}
-            {migrationSummary.fitnessGoalsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.fitnessGoals'),
+              value: `${migrationSummary.fitnessGoalsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.userMetrics')}:{' '}
-            {migrationSummary.userMetricsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.userMetrics'),
+              value: `${migrationSummary.userMetricsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.users')}: {migrationSummary.usersCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.users'),
+              value: `${migrationSummary.usersCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.foods')}: {migrationSummary.foodsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.foods'),
+              value: `${migrationSummary.foodsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.nutritionLogs')}:{' '}
-            {migrationSummary.nutritionLogsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.nutritionLogs'),
+              value: `${migrationSummary.nutritionLogsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.exercises')}: {migrationSummary.exercisesCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.exercises'),
+              value: `${migrationSummary.exercisesCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.workouts')}: {migrationSummary.workoutsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.workouts'),
+              value: `${migrationSummary.workoutsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.workoutLogs')}:{' '}
-            {migrationSummary.workoutLogsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.workoutLogs'),
+              value: `${migrationSummary.workoutLogsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.templateSets')}:{' '}
-            {migrationSummary.templateSetsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.templateSets'),
+              value: `${migrationSummary.templateSetsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.logSets')}: {migrationSummary.logSetsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.logSets'),
+              value: `${migrationSummary.logSetsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
             • {t('settings.migration.tablesFound')} {migrationSummary.tables.join(', ')}
           </Text>
         </View>
       ) : null}
-
       {migrationResult ? (
         <View
           className={`rounded-lg border p-3 ${
@@ -184,13 +212,11 @@ export const MigrationSection = () => {
           )}
         </View>
       ) : null}
-
       {!migrationSummary && !checkingOldDatabase ? (
         <Text className="py-2 text-sm text-text-tertiary">
           {t('settings.migration.clickToCheck')}
         </Text>
       ) : null}
-
       {migrationResult ? (
         <Pressable
           className="mt-2 self-center rounded-lg border border-border-light bg-bg-primary px-4 py-2"

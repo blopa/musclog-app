@@ -1,8 +1,12 @@
-import { type ColorProp, FlexWidget, ImageWidget } from 'react-native-android-widget';
+import { FlexWidget, ImageWidget } from 'react-native-android-widget';
 
-import { theme } from '../theme';
+import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
 
 export function SmartCameraWidget() {
+  // Use dark theme colors for widget as per requirements.
+  // this will not dynamically update if the theme is changed.
+  const theme = darkTheme;
+
   return (
     <FlexWidget
       style={{

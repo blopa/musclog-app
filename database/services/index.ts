@@ -2,7 +2,7 @@
 export { FoodPortionService } from './FoodPortionService';
 export { FoodService } from './FoodService';
 export { MealService } from './MealService';
-export { NutritionService } from './NutritionService';
+export { NutritionService, scaleMealNutritionLogsToTotalGrams } from './NutritionService';
 
 // Export exercise service
 export { ExerciseService } from './ExerciseService';

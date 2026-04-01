@@ -16,6 +16,7 @@
     "fat": "Gordura",
     "fiber": "Fibras",
     "foodNotFound": "Alimento Não Encontrado",
+    "foodNotFoundDescription": "Não encontramos este item em nosso banco de dados. O que você gostaria de fazer?",
     "import": "Importar",
     "importFormatInfo": "Cole ou digite seu registro de refeição (ex: de uma nota ou app). A IA vai analisar e sugerir entradas.",
     "importInstructions": "Cole seus dados de nutrição abaixo. Suportado: texto livre, listas com marcadores ou registros estruturados.",
@@ -62,6 +63,7 @@
       "summaryIntro": "Você visou {{target}} kcal/dia, mas em média",
       "summaryOutro": "Apesar do resultado, você completou",
       "workoutsCount": "treinos",
+      "noWorkouts": "nenhum treino",
       "withHighIntensity": "com alta intensidade.",
       "avgIntake": "Ingestão Média",
       "consistency": "Consistência",
@@ -87,7 +89,13 @@
         "pending": "Pendente",
         "ahead": "Acima",
         "onTrack": "No Rumo Certo",
-        "behind": "Abaixo"
+        "behind": "Abaixo",
+        "descriptions": {
+          "pending": "Verificação ainda não concluída",
+          "ahead": "Progresso acima do objetivo",
+          "onTrack": "Progresso no objetivo",
+          "behind": "Progresso abaixo do objetivo"
+        }
       }
     },
     "common": {

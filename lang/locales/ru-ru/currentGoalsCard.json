@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Дневная цель",
+    "kcal": "ккал",
+    "protein": "Белок",
+    "proteinShort": "Б",
+    "carbs": "Углеводы",
+    "carbsShort": "У",
+    "fats": "Жиры",
+    "fatsShort": "Ж",
+    "targetWeight": "Целевой вес",
+    "bodyFat": "Жировая масса",
+    "ffmi": "FFMI",
+    "bmi": "ИМТ",
+    "g": "г",
+    "kg": "кг",
+    "lbs": "фунт",
+    "percent": "%"
+  }
+}

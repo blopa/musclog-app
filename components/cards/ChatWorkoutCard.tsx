@@ -3,6 +3,7 @@ import { ArrowRight, Dumbbell, Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
@@ -27,6 +28,7 @@ export function ChatWorkoutCard({
 }: ChatWorkoutCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   return (
     <GenericCard variant="card" size="sm">
       {/* Hero Image Section */}
@@ -57,13 +59,13 @@ export function ChatWorkoutCard({
           <View className="flex-row items-center gap-1">
             <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {exerciseCount} {t('workouts.exercises')}
+              {formatInteger(exerciseCount)} {t('workouts.exercises')}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
             <Flame size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {calories} {t('common.kcal')}
+              {formatInteger(Math.round(calories))} {t('common.kcal')}
             </Text>
           </View>
         </View>

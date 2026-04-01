@@ -22,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react-native';
 
+import { type Theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarBackgroundColor, getAvatarColor } from './avatarColorUtils';
@@ -60,12 +61,13 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
 }
 
 export function getAvatarDisplayProps(
+  theme: Theme,
   avatarIcon?: AvatarIcon | null,
   avatarColor?: AvatarColor | null
 ) {
   const IconComponent = getAvatarIcon(avatarIcon);
-  const color = getAvatarColor(avatarColor);
-  const backgroundColor = getAvatarBackgroundColor(avatarColor);
+  const color = getAvatarColor(theme, avatarColor);
+  const backgroundColor = getAvatarBackgroundColor(theme, avatarColor);
 
   return {
     IconComponent,

@@ -1,12 +1,11 @@
-import { format } from 'date-fns';
-import { Calendar } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { DateRangePreset } from '../../hooks/useProgressData';
-import { useTheme } from '../../hooks/useTheme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { FilterTabs } from '../FilterTabs';
+import { DatePickerInput } from '../modals/DatePickerInput';
 import { DatePickerModal } from '../modals/DatePickerModal';
 import { Button } from '../theme/Button';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -29,13 +28,16 @@ export function ProgressDateFilter({
   onToggleWeeklyAverages,
 }: ProgressDateFilterProps) {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
-  const [tempStartDate, setTempStartDate] = useState(appliedRange?.startDate || new Date());
-  const [tempEndDate, setTempEndDate] = useState(appliedRange?.endDate || new Date());
+  const [tempStartDate, setTempStartDate] = useState(() =>
+    localCalendarDayDate(appliedRange?.startDate || new Date())
+  );
+  const [tempEndDate, setTempEndDate] = useState(() =>
+    localCalendarDayDate(appliedRange?.endDate || new Date())
+  );
   const [showCustomUI, setShowCustomUI] = useState(activePreset === 'custom');
 
   const presets = [
@@ -49,16 +51,18 @@ export function ProgressDateFilter({
   ];
 
   const handleStartDateSelect = (date: Date) => {
-    setTempStartDate(date);
-    if (date > tempEndDate) {
-      setTempEndDate(date);
+    const d = localCalendarDayDate(date);
+    setTempStartDate(d);
+    if (d > tempEndDate) {
+      setTempEndDate(d);
     }
   };
 
   const handleEndDateSelect = (date: Date) => {
-    setTempEndDate(date);
-    if (date < tempStartDate) {
-      setTempStartDate(date);
+    const d = localCalendarDayDate(date);
+    setTempEndDate(d);
+    if (d < tempStartDate) {
+      setTempStartDate(d);
     }
   };
 
@@ -87,36 +91,25 @@ export function ProgressDateFilter({
 
       {showCustomUI ? (
         <View className="mb-4">
-          <View className="mb-3 flex-row items-center gap-3">
-            <Pressable
-              onPress={() => setShowStartDatePicker(true)}
-              className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
-            >
-              <View>
-                <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                  {t('progress.startDate')}
-                </Text>
-                <Text className="text-sm font-semibold text-text-primary">
-                  {format(tempStartDate, 'MMM d, yyyy')}
-                </Text>
-              </View>
-              <Calendar size={16} color={theme.colors.text.tertiary} />
-            </Pressable>
-
-            <Pressable
-              onPress={() => setShowEndDatePicker(true)}
-              className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
-            >
-              <View>
-                <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                  {t('progress.endDate')}
-                </Text>
-                <Text className="text-sm font-semibold text-text-primary">
-                  {format(tempEndDate, 'MMM d, yyyy')}
-                </Text>
-              </View>
-              <Calendar size={16} color={theme.colors.text.tertiary} />
-            </Pressable>
+          <View className="mb-3 flex-row items-stretch gap-3">
+            <View className="min-w-0 flex-1">
+              <DatePickerInput
+                className="flex-1"
+                label={t('progress.startDate')}
+                selectedDate={tempStartDate}
+                onPress={() => setShowStartDatePicker(true)}
+                variant="compact"
+              />
+            </View>
+            <View className="min-w-0 flex-1">
+              <DatePickerInput
+                className="flex-1"
+                label={t('progress.endDate')}
+                selectedDate={tempEndDate}
+                onPress={() => setShowEndDatePicker(true)}
+                variant="compact"
+              />
+            </View>
           </View>
           <Button
             label={t('progress.apply')}

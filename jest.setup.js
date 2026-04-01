@@ -14,3 +14,15 @@ if (process.env.JEST_ENVIRONMENT !== 'jsdom') {
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
+
+jest.mock('expo-localization', () => ({
+  getLocales: () => [{ languageTag: 'en-US', languageCode: 'en', regionCode: 'US' }],
+  getCalendars: () => [
+    {
+      calendar: 'gregorian',
+      timeZone: 'America/New_York',
+      uses24HourClock: false,
+      firstDayOfWeek: 1,
+    },
+  ],
+}));

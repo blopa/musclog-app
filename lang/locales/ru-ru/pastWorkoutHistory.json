@@ -1,0 +1,55 @@
+{
+  "pastWorkoutHistory": {
+    "title": "История тренировок",
+    "searchPlaceholder": "Поиск сессий...",
+    "noWorkoutsFound": "Тренировки по вашему запросу не найдены.",
+    "noWorkoutHistory": "История тренировок пока пуста.",
+    "loadMore": "Загрузить ещё",
+    "loadingMore": "Загрузка...",
+    "stats": {
+      "duration": "Длительность",
+      "volume": "Объём",
+      "calories": "Калории"
+    },
+    "prBadge": {
+      "singular": "{{count}} ЛР",
+      "plural": "{{count}} ЛР"
+    },
+    "filters": {
+      "title": "Фильтр тренировок",
+      "workoutType": "ТИП ТРЕНИРОВКИ",
+      "minDuration": "МИН. ДЛИТЕЛЬНОСТЬ",
+      "reset": "Сбросить",
+      "applyFilters": "Применить фильтры",
+      "durationFormats": {
+        "zero": "0м",
+        "minutes": "{{minutes}}м",
+        "minutesPlus": "{{minutes}}+ мин",
+        "max": "120м+"
+      },
+      "workoutTypes": {
+        "all": "Все типы",
+        "strength": "Силовая",
+        "cardio": "Кардио",
+        "hiit": "HIIT",
+        "yoga": "Йога"
+      },
+      "dateRange": {
+        "title": "ДИАПАЗОН ДАТ",
+        "30days": "Последние 30 дней",
+        "90days": "Последние 90 дней",
+        "custom": "Произвольный"
+      },
+      "muscleGroups": {
+        "title": "ГРУППА МЫШЦ (МУЛЬТИ-ВЫБОР)",
+        "chest": "Грудь",
+        "back": "Спина",
+        "legs": "Ноги",
+        "shoulders": "Плечи",
+        "arms": "Руки",
+        "core": "Кор",
+        "fullBody": "Всё тело"
+      }
+    }
+  }
+}

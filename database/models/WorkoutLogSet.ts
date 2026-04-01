@@ -38,10 +38,6 @@ export default class WorkoutLogSet extends Model {
     return this.weight > 0;
   }
 
-  get volume(): number {
-    return this.reps * this.weight;
-  }
-
   @writer
   async markAsDeleted(): Promise<void> {
     const now = Date.now();

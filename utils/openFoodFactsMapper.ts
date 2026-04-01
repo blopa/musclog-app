@@ -1,11 +1,10 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
 import i18n from '../lang/lang';
-import {
-  ProductNameFields,
-  ProductV3,
-  SearchResultProduct,
-  SuccessFoodProductState,
-} from '../types/openFoodFacts';
+import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
+import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
+import { getProductName as _getProductName } from './productName';
+
+export type { ProductNameResult } from './productName';
 
 // All possible Open Food Facts nutriment properties
 const NUTRIMENT_PROPERTIES = [
@@ -288,13 +287,14 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   const valueField = nutriments[`${baseName}_value`];
 
   const raw = value100g ?? valueServing ?? baseValue ?? valueField;
-  const num = typeof raw === 'number' && !Number.isNaN(raw) ? raw : undefined;
-  return num;
-}
+  const num =
+    typeof raw === 'number'
+      ? raw
+      : typeof raw === 'string'
+        ? Number.parseFloat(raw.replace(',', '.'))
+        : Number.NaN;
 
-// Helper function to get nutriment unit
-function getNutrimentUnit(nutriments: any, baseName: string): string | undefined {
-  return nutriments[`${baseName}_unit`];
+  return Number.isFinite(num) ? num : undefined;
 }
 
 // Map all nutriments to a comprehensive object
@@ -319,7 +319,6 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const kcal = nutriments?.['energy-kcal'];
-  const calories = kcal ? Math.round(kcal) : undefined;
 
   // Map all comprehensive nutriments
   const allNutriments = mapAllNutriments(nutriments);
@@ -345,6 +344,16 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       fiber = Math.max(0, calculatedFiber); // Clamp to minimum 0 to prevent negative values
     }
   }
+
+  const roundedCalories = resolveRoundedPer100gCaloriesForDisplay({
+    calories: kcal,
+    protein,
+    carbs,
+    fat,
+    fiber,
+  });
+
+  const calories = roundedCalories > 0 ? roundedCalories : undefined;
 
   const sugars = getNutrimentValue(nutriments, 'sugars');
   const saturatedFat = getNutrimentValue(nutriments, 'saturated-fat');
@@ -474,63 +483,9 @@ export type GetProductNameInput =
   | { product?: SearchResultProduct | ProductV3 }
   | { products?: (SearchResultProduct | ProductV3)[] };
 
+/** Backward-compatible string wrapper. New code should import from `utils/productName` directly. */
 export function getProductName(data: GetProductNameInput | null | undefined): string {
-  // OFF API: single product has .product, search has .products[], or payload is the product itself
-  type WithOptional = { product?: unknown; products?: unknown[] };
-  const product =
-    (data as WithOptional)?.product ||
-    (Array.isArray((data as WithOptional)?.products) ? (data as WithOptional).products?.[0] : data);
-
-  if (!product) {
-    return i18n.t('food.unknownFood');
-  }
-
-  const p = product as Record<string, unknown>;
-
-  // 1. Try the standard name fields (OFF: product_name, product_name_LANG)
-  let name: string | undefined =
-    (p.product_name as string) ||
-    (p.description as string) ||
-    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined) ||
-    (p.product_name_en as string) ||
-    (p.product_name_nl as string) ||
-    (p.product_name_fr as string) ||
-    (p.product_name_de as string);
-
-  // 1b. V3 API often has only product_name_<lang> (e.g. product_name_en) without product_name – scan for any
-  if (!name && typeof p === 'object' && p !== null) {
-    for (const key of Object.keys(p)) {
-      if (key.startsWith('product_name_') && key !== 'product_name') {
-        const val = p[key];
-        if (typeof val === 'string' && val.trim()) {
-          name = val;
-          break;
-        }
-      }
-    }
-  }
-
-  // 2. Fallback to Abbreviated Name (OFF: abbreviated_product_name, receipt/small UI names)
-  if (!name) {
-    name = p.abbreviated_product_name as string;
-  }
-
-  // 3. Fallback to Generic Names (OFF: generic_name, generic_name_LANG)
-  if (!name) {
-    name =
-      (p.generic_name as string) ||
-      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined) ||
-      (p.generic_name_en as string);
-  }
-
-  // 4. Ultimate Fallback: Brand + Category
-  // Returns something like "Milbona (Yogurts)" instead of "Unknown"
-  if (!name && p.brands) {
-    const category = (p.categories as string)?.split(',')[0];
-    name = category ? `${p.brands} (${category})` : (p.brands as string);
-  }
-
-  return name && name.trim() ? name.trim() : i18n.t('food.unknownFood');
+  return _getProductName(data).name;
 }
 
 // Export the properties array for reference

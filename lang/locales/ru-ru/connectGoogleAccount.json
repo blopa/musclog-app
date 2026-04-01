@@ -1,0 +1,30 @@
+{
+  "connectGoogleAccount": {
+    "title": "Подключить аккаунт Google",
+    "unlockTitle": "Разблокировать",
+    "aiInsights": "Аналитику ИИ",
+    "description": "Разблокируйте персонализированную аналитику ИИ, подключив аккаунт Google для интеграции с вашим ключом Gemini.",
+    "features": {
+      "deepAnalysis": {
+        "title": "Глубокий анализ",
+        "description": "Персонализированный разбор тренировок"
+      },
+      "geminiPowered": {
+        "title": "На базе Gemini",
+        "description": "Продвинутый ИИ для фитнеса"
+      },
+      "smartGoals": {
+        "title": "Умные цели",
+        "description": "Отслеживание и предложения целей на основе ИИ"
+      },
+      "aiCoach": {
+        "title": "ИИ-тренер",
+        "description": "Ваш персональный тренер на базе ИИ"
+      }
+    },
+    "connectWithGoogle": "Войти через Google",
+    "maybeLater": "Позже",
+    "billingInfoLabel": "Информация об оплате:",
+    "billingInfo": "Эта интеграция по умолчанию использует бесплатный уровень Google. С вас не будет взиматься плата, если вы явно не включили «Pay-as-you-go» в Google Cloud Console. При достижении лимита бесплатного использования сервис просто остановится."
+  }
+}

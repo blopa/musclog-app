@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -71,17 +72,21 @@ export function BarLineChart({
   leftAxisLabels = DEFAULT_LEFT_LABELS,
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
-  stepsFormatter = (v) => v.toLocaleString(),
-  heartRateFormatter = (v) => String(Math.round(v)),
+  stepsFormatter: stepsFormatterProp,
+  heartRateFormatter: heartRateFormatterProp,
   interactive = true,
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
+  const stepsFormatter = stepsFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
+  const heartRateFormatter =
+    heartRateFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
-  const [labelContainerWidth, setLabelContainerWidth] = useState(0);
+
   const containerWidthRef = useRef(0);
 
   useEffect(() => {
@@ -124,19 +129,6 @@ export function BarLineChart({
   };
 
   const chartData = data as { x: number; steps: number; heartRate: number }[];
-
-  // Match chart's domainPadding (left: 12, right: 12): data x [0, n-1] maps to 12px .. (width - 12)px
-  const CHART_PADDING_X = 12;
-  const LABEL_BOX_WIDTH = 40;
-  const xLabelLeft = (index: number) => {
-    if (labelContainerWidth <= 0) {
-      return 0;
-    }
-
-    const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
-    const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
-    return barCenterX - LABEL_BOX_WIDTH / 2;
-  };
 
   const tooltipPillStyle = {
     minWidth: 72,

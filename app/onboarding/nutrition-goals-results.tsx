@@ -21,7 +21,9 @@ import {
   UserMetricService,
 } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
+import { localDayKeyPlusCalendarDays, localDayStartMs } from '../../utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   estimateTargetBodyFatWhenCutting,
@@ -31,6 +33,7 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '../../utils/nutritionCalculator';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -42,6 +45,7 @@ export default function NutritionGoalsResults() {
   const scrollViewRef = useRef<ScrollView>(null);
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
 
   const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
@@ -107,8 +111,9 @@ export default function NutritionGoalsResults() {
   // Resolve display data: prefer parsedPlan (AI), fall back to savedGoal (manual)
   const displayData = useMemo(() => {
     if (parsedPlan) {
-      const weightChange = parseFloat(
-        (parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg).toFixed(1)
+      const weightChange = roundToDecimalPlaces(
+        parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg,
+        1
       );
       return {
         targetCalories: parsedPlan.targetCalories,
@@ -171,12 +176,12 @@ export default function NutritionGoalsResults() {
       const weightKg = startWeight + (projectedWeight - startWeight) * progress;
       const weightDisplay = kgToDisplay(weightKg, units);
       return {
-        marker: `${weightDisplay % 1 === 0 ? weightDisplay : weightDisplay.toFixed(1)} ${t(weightUnitKey)}`,
+        marker: `${formatDecimal(weightDisplay, 1)} ${t(weightUnitKey)}`,
         x: i,
-        y: parseFloat(weightKg.toFixed(1)),
+        y: roundToDecimalPlaces(weightKg, 1),
       };
     });
-  }, [displayData, units, t, weightUnitKey]);
+  }, [displayData, units, t, weightUnitKey, formatDecimal]);
 
   // Determine eating phase from the calorie delta
   const eatingPhase = useMemo<EatingPhase>(() => {
@@ -236,9 +241,10 @@ export default function NutritionGoalsResults() {
 
     const lowDisplay = kgToDisplay(parts[0], units);
     const highDisplay = kgToDisplay(parts[1], units);
-    const format = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1));
-    return `${format(lowDisplay)}–${format(highDisplay)}`;
-  }, [maintenanceMuscleRange, units]);
+    const fmt = (n: number) =>
+      n % 1 === 0 ? formatInteger(n, { useGrouping: false }) : formatDecimal(n, 1);
+    return `${fmt(lowDisplay)}–${fmt(highDisplay)}`;
+  }, [maintenanceMuscleRange, units, formatDecimal, formatInteger]);
 
   // Helper functions to format weight values consistently
   const formatProjectedWeight = useMemo(() => {
@@ -247,8 +253,8 @@ export default function NutritionGoalsResults() {
     }
 
     const d = kgToDisplay(displayData.projectedWeight, units);
-    return d % 1 === 0 ? String(d) : d.toFixed(1);
-  }, [displayData, units]);
+    return d % 1 === 0 ? formatInteger(d, { useGrouping: false }) : formatDecimal(d, 1);
+  }, [displayData, units, formatDecimal, formatInteger]);
 
   const formatEstimatedFatChange = useMemo(() => {
     if (!displayData) {
@@ -256,8 +262,8 @@ export default function NutritionGoalsResults() {
     }
 
     const d = kgToDisplay(displayData.estimatedFatChangeKg ?? 0, units);
-    return d % 1 === 0 ? d : d.toFixed(1);
-  }, [displayData, units]);
+    return d % 1 === 0 ? formatInteger(d, { useGrouping: false }) : formatDecimal(d, 1);
+  }, [displayData, units, formatDecimal, formatInteger]);
 
   const formatEstimatedLeanChange = useMemo(() => {
     if (!displayData) {
@@ -265,8 +271,8 @@ export default function NutritionGoalsResults() {
     }
 
     const d = kgToDisplay(displayData.estimatedLeanChangeKg ?? 0, units);
-    return d % 1 === 0 ? d : d.toFixed(1);
-  }, [displayData, units]);
+    return d % 1 === 0 ? formatInteger(d, { useGrouping: false }) : formatDecimal(d, 1);
+  }, [displayData, units, formatDecimal, formatInteger]);
 
   const handleAccept = async () => {
     if (!displayData) {
@@ -324,7 +330,10 @@ export default function NutritionGoalsResults() {
             : 0;
 
         const startDate = Date.now();
-        const targetDate = startDate + parsedPlan.projectionDays * 24 * 60 * 60 * 1000;
+        const targetDate = localDayKeyPlusCalendarDays(
+          localDayStartMs(new Date(startDate)),
+          parsedPlan.projectionDays
+        );
 
         const savedGoal = await NutritionGoalService.saveGoals({
           totalCalories: parsedPlan.targetCalories,
@@ -340,8 +349,7 @@ export default function NutritionGoalsResults() {
           targetDate,
         });
 
-        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        if (targetDate - startDate > oneWeekMs) {
+        if (parsedPlan.projectionDays > 7) {
           const weeklyData = generateWeeklyCheckins(
             parsedPlan,
             startDate,
@@ -357,7 +365,7 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      router.push('/onboarding/personal-info');
+      router.navigate('/onboarding/personal-info');
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -376,8 +384,12 @@ export default function NutritionGoalsResults() {
     const endDisplay = kgToDisplay(displayData.startWeight + displayData.weightChange, units);
     const changeDisplay = endDisplay - startDisplay;
     const sign = changeDisplay > 0 ? '+' : '';
-    return `${sign}${changeDisplay % 1 === 0 ? changeDisplay : changeDisplay.toFixed(1)}`;
-  }, [displayData, units]);
+    const body =
+      changeDisplay % 1 === 0
+        ? formatInteger(changeDisplay, { useGrouping: false })
+        : formatDecimal(changeDisplay, 1);
+    return `${sign}${body}`;
+  }, [displayData, units, formatDecimal, formatInteger]);
 
   // Loading state for manual flow
   if (!aiGenerated && isLoadingGoal) {
@@ -390,17 +402,16 @@ export default function NutritionGoalsResults() {
     );
   }
 
-  // Format calorie number with comma separator
-  const formattedCalories = displayData ? displayData.targetCalories.toLocaleString() : '0';
-
   // Whether we have a meaningful calorie range from body fat uncertainty
   const hasCalorieRange =
     displayData?.minTargetCalories !== undefined &&
     displayData?.maxTargetCalories !== undefined &&
     displayData.minTargetCalories !== displayData.maxTargetCalories;
 
+  const formattedCalories = displayData ? formatInteger(displayData.targetCalories) : '0';
+
   const formattedCalorieRange = hasCalorieRange
-    ? `${displayData!.minTargetCalories!.toLocaleString()} – ${displayData!.maxTargetCalories!.toLocaleString()}`
+    ? `${formatInteger(displayData!.minTargetCalories!)} – ${formatInteger(displayData!.maxTargetCalories!)}`
     : null;
 
   return (
@@ -594,10 +605,10 @@ export default function NutritionGoalsResults() {
                   >
                     {displayData.dailyCalorieDeficit != null
                       ? t('nutritionGoals.results.dailyDeficit', {
-                          kcal: displayData.dailyCalorieDeficit.toLocaleString(),
+                          kcal: formatInteger(displayData.dailyCalorieDeficit),
                         })
                       : t('nutritionGoals.results.dailySurplus', {
-                          kcal: displayData.dailyCalorieSurplus!.toLocaleString(),
+                          kcal: formatInteger(displayData.dailyCalorieSurplus!),
                         })}
                   </Text>
                 </View>
@@ -660,7 +671,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {displayData?.protein ?? 0}g
+                {formatInteger(displayData?.protein ?? 0)}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -670,7 +681,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                {displayData?.proteinPct ?? 0}%
+                {formatInteger(displayData?.proteinPct ?? 0)}%
               </Text>
             </GenericCard>
 
@@ -704,7 +715,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {displayData?.carbs ?? 0}g
+                {formatInteger(displayData?.carbs ?? 0)}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -714,7 +725,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                {displayData?.carbsPct ?? 0}%
+                {formatInteger(displayData?.carbsPct ?? 0)}%
               </Text>
             </GenericCard>
 
@@ -748,7 +759,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {displayData?.fats ?? 0}g
+                {formatInteger(displayData?.fats ?? 0)}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -758,7 +769,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                {displayData?.fatsPct ?? 0}%
+                {formatInteger(displayData?.fatsPct ?? 0)}%
               </Text>
             </GenericCard>
           </View>
@@ -1150,7 +1161,7 @@ export default function NutritionGoalsResults() {
               width="full"
               size="sm"
               onPress={() => {
-                router.push({
+                router.navigate({
                   pathname: '/onboarding/nutrition-goals',
                   params: { isAdjusting: 'true' },
                 });

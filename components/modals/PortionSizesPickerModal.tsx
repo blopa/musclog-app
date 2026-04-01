@@ -21,6 +21,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import FoodPortion from '../../database/models/FoodPortion';
 import { FoodPortionService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
@@ -69,6 +70,7 @@ export function PortionSizesPickerModal({
 }: PortionSizesPickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const [searchQuery, setSearchQuery] = useState('');
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
@@ -91,13 +93,13 @@ export function PortionSizesPickerModal({
       return {
         id: portion.id,
         label: portion.name,
-        description: `${portion.gramWeight}g`,
+        description: `${formatInteger(Math.round(portion.gramWeight))}g`,
         icon: IconComponent || (() => null as any),
         iconBgColor: theme.colors.accent.primary,
         iconColor: theme.colors.text.black,
       };
     });
-  }, [portions, theme.colors.accent.primary, theme.colors.text.black]);
+  }, [portions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {

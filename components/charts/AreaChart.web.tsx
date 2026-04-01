@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react';
 import { useEffect, useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import {
@@ -13,6 +14,7 @@ import {
 } from 'victory';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
@@ -83,6 +85,7 @@ export function AreaChart({
   interactive = true,
   tooltipFormatter,
 }: AreaChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
@@ -92,6 +95,8 @@ export function AreaChart({
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
+
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   if (data.length === 0 || series.length === 0) {
     return null;
@@ -103,7 +108,7 @@ export function AreaChart({
   const gapChartToLabels = 2;
   const chartHeight = height - gapChartToLabels - xAxisGap;
   const gridColor = gridLineColor ?? theme.colors.border.light;
-  const mutedColor = theme.colors.text.tertiary ?? '#7E8A87';
+  const mutedColor = theme.colors.text.tertiary;
 
   const peakSeries = peak ? series.find((s) => s.key === peak.seriesKey) : null;
   const peakDatum =
@@ -291,7 +296,12 @@ export function AreaChart({
                 const label = tooltipFormatter
                   ? tooltipFormatter(nearest)
                   : series
-                      .map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`)
+                      .map((s) =>
+                        t('common.labelColonValue', {
+                          label: s.label,
+                          value: formatRoundedDecimal(nearest[s.key] ?? 0, 1),
+                        })
+                      )
                       .join('\n');
                 notifyChartActive(chartId);
                 setActiveLabel(label);
@@ -312,7 +322,7 @@ export function AreaChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.sm,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

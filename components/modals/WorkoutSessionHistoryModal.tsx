@@ -1,5 +1,5 @@
 import { Dumbbell, Share2, Weight } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -8,11 +8,17 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
 import type { EnrichedWorkoutLogSet } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import {
+  calculatePreviewVolumeFromTemplateSets,
+  calculateSessionVolumeFromSets,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { Button } from '../theme/Button';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
@@ -31,6 +37,7 @@ export type WorkoutHistoryModalProps = {
   exercises?: Exercise[];
   currentSetOrder?: number | null;
   isPreview?: boolean;
+  shouldShowTimer?: boolean;
   onStartWorkout?: () => void;
 };
 
@@ -44,12 +51,19 @@ export function WorkoutSessionHistoryModal({
   exercises = [],
   currentSetOrder = null,
   isPreview = false,
+  shouldShowTimer = true,
   onStartWorkout,
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  useEffect(() => {
+    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+  }, []);
 
   const sessionTime = useSessionTotalTime({ startTime: workoutLog?.startedAt });
 
@@ -214,23 +228,15 @@ export function WorkoutSessionHistoryModal({
     }
   }, [isPreview, workoutTemplate, workoutLog, templateSets, sets, exercises, currentSetOrder]);
 
-  // Calculate total volume
   const totalVolume = useMemo(() => {
+    const exerciseById = new Map(exercises.map((e) => [e.id, e]));
     if (isPreview) {
-      // Preview mode: calculate planned volume from template sets
-      return templateSets.reduce((sum, set) => {
-        return sum + (set.targetReps ?? 0) * (set.targetWeight ?? 0);
-      }, 0);
-    } else {
-      // Session mode: only count completed sets
-      return sets.reduce((sum, set) => {
-        if ((set.difficultyLevel ?? 0) > 0) {
-          return sum + (set.reps ?? 0) * (set.weight ?? 0);
-        }
-        return sum;
-      }, 0);
+      return calculatePreviewVolumeFromTemplateSets(templateSets, exerciseById, bodyWeightKg);
     }
-  }, [isPreview, templateSets, sets]);
+    return calculateSessionVolumeFromSets(sets, exerciseById, bodyWeightKg, {
+      onlyCompletedSets: true,
+    });
+  }, [isPreview, templateSets, sets, exercises, bodyWeightKg]);
 
   // Count completed sets (only for session mode)
   const completedSetsCount = useMemo(() => {
@@ -284,8 +290,13 @@ export function WorkoutSessionHistoryModal({
               <Text className="text-3xl font-bold leading-tight text-text-primary">
                 {workoutName}
               </Text>
+              {(isPreview ? workoutTemplate?.description : null) ? (
+                <Text className="mt-1 text-sm text-text-secondary">
+                  {workoutTemplate!.description}
+                </Text>
+              ) : null}
             </View>
-            {!isPreview ? (
+            {!isPreview && shouldShowTimer ? (
               <View className="items-end">
                 <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
@@ -305,7 +316,7 @@ export function WorkoutSessionHistoryModal({
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
               <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
-                {totalVolume.toLocaleString()} {t(weightUnitKey)} {t('workoutHistory.volume')}
+                {formatInteger(totalVolume)} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
             {!isPreview ? (

@@ -7,10 +7,11 @@ import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { ProgressIndicator } from '../../components/theme/ProgressIndicator';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { TestSection } from './components/TestSection';
 
 export default function EmptyStatesTestScreen() {
+  const theme = useTheme();
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}

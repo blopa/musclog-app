@@ -1,0 +1,12 @@
+{
+  "goalHistoryCard": {
+    "kcal": "ККАЛ",
+    "proteinPrefix": "Б",
+    "carbsPrefix": "У",
+    "fatPrefix": "Ж",
+    "g": "г",
+    "kg": "кг",
+    "lbs": "фунты",
+    "bf": "ЖМ"
+  }
+}

@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
+import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -9,6 +10,10 @@ import {
   isValidBodyFat,
 } from '../../utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
+import {
+  calculateExerciseVolume,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import MenstrualCycle from '../models/MenstrualCycle';
@@ -47,6 +52,16 @@ export interface MuscleGroupSets {
   sets: number;
 }
 
+/** Per-day averages: sum of logged intake divided by number of days with nutrition logs. */
+export interface AverageIntakeForPeriod {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  dayCount: number;
+}
+
 export interface ProgressInsights {
   tdee: number;
   empiricalTdee: number;
@@ -66,6 +81,7 @@ export interface ProgressInsights {
     bf15: number;
     bf20: number;
   };
+  averageIntake: AverageIntakeForPeriod | null;
 }
 
 export interface CorrelationPoint {
@@ -347,9 +363,7 @@ export class ProgressService {
 
     for (const log of logs) {
       const nutrients = await log.getNutrients();
-      // Normalize to midnight to handle migrated logs with non-midnight timestamps
-      const d = new Date(log.date);
-      const date = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const date = localDayStartFromUtcMs(log.date);
       const existing = dailyMap.get(date) || {
         date,
         calories: 0,
@@ -585,11 +599,11 @@ export class ProgressService {
     // Only include calories within the period covered by the measurements.
     // We use [start, end) interval for calories because the final weight measurement
     // is typically taken at the start of the final day.
-    const empiricalStartMidnight = new Date(empiricalStart).setUTCHours(0, 0, 0, 0);
-    const empiricalEndMidnight = new Date(empiricalEnd).setUTCHours(0, 0, 0, 0);
+    const empiricalStartKey = localDayStartFromUtcMs(empiricalStart);
+    const empiricalEndKey = localDayStartFromUtcMs(empiricalEnd);
 
     const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStartMidnight && n.date < empiricalEndMidnight)
+      .filter((n) => n.date >= empiricalStartKey && n.date < empiricalEndKey)
       .reduce((acc, curr) => acc + curr.calories, 0);
 
     if (isImperial) {
@@ -604,7 +618,7 @@ export class ProgressService {
         ? (convert(initialWeight || 70, 'lb').to('kg') as number)
         : initialWeight || 70) ||
       70;
-    const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
+    const dob = user?.dateOfBirth || localDayStartMs(new Date(1990, 0, 1));
     const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
 
     const bmr = isValidBodyFat(finalFat)
@@ -688,6 +702,30 @@ export class ProgressService {
     const weightTrend =
       Math.abs(weightChangeWeekly) < 0.05 ? 'stable' : weightChangeWeekly > 0 ? 'up' : 'down';
 
+    const intakeDayCount = nutritionDaily.length;
+    let averageIntake: AverageIntakeForPeriod | null = null;
+    if (intakeDayCount > 0) {
+      const totals = nutritionDaily.reduce(
+        (acc, n) => ({
+          calories: acc.calories + n.calories,
+          protein: acc.protein + n.protein,
+          carbs: acc.carbs + n.carbs,
+          fat: acc.fat + n.fat,
+          fiber: acc.fiber + n.fiber,
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+      );
+      const d = intakeDayCount;
+      averageIntake = {
+        calories: totals.calories / d,
+        protein: totals.protein / d,
+        carbs: totals.carbs / d,
+        fat: totals.fat / d,
+        fiber: totals.fiber / d,
+        dayCount: d,
+      };
+    }
+
     return {
       tdee,
       empiricalTdee,
@@ -702,12 +740,12 @@ export class ProgressService {
       weightTrend,
       eatingPhase,
       targetWeights,
+      averageIntake,
     };
   }
 
   private static getStartOfAggregation(date: number, aggregation: TimeAggregation): number {
-    const d = new Date(date);
-    d.setUTCHours(0, 0, 0, 0);
+    const d = new Date(localDayStartFromUtcMs(date));
     if (aggregation === 'weekly') {
       const day = d.getDay();
       const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
@@ -715,7 +753,7 @@ export class ProgressService {
     } else if (aggregation === 'monthly') {
       d.setDate(1);
     }
-    return d.getTime();
+    return localDayStartMs(d);
   }
 
   private static calculateCorrelationHistory(
@@ -936,6 +974,7 @@ export class ProgressService {
             .fetch()
         : [];
     const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
+    const bodyWeightKg = await getUserBodyWeightKgForVolume();
 
     // Fetch all sets for all log exercises at once
     const logExIds = allLogExercises.map((le) => le.id);
@@ -979,7 +1018,15 @@ export class ProgressService {
         const muscleGroup = exercise?.muscleGroup || 'Other';
 
         const sets = setsByLogExId.get(le.id) || [];
-        const volume = sets.reduce((acc, s) => acc + s.reps * s.weight, 0);
+        const volume = calculateExerciseVolume(
+          sets.map((s) => ({
+            weight: s.weight,
+            reps: s.reps,
+            repsInReserve: s.repsInReserve,
+          })),
+          { equipmentType: exercise?.equipmentType },
+          bodyWeightKg
+        );
         muscleGroupVolume[muscleGroup] = (muscleGroupVolume[muscleGroup] || 0) + volume;
       }
       groupedMuscleVol.set(start, muscleGroupVolume);

@@ -1,7 +1,8 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../../hooks/useFormatAppNumber';
 import { useTheme } from '../../../hooks/useTheme';
 import { GenericCard } from '../GenericCard';
 import {
@@ -32,8 +33,12 @@ export function DailySummaryCard({
   highlightThresholdStyle = 'none',
   menuButton,
 }: DailySummaryCardProps) {
+  const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatDecimal } = useFormatAppNumber();
+
+  const isNarrow = windowWidth < 380;
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
@@ -56,8 +61,8 @@ export function DailySummaryCard({
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
-              <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {calories.consumed}
+              <Text className="text-5xl font-extrabold tracking-tighter text-text-on-colorful">
+                {formatInteger(Math.round(calories.consumed))}
               </Text>
 
               <View className="flex-col">
@@ -65,20 +70,20 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.sm,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                     marginTop: theme.spacing.margin.md,
                   }}
                 >
-                  {`/ ${calories.goal}`}
+                  {`/ ${formatInteger(Math.round(calories.goal))}`}
                 </Text>
                 <Text
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.kcal', 'Kcal')}
+                  {t('dailySummaryCard.kcal')}
                 </Text>
               </View>
             </View>
@@ -96,10 +101,13 @@ export function DailySummaryCard({
           {/* Progress bar */}
           <View className="gap-1.5">
             <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold" style={{ color: theme.colors.overlay.white90 }}>
+              <Text
+                className="text-xs font-bold"
+                style={{ color: theme.colors.overlay.onColorful90 }}
+              >
                 {calories.remaining >= 0
-                  ? `${calories.remaining} ${t('dailySummaryCard.remaining', 'remaining')}`
-                  : `${Math.abs(calories.remaining)} ${t('dailySummaryCard.over', 'over')}`}
+                  ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining', 'remaining')}`
+                  : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over', 'over')}`}
               </Text>
               {highlightThresholds && calorieStatus !== 'not-reached' ? (
                 <Text
@@ -122,12 +130,15 @@ export function DailySummaryCard({
                   width: `${Math.min(calorieProgress, 100)}%`,
                   backgroundColor: showColoredIndicators
                     ? getProgressBarColor(calorieStatus, theme)
-                    : theme.colors.text.primary,
+                    : theme.colors.text.onColorful,
                 }}
               />
             </View>
-            <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
-              {Math.round(calorieProgress)}%
+            <Text
+              className="text-left text-xs"
+              style={{ color: theme.colors.overlay.onColorful70 }}
+            >
+              {formatInteger(Math.round(calorieProgress))}%
             </Text>
           </View>
         </View>
@@ -142,10 +153,10 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.protein', 'Prot')}
+                  {isNarrow ? t('dailySummaryCard.proteinShort') : t('dailySummaryCard.protein')}
                 </Text>
                 {highlightThresholds && proteinStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -159,11 +170,15 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(proteinStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.protein.value}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.protein.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>
+                      {formatDecimal(macros.protein.value, 1)}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.protein.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -177,12 +192,15 @@ export function DailySummaryCard({
                     width: `${Math.min(proteinProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(proteinStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
-                {Math.round(proteinProgress)}%
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
+                {formatInteger(Math.round(proteinProgress))}%
               </Text>
             </View>
 
@@ -193,10 +211,10 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.carbs', 'Carb')}
+                  {isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs')}
                 </Text>
                 {highlightThresholds && carbsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -210,11 +228,15 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(carbsStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.carbs.value}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.carbs.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>
+                      {formatDecimal(macros.carbs.value, 1)}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.carbs.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -228,12 +250,15 @@ export function DailySummaryCard({
                     width: `${Math.min(carbsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(carbsStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
-                {Math.round(carbsProgress)}%
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
+                {formatInteger(Math.round(carbsProgress))}%
               </Text>
             </View>
 
@@ -244,10 +269,10 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.fats', 'Fat')}
+                  {isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats')}
                 </Text>
                 {highlightThresholds && fatsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -261,11 +286,13 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(fatsStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.fats.value}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.fats.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>{formatDecimal(macros.fats.value, 1)}</Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.fats.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -279,12 +306,15 @@ export function DailySummaryCard({
                     width: `${Math.min(fatsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(fatsStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
-                {Math.round(fatsProgress)}%
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
+                {formatInteger(Math.round(fatsProgress))}%
               </Text>
             </View>
           </View>

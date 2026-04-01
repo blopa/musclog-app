@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { AI_COACH_AVATAR } from '../../hooks/useChatMessages';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 
 type ChatMealPlanCarouselProps = {
@@ -26,6 +27,7 @@ const SEE_ALL_CARD_WIDTH = 88;
 export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: screenWidth } = useWindowDimensions();
 
   if (!meals || meals.length === 0) {
@@ -93,7 +95,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                   className="text-base font-bold leading-none"
                   style={{ color: theme.colors.text.primary }}
                 >
-                  {meal.calories}
+                  {formatRoundedDecimal(meal.calories, 2)}
                 </Text>
                 <Text
                   className="text-[10px] font-medium leading-none"
@@ -115,7 +117,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.accent.primary }}
                   >
-                    {meal.protein}g
+                    {formatRoundedDecimal(meal.protein, 2)}g
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -129,7 +131,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.indigo }}
                   >
-                    {meal.carbs}g
+                    {formatRoundedDecimal(meal.carbs, 2)}g
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -143,7 +145,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.warning }}
                   >
-                    {meal.fats}g
+                    {formatRoundedDecimal(meal.fats, 2)}g
                   </Text>
                 </View>
               </View>

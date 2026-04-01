@@ -11,12 +11,20 @@ type AINutritionTrackingContextModalProps = {
   visible: boolean;
   onClose: () => void;
   onApply?: (context: { description: string; tags: string[] }) => void;
+  title?: string;
+  describeLabel?: string;
+  placeholder?: string;
+  applyLabel?: string;
 };
 
 export function AINutritionTrackingContextModal({
   visible,
   onClose,
   onApply,
+  title,
+  describeLabel,
+  placeholder,
+  applyLabel,
 }: AINutritionTrackingContextModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -58,7 +66,7 @@ export function AINutritionTrackingContextModal({
     <BottomPopUp
       visible={visible}
       onClose={handleCancel}
-      title={t('food.aiNutritionContext.title')}
+      title={title ?? t('food.aiNutritionContext.title')}
       maxHeight="85%"
       headerIcon={
         <View
@@ -81,7 +89,7 @@ export function AINutritionTrackingContextModal({
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
-            {t('food.aiNutritionContext.describeYourMeal')}
+            {describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
           </Text>
           <View
             className="w-full rounded-lg border p-4"
@@ -99,7 +107,7 @@ export function AINutritionTrackingContextModal({
                 color: theme.colors.text.primary,
                 textAlignVertical: 'top',
               }}
-              placeholder={t('food.aiNutritionContext.placeholder')}
+              placeholder={placeholder ?? t('food.aiNutritionContext.placeholder')}
               placeholderTextColor={theme.colors.background.white20}
               value={mealDescription}
               onChangeText={setMealDescription}
@@ -121,16 +129,19 @@ export function AINutritionTrackingContextModal({
                 <Pressable
                   key={tag}
                   onPress={() => handleToggleTag(tag)}
-                  className="rounded-full border px-4 py-2"
+                  className={`flex-row items-center rounded-full px-4 py-2.5 ${
+                    isSelected ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
+                  }`}
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                  style={{
-                    backgroundColor: isSelected
-                      ? theme.colors.background.white10
-                      : theme.colors.background.darkGreenSolidAlt,
-                    borderColor: theme.colors.background.white5,
-                  }}
                 >
-                  <Text className="text-sm font-medium text-text-primary">{tag}</Text>
+                  <Text
+                    className={`text-sm font-medium ${isSelected ? 'font-semibold' : ''}`}
+                    style={{
+                      color: isSelected ? theme.colors.text.black : theme.colors.text.gray300,
+                    }}
+                  >
+                    {tag}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -168,7 +179,7 @@ export function AINutritionTrackingContextModal({
             />
             <View className="flex-row items-center justify-center gap-2">
               <Text className="text-sm font-bold text-white">
-                {t('food.aiNutritionContext.applyContext')}
+                {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
               <CheckCircle size={theme.iconSize.md} color={theme.colors.text.white} />
             </View>

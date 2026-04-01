@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Связать",
+    "unlink": "Отвязать",
+    "edit": "Редактировать",
+    "done": "Готово",
+    "deleteExercise": "Удалить упражнение",
+    "deleteExercises": "Удалить упражнения"
+  }
+}

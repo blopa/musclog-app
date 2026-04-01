@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
@@ -7,9 +8,12 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
+import { type Theme } from '../theme';
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
+import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
+import { calculateSetVolume, getUserBodyWeightKgForVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
 
 /**
@@ -52,14 +56,24 @@ export type WorkoutDetailData = {
 /**
  * Format weight for display (input in kg, output in user unit)
  */
-function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units: Units): string {
+function formatWeight(
+  weight: number,
+  isBodyweight: boolean,
+  t: TFunction,
+  units: Units,
+  appNumberLocale: string
+): string {
   const unitKey = getWeightUnitI18nKey(units);
   const displayWeight = kgToDisplay(weight, units);
   const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+  const weightStr =
+    rounded % 1 === 0
+      ? formatAppInteger(appNumberLocale, Math.round(rounded))
+      : formatAppDecimal(appNumberLocale, rounded, 1);
   if (isBodyweight) {
-    return weight > 0 ? `+${rounded} ${t(unitKey)}` : t('workoutSession.bodyweight');
+    return weight > 0 ? `+${weightStr} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
-  return `${rounded} ${t(unitKey)}`;
+  return `${weightStr} ${t(unitKey)}`;
 }
 
 /**
@@ -67,7 +81,8 @@ function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units
  */
 async function calculateVolumeTrend(
   currentWorkoutLog: WorkoutLog,
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): Promise<{
   percentage: number;
   data: LineChartDataPoint[];
@@ -144,8 +159,9 @@ async function calculateVolumeTrend(
     (x) => {
       const log = sortedLogs[x];
       const date = new Date(log.startedAt || log.completedAt || Date.now());
-      return format(date, 'MMM d');
-    }
+      return format(date, 'MMM d', { locale });
+    },
+    locale
   );
 
   // Map data x back to chartWidth scale if needed, but LineChart can handle domain [0, n-1]
@@ -170,10 +186,16 @@ export async function transformWorkoutToDetailData(
   sets: EnrichedWorkoutLogSet[],
   exercises: Exercise[],
   t: TFunction,
-  units: Units
+  units: Units,
+  locale: Locale,
+  theme: Theme,
+  /** `Intl` / `formatApp*` locale string (e.g. i18n.resolvedLanguage), not date-fns Locale */
+  appNumberLocale: string
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
+
+  const bodyWeightKg = await getUserBodyWeightKgForVolume();
 
   const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
   sets.forEach((set) => {
@@ -184,15 +206,23 @@ export async function transformWorkoutToDetailData(
     setsByExercise.get(exerciseId)!.push(set);
   });
 
-  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog);
+  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
     sets.forEach((set) => {
       if (set.exerciseId === pr.exerciseId) {
+        const exercise = exerciseMap.get(pr.exerciseId);
+        const setVol = calculateSetVolume(
+          set.weight ?? 0,
+          set.reps ?? 0,
+          set.repsInReserve,
+          exercise?.equipmentType,
+          bodyWeightKg
+        );
         if (
           (pr.type === 'weight' && set.weight === pr.newRecord.weight) ||
           (pr.type === 'reps' && set.reps === pr.newRecord.reps) ||
-          (pr.type === 'volume' && (set.reps ?? 0) * (set.weight ?? 0) === pr.newRecord.volume)
+          (pr.type === 'volume' && Math.abs(setVol - pr.newRecord.volume) < 0.01)
         ) {
           prSetIds.add(set.id);
         }
@@ -209,14 +239,14 @@ export async function transformWorkoutToDetailData(
 
       const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
 
-      const iconData = getWorkoutIcon(exercise.name ?? '');
+      const iconData = getWorkoutIcon(theme, exercise.name ?? '');
       const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
       const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
         const isHighlighted = prSetIds.has(set.id);
         return {
           setNumber: index + 1,
-          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units),
+          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
           reps: set.reps ?? 0,
           partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
           repsInReserve: set.repsInReserve ?? 0,
@@ -245,7 +275,7 @@ export async function transformWorkoutToDetailData(
 
   const workoutDate = new Date(workoutLog.startedAt || workoutLog.completedAt || Date.now());
 
-  const volumeTrend = await calculateVolumeTrend(workoutLog, t);
+  const volumeTrend = await calculateVolumeTrend(workoutLog, t, locale);
 
   return {
     name: workoutLog.workoutName ?? '',

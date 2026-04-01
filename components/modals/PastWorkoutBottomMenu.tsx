@@ -38,17 +38,18 @@ export function PastWorkoutBottomMenu({
         onPreview?.();
       },
     },
-    {
-      icon: Pencil,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('workoutDetails.edit'),
-      description: t('workoutDetails.editDescription'),
-      onPress: () => {
-        onClose();
-        onEdit?.();
-      },
-    },
+    // TODO: implement a modal that allow editing the past workout
+    // {
+    //   icon: Pencil,
+    //   iconColor: theme.colors.text.primary,
+    //   iconBgColor: theme.colors.text.primary20,
+    //   title: t('workoutDetails.edit'),
+    //   description: t('workoutDetails.editDescription'),
+    //   onPress: () => {
+    //     onClose();
+    //     onEdit?.();
+    //   },
+    // },
     {
       icon: Share2,
       iconColor: theme.colors.text.primary,
@@ -60,19 +61,23 @@ export function PastWorkoutBottomMenu({
         onShare?.();
       },
     },
-    {
-      icon: Trash2,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('workoutDetails.delete'),
-      description: t('workoutDetails.deleteDescription'),
-      titleColor: theme.colors.status.error,
-      descriptionColor: theme.colors.status.error,
-      onPress: () => {
-        onClose();
-        onDelete?.();
-      },
-    },
+    ...(onDelete
+      ? [
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('workoutDetails.delete'),
+            description: t('workoutDetails.deleteDescription'),
+            titleColor: theme.colors.status.error,
+            descriptionColor: theme.colors.status.error,
+            onPress: () => {
+              onClose();
+              onDelete?.();
+            },
+          },
+        ]
+      : []),
   ];
 
   return (

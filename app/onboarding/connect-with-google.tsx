@@ -7,11 +7,12 @@ import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountB
 import { MasterLayout } from '../../components/MasterLayout';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { useScrollFade } from '../../hooks/useScrollFade';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { setCurrentOnboardingStep } from '../../utils/onboardingService';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function ConnectWithGoogle() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { isSigningIn, promptAsync } = useGoogleAuth();
@@ -48,10 +49,10 @@ export default function ConnectWithGoogle() {
           </View>
           <ConnectGoogleAccountBody
             onMaybeLater={() => {
-              router.push('/onboarding/fitness-info');
+              router.navigate('/onboarding/fitness-info');
             }}
             onConnect={handleConnect}
-            onContinue={() => router.push('/onboarding/fitness-info')}
+            onContinue={() => router.navigate('/onboarding/fitness-info')}
             onClose={() => {}}
             isSigningIn={isSigningIn || params?.loading === 'true'}
           />

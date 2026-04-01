@@ -55,9 +55,7 @@ export type StackedBarLineChartProps = {
 };
 
 const TOOLTIP_HEIGHT = 32;
-const LABEL_BOX_WIDTH = 40;
 
-const DEFAULT_STACK_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
 const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 
@@ -87,11 +85,17 @@ export function StackedBarLineChart({
   className,
 }: StackedBarLineChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_STACK_COLORS = [
+    theme.colors.status.info,
+    theme.colors.status.error,
+    theme.colors.status.yellow,
+    theme.colors.accent.primary,
+  ];
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
-  const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
 
   useEffect(() => {
@@ -150,16 +154,6 @@ export function StackedBarLineChart({
     notifyChartActive(chartId);
     setActiveLabel(totalFormatter(sumSegments(datum), datum));
     setActiveLabelSecondary(lineFormatter(datum.lineValue));
-  };
-
-  const CHART_PADDING_X = 12;
-  const xLabelLeft = (index: number) => {
-    if (labelContainerWidth <= 0) {
-      return 0;
-    }
-    const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
-    const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
-    return barCenterX - LABEL_BOX_WIDTH / 2;
   };
 
   const tooltipPillStyle = {

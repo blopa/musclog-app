@@ -13,6 +13,13 @@
     "archiveError": "Falha ao arquivar treino",
     "duplicateSuccess": "Treino duplicado com sucesso",
     "duplicateError": "Falha ao duplicar treino",
+    "delete": "Excluir",
+    "deleteSuccess": "Treino excluído com sucesso",
+    "deleteError": "Falha ao excluir treino",
+    "deleteConfirmation": {
+      "title": "Excluir Treino",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita."
+    },
     "searchPlaceholder": "Pesquisar treinos...",
     "noSearchResults": "Nenhum treino encontrado",
     "noSearchResultsDescription": "Nenhum treino corresponde a \"{{query}}\"",
@@ -140,7 +147,15 @@
       "successMessage": "Treinos criados com sucesso"
     },
     "aiGeneration": {
-      "comingSoon": "Geração de treino por IA em breve!"
+      "comingSoon": "Geração de treino por IA em breve!",
+      "title": "Gerar com IA",
+      "subtitle": "Conte seus objetivos e criaremos um plano de treino personalizado",
+      "preferencesLabel": "Suas preferências",
+      "preferencesPlaceholder": "Ex: Quero ganhar massa muscular, posso treinar 4 dias por semana, tenho acesso a uma academia completa, sou um praticante intermediário...",
+      "generateButton": "Gerar Plano",
+      "successMessage": "Seu plano de treino está pronto! {{count}} treino(s) adicionado(s).",
+      "errorMessage": "Não foi possível gerar um plano. Por favor, tente novamente.",
+      "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações."
     },
     "templateBrowser": {
       "comingSoon": "Navegador de modelos em breve!"

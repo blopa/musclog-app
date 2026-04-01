@@ -9,6 +9,7 @@
     "today": "Hoje",
     "tomorrow": "Amanhã",
     "year": "Ano",
+    "xYearsAgo": "{{count}} anos atrás",
     "yesterday": "Ontem"
   }
 }

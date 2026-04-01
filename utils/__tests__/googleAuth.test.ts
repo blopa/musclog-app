@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { format } from 'date-fns';
+
 import {
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
@@ -338,7 +340,7 @@ describe('utils/googleAuth', () => {
     });
 
     it('should not show error twice on the same day', async () => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = format(new Date(), 'yyyy-MM-dd');
       mockGoogleAuthService.getRefreshToken.mockResolvedValue(null);
       mockGoogleAuthService.clearRefreshToken.mockResolvedValue();
       mockAsyncStorage.getItem.mockResolvedValueOnce('true').mockResolvedValueOnce(today);

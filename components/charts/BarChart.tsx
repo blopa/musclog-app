@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { Bar, CartesianChart } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -89,6 +90,8 @@ export function BarChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
 
+  const { formatRoundedDecimal } = useFormatAppNumber();
+
   if (data.length === 0) {
     return null;
   }
@@ -107,9 +110,7 @@ export function BarChart({
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
-    const label = tooltipFormatter
-      ? tooltipFormatter(nearest)
-      : String(Math.round(nearest.y * 10) / 10);
+    const label = tooltipFormatter ? tooltipFormatter(nearest) : formatRoundedDecimal(nearest.y, 1);
     notifyChartActive(chartId);
     setActiveLabel(label);
   };

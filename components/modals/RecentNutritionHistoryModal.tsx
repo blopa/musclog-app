@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from 'react-native';
 
 import { useFoods } from '../../hooks/useFoods';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
@@ -33,6 +34,7 @@ export function RecentNutritionHistoryModal({
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const { foods, isLoading, isLoadingMore, hasMore, loadMore } = useFoods({
     mode: 'list',
     visible,
@@ -74,7 +76,7 @@ export function RecentNutritionHistoryModal({
                     name: food.name ?? '',
                     description: t('foodSearch.foodDescriptionPer100g', {
                       brand: food.brand || t('foodSearch.customFoodLabel'),
-                      calories: Math.round(food.calories ?? 0),
+                      calories: formatInteger(Math.round(food.calories ?? 0)),
                     }),
                     brand: food.brand,
                     serving_size: portion100gName,

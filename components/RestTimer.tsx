@@ -25,7 +25,7 @@ export function RestTimer({ restTime, rotationAnim, initialRestTime }: RestTimer
 
   // Calculate progress for circular ring (0 to 1)
   const totalRestTime = initialRestTime || 90; // Use provided initial time or default to 90
-  const progress = totalRestTime > 0 ? Math.max(0, Math.min(1, 1 - restTime / totalRestTime)) : 0;
+  const progress = totalRestTime > 0 ? Math.max(0, Math.min(1, restTime / totalRestTime)) : 0;
   const circumference = 2 * Math.PI * 46; // radius = 46
   const strokeDashoffset = circumference * (1 - progress);
 

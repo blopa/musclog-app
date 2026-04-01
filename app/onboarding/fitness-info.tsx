@@ -8,9 +8,10 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { useOnboardingFitnessData } from '../../hooks/useOnboardingFitnessData';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function FitnessInfo() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const {
@@ -26,7 +27,7 @@ export default function FitnessInfo() {
     const data = getMergedFitnessData();
     const result = await saveFitnessData(data);
 
-    router.push({
+    router.navigate({
       pathname: '/onboarding/fitness-basis',
       params:
         result.weightMetricId && result.heightMetricId
@@ -39,7 +40,7 @@ export default function FitnessInfo() {
     const data = getMergedFitnessData();
     const result = await saveFitnessData(data);
 
-    router.push({
+    router.navigate({
       pathname: '/onboarding/fitness-basis',
       params:
         result.weightMetricId && result.heightMetricId

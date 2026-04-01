@@ -79,7 +79,7 @@ export function ConfirmationModal({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={isLoading ? () => {} : onClose}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       {/* Backdrop */}

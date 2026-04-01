@@ -1,5 +1,11 @@
 {
   "progress": {
+    "averageIntakeTitle": "Ingestão média diária",
+    "averageIntakeSubtitle": "{{count}} dias registrados",
+    "averageIntakeProtein": "Proteína",
+    "averageIntakeCarbs": "Carboidratos",
+    "averageIntakeFat": "Gordura",
+    "averageIntakeFiber": "Fibra",
     "metabolicSummary": "Resumo Metabólico",
     "currentTdee": "TDEE Atual",
     "basedOnRecentActivity": "BASEADO EM ATIVIDADE RECENTE E NUTRIÇÃO",

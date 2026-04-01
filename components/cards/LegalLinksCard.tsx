@@ -3,8 +3,8 @@ import { ExternalLink } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
+import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
-import { theme } from '../../theme';
 import { GenericCard } from './GenericCard';
 
 const buildNumber =
@@ -16,6 +16,7 @@ interface LegalLinksCardProps {
 
 export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%', ...containerStyle }}>
@@ -41,7 +42,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
                 borderRadius: theme.borderRadius.sm,
               },
             ]}
-            onPress={() => Linking.openURL('https://werules.com/musclog/terms')}
+            onPress={() => Linking.openURL('https://musclog.app/en-us/terms')}
           >
             <Text
               style={{
@@ -89,7 +90,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
                 borderRadius: theme.borderRadius.sm,
               },
             ]}
-            onPress={() => Linking.openURL('https://werules.com/musclog/privacy')}
+            onPress={() => Linking.openURL('https://musclog.app/en-us/privacy')}
           >
             <Text
               style={{

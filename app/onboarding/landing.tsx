@@ -11,22 +11,20 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { Button } from '../../components/theme/Button';
 import { TextInput } from '../../components/theme/TextInput';
-import {
-  CURRENT_ONBOARDING_VERSION,
-  ONBOARDING_COMPLETED,
-  ONBOARDING_VERSION,
-} from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
-import { theme } from '../../theme';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useTheme } from '../../hooks/useTheme';
 import { importDatabase, shouldSeedDevData } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function LandingScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
 
   const [isInitializing, setIsInitializing] = useState(true);
@@ -66,7 +64,7 @@ export default function LandingScreen() {
         if (shouldSeedDevData()) {
           await seedDevData();
 
-          router.push('/');
+          router.navigate('/');
         }
       } catch (error) {
         console.error('Error initializing app:', error);
@@ -242,7 +240,7 @@ export default function LandingScreen() {
                         fontSize: theme.typography.fontSize.xl,
                       }}
                     >
-                      {initProgressCurrent.toLocaleString()} / {initProgressTotal.toLocaleString()}
+                      {formatInteger(initProgressCurrent)} / {formatInteger(initProgressTotal)}
                     </Text>
                   ) : null}
                   <View style={{ height: theme.size.xs }} />
@@ -270,7 +268,7 @@ export default function LandingScreen() {
                   label={t('onboarding.landing.getStarted')}
                   onPress={() => {
                     // Navigate to home or onboarding
-                    router.push('/onboarding/onboarding');
+                    router.navigate('/onboarding/onboarding');
                   }}
                   icon={ArrowRight}
                   iconPosition="right"
@@ -294,7 +292,7 @@ export default function LandingScreen() {
                   <Text
                     accessibilityRole="link"
                     onPress={async () => {
-                      const url = 'https://werules.com/musclog/terms';
+                      const url = 'https://musclog.app/en-us/terms';
                       try {
                         await Linking.openURL(url);
                       } catch (e) {

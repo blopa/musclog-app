@@ -28,7 +28,7 @@ import {
   Wine,
   Zap,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -36,6 +36,11 @@ import Food from '../../database/models/Food';
 import { FoodService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedDecimalInput,
+} from '../../utils/localizedDecimalInput';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
@@ -121,7 +126,11 @@ export default function CreateCustomFoodModal({
   const [microOpen, setMicroOpen] = useState(false);
   const [showPortionPicker, setShowPortionPicker] = useState(false);
   const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const decimalSeparator = useMemo(
+    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
 
   const { portions, isLoading: isLoadingPortions } = useFoodPortions({
     mode: 'all',
@@ -151,11 +160,11 @@ export default function CreateCustomFoodModal({
       try {
         // Parse numeric values
         const nutrition = {
-          calories: parseInt(calories || '0', 10) || 0,
-          protein: parseFloat(protein || '0') || 0,
-          carbs: parseFloat(carbs || '0') || 0,
-          fat: parseFloat(fat || '0') || 0,
-          fiber: parseFloat(fiber || '0') || 0,
+          calories: parseLocalizedDecimalString(calories, decimalSeparator),
+          protein: parseLocalizedDecimalString(protein, decimalSeparator),
+          carbs: parseLocalizedDecimalString(carbs, decimalSeparator),
+          fat: parseLocalizedDecimalString(fat, decimalSeparator),
+          fiber: parseLocalizedDecimalString(fiber, decimalSeparator),
         };
 
         // Determine serving amount/unit based on selected portion
@@ -206,19 +215,14 @@ export default function CreateCustomFoodModal({
     onClose();
   };
 
-  // Filter to only allow numeric input
   const handleNumericChange = (value: string, setter: (val: string) => void) => {
-    // Remove any non-numeric characters (allow digits only)
-    const numericValue = value.replace(/[^0-9]/g, '');
-    setter(numericValue);
+    setter(sanitizeLocalizedDecimalInput(value, decimalSeparator, 2));
   };
 
-  // Handle micronutrient changes
   const handleMicronutrientChange = (key: keyof typeof micronutrients, value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, '');
     setMicronutrients((prev) => ({
       ...prev,
-      [key]: numericValue,
+      [key]: sanitizeLocalizedDecimalInput(value, decimalSeparator, 2),
     }));
   };
 
@@ -650,7 +654,7 @@ export default function CreateCustomFoodModal({
               {t('food.newCustomFood.portionSizes')}
             </Text>
             <Pressable
-              className="min-h-12 flex-row items-center justify-between rounded-lg border p-3"
+              className="min-h-12 overflow-hidden rounded-lg border"
               style={{
                 backgroundColor: theme.colors.background.secondary,
                 borderColor: theme.colors.background.white20,
@@ -659,34 +663,38 @@ export default function CreateCustomFoodModal({
               onPress={() => setShowPortionPicker(true)}
               disabled={isLoadingPortions}
             >
-              <View className="flex-1 flex-row flex-wrap items-center gap-2">
-                {isLoadingPortions ? (
-                  <SkeletonLoader width="80%" height={20} borderRadius={10} />
-                ) : selectedPortionIds.length > 0 ? (
-                  selectedPortionIds.map((id) => {
-                    const portion = portions.find((p) => p.id === id);
-                    return portion ? (
-                      <View
-                        key={id}
-                        className="rounded-full px-3 py-1.5"
-                        style={{ backgroundColor: theme.colors.status.emerald }}
-                      >
-                        <Text
-                          className="text-sm font-medium"
-                          style={{ color: theme.colors.text.white }}
+              <View className="min-h-12 flex-row items-center justify-between p-3">
+                <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
+                  {isLoadingPortions ? (
+                    <SkeletonLoader width="80%" height={20} borderRadius={10} />
+                  ) : selectedPortionIds.length > 0 ? (
+                    selectedPortionIds.map((id) => {
+                      const portion = portions.find((p) => p.id === id);
+                      return portion ? (
+                        <View
+                          key={id}
+                          className="rounded-full px-3 py-1.5"
+                          style={{ backgroundColor: theme.colors.status.emerald }}
                         >
-                          {portion.name} ({portion.gramWeight}g)
-                        </Text>
-                      </View>
-                    ) : null;
-                  })
-                ) : (
-                  <Text className="text-text-tertiary">
-                    {t('food.newCustomFood.selectPortionSizes')}
-                  </Text>
-                )}
+                          <Text
+                            className="text-sm font-medium"
+                            style={{ color: theme.colors.text.white }}
+                          >
+                            {portion.name} ({portion.gramWeight}g)
+                          </Text>
+                        </View>
+                      ) : null;
+                    })
+                  ) : (
+                    <Text className="text-text-tertiary">
+                      {t('food.newCustomFood.selectPortionSizes')}
+                    </Text>
+                  )}
+                </View>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+                </View>
               </View>
-              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
 
@@ -703,6 +711,7 @@ export default function CreateCustomFoodModal({
             label={t('food.newCustomFood.calories')}
             value={calories}
             onChange={(value) => handleNumericChange(value, setCalories)}
+            allowDecimals
             topRightElement={
               <View
                 className="rounded-full px-2"
@@ -726,6 +735,7 @@ export default function CreateCustomFoodModal({
               label={t('food.newCustomFood.protein')}
               value={protein}
               onChange={(value) => handleNumericChange(value, setProtein)}
+              allowDecimals
               topRightElement={
                 <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
               }
@@ -736,6 +746,7 @@ export default function CreateCustomFoodModal({
               label={t('food.newCustomFood.carbs')}
               value={carbs}
               onChange={(value) => handleNumericChange(value, setCarbs)}
+              allowDecimals
               topRightElement={
                 <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
               }
@@ -746,6 +757,7 @@ export default function CreateCustomFoodModal({
               label={t('food.newCustomFood.fat')}
               value={fat}
               onChange={(value) => handleNumericChange(value, setFat)}
+              allowDecimals
               topRightElement={
                 <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
               }
@@ -756,6 +768,7 @@ export default function CreateCustomFoodModal({
               label={t('food.newCustomFood.fiber')}
               value={fiber}
               onChange={(value) => handleNumericChange(value, setFiber)}
+              allowDecimals
               topRightElement={
                 <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
               }
@@ -793,6 +806,7 @@ export default function CreateCustomFoodModal({
                     label={nutrient.label}
                     value={nutrient.value}
                     onChange={(value: string) => handleMicronutrientChange(nutrient.key, value)}
+                    allowDecimals
                     topRightElement={
                       <nutrient.icon size={theme.iconSize.sm} color={nutrient.iconColor} />
                     }

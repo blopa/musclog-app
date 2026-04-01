@@ -18,9 +18,9 @@ import type { MuscleGroup } from '../../database/models';
 import { GoogleAuthService, MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
+import { useTheme } from '../../hooks/useTheme';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
@@ -31,6 +31,11 @@ const APP_SCREENS = [
   { name: 'Home', route: '/', category: 'Main' },
   { name: 'Profile', route: '/profile', category: 'Main' },
   { name: 'Food', route: '/nutrition/food', category: 'Nutrition' },
+  {
+    name: 'Nutrition Check-in List',
+    route: '/nutrition/checkin-list',
+    category: 'Nutrition',
+  },
   { name: 'Workouts', route: '/workout/workouts', category: 'Workout' },
   { name: 'Workout Session', route: '/workout/workout-session', category: 'Workout' },
   { name: 'Workout Summary', route: '/workout/workout-summary', category: 'Workout' },
@@ -59,6 +64,7 @@ const APP_SCREENS = [
 ];
 
 export default function DebugTestScreen() {
+  const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -663,7 +669,7 @@ export default function DebugTestScreen() {
                     <Pressable
                       key={screen.route}
                       className="flex-row items-center justify-between rounded-lg border border-border-light bg-bg-primary p-3"
-                      onPress={() => router.push(screen.route as any)}
+                      onPress={() => router.navigate(screen.route as any)}
                     >
                       <Text className="flex-1 text-base font-medium text-text-primary">
                         {screen.name}

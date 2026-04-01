@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import Meal from '../database/models/Meal';
 import { MealService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type MealDataDisplayItem = {
@@ -31,7 +33,7 @@ export type MealDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -40,9 +42,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function pickIconForMeal(name: string, isAiGenerated: boolean): MealDataDisplayItem['icon'] {
@@ -99,7 +101,8 @@ async function mealToDisplayItemWithT(
 
 function groupMealsByDate(
   items: { item: MealDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): MealDataDayGroup[] {
   const groupMap = new Map<number, MealDataDisplayItem[]>();
 
@@ -112,7 +115,7 @@ function groupMealsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -122,7 +125,8 @@ function groupMealsByDate(
 function mergeIntoDayGroups(
   existing: MealDataDayGroup[],
   newItemsWithDates: { item: MealDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): MealDataDayGroup[] {
   const groupMap = new Map<number, MealDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -146,7 +150,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.id.localeCompare(b.id)), // stable order within day
     }))
@@ -193,6 +197,7 @@ export function useMealDataLogs({
 }: UseMealDataLogsParams = {}): UseMealDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
       restaurant: {
@@ -233,7 +238,7 @@ export function useMealDataLogs({
       const validResults = results.filter(
         (r): r is { item: MealDataDisplayItem; dateTimestamp: number } => r !== null
       );
-      const groups = groupMealsByDate(validResults, t);
+      const groups = groupMealsByDate(validResults, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(meals.length === batchSize);
       setOffset(meals.length);
@@ -244,7 +249,7 @@ export function useMealDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -272,7 +277,7 @@ export function useMealDataLogs({
         (r): r is { item: MealDataDisplayItem; dateTimestamp: number } => r !== null
       );
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t, dateFnsLocale));
       setHasMore(meals.length === batchSize);
       setOffset((prev) => prev + meals.length);
     } catch (err) {
@@ -281,7 +286,7 @@ export function useMealDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

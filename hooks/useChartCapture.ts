@@ -4,6 +4,7 @@ import * as Sharing from 'expo-sharing';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import { formatLocalCalendarDayIso } from '../utils/calendarDate';
 import { showSnackbar } from '../utils/snackbarService';
 
 function sanitizeFilename(title: string): string {
@@ -36,7 +37,7 @@ export function useChartCapture() {
       }
 
       const base64 = skImage.encodeToBase64(ImageFormat.PNG);
-      const date = new Date().toISOString().slice(0, 10);
+      const date = formatLocalCalendarDayIso(new Date());
       const filename = `musclog-${sanitizeFilename(title)}-${date}.png`;
       const fileUri = `${cacheDirectory}${filename}`;
 

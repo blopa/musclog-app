@@ -17,6 +17,8 @@
     "setLabel": "Série {{index}}",
     "remove": "Remover",
     "rir": "RIR (Repetições em Reserva)",
+    "syncToHealthConnect": "Sincronizar com Health Connect",
+    "shareMessage": "Acabei de terminar um treino com volume de {{volume}} {{unit}} e queimei {{calories}} calorias",
     "inputs": {
       "weightKg": "Peso (kg)",
       "weightLbs": "Peso (lbs)",

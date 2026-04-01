@@ -1,10 +1,12 @@
 import type { MouseEvent } from 'react';
 import React, { useEffect, useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
@@ -78,6 +80,7 @@ export function MultipleLinesChart({
   interactive = true,
   tooltipFormatter,
 }: MultipleLinesChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
@@ -88,6 +91,8 @@ export function MultipleLinesChart({
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
+
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   if (data.length === 0 || series.length === 0) {
     return null;
@@ -244,7 +249,12 @@ export function MultipleLinesChart({
                   const label = tooltipFormatter
                     ? tooltipFormatter(nearest)
                     : series
-                        .map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`)
+                        .map((s) =>
+                          t('common.labelColonValue', {
+                            label: s.label,
+                            value: formatRoundedDecimal(nearest[s.key] ?? 0, 1),
+                          })
+                        )
                         .join('\n');
                   notifyChartActive(chartId);
                   setActiveLabel(label);
@@ -265,7 +275,7 @@ export function MultipleLinesChart({
                 borderRadius: theme.borderRadius.xs,
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.sm,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
                 zIndex: 100,
                 alignItems: 'center',
                 justifyContent: 'center',

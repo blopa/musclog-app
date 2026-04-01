@@ -18,7 +18,8 @@ import {
 } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
+import { localDayKeyPlusCalendarDaysFromNow } from '../../utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -29,6 +30,7 @@ import {
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();
@@ -137,7 +139,7 @@ export default function NutritionGoalsScreen() {
           const checkins = generateWeeklyCheckins(
             plan,
             Date.now(),
-            goals.targetDate ?? Date.now() + 90 * 24 * 60 * 60 * 1000,
+            goals.targetDate ?? localDayKeyPlusCalendarDaysFromNow(90),
             heightDecrypted.value / 100,
             bodyFatDecrypted?.value ?? null
           );
@@ -150,7 +152,7 @@ export default function NutritionGoalsScreen() {
         // If the user arrived here from the results screen to adjust the AI plan,
         // then after saving we should continue the onboarding flow to personal-info.
         if (isAdjusting) {
-          router.push('/onboarding/personal-info');
+          router.navigate('/onboarding/personal-info');
           return;
         }
 
@@ -159,7 +161,7 @@ export default function NutritionGoalsScreen() {
           return;
         }
 
-        router.push({
+        router.navigate({
           pathname: '/onboarding/nutrition-goals-results',
           params: { aiGenerated: 'false' },
         });

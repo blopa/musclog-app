@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
@@ -12,6 +13,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 import type {
@@ -37,7 +39,7 @@ export function GenericEditModal({
   loadError,
   submitLabel,
 }: GenericEditModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [formValues, setFormValues] = useState<EditFormValues>(initialValues);
   const [isSaving, setIsSaving] = useState(false);
@@ -67,10 +69,9 @@ export function GenericEditModal({
       onClose();
     } catch (error) {
       console.error('Error saving record:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : t('common.saveError', 'Failed to save changes');
+      const errorMessage = error instanceof Error ? error.message : t('common.saveError');
       showSnackbar('error', errorMessage, {
-        subtitle: t('common.saveErrorSubtitle', 'Please try again'),
+        subtitle: t('common.saveErrorSubtitle'),
       });
     } finally {
       setIsSaving(false);
@@ -93,16 +94,18 @@ export function GenericEditModal({
       ];
       const colorScheme = colorSchemes[index % colorSchemes.length];
 
-      // Try to get a description from translation keys
+      // Optional longer subtitle: e.g. food.meals.* → food.meals.descriptions.*
+      // (keys like ai.icons.Dumbbell have no parallel *.descriptions.* — skip if absent)
       const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
-      const description = t(descriptionKey);
+      const title = t(option.label, option.label);
+      const description = i18n.exists(descriptionKey) ? t(descriptionKey) : title;
 
       return {
         icon: Circle,
         iconColor: colorScheme.color,
         iconBgColor: colorScheme.bg,
-        title: t(option.label, option.label),
-        description: description || t(option.label, option.label),
+        title,
+        description,
         onPress: () => onSelect(option.value),
       };
     });
@@ -139,12 +142,14 @@ export function GenericEditModal({
         const numberField = field as NumberFieldConfig;
         const numValue = (value as number) ?? numberField.min ?? 0;
         const step = numberField.step ?? 1;
+        const maxFractionDigits = numberField.maxFractionDigits ?? (step % 1 === 0 ? 0 : 1);
         return (
           <StepperInput
             key={field.key}
             label={label}
             value={numValue}
             unit={numberField.unit}
+            maxFractionDigits={maxFractionDigits}
             onIncrement={() => {
               const max = numberField.max ?? Infinity;
               const newValue = Math.min(numValue + step, max);
@@ -219,7 +224,7 @@ export function GenericEditModal({
         const selectedOption = options.find((opt) => opt.value === selectValue);
         const selectedLabel = selectedOption
           ? t(selectedOption.label, selectedOption.label)
-          : t('common.select', 'Select...');
+          : t('common.select');
 
         const menuItems = createBottomMenuItems(options, (val) => {
           handleFieldChange(field.key, val);
@@ -235,10 +240,14 @@ export function GenericEditModal({
                 setCurrentSelectFieldKey(field.key);
                 setSelectMenuVisible(true);
               }}
-              className="flex-row items-center justify-between rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+              className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
             >
-              <Text className="text-base text-text-primary">{selectedLabel}</Text>
-              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+              <View className="flex-row items-center justify-between px-4 py-3">
+                <Text className="min-w-0 flex-1 text-base text-text-primary">{selectedLabel}</Text>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </View>
+              </View>
             </Pressable>
             <BottomPopUpMenu
               visible={selectMenuVisible ? currentSelectFieldKey === field.key : false}
@@ -258,26 +267,16 @@ export function GenericEditModal({
         const timestamp = (value as number) ?? Date.now();
         const dateValue = new Date(timestamp);
 
-        const formatDate = (date: Date) => {
-          return date.toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          });
-        };
-
         return (
           <View key={field.key} className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
-            <Pressable
+            <DatePickerInput
+              label={label}
+              selectedDate={dateValue}
               onPress={() => {
                 setCurrentDateFieldKey(field.key);
                 setDatePickerVisible(true);
               }}
-              className="rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
-            >
-              <Text className="text-base text-text-primary">{formatDate(dateValue)}</Text>
-            </Pressable>
+            />
             <DatePickerModal
               visible={datePickerVisible ? currentDateFieldKey === field.key : false}
               onClose={() => {
@@ -286,8 +285,7 @@ export function GenericEditModal({
               }}
               selectedDate={dateValue}
               onDateSelect={(date) => {
-                // Convert Date to timestamp (milliseconds)
-                handleFieldChange(field.key, date.getTime());
+                handleFieldChange(field.key, localDayStartMs(date));
                 setDatePickerVisible(false);
                 setCurrentDateFieldKey(null);
               }}
@@ -318,7 +316,7 @@ export function GenericEditModal({
         <View className="flex-1 items-center justify-center p-6">
           <Text className="text-status-error50 text-center text-base">{loadError}</Text>
           <Button
-            label={t('common.close', 'Close')}
+            label={t('common.close')}
             variant="outline"
             size="sm"
             onPress={onClose}
@@ -336,7 +334,7 @@ export function GenericEditModal({
       title={title}
       footer={
         <Button
-          label={submitLabel ?? t('common.saveChanges', 'Save Changes')}
+          label={submitLabel ?? t('common.saveChanges')}
           icon={Check}
           variant="gradientCta"
           size="md"
@@ -349,7 +347,7 @@ export function GenericEditModal({
     >
       {isLoading ? (
         <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-base text-text-secondary">{t('common.loading', 'Loading...')}</Text>
+          <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
         <ScrollView className="px-4 py-6">

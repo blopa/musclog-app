@@ -1,7 +1,7 @@
-import { theme } from '../theme';
+import { type Theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 
-export function getAvatarColor(avatarColor?: AvatarColor | null) {
+export function getAvatarColor(theme: Theme, avatarColor?: AvatarColor | null) {
   if (!avatarColor) {
     return theme.colors.accent.primary;
   }
@@ -20,7 +20,7 @@ export function getAvatarColor(avatarColor?: AvatarColor | null) {
   return colorMap[avatarColor] || theme.colors.accent.primary;
 }
 
-export function getAvatarBackgroundColor(avatarColor?: AvatarColor | null) {
+export function getAvatarBackgroundColor(theme: Theme, avatarColor?: AvatarColor | null) {
   if (!avatarColor) {
     return theme.colors.accent.primary20;
   }

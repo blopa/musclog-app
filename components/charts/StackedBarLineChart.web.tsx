@@ -47,7 +47,6 @@ export type StackedBarLineChartProps = {
   className?: string;
 };
 
-const DEFAULT_STACK_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
 const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 
@@ -77,6 +76,13 @@ export function StackedBarLineChart({
   className,
 }: StackedBarLineChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_STACK_COLORS = [
+    theme.colors.status.info,
+    theme.colors.status.error,
+    theme.colors.status.yellow,
+    theme.colors.accent.primary,
+  ];
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -375,7 +381,7 @@ export function StackedBarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                  boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
                 }}
               >
                 <Text
@@ -397,7 +403,7 @@ export function StackedBarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  boxShadow: `0 2px 4px ${theme.colors.background.black20}`,
                 }}
               >
                 <Text

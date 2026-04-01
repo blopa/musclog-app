@@ -1,0 +1,126 @@
+{
+  "nutritionGoals": {
+    "title": "Установить цели питания и тела",
+    "subtitle": "Задайте цели по питанию и составу тела.",
+    "dailyMacroTargets": "Дневные целевые макросы",
+    "totalDailyCalories": "Общие дневные калории",
+    "targetBodyMetrics": "Целевые показатели тела",
+    "macrosDistribution": "Распределение макросов",
+    "balance": "Баланс",
+    "optimal": "Оптимальный",
+    "protein": "Белок",
+    "carbohydrates": "Углеводы",
+    "fats": "Жиры",
+    "targetWeight": "Целевой вес",
+    "targetBodyFat": "Целевая жировая масса",
+    "targetBMI": "Целевой ИМТ",
+    "targetFFMI": "Целевой FFMI",
+    "targetDate": "Целевая дата",
+    "targetDateNotSet": "Не задана",
+    "targetDateSublabel": "Когда вы хотите достичь целевых показателей тела",
+    "targetDateClear": "Очистить",
+    "editTitle": "Редактировать цель",
+    "updateGoal": "Обновить цель",
+    "goalStartDate": "Дата начала цели",
+    "goalStartDateSublabel": "Когда начался этот период цели",
+    "goalStartDateToday": "Сегодня",
+    "saveGoals": "Сохранить цели",
+    "settingsNote": "Вы можете изменить эти значения в любое время в Настройках.",
+    "kcalPerGram": {
+      "protein": "4 ккал/г",
+      "carbs": "4 ккал/г",
+      "fats": "9 ккал/г",
+      "fiber": "2 ккал/г"
+    },
+    "sublabels": {
+      "targetWeight": "Целевой вес в {{unit}}",
+      "targetBodyFat": "% процент",
+      "targetBMI": "Индекс массы тела",
+      "targetFFMI": "Индекс безжировой массы"
+    },
+    "acceptAndContinue": "Принять и продолжить",
+    "adjustGoalsManually": "Настроить цели вручную",
+    "continue": "Продолжить",
+    "results": {
+      "aiCalculationComplete": "Расчёт завершён",
+      "your": "Ваш",
+      "nutritionPlan": "план питания",
+      "aiDescription": "На основе ваших показателей тела и уровня активности наш расчёт оптимизировал ваши дневные цели.",
+      "manualDescription": "Вот цели питания, которые вы установили. Вы можете продолжить или вернуться для корректировки.",
+      "manualPlanBadge": "Ваш персональный план",
+      "macroSplit": "Распределение макросов",
+      "manualTipsTitle": "Всё готово",
+      "manualTipsDescription": "Начните записывать приёмы пищи для отслеживания прогресса. Вы можете изменить эти цели в любое время в Настройках.",
+      "dailyCalorieTarget": "Дневная норма калорий",
+      "kcal": "ККАЛ",
+      "protein": "Белок",
+      "carbs": "Углеводы",
+      "fats": "Жиры",
+      "estimatedWeightLoss": "Ожидаемое снижение веса",
+      "estimatedWeightGain": "Ожидаемый набор веса",
+      "estimatedMaintenance": "Ожидаемое поддержание",
+      "projectionTitle": "Прогноз на {{days}} дней",
+      "projectionDescription": "При соблюдении этих целей прогнозируется достижение {{value}} {{unit}} через {{days}} дней.",
+      "projectionMaintenanceTitle": "Поддержание веса",
+      "projectionMaintenanceMuscleGain": "При регулярных тренировках и правильном питании естественный прирост мышц за {{days}} дней обычно составляет {{range}} {{unit}}, в зависимости от генетики и опыта.",
+      "calorieRange": "Диапазон: {{range}} ккал",
+      "bodyFatUncertaintyNote": "Диапазон учитывает погрешность измерения жировой массы (±4%)",
+      "dailyDeficit": "Дневной дефицит: {{kcal}} ккал",
+      "dailySurplus": "Дневной профицит: {{kcal}} ккал",
+      "projectionFat": "Жир: {{value}} {{unit}}",
+      "projectionLean": "Мышцы: {{value}} {{unit}}",
+      "leanMassClarification": "Мышечная масса включает воду, гликоген и другие ткани без жира — не только мышцы.",
+      "formulasBasedOn": "На основе модели состава тела Hall/Forbes и метаболизируемой энергии (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Целевые макросы основаны на IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016) и Helms et al. (2014).",
+      "goalLabels": {
+        "weight_loss": "Снижение веса",
+        "muscle_gain": "Набор мышечной массы",
+        "maintenance": "Поддержание",
+        "moderateWeightLoss": "Умеренное снижение веса",
+        "enduranceTraining": "Тренировки на выносливость",
+        "generalFitness": "Общий фитнес",
+        "leanBulk": "Стратегия чистого набора",
+        "strengthSurplus": "Стратегия силового профицита"
+      }
+    },
+    "errorSaving": "Ошибка сохранения",
+    "dietTypes": {
+      "keto": {
+        "title": "Кето",
+        "subtitle": "Низкоуглеводный"
+      },
+      "lowCarb": {
+        "title": "Низкоуглеводный",
+        "subtitle": "Жировая адаптация"
+      },
+      "highProteinMuscle": {
+        "title": "Высокобелковый",
+        "subtitle": "Набор мышц"
+      },
+      "highProteinFatLoss": {
+        "title": "Высокобелковый",
+        "subtitle": "Сжигание жира"
+      },
+      "highCarb": {
+        "title": "Высокоуглеводный",
+        "subtitle": "Акцент на энергии"
+      },
+      "balanced": {
+        "title": "Сбалансированный",
+        "subtitle": "Оптимальный"
+      },
+      "moderateFat": {
+        "title": "Умеренные жиры",
+        "subtitle": "Устойчивая энергия"
+      },
+      "lowFat": {
+        "title": "Низкожировой",
+        "subtitle": "Лёгкая диета"
+      },
+      "custom": {
+        "title": "Персональный",
+        "subtitle": "Ваш план"
+      }
+    }
+  }
+}

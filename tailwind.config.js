@@ -1,4 +1,4 @@
-const { darkTheme } = require('./theme');
+const { themeColors } = require('./theme.tokens'); // Plain JS tokens — Tailwind/Node cannot load theme.ts (TS + RN/DB imports)
 
 /**
  * Tailwind Configuration for NativeWind
@@ -35,41 +35,42 @@ module.exports = {
       colors: {
         // Background colors
         bg: {
-          primary: darkTheme.colors.background.primary,
-          secondary: darkTheme.colors.background.secondary,
-          tertiary: darkTheme.colors.background.tertiary,
-          card: darkTheme.colors.background.card,
-          cardElevated: darkTheme.colors.background.cardElevated,
-          cardDark: darkTheme.colors.background.secondaryDark,
-          navBar: darkTheme.colors.background.secondary,
-          navActive: darkTheme.colors.background.secondaryDark,
-          screen: darkTheme.colors.background.primary,
-          overlay: darkTheme.colors.background.overlay,
-          filterTab: darkTheme.colors.background.filterTab,
+          primary: themeColors.background.primary,
+          secondary: themeColors.background.secondary,
+          tertiary: themeColors.background.tertiary,
+          card: themeColors.background.card,
+          cardElevated: themeColors.background.cardElevated,
+          cardDark: themeColors.background.secondaryDark,
+          navBar: themeColors.background.secondary,
+          navActive: themeColors.background.secondaryDark,
+          screen: themeColors.background.primary,
+          overlay: themeColors.background.overlay,
+          filterTab: themeColors.background.filterTab,
         },
         // Text colors
         text: {
-          primary: darkTheme.colors.text.primary,
-          secondary: darkTheme.colors.text.secondary,
-          tertiary: darkTheme.colors.text.tertiary,
-          muted: darkTheme.colors.text.muted,
-          accent: darkTheme.colors.text.accent,
-          accentLight: darkTheme.colors.text.accentLight,
-          black: darkTheme.colors.text.black,
+          primary: themeColors.text.primary,
+          secondary: themeColors.text.secondary,
+          tertiary: themeColors.text.tertiary,
+          muted: themeColors.text.muted,
+          accent: themeColors.text.accent,
+          accentLight: themeColors.text.accentLight,
+          black: themeColors.text.black,
+          'on-colorful': themeColors.text.onColorful,
         },
         // Accent colors
         accent: {
-          primary: darkTheme.colors.accent.primary,
-          secondary: darkTheme.colors.accent.secondary,
-          tertiary: darkTheme.colors.accent.tertiary,
+          primary: themeColors.accent.primary,
+          secondary: themeColors.accent.secondary,
+          tertiary: themeColors.accent.tertiary,
         },
         // Border colors
         border: {
-          default: darkTheme.colors.border.default,
-          light: darkTheme.colors.border.light,
-          dark: darkTheme.colors.border.dark,
-          accent: darkTheme.colors.border.accent,
-          dashed: darkTheme.colors.border.dashed,
+          default: themeColors.border.default,
+          light: themeColors.border.light,
+          dark: themeColors.border.dark,
+          accent: themeColors.border.accent,
+          dashed: themeColors.border.dashed,
         },
       },
     },

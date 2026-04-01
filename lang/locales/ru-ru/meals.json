@@ -1,0 +1,64 @@
+{
+  "meals": {
+    "title": "Мои приёмы пищи",
+    "filters": {
+      "all": "Все",
+      "highProtein": "Высокобелковые",
+      "breakfast": "Завтрак",
+      "lunch": "Обед"
+    },
+    "tags": {
+      "highProtein": "Высокобелковый",
+      "ketoFriendly": "Подходит для кето",
+      "vegetarian": "Вегетарианский",
+      "breakfast": "Завтрак",
+      "lunch": "Обед",
+      "dinner": "Ужин",
+      "snack": "Перекус"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} приём пищи",
+      "mealCount_other": "{{count}} приёмов пищи",
+      "view": "Открыть",
+      "viewBreakfast": "Завтрак",
+      "viewLunch": "Обед",
+      "viewDinner": "Ужин",
+      "viewSnack": "Перекус",
+      "tracked": "Записан"
+    },
+    "untitledMeal": "Приём пищи без названия",
+    "searchPlaceholder": "Поиск приёмов пищи...",
+    "loadingMeals": "Загрузка приёмов пищи...",
+    "noMealsFound": "Приёмов пищи не найдено",
+    "noMealsYet": "Приёмов пищи пока нет",
+    "noMealsMatch": "Нет приёмов пищи по запросу «{{query}}»",
+    "createFirstMeal": "Создайте первый приём пищи для начала работы",
+    "tryDifferentFilter": "Попробуйте другой фильтр",
+    "loadingMore": "Загрузка ещё...",
+    "loadMore": "Загрузить ещё",
+    "customMeal": "Пользовательский приём пищи",
+    "createdByYou": "Создано вами",
+    "logMeal": "Записать приём пищи",
+    "mealType": "Тип приёма пищи",
+    "history": {
+      "unknownMeal": "Неизвестный приём пищи"
+    },
+    "deleteItem": {
+      "title": "Удалить элемент",
+      "message": "Вы уверены, что хотите удалить этот элемент?",
+      "cancel": "Отмена",
+      "delete": "Удалить"
+    },
+    "unknownFood": "Неизвестно",
+    "generateAI": {
+      "title": "Создать приёмы пищи с ИИ",
+      "describeLabel": "ОПИШИТЕ ВАШИ ПРЕДПОЧТЕНИЯ",
+      "placeholder": "например: высокобелковые блюда для набора мышц, предпочитаю курицу и рис, без молочных продуктов...",
+      "applyLabel": "Создать приёмы пищи",
+      "successMessage": "Приём пищи успешно создан!",
+      "errorMessage": "Не удалось создать приёмы пищи. Попробуйте снова.",
+      "aiNotConfigured": "Функции ИИ не настроены. Добавьте API-ключ Gemini или OpenAI в Настройках.",
+      "generating": "Создание приёмов пищи..."
+    }
+  }
+}

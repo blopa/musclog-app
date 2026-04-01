@@ -1,19 +1,31 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedIntegerInput,
+  sanitizeLocalizedSignedDecimalInput,
+} from '../../utils/localizedDecimalInput';
 
-type TestStepperProps = {
+type StepperInlineInputProps = {
   label: string;
   value: number;
   onIncrement: () => void;
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
+  onFocus?: () => void;
   unit?: string;
   icon?: LucideIcon;
   subtitle?: string;
   iconSize?: 'sm' | 'md';
+  step?: number;
+  /** 0 = integer only; 1+ = locale decimal separator. Default 1. */
+  maxFractionDigits?: number;
 };
 
 export function StepperInlineInput({
@@ -22,52 +34,116 @@ export function StepperInlineInput({
   onIncrement,
   onDecrement,
   onChangeValue,
+  onFocus,
   unit,
   icon: Icon,
   subtitle,
   iconSize = 'md',
-}: TestStepperProps) {
+  step = 1,
+  maxFractionDigits = 1,
+}: StepperInlineInputProps) {
   const theme = useTheme();
+  const { i18n } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const decimalSeparator = useMemo(
+    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
+  const formatValue = useCallback(
+    (v: number) =>
+      maxFractionDigits === 0
+        ? formatInteger(v, { useGrouping: false })
+        : v % 1 === 0
+          ? formatInteger(v, { useGrouping: false })
+          : formatDecimal(v, maxFractionDigits),
+    [formatDecimal, formatInteger, maxFractionDigits]
+  );
   const [editing, setEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInput>(null);
 
-  // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
-  }, [value, editing]);
+  }, [value, editing, formatValue]);
+
+  useEffect(() => {
+    const subscription = Keyboard.addListener('keyboardDidHide', () => {
+      if (editing) {
+        inputRef.current?.blur();
+      }
+    });
+    return () => subscription.remove();
+  }, [editing]);
 
   const handleValuePress = () => {
     setEditing(true);
-    // Small delay to ensure state update before focusing
+    onFocus?.();
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
   };
 
   const handleInputChange = (text: string) => {
-    // Allow only numbers, decimal point, and optional minus sign
-    if (/^-?\d*\.?\d*$/.test(text)) {
-      setInputValue(text);
+    if (maxFractionDigits === 0) {
+      const sanitized = sanitizeLocalizedIntegerInput(text);
+      setInputValue(sanitized);
+      if (sanitized === '') {
+        return;
+      }
+      const num = parseInt(sanitized, 10);
+      if (!Number.isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      }
+      return;
+    }
+
+    const sanitized = sanitizeLocalizedSignedDecimalInput(
+      text,
+      decimalSeparator,
+      maxFractionDigits
+    );
+    setInputValue(sanitized);
+    if (sanitized === '' || sanitized === '-') {
+      return;
+    }
+    const num = parseLocalizedDecimalString(sanitized, decimalSeparator, maxFractionDigits);
+    if (onChangeValue) {
+      onChangeValue(num);
     }
   };
 
   const handleInputBlur = () => {
     setEditing(false);
-    const num = parseFloat(inputValue);
-    if (!isNaN(num) && onChangeValue) {
+    if (maxFractionDigits === 0) {
+      const num = parseInt(inputValue, 10);
+      if (!Number.isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      } else {
+        setInputValue(formatValue(value));
+      }
+      return;
+    }
+    if (inputValue.trim() !== '' && inputValue.trim() !== '-' && onChangeValue) {
+      const num = parseLocalizedDecimalString(inputValue, decimalSeparator, maxFractionDigits);
       onChangeValue(num);
     } else {
-      // Reset to current value if invalid
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   };
 
   const handleInputSubmit = () => {
     inputRef.current?.blur();
   };
+
+  const parseCurrent = useCallback(
+    (prev: string) =>
+      maxFractionDigits === 0
+        ? parseInt(prev, 10) || 0
+        : parseLocalizedDecimalString(prev, decimalSeparator, maxFractionDigits),
+    [decimalSeparator, maxFractionDigits]
+  );
 
   return (
     <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
@@ -101,7 +177,12 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onDecrement}
+          onPress={() => {
+            if (editing) {
+              setInputValue((prev) => formatValue(parseCurrent(prev) - step));
+            }
+            onDecrement();
+          }}
         >
           <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
@@ -113,7 +194,7 @@ export function StepperInlineInput({
               onChangeText={handleInputChange}
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
-              keyboardType="numeric"
+              keyboardType={maxFractionDigits === 0 ? 'numeric' : 'decimal-pad'}
               className="p-0 text-center text-xl font-bold text-white"
               style={{
                 width: theme.size['4xl'],
@@ -135,9 +216,7 @@ export function StepperInlineInput({
           </View>
         ) : (
           <Pressable onPress={handleValuePress} className="w-16 items-center">
-            <Text className="text-xl font-bold text-white">
-              {value % 1 === 0 ? value : value.toFixed(1)}
-            </Text>
+            <Text className="text-xl font-bold text-white">{formatValue(value)}</Text>
             {unit ? (
               <Text
                 className="text-xs text-gray-500"
@@ -154,7 +233,12 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onIncrement}
+          onPress={() => {
+            if (editing) {
+              setInputValue((prev) => formatValue(parseCurrent(prev) + step));
+            }
+            onIncrement();
+          }}
         >
           <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>

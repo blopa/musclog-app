@@ -17,6 +17,7 @@ import {
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
+  getMealCritiquePrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
   getParsePastNutritionPrompt,
@@ -206,7 +207,6 @@ export type NutritionEntry = {
 };
 
 export const WORDS_SOFT_LIMIT = 100;
-export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
 
 /**
  * Merged System Prompt:
@@ -773,13 +773,20 @@ export async function generateMealPlan(
 ): Promise<GenerateMealPlanResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getGenerateMealPlanPrompt(lang, macroTargets, undefined, context);
+    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const systemPrompt = await getGenerateMealPlanPrompt(
+      lang,
+      macroTargets,
+      undefined,
+      context,
+      includeFoundationFoods
+    );
 
     const userMessage =
       history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
       '\n\nGenerate the meal plan.';
 
-    const fns = getGenerateMealPlanFunctions();
+    const fns = getGenerateMealPlanFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<GenerateMealPlanResponse>(
       config,
@@ -1198,6 +1205,30 @@ export async function parseRetrospectiveNutrition(
     return parsed?.nutritionEntries ?? null;
   } catch (error) {
     console.error('[coachAI] parseRetrospectiveNutrition error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get AI critique/insights for a single meal.
+ */
+export async function getMealCritique(
+  config: CoachAIConfig,
+  mealType: string,
+  foods: { name: string; gramWeight: number }[],
+  totals: { calories: number; protein: number; carbs: number; fat: number },
+  userRemarks?: string
+): Promise<string | null> {
+  try {
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, 'nutrition');
+    const finalUserMessage = userRemarks?.trim()
+      ? userRemarks.trim()
+      : 'Please critique this meal.';
+    const text = await generateText(config, systemPrompt, finalUserMessage);
+    return text || null;
+  } catch (error) {
+    console.error('[coachAI] getMealCritique error:', error);
     return null;
   }
 }

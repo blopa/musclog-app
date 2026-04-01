@@ -1,0 +1,10 @@
+{
+  "food_food_portions": "Порции продуктов питания",
+  "createPortion": "Создать порцию",
+  "createFoodPortion": "Создать порцию продукта",
+  "portionName": "Название порции",
+  "portionNamePlaceholder": "например, Чашка, Ломтик, Штука",
+  "weightGrams": "Вес (граммы)",
+  "selectIcon": "Выбрать иконку",
+  "chooseIcon": "Выбрать иконку"
+}

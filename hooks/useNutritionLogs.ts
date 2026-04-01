@@ -6,6 +6,11 @@ import { database } from '../database';
 import Food from '../database/models/Food';
 import NutritionLog, { type MealType } from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
+import {
+  localDayHalfOpenRange,
+  localDayStartMs,
+  localNextDayStartMsFromDate,
+} from '../utils/calendarDate';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
@@ -423,31 +428,20 @@ export function useNutritionLogs({
 
     // Add mode-specific filters to avoid unnecessary re-renders
     if (mode === 'daily' && date) {
-      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-      const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
-      query = query.extend(
-        Q.where('date', Q.gte(dateTimestamp)),
-        Q.where('date', Q.lt(nextDayTimestamp))
-      );
+      const { start, nextStart } = localDayHalfOpenRange(date);
+      query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
     } else if (mode === 'range' && startDate && endDate) {
-      const startTimestamp = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      ).getTime();
-      const endTimestamp =
-        new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime() +
-        24 * 60 * 60 * 1000;
+      const startTimestamp = localDayStartMs(startDate);
+      const endTimestamp = localNextDayStartMsFromDate(endDate);
       query = query.extend(
         Q.where('date', Q.gte(startTimestamp)),
         Q.where('date', Q.lt(endTimestamp))
       );
     } else if (mode === 'meal-type' && date && mealType) {
-      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-      const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
+      const { start, nextStart } = localDayHalfOpenRange(date);
       query = query.extend(
-        Q.where('date', Q.gte(dateTimestamp)),
-        Q.where('date', Q.lt(nextDayTimestamp)),
+        Q.where('date', Q.gte(start)),
+        Q.where('date', Q.lt(nextStart)),
         Q.where('type', mealType)
       );
     } else {

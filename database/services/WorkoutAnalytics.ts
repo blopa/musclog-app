@@ -1,5 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
 
+import {
+  calculateEstimated1RMForSet,
+  calculateSetVolume,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import WorkoutLog from '../models/WorkoutLog';
@@ -26,7 +31,7 @@ export interface PersonalRecord {
     reps: number;
     volume: number;
   };
-  type: 'weight' | 'reps' | 'volume' | 'estimated1RM';
+  type: 'weight' | 'reps' | 'volume';
 }
 
 export interface ProgressiveOverloadDataPoint {
@@ -44,16 +49,6 @@ export interface MuscleGroupVolume {
 }
 
 export class WorkoutAnalytics {
-  /**
-   * Calculate estimated 1RM using Epley formula: weight × (1 + reps/30)
-   */
-  static calculateEstimated1RM(weight: number, reps: number): number {
-    if (reps === 0) {
-      return 0;
-    }
-    return weight * (1 + reps / 30);
-  }
-
   /**
    * Get enriched sets for a workout log (sets with exerciseId and workoutLogId denormalized)
    */
@@ -160,11 +155,14 @@ export class WorkoutAnalytics {
   /**
    * Detect personal records in a completed workout log
    */
-  static async detectPersonalRecords(workoutLog: WorkoutLog): Promise<PersonalRecord[]> {
+  static async detectPersonalRecords(
+    workoutLog: WorkoutLog,
+    bodyWeightKg?: number
+  ): Promise<PersonalRecord[]> {
     const records: PersonalRecord[] = [];
+    const bwKg = bodyWeightKg ?? (await getUserBodyWeightKgForVolume());
     const sets = await this.getEnrichedSetsForWorkout(workoutLog);
 
-    // Group sets by exercise
     const exerciseSets = new Map<string, EnrichedSet[]>();
     for (const set of sets) {
       const exerciseId = set.exerciseId ?? '';
@@ -174,19 +172,29 @@ export class WorkoutAnalytics {
       exerciseSets.get(exerciseId)!.push(set);
     }
 
-    // Check for PRs in each exercise
     for (const [exerciseId, logSets] of exerciseSets.entries()) {
-      // Get the best set from current workout (highest weight × reps)
-      const bestSet = logSets.reduce((best, current) => {
-        const currentVolume = (current.weight ?? 0) * (current.reps ?? 0);
-        const bestVolume = (best.weight ?? 0) * (best.reps ?? 0);
-        return currentVolume > bestVolume ? current : best;
-      });
+      let exercise: Exercise;
+      try {
+        exercise = await database.get<Exercise>('exercises').find(exerciseId);
+      } catch {
+        continue;
+      }
 
-      // Get all historical sets for this exercise (excluding current workout)
+      const volFor = (s: EnrichedSet) =>
+        calculateSetVolume(
+          s.weight ?? 0,
+          s.reps ?? 0,
+          s.repsInReserve,
+          exercise.equipmentType,
+          bwKg
+        );
+
+      const bestSet = logSets.reduce((best, current) =>
+        volFor(current) > volFor(best) ? current : best
+      );
+
       const historicalSets = await this.getHistoricalSetsForExercise(exerciseId, workoutLog.id);
 
-      // Get historical sets only from completed workouts
       const uniqueWorkoutIds = [...new Set(historicalSets.map((s) => s.workoutLogId ?? ''))].filter(
         Boolean
       );
@@ -209,57 +217,41 @@ export class WorkoutAnalytics {
       );
 
       if (validHistoricalSets.length === 0) {
-        // First time doing this exercise - it's a PR by default
-        try {
-          const exercise = await database.get<Exercise>('exercises').find(exerciseId);
-          records.push({
-            exerciseId,
-            exerciseName: exercise.name ?? '',
-            previousBest: {
-              weight: 0,
-              reps: 0,
-              volume: 0,
-              date: 0,
-            },
-            newRecord: {
-              weight: bestSet.weight ?? 0,
-              reps: bestSet.reps ?? 0,
-              volume: (bestSet.weight ?? 0) * (bestSet.reps ?? 0),
-            },
-            type: 'volume',
-          });
-        } catch (error) {
-          // Exercise not found, skip
-          continue;
-        }
+        const currentVolume = volFor(bestSet);
+        records.push({
+          exerciseId,
+          exerciseName: exercise.name ?? '',
+          previousBest: {
+            weight: 0,
+            reps: 0,
+            volume: 0,
+            date: 0,
+          },
+          newRecord: {
+            weight: bestSet.weight ?? 0,
+            reps: bestSet.reps ?? 0,
+            volume: currentVolume,
+          },
+          type: 'volume',
+        });
         continue;
       }
 
-      // Find best historical performance
-      const bestHistorical = validHistoricalSets.reduce((best, current) => {
-        const currentVolume = (current.weight ?? 0) * (current.reps ?? 0);
-        const bestVolume = (best.weight ?? 0) * (best.reps ?? 0);
-        return currentVolume > bestVolume ? current : best;
-      });
-
-      const bestHistoricalVolume = (bestHistorical.weight ?? 0) * (bestHistorical.reps ?? 0);
-      const bestHistoricalWeight = Math.max(...validHistoricalSets.map((s) => s.weight ?? 0));
-      const bestHistoricalReps = Math.max(...validHistoricalSets.map((s) => s.reps ?? 0));
-      const bestHistorical1RM = Math.max(
-        ...validHistoricalSets.map((s) => this.calculateEstimated1RM(s.weight ?? 0, s.reps ?? 0))
+      const bestHistorical = validHistoricalSets.reduce((best, current) =>
+        volFor(current) > volFor(best) ? current : best
       );
 
-      const currentVolume = (bestSet.weight ?? 0) * (bestSet.reps ?? 0);
-      const current1RM = this.calculateEstimated1RM(bestSet.weight ?? 0, bestSet.reps ?? 0);
+      const bestHistoricalVolume = volFor(bestHistorical);
+      const bestHistoricalWeight = Math.max(...validHistoricalSets.map((s) => s.weight ?? 0));
+      const bestHistoricalReps = Math.max(...validHistoricalSets.map((s) => s.reps ?? 0));
 
-      // Get the workout date for the best historical
+      const currentVolume = volFor(bestSet);
+
       try {
         const historicalWorkout = await database
           .get<WorkoutLog>('workout_logs')
           .find(bestHistorical.workoutLogId ?? '');
-        const exercise = await database.get<Exercise>('exercises').find(exerciseId);
 
-        // Check for volume PR
         if (currentVolume > bestHistoricalVolume) {
           records.push({
             exerciseId,
@@ -279,7 +271,6 @@ export class WorkoutAnalytics {
           });
         }
 
-        // Check for weight PR
         if ((bestSet.weight ?? 0) > bestHistoricalWeight) {
           records.push({
             exerciseId,
@@ -299,7 +290,6 @@ export class WorkoutAnalytics {
           });
         }
 
-        // Check for reps PR
         if ((bestSet.reps ?? 0) > bestHistoricalReps) {
           records.push({
             exerciseId,
@@ -318,28 +308,7 @@ export class WorkoutAnalytics {
             type: 'reps',
           });
         }
-
-        // Check for estimated 1RM PR
-        if (current1RM > bestHistorical1RM) {
-          records.push({
-            exerciseId,
-            exerciseName: exercise.name ?? '',
-            previousBest: {
-              weight: 0,
-              reps: 0,
-              volume: 0,
-              date: historicalWorkout.startedAt ?? 0,
-            },
-            newRecord: {
-              weight: bestSet.weight ?? 0,
-              reps: bestSet.reps ?? 0,
-              volume: currentVolume,
-            },
-            type: 'estimated1RM',
-          });
-        }
-      } catch (error) {
-        // Skip if workout or exercise not found
+      } catch {
         continue;
       }
     }
@@ -354,7 +323,6 @@ export class WorkoutAnalytics {
     exerciseId: string,
     timeframe?: { startDate: number; endDate: number }
   ): Promise<ProgressiveOverloadDataPoint[]> {
-    // First get all log exercises for this exercise
     const logExercises = await database
       .get<WorkoutLogExercise>('workout_log_exercises')
       .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
@@ -363,6 +331,15 @@ export class WorkoutAnalytics {
     if (logExercises.length === 0) {
       return [];
     }
+
+    let exercise: Exercise;
+    try {
+      exercise = await database.get<Exercise>('exercises').find(exerciseId);
+    } catch {
+      return [];
+    }
+
+    const bodyWeightKg = await getUserBodyWeightKgForVolume();
 
     // Get all sets for these log exercises
     const logExerciseIds = logExercises.map((le) => le.id);
@@ -428,16 +405,22 @@ export class WorkoutAnalytics {
       validSets = sets.filter((s) => completedWorkoutIds.has(s.workoutLogId ?? ''));
     }
 
-    // Group by workout and get best set per workout
+    const volFor = (set: (typeof sets)[0]) =>
+      calculateSetVolume(
+        set.weight ?? 0,
+        set.reps ?? 0,
+        set.repsInReserve,
+        exercise.equipmentType,
+        bodyWeightKg
+      );
+
+    // Group by workout and get best set per workout (by algorithm volume)
     const workoutData = new Map<string, (typeof sets)[0]>();
 
     for (const set of validSets) {
       const workoutLogId = set.workoutLogId ?? '';
       const existing = workoutData.get(workoutLogId);
-      if (
-        !existing ||
-        (set.weight ?? 0) * (set.reps ?? 0) > (existing.weight ?? 0) * (existing.reps ?? 0)
-      ) {
+      if (!existing || volFor(set) > volFor(existing)) {
         workoutData.set(workoutLogId, set);
       }
     }
@@ -452,8 +435,14 @@ export class WorkoutAnalytics {
           date: workout.startedAt ?? 0,
           weight: set.weight ?? 0,
           reps: set.reps ?? 0,
-          volume: (set.weight ?? 0) * (set.reps ?? 0),
-          estimated1RM: this.calculateEstimated1RM(set.weight ?? 0, set.reps ?? 0),
+          volume: volFor(set),
+          estimated1RM: calculateEstimated1RMForSet(
+            set.weight ?? 0,
+            set.reps ?? 0,
+            set.repsInReserve,
+            exercise.equipmentType,
+            bodyWeightKg
+          ),
         });
       } catch (error) {
         // Skip if workout not found
@@ -483,6 +472,7 @@ export class WorkoutAnalytics {
       );
     }
 
+    const bodyWeightKg = await getUserBodyWeightKgForVolume();
     // Process each workout
     for (const workout of validWorkouts) {
       const sets = await this.getEnrichedSetsForWorkout(workout);
@@ -490,7 +480,13 @@ export class WorkoutAnalytics {
       for (const set of sets) {
         try {
           const exercise = await database.get<Exercise>('exercises').find(set.exerciseId ?? '');
-          const volume = (set.reps ?? 0) * (set.weight ?? 0);
+          const volume = calculateSetVolume(
+            set.weight ?? 0,
+            set.reps ?? 0,
+            set.repsInReserve,
+            exercise.equipmentType,
+            bodyWeightKg
+          );
           const muscleGroup = exercise.muscleGroup ?? '';
 
           if (!muscleGroupVolume.has(muscleGroup)) {

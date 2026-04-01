@@ -1,0 +1,18 @@
+{
+  "replaceExercise": {
+    "title": "Заменить упражнение",
+    "cancel": "Отмена",
+    "replace": "Заменить",
+    "searchPlaceholder": "Поиск упражнений...",
+    "muscleGroups": {
+      "all": "Все",
+      "chest": "Грудь",
+      "shoulders": "Плечи",
+      "triceps": "Трицепс"
+    },
+    "selectExercise": "Выбрать упражнение",
+    "loadMore": "Загрузить ещё",
+    "loadingMore": "Загрузка…",
+    "noExercisesMatch": "Упражнения не найдены"
+  }
+}

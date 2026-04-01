@@ -1,0 +1,10 @@
+{
+  "focus": {
+    "currentPhase": "Текущая фаза",
+    "day": "День",
+    "physiologicalInsights": "Физиологические данные",
+    "estrogen": "Эстроген",
+    "metabolism": "Метаболизм",
+    "energyLevel": "Уровень энергии"
+  }
+}

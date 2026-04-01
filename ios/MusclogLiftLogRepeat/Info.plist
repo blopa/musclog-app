@@ -23,7 +23,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.4.5</string>
+    <string>2.5.7</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -37,7 +37,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>169</string>
+    <string>181</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -55,10 +55,14 @@
     <string>Allow $(PRODUCT_NAME) to access your calendars</string>
     <key>NSCameraUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your camera</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your photos</string>
+    <string>Allow Musclog to access your photos to select food images and exercise demonstrations.</string>
     <key>NSRemindersFullAccessUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
     <key>NSRemindersUsageDescription</key>
@@ -72,6 +76,7 @@
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>
+      <string>remote-notification</string>
       <string>processing</string>
     </array>
     <key>UILaunchStoryboardName</key>

@@ -130,7 +130,10 @@ export function ImportWorkoutsModal({
 
             {/* Character Count */}
             <Text className="mb-4 text-xs text-text-tertiary">
-              {t('workout.import.characters')}: {rawText.length}
+              {t('common.labelColonValue', {
+                label: t('workout.import.characters'),
+                value: String(rawText.length),
+              })}
             </Text>
           </View>
         </ScrollView>

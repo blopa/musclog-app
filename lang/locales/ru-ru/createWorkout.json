@@ -1,0 +1,41 @@
+{
+  "createWorkout": {
+    "title": "Создать новую тренировку",
+    "save": "Сохранить",
+    "workoutIcon": "Иконка тренировки",
+    "essentials": "Основное",
+    "workoutTitle": "Название тренировки",
+    "workoutTitlePlaceholder": "например, День ног",
+    "description": "Описание",
+    "descriptionPlaceholder": "Акцент на квадрицепсы и икры...",
+    "workoutType": "Тип тренировки",
+    "types": {
+      "strength": "Силовая",
+      "cardio": "Кардио",
+      "flexibility": "Гибкость",
+      "calisthenics": "Калистеника",
+      "other": "Другое"
+    },
+    "intelligence": "Интеллект",
+    "volumeCalculation": {
+      "title": "Расчёт объёма",
+      "description": "Выберите, как Musclog рассчитывает оптимальный объём для следующей тренировки. ИИ адаптируется на основе данных о восстановлении.",
+      "none": "Нет",
+      "algorithm": "Алгоритм",
+      "ai": "ИИ"
+    },
+    "routine": "Программа",
+    "repeatOnDays": "Повторять в дни",
+    "weekly": "Еженедельно",
+    "exercises": "Упражнения",
+    "exercisesInWorkout": "Упражнения в тренировке",
+    "addExerciseError": "Не удалось добавить упражнение",
+    "editTitle": "Редактировать тренировку",
+    "loadError": "Не удалось загрузить",
+    "noExercisesPlaceholder": "Нет упражнений",
+    "saveError": "Не удалось сохранить",
+    "validation": {
+      "titleRequiredMessage": "Пожалуйста, введите название тренировки"
+    }
+  }
+}

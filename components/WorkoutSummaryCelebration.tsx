@@ -147,7 +147,7 @@ export function WorkoutSummaryCelebration({
             <Button
               label={
                 isGetFeedbackLoading
-                  ? t('workoutSummary.gettingFeedback', 'Getting feedback...')
+                  ? t('workoutSummary.gettingFeedback')
                   : t('workoutSummary.getFeedback')
               }
               icon={MessageCircle}

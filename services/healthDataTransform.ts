@@ -2,6 +2,7 @@ import convert from 'convert';
 
 import type { Units } from '../constants/settings';
 import i18n from '../lang/lang';
+import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
 import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
 import { HealthConnectError, HealthConnectErrorCode } from './healthConnectErrors';
 
@@ -159,18 +160,19 @@ export class WeightConverter {
   static formatWeight(kg: number, system: UnitSystem, decimals: number = 1): string {
     const units: Units = system === UnitSystem.IMPERIAL ? 'imperial' : 'metric';
     const display = kgToDisplay(kg, units);
+    const locale = i18n.resolvedLanguage ?? i18n.language;
 
     // Helper function to format rounded value
     const formatRoundedValue = (value: number, decimalPlaces: number): string => {
       if (decimalPlaces >= 0) {
-        return value.toFixed(decimalPlaces);
+        return formatAppDecimal(locale, value, decimalPlaces);
       }
 
       if (value % 1 === 0) {
-        return String(value);
+        return formatAppInteger(locale, value, { useGrouping: false });
       }
 
-      return value.toFixed(1);
+      return formatAppDecimal(locale, value, 1);
     };
 
     const rounded = formatRoundedValue(display, decimals);
@@ -203,7 +205,12 @@ export class EnergyConverter {
    * Format energy for display
    */
   static formatCalories(kcal: number, decimals: number = 0): string {
-    return `${kcal.toFixed(decimals)} kcal`;
+    const locale = i18n.resolvedLanguage ?? i18n.language;
+    const num =
+      decimals === 0
+        ? formatAppInteger(locale, Math.round(kcal))
+        : formatAppDecimal(locale, kcal, decimals);
+    return `${num} kcal`;
   }
 }
 

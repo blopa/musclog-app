@@ -1,0 +1,9 @@
+{
+  "portionSizes": {
+    "addNew": "Добавить новый",
+    "noResults": "Нет результатов",
+    "searchPlaceholder": "Поиск порций...",
+    "selectTitle": "Выберите размер порции",
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
+  }
+}

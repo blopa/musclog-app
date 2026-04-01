@@ -5,11 +5,10 @@ import '../global.css';
 import * as Sentry from '@sentry/react-native';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
-import * as NavigationBar from 'expo-navigation-bar';
-import { Stack } from 'expo-router';
+import { Stack, useSegments } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
-import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -23,9 +22,10 @@ import { SmartCameraProvider } from '../context/SmartCameraContext';
 import { SnackbarProvider } from '../context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
+import { ExerciseService, FoodPortionService, WorkoutService } from '../database/services';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
-import { getActiveWorkoutLogId } from '../utils/activeWorkoutStorage';
+import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
 import { configureDailyTasks } from '../utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -45,15 +45,6 @@ const queryClient = new QueryClient({
 // Inner component that has access to theme context
 function AppContent() {
   const { theme, isDark } = useThemeContext();
-
-  useEffect(() => {
-    // Setup Android Navigation Bar with dynamic theme
-    if (Platform.OS === 'android') {
-      // In Android 15+ (edge-to-edge), manual background color is ignored/deprecated.
-      // We still set the button style (icons color) to match the theme.
-      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark').catch(() => {});
-    }
-  }, [isDark]);
 
   useEffect(() => {
     // Lock orientation to portrait on phones, allow all orientations on tablets
@@ -82,6 +73,8 @@ function AppContent() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background.primary },
+          animation: 'fade',
+          animationDuration: 200,
         }}
       />
     </>
@@ -89,9 +82,63 @@ function AppContent() {
 }
 
 function RootLayout() {
-  // Boot-time tasks (Android only, all run in parallel)
+  const segments = useSegments();
+
+  // Prune orphaned workout insights dismissal state when leaving the workout domain.
+  // This prevents accumulation of old keys if the app is killed or navigates away.
   useEffect(() => {
-    if (Platform.OS !== 'android') {
+    const isInsideWorkoutDomain = segments[0] === 'workout';
+    if (!isInsideWorkoutDomain) {
+      pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
+    }
+  }, [segments]);
+
+  // Backfill the exercise `source` field on web only. Native/SQLite handles
+  // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
+  // ignores that step, so we run the JS equivalent here instead.
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    ExerciseService.backfillExerciseSources().catch((err) =>
+      console.warn('[ExerciseService] backfillExerciseSources error:', err)
+    );
+  }, []);
+
+  // Backfill the food_portion `source` field on web only. Native/SQLite handles
+  // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
+  // ignores that step, so we run the JS equivalent here instead.
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    FoodPortionService.backfillPortionSources().catch((err) =>
+      console.warn('[FoodPortionService] backfillPortionSources error:', err)
+    );
+  }, []);
+
+  // Sync app exercises on every boot: seeds any exercises that are in the
+  // bundled JSON but missing from the DB with source='app'. This is a no-op
+  // on most boots once the DB is up to date.
+  useEffect(() => {
+    ExerciseService.syncAppExercises().catch((err) =>
+      console.warn('[ExerciseService] syncAppExercises error:', err)
+    );
+  }, []);
+
+  // Backfill totalVolume for workout logs that have NULL after the v3 migration.
+  // Runs once per boot but exits immediately when there is nothing to do.
+  useEffect(() => {
+    WorkoutService.backfillNullTotalVolumes().catch((err) =>
+      console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
+    );
+  }, []);
+
+  // Boot-time tasks (native: Android + iOS, all run in parallel)
+  useEffect(() => {
+    if (Platform.OS === 'web') {
       return;
     }
 
@@ -112,8 +159,8 @@ function RootLayout() {
 
     Promise.all([
       healthDataSyncService
-        .syncFromHealthConnect({ lookbackDays: 7 })
-        .catch((err) => console.warn('[boot sync] Health Connect sync error:', err)),
+        .syncFromHealthPlatform({ lookbackDays: 7 })
+        .catch((err) => console.warn('[boot sync] Health platform sync error:', err)),
       configureDailyTasks().catch((err) =>
         console.warn('[configureDailyTasks] Startup error:', err)
       ),

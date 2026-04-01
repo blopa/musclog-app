@@ -1,10 +1,16 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Exercise, { type EquipmentType, type MuscleGroup } from '../database/models/Exercise';
+import Exercise, {
+  type EquipmentType,
+  type ExerciseSource,
+  type MuscleGroup,
+} from '../database/models/Exercise';
 import { ExerciseService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type ExerciseDataDisplayItem = {
@@ -15,6 +21,7 @@ export type ExerciseDataDisplayItem = {
   iconBgColor: string;
   muscleGroup: MuscleGroup | string;
   equipmentType: EquipmentType | string;
+  source?: ExerciseSource;
 };
 
 export type ExerciseDataDayGroup = {
@@ -25,7 +32,7 @@ export type ExerciseDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -34,9 +41,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function exerciseToDisplayItem(
@@ -55,12 +62,14 @@ function exerciseToDisplayItem(
     iconBgColor: colors.bg,
     muscleGroup: exercise.muscleGroup,
     equipmentType: exercise.equipmentType,
+    source: exercise.source,
   };
 }
 
 function groupExercisesByDate(
   items: { item: ExerciseDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): ExerciseDataDayGroup[] {
   const groupMap = new Map<number, ExerciseDataDisplayItem[]>();
 
@@ -73,7 +82,7 @@ function groupExercisesByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -83,7 +92,8 @@ function groupExercisesByDate(
 function mergeIntoDayGroups(
   existing: ExerciseDataDayGroup[],
   newItemsWithDates: { item: ExerciseDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): ExerciseDataDayGroup[] {
   const groupMap = new Map<number, ExerciseDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -107,7 +117,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.id.localeCompare(b.id)),
     }))
@@ -154,6 +164,7 @@ export function useExerciseDataLogs({
 }: UseExerciseDataLogsParams = {}): UseExerciseDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
       chest: { color: theme.colors.status.error, bg: theme.colors.status.error10 },
@@ -192,7 +203,7 @@ export function useExerciseDataLogs({
         item: exerciseToDisplayItem(exercise, t, iconColors),
         dateTimestamp: exercise.createdAt,
       }));
-      const groups = groupExercisesByDate(validResults, t);
+      const groups = groupExercisesByDate(validResults, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(exercises.length === batchSize);
       setOffset(exercises.length);
@@ -203,7 +214,7 @@ export function useExerciseDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -225,7 +236,7 @@ export function useExerciseDataLogs({
         dateTimestamp: exercise.createdAt,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t, dateFnsLocale));
       setHasMore(exercises.length === batchSize);
       setOffset((prev) => prev + exercises.length);
     } catch (err) {
@@ -234,7 +245,7 @@ export function useExerciseDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

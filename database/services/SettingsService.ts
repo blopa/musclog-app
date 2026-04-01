@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
@@ -29,6 +30,7 @@ import {
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
+  SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -82,6 +84,17 @@ export class SettingsService {
         });
       }
     });
+  }
+
+  /**
+   * Get the theme preference setting ('system' | 'light' | 'dark').
+   * Defaults to 'system' if not set.
+   */
+  static async getThemePreference(): Promise<'system' | 'light' | 'dark'> {
+    return (await SettingsService.getStringSetting(THEME_SETTING_TYPE, 'system')) as
+      | 'system'
+      | 'light'
+      | 'dark';
   }
 
   /**
@@ -422,6 +435,27 @@ export class SettingsService {
    */
   static async setMaxAiMemories(value: number) {
     await SettingsService.setStringSetting(MAX_AI_MEMORIES_SETTING_TYPE, value.toString());
+  }
+
+  /**
+   * Upsert the show daily mood prompt setting
+   */
+  static async setShowDailyMoodPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the always allow food editing setting
+   */
+  static async setAlwaysAllowFoodEditing(value: boolean) {
+    await SettingsService.setBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the always allow food editing setting
+   */
+  static async getAlwaysAllowFoodEditing(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
   }
 
   /**

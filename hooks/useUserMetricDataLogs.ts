@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
 import { UserMetricService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type UserMetricDataDisplayItem = {
@@ -47,7 +49,7 @@ const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   ffmi: 'trending-up',
 };
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -56,9 +58,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function getMetricTypeLabel(type: string, t: TFunction): string {
@@ -92,7 +94,8 @@ function metricToDisplayItem(
 
 function groupMetricsByDate(
   items: { item: UserMetricDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): UserMetricDataDayGroup[] {
   const groupMap = new Map<number, UserMetricDataDisplayItem[]>();
 
@@ -105,7 +108,7 @@ function groupMetricsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -115,7 +118,8 @@ function groupMetricsByDate(
 function mergeIntoDayGroups(
   existing: UserMetricDataDayGroup[],
   newItemsWithDates: { item: UserMetricDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): UserMetricDataDayGroup[] {
   const groupMap = new Map<number, UserMetricDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -139,7 +143,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.id.localeCompare(b.id)),
     }))
@@ -186,6 +190,7 @@ export function useUserMetricDataLogs({
 }: UseUserMetricDataLogsParams = {}): UseUserMetricDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
       'monitor-weight': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
@@ -226,7 +231,7 @@ export function useUserMetricDataLogs({
         item: metricToDisplayItem(metric, decryptedList[i], t, iconColors),
         dateTimestamp: decryptedList[i].date,
       }));
-      const groups = groupMetricsByDate(results, t);
+      const groups = groupMetricsByDate(results, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(metrics.length === batchSize);
       setOffset(metrics.length);
@@ -237,7 +242,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -265,7 +270,7 @@ export function useUserMetricDataLogs({
         dateTimestamp: decryptedList[i].date,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t, dateFnsLocale));
       setHasMore(metrics.length === batchSize);
       setOffset((prev) => prev + metrics.length);
     } catch (err) {
@@ -274,7 +279,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

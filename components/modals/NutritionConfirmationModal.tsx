@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { NutritionEntry } from '../../utils/coachAI';
 import { calculateNutritionTotals, mealTypeToString } from '../../utils/nutritionAI';
@@ -26,6 +27,7 @@ export function NutritionConfirmationModal({
 }: NutritionConfirmationModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const insets = useSafeAreaInsets();
 
   const totals = useMemo(() => calculateNutritionTotals(entries), [entries]);
@@ -48,24 +50,34 @@ export function NutritionConfirmationModal({
       <View className="space-y-1">
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.calories} kcal</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatRoundedDecimal(item.calories, 2)} kcal
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.protein.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatRoundedDecimal(item.protein, 2)}g
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.carbs.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatRoundedDecimal(item.carbs, 2)}g
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.fat.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatRoundedDecimal(item.fat, 2)}g
+          </Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
-            <Text className="text-xs font-medium text-text-primary">{item.fiber.toFixed(1)}g</Text>
+            <Text className="text-xs font-medium text-text-primary">
+              {formatRoundedDecimal(item.fiber, 2)}g
+            </Text>
           </View>
         ) : null}
       </View>
@@ -78,6 +90,7 @@ export function NutritionConfirmationModal({
       onClose={onClose}
       title={t('nutrition.review')}
       scrollable={false}
+      closable={!isLoading}
     >
       <ScrollView className="flex-1 px-4 py-4">
         {/* Summary */}
@@ -88,27 +101,35 @@ export function NutritionConfirmationModal({
           <Text className="mb-3 font-semibold text-text-primary">{t('nutrition.dailyTotals')}</Text>
           <View className="space-y-2">
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.calories')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.calories') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalCalories} kcal
+                {formatRoundedDecimal(totals.totalCalories, 2)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.protein')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.protein') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalProtein.toFixed(1)}g
+                {formatRoundedDecimal(totals.totalProtein, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.carbs')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.carbs') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalCarbs.toFixed(1)}g
+                {formatRoundedDecimal(totals.totalCarbs, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.fat')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.fat') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalFat.toFixed(1)}g
+                {formatRoundedDecimal(totals.totalFat, 2)}g
               </Text>
             </View>
           </View>
@@ -116,7 +137,10 @@ export function NutritionConfirmationModal({
 
         {/* Entry Count */}
         <Text className="mb-4 text-xs text-text-secondary">
-          {t('nutrition.entriesCount')}: {entries.length}
+          {t('common.labelColonValue', {
+            label: t('nutrition.entriesCount'),
+            value: String(entries.length),
+          })}
         </Text>
 
         {/* Entry List */}

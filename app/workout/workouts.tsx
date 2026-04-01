@@ -15,8 +15,10 @@ import {
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { AnimatedContent } from '../../components/theme/AnimatedContent';
 import DashedButton from '../../components/theme/DashedButton';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
@@ -27,12 +29,14 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 
 export default function WorkoutsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
@@ -63,6 +67,9 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
+  const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isDeletingWorkoutTemplate, setIsDeletingWorkoutTemplate] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
     useState(false);
   const [isCreatingWorkoutsFromTemplate, setIsCreatingWorkoutsFromTemplate] = useState(false);
@@ -76,6 +83,27 @@ export default function WorkoutsScreen() {
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const { showSnackbar } = useSnackbar();
+
+  const handleConfirmDeleteWorkout = useCallback(async () => {
+    if (!selectedWorkoutId) {
+      return;
+    }
+
+    setIsDeletingWorkoutTemplate(true);
+    await flushLoadingPaint();
+    try {
+      const template = await database
+        .get<WorkoutTemplate>('workout_templates')
+        .find(selectedWorkoutId);
+      await template.markAsDeleted();
+      showSnackbar('success', t('workouts.deleteSuccess'));
+    } catch (err) {
+      console.error('Error deleting workout:', err);
+      showSnackbar('error', t('workouts.deleteError'));
+    } finally {
+      setIsDeletingWorkoutTemplate(false);
+    }
+  }, [selectedWorkoutId, showSnackbar, t]);
 
   // Reactively fetch template details when previewTemplateId is set
   const {
@@ -421,59 +449,63 @@ export default function WorkoutsScreen() {
 
             {/* Normal State - Featured Workout */}
             {!isLoading && !error && filteredFeaturedWorkout ? (
-              <WorkoutCard
-                name={filteredFeaturedWorkout.name}
-                lastCompleted={filteredFeaturedWorkout.lastCompleted}
-                lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
-                exerciseCount={filteredFeaturedWorkout.exerciseCount}
-                duration={filteredFeaturedWorkout.duration}
-                icon={filteredFeaturedWorkout.icon}
-                onStart={async () => {
-                  if (filteredFeaturedWorkout.id) {
-                    await handleStartWorkout(filteredFeaturedWorkout.id);
-                  }
-                }}
-                onMore={() => {
-                  setSelectedWorkoutName(filteredFeaturedWorkout.name);
-                  setSelectedWorkoutId(filteredFeaturedWorkout.id);
-                  setIsMenuVisible(true);
-                }}
-              />
+              <AnimatedContent>
+                <WorkoutCard
+                  name={filteredFeaturedWorkout.name}
+                  lastCompleted={filteredFeaturedWorkout.lastCompleted}
+                  lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
+                  exerciseCount={filteredFeaturedWorkout.exerciseCount}
+                  duration={filteredFeaturedWorkout.duration}
+                  icon={filteredFeaturedWorkout.icon}
+                  onStart={async () => {
+                    if (filteredFeaturedWorkout.id) {
+                      await handleStartWorkout(filteredFeaturedWorkout.id);
+                    }
+                  }}
+                  onMore={() => {
+                    setSelectedWorkoutName(filteredFeaturedWorkout.name);
+                    setSelectedWorkoutId(filteredFeaturedWorkout.id);
+                    setIsMenuVisible(true);
+                  }}
+                />
+              </AnimatedContent>
             ) : null}
 
             {/* Normal State - Regular Workouts */}
             {!isLoading && !error && filteredWorkouts.length > 0 ? (
-              <>
-                {filteredWorkouts.map((workout) => (
-                  <WorkoutCard
-                    key={workout.id}
-                    name={workout.name}
-                    lastCompleted={workout.lastCompleted}
-                    lastCompletedTimestamp={workout.lastCompletedTimestamp}
-                    exerciseCount={workout.exerciseCount}
-                    duration={workout.duration}
-                    icon={workout.icon}
-                    variant="standard"
-                    onStart={async () => {
-                      await handleStartWorkout(workout.id);
-                    }}
-                    onArchive={async () => {
-                      try {
-                        await WorkoutTemplateService.archiveTemplate(workout.id);
-                        showSnackbar('success', t('workouts.archiveSuccess'));
-                      } catch (err) {
-                        console.error('Error archiving workout:', err);
-                        showSnackbar('error', t('workouts.archiveError'));
-                      }
-                    }}
-                    onMore={() => {
-                      setSelectedWorkoutName(workout.name);
-                      setSelectedWorkoutId(workout.id);
-                      setIsMenuVisible(true);
-                    }}
-                  />
-                ))}
-              </>
+              <AnimatedContent>
+                <>
+                  {filteredWorkouts.map((workout, index) => (
+                    <WorkoutCard
+                      key={workout.id}
+                      name={workout.name}
+                      lastCompleted={workout.lastCompleted}
+                      lastCompletedTimestamp={workout.lastCompletedTimestamp}
+                      exerciseCount={workout.exerciseCount}
+                      duration={workout.duration}
+                      icon={workout.icon}
+                      variant="standard"
+                      onStart={async () => {
+                        await handleStartWorkout(workout.id);
+                      }}
+                      onArchive={async () => {
+                        try {
+                          await WorkoutTemplateService.archiveTemplate(workout.id);
+                          showSnackbar('success', t('workouts.archiveSuccess'));
+                        } catch (err) {
+                          console.error('Error archiving workout:', err);
+                          showSnackbar('error', t('workouts.archiveError'));
+                        }
+                      }}
+                      onMore={() => {
+                        setSelectedWorkoutName(workout.name);
+                        setSelectedWorkoutId(workout.id);
+                        setIsMenuVisible(true);
+                      }}
+                    />
+                  ))}
+                </>
+              </AnimatedContent>
             ) : null}
 
             {/* Create Template Button - Only show when there are workouts */}
@@ -536,18 +568,9 @@ export default function WorkoutsScreen() {
             showSnackbar('error', t('common.error'));
           }
         }}
-        onDelete={async () => {
-          if (selectedWorkoutId) {
-            try {
-              const template = await database
-                .get<WorkoutTemplate>('workout_templates')
-                .find(selectedWorkoutId);
-              await template.markAsDeleted();
-            } catch (err) {
-              console.error('Error deleting workout:', err);
-            }
-          }
+        onDelete={() => {
           setIsMenuVisible(false);
+          setIsDeleteConfirmationVisible(true);
         }}
         onPreview={() => {
           if (selectedWorkoutId) {
@@ -563,7 +586,7 @@ export default function WorkoutsScreen() {
           try {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
-            router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            router.navigate(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
@@ -571,8 +594,7 @@ export default function WorkoutsScreen() {
         }}
         onGenerateWithAi={() => {
           setIsCreateOptionsVisible(false);
-          setEditingTemplateId(undefined);
-          setIsCreateWorkoutModalVisible(true);
+          setIsGenerateWithAiModalVisible(true);
         }}
         onCreateEmptyTemplate={() => {
           setIsCreateOptionsVisible(false);
@@ -593,6 +615,10 @@ export default function WorkoutsScreen() {
         }}
         templateId={editingTemplateId}
       />
+      <GenerateWorkoutWithAiModal
+        visible={isGenerateWithAiModalVisible}
+        onClose={() => setIsGenerateWithAiModalVisible(false)}
+      />
       <BrowseTemplatesModal
         visible={isBrowseTemplatesVisible}
         onClose={() => setIsBrowseTemplatesVisible(false)}
@@ -608,6 +634,16 @@ export default function WorkoutsScreen() {
         }}
       />
       <ConfirmationModal
+        visible={isDeleteConfirmationVisible}
+        onClose={() => setIsDeleteConfirmationVisible(false)}
+        onConfirm={handleConfirmDeleteWorkout}
+        title={t('workouts.deleteConfirmation.title')}
+        message={t('workouts.deleteConfirmation.message', { name: selectedWorkoutName })}
+        confirmLabel={t('workouts.delete')}
+        variant="destructive"
+        isLoading={isDeletingWorkoutTemplate}
+      />
+      <ConfirmationModal
         visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
         onClose={() => {
           setIsCreateFromTemplateConfirmationVisible(false);
@@ -619,9 +655,7 @@ export default function WorkoutsScreen() {
           }
 
           setIsCreatingWorkoutsFromTemplate(true);
-
-          // Small delay to ensure React processes the state update and shows loading state
-          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+          await flushLoadingPaint();
 
           try {
             const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
@@ -654,16 +688,16 @@ export default function WorkoutsScreen() {
         workoutLogId={selectedWorkoutLogId}
         onStartWorkout={() => {
           setIsWorkoutOverviewVisible(false);
-          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onResumeSession={() => {
           setIsWorkoutOverviewVisible(false);
-          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onSelectExercise={(exerciseId) => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout session with selected exercise
-          router.push(
+          router.navigate(
             `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
           );
         }}
@@ -684,7 +718,7 @@ export default function WorkoutsScreen() {
         onFinishWorkout={() => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout summary
-          router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
         }}
       />
 

@@ -1,12 +1,27 @@
 import { Q } from '@nozbe/watermelondb';
+import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
-import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
+import {
+  localDayClosedRangeMaxMs,
+  localDayStartFromUtcMs,
+  localDayStartMs,
+} from '../../utils/calendarDate';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
 import Food from '../models/Food';
 import NutritionLog, { MealType } from '../models/NutritionLog';
+
+async function triggerWidgetUpdate(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+
+  const { requestNutritionWidgetUpdate } = await import('../../widgets/widget-update-helpers');
+  await requestNutritionWidgetUpdate();
+}
 
 /**
  * Helper function to retry database queries that fail during database reset.
@@ -38,6 +53,67 @@ async function retryOnResetError<T>(
   throw new Error('Max retries exceeded');
 }
 
+/**
+ * Scale every log in the meal proportionally so combined gram weight matches `newTotalGrams`.
+ * Top-level export avoids rare cases where a class static is missing on the runtime object.
+ */
+export async function scaleMealNutritionLogsToTotalGrams(
+  entries: { log: NutritionLog; gramWeight: number }[],
+  newTotalGrams: number
+): Promise<void> {
+  const totalGrams = entries.reduce((sum, e) => sum + e.gramWeight, 0);
+  if (totalGrams <= 0) {
+    throw new Error('Meal has no weight');
+  }
+  if (newTotalGrams <= 0) {
+    throw new Error('Invalid target weight');
+  }
+  const ratio = newTotalGrams / totalGrams;
+
+  const prepared = await Promise.all(
+    entries.map(async ({ log, gramWeight }) => {
+      const newGramWeight = gramWeight * ratio;
+      let newAmount = newGramWeight;
+      let portionId: string | undefined = log.portionId;
+
+      if (log.portionId) {
+        try {
+          const portion = await log.portion;
+          const pg = portion?.gramWeight;
+          if (pg && pg > 0) {
+            newAmount = roundToDecimalPlaces(newGramWeight / pg, 6);
+          } else {
+            portionId = undefined;
+            newAmount = roundToDecimalPlaces(newGramWeight, 6);
+          }
+        } catch {
+          portionId = undefined;
+          newAmount = roundToDecimalPlaces(newGramWeight, 6);
+        }
+      } else {
+        newAmount = roundToDecimalPlaces(newGramWeight, 6);
+      }
+
+      return { log, newAmount, portionId };
+    })
+  );
+
+  await database.write(async () => {
+    const now = Date.now();
+    await database.batch(
+      ...prepared.map(({ log, newAmount, portionId }) =>
+        log.prepareUpdate((record) => {
+          record.amount = newAmount;
+          record.portionId = portionId;
+          record.updatedAt = now;
+        })
+      )
+    );
+  });
+
+  await triggerWidgetUpdate();
+}
+
 export class NutritionService {
   /**
    * Log food consumption. Stores a snapshot of the food's macros/micros per 100g at log time.
@@ -50,7 +126,7 @@ export class NutritionService {
     portionId?: string,
     externalId?: string
   ): Promise<NutritionLog> {
-    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const dateTimestamp = localDayStartMs(date);
 
     const log = await database.write(async () => {
       const food = await database.get<Food>('foods').find(foodId);
@@ -84,36 +160,36 @@ export class NutritionService {
       });
     });
 
-    // Write to Health Connect (Android only, user-entered records only — HC-sourced records
-    // already have externalId set and must not be written back to avoid an echo loop).
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
+    }
 
-      if (!externalId) {
-        const [nutrients, snapshot] = await Promise.all([
-          log.getNutrients(),
-          log.getDecryptedSnapshot(),
-        ]);
+    // Health Connect / Apple Health (user-entered only — health-sourced records
+    // already have externalId set and must not be written back to avoid an echo loop).
+    if ((Platform.OS === 'android' || Platform.OS === 'ios') && !externalId) {
+      const [nutrients, snapshot] = await Promise.all([
+        log.getNutrients(),
+        log.getDecryptedSnapshot(),
+      ]);
 
-        const hcId = await writeNutritionLogToHealthConnect({
-          logId: log.id,
-          date: dateTimestamp,
-          mealType,
-          foodName: snapshot.loggedFoodName ?? '',
-          calories: nutrients.calories,
-          protein: nutrients.protein,
-          carbs: nutrients.carbs,
-          fat: nutrients.fat,
-          fiber: nutrients.fiber,
-        }).catch(() => undefined);
+      const hcId = await writeNutritionLogToHealthConnect({
+        logId: log.id,
+        date: dateTimestamp,
+        mealType,
+        foodName: snapshot.loggedFoodName ?? '',
+        calories: nutrients.calories,
+        protein: nutrients.protein,
+        carbs: nutrients.carbs,
+        fat: nutrients.fat,
+        fiber: nutrients.fiber,
+      }).catch(() => undefined);
 
-        if (hcId) {
-          await database.write(async () => {
-            await log.update((record) => {
-              record.externalId = hcId;
-            });
+      if (hcId) {
+        await database.write(async () => {
+          await log.update((record) => {
+            record.externalId = hcId;
           });
-        }
+        });
       }
     }
 
@@ -124,15 +200,15 @@ export class NutritionService {
    * Get all nutrition logs for a specific date
    */
   static async getNutritionLogsForDate(date: Date): Promise<NutritionLog[]> {
-    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-    const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
+    const dateTimestamp = localDayStartMs(date);
+    const maxInclusive = localDayClosedRangeMaxMs(date);
 
     return await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1))
+          Q.where('date', Q.between(dateTimestamp, maxInclusive))
         )
         .fetch()
     );
@@ -169,21 +245,15 @@ export class NutritionService {
     startDate: Date,
     endDate: Date
   ): Promise<NutritionLog[]> {
-    const startTimestamp = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
-    ).getTime();
-    const endTimestamp =
-      new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime() +
-      24 * 60 * 60 * 1000;
+    const startTimestamp = localDayStartMs(startDate);
+    const maxInclusive = localDayClosedRangeMaxMs(endDate);
 
     return await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(startTimestamp, endTimestamp - 1))
+          Q.where('date', Q.between(startTimestamp, maxInclusive))
         )
         .fetch()
     );
@@ -193,14 +263,14 @@ export class NutritionService {
    * Get nutrition logs for a specific meal type on a date
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
-    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-    const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
+    const dateTimestamp = localDayStartMs(date);
+    const maxInclusive = localDayClosedRangeMaxMs(date);
 
     return await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)),
+        Q.where('date', Q.between(dateTimestamp, maxInclusive)),
         Q.where('type', mealType)
       )
       .fetch();
@@ -313,7 +383,7 @@ export class NutritionService {
       totalFiber += nutrients.fiber;
     }
 
-    const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+    const days = differenceInCalendarDays(endDate, startDate) + 1;
 
     return {
       calories: totalCalories,
@@ -365,9 +435,7 @@ export class NutritionService {
       return log;
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
 
     return updatedLog;
   }
@@ -380,9 +448,48 @@ export class NutritionService {
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
+  }
+
+  /**
+   * @see scaleMealNutritionLogsToTotalGrams
+   */
+  static async scaleNutritionLogsProportionalToTotalGrams(
+    entries: { log: NutritionLog; gramWeight: number }[],
+    newTotalGrams: number
+  ): Promise<void> {
+    return scaleMealNutritionLogsToTotalGrams(entries, newTotalGrams);
+  }
+
+  /**
+   * Merge duplicate nutrition logs (same food) within a meal.
+   * Updates the first log of each duplicate group with the combined gram weight,
+   * clears its portionId so amount is interpreted as grams, then deletes the rest.
+   */
+  static async mergeDuplicateNutritionLogs(
+    toUpdate: { log: NutritionLog; newAmount: number }[],
+    toDelete: NutritionLog[]
+  ): Promise<void> {
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...toUpdate.map(({ log, newAmount }) =>
+          log.prepareUpdate((record) => {
+            record.amount = newAmount;
+            record.portionId = undefined;
+            record.updatedAt = now;
+          })
+        ),
+        ...toDelete.map((log) =>
+          log.prepareUpdate((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -401,9 +508,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -415,11 +520,7 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = new Date(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate()
-    ).getTime();
+    const dateTimestamp = localDayStartMs(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -445,9 +546,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -458,11 +557,7 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = new Date(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate()
-    ).getTime();
+    const dateTimestamp = localDayStartMs(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -477,9 +572,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -495,11 +588,7 @@ export class NutritionService {
   ): Promise<void> {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
-    const dateTimestamp = new Date(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate()
-    ).getTime();
+    const dateTimestamp = localDayStartMs(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -533,9 +622,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -548,9 +635,9 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (date) {
-      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-      const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)));
+      const dateTimestamp = localDayStartMs(date);
+      const maxInclusive = localDayClosedRangeMaxMs(date);
+      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
     }
 
     const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
@@ -593,9 +680,9 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (date) {
-      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-      const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)));
+      const dateTimestamp = localDayStartMs(date);
+      const maxInclusive = localDayClosedRangeMaxMs(date);
+      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
     }
 
     const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
@@ -750,23 +837,16 @@ export class NutritionService {
       return 0;
     }
 
-    const uniqueDates = [...new Set(logs.map((log) => log.date ?? 0))].sort(
-      (a, b) => (b ?? 0) - (a ?? 0)
-    );
+    const uniqueDayStarts = [
+      ...new Set(logs.map((log) => localDayStartFromUtcMs(log.date ?? 0))),
+    ].sort((a, b) => b - a);
 
     let streak = 0;
-    let expectedDate = new Date();
-    expectedDate.setUTCHours(0, 0, 0, 0);
+    const expectedStart = localDayStartMs(new Date());
 
-    for (const dateTimestamp of uniqueDates) {
-      const currentDate = new Date(dateTimestamp ?? Date.now());
-      currentDate.setUTCHours(0, 0, 0, 0);
-
-      const daysDiff = Math.floor(
-        (expectedDate.getTime() - currentDate.getTime()) / (24 * 60 * 60 * 1000)
-      );
-
-      if (daysDiff === streak) {
+    for (const dayStart of uniqueDayStarts) {
+      const diff = differenceInCalendarDays(new Date(expectedStart), new Date(dayStart));
+      if (diff === streak) {
         streak++;
       } else {
         break;
@@ -795,7 +875,7 @@ export class NutritionService {
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
-        log.date = originalLog.date;
+        log.date = localDayStartFromUtcMs(originalLog.date);
         log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
         log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
         log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';
@@ -826,7 +906,7 @@ export class NutritionService {
     mealType: MealType,
     amount: number = 100 // Default to 100g for custom meals
   ): Promise<NutritionLog> {
-    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const dateTimestamp = localDayStartMs(date);
 
     // If foodId is provided, log directly using the existing food
     if (mealData.foodId) {
@@ -891,10 +971,11 @@ export class NutritionService {
       });
     });
 
-    // Write to Health Connect (Android only)
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
+    }
 
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
       const [nutrients, snapshot] = await Promise.all([
         log.getNutrients(),
         log.getDecryptedSnapshot(),
@@ -910,7 +991,7 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined); // Silently ignore Health Connect errors
+      }).catch(() => undefined);
     }
 
     return log;
@@ -942,11 +1023,11 @@ export class NutritionService {
           const scale = ingredient.grams / 100;
           return {
             ...ingredient,
-            kcal: (food.calories ?? 0) * scale,
-            protein: (food.protein ?? 0) * scale,
-            carbs: (food.carbs ?? 0) * scale,
-            fat: (food.fat ?? 0) * scale,
-            fiber: (food.fiber ?? 0) * scale,
+            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
         } catch {
           // Food not found — fall back to LLM values
@@ -973,7 +1054,7 @@ export class NutritionService {
     date: Date,
     mealType: MealType
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const dateTimestamp = localDayStartMs(date);
     const now = Date.now();
 
     const logs = await database.write(async () => {
@@ -1071,10 +1152,11 @@ export class NutritionService {
       return createdLogs;
     });
 
-    // Update widgets and Health Connect
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
+    }
 
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
       for (const log of logs) {
         try {
           const [nutrients, snapshot] = await Promise.all([
@@ -1094,7 +1176,7 @@ export class NutritionService {
             fiber: nutrients.fiber,
           }).catch(() => undefined);
         } catch (error) {
-          console.error('Error syncing log to Health Connect:', error);
+          console.error('Error syncing log to health platform:', error);
         }
       }
     }

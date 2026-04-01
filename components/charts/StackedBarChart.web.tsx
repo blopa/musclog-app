@@ -41,8 +41,6 @@ export type StackedBarChartProps = {
   tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
 
-const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
-
 const TOOLTIP_WIDTH = 90;
 const TOOLTIP_HEIGHT = 36;
 
@@ -65,6 +63,13 @@ export function StackedBarChart({
   tooltipFormatter,
 }: StackedBarChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_COLORS = [
+    theme.colors.status.info,
+    theme.colors.status.error,
+    theme.colors.status.yellow,
+    theme.colors.accent.primary,
+  ];
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
@@ -232,7 +237,7 @@ export function StackedBarChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

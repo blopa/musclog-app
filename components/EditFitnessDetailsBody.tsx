@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { FitnessGoal, type Gender, LiftingExperience, WeightGoal } from '../database/models';
+import type { FitnessDetails } from '../types/fitnessDetails';
 import { EditFitnessGoalsBody, type FitnessGoals } from './EditFitnessGoalsBody';
 import { EditPhysicalStatsBody, type PhysicalStats } from './EditPhysicalStatsBody';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -21,18 +21,7 @@ type EditFitnessDetailsBodyProps = {
   mode?: 'physical' | 'goals' | 'both';
 };
 
-export type FitnessDetails = {
-  dob?: string;
-  units: 'imperial' | 'metric';
-  weight: string;
-  height: string;
-  fatPercentage?: number;
-  weightGoal: WeightGoal;
-  fitnessGoal: FitnessGoal;
-  activityLevel: number;
-  gender: Gender;
-  experience: LiftingExperience;
-};
+export type { FitnessDetails };
 
 export function EditFitnessDetailsBody({
   onClose,

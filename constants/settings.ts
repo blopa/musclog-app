@@ -171,6 +171,18 @@ export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
  */
 export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 
+/**
+ * Setting type for showing the daily mood prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
+
+/**
+ * Setting type for always allowing food editing in FoodMealDetailsModal.
+ * value: 'true' | 'false'.
+ */
+export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -183,8 +195,8 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
-export type FoodSearchSource = 'both' | 'openfood' | 'usda';
-export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation';
+export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
+export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
 
 export type UseSettingsResult = {
@@ -200,4 +212,5 @@ export type UseSettingsResult = {
   notificationsWorkoutDuration: boolean;
   foodSearchSource: FoodSearchSource;
   chartTooltipPosition: ChartTooltipPosition;
+  alwaysAllowFoodEditing: boolean;
 };

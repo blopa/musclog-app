@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
 import {
   BarChart3,
@@ -13,13 +14,14 @@ import {
 } from 'lucide-react-native';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { NavItemKey } from '../constants/settings';
 import { useNavigationItems } from '../hooks/useNavigationItems';
 import { useTheme } from '../hooks/useTheme';
 import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
+import { addOpacityToHex } from '../theme';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
@@ -37,6 +39,8 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { rawSlots, isCycleActive } = useNavigationItems();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const unreadChatMessages = useUnreadChatMessages();
+  const { width: screenWidth } = useWindowDimensions();
+  const isSmallScreen = screenWidth < 350;
 
   const isPathActive = useCallback(
     (path: string) => {
@@ -63,7 +67,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/workout/workouts');
+                  router.navigate('/workout/workouts');
                 }
               }}
             >
@@ -93,7 +97,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/nutrition/food');
+                  router.replace('/nutrition/food');
                 }
               }}
             >
@@ -121,7 +125,13 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="profile"
               className="flex-1 items-center justify-center gap-1"
-              onPress={() => router.push('/profile')}
+              onPressIn={() => {
+                if (!active) {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                  router.prefetch('/profile');
+                }
+              }}
+              onPress={() => router.navigate('/profile')}
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
@@ -185,7 +195,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/cycle');
+                  router.navigate('/cycle');
                 }
               }}
             >
@@ -215,7 +225,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/settings');
+                  router.navigate('/settings');
                 }
               }}
             >
@@ -245,7 +255,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/progress');
+                  router.navigate('/progress');
                 }
               }}
             >
@@ -275,7 +285,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/nutrition/checkin-list');
+                  router.navigate('/nutrition/checkin-list');
                 }
               }}
             >
@@ -305,6 +315,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const homeActive = isPathActive('/');
+  const cameraFabActive = isPathActive('/nutrition/ai-camera');
 
   return (
     <View
@@ -318,7 +329,7 @@ export const NavigationMenu = memo(function NavigationMenu({
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
               if (!homeActive) {
-                router.push('/');
+                router.navigate('/');
               }
             }}
           >
@@ -343,28 +354,27 @@ export const NavigationMenu = memo(function NavigationMenu({
 
           {/* Camera - always fixed */}
           <Pressable
-            className="z-10 flex-1 items-center justify-center gap-1"
+            className="z-10 items-center justify-center gap-1"
+            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
             onPress={onCameraPress}
           >
             <View
-              className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
-                isPathActive('/nutrition/ai-camera')
-                  ? 'bg-accent-primary'
-                  : 'bg-accent-primary opacity-80'
-              }`}
+              className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+              style={[
+                isSmallScreen
+                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                  : { width: 80, height: 80 },
+                {
+                  backgroundColor: cameraFabActive
+                    ? theme.colors.accent.primary
+                    : addOpacityToHex(theme.colors.accent.primary, 0.8),
+                },
+              ]}
             >
               <Camera
-                size={theme.iconSize.md}
-                color={
-                  isPathActive('/nutrition/ai-camera')
-                    ? theme.colors.text.primary
-                    : theme.colors.text.tertiary
-                }
-                strokeWidth={
-                  isPathActive('/nutrition/ai-camera')
-                    ? theme.strokeWidth.medium
-                    : theme.borderWidth.medium
-                }
+                size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+                color={theme.colors.background.secondaryDark}
+                strokeWidth={theme.strokeWidth.medium}
               />
             </View>
           </Pressable>

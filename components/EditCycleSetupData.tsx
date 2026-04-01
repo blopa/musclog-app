@@ -1,6 +1,5 @@
 import {
   Activity,
-  Calendar as CalendarIcon,
   CheckCircle2,
   HelpCircle,
   Pill,
@@ -15,9 +14,10 @@ import { Text, View } from 'react-native';
 
 import { type BirthControlType } from '../database/models';
 import { SyncGoal } from '../database/models/MenstrualCycle';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import { localCalendarDayDate } from '../utils/calendarDate';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
-import { GenericCard } from './cards/GenericCard';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { NumericInput } from './theme/NumericInput';
 import { PickerButton } from './theme/PickerButton';
@@ -37,6 +37,7 @@ type EditCycleSetupDataProps = {
 
 export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetupDataProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [selectedDate, setSelectedDate] = useState<Date>(
     initialData?.lastPeriodStartDate ?? new Date()
@@ -62,9 +63,6 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
       syncGoal: selectedGoal,
     });
   }, [selectedDate, cycleLength, periodDuration, selectedBirthControl, selectedGoal, onFormChange]);
-
-  const formatDate = (date: Date): string =>
-    date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 
   const birthControlOptions: (BottomPopUpMenuItem & { value: BirthControlType | 'none' })[] = [
     {
@@ -152,30 +150,11 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
   return (
     <>
       <View className="gap-6">
-        {/* Last period date */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.anchor.title')}
-          </Text>
-          <GenericCard isPressable onPress={() => setIsDatePickerVisible(true)} variant="card">
-            <View className="flex-row items-center p-6">
-              <View
-                className="mr-4 h-12 w-12 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary20 }}
-              >
-                <CalendarIcon size={24} color={theme.colors.accent.primary} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm text-text-secondary">
-                  {t('onboarding.cycleSetup.anchor.title')}
-                </Text>
-                <Text className="text-xl font-bold text-text-primary">
-                  {formatDate(selectedDate)}
-                </Text>
-              </View>
-            </View>
-          </GenericCard>
-        </View>
+        <DatePickerInput
+          label={t('onboarding.cycleSetup.anchor.title')}
+          selectedDate={selectedDate}
+          onPress={() => setIsDatePickerVisible(true)}
+        />
 
         {/* Cycle lengths */}
         <View>
@@ -189,7 +168,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
               onChangeText={(v) => setCycleLength(parseInt(v) || 0)}
               onIncrement={() => setCycleLength((v) => Math.min(45, v + 1))}
               onDecrement={() => setCycleLength((v) => Math.max(15, v - 1))}
-              unit={t('common.days')}
+              unit={t('common.days.label')}
             />
             <NumericInput
               label={t('onboarding.cycleSetup.length.periodDuration')}
@@ -197,7 +176,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
               onChangeText={(v) => setPeriodDuration(parseInt(v) || 0)}
               onIncrement={() => setPeriodDuration((v) => Math.min(10, v + 1))}
               onDecrement={() => setPeriodDuration((v) => Math.max(1, v - 1))}
-              unit={t('common.days')}
+              unit={t('common.days.label')}
             />
           </View>
         </View>
@@ -234,7 +213,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={(date) => {
-          setSelectedDate(date);
+          setSelectedDate(localCalendarDayDate(date));
           setIsDatePickerVisible(false);
         }}
         maxYear={new Date().getFullYear()}

@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,20 +14,27 @@ import { RestTimerControls } from '../../components/RestTimerControls';
 import { UpNextLabel } from '../../components/UpNextLabel';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { WorkoutService } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestTimerScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string; completedSetOrder?: string }>();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const { locale } = useFormatAppNumber();
+  const formatDisplayWeight = useCallback(
+    (kg: number) => formatDisplayWeightKg(locale, units, kg),
+    [locale, units]
+  );
 
   const workoutLogId = params.workoutLogId;
   const completedSetOrder =
@@ -281,7 +287,6 @@ export default function RestTimerScreen() {
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
@@ -292,7 +297,6 @@ export default function RestTimerScreen() {
   if (error || !completedSet || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-text-primary">{error || t('errors.failedToLoadData')}</Text>
         </View>
@@ -356,7 +360,7 @@ export default function RestTimerScreen() {
               </Text>
             </View>
             <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
-              {kgToDisplay(completedSet.set.weight ?? 0, units)} {t(weightUnitKey)}{' '}
+              {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
               <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
               {completedSet.set.reps ?? 0} {t('restTimer.reps')}
             </Text>
@@ -369,7 +373,7 @@ export default function RestTimerScreen() {
                 name: nextSet.exercise.name ?? '',
                 media: require('../../assets/icon.png'), // Default image for now
                 itemOne: {
-                  value: `${kgToDisplay(nextSet.set.weight ?? 0, units)} ${t(weightUnitKey)}`,
+                  value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
                   icon: Dumbbell,
                 },
                 itemTwo: {
@@ -402,7 +406,7 @@ export default function RestTimerScreen() {
             setIsWorkoutOverviewModalVisible(true);
           }}
           // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.push('/workout-settings')}
+          // onWorkoutSettings={() => router.navigate('/workout-settings')}
           onEndWorkout={handleEndWorkout}
         />
       ) : null}

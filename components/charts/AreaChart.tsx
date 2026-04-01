@@ -1,8 +1,10 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -91,6 +93,7 @@ export function AreaChart({
   interactive = true,
   tooltipFormatter,
 }: AreaChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
@@ -102,6 +105,8 @@ export function AreaChart({
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
+
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   if (data.length === 0 || series.length === 0) {
     return null;
@@ -135,7 +140,14 @@ export function AreaChart({
     );
     const label = tooltipFormatter
       ? tooltipFormatter(nearest)
-      : series.map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`).join('\n');
+      : series
+          .map((s) =>
+            t('common.labelColonValue', {
+              label: s.label,
+              value: formatRoundedDecimal(nearest[s.key] ?? 0, 1),
+            })
+          )
+          .join('\n');
     notifyChartActive(chartId);
     setActiveLabel(label);
   };

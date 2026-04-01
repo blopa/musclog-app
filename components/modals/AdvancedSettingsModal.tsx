@@ -1,7 +1,7 @@
 import {
   Activity,
-  AlignHorizontalJustifyEnd,
   AlignHorizontalJustifyStart,
+  AlignLeft,
   Apple,
   Bug,
   CalendarCheck,
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
@@ -73,6 +73,10 @@ export function AdvancedSettingsModal({
     handleAnonymousBugReportChange,
     chartTooltipPosition: debouncedChartTooltipPosition,
     handleChartTooltipPositionChange,
+    showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
+    handleShowDailyMoodPromptChange,
+    alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
+    handleAlwaysAllowFoodEditingChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -119,16 +123,11 @@ export function AdvancedSettingsModal({
   }, [decryptionPhrase, t, showSnackbar]);
 
   const handleOpenAppSettings = useCallback(async () => {
-    if (Platform.OS === 'android') {
-      try {
-        await Linking.openSettings();
-      } catch (err) {
-        console.error('Failed to open settings:', err);
-        showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
-      }
-    } else {
-      // TODO: Implement clear app data functionality for iOS
-      console.log('Clear app data settings - only available on Android');
+    try {
+      await Linking.openSettings();
+    } catch (err) {
+      console.error('Failed to open settings:', err);
+      showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
     }
   }, [t, showSnackbar]);
 
@@ -165,6 +164,51 @@ export function AdvancedSettingsModal({
       ),
       value: debouncedAnonymousBugReport,
       onValueChange: handleAnonymousBugReportChange,
+    },
+  ];
+
+  const dailyMoodPromptItems = [
+    {
+      key: 'daily-mood-prompt',
+      label: t('settings.advancedSettings.dailyMoodPrompt'),
+      subtitle: t('settings.advancedSettings.dailyMoodPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Activity size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedShowDailyMoodPrompt,
+      onValueChange: handleShowDailyMoodPromptChange,
+    },
+    {
+      key: 'always-allow-food-editing',
+      label: t('settings.advancedSettings.alwaysAllowFoodEditing'),
+      subtitle: t('settings.advancedSettings.alwaysAllowFoodEditingSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.amber20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <AlignLeft size={theme.iconSize.xl} color={theme.colors.status.amber} />
+        </View>
+      ),
+      value: debouncedAlwaysAllowFoodEditing,
+      onValueChange: handleAlwaysAllowFoodEditingChange,
     },
   ];
 
@@ -252,6 +296,8 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.privacyDiagnostics')}
             </Text>
             <ToggleInput items={bugReportItems} />
+            <View className="mt-4" />
+            <ToggleInput items={dailyMoodPromptItems} />
           </View>
 
           {/* Charts Section */}
@@ -431,7 +477,7 @@ export function AdvancedSettingsModal({
                 borderRadius: theme.borderRadius.sm,
                 backgroundColor: theme.colors.accent.primary20,
               }}
-              title={t('settings.chatMessages.title', 'Chat Messages')}
+              title={t('settings.chatMessages.title')}
               subtitle={t(
                 'settings.chatMessages.subtitle',
                 'View and edit your conversation history'

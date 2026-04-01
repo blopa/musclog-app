@@ -1,4 +1,5 @@
-import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
+import type { Locale } from 'date-fns';
+import { format, isThisWeek, isToday, isYesterday, subDays, subMonths, subYears } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -6,11 +7,14 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
@@ -48,9 +52,9 @@ type MetricData = {
 };
 
 // Helper function to format relative date
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
-  const timeStr = format(date, 'hh:mm a');
+  const timeStr = format(date, 'hh:mm a', { locale });
 
   if (isToday(date)) {
     return `${t('bodyMetrics.dateFormats.today')}, ${timeStr}`;
@@ -59,9 +63,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return `${t('bodyMetrics.dateFormats.yesterday')}, ${timeStr}`;
   }
   if (isThisWeek(date)) {
-    return `${format(date, 'EEE')}, ${timeStr}`;
+    return `${format(date, 'EEE', { locale })}, ${timeStr}`;
   }
-  return format(date, 'MMM d, hh:mm a');
+  return format(date, 'MMM d, hh:mm a', { locale });
 }
 
 type BodyMetricsHistoryModalProps = {
@@ -75,7 +79,9 @@ export default function BodyMetricsHistoryModal({
 }: BodyMetricsHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
   const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
@@ -142,18 +148,20 @@ export default function BodyMetricsHistoryModal({
 
   // Calculate date range based on selected period
   const dateRange = useMemo(() => {
-    const now = Date.now();
-    let startDate = now;
+    const endDate = Date.now();
+    const today = new Date();
+    let startDate = endDate;
     if (selectedPeriod === '30D') {
-      startDate = now - 30 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subDays(today, 30));
     } else if (selectedPeriod === '3M') {
-      startDate = now - 90 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subMonths(today, 3));
     } else if (selectedPeriod === '6M') {
-      startDate = now - 180 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subMonths(today, 6));
     } else if (selectedPeriod === '1Y') {
-      startDate = now - 365 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subYears(today, 1));
     }
-    return { startDate, endDate: now };
+
+    return { startDate, endDate };
   }, [selectedPeriod]);
 
   // Use hook for paginated history (for list display)
@@ -266,12 +274,14 @@ export default function BodyMetricsHistoryModal({
             if (absDiff > 0.01) {
               changeType = diff > 0 ? 'up' : 'down';
               const sign = diff > 0 ? '+' : '';
-              change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+              const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
+              change = `${sign}${formatDecimal(absDiff, decPlaces)}${unit ? ` ${unit}` : ''}`;
             }
           }
         }
 
-        const valueStr = `${displayValue % 1 === 0 ? displayValue : displayValue.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+        const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
+        const valueStr = `${displayValue % 1 === 0 ? formatInteger(displayValue, { useGrouping: false }) : formatDecimal(displayValue, decPlaces)}${unit ? ` ${unit}` : ''}`;
 
         let note = '';
         if (index === metrics.length - 1) {
@@ -287,7 +297,7 @@ export default function BodyMetricsHistoryModal({
 
         entries.push({
           id: metric.id,
-          date: formatRelativeDate(d.date, t),
+          date: formatRelativeDate(d.date, t, dateFnsLocale),
           value: valueStr,
           change,
           changeType,
@@ -304,11 +314,14 @@ export default function BodyMetricsHistoryModal({
     [
       selectedMetric,
       t,
+      dateFnsLocale,
       theme.colors.border.light,
       theme.colors.status.indigo600,
       theme.colors.text.primary,
       theme.colors.text.secondary,
       getDisplayValue,
+      formatDecimal,
+      formatInteger,
     ]
   );
 
@@ -356,15 +369,24 @@ export default function BodyMetricsHistoryModal({
 
     const unit = getMetricUnit(selectedMetric);
 
+    const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
     return {
       current:
         displayVal % 1 === 0
-          ? String(displayVal)
-          : displayVal.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2),
+          ? formatInteger(displayVal, { useGrouping: false })
+          : formatDecimal(displayVal, decPlaces),
       unit,
       label: getMetricLabel(selectedMetric),
     };
-  }, [paginatedMetrics, selectedMetric, getMetricUnit, getMetricLabel, getDisplayValue]);
+  }, [
+    paginatedMetrics,
+    selectedMetric,
+    getMetricUnit,
+    getMetricLabel,
+    getDisplayValue,
+    formatDecimal,
+    formatInteger,
+  ]);
 
   // Generate chart data from all metrics
   const chartData = useMemo(() => {
@@ -418,9 +440,10 @@ export default function BodyMetricsHistoryModal({
     const midDisplay = (minDisplay + maxDisplay) / 2;
 
     const unit = getMetricUnit(selectedMetric);
+    const decimals = 1;
     const fmt = (v: number) => {
-      const decimals = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 1;
-      return unit ? `${v.toFixed(decimals)} ${unit}` : v.toFixed(decimals);
+      const s = formatDecimal(v, decimals);
+      return unit ? `${s} ${unit}` : s;
     };
 
     if (range < 0.01) {
@@ -432,7 +455,7 @@ export default function BodyMetricsHistoryModal({
       { label: fmt(midDisplay), yDomainValue: toDomainY((minStored + maxStored) / 2) },
       { label: fmt(minDisplay), yDomainValue: toDomainY(minStored) },
     ];
-  }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit]);
+  }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit, formatDecimal]);
 
   // X-axis labels from actual date range
   const xAxisLabels = useMemo(() => {
@@ -442,9 +465,10 @@ export default function BodyMetricsHistoryModal({
     const sorted = [...allMetricsForChart].sort((a, b) => a.decrypted.date - b.decrypted.date);
     return getXAxisLabels(
       sorted.map((m) => ({ x: m.decrypted.date })),
-      (x) => format(x, 'MMM d')
+      (x) => format(x, 'MMM d', { locale: dateFnsLocale }),
+      dateFnsLocale
     );
-  }, [allMetricsForChart]);
+  }, [allMetricsForChart, dateFnsLocale]);
 
   const handleNewMetric = () => {
     setIsAddMetricVisible(true);

@@ -10,6 +10,7 @@ interface NewNumericalInputProps {
   onChange: (value: number) => void;
   min?: number;
   step?: number;
+  variant?: 'default' | 'compact';
 }
 
 export default function NewNumericalInput({
@@ -18,10 +19,12 @@ export default function NewNumericalInput({
   onChange,
   min = 0,
   step = 1,
+  variant = 'default',
 }: NewNumericalInputProps) {
   const theme = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const inputRef = useRef<TextInput | null>(null);
+  const isCompact = variant === 'compact';
 
   useEffect(() => {
     setInputValue(value.toString());
@@ -63,13 +66,13 @@ export default function NewNumericalInput({
   return (
     <View className="w-full">
       <Text
-        className="mb-3 text-xs font-semibold uppercase tracking-wide"
+        className={`text-xs font-semibold uppercase tracking-wide ${isCompact ? 'mb-1.5' : 'mb-3'}`}
         style={{ color: theme.colors.background.workoutIcon }}
       >
         {label}
       </Text>
       <View
-        className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl px-4 py-3"
+        className={`flex w-full flex-row items-center justify-between rounded-2xl ${isCompact ? 'gap-0.5 px-2.5 py-1.5' : 'gap-2 px-4 py-3'}`}
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
         <Pressable
@@ -77,14 +80,14 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Minus size={20} color={theme.colors.accent.secondary} strokeWidth={3} />
+          <Minus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
         <TextInput
           ref={inputRef}
           value={inputValue}
           onChangeText={handleInputChange}
           onBlur={handleInputBlur}
-          className="min-w-0 flex-1 bg-transparent text-center text-2xl font-bold"
+          className={`min-w-0 flex-1 bg-transparent text-center font-bold ${isCompact ? 'text-lg' : 'text-2xl'}`}
           style={{ color: theme.colors.text.white }}
           keyboardType="numeric"
           placeholderTextColor={theme.colors.text.secondary}
@@ -95,7 +98,7 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Plus size={20} color={theme.colors.accent.secondary} strokeWidth={3} />
+          <Plus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
       </View>
     </View>

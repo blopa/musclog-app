@@ -4,7 +4,7 @@ import type { SelectorOption } from '../../components/theme/OptionsMultiSelector
 import Exercise from '../../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../../database/models/Schedule';
 import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
-import { theme } from '../../theme';
+import { darkTheme as theme } from '../../theme';
 import {
   createExerciseOption,
   type CreateExerciseOptionParams,
@@ -14,13 +14,13 @@ import {
   extractExerciseMetadata,
   formatExerciseDescription,
   getExerciseIconConfig,
+  getWeekdayLabels,
   indexToDayName,
   isBodyweightExercise,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
-  WEEKDAY_LABELS,
   WEEKDAY_NAMES,
 } from '../workout';
 
@@ -76,13 +76,13 @@ jest.mock('lucide-react-native', () => ({
 
 describe('utils/workout', () => {
   describe('Day Mapping Utilities', () => {
-    describe('WEEKDAY_LABELS', () => {
-      it('should have 7 elements', () => {
-        expect(WEEKDAY_LABELS).toHaveLength(7);
+    describe('getWeekdayLabels', () => {
+      it('should return 7 elements', () => {
+        expect(getWeekdayLabels()).toHaveLength(7);
       });
 
-      it('should have correct values', () => {
-        expect(WEEKDAY_LABELS).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
+      it('should return correct values for the default en-US locale', () => {
+        expect(getWeekdayLabels()).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
       });
     });
 
@@ -213,22 +213,22 @@ describe('utils/workout', () => {
 
     describe('getExerciseIconConfig', () => {
       it('should return User icon and correct colors for bodyweight exercises', () => {
-        const config = getExerciseIconConfig(true);
+        const config = getExerciseIconConfig(theme, true);
         expect(config.icon).toBe(User);
         expect(config.iconBgColor).toBe(theme.colors.background.white5);
         expect(config.iconColor).toBe(theme.colors.text.secondary);
       });
 
       it('should return Dumbbell icon and correct colors for non-bodyweight exercises', () => {
-        const config = getExerciseIconConfig(false);
+        const config = getExerciseIconConfig(theme, false);
         expect(config.icon).toBe(Dumbbell);
         expect(config.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(config.iconColor).toBe(theme.colors.accent.primary);
       });
 
       it('should return correct icon types', () => {
-        const bodyweightConfig = getExerciseIconConfig(true);
-        const nonBodyweightConfig = getExerciseIconConfig(false);
+        const bodyweightConfig = getExerciseIconConfig(theme, true);
+        const nonBodyweightConfig = getExerciseIconConfig(theme, false);
         expect(bodyweightConfig.icon).toBe(User);
         expect(nonBodyweightConfig.icon).toBe(Dumbbell);
       });
@@ -253,8 +253,12 @@ describe('utils/workout', () => {
       });
 
       it('should include weight for non-bodyweight exercises', () => {
-        expect(formatExerciseDescription(3, 10, 60, false)).toBe('3 sets × 10 reps @ 60kg');
-        expect(formatExerciseDescription(4, 8, 22.5, false)).toBe('4 sets × 8 reps @ 22.5kg');
+        expect(formatExerciseDescription(3, 10, 60, false, 'metric', 'en-US')).toBe(
+          '3 sets × 10 reps @ 60kg'
+        );
+        expect(formatExerciseDescription(4, 8, 22.5, false, 'metric', 'en-US')).toBe(
+          '4 sets × 8 reps @ 22.5kg'
+        );
       });
 
       it('should not include weight for bodyweight exercises', () => {
@@ -280,7 +284,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(User);
         expect(result.id).toBe('ex-1');
         expect(result.label).toBe('Push Up');
@@ -297,7 +301,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(User);
       });
 
@@ -311,7 +315,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(Dumbbell);
         expect(result.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(result.iconColor).toBe(theme.colors.accent.primary);
@@ -329,7 +333,7 @@ describe('utils/workout', () => {
           groupId: 'group-1',
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.groupId).toBe('group-1');
       });
 
@@ -343,7 +347,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.groupId).toBeUndefined();
       });
 
@@ -361,7 +365,7 @@ describe('utils/workout', () => {
           groupId: 'group-2',
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result).toMatchObject({
           id: 'ex-1',
           label: 'Bench Press',
@@ -383,7 +387,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.label).toBe('');
       });
 
@@ -397,7 +401,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.label).toBe("O'Brien Press");
       });
     });

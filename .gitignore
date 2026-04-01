@@ -8,6 +8,9 @@ node_modules/
 dist/
 web-build/
 
+# Generated web mirror of experiments.baseUrl (see scripts/sync-web-phone-frame.js)
+public/musclog-app/
+
 # Native
 *.orig.*
 *.jks

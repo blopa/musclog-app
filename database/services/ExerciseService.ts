@@ -1,14 +1,18 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '../../data/exercisesEnUS.json';
+import exercisesEnUS from '../../data/exercisesEnUS.json';
+import exercisesPtBr from '../../data/exercisesPtBr.json';
+import i18n, { PT_BR } from '../../lang/lang';
 import {
   getBundledExerciseImageSourceByIndex,
   getExerciseImageFilenameByIndex,
+  preloadExerciseImages,
 } from '../../utils/exerciseImage';
 import { copyBundledExerciseImageToDocument } from '../../utils/file';
 import { database } from '../index';
 import Exercise, {
   type EquipmentType,
+  type ExerciseSource,
   type MechanicType,
   type MuscleGroup,
 } from '../models/Exercise';
@@ -20,6 +24,10 @@ interface ExerciseJsonData {
   description: string;
   targetMuscles?: string[];
   loadMultiplier?: number;
+}
+
+function getExercisesData(): ExerciseJsonData[] {
+  return (i18n.language === PT_BR ? exercisesPtBr : exercisesEnUS) as ExerciseJsonData[];
 }
 
 export class ExerciseService {
@@ -99,7 +107,8 @@ export class ExerciseService {
     equipmentType: EquipmentType | string,
     mechanicType: MechanicType | string,
     loadMultiplier: number = 1.0,
-    imageUrl?: string
+    imageUrl?: string,
+    source: ExerciseSource = 'user'
   ): Promise<Exercise> {
     return await database.write(async () => {
       const now = Date.now();
@@ -111,6 +120,7 @@ export class ExerciseService {
         exercise.muscleGroup = muscleGroup as MuscleGroup;
         exercise.equipmentType = equipmentType as EquipmentType;
         exercise.mechanicType = mechanicType as MechanicType;
+        exercise.source = source;
         exercise.loadMultiplier = loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
@@ -307,6 +317,7 @@ export class ExerciseService {
         exercise.muscleGroup = originalExercise.muscleGroup;
         exercise.equipmentType = originalExercise.equipmentType;
         exercise.mechanicType = originalExercise.mechanicType;
+        exercise.source = 'user';
         exercise.loadMultiplier = originalExercise.loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
@@ -395,7 +406,7 @@ export class ExerciseService {
    */
   static async createCommonExercises(): Promise<Exercise[]> {
     const exercises: Exercise[] = [];
-    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const exercisesJson = getExercisesData();
     const now = Date.now();
 
     const created = await database.write(async () => {
@@ -423,6 +434,7 @@ export class ExerciseService {
             exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
             exercise.equipmentType = equipmentType as EquipmentType;
             exercise.mechanicType = mechanicType as MechanicType;
+            exercise.source = 'app';
             exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
             exercise.imageUrl = undefined; // No image URLs in JSON
             exercise.createdAt = now;
@@ -488,6 +500,38 @@ export class ExerciseService {
   }
 
   /**
+   * Backfills the `source` field for exercises that predate the column addition.
+   * Exercises with no source are ordered by creation date (oldest first); the first
+   * `appExerciseCount` are assumed to be app-seeded and get `'app'`, the rest get `'user'`.
+   * Safe to call on every app start — it's a no-op when all exercises already have a source.
+   */
+  static async backfillExerciseSources(appExerciseCount: number = 105): Promise<void> {
+    const unsourced = await database
+      .get<Exercise>('exercises')
+      .query(
+        Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))),
+        Q.sortBy('created_at', Q.asc)
+      )
+      .fetch();
+
+    if (unsourced.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (let i = 0; i < unsourced.length; i++) {
+        const exercise = unsourced[i];
+        const source: ExerciseSource = i < appExerciseCount ? 'app' : 'user';
+        await exercise.update((e) => {
+          e.source = source;
+        });
+      }
+    });
+
+    console.log(`Backfilled source for ${unsourced.length} exercise(s)`);
+  }
+
+  /**
    * Repairs exercises that were seeded without an imageUrl (e.g. due to a previous
    * FileAlreadyExistsException during seeding). Finds all non-deleted exercises with
    * a missing imageUrl, matches them against the JSON data by name, copies the bundled
@@ -495,7 +539,7 @@ export class ExerciseService {
    * all images are already present.
    */
   static async repairMissingExerciseImages(): Promise<void> {
-    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const exercisesJson = getExercisesData();
     const allExercises = await database.get<Exercise>('exercises').query().fetch();
     const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt);
 
@@ -533,5 +577,95 @@ export class ExerciseService {
       });
       console.log(`Repaired ${updates.length} exercise image(s)`);
     }
+  }
+
+  /**
+   * Compares the bundled exercisesEnUS.json against the exercises in the DB that
+   * have source='app', and creates any entries that are missing. Intended to run
+   * on every app boot so that new exercises added to the JSON in a future update
+   * are automatically seeded for existing users.
+   *
+   * Safe to call repeatedly — exits immediately when nothing is missing.
+   * Returns the number of exercises created (0 on a no-op boot).
+   */
+  static async syncAppExercises(): Promise<number> {
+    const exercisesJson = getExercisesData();
+
+    // Collect names of non-deleted app exercises already in the DB
+    const existing = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const existingNames = new Set(existing.map((ex) => (ex.name ?? '').toLowerCase()));
+
+    // Determine which JSON entries are missing from the DB
+    const missing = exercisesJson.filter((data) => !existingNames.has(data.name.toLowerCase()));
+
+    if (missing.length === 0) {
+      return 0;
+    }
+
+    // Preload bundled image assets before doing any file copies
+    await preloadExerciseImages();
+
+    const now = Date.now();
+
+    // Prepare records — prepareCreate assigns IDs and is usable after batch()
+    const prepared = missing.map((data) => {
+      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type);
+      const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
+
+      return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+        exercise.name = data.name;
+        exercise.description = data.description;
+        exercise.muscleGroup = data.muscleGroup as MuscleGroup;
+        exercise.equipmentType = equipmentType as EquipmentType;
+        exercise.mechanicType = mechanicType as MechanicType;
+        exercise.source = 'app';
+        exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
+        exercise.imageUrl = undefined;
+        exercise.createdAt = now;
+        exercise.updatedAt = now;
+        exercise.deletedAt = undefined;
+      });
+    });
+
+    await database.write(async () => {
+      await database.batch(...prepared);
+    });
+
+    // Copy the bundled image for each newly created exercise.
+    // File I/O cannot run inside a write transaction, so this is a second pass.
+    const imageUpdates: { exercise: Exercise; fileUri: string }[] = [];
+    for (const exercise of prepared) {
+      const jsonIndex = exercisesJson.findIndex(
+        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
+      );
+      if (jsonIndex < 0) {
+        continue;
+      }
+
+      try {
+        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
+        const filename = getExerciseImageFilenameByIndex(jsonIndex);
+        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
+        imageUpdates.push({ exercise, fileUri });
+      } catch (err) {
+        console.warn('[syncAppExercises] Failed to copy image for', exercise.name, err);
+      }
+    }
+
+    if (imageUpdates.length > 0) {
+      await database.write(async () => {
+        for (const { exercise, fileUri } of imageUpdates) {
+          await exercise.update((e) => {
+            e.imageUrl = fileUri;
+          });
+        }
+      });
+    }
+
+    console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
+    return prepared.length;
   }
 }

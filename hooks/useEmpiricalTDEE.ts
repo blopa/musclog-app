@@ -1,6 +1,8 @@
+import { addDays } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '../database/services';
+import { localDayStartMs } from '../utils/calendarDate';
 import { calculateTDEE, lbsToKg } from '../utils/nutritionCalculator';
 import { useSettings } from './useSettings';
 import { useUser } from './useUser';
@@ -74,9 +76,9 @@ async function getHistoricalNutritionParamsCustom(options: {
     useWeeklyAverages = true,
   } = options;
 
-  const endOfDay = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
-  const endTs = endOfDay.getTime();
-  const startTs = endTs - lookbackDays * 24 * 60 * 60 * 1000;
+  const endTs = localDayStartMs(asOfDate);
+  const endOfDay = new Date(endTs);
+  const startTs = localDayStartMs(addDays(endOfDay, -lookbackDays));
   const startOfRange = new Date(startTs);
 
   const dateRange = { startDate: startTs, endDate: endTs };

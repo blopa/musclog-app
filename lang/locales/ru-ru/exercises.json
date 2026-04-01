@@ -1,0 +1,172 @@
+{
+  "exercises": {
+    "title": "Упражнения",
+    "searchPlaceholder": "Поиск упражнений...",
+    "muscleGroups": {
+      "chest": "Грудь",
+      "back": "Спина",
+      "legs": "Ноги",
+      "shoulders": "Плечи",
+      "arms": "Руки",
+      "core": "Кор",
+      "abdomen": "Живот",
+      "glutes": "Ягодицы",
+      "fullBody": "Всё тело",
+      "biceps": "Бицепс",
+      "triceps": "Трицепс",
+      "forearms": "Предплечья",
+      "abs": "Пресс",
+      "quads": "Квадрицепс",
+      "hamstrings": "Бицепс бедра",
+      "calves": "Икры",
+      "full_body": "Всё тело",
+      "cardio": "Кардио",
+      "other": "Другое",
+      "descriptions": {
+        "chest": "Мышцы груди",
+        "back": "Мышцы спины",
+        "shoulders": "Мышцы плеч",
+        "biceps": "Мышцы бицепса",
+        "triceps": "Мышцы трицепса",
+        "forearms": "Мышцы предплечий",
+        "abs": "Мышцы пресса",
+        "quads": "Мышцы квадрицепса",
+        "hamstrings": "Мышцы бицепса бедра",
+        "glutes": "Мышцы ягодиц",
+        "calves": "Мышцы икр",
+        "full_body": "Тренировка всего тела",
+        "cardio": "Кардио упражнения",
+        "other": "Другие группы мышц"
+      }
+    },
+    "typeTags": {
+      "bodyweight": "С ВЕСОМ ТЕЛА",
+      "equipment": "С ОБОРУДОВАНИЕМ"
+    },
+    "emptyGroupMessage": "Нажмите для просмотра упражнений на {{muscleGroup}}.",
+    "createExercise": {
+      "title": "Создать упражнение",
+      "imagePermissionDenied": "Требуется доступ к фотобиблиотеке",
+      "imageSelected": "Изображение выбрано",
+      "videoURLSet": "URL установлен",
+      "description": "Добавить новое упражнение в вашу библиотеку",
+      "exerciseName": "Название упражнения",
+      "exerciseNamePlaceholder": "например, Жим гантелей на наклонной скамье",
+      "muscleTarget": "Целевая мышца",
+      "primaryMuscleGroup": "Основная группа мышц",
+      "secondaryMuscles": "Дополнительные мышцы",
+      "selectPrimaryMuscle": "Выбрать основную мышцу",
+      "bodyweightOnly": "Только с весом тела",
+      "bodyweightOnlySubtitle": "Это упражнение не требует оборудования",
+      "addVisuals": "Добавить изображения",
+      "uploadImage": "Загрузить изображение",
+      "videoURL": "URL видео",
+      "createButton": "Создать упражнение",
+      "nameRequired": "Требуется название упражнения",
+      "primaryMuscleRequired": "Пожалуйста, выберите основную группу мышц",
+      "createSuccess": "Упражнение успешно создано",
+      "createError": "Не удалось создать упражнение. Пожалуйста, попробуйте снова.",
+      "muscleGroups": {
+        "primary": {
+          "abdomen": "Живот",
+          "glutes": "Ягодицы",
+          "chest": "Грудь",
+          "shoulders": "Плечи",
+          "back": "Спина",
+          "legs": "Ноги",
+          "arms": "Руки",
+          "core": "Кор"
+        },
+        "secondary": {
+          "chest": "Грудь",
+          "back": "Спина",
+          "legs": "Ноги",
+          "shoulders": "Плечи",
+          "arms": "Руки",
+          "core": "Кор",
+          "abdomen": "Живот",
+          "triceps": "Трицепс",
+          "biceps": "Бицепс",
+          "abs": "Пресс",
+          "forearms": "Предплечья",
+          "traps": "Трапеции",
+          "glutes": "Ягодицы"
+        }
+      }
+    },
+    "viewExercise": {
+      "watchTechnique": "СМОТРЕТЬ ТЕХНИКУ",
+      "primaryMuscle": "Основная мышца",
+      "equipment": "Оборудование",
+      "mechanic": "Механика",
+      "personalBest": "Личный рекорд",
+      "avgFrequency": "Ср. частота",
+      "workoutsUsingThis": "Тренировки с этим упражнением",
+      "templates": "ШАБЛОНЫ",
+      "exerciseOptions": "Параметры упражнения",
+      "editExercise": "Редактировать упражнение",
+      "editExerciseDescription": "Изменить детали упражнения",
+      "share": "Поделиться",
+      "shareDescription": "Поделиться этим упражнением",
+      "duplicate": "Дублировать",
+      "duplicateDescription": "Создать копию этого упражнения",
+      "delete": "Удалить",
+      "deleteDescription": "Безвозвратно удалить это упражнение",
+      "duplicateSuccess": "Упражнение дублировано",
+      "couldNotOpenLink": "Не удалось открыть ссылку",
+      "usedInTemplatesShort": "Шаблон"
+    },
+    "manageExerciseData": {
+      "deleteExerciseWarning": "Вы уверены, что хотите удалить это упражнение? Это действие нельзя отменить.",
+      "usedInLogs": "Использовано в {{count}} журнале тренировок",
+      "usedInTemplates": "Использовано в {{count}} шаблоне",
+      "title": "Управление данными упражнений",
+      "searchPlaceholder": "Поиск упражнений...",
+      "noExercises": "Упражнений пока нет",
+      "noExercisesDesc": "Создайте пользовательские упражнения, чтобы они появились здесь",
+      "endOfHistory": "Конец истории упражнений",
+      "exerciseOptions": "Параметры упражнения",
+      "editExercise": "Редактировать упражнение",
+      "editExerciseDesc": "Изменить детали упражнения",
+      "duplicateExercise": "Дублировать упражнение",
+      "duplicateExerciseDesc": "Создать копию этого упражнения",
+      "deleteExercise": "Удалить упражнение",
+      "deleteExerciseDesc": "Безвозвратно удалить это упражнение",
+      "detailFormat": "{{muscleGroup}} • {{equipment}}",
+      "unknownExercise": "Неизвестное упражнение"
+    },
+    "equipmentTypes": {
+      "medicine_ball": "Медбол",
+      "smith_machine": "Тренажёр Смита",
+      "dumbbell": "Гантель",
+      "barbell": "Штанга",
+      "bodyweight": "Вес тела",
+      "machine": "Тренажёр",
+      "cable": "Блочный тренажёр",
+      "kettlebell": "Гиря",
+      "resistance_band": "Эластичная лента",
+      "other": "Другое",
+      "descriptions": {
+        "dumbbell": "Свободные веса с ручкой",
+        "barbell": "Длинный гриф с весами",
+        "bodyweight": "Без оборудования",
+        "machine": "Тренажёр",
+        "cable": "Блочная система",
+        "kettlebell": "Гиря",
+        "resistance_band": "Резиновые эспандеры",
+        "other": "Другое оборудование"
+      }
+    },
+    "mechanicTypes": {
+      "compound": "Базовое",
+      "isolation": "Изолированное"
+    },
+    "units": {
+      "kg": "кг",
+      "lbs": "фунты"
+    },
+    "frequency": {
+      "perWeek": "{{value}}x / нед"
+    }
+  }
+}

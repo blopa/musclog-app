@@ -102,16 +102,16 @@ export function ScannedFoodDetailsModal({
     const foodInfo = {
       name: getProductName(product),
       category: product.categories?.split(',')[0] || t('food.generic'),
-      calories: Math.round(getNutrimentValue(nutriments, 'energy-kcal') || 0),
-      protein: Math.round(getNutrimentValue(nutriments, 'proteins') || 0),
-      carbs: Math.round(getNutrimentValue(nutriments, 'carbohydrates') || 0),
-      fat: Math.round(getNutrimentValue(nutriments, 'fat') || 0),
+      calories: getNutrimentValue(nutriments, 'energy-kcal') || 0,
+      protein: getNutrimentValue(nutriments, 'proteins') || 0,
+      carbs: getNutrimentValue(nutriments, 'carbohydrates') || 0,
+      fat: getNutrimentValue(nutriments, 'fat') || 0,
     };
 
     return (
       <View>
         <FoodInfoCard food={foodInfo} />
-
+        <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
         <ServingSizeSelector
           value={amount}
           onChange={setAmount}

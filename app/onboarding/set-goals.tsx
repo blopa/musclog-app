@@ -19,6 +19,11 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import {
+  localDayClosedRangeMaxMs,
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { getHistoricalNutritionParams } from '../../utils/historicalNutritionParams';
 import {
   bmiFromWeightAndHeightM,
@@ -339,8 +344,8 @@ export default function SetGoals() {
       let rawWeight = weightDec?.value ?? 0;
       let rawHeight = heightDec?.value ?? 0;
 
-      const todayStart = new Date().setUTCHours(0, 0, 0, 0);
-      const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
+      const todayStart = localDayStartMs(new Date());
+      const todayEnd = localDayClosedRangeMaxMs(new Date());
       if (rawWeight <= 0) {
         const todayWeights = await UserMetricService.getMetricsHistory(
           'weight',
@@ -430,7 +435,7 @@ export default function SetGoals() {
     // Set a goal date for 90 days from now if the eatingPhase is either cut or bulk
     const goalDate =
       eatingPhase === 'cut' || eatingPhase === 'bulk'
-        ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days from now
+        ? new Date(localDayKeyPlusCalendarDaysFromNow(90))
         : undefined;
 
     const planWithTargets: NutritionPlan = {
@@ -459,7 +464,7 @@ export default function SetGoals() {
         return;
       }
 
-      router.push({
+      router.navigate({
         pathname: '/onboarding/nutrition-goals-results',
         params: { aiGenerated: 'true' },
       });
@@ -475,7 +480,7 @@ export default function SetGoals() {
     setIsCalculating(true);
     try {
       await calculateAndStorePlan();
-      router.push('/onboarding/nutrition-goals');
+      router.navigate('/onboarding/nutrition-goals');
     } catch (error) {
       console.error('Error calculating nutrition plan:', error);
       showSnackbar('error', t('onboarding.setGoals.missingData'));
@@ -493,15 +498,17 @@ export default function SetGoals() {
           <OrbitalIllustration />
 
           {/* Header */}
-          <Text
-            className="mb-4 text-center text-[32px] font-bold leading-[1.1]"
-            style={{
-              color: theme.colors.text.primary,
-              fontSize: theme.typography.fontSize['3xl'],
-              fontWeight: theme.typography.fontWeight.bold,
-            }}
-          >
-            {t('onboarding.setGoals.title')}{' '}
+          <View className="mb-4 flex-row flex-wrap items-center justify-center" style={{ gap: 6 }}>
+            <Text
+              className="text-center text-[32px] font-bold leading-[1.1]"
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize['3xl'],
+                fontWeight: theme.typography.fontWeight.bold,
+              }}
+            >
+              {t('onboarding.setGoals.title')}
+            </Text>
             <GradientText
               colors={theme.colors.gradients.cta}
               style={{
@@ -511,7 +518,7 @@ export default function SetGoals() {
             >
               {t('onboarding.setGoals.calculation')}
             </GradientText>
-          </Text>
+          </View>
 
           <Text
             className="mb-8 text-center text-[16px] font-normal leading-relaxed"
@@ -604,7 +611,7 @@ export default function SetGoals() {
 
         <MaybeLaterButton
           onPress={() => {
-            router.push('/onboarding/personal-info');
+            router.navigate('/onboarding/personal-info');
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />

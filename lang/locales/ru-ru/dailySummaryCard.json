@@ -1,0 +1,17 @@
+{
+  "dailySummaryCard": {
+    "carbs": "Углеводы",
+    "carbsShort": "У",
+    "dailySummary": "Сводка дня",
+    "fats": "Жиры",
+    "fatsShort": "Ж",
+    "kcal": "Ккал",
+    "over": "Превышение",
+    "protein": "Белок",
+    "proteinShort": "Б",
+    "remaining": "Остаток",
+    "setGoals": "Установить цели",
+    "setGoalsToTrack": "Установите цели для отслеживания",
+    "today": "Сегодня"
+  }
+}

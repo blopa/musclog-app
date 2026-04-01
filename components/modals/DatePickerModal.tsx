@@ -9,14 +9,12 @@ import {
   getYear,
   isSameDay,
   isSameMonth,
-  nextMonday,
   setMonth,
   setYear,
   startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
-  subWeeks,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
@@ -25,8 +23,14 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
+
+type QuickDateOption = {
+  label: string;
+  date: Date;
+};
 
 type DatePickerModalProps = {
   visible: boolean;
@@ -35,6 +39,7 @@ type DatePickerModalProps = {
   onDateSelect: (date: Date) => void | Promise<void>;
   minYear?: number;
   maxYear?: number;
+  quickDates?: QuickDateOption[];
 };
 
 export function DatePickerModal({
@@ -44,6 +49,7 @@ export function DatePickerModal({
   onDateSelect,
   minYear,
   maxYear,
+  quickDates,
 }: DatePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -55,13 +61,24 @@ export function DatePickerModal({
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
 
   const today = new Date();
+  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
+  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday = 0
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const weekRefStart = startOfWeek(today, { weekStartsOn: 0 });
+  const weekDayLetters = Array.from({ length: 7 }, (_, i) =>
+    format(addDays(weekRefStart, i), 'EEEEE', { locale })
+  );
+
+  const monthNames = Array.from({ length: 12 }, (_, i) => {
+    const monthDate = setMonth(new Date(2024, 0, 1), i);
+    return format(monthDate, 'MMMM', { locale });
+  });
 
   const handlePreviousMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
@@ -87,52 +104,9 @@ export function DatePickerModal({
     }, 0);
   };
 
-  const handleQuickDate = (
-    type:
-      | 'today'
-      | 'tomorrow'
-      | 'nextMonday'
-      | 'yesterday'
-      | 'lastWeek'
-      | 'lastMonth'
-      | 'nextWeek'
-      | 'nextMonth'
-  ) => {
-    let date: Date;
-    switch (type) {
-      case 'today':
-        date = new Date();
-        break;
-      case 'tomorrow':
-        date = addDays(new Date(), 1);
-        break;
-      case 'nextMonday':
-        date = nextMonday(new Date());
-        break;
-      case 'yesterday':
-        date = subDays(new Date(), 1);
-        break;
-      case 'lastWeek':
-        date = subWeeks(new Date(), 1);
-        break;
-      case 'lastMonth':
-        date = subMonths(new Date(), 1);
-        break;
-      case 'nextWeek':
-        date = addDays(new Date(), 7);
-        break;
-      case 'nextMonth':
-        date = addMonths(new Date(), 1);
-        break;
-    }
-
-    setTempSelectedDate(date);
-    setCurrentMonth(startOfMonth(date));
-  };
-
   const formatSelectedDate = (date: Date) => {
-    const dayName = format(date, 'EEEE', { weekStartsOn: 0 });
-    const monthDay = format(date, 'MMM d');
+    const dayName = format(date, 'EEEE', { locale });
+    const monthDay = format(date, 'MMM d', { locale });
     return `${dayName},\n${monthDay}`;
   };
 
@@ -155,14 +129,6 @@ export function DatePickerModal({
   const minYearToUse = minYear ?? defaultMinYear;
   const maxYearToUse = maxYear ?? defaultMaxYear;
   const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => maxYearToUse - i);
-
-  // Generate month names using date-fns format with locale support
-  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
-  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
-  const monthNames = Array.from({ length: 12 }, (_, i) => {
-    const monthDate = setMonth(new Date(2024, 0, 1), i);
-    return format(monthDate, 'MMMM', { locale });
-  });
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
@@ -197,7 +163,7 @@ export function DatePickerModal({
                   onPress={handleMonthYearPickerOpen}
                 >
                   <Text className="text-base font-semibold text-text-primary">
-                    {format(currentMonth, 'MMMM yyyy')}
+                    {format(currentMonth, 'MMMM yyyy', { locale })}
                   </Text>
                   <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
@@ -213,7 +179,7 @@ export function DatePickerModal({
 
               {/* Week Days Header */}
               <View className="mb-4 flex-row">
-                {weekDays.map((day, index) => (
+                {weekDayLetters.map((day, index) => (
                   <View key={index} className="flex-1">
                     <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
                       {day}
@@ -285,27 +251,34 @@ export function DatePickerModal({
               className="mt-6 pb-2"
               contentContainerStyle={{ gap: theme.spacing.gap.md }}
             >
-              <Button
-                label={t('datePicker.yesterday')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('yesterday')}
-              />
-              <Button
-                label={t('datePicker.today')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('today')}
-              />
-              <Button
-                label={t('datePicker.tomorrow')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('tomorrow')}
-              />
+              {(
+                quickDates ?? [
+                  {
+                    label: t('datePicker.yesterday'),
+                    date: localCalendarDayDate(subDays(new Date(), 1)),
+                  },
+                  { label: t('datePicker.today'), date: localCalendarDayDate(new Date()) },
+                  {
+                    label: t('datePicker.tomorrow'),
+                    date: localCalendarDayDate(addDays(new Date(), 1)),
+                  },
+                ]
+              ).map((option, index) => {
+                const isQuickPickActive = isSameDay(tempSelectedDate, option.date);
+                return (
+                  <Button
+                    key={index}
+                    label={option.label}
+                    variant={isQuickPickActive ? 'accent' : 'secondary'}
+                    size="sm"
+                    width="auto"
+                    onPress={() => {
+                      setTempSelectedDate(option.date);
+                      setCurrentMonth(startOfMonth(option.date));
+                    }}
+                  />
+                );
+              })}
             </ScrollView>
           </View>
         </ScrollView>

@@ -20,6 +20,8 @@ export type NumberFieldConfig = BaseFieldConfig & {
   max?: number;
   step?: number;
   unit?: string;
+  /** Override inferred fraction digits from `step` (e.g. 2 for hundredths). */
+  maxFractionDigits?: number;
 };
 
 // Boolean field config

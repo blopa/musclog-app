@@ -4,9 +4,6 @@ import { Pressable, Text, View } from 'react-native';
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 
-const DEFAULT_NEON = '#00FFA2';
-const DEFAULT_BORDER = '#1C2623';
-
 /**
  * Cell intensity: 0 = empty (border color), 1–5 = neon at 20%, 40%, 60%, 80%, 100%.
  * Value 5 can optionally show a glow (high PR).
@@ -64,7 +61,7 @@ export function TrainingConsistencyChart({
   data,
   rowsPerColumn = 7,
   columns = 12,
-  accentColor = DEFAULT_NEON,
+  accentColor,
   emptyColor,
   showGlowOnMax = true,
   gridHeight = 128,
@@ -72,6 +69,10 @@ export function TrainingConsistencyChart({
   className,
 }: TrainingConsistencyChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_NEON = theme.colors.status.emeraldLight;
+  const DEFAULT_BORDER = theme.colors.border.dark;
+  const accentColorResolved = accentColor ?? DEFAULT_NEON;
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
@@ -81,8 +82,8 @@ export function TrainingConsistencyChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
-  const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
-  const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
+  const mutedColor = theme.colors.text.tertiary;
+  const textPrimary = theme.colors.text.primary;
 
   const totalCells = rowsPerColumn * columns;
   const cells = data.slice(0, totalCells);
@@ -157,7 +158,7 @@ export function TrainingConsistencyChart({
               style={{
                 fontSize: theme.typography?.fontSize?.xl ?? 20,
                 fontWeight: '700',
-                color: accentColor,
+                color: accentColorResolved,
               }}
             >
               {percentage}%
@@ -217,11 +218,11 @@ export function TrainingConsistencyChart({
                     flex: 1,
                     minHeight: 0,
                     borderRadius: 4,
-                    backgroundColor: isEmpty ? borderColor : accentColor,
+                    backgroundColor: isEmpty ? borderColor : accentColorResolved,
                     opacity: isEmpty ? 1 : opacity,
                     ...(showGlowOnMax && isMax && !isEmpty
                       ? {
-                          shadowColor: accentColor,
+                          shadowColor: accentColorResolved,
                           shadowOffset: { width: 0, height: 0 },
                           shadowOpacity: 0.4,
                           shadowRadius: 8,
@@ -268,7 +269,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.3,
             }}
           />
@@ -277,7 +278,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.6,
             }}
           />
@@ -286,7 +287,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
             }}
           />
         </View>

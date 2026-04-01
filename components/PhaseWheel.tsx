@@ -5,7 +5,8 @@ import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
 import { EnergyLevel, MenstrualPhase } from '../database/services/MenstrualService';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import { type Theme } from '../theme';
 
 type PhaseWheelProps = {
   currentPhase: MenstrualPhase | null;
@@ -16,7 +17,11 @@ type PhaseWheelProps = {
 };
 
 // Helper function to calculate phase proportions dynamically
-function calculatePhaseProportions(avgCycleLength: number, avgPeriodDuration: number) {
+function calculatePhaseProportions(
+  avgCycleLength: number,
+  avgPeriodDuration: number,
+  theme: Theme
+) {
   const menstrualLength = avgPeriodDuration;
   const ovulationLength = 3; // Standard ovulation window
 
@@ -48,9 +53,10 @@ export function PhaseWheel({
   avgPeriodDuration = 5,
 }: PhaseWheelProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   // Calculate phases dynamically based on user's cycle
-  const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration);
+  const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration, theme);
 
   const size = 260;
   const strokeWidth = 16;

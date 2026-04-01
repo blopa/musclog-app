@@ -77,14 +77,14 @@ jest.mock('../../../theme', () => ({
   theme: {
     colors: {
       background: {
-        white5: '#f5f5f5',
+        white5: 'rgba(255, 255, 255, 0.05)',
       },
       accent: {
-        primary10: '#e0e7ff',
-        primary: '#6366f1',
+        primary10: 'rgba(34, 197, 94, 0.1)',
+        primary: '#22c55e',
       },
       text: {
-        secondary: '#6b7280',
+        secondary: '#9ca3af',
       },
     },
   },

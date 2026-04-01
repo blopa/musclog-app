@@ -1,4 +1,3 @@
-import { focusManager } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
@@ -14,7 +13,7 @@ import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerVi
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -28,6 +27,7 @@ type OnboardingBodyProps = {
 };
 
 function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -94,6 +94,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
 }
 
 function OnboardingStepThree({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -228,6 +229,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 }
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -362,6 +364,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 }
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -496,6 +499,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 }
 
 export default function OnboardingScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
@@ -509,9 +513,9 @@ export default function OnboardingScreen() {
     } else {
       // Navigate to home when on last step
       if (!__DEV__ && Platform.OS === 'web') {
-        router.push('/onboarding/connect-with-google');
+        router.navigate('/onboarding/connect-with-google');
       } else {
-        router.push('/onboarding/health-connect');
+        router.navigate('/onboarding/health-connect');
       }
     }
   };
@@ -536,9 +540,9 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               if (!__DEV__ && Platform.OS === 'web') {
-                router.push('/onboarding/connect-with-google');
+                router.navigate('/onboarding/connect-with-google');
               } else {
-                router.push('/onboarding/health-connect');
+                router.navigate('/onboarding/health-connect');
               }
             }}
             text={t('onboarding.skip')}

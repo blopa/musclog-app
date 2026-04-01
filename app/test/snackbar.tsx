@@ -1,33 +1,28 @@
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useSnackbar } from '../../context/SnackbarContext';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function SnackbarTestScreen() {
+  const theme = useTheme();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 
   const triggerSuccessSnackbar = () => {
-    showSnackbar('success', 'Workout saved successfully!', {
-      action: 'VIEW',
-    });
+    showSnackbar('success', 'Workout saved successfully!');
   };
 
   const triggerErrorSnackbar = () => {
     showSnackbar('error', 'Failed to save workout', {
       subtitle: 'Please check your connection and try again.',
-      action: 'RETRY',
     });
   };
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-      <StatusBar style="light" />
-
       {/* Header */}
       <View
         className="border-b bg-bg-primary"

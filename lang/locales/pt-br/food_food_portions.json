@@ -1,3 +1,10 @@
 {
-  "food_food_portions": "Porções de Alimentos"
+  "food_food_portions": "Porções de Alimentos",
+  "createPortion": "Criar Porção",
+  "createFoodPortion": "Criar Porção de Alimento",
+  "portionName": "Nome da Porção",
+  "portionNamePlaceholder": "ex., Xícara, Fatia, Peça",
+  "weightGrams": "Peso (gramas)",
+  "selectIcon": "Selecionar Ícone",
+  "chooseIcon": "Escolher Ícone"
 }

@@ -26,6 +26,8 @@
       "editGoalDesc": "Change calories, macros, and targets",
       "duplicateGoal": "Duplicate goal",
       "duplicateGoalDesc": "Create a copy to use as a new goal",
+      "regenerateCheckins": "Regenerate check-ins",
+      "regenerateCheckinsDesc": "Delete and recreate check-ins for this goal",
       "deleteGoal": "Delete goal",
       "deleteGoalDesc": "Remove this goal from history",
       "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} {{unit}}",

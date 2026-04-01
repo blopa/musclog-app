@@ -27,7 +27,31 @@
       "ffmi": "FFMI",
       "nutrition": "Nutrição",
       "exercise": "Exercício",
-      "other": "Outro"
+      "other": "Outro",
+      "descriptions": {
+        "weight": "Acompanhe seu peso corporal ao longo do tempo",
+        "body_fat": "Percentual de massa gorda corporal",
+        "muscle_mass": "Massa muscular esquelética total",
+        "lean_body_mass": "Peso corporal menos a massa gorda",
+        "basal_metabolic_rate": "Calorias queimadas em repouso completo",
+        "total_calories_burned": "Gasto energético diário total",
+        "active_calories_burned": "Calorias queimadas por atividade física",
+        "bmi": "Índice de massa corporal baseado em altura e peso",
+        "height": "Sua altura em pé",
+        "chest": "Medida da circunferência do peito",
+        "waist": "Medida da circunferência da cintura",
+        "hips": "Medida da circunferência do quadril",
+        "arms": "Medida da circunferência do braço",
+        "thighs": "Medida da circunferência da coxa",
+        "calves": "Medida da circunferência da panturrilha",
+        "neck": "Medida da circunferência do pescoço",
+        "shoulders": "Medida da circunferência dos ombros",
+        "mood": "Seu humor e bem-estar geral",
+        "ffmi": "Índice de massa livre de gordura",
+        "nutrition": "Registro de ingestão nutricional diária",
+        "exercise": "Registro de atividade física e exercícios",
+        "other": "Outras medidas de métricas corporais"
+      }
     },
     "current": {
       "label": "ATUAL"
@@ -83,6 +107,7 @@
     },
     "addEntry": {
       "title": "Adicionar Entrada",
+      "enterType": "Tipo de métrica",
       "description": "Registre uma nova medição de métrica corporal",
       "enterWeight": "Digite o Peso",
       "enterBodyFat": "Digite a Gordura Corporal",
@@ -98,6 +123,7 @@
         "4": "Ótimo"
       },
       "saveEntry": "Salvar Entrada",
+      "saveSuccess": "Entrada salva com sucesso",
       "errorSaving": "Erro ao Salvar",
       "note": "Observação",
       "notePlaceholder": "Adicione uma observação..."

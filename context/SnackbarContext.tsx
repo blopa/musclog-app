@@ -41,14 +41,14 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       }
     ) => {
       const id = Date.now();
-      const duration = options?.duration ?? 5000;
+      const duration = options?.duration ?? 2000;
 
       const newSnackbar: SnackbarType = {
         id,
         type,
         message,
         subtitle: options?.subtitle,
-        action: options?.action ?? (type === 'success' ? t('snackbar.view') : t('snackbar.retry')),
+        action: options?.action ?? t('snackbar.ok'),
         onAction: options?.onAction,
       };
 

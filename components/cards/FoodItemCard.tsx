@@ -12,8 +12,9 @@ import {
 } from 'lucide-react-native';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
@@ -39,23 +40,37 @@ const MacroItem = ({
   value,
   label,
   unit,
+  shortLabel,
+  valueMode = 'decimal1',
 }: {
   icon: any;
   value: number;
   label?: string;
   unit?: string;
+  shortLabel?: string;
+  /** `integer` = kcal-style; `decimal1` = grams/macros */
+  valueMode?: 'integer' | 'decimal1';
 }) => {
   const theme = useTheme();
+  const { width: windowWidth } = useWindowDimensions();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+
+  const isNarrow = windowWidth < 380;
+  const displayLabel = isNarrow && shortLabel ? shortLabel : label;
+  const displayValue =
+    valueMode === 'integer'
+      ? formatInteger(Math.round(value), { useGrouping: false })
+      : formatRoundedDecimal(value, 1);
 
   return (
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text className="text-xs text-text-secondary">
         {t('food.macroValueFormat', {
-          value,
+          value: displayValue,
           unit: unit || '',
-          label: label || '',
+          label: displayLabel || '',
         })}
       </Text>
     </View>
@@ -100,10 +115,10 @@ export const FoodItemCard = memo(function FoodItemCard({
 
   const MealIcon = getMealIcon();
 
-  const p = Math.round(protein ?? 0);
-  const c = Math.round(carbs ?? 0);
-  const f = Math.round(fat ?? 0);
-  const g = Math.round(gramsToDisplay(portion ?? 0, units));
+  const p = protein ?? 0;
+  const c = carbs ?? 0;
+  const f = fat ?? 0;
+  const g = gramsToDisplay(portion ?? 0, units);
   const massUnit = getMassUnitLabel(units);
 
   const handleImageError = () => {
@@ -151,13 +166,36 @@ export const FoodItemCard = memo(function FoodItemCard({
           ) : null}
           <View className="flex-row items-center gap-3">
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
-            <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
+            <MacroItem
+              icon={Flame}
+              value={calories}
+              label={t('food.common.kcal')}
+              valueMode="integer"
+            />
           </View>
           {variant === 'default' ? (
             <View className="flex-row items-center gap-3">
-              <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
-              <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
-              <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
+              <MacroItem
+                icon={Zap}
+                value={p}
+                label={t('food.macros.protein')}
+                shortLabel={t('food.macros.proteinShort')}
+                unit={massUnit}
+              />
+              <MacroItem
+                icon={Wheat}
+                value={c}
+                label={t('food.macros.carbs')}
+                shortLabel={t('food.macros.carbsShort')}
+                unit={massUnit}
+              />
+              <MacroItem
+                icon={Droplet}
+                value={f}
+                label={t('food.macros.fat')}
+                shortLabel={t('food.macros.fatShort')}
+                unit={massUnit}
+              />
             </View>
           ) : null}
         </View>

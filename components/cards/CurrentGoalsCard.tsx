@@ -4,17 +4,19 @@ import {
   Calendar,
   Pencil,
   Percent,
+  RefreshCw,
   Scale,
   Trash2,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -37,17 +39,37 @@ interface CurrentGoal {
 interface CurrentGoalsCardProps {
   goal: CurrentGoal;
   onEdit?: () => void;
+  onRegenerateCheckins?: () => void;
   onDelete?: () => void;
+  isRegenerating?: boolean;
 }
 
-export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardProps) {
+export function CurrentGoalsCard({
+  goal,
+  onEdit,
+  onRegenerateCheckins,
+  onDelete,
+  isRegenerating = false,
+}: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
+  const { width: windowWidth } = useWindowDimensions();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay =
-    goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
+    goal.targetWeight != null ? formatDisplayWeightKg(locale, units, goal.targetWeight) : undefined;
   const [menuVisible, setMenuVisible] = useState(false);
+  const wasRegenerating = useRef(false);
+
+  useEffect(() => {
+    if (isRegenerating) {
+      wasRegenerating.current = true;
+    } else if (wasRegenerating.current) {
+      wasRegenerating.current = false;
+      setMenuVisible(false);
+    }
+  }, [isRegenerating]);
 
   const hasMenu = onEdit != null || onDelete != null;
 
@@ -61,6 +83,19 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onRegenerateCheckins
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+            description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+            onPress: onRegenerateCheckins,
+            keepOpenOnPress: true,
           },
         ]
       : []),
@@ -92,7 +127,7 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
           </Text>
           <View className="flex-row items-baseline gap-1">
             <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
-              {goal.calories.toLocaleString()}
+              {formatInteger(goal.calories)}
             </Text>
             <Text className="text-sm font-bold uppercase text-accent-primary">
               {t('currentGoalsCard.kcal')}
@@ -107,10 +142,12 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.protein')}
+              {windowWidth < 380
+                ? t('currentGoalsCard.proteinShort')
+                : t('currentGoalsCard.protein')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.protein}
+              {formatInteger(goal.protein)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -124,10 +161,10 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.carbs')}
+              {windowWidth < 380 ? t('currentGoalsCard.carbsShort') : t('currentGoalsCard.carbs')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.carbs}
+              {formatInteger(goal.carbs)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -141,10 +178,10 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.fats')}
+              {windowWidth < 380 ? t('currentGoalsCard.fatsShort') : t('currentGoalsCard.fats')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.fat}
+              {formatInteger(goal.fat)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -185,9 +222,7 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {targetWeightDisplay % 1 === 0
-                      ? targetWeightDisplay
-                      : Math.round(targetWeightDisplay * 10) / 10}{' '}
+                    {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -209,7 +244,7 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.bodyFat}{' '}
+                    {formatRoundedDecimal(goal.bodyFat, 1)}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -231,7 +266,7 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
                     {t('currentGoalsCard.ffmi')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.ffmi.toFixed(1)}
+                    {formatRoundedDecimal(goal.ffmi, 1)}
                   </Text>
                 </View>
               </View>
@@ -246,7 +281,9 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
                   >
                     {t('currentGoalsCard.bmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">{goal.bmi.toFixed(1)}</Text>
+                  <Text className="text-sm font-bold text-text-primary">
+                    {formatRoundedDecimal(goal.bmi, 1)}
+                  </Text>
                 </View>
               </View>
             ) : null}
@@ -265,6 +302,8 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
             items={menuItems}
+            isLoading={isRegenerating}
+            loadingTitle={t('common.processing')}
           />
         ) : null}
       </View>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { CorrelationPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -19,6 +20,7 @@ const formatDate = (timestamp: number): string => {
 
 export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -87,10 +89,18 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
         lineSeriesLabel={t('progress.dailyCalories')}
         stepsDomain={[0, maxVol * 1.1]}
         heartRateDomain={[0, maxCal * 1.1]}
-        leftAxisLabels={['0', `${Math.round(maxVol / 2)}`, `${Math.round(maxVol)}`]}
-        rightAxisLabels={['0', `${Math.round(maxCal / 2)}`, `${Math.round(maxCal)}`]}
-        stepsFormatter={(v) => `${Math.round(v)} ${weightLabel}`}
-        heartRateFormatter={(v) => `${Math.round(v)} ${t('progress.kcal')}`}
+        leftAxisLabels={[
+          '0',
+          formatInteger(Math.round(maxVol / 2)),
+          formatInteger(Math.round(maxVol)),
+        ]}
+        rightAxisLabels={[
+          '0',
+          formatInteger(Math.round(maxCal / 2)),
+          formatInteger(Math.round(maxCal)),
+        ]}
+        stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${weightLabel}`}
+        heartRateFormatter={(v) => `${formatInteger(Math.round(v))} ${t('progress.kcal')}`}
         xAxisLabels={xAxisLabels}
       />
     </ProgressChartSection>

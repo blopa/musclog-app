@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
@@ -91,6 +92,8 @@ export function BarChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
 
+  const { formatRoundedDecimal } = useFormatAppNumber();
+
   if (data.length === 0) {
     return null;
   }
@@ -162,7 +165,7 @@ export function BarChart({
                 }
                 const label = tooltipFormatter
                   ? tooltipFormatter(nearest)
-                  : String(Math.round(nearest.y * 10) / 10);
+                  : formatRoundedDecimal(nearest.y, 1);
                 notifyChartActive(chartId);
                 setActiveLabel(label);
               },
@@ -227,7 +230,7 @@ export function BarChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

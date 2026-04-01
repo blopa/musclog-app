@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -21,6 +24,9 @@ export function BodyMetricsCharts({
   units,
 }: BodyMetricsChartsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const dateFnsLocale = useDateFnsLocale();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -34,8 +40,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={weightHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#3b82f6"
-            areaColor="rgba(59, 130, 246, 0.1)"
+            lineColor={theme.colors.status.info}
+            areaColor={theme.colors.status.info10}
             xDomain={[weightHistory[0].date, weightHistory[weightHistory.length - 1].date]}
             yDomain={[
               Math.min(...weightHistory.map((p) => p.value)) * 0.95,
@@ -45,10 +51,14 @@ export function BodyMetricsCharts({
               Math.min(...weightHistory.map((p) => p.value)) * 0.95,
               Math.max(...weightHistory.map((p) => p.value)) * 1.05,
               3,
-              (v) => `${Math.round(v)} ${weightLabel}`
+              (v) => `${formatInteger(Math.round(v))} ${weightLabel}`
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
-            xAxisLabels={getXAxisLabels(weightHistory.map((p) => ({ x: p.date })))}
+            tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)} ${weightLabel}`}
+            xAxisLabels={getXAxisLabels(
+              weightHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}
@@ -61,8 +71,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={fatHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#ef4444"
-            areaColor="rgba(239, 68, 68, 0.1)"
+            lineColor={theme.colors.status.error}
+            areaColor={theme.colors.status.error10}
             xDomain={[fatHistory[0].date, fatHistory[fatHistory.length - 1].date]}
             yDomain={[
               Math.min(...fatHistory.map((p) => p.value)) * 0.9,
@@ -72,10 +82,14 @@ export function BodyMetricsCharts({
               Math.min(...fatHistory.map((p) => p.value)) * 0.9,
               Math.max(...fatHistory.map((p) => p.value)) * 1.1,
               3,
-              (v) => `${Math.round(v)}%`
+              (v) => `${formatInteger(Math.round(v))}%`
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
-            xAxisLabels={getXAxisLabels(fatHistory.map((p) => ({ x: p.date })))}
+            tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)}%`}
+            xAxisLabels={getXAxisLabels(
+              fatHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}
@@ -85,8 +99,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={ffmiHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#10b981"
-            areaColor="rgba(16, 185, 129, 0.1)"
+            lineColor={theme.colors.accent.secondary}
+            areaColor={theme.colors.accent.secondary10}
             xDomain={[ffmiHistory[0].date, ffmiHistory[ffmiHistory.length - 1].date]}
             yDomain={[
               Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
@@ -95,10 +109,15 @@ export function BodyMetricsCharts({
             yAxisLabels={getYAxisLabels(
               Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
               Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
-              3
+              3,
+              (v) => formatInteger(Math.round(v))
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-            xAxisLabels={getXAxisLabels(ffmiHistory.map((p) => ({ x: p.date })))}
+            tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
+            xAxisLabels={getXAxisLabels(
+              ffmiHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}

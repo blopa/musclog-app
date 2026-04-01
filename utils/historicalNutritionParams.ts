@@ -1,4 +1,7 @@
+import { addDays } from 'date-fns';
+
 import { NutritionService, UserMetricService } from '../database/services';
+import { localDayStartMs } from './calendarDate';
 import { lbsToKg } from './nutritionCalculator';
 
 const LOOKBACK_DAYS = 30;
@@ -72,9 +75,9 @@ export async function getHistoricalNutritionParams(options: {
 }): Promise<HistoricalNutritionParams | null> {
   const { asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
 
-  const endOfDay = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
-  const endTs = endOfDay.getTime();
-  const startTs = endTs - LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  const endTs = localDayStartMs(asOfDate);
+  const endOfDay = new Date(endTs);
+  const startTs = localDayStartMs(addDays(endOfDay, -LOOKBACK_DAYS));
   const startOfRange = new Date(startTs);
 
   const dateRange = { startDate: startTs, endDate: endTs };

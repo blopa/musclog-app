@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addDays } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
@@ -34,6 +35,7 @@ import {
   UserService,
 } from '../database/services';
 import AiService from '../services/AiService';
+import { formatLocalCalendarDayIso, localCalendarDayDate } from '../utils/calendarDate';
 import {
   AiCreditsError,
   type ChatHistoryEntry,
@@ -49,7 +51,7 @@ import {
 } from '../utils/coachAI';
 import { processMealPlanResponse } from '../utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '../utils/nutritionCalculator';
-import { getChatMessagePromptContent } from '../utils/prompts';
+import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -210,7 +212,8 @@ export type UseChatMessagesResult = {
     mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
     ingredients: TrackMealIngredient[],
     date: Date,
-    logMealType: MealType
+    logMealType: MealType,
+    portionGrams: number
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
@@ -635,11 +638,10 @@ export function useChatMessages(
             return;
           }
         } else if (pendingIntention === ANALYZE_PROGRESS) {
-          const end = new Date();
-          const start = new Date();
-          start.setDate(start.getDate() - 7);
-          const startDate = start.toISOString().split('T')[0];
-          const endDate = end.toISOString().split('T')[0];
+          const end = localCalendarDayDate(new Date());
+          const start = localCalendarDayDate(addDays(end, -7));
+          const startDate = formatLocalCalendarDayIso(start);
+          const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
           const result = await getRecentWorkoutsInsights(
             aiConfig,
@@ -665,11 +667,10 @@ export function useChatMessages(
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
           setPendingIntention(null);
         } else if (pendingIntention === NUTRITION_CHECK) {
-          const end = new Date();
-          const start = new Date();
-          start.setDate(start.getDate() - 7);
-          const startDate = start.toISOString().split('T')[0];
-          const endDate = end.toISOString().split('T')[0];
+          const end = localCalendarDayDate(new Date());
+          const start = localCalendarDayDate(addDays(end, -7));
+          const startDate = formatLocalCalendarDayIso(start);
+          const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
           const result = await getNutritionInsights(
             aiConfig,
@@ -812,22 +813,30 @@ export function useChatMessages(
       mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
       ingredients: TrackMealIngredient[],
       date: Date,
-      logMealType: MealType
+      logMealType: MealType,
+      portionGrams: number
     ) => {
-      await NutritionService.logCustomMealsBatch(
-        ingredients.map((i) => ({
+      const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
+      const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
+      const scale = portionGrams / safeBase;
+
+      const scaledIngredients = ingredients.map((i) => {
+        const scaledGramsRaw = i.grams * scale;
+        const scaledGrams = scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
+
+        return {
           name: i.name,
-          calories: i.kcal,
-          protein: i.protein,
-          carbs: i.carbs,
-          fat: i.fat,
-          fiber: i.fiber,
-          grams: i.grams,
+          calories: i.kcal * scale,
+          protein: i.protein * scale,
+          carbs: i.carbs * scale,
+          fat: i.fat * scale,
+          fiber: (i.fiber ?? 0) * scale,
+          grams: scaledGrams,
           foodId: i.foodId,
-        })),
-        date,
-        logMealType
-      );
+        };
+      });
+
+      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType);
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

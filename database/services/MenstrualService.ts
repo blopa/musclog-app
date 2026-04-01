@@ -1,3 +1,5 @@
+import { differenceInCalendarDays } from 'date-fns';
+
 import MenstrualCycle, { SyncGoal } from '../models/MenstrualCycle';
 
 export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
@@ -8,10 +10,10 @@ export class MenstrualService {
    * Calculates the current cycle day (1-indexed)
    */
   static getCycleDay(cycle: MenstrualCycle): number {
-    const now = Date.now();
-    const lastStart = cycle.lastPeriodStartDate;
-    const diffMs = now - lastStart;
-    const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    const diffDays = Math.max(
+      0,
+      differenceInCalendarDays(new Date(), new Date(cycle.lastPeriodStartDate))
+    );
 
     // Normalize to cycle length
     return (diffDays % cycle.avgCycleLength) + 1;

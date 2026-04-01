@@ -1,0 +1,17 @@
+{
+  "timePicker": {
+    "am": "AM",
+    "cancel": "Отмена",
+    "clearSelection": "Очистить выбор",
+    "confirm": "Установить время",
+    "confirmTime": "Подтвердить время",
+    "hours": "Часы",
+    "midnight": "Полночь",
+    "minutes": "Минуты",
+    "noon": "Полдень",
+    "now": "Сейчас",
+    "pm": "PM",
+    "selectedStartTime": "Выбранное время начала",
+    "selectTime": "Выбрать время"
+  }
+}

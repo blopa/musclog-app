@@ -1,0 +1,14 @@
+{
+  "userMenu": {
+    "greeting": "Аккаунт",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "progress": "Прогресс",
+    "cycle": "Цикл",
+    "workouts": "Тренировки",
+    "food": "Питание",
+    "coach": "Тренер",
+    "checkin": "Отметки",
+    "debugPage": "Страница отладки"
+  }
+}

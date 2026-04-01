@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
 import { isSuccessStatus } from '../types/guards/openFoodFacts';
-import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
-import { getProductName } from '../utils/openFoodFactsMapper';
+import type { ProductState } from '../types/openFoodFacts';
 import { useSettings } from './useSettings';
 
 /**
@@ -62,7 +61,7 @@ export type ProductDetailsQueryData =
   | { status: 'error'; error: { message: string } }
   | null;
 
-async function fetchOFFProductByBarcode(
+export async function fetchOFFProductByBarcode(
   barcode: string,
   externalSignal?: AbortSignal
 ): Promise<ProductV3Result> {
@@ -97,7 +96,10 @@ async function fetchOFFProductByBarcode(
   }
 }
 
-async function fetchUSDAProductByBarcode(barcode: string, signal?: AbortSignal): Promise<any> {
+export async function fetchUSDAProductByBarcode(
+  barcode: string,
+  signal?: AbortSignal
+): Promise<any> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
 
@@ -115,6 +117,23 @@ async function fetchUSDAProductByBarcode(barcode: string, signal?: AbortSignal):
     return null;
   } catch (e) {
     console.error('Error fetching from USDA by barcode:', e);
+    return null;
+  }
+}
+
+export async function fetchMusclogProductByBarcode(
+  barcode: string,
+  signal?: AbortSignal
+): Promise<any> {
+  const url = `https://api.musclog.app/barcodes/${encodeURIComponent(barcode)}.json`;
+  try {
+    const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    if (!res.ok) {
+      return null;
+    }
+
+    return await res.json();
+  } catch {
     return null;
   }
 }
@@ -160,14 +179,19 @@ export function useFoodProductDetails(
         return null;
       }
 
-      const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
-      const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
+      const includeOpenFood =
+        foodSearchSource !== 'none' &&
+        (foodSearchSource === 'both' || foodSearchSource === 'openfood');
+      const includeUSDA =
+        foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'usda');
+      const includeMusclog = foodSearchSource === 'musclog' || foodSearchSource === 'both';
 
       if (includeOpenFood && includeUSDA) {
-        // Both sources enabled: fire in parallel, resolve with whichever succeeds first
-        // and abort the other request immediately.
+        // Both/All sources: fire OFF+USDA in parallel, resolve with whichever succeeds first.
+        // If both fail, try Musclog as a sequential fallback.
+        let offUsdaResult: ProductDetailsQueryData | null = null;
         try {
-          return await raceToSuccess(
+          offUsdaResult = await raceToSuccess(
             async (signal) => {
               const result = await fetchOFFProductByBarcode(barcode, signal);
               return isSuccessStatus(result.data?.status) ? result.data! : null;
@@ -180,9 +204,21 @@ export function useFoodProductDetails(
             }
           );
         } catch {
-          // Both returned null/non-success
-          return { status: 'failure', code: barcode } as any;
+          // Both returned null/non-success — fall through to Musclog
         }
+
+        if (offUsdaResult) {
+          return offUsdaResult;
+        }
+
+        if (includeMusclog) {
+          const musclogData = await fetchMusclogProductByBarcode(barcode);
+          if (musclogData) {
+            return { status: 'success', product: musclogData, source: 'musclog' } as any;
+          }
+        }
+
+        return { status: 'failure', code: barcode } as any;
       }
 
       if (includeOpenFood) {
@@ -205,6 +241,13 @@ export function useFoodProductDetails(
             product: usdaData,
             source: 'usda',
           } as any;
+        }
+      }
+
+      if (includeMusclog && foodSearchSource === 'musclog') {
+        const musclogData = await fetchMusclogProductByBarcode(barcode);
+        if (musclogData) {
+          return { status: 'success', product: musclogData, source: 'musclog' } as any;
         }
       }
 

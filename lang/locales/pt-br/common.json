@@ -1,6 +1,11 @@
 {
   "common": {
     "clear": "Limpar",
+    "value": "Valor",
+    "name": "Nome",
+    "context": "Context",
+    "processing": "processando...",
+    "success": "Sucesso",
     "saveError": "Falha ao salvar alterações",
     "saveErrorSubtitle": "Por favor, tente novamente",
     "error_description": "Um erro inesperado ocorreu. Por favor, tente novamente.",
@@ -23,12 +28,16 @@
     "loading": "Carregando...",
     "saving": "Salvando...",
     "save": "Salvar",
+    "category": "Categoria",
+    "active": "Ativo",
     "edit": "Editar",
+    "status": "Status",
     "change": "Alterar",
     "confirm": "Confirmar",
     "decreaseValue": "Diminuir Valor",
     "delete": "Excluir",
     "error": "Erro",
+    "loadMore": "Carregar Mais",
     "goHome": "Ir para Início",
     "increaseValue": "Aumentar Valor",
     "ok": "Ok",
@@ -49,9 +58,10 @@
     "eatingPhase": "Fase de Alimentação",
     "description": "Descrição",
     "loadMultiplier": "Multiplicador de Carga",
-    "days": "Dias",
     "deleteSuccess": "Excluído com sucesso",
     "notFound": "Não encontrado",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Diário",
       "weekly": "Semanal",
@@ -59,6 +69,32 @@
     },
     "appName": "MUSCLOG",
     "selectIcon": "Selecionar ícone",
-    "selectIconLabel": "Selecionar Ícone"
+    "selectIconLabel": "Selecionar Ícone",
+    "icon": "Ícone",
+    "archived": "Arquivado",
+    "descriptions": {
+      "none": "Nenhum"
+    },
+    "days": {
+      "label": "Dias",
+      "letter": {
+        "sun": "D",
+        "mon": "S",
+        "tue": "T",
+        "wed": "Q",
+        "thu": "Q",
+        "fri": "S",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "DOM",
+        "mon": "SEG",
+        "tue": "TER",
+        "wed": "QUA",
+        "thu": "QUI",
+        "fri": "SEX",
+        "sat": "SÁB"
+      }
+    }
   }
 }

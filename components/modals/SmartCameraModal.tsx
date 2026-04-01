@@ -14,19 +14,13 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Animated,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
 import { NutritionService } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
@@ -75,6 +69,7 @@ type CameraModalProps = {
   isAiEnabled?: boolean;
   useOcrBeforeAi?: boolean;
   logDate?: Date;
+  mealTypeForLog?: MealType;
 };
 
 export default function SmartCameraModal({
@@ -85,9 +80,11 @@ export default function SmartCameraModal({
   isAiEnabled = true,
   useOcrBeforeAi = false,
   logDate,
+  mealTypeForLog,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
@@ -306,10 +303,10 @@ export default function SmartCameraModal({
               'success',
               t('food.aiCamera.analysisSuccess', {
                 name: normalized.name,
-                kcal: Math.round(normalized.kcal),
-                protein: normalized.protein,
-                carbs: normalized.carbs,
-                fat: normalized.fat,
+                kcal: formatRoundedDecimal(normalized.kcal, 2),
+                protein: formatRoundedDecimal(normalized.protein, 2),
+                carbs: formatRoundedDecimal(normalized.carbs, 2),
+                fat: formatRoundedDecimal(normalized.fat, 2),
               })
             );
 
@@ -329,6 +326,7 @@ export default function SmartCameraModal({
     [
       cameraMode,
       t,
+      formatRoundedDecimal,
       useOcrBeforeAi,
       aiContext,
       mapMacroEstimateToMeal,
@@ -474,25 +472,28 @@ export default function SmartCameraModal({
   }, []);
 
   const handleLogMeal = useCallback(
-    async (date: Date, mealType: MealType) => {
+    async (date: Date, mealType: MealType, portionGrams: number) => {
       try {
         if (!selectedMealForLogging) {
           showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
           return;
         }
 
+        const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
+        const scale = portionGrams / baseGrams;
+
         await NutritionService.logCustomMeal(
           {
             name: selectedMealForLogging.name,
-            calories: selectedMealForLogging.calories,
-            protein: selectedMealForLogging.protein,
-            carbs: selectedMealForLogging.carbs,
-            fat: selectedMealForLogging.fat,
+            calories: selectedMealForLogging.calories * scale,
+            protein: selectedMealForLogging.protein * scale,
+            carbs: selectedMealForLogging.carbs * scale,
+            fat: selectedMealForLogging.fat * scale,
             foodId: selectedMealForLogging.foodId,
           },
           date,
           mealType,
-          selectedMealForLogging.grams
+          portionGrams
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
@@ -640,7 +641,7 @@ export default function SmartCameraModal({
       showHeader={false}
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <StatusBar barStyle="light-content" />
+        <SystemBars style="light" />
         <SafeAreaView className="flex-1" edges={['top']}>
           {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
           <View className="absolute inset-0">
@@ -1030,6 +1031,7 @@ export default function SmartCameraModal({
             isAiEnabled={isAiEnabled}
             canEdit={!!productFromAiLabel}
             initialDate={logDate}
+            initialMealType={mealTypeForLog}
           />
         ) : null}
 

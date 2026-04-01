@@ -98,43 +98,47 @@ jest.mock('../../utils/workoutHistory', () => ({
       name: w.workoutName,
       date: new Date(w.startedAt).toLocaleDateString(),
       dateTimestamp: w.startedAt,
-      iconBgColor: '#000',
-      iconBgOpacity: '#000',
+      iconBgColor: '#131314',
+      iconBgOpacity: '#131314',
       icon: jest.fn(),
       prCount: null,
       stats: [],
     }));
   }),
   groupWorkoutsByMonth: jest.fn((workouts: any[]) => {
-    // Simple grouping mock
     const grouped = new Map<string, any[]>();
     workouts.forEach((w) => {
-      const month = new Date(w.dateTimestamp).toLocaleDateString('en-US', {
-        month: 'long',
-        year: 'numeric',
-      });
-      if (!grouped.has(month)) {
-        grouped.set(month, []);
+      const d = new Date(w.dateTimestamp);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!grouped.has(monthKey)) {
+        grouped.set(monthKey, []);
       }
-      grouped.get(month)!.push(w);
+      grouped.get(monthKey)!.push(w);
     });
-    return Array.from(grouped.entries()).map(([month, workouts]) => ({ month, workouts }));
+
+    return Array.from(grouped.entries()).map(([monthKey, wk]) => ({
+      monthKey,
+      month: monthKey,
+      workouts: wk,
+    }));
   }),
   mergeWorkoutSections: jest.fn((existing: any[], newWorkouts: any[]) => {
-    // Simple merge mock - just combine
     const allWorkouts = [...existing.flatMap((s) => s.workouts), ...newWorkouts];
     const grouped = new Map<string, any[]>();
     allWorkouts.forEach((w) => {
-      const month = new Date(w.dateTimestamp).toLocaleDateString('en-US', {
-        month: 'long',
-        year: 'numeric',
-      });
-      if (!grouped.has(month)) {
-        grouped.set(month, []);
+      const d = new Date(w.dateTimestamp);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!grouped.has(monthKey)) {
+        grouped.set(monthKey, []);
       }
-      grouped.get(month)!.push(w);
+      grouped.get(monthKey)!.push(w);
     });
-    return Array.from(grouped.entries()).map(([month, workouts]) => ({ month, workouts }));
+
+    return Array.from(grouped.entries()).map(([monthKey, wk]) => ({
+      monthKey,
+      month: monthKey,
+      workouts: wk,
+    }));
   }),
   filterWorkoutsBySearch: jest.fn((sections: any[], query: string) => {
     if (!query) {
@@ -172,7 +176,7 @@ jest.mock('../../theme', () => ({
   theme: {
     colors: {
       background: {
-        imageLight: '#ffffff',
+        imageLight: '#d4b5a0',
       },
     },
   },

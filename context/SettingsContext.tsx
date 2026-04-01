@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native';
 
 import { GEMINI_MODELS } from '../constants/ai';
 import {
+  ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
@@ -33,6 +34,7 @@ import {
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
+  SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
   type Units,
@@ -79,6 +81,8 @@ type SettingsState = {
   chartTooltipPosition: ChartTooltipPosition;
   language: string;
   maxAiMemories: number;
+  showDailyMoodPrompt: boolean;
+  alwaysAllowFoodEditing: boolean;
   isLoading: boolean;
 };
 
@@ -114,6 +118,8 @@ const DEFAULT_STATE: SettingsState = {
   conversationContext: 'general',
   chartTooltipPosition: 'right',
   maxAiMemories: 50,
+  showDailyMoodPrompt: true,
+  alwaysAllowFoodEditing: false,
   isLoading: true,
 };
 
@@ -206,6 +212,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
       (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     maxAiMemories,
+    showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
+    alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -242,6 +250,8 @@ export type SettingsContextType = UseSettingsResult & {
   chartTooltipPosition: ChartTooltipPosition;
   language: string;
   maxAiMemories: number;
+  showDailyMoodPrompt: boolean;
+  alwaysAllowFoodEditing: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

@@ -13,7 +13,7 @@ import { Button } from '../../components/theme/Button';
 import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
 import { useScrollFade } from '../../hooks/useScrollFade';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 /**
  * Health Connect Onboarding Screen
@@ -36,6 +36,7 @@ import { theme } from '../../theme';
  * - Data validation and deduplication
  */
 export default function HealthConnectScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -210,7 +211,7 @@ export default function HealthConnectScreen() {
 
                   if (hasAnyPermission) {
                     // Already has at least one permission, navigate to next screen
-                    router.push('/onboarding/connect-with-google');
+                    router.navigate('/onboarding/connect-with-google');
                     return;
                   }
 
@@ -224,7 +225,7 @@ export default function HealthConnectScreen() {
                   }
 
                   // Navigate to next screen regardless of granted permissions
-                  router.push('/onboarding/connect-with-google');
+                  router.navigate('/onboarding/connect-with-google');
                 } catch (error) {
                   console.error('Error setting up Health Connect:', error);
                 } finally {
@@ -241,7 +242,7 @@ export default function HealthConnectScreen() {
             <MaybeLaterButton
               onPress={() => {
                 // Navigate away or skip
-                router.push('/onboarding/connect-with-google');
+                router.navigate('/onboarding/connect-with-google');
               }}
               text={t('onboarding.healthConnect.maybeLater')}
             />

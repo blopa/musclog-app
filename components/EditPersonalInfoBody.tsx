@@ -1,4 +1,5 @@
-import { Calendar, Check, Mail, User } from 'lucide-react-native';
+import { subYears } from 'date-fns';
+import { Check, Mail, User } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -8,7 +9,10 @@ import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
+import { localCalendarDayDate } from '../utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
 import { AvatarSelector } from './AvatarSelector';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -71,22 +75,6 @@ export function EditPersonalInfoBody({
   const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  // Helper function to convert DOB string to Date object
-  const parseDobToDate = (dobString: string): Date => {
-    if (!dobString) {
-      return new Date();
-    }
-    const parts = dobString.split('/');
-    if (parts.length === 3) {
-      const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed
-      const day = parseInt(parts[1], 10);
-      const year = parseInt(parts[2], 10);
-      return new Date(year, month, day);
-    }
-
-    return new Date();
-  };
-
   // Helper function to convert Date object to DOB string
   const formatDateToDob = (date: Date): string => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -95,12 +83,11 @@ export function EditPersonalInfoBody({
     return `${month}/${day}/${year}`;
   };
 
-  // Get current date as Date object for picker
-  const currentDate = parseDobToDate(dob);
+  const currentDate = parseDobDisplayStringToPickerDate(dob);
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    const newDob = formatDateToDob(date);
+    const newDob = formatDateToDob(localCalendarDayDate(date));
     setDob(newDob);
   };
 
@@ -174,17 +161,13 @@ export function EditPersonalInfoBody({
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
               </View>
             </Text>
-            <Pressable
-              className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+            <DatePickerInput
+              hideLabel
+              unset={!dob}
+              unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
+              selectedDate={currentDate}
               onPress={() => setIsDatePickerVisible(true)}
-            >
-              <View className="ml-3 flex-1">
-                <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
-                  {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
-                </Text>
-              </View>
-              <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-            </Pressable>
+            />
           </View>
         ) : null}
 
@@ -266,6 +249,11 @@ export function EditPersonalInfoBody({
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={new Date().getFullYear()}
+        quickDates={[
+          { label: t('datePicker.xYearsAgo', { count: 20 }), date: subYears(new Date(), 20) },
+          { label: t('datePicker.xYearsAgo', { count: 30 }), date: subYears(new Date(), 30) },
+          { label: t('datePicker.xYearsAgo', { count: 40 }), date: subYears(new Date(), 40) },
+        ]}
       />
     </View>
   );

@@ -1,10 +1,9 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -15,405 +14,356 @@ import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
-const ITEM_HEIGHT = 52;
-const VISIBLE_ITEMS = 7;
-const PICKER_VIEW_HEIGHT = VISIBLE_ITEMS * ITEM_HEIGHT;
-const PADDING_TOP = Math.floor((VISIBLE_ITEMS - 1) / 2) * ITEM_HEIGHT;
+const ITEM_HEIGHT = 64;
+const PICKER_HEIGHT = ITEM_HEIGHT * 3;
 
-type TimePickerModalProps = {
-  visible: boolean;
-  onClose: () => void;
-  selectedTime: Date;
-  onTimeSelect: (time: Date) => void;
+const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+type ScrollPickerProps = {
+  highlightBgColor: string;
+  initialIndex: number;
+  items: string[];
+  onSelect: (index: number) => void;
+  textMutedColor: string;
+  textPrimaryColor: string;
 };
 
-function getOpacityForDistance(distance: number): number {
-  if (distance === 0) {
-    return 1;
-  }
+function ScrollPicker({
+  items,
+  initialIndex,
+  onSelect,
+  textPrimaryColor,
+  textMutedColor,
+  highlightBgColor,
+}: ScrollPickerProps) {
+  const scrollRef = useRef<ScrollView>(null);
+  const [displayIndex, setDisplayIndex] = useState(initialIndex);
 
-  if (distance === 1) {
-    return 0.6;
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: initialIndex * ITEM_HEIGHT, animated: false });
+      setDisplayIndex(initialIndex);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [initialIndex]);
 
-  if (distance === 2) {
-    return 0.4;
-  }
-  return 0.2;
+  const handleScrollEnd = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const offsetY = e.nativeEvent.contentOffset.y;
+      const index = Math.round(offsetY / ITEM_HEIGHT);
+      const clamped = Math.max(0, Math.min(index, items.length - 1));
+      setDisplayIndex(clamped);
+      onSelect(clamped);
+    },
+    [items.length, onSelect]
+  );
+
+  return (
+    <View style={{ flex: 1, height: PICKER_HEIGHT, overflow: 'hidden', position: 'relative' }}>
+      <View
+        pointerEvents="none"
+        style={{
+          backgroundColor: highlightBgColor,
+          borderRadius: 12,
+          bottom: ITEM_HEIGHT,
+          left: 0,
+          position: 'absolute',
+          right: 0,
+          top: ITEM_HEIGHT,
+          zIndex: 0,
+        }}
+      />
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }}
+        decelerationRate="fast"
+        onMomentumScrollEnd={handleScrollEnd}
+        onScrollEndDrag={handleScrollEnd}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_HEIGHT}
+      >
+        {items.map((item, index) => {
+          const isSelected = index === displayIndex;
+          const distance = Math.abs(index - displayIndex);
+          return (
+            <Pressable
+              key={item}
+              onPress={() => {
+                scrollRef.current?.scrollTo({ y: index * ITEM_HEIGHT, animated: true });
+                setDisplayIndex(index);
+                onSelect(index);
+              }}
+              style={{ alignItems: 'center', height: ITEM_HEIGHT, justifyContent: 'center' }}
+            >
+              <Text
+                style={{
+                  color: isSelected ? textPrimaryColor : textMutedColor,
+                  fontSize: 30,
+                  fontWeight: '600',
+                  opacity: distance === 0 ? 1 : distance === 1 ? 0.4 : 0.15,
+                }}
+              >
+                {item}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
 }
 
-const isNativePlatform = Platform.OS === 'ios' || Platform.OS === 'android';
+type TimePickerModalProps = {
+  onClose: () => void;
+  onTimeSelect: (time: Date) => void;
+  selectedTime: Date;
+  title: string;
+  visible: boolean;
+};
+
+function toHour12(d: Date): number {
+  return d.getHours() % 12 || 12;
+}
+
+function toPeriod(d: Date): 'AM' | 'PM' {
+  return d.getHours() >= 12 ? 'PM' : 'AM';
+}
 
 export function TimePickerModal({
   visible,
   onClose,
   selectedTime,
   onTimeSelect,
+  title,
 }: TimePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const selectedHour = selectedTime.getHours().toString().padStart(2, '0');
-  const selectedMinute = selectedTime.getMinutes().toString().padStart(2, '0');
-  const displayTime = `${selectedHour}:${selectedMinute}`;
-
-  const handleNativeChange = useCallback(
-    (_event: unknown, date?: Date) => {
-      if (date) {
-        onTimeSelect(date);
-      }
-    },
-    [onTimeSelect]
-  );
-
-  // --- Native (iOS/Android): DateTimePicker with our chrome ---
-  if (isNativePlatform) {
-    return (
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title=""
-        scrollable={false}
-        showHeader={false}
-        footer={
-          <View className="flex-row items-stretch gap-3">
-            <Button
-              label={t('timePicker.cancel').toUpperCase()}
-              variant="outline"
-              size="sm"
-              width="flex-1"
-              onPress={onClose}
-              style={{ borderColor: theme.colors.background.white20 }}
-            />
-            <Button
-              label={t('timePicker.confirm').toUpperCase()}
-              variant="gradientCta"
-              size="sm"
-              width="flex-1"
-              onPress={() => {
-                onTimeSelect(selectedTime);
-                onClose();
-              }}
-            />
-          </View>
-        }
-      >
-        <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
-          {/* Header: large time display (24h) */}
-          <View className="mb-16 flex w-full justify-center">
-            <Text
-              className="text-center font-bold tracking-tight text-white"
-              style={{
-                fontSize: theme.typography.fontSize['8xl'],
-                textShadowColor: theme.colors.background.black30,
-                textShadowOffset: { width: 0, height: 2 },
-                textShadowRadius: 8,
-              }}
-            >
-              {displayTime}
-            </Text>
-          </View>
-
-          {/* Native time picker - functionality from package, our layout around it */}
-          <View className="flex-1 items-center justify-center">
-            <DateTimePicker
-              value={selectedTime}
-              mode="time"
-              display="spinner"
-              onChange={handleNativeChange}
-              is24Hour={true}
-              {...(Platform.OS === 'ios' && {
-                themeVariant: 'dark' as const,
-                accentColor: theme.colors.accent.primary,
-                textColor: theme.colors.text.primary,
-              })}
-              {...(Platform.OS === 'android' && { style: { height: 180 } })}
-            />
-          </View>
-        </View>
-      </FullScreenModal>
-    );
-  }
-
-  // --- Web fallback: custom scroll picker (same design as before) ---
-  return (
-    <TimePickerModalWeb
-      visible={visible}
-      onClose={onClose}
-      selectedTime={selectedTime}
-      onTimeSelect={onTimeSelect}
-    />
-  );
-}
-
-// --- Web-only: custom scroll picker to avoid glitchy native unsupported on web ---
-function TimePickerModalWeb({
-  visible,
-  onClose,
-  selectedTime,
-  onTimeSelect,
-}: TimePickerModalProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  const hoursScrollRef = useRef<ScrollView>(null);
-  const minutesScrollRef = useRef<ScrollView>(null);
-
-  const hours = useMemo(
-    () => Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')),
-    []
-  );
-  const minutes = useMemo(
-    () => Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0')),
-    []
-  );
-
-  const selectedHour = selectedTime.getHours().toString().padStart(2, '0');
-  const selectedMinute = selectedTime.getMinutes().toString().padStart(2, '0');
-  const selectedHourIndex = parseInt(selectedHour, 10);
-  const selectedMinuteIndex = parseInt(selectedMinute, 10);
-
-  const scrollToHour = useCallback((index: number, animated = true) => {
-    const y = Math.max(
-      0,
-      PADDING_TOP + index * ITEM_HEIGHT - (PICKER_VIEW_HEIGHT - ITEM_HEIGHT) / 2
-    );
-    hoursScrollRef.current?.scrollTo({ y, animated });
-  }, []);
-
-  const scrollToMinute = useCallback((index: number, animated = true) => {
-    const y = Math.max(
-      0,
-      PADDING_TOP + index * ITEM_HEIGHT - (PICKER_VIEW_HEIGHT - ITEM_HEIGHT) / 2
-    );
-    minutesScrollRef.current?.scrollTo({ y, animated });
-  }, []);
-
-  const getCenteredIndex = useCallback((contentOffsetY: number) => {
-    const centerY = contentOffsetY + PICKER_VIEW_HEIGHT / 2;
-    return Math.round((centerY - PADDING_TOP - ITEM_HEIGHT / 2) / ITEM_HEIGHT);
-  }, []);
-
-  const handleHoursScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(0, Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y)));
-      const newTime = new Date(selectedTime);
-      if (newTime.getHours() !== index) {
-        newTime.setHours(index);
-        onTimeSelect(newTime);
-      }
-    },
-    [selectedTime, onTimeSelect, getCenteredIndex]
-  );
-
-  const handleMinutesScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(0, Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y)));
-      const newTime = new Date(selectedTime);
-      if (newTime.getMinutes() !== index) {
-        newTime.setMinutes(index);
-        onTimeSelect(newTime);
-      }
-    },
-    [selectedTime, onTimeSelect, getCenteredIndex]
-  );
-
-  const snapHours = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(0, Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y)));
-      scrollToHour(index, true);
-    },
-    [getCenteredIndex, scrollToHour]
-  );
-
-  const snapMinutes = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(0, Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y)));
-      scrollToMinute(index, true);
-    },
-    [getCenteredIndex, scrollToMinute]
-  );
+  const [hourIndex, setHourIndex] = useState(() => toHour12(selectedTime) - 1);
+  const [minuteIndex, setMinuteIndex] = useState(() => selectedTime.getMinutes());
+  const [amPm, setAmPm] = useState<'AM' | 'PM'>(() => toPeriod(selectedTime));
+  const [pickerKey, setPickerKey] = useState(0);
 
   useEffect(() => {
     if (visible) {
-      const id = setTimeout(() => {
-        scrollToHour(selectedHourIndex, false);
-        scrollToMinute(selectedMinuteIndex, false);
-      }, 100);
-      return () => clearTimeout(id);
+      setHourIndex(toHour12(selectedTime) - 1);
+      setMinuteIndex(selectedTime.getMinutes());
+      setAmPm(toPeriod(selectedTime));
+      setPickerKey((k) => k + 1);
     }
-  }, [visible, selectedHourIndex, selectedMinuteIndex, scrollToHour, scrollToMinute]);
+  }, [visible, selectedTime]);
 
-  const handleHourPress = (hour: string) => {
-    const index = parseInt(hour, 10);
-    scrollToHour(index, true);
-    const newTime = new Date(selectedTime);
-    newTime.setHours(index);
-    onTimeSelect(newTime);
-  };
+  const displayHour = String(hourIndex + 1).padStart(2, '0');
+  const displayMinute = String(minuteIndex).padStart(2, '0');
 
-  const handleMinutePress = (minute: string) => {
-    const index = parseInt(minute, 10);
-    scrollToMinute(index, true);
-    const newTime = new Date(selectedTime);
-    newTime.setMinutes(index);
-    onTimeSelect(newTime);
-  };
+  const buildDate = useCallback(
+    (hIdx: number, mIdx: number, period: 'AM' | 'PM'): Date => {
+      const h12 = hIdx + 1;
+      const h24 = (h12 % 12) + (period === 'PM' ? 12 : 0);
+      const d = new Date(selectedTime);
+      d.setHours(h24, mIdx, 0, 0);
+      return d;
+    },
+    [selectedTime]
+  );
 
-  const displayTime = `${selectedHour}:${selectedMinute}`;
+  const handleConfirm = useCallback(() => {
+    onTimeSelect(buildDate(hourIndex, minuteIndex, amPm));
+    onClose();
+  }, [hourIndex, minuteIndex, amPm, buildDate, onTimeSelect, onClose]);
+
+  const accentColor = theme.colors.accent.primary;
+  const cardBg = theme.colors.background.card;
+  const highlightBg = theme.colors.background.white12;
+  const textPrimary = theme.colors.text.primary;
+  const textMuted = theme.colors.text.secondary;
+  const toggleBg = theme.colors.background.gray800;
 
   return (
     <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title=""
-      scrollable={false}
-      showHeader={false}
       footer={
-        <View className="flex-row items-stretch gap-3">
+        <View className="w-full items-center gap-4">
           <Button
-            label={t('timePicker.cancel').toUpperCase()}
-            variant="outline"
-            size="sm"
-            width="flex-1"
-            onPress={onClose}
-            style={{ borderColor: theme.colors.background.white20 }}
-          />
-          <Button
-            label={t('timePicker.confirm').toUpperCase()}
+            label={t('timePicker.confirmTime')}
+            onPress={handleConfirm}
+            size="md"
             variant="gradientCta"
-            size="sm"
-            width="flex-1"
-            onPress={() => {
-              onTimeSelect(selectedTime);
-              onClose();
-            }}
+            width="full"
           />
+          <Pressable hitSlop={16} onPress={onClose}>
+            <Text
+              style={{
+                color: textMuted,
+                fontSize: 11,
+                fontWeight: '600',
+                letterSpacing: 2,
+                textTransform: 'uppercase',
+              }}
+            >
+              {t('timePicker.clearSelection')}
+            </Text>
+          </Pressable>
         </View>
       }
+      onClose={onClose}
+      scrollable={false}
+      showHeader
+      title={title}
+      visible={visible}
     >
-      <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
-        <View className="mb-16 flex w-full justify-center">
+      <View className="flex-1 items-center bg-bg-primary px-5 pt-8">
+        {/* Time display */}
+        <View className="mb-8 items-center">
+          <View className="flex-row items-end">
+            <Text
+              style={{
+                color: textPrimary,
+                fontSize: 80,
+                fontWeight: '300',
+                letterSpacing: -2,
+                lineHeight: 88,
+              }}
+            >
+              {displayHour}:{displayMinute}
+            </Text>
+            <Text
+              style={{
+                color: accentColor,
+                fontSize: 26,
+                fontWeight: '700',
+                lineHeight: 36,
+                marginBottom: 10,
+                marginLeft: 6,
+              }}
+            >
+              {amPm}
+            </Text>
+          </View>
           <Text
-            className="text-center font-bold tracking-tight text-white"
             style={{
-              fontSize: theme.typography.fontSize['8xl'],
-              textShadowColor: theme.colors.background.black30,
-              textShadowOffset: { width: 0, height: 2 },
-              textShadowRadius: 8,
+              color: textMuted,
+              fontSize: 10,
+              fontWeight: '600',
+              letterSpacing: 2.5,
+              marginTop: 4,
+              textTransform: 'uppercase',
             }}
           >
-            {displayTime}
+            {t('timePicker.selectedStartTime')}
           </Text>
         </View>
 
-        <View className="w-full max-w-sm flex-1 flex-col items-center justify-center">
-          <View className="relative w-full" style={{ height: PICKER_VIEW_HEIGHT }}>
-            <View
-              className="absolute left-1/2 top-1/2 z-0 w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-xl"
-              style={{
-                height: 64,
-                backgroundColor: theme.colors.background.white10,
-              }}
-              pointerEvents="none"
-            />
-            <View className="z-10 flex h-full w-full flex-row items-center justify-center gap-16">
-              <View className="flex flex-col items-center">
-                <ScrollView
-                  ref={hoursScrollRef}
-                  style={{ height: PICKER_VIEW_HEIGHT }}
-                  contentContainerStyle={{
-                    paddingTop: PADDING_TOP,
-                    paddingBottom: PADDING_TOP,
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  scrollEventThrottle={16}
-                  onScroll={handleHoursScroll}
-                  onMomentumScrollEnd={snapHours}
-                  onScrollEndDrag={snapHours}
-                  nestedScrollEnabled
-                >
-                  {hours.map((hour, i) => {
-                    const distance = Math.abs(i - selectedHourIndex);
-                    const opacity = getOpacityForDistance(distance);
-                    const isSelected = distance === 0;
-                    return (
-                      <Pressable
-                        key={hour}
-                        onPress={() => handleHourPress(hour)}
-                        className="items-center justify-center"
-                        style={{ height: ITEM_HEIGHT }}
-                      >
-                        <Text
-                          className="font-semibold"
-                          style={{
-                            color: `rgba(255,255,255,${opacity})`,
-                            fontSize: isSelected ? 36 : 24,
-                            fontWeight: isSelected ? '700' : '600',
-                          }}
-                        >
-                          {hour}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-              <View className="flex flex-col items-center">
-                <ScrollView
-                  ref={minutesScrollRef}
-                  style={{ height: PICKER_VIEW_HEIGHT }}
-                  contentContainerStyle={{
-                    paddingTop: PADDING_TOP,
-                    paddingBottom: PADDING_TOP,
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  scrollEventThrottle={16}
-                  onScroll={handleMinutesScroll}
-                  onMomentumScrollEnd={snapMinutes}
-                  onScrollEndDrag={snapMinutes}
-                  nestedScrollEnabled
-                >
-                  {minutes.map((minute, i) => {
-                    const distance = Math.abs(i - selectedMinuteIndex);
-                    const opacity = getOpacityForDistance(distance);
-                    const isSelected = distance === 0;
-                    return (
-                      <Pressable
-                        key={minute}
-                        onPress={() => handleMinutePress(minute)}
-                        className="items-center justify-center"
-                        style={{ height: ITEM_HEIGHT }}
-                      >
-                        <Text
-                          className="font-semibold"
-                          style={{
-                            color: `rgba(255,255,255,${opacity})`,
-                            fontSize: isSelected ? 36 : 24,
-                            fontWeight: isSelected ? '700' : '600',
-                          }}
-                        >
-                          {minute}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            </View>
-          </View>
-          <View className="mt-8 flex w-full flex-row justify-center gap-16">
+        {/* Picker card */}
+        <View
+          className="w-full"
+          style={{ backgroundColor: cardBg, borderRadius: 24, overflow: 'hidden' }}
+        >
+          {/* Column labels */}
+          <View className="flex-row px-6 pb-1 pt-5">
             <Text
-              className="font-semibold uppercase tracking-widest text-white/50"
-              style={{ fontSize: theme.typography.fontSize.xxs }}
+              className="flex-1 text-center"
+              style={{
+                color: textMuted,
+                fontSize: 10,
+                fontWeight: '600',
+                letterSpacing: 2,
+                textTransform: 'uppercase',
+              }}
             >
               {t('timePicker.hours')}
             </Text>
+            <View style={{ width: 36 }} />
             <Text
-              className="font-semibold uppercase tracking-widest text-white/50"
-              style={{ fontSize: theme.typography.fontSize.xxs }}
+              className="flex-1 text-center"
+              style={{
+                color: textMuted,
+                fontSize: 10,
+                fontWeight: '600',
+                letterSpacing: 2,
+                textTransform: 'uppercase',
+              }}
             >
               {t('timePicker.minutes')}
             </Text>
+          </View>
+
+          {/* Scroll pickers + colon */}
+          <View className="flex-row items-center px-4 pb-2">
+            <ScrollPicker
+              key={`hours-${pickerKey}`}
+              highlightBgColor={highlightBg}
+              initialIndex={hourIndex}
+              items={HOURS}
+              onSelect={setHourIndex}
+              textMutedColor={textMuted}
+              textPrimaryColor={textPrimary}
+            />
+            <Text
+              style={{
+                color: accentColor,
+                fontSize: 30,
+                fontWeight: '700',
+                textAlign: 'center',
+                width: 36,
+              }}
+            >
+              :
+            </Text>
+            <ScrollPicker
+              key={`minutes-${pickerKey}`}
+              highlightBgColor={highlightBg}
+              initialIndex={minuteIndex}
+              items={MINUTES}
+              onSelect={setMinuteIndex}
+              textMutedColor={textMuted}
+              textPrimaryColor={textPrimary}
+            />
+          </View>
+
+          {/* AM / PM toggle */}
+          <View
+            className="mx-4 mb-5 flex-row overflow-hidden"
+            style={{ backgroundColor: toggleBg, borderRadius: 9999 }}
+          >
+            {(['AM', 'PM'] as const).map((period) => {
+              const isActive = amPm === period;
+              const periodLabel = period === 'AM' ? t('timePicker.am') : t('timePicker.pm');
+              return (
+                <Pressable key={period} onPress={() => setAmPm(period)} style={{ flex: 1 }}>
+                  {isActive ? (
+                    <LinearGradient
+                      colors={[theme.colors.accent.secondary, theme.colors.accent.tertiary]}
+                      end={{ x: 1, y: 0 }}
+                      start={{ x: 0, y: 0 }}
+                      style={{
+                        alignItems: 'center',
+                        borderRadius: 9999,
+                        height: 44,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: theme.colors.text.onColorful,
+                          fontSize: 15,
+                          fontWeight: '700',
+                        }}
+                      >
+                        {periodLabel}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <View style={{ alignItems: 'center', height: 44, justifyContent: 'center' }}>
+                      <Text style={{ color: textMuted, fontSize: 15, fontWeight: '600' }}>
+                        {periodLabel}
+                      </Text>
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
           </View>
         </View>
       </View>

@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { subDays } from 'date-fns';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
 import {
@@ -7,6 +8,8 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '../../constants/misc';
+import { localDayStartMs } from '../../utils/calendarDate';
+import { calculateWorkoutVolume } from '../../utils/workoutCalculator';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import ChatMessage from '../models/ChatMessage';
@@ -17,7 +20,6 @@ import Exercise, {
 } from '../models/Exercise';
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
-import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import MenstrualCycle from '../models/MenstrualCycle';
 import Setting from '../models/Setting';
@@ -28,7 +30,16 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { ExerciseService, MealService, SettingsService, UserService } from '../services';
+import {
+  ExerciseService,
+  FoodPortionService,
+  MealService,
+  SettingsService,
+  UserService,
+} from '../services';
+
+/** Assumed user body weight (kg) for seeded workout volume (bodyweight exercises). */
+const SEED_USER_BODY_WEIGHT_KG = 70;
 
 /**
  * Seeds the exercises database if it's empty
@@ -113,6 +124,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             ex.muscleGroup = muscleGroup as MuscleGroup;
             ex.equipmentType = 'dumbbell' as EquipmentType;
             ex.mechanicType = 'compound' as MechanicType;
+            ex.source = 'app';
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
@@ -432,8 +444,14 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             log.updatedAt = now;
           });
 
-          // Create log exercises and their sets, and calculate total volume
-          let totalVolume = 0;
+          const totalVolume = calculateWorkoutVolume(
+            exerciseSets.map((ed) => ({
+              exercise: { equipmentType: ed.exercise.equipmentType },
+              sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+            })),
+            SEED_USER_BODY_WEIGHT_KG
+          );
+
           let setOrder = 1;
           let exerciseOrder = 1;
 
@@ -451,9 +469,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               });
 
             for (const set of exerciseData.sets) {
-              const setVolume = set.weight * set.reps;
-              totalVolume += setVolume;
-
               await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
                 logSet.logExerciseId = logExercise.id;
                 logSet.reps = set.reps;
@@ -729,7 +744,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           log.updatedAt = now;
         });
 
-        let totalVolume = 0;
         let setOrder = 1;
         let exerciseOrder = 1;
         const pushDaySets = [
@@ -760,6 +774,14 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           },
         ];
 
+        const totalVolume = calculateWorkoutVolume(
+          pushDaySets.map((ed) => ({
+            exercise: { equipmentType: ed.exercise.equipmentType },
+            sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+          })),
+          SEED_USER_BODY_WEIGHT_KG
+        );
+
         for (const exerciseData of pushDaySets) {
           // Create log exercise block first
           const logExercise = await database
@@ -774,7 +796,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             });
 
           for (const set of exerciseData.sets) {
-            totalVolume += set.weight * set.reps;
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
               logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;
@@ -843,6 +864,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             ex.muscleGroup = muscleGroup as MuscleGroup;
             ex.equipmentType = 'dumbbell' as EquipmentType;
             ex.mechanicType = 'compound' as MechanicType;
+            ex.source = 'app';
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
@@ -878,8 +900,14 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
           log.updatedAt = now;
         });
 
-        // Create log exercises and their sets, and calculate total volume
-        let totalVolume = 0;
+        const totalVolume = calculateWorkoutVolume(
+          exerciseSets.map((ed) => ({
+            exercise: { equipmentType: ed.exercise.equipmentType },
+            sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+          })),
+          SEED_USER_BODY_WEIGHT_KG
+        );
+
         let setOrder = 1;
         let exerciseOrder = 1;
 
@@ -897,9 +925,6 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             });
 
           for (const set of exerciseData.sets) {
-            const setVolume = set.weight * set.reps;
-            totalVolume += setVolume;
-
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
               logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;
@@ -1247,19 +1272,11 @@ async function seedUserMetrics(): Promise<{ created: number }> {
     await database.write(async () => {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Helper to create a date N days ago
-      const daysAgo = (days: number): number => {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        date.setHours(8, 30, 0, 0); // 8:30 AM for consistency
-        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
-      };
+      // Local calendar day start (matches app convention / NutritionService queries)
+      const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));
 
-      // Helper to create a date in a specific month
-      const dateInMonth = (year: number, month: number, day: number): number => {
-        const date = new Date(year, month, day, 8, 30, 0, 0);
-        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime();
-      };
+      const dateInMonth = (year: number, month: number, day: number): number =>
+        localDayStartMs(new Date(year, month, day));
 
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -1443,6 +1460,8 @@ async function seedFoods(): Promise<{ created: number }> {
       return { created: 0 };
     }
 
+    const shared100gPortion = await FoodPortionService.createFoodPortion('100g', 100);
+
     await database.write(async () => {
       // Simple foods for easy testing
       const simpleFoods = [
@@ -1582,26 +1601,10 @@ async function seedFoods(): Promise<{ created: number }> {
           food.updatedAt = now;
         });
 
-        // Create or find the default 100g portion (global, reusable)
-        const existingPortion = await database
-          .get<FoodPortion>('food_portions')
-          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-          .fetch();
-
-        const defaultPortion =
-          existingPortion.length > 0
-            ? existingPortion[0]
-            : await database.get<FoodPortion>('food_portions').create((portion) => {
-                portion.name = '100g';
-                portion.gramWeight = 100;
-                portion.createdAt = now;
-                portion.updatedAt = now;
-              });
-
         // Link food to portion via junction table
         await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
           ffp.foodId = food.id;
-          ffp.foodPortionId = defaultPortion.id;
+          ffp.foodPortionId = shared100gPortion.id;
           ffp.isDefault = true;
           ffp.createdAt = now;
           ffp.updatedAt = now;
@@ -1646,25 +1649,11 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       { name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
     ];
 
-    // Get or create the 100g portion needed to link foods
-    const existing100g = await database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-      .fetch();
+    const portion100g = await FoodPortionService.createFoodPortion('100g', 100);
 
     const devFoods = new Map<string, Food>();
 
     await database.write(async () => {
-      const portion100g =
-        existing100g.length > 0
-          ? existing100g[0]
-          : await database.get<FoodPortion>('food_portions').create((p) => {
-              p.name = '100g';
-              p.gramWeight = 100;
-              p.createdAt = now;
-              p.updatedAt = now;
-            });
-
       for (const def of devFoodDefs) {
         // Check by exact name (case-insensitive)
         const existing = await database.get<Food>('foods').query(Q.where('name', def.name)).fetch();
@@ -1701,12 +1690,7 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       }
     });
 
-    const daysAgo = (days: number): number => {
-      const date = new Date();
-      date.setDate(date.getDate() - days);
-      date.setHours(0, 0, 0, 0); // local midnight — matches NutritionService query logic
-      return date.getTime();
-    };
+    const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));
 
     // Each day rotates through different meal combinations
     const dailyPlans: { name: string; type: string; amount: number }[][] = [
@@ -1957,7 +1941,7 @@ async function seedUser(): Promise<boolean> {
 
     await UserService.initializeUser({
       fullName: 'Alex Johnson',
-      dateOfBirth: new Date(1990, 3, 15).getTime(), // April 15, 1990
+      dateOfBirth: localDayStartMs(new Date(1990, 3, 15)), // April 15, 1990 (local calendar day)
       gender: 'male',
       fitnessGoal: 'hypertrophy',
       weightGoal: 'maintain',

@@ -16,6 +16,7 @@
     "fat": "Fat",
     "fiber": "Fiber",
     "foodNotFound": "Food Not Found",
+    "foodNotFoundDescription": "We couldn't find this item in our database. What would you like to do?",
     "import": "Import",
     "importFormatInfo": "Paste or type your meal log (e.g. from a note or app). AI will parse it and suggest entries.",
     "importInstructions": "Paste your nutrition data below. Supported: free text, bullet lists, or structured logs.",
@@ -62,6 +63,7 @@
       "summaryIntro": "You aimed for {{target}} kcal/day, but averaged",
       "summaryOutro": "Despite the result, you completed",
       "workoutsCount": "workouts",
+      "noWorkouts": "no workouts",
       "withHighIntensity": "with high intensity.",
       "avgIntake": "Avg. Intake",
       "consistency": "Consistency",
@@ -87,7 +89,13 @@
         "pending": "Pending",
         "ahead": "Ahead",
         "onTrack": "On Track",
-        "behind": "Behind"
+        "behind": "Behind",
+        "descriptions": {
+          "pending": "Check-in not yet completed",
+          "ahead": "Progress ahead of target",
+          "onTrack": "Progress on target",
+          "behind": "Progress behind target"
+        }
       }
     },
     "common": {

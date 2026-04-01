@@ -2,6 +2,7 @@ import { Edit2, Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
 import { GenericCard } from './cards/GenericCard';
 import { MacroCard } from './cards/MacroCard';
@@ -45,6 +46,7 @@ export function MealEstimationScreen({
 }: MealEstimationScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
 
   const macroColors = {
     protein: theme.colors.status.emerald10,
@@ -82,7 +84,7 @@ export function MealEstimationScreen({
             {/* Total Calories */}
             <View className="mb-4">
               <Text className="text-4xl font-bold" style={{ color: theme.colors.text.primary }}>
-                {totalCalories} {t('nutrition.common.kcal')}
+                {formatInteger(Math.round(totalCalories))} {t('nutrition.common.kcal')}
               </Text>
             </View>
 
@@ -156,7 +158,8 @@ export function MealEstimationScreen({
                       {item.name}
                     </Text>
                     <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                      {item.weight} • {item.calories} {t('nutrition.common.kcal')}
+                      {item.weight} • {formatInteger(Math.round(item.calories))}{' '}
+                      {t('nutrition.common.kcal')}
                     </Text>
                   </View>
 

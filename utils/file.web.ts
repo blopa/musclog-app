@@ -39,9 +39,14 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
           reader.onerror = () => rej(reader.error);
           reader.readAsText(file);
         });
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
         await restoreDatabase(dbDump, decryptionPhrase);
+        await new Promise((resolve) => setTimeout(resolve, 50));
         resolve();
+        await new Promise((resolve) => setTimeout(resolve, 50));
         await reloadApp();
+        await new Promise((resolve) => setTimeout(resolve, 50));
       } catch (error) {
         reject(error);
       }

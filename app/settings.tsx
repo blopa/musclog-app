@@ -13,12 +13,14 @@ import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
 import { NotificationsSettingsModal } from '../components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
+import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { SettingsService } from '../database/services/SettingsService';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { useSettings } from '../hooks/useSettings';
-import { theme } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function SettingsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { googleGeminiApiKey, googleGeminiModel, openAiApiKey, openAiModel } = useSettings();
@@ -52,7 +54,7 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
-              router.push('/');
+              router.navigate('/');
             }}
           >
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
@@ -72,125 +74,127 @@ export default function SettingsScreen() {
         contentContainerStyle={{ paddingBottom: theme.size['8'] }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ height: theme.size['6'] }} />
-        {/* Configuration Section */}
-        <Text
-          style={{
-            marginLeft: theme.spacing.padding['5'],
-            marginTop: theme.spacing.padding.sm,
-            marginBottom: theme.spacing.padding.sm,
-            fontSize: theme.typography.fontSize.sm,
-            fontWeight: theme.typography.fontWeight.bold,
-            color: theme.colors.text.secondary,
-            textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.extraWide,
-          }}
-        >
-          {t('settings.configuration')}
-        </Text>
+        <AnimatedContent>
+          <View style={{ height: theme.size['6'] }} />
+          {/* Configuration Section */}
+          <Text
+            style={{
+              marginLeft: theme.spacing.padding['5'],
+              marginTop: theme.spacing.padding.sm,
+              marginBottom: theme.spacing.padding.sm,
+              fontSize: theme.typography.fontSize.sm,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: theme.typography.letterSpacing.extraWide,
+            }}
+          >
+            {t('settings.configuration')}
+          </Text>
 
-        <SettingsCard
-          icon={
-            <MaterialIcons
-              name="settings"
-              size={theme.iconSize['2xl']}
-              color={theme.colors.accent.primary}
-            />
-          }
-          title={t('settings.basicSettings.title')}
-          subtitle={t('settings.basicSettings.subtitle')}
-          onPress={() => setBasicSettingsVisible(true)}
-          rightIcon={
-            <MaterialIcons
-              name="chevron-right"
-              size={theme.iconSize.xl}
-              color={theme.colors.text.secondary}
-            />
-          }
-        />
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="settings"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.basicSettings.title')}
+            subtitle={t('settings.basicSettings.subtitle')}
+            onPress={() => setBasicSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
 
-        <SettingsCard
-          icon={
-            <MaterialIcons
-              name="grid-view"
-              size={theme.iconSize['2xl']}
-              color={theme.colors.accent.primary}
-            />
-          }
-          title={t('settings.visualSettings.title')}
-          subtitle={t('settings.visualSettings.subtitle')}
-          onPress={() => setVisualSettingsVisible(true)}
-          rightIcon={
-            <MaterialIcons
-              name="chevron-right"
-              size={theme.iconSize.xl}
-              color={theme.colors.text.secondary}
-            />
-          }
-        />
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="grid-view"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.visualSettings.title')}
+            subtitle={t('settings.visualSettings.subtitle')}
+            onPress={() => setVisualSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
 
-        <SettingsCard
-          icon={
-            <MaterialIcons
-              name="sd-storage"
-              size={theme.iconSize['2xl']}
-              color={theme.colors.accent.primary}
-            />
-          }
-          title={t('settings.advancedSettings.title')}
-          subtitle={t('settings.advancedSettings.subtitle')}
-          onPress={() => setAdvancedSettingsVisible(true)}
-          rightIcon={
-            <MaterialIcons
-              name="chevron-right"
-              size={theme.iconSize.xl}
-              color={theme.colors.text.secondary}
-            />
-          }
-        />
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="sd-storage"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.advancedSettings.title')}
+            subtitle={t('settings.advancedSettings.subtitle')}
+            onPress={() => setAdvancedSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
 
-        <SettingsCard
-          icon={
-            <MaterialIcons
-              name="smart-toy"
-              size={theme.iconSize['2xl']}
-              color={theme.colors.accent.primary}
-            />
-          }
-          title={t('settings.aiSettings.title')}
-          subtitle={t('settings.aiSettings.subtitle')}
-          onPress={() => setAISettingsVisible(true)}
-          rightIcon={
-            <MaterialIcons
-              name="chevron-right"
-              size={theme.iconSize.xl}
-              color={theme.colors.text.secondary}
-            />
-          }
-        />
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="smart-toy"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.aiSettings.title')}
+            subtitle={t('settings.aiSettings.subtitle')}
+            onPress={() => setAISettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
 
-        <SettingsCard
-          icon={
-            <MaterialIcons
-              name="notifications"
-              size={theme.iconSize['2xl']}
-              color={theme.colors.accent.primary}
-            />
-          }
-          title={t('settings.notificationsSettings.title')}
-          subtitle={t('settings.notificationsSettings.subtitle')}
-          onPress={() => setNotificationsSettingsVisible(true)}
-          rightIcon={
-            <MaterialIcons
-              name="chevron-right"
-              size={theme.iconSize.xl}
-              color={theme.colors.text.secondary}
-            />
-          }
-        />
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="notifications"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.notificationsSettings.title')}
+            subtitle={t('settings.notificationsSettings.subtitle')}
+            onPress={() => setNotificationsSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
 
-        <LegalLinksCard />
-        <View style={{ height: theme.size['8'] }} />
+          <LegalLinksCard />
+          <View style={{ height: theme.size['8'] }} />
+        </AnimatedContent>
       </ScrollView>
 
       <AISettingsModal

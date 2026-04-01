@@ -2,6 +2,7 @@ import { History, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { YesterdayMealData } from '../../hooks/useYesterdayMealData';
 import { GenericCard } from './GenericCard';
@@ -19,6 +20,7 @@ export function SameAsYesterdayCard({
 }: SameAsYesterdayCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View style={{ marginTop: theme.spacing.padding.lg }}>
@@ -151,7 +153,7 @@ export function SameAsYesterdayCard({
                     </Text>
                   </View>
                   <Text className="text-xs text-text-secondary" style={{ flexShrink: 0 }}>
-                    {item.calories} {t('food.common.kcal')}
+                    {formatInteger(Math.round(item.calories))} {t('food.common.kcal')}
                   </Text>
                 </View>
               ))}

@@ -1,6 +1,12 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import {
+  calculateWorkoutVolume,
+  type ExerciseWithSets,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
+import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
@@ -47,10 +53,48 @@ export default class WorkoutLog extends Model {
   }
 
   async calculateVolume(): Promise<number> {
-    const sets = await this.getAllSets();
-    return sets.reduce((total: number, set: WorkoutLogSet) => {
-      return total + set.reps * set.weight;
-    }, 0);
+    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const logExercises = await this.logExercises.fetch();
+    const active = logExercises.filter((le) => !le.deletedAt);
+    if (active.length === 0) {
+      return 0;
+    }
+
+    const exerciseIds = [...new Set(active.map((le) => le.exerciseId))];
+    const exercises =
+      exerciseIds.length > 0
+        ? await this.collections
+            .get<Exercise>('exercises')
+            .query(Q.where('id', Q.oneOf(exerciseIds as string[])))
+            .fetch()
+        : [];
+    const exerciseById = new Map(exercises.map((e) => [e.id, e]));
+
+    // Fetch all sets in a single query (getAllSets already filters deleted)
+    const allSets = await this.getAllSets();
+    const setsByLogExId = new Map<string, WorkoutLogSet[]>();
+    for (const set of allSets) {
+      const id = set.logExerciseId;
+      if (!setsByLogExId.has(id)) {
+        setsByLogExId.set(id, []);
+      }
+      setsByLogExId.get(id)!.push(set);
+    }
+
+    const parts: ExerciseWithSets[] = active.map((le) => {
+      const ex = exerciseById.get(le.exerciseId);
+      const sets = setsByLogExId.get(le.id) ?? [];
+      return {
+        exercise: { equipmentType: ex?.equipmentType },
+        sets: sets.map((s: WorkoutLogSet) => ({
+          weight: s.weight,
+          reps: s.reps,
+          repsInReserve: s.repsInReserve,
+        })),
+      };
+    });
+
+    return calculateWorkoutVolume(parts, bodyWeightKg);
   }
 
   @writer

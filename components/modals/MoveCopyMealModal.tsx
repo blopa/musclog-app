@@ -1,15 +1,16 @@
-import { format } from 'date-fns';
-import { Calendar } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
 type MoveCopyMealModalProps = {
@@ -21,6 +22,7 @@ type MoveCopyMealModalProps = {
     splitPercentage?: number
   ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
+  title?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
@@ -33,23 +35,38 @@ export function MoveCopyMealModal({
   onClose,
   onConfirm,
   mode,
+  title: customTitle,
   sourceMealType,
   sourceDate,
   isLoading = false,
 }: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [targetDate, setTargetDate] = useState(sourceDate);
+  const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isBusy = isLoading || isSubmitting;
+
+  useEffect(() => {
+    if (visible) {
+      setTargetDate(localCalendarDayDate(sourceDate));
+      setTargetMealType(sourceMealType);
+      setSplitPercentage(50);
+    } else {
+      setIsSubmitting(false);
+    }
+  }, [visible, sourceDate, sourceMealType]);
 
   const title =
-    mode === 'move'
+    customTitle ||
+    (mode === 'move'
       ? t('food.actions.moveModalTitle')
       : mode === 'copy'
         ? t('food.actions.copyModalTitle')
-        : t('food.actions.splitModalTitle');
+        : t('food.actions.splitModalTitle'));
 
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
@@ -60,11 +77,17 @@ export function MoveCopyMealModal({
   ];
 
   const handleConfirm = async () => {
-    if (isLoading) {
+    if (isBusy) {
       return;
     }
-    await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
-    onClose();
+    setIsSubmitting(true);
+    await flushLoadingPaint();
+    try {
+      await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePresetPress = (preset: number) => {
@@ -72,13 +95,13 @@ export function MoveCopyMealModal({
   };
 
   const isConfirmDisabled =
-    isLoading || (mode === 'split' && (splitPercentage < 1 || splitPercentage > 99));
+    isBusy || (mode === 'split' && (splitPercentage < 1 || splitPercentage > 99));
 
   return (
     <>
       <BottomPopUp
         visible={visible}
-        onClose={onClose}
+        onClose={isBusy ? undefined : onClose}
         title={title}
         footer={
           <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
@@ -88,7 +111,7 @@ export function MoveCopyMealModal({
               size="sm"
               width="flex-1"
               onPress={onClose}
-              disabled={isLoading}
+              disabled={isBusy}
             />
             <Button
               label={t('common.confirm')}
@@ -97,37 +120,24 @@ export function MoveCopyMealModal({
               width="flex-1"
               onPress={handleConfirm}
               disabled={isConfirmDisabled}
-              loading={isLoading}
+              loading={isBusy}
             />
           </View>
         }
       >
-        <View className="gap-5">
+        <View
+          className="gap-5"
+          pointerEvents={isBusy ? 'none' : 'auto'}
+          style={{ opacity: isBusy ? 0.65 : 1 }}
+        >
           {/* Target Date */}
-          <View className="gap-2">
-            <Text
-              className="text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
-              {t('food.actions.targetDate')}
-            </Text>
-            <Pressable
-              className="flex-row items-center gap-3 rounded-xl border p-3"
-              style={{
-                borderColor: theme.colors.background.white10,
-                backgroundColor: theme.colors.background.white5,
-              }}
-              onPress={() => setIsDatePickerVisible(true)}
-            >
-              <Calendar size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-              <Text
-                className="flex-1 font-medium text-text-primary"
-                style={{ fontSize: theme.typography.fontSize.sm }}
-              >
-                {format(targetDate, 'EEEE, MMM d, yyyy')}
-              </Text>
-            </Pressable>
-          </View>
+          <DatePickerInput
+            label={t('food.actions.targetDate')}
+            selectedDate={targetDate}
+            onPress={() => setIsDatePickerVisible(true)}
+            disabled={isBusy}
+            variant="compact"
+          />
 
           {/* Split Percentage (only for split mode) */}
           {mode === 'split' ? (
@@ -219,7 +229,7 @@ export function MoveCopyMealModal({
           onClose={() => setIsDatePickerVisible(false)}
           selectedDate={targetDate}
           onDateSelect={(date) => {
-            setTargetDate(date);
+            setTargetDate(localCalendarDayDate(date));
             setIsDatePickerVisible(false);
           }}
         />

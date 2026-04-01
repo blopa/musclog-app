@@ -1,12 +1,13 @@
-import { History, Pencil, Trash2 } from 'lucide-react-native';
-import { useState } from 'react';
+import { History, Pencil, RefreshCw, Trash2 } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -29,16 +30,36 @@ interface GoalHistoryCardProps {
   goal: GoalHistoryItem;
   isLast?: boolean;
   onEdit?: () => void;
+  onRegenerateCheckins?: () => void;
   onDelete?: () => void;
+  isRegenerating?: boolean;
 }
 
-export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: GoalHistoryCardProps) {
+export function GoalHistoryCard({
+  goal,
+  isLast = false,
+  onEdit,
+  onRegenerateCheckins,
+  onDelete,
+  isRegenerating = false,
+}: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const weightDisplay = kgToDisplay(goal.weight, units);
+  const weightDisplay = formatDisplayWeightKg(locale, units, goal.weight);
   const [menuVisible, setMenuVisible] = useState(false);
+  const wasRegenerating = useRef(false);
+
+  useEffect(() => {
+    if (isRegenerating) {
+      wasRegenerating.current = true;
+    } else if (wasRegenerating.current) {
+      wasRegenerating.current = false;
+      setMenuVisible(false);
+    }
+  }, [isRegenerating]);
 
   const hasMenu = onEdit != null || onDelete != null;
 
@@ -52,6 +73,19 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onRegenerateCheckins
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+            description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+            onPress: onRegenerateCheckins,
+            keepOpenOnPress: true,
           },
         ]
       : []),
@@ -108,6 +142,8 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
             items={menuItems}
+            isLoading={isRegenerating}
+            loadingTitle={t('common.processing')}
           />
         ) : null}
 
@@ -116,7 +152,7 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
                 <Text className="text-lg font-bold text-text-primary">
-                  {goal.calories.toLocaleString()}{' '}
+                  {formatInteger(goal.calories)}{' '}
                   <Text
                     className="font-normal text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xs }}
@@ -128,22 +164,23 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
                   className="text-text-secondary"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
-                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}
+                  {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
+                  {formatInteger(goal.carbs)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
+                  {formatInteger(goal.fat)}
                   {t('goalHistoryCard.g')}
                 </Text>
               </View>
               <View className="items-end">
                 <Text className="text-xs font-bold text-text-secondary">
-                  {weightDisplay % 1 === 0 ? weightDisplay : Math.round(weightDisplay * 10) / 10}{' '}
-                  {t(weightUnitKey)}
+                  {weightDisplay} {t(weightUnitKey)}
                 </Text>
                 <Text
                   className="text-text-secondary"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
-                  {goal.bodyFat}% {t('goalHistoryCard.bf')}
+                  {formatRoundedDecimal(goal.bodyFat, 1)}% {t('goalHistoryCard.bf')}
                 </Text>
               </View>
             </View>

@@ -18,6 +18,7 @@ type TestInputProps = {
   selectTextOnFocus?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  editable?: boolean;
 };
 
 const ANIMATION_DURATION = 100;
@@ -41,6 +42,7 @@ export function TextInput({
   selectTextOnFocus = true,
   multiline = false,
   numberOfLines = 4,
+  editable = true,
 }: TestInputProps) {
   const theme = useTheme();
 
@@ -120,9 +122,17 @@ export function TextInput({
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             textAlignVertical={multiline ? 'top' : 'center'}
+            editable={editable}
           />
           {icon ? (
-            <View className="absolute right-4 items-center justify-center">{icon}</View>
+            <View
+              className={classNames('absolute right-4 justify-center', {
+                'bottom-0 top-0': !multiline,
+                'top-3': multiline,
+              })}
+            >
+              {icon}
+            </View>
           ) : null}
         </View>
       ) : (
@@ -156,9 +166,17 @@ export function TextInput({
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             textAlignVertical={multiline ? 'top' : 'center'}
+            editable={editable}
           />
           {icon ? (
-            <View className="absolute right-4 items-center justify-center">{icon}</View>
+            <View
+              className={classNames('absolute right-4 justify-center', {
+                'bottom-0 top-0': !multiline,
+                'top-3': multiline,
+              })}
+            >
+              {icon}
+            </View>
           ) : null}
         </Animated.View>
       )}

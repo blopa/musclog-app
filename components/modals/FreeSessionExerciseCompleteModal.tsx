@@ -1,15 +1,20 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
-import { createElement, useMemo } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import type { EnrichedWorkoutLogSet } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { getExerciseIconConfig, isBodyweightExercise } from '../../utils/workout';
+import {
+  calculateExerciseVolume,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -49,29 +54,43 @@ export function FreeSessionExerciseCompleteModal({
   isFinishing = false,
 }: FreeSessionExerciseCompleteModalProps) {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const iconConfig = useMemo(
-    () => getExerciseIconConfig(isBodyweightExercise(equipmentType ?? undefined)),
-    [equipmentType]
+    () => getExerciseIconConfig(theme, isBodyweightExercise(equipmentType ?? undefined)),
+    [theme, equipmentType]
   );
   const showImage = Boolean(exerciseImageUrl?.trim());
+
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  useEffect(() => {
+    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+  }, []);
 
   const { setsCompleted, totalVolumeKg } = useMemo(() => {
     const exerciseSets = sets.filter((s) => s.exerciseId === exerciseId);
     const completed = exerciseSets.filter(
       (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
     ).length;
-    const volume = exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0) * (s.weight ?? 0), 0);
+
+    const volume = calculateExerciseVolume(
+      exerciseSets.map((s) => ({
+        weight: s.weight ?? 0,
+        reps: s.reps ?? 0,
+        repsInReserve: s.repsInReserve ?? 0,
+      })),
+      { equipmentType: equipmentType ?? undefined },
+      bodyWeightKg
+    );
+
     return { setsCompleted: completed, totalVolumeKg: volume };
-  }, [sets, exerciseId]);
+  }, [sets, exerciseId, equipmentType, bodyWeightKg]);
 
   const displayVolume = kgToDisplay(totalVolumeKg, units);
   const displayVolumeStr =
-    displayVolume % 1 === 0
-      ? displayVolume.toLocaleString(i18n.language)
-      : displayVolume.toLocaleString(i18n.language, { maximumFractionDigits: 1 });
+    displayVolume % 1 === 0 ? formatInteger(displayVolume) : formatDecimal(displayVolume, 1);
 
   const emerald = theme.colors.status.emerald;
   const indigo = theme.colors.status.indigo;
@@ -85,6 +104,7 @@ export function FreeSessionExerciseCompleteModal({
       onClose={onClose}
       title={t('freeTraining.workoutName')}
       scrollable={false}
+      closable={false}
     >
       <View className="flex-1 px-4">
         <View className="flex-row items-center justify-between pb-4 pt-2">

@@ -109,9 +109,9 @@ export class UserMetricService {
       return newMetric;
     });
 
-    // Write to Health Connect (Android only, user-entered records only — HC-sourced records
+    // Health Connect / Apple Health (user-entered only — health-sourced records
     // already have externalId set and must not be written back to avoid an echo loop).
-    if (Platform.OS === 'android' && !plain.externalId) {
+    if ((Platform.OS === 'android' || Platform.OS === 'ios') && !plain.externalId) {
       const hcId = await writeUserMetricToHealthConnect({
         metricId: metric.id,
         type: plain.type,

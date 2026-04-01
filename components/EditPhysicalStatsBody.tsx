@@ -1,11 +1,14 @@
-import { Calendar } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { type Gender } from '../database/models';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
+import { localCalendarDayDate } from '../utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInlineInput } from './theme/StepperInlineInput';
@@ -25,17 +28,6 @@ type EditPhysicalStatsBodyProps = {
   onFormChange?: (data: PhysicalStats) => void;
 };
 
-function parseDobToDate(dobString: string): Date {
-  if (!dobString) {
-    return new Date();
-  }
-  const parts = dobString.split('/');
-  if (parts.length === 3) {
-    return new Date(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10));
-  }
-  return new Date();
-}
-
 function formatDateToDob(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -50,9 +42,12 @@ export function EditPhysicalStatsBody({
 }: EditPhysicalStatsBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatDecimal } = useFormatAppNumber();
   const [dob, setDob] = useState(initialData?.dob ?? '');
   const [gender, setGender] = useState<Gender>(initialData?.gender ?? 'other');
-  const [weight, setWeight] = useState(parseFloat(initialData?.weight || '0.0').toFixed(2));
+  const [weight, setWeight] = useState(() =>
+    formatDecimal(parseFloat(initialData?.weight || '0'), 2)
+  );
   const [height, setHeight] = useState(initialData?.height ?? '0');
   const [fatPercentage, setFatPercentage] = useState<number | null>(
     initialData?.fatPercentage ?? null
@@ -60,7 +55,7 @@ export function EditPhysicalStatsBody({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const handleDateSelect = useCallback((date: Date) => {
-    setDob(formatDateToDob(date));
+    setDob(formatDateToDob(localCalendarDayDate(date)));
   }, []);
 
   useEffect(() => {
@@ -81,17 +76,13 @@ export function EditPhysicalStatsBody({
           <Text className="ml-1 text-sm font-semibold text-text-tertiary">
             {t('editPersonalInfo.dateOfBirth')}
           </Text>
-          <Pressable
-            className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+          <DatePickerInput
+            hideLabel
+            unset={!dob}
+            unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
+            selectedDate={parseDobDisplayStringToPickerDate(dob)}
             onPress={() => setIsDatePickerVisible(true)}
-          >
-            <View className="ml-3 flex-1">
-              <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
-                {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
-              </Text>
-            </View>
-            <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-          </Pressable>
+          />
         </View>
 
         {/* Gender */}
@@ -181,6 +172,7 @@ export function EditPhysicalStatsBody({
                 <StepperInlineInput
                   label={t('editFitnessDetails.fatPercentage')}
                   value={fatPercentage}
+                  maxFractionDigits={1}
                   onIncrement={() => setFatPercentage((prev) => Math.min(50, (prev ?? 20) + 0.5))}
                   onDecrement={() => setFatPercentage((prev) => Math.max(5, (prev ?? 20) - 0.5))}
                   onChangeValue={(value) => setFatPercentage(Math.min(50, Math.max(5, value)))}
@@ -195,7 +187,7 @@ export function EditPhysicalStatsBody({
       <DatePickerModal
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={parseDobToDate(dob)}
+        selectedDate={parseDobDisplayStringToPickerDate(dob)}
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={new Date().getFullYear()}

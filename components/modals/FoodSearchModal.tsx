@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Apple,
   Beef,
   Carrot,
@@ -41,11 +42,13 @@ import Meal from '../../database/models/Meal';
 import { FoodPortionService, NutritionService } from '../../database/services';
 import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
 import { useFoods } from '../../hooks/useFoods';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { Button } from '../theme/Button';
@@ -216,11 +219,12 @@ type MealSearchCardProps = {
 function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(mealData.protein),
-    carbs: Math.round(mealData.carbs),
-    fat: Math.round(mealData.fat),
+    protein: formatRoundedDecimal(mealData.protein, 2),
+    carbs: formatRoundedDecimal(mealData.carbs, 2),
+    fat: formatRoundedDecimal(mealData.fat, 2),
   });
 
   return (
@@ -256,7 +260,7 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
           </Text>
         ) : null}
         <Text className="mt-0.5 text-sm text-text-secondary">
-          {Math.round(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
+          {formatRoundedDecimal(mealData.calories, 2)} {t('food.common.kcal')} • {macroSummary}
         </Text>
       </View>
 
@@ -274,6 +278,40 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   );
 }
 
+function getSectionHeaderTitle(
+  isInitialLoad: boolean,
+  hasLocalResults: boolean,
+  hasApiResults: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
+): string {
+  if (isInitialLoad) {
+    return t('foodSearch.searching');
+  }
+
+  if (hasLocalResults || hasApiResults || isLoadingAPI) {
+    return t('foodSearch.bestMatches');
+  }
+
+  return t('foodSearch.noResults');
+}
+
+function getSearchingStatusText(
+  isLoadingLocal: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
+): string {
+  if (isLoadingLocal && isLoadingAPI) {
+    return t('foodSearch.searchingLocalAndAPI');
+  }
+
+  if (isLoadingLocal) {
+    return t('foodSearch.searchingLocal');
+  }
+
+  return t('foodSearch.searchingAPI');
+}
+
 export function FoodSearchModal({
   visible,
   onClose,
@@ -287,6 +325,7 @@ export function FoodSearchModal({
 }: FoodSearchModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
@@ -355,7 +394,8 @@ export function FoodSearchModal({
     resultsBySource,
     isLoadingLocal,
     isLoadingAPI,
-    error,
+    apiError,
+    usdaError,
     localCount,
     apiCount,
     hasLocalResults,
@@ -371,6 +411,10 @@ export function FoodSearchModal({
     loadMoreAPI,
     loadMoreUSDA,
     firstResolvedApi,
+    retryAPI,
+    retryUSDA,
+    cancelSearch,
+    triggerNow,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -379,8 +423,27 @@ export function FoodSearchModal({
     localLimit: 10,
     apiLimit: openFoodLimit,
     usdaLimit,
-    debounceMs: 300,
+    debounceMs: 600,
   });
+
+  const [showCancelSearch, setShowCancelSearch] = useState(false);
+
+  useEffect(() => {
+    setShowCancelSearch(false);
+
+    if (!searchQuery.trim() || (!isLoadingAPI && !isInitialLoad) || hasApiResults) {
+      return;
+    }
+
+    const timer = setTimeout(() => setShowCancelSearch(true), 10_000);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isLoadingAPI, isInitialLoad, hasApiResults]);
+
+  const handleCancelSearch = useCallback(() => {
+    cancelSearch();
+    setSearchQuery('');
+    setShowCancelSearch(false);
+  }, [cancelSearch]);
 
   const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
@@ -491,7 +554,15 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: t('foodSearch.foodDescriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: Math.round(f.calories ?? 0),
+                calories: formatInteger(
+                  resolveRoundedPer100gCaloriesForDisplay({
+                    calories: f.calories,
+                    protein: f.protein,
+                    carbs: f.carbs,
+                    fat: f.fat,
+                    fiber: f.fiber,
+                  })
+                ),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -534,6 +605,7 @@ export function FoodSearchModal({
     searchQuery,
     mealType,
     t,
+    formatInteger,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -548,7 +620,15 @@ export function FoodSearchModal({
           name: f.name ?? '',
           description: t('foodSearch.foodDescriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: Math.round(f.calories ?? 0),
+            calories: formatInteger(
+              resolveRoundedPer100gCaloriesForDisplay({
+                calories: f.calories,
+                protein: f.protein,
+                carbs: f.carbs,
+                fat: f.fat,
+                fiber: f.fiber,
+              })
+            ),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -568,6 +648,7 @@ export function FoodSearchModal({
   }, [
     favoriteFoodsRaw,
     t,
+    formatInteger,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -740,14 +821,10 @@ export function FoodSearchModal({
       onFoodSelect?.({} as FoodItem);
       onFoodTracked?.();
       onClose();
-      showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
       console.error('Error logging same as yesterday:', err);
-      showSnackbar('error', t('foodSearch.sameAsYesterdayError'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('foodSearch.sameAsYesterdayError'));
     } finally {
       setIsAddingSameAsYesterday(false);
     }
@@ -793,6 +870,8 @@ export function FoodSearchModal({
                 placeholderTextColor={theme.colors.text.secondary}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                onSubmitEditing={triggerNow}
+                returnKeyType="search"
                 className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
@@ -865,13 +944,13 @@ export function FoodSearchModal({
                     /* All / Favorites / API tabs: food search results */
                     <View>
                       <SectionHeader
-                        title={
-                          isInitialLoad
-                            ? t('foodSearch.searching')
-                            : hasLocalResults || hasApiResults || isLoadingAPI
-                              ? t('foodSearch.bestMatches')
-                              : t('foodSearch.noResults')
-                        }
+                        title={getSectionHeaderTitle(
+                          isInitialLoad,
+                          hasLocalResults,
+                          hasApiResults,
+                          isLoadingAPI,
+                          t
+                        )}
                       />
                       <View className="gap-1.5">
                         {/* Show initial loading state */}
@@ -879,17 +958,23 @@ export function FoodSearchModal({
                           <View className="flex items-center justify-center py-12">
                             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                             <Text className="mt-2 text-sm text-text-secondary">
-                              {isLoadingLocal && isLoadingAPI
-                                ? t('foodSearch.searchingLocalAndAPI')
-                                : isLoadingLocal
-                                  ? t('foodSearch.searchingLocal')
-                                  : t('foodSearch.searchingAPI')}
+                              {getSearchingStatusText(isLoadingLocal, isLoadingAPI, t)}
                             </Text>
+                            {showCancelSearch ? (
+                              <View className="mt-4">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
+                            ) : null}
                           </View>
                         ) : null}
 
                         {/* Show results when available */}
-                        {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                        {!isInitialLoad && (filteredResults.length > 0 || apiError || usdaError) ? (
                           <>
                             {/* Local Results Section - only show if filter includes local or 'all' */}
                             {(activeFilter === 'all' || activeFilter === 'myFoods') &&
@@ -954,10 +1039,11 @@ export function FoodSearchModal({
                               if (apiSource === 'openfood') {
                                 if (
                                   !(activeFilter === 'all' || activeFilter === 'openfood') ||
-                                  resultsBySource.api.length === 0
+                                  (resultsBySource.api.length === 0 && !apiError)
                                 ) {
                                   return null;
                                 }
+
                                 return (
                                   <View key="openfood" className="mb-4">
                                     <View className="mb-3 flex-row items-center gap-2">
@@ -971,20 +1057,59 @@ export function FoodSearchModal({
                                       </View>
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     </View>
-                                    <View className="gap-1.5">
-                                      {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                        <FoodSearchItemCard
-                                          key={`api-${food.id}`}
-                                          food={{
-                                            ...food,
-                                            iconComponent: food.imageUrl
-                                              ? undefined
-                                              : searchSessionIcon,
-                                          }}
-                                          onAddPress={() => handleFoodClick(food)}
-                                        />
-                                      ))}
-                                    </View>
+                                    {apiError ? (
+                                      <View
+                                        className="mb-4 overflow-hidden rounded-xl border"
+                                        style={{
+                                          backgroundColor: theme.colors.status.error10,
+                                          borderColor: theme.colors.status.error + '33',
+                                        }}
+                                      >
+                                        <View className="flex-row items-center gap-3 p-3">
+                                          <View
+                                            className="items-center justify-center rounded-lg p-2"
+                                            style={{
+                                              backgroundColor: theme.colors.status.error + '22',
+                                            }}
+                                          >
+                                            <AlertTriangle
+                                              size={theme.iconSize.sm}
+                                              color={theme.colors.status.error}
+                                            />
+                                          </View>
+                                          <Text
+                                            className="flex-1 text-xs font-medium"
+                                            style={{ color: theme.colors.status.error }}
+                                          >
+                                            {t('foodSearch.errorLoadingAPI')}
+                                          </Text>
+                                        </View>
+                                        <View className="items-center px-3 pb-3">
+                                          <Button
+                                            label={t('foodSearch.retrySearch')}
+                                            onPress={retryAPI}
+                                            size="sm"
+                                            variant="outline"
+                                            width="full"
+                                          />
+                                        </View>
+                                      </View>
+                                    ) : (
+                                      <View className="gap-1.5">
+                                        {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                          <FoodSearchItemCard
+                                            key={`api-${food.id}`}
+                                            food={{
+                                              ...food,
+                                              iconComponent: food.imageUrl
+                                                ? undefined
+                                                : searchSessionIcon,
+                                            }}
+                                            onAddPress={() => handleFoodClick(food)}
+                                          />
+                                        ))}
+                                      </View>
+                                    )}
                                     {hasMoreAPI ? (
                                       <View className="py-3">
                                         <Button
@@ -1010,10 +1135,11 @@ export function FoodSearchModal({
                               // usda
                               if (
                                 !(activeFilter === 'all' || activeFilter === 'usda') ||
-                                resultsBySource.usda.length === 0
+                                (resultsBySource.usda.length === 0 && !usdaError)
                               ) {
                                 return null;
                               }
+
                               return (
                                 <View key="usda" className="mb-4">
                                   <View className="mb-3 flex-row items-center gap-2">
@@ -1027,15 +1153,54 @@ export function FoodSearchModal({
                                     </View>
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                   </View>
-                                  <View className="gap-1.5">
-                                    {resultsBySource.usda.map((food: UnifiedFoodResult) => (
-                                      <FoodSearchItemCard
-                                        key={`usda-${food.id}`}
-                                        food={{ ...food, iconComponent: searchSessionIcon }}
-                                        onAddPress={() => handleFoodClick(food)}
-                                      />
-                                    ))}
-                                  </View>
+                                  {usdaError ? (
+                                    <View
+                                      className="mb-4 overflow-hidden rounded-xl border"
+                                      style={{
+                                        backgroundColor: theme.colors.status.error10,
+                                        borderColor: theme.colors.status.error + '33',
+                                      }}
+                                    >
+                                      <View className="flex-row items-center gap-3 p-3">
+                                        <View
+                                          className="items-center justify-center rounded-lg p-2"
+                                          style={{
+                                            backgroundColor: theme.colors.status.error + '22',
+                                          }}
+                                        >
+                                          <AlertTriangle
+                                            size={theme.iconSize.sm}
+                                            color={theme.colors.status.error}
+                                          />
+                                        </View>
+                                        <Text
+                                          className="flex-1 text-xs font-medium"
+                                          style={{ color: theme.colors.status.error }}
+                                        >
+                                          {t('foodSearch.errorLoadingUSDA')}
+                                        </Text>
+                                      </View>
+                                      <View className="items-center px-3 pb-3">
+                                        <Button
+                                          label={t('foodSearch.retrySearch')}
+                                          onPress={retryUSDA}
+                                          size="sm"
+                                          variant="outline"
+                                          width="full"
+                                        />
+                                      </View>
+                                    </View>
+                                  ) : (
+                                    <View className="gap-1.5">
+                                      {resultsBySource.usda.map((food: UnifiedFoodResult) => (
+                                        <FoodSearchItemCard
+                                          key={`usda-${food.id}`}
+                                          food={{ ...food, iconComponent: searchSessionIcon }}
+                                          onAddPress={() => handleFoodClick(food)}
+                                        />
+                                      ))}
+                                    </View>
+                                  )}
                                   {hasMoreUSDA ? (
                                     <View className="py-3">
                                       <Button
@@ -1066,13 +1231,24 @@ export function FoodSearchModal({
                             <Text className="ml-2 text-xs text-text-secondary">
                               {t('foodSearch.searchingAPI')}
                             </Text>
+                            {showCancelSearch ? (
+                              <View className="mt-3">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
+                            ) : null}
                           </View>
                         ) : null}
 
                         {/* Show no results state - only when API is completely done */}
                         {!isInitialLoad &&
                         !isLoadingAPI &&
-                        !error &&
+                        !apiError &&
+                        !usdaError &&
                         filteredResults.length === 0 &&
                         searchQuery ? (
                           <View className="py-8 text-center">
@@ -1212,7 +1388,15 @@ export function FoodSearchModal({
                               name: food.name ?? '',
                               description: t('foodSearch.foodDescriptionPer100g', {
                                 brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: Math.round(food.calories ?? 0),
+                                calories: formatInteger(
+                                  resolveRoundedPer100gCaloriesForDisplay({
+                                    calories: food.calories,
+                                    protein: food.protein,
+                                    carbs: food.carbs,
+                                    fat: food.fat,
+                                    fiber: food.fiber,
+                                  })
+                                ),
                               }),
                               brand: food.brand,
                               serving_size: portion100gName,

@@ -2,6 +2,7 @@ import { type LucideIcon, Plus, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '../../theme';
@@ -25,11 +26,11 @@ type FoodSearchItemCardProps = {
 export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(food.protein ?? 0),
-    carbs: Math.round(food.carbs ?? 0),
-    fat: Math.round(food.fat ?? 0),
+    protein: formatRoundedDecimal(food.protein ?? 0, 2),
+    carbs: formatRoundedDecimal(food.carbs ?? 0, 2),
+    fat: formatRoundedDecimal(food.fat ?? 0, 2),
   });
 
   return (

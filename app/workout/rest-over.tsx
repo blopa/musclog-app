@@ -1,7 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { Play, WifiOff } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, View } from 'react-native';
 
@@ -18,17 +17,24 @@ import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { WorkoutService } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestOverScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const { locale } = useFormatAppNumber();
+  const formatDisplayWeight = useCallback(
+    (kg: number) => formatDisplayWeightKg(locale, units, kg),
+    [locale, units]
+  );
   const params = useLocalSearchParams<{ workoutLogId?: string; nextSetOrder?: string }>();
   const workoutLogId = params.workoutLogId;
   const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
@@ -139,13 +145,11 @@ export default function RestOverScreen() {
       return null;
     }
 
-    const d = kgToDisplay(nextExercise.weightKg, units);
-    const rounded = d % 1 === 0 ? d : Math.round(d * 10) / 10;
     return t('restOver.weightWithUnit', {
-      value: rounded,
+      value: formatDisplayWeight(nextExercise.weightKg),
       unit: t(weightUnitKey),
     });
-  }, [nextExercise, units, weightUnitKey, t]);
+  }, [nextExercise, weightUnitKey, t, formatDisplayWeight]);
 
   const handleStartNextSet = () => {
     if (workoutLogId) {
@@ -161,7 +165,6 @@ export default function RestOverScreen() {
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
@@ -172,7 +175,6 @@ export default function RestOverScreen() {
   if (error || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}
@@ -248,7 +250,7 @@ export default function RestOverScreen() {
             setIsWorkoutOverviewModalVisible(true);
           }}
           // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.push('/workout-settings')}
+          // onWorkoutSettings={() => router.navigate('/workout-settings')}
           onEndWorkout={handleEndWorkout}
         />
       ) : null}

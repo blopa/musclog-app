@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { BarChart } from '../charts/BarChart';
@@ -16,6 +19,9 @@ interface WorkoutChartsProps {
 
 export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const dateFnsLocale = useDateFnsLocale();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View>
@@ -27,8 +33,8 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <LineChart
             data={workoutVolumeHistory.map((p) => ({ x: p.date, y: p.volume }))}
             height={200}
-            lineColor="#8b5cf6"
-            areaColor="rgba(139, 92, 246, 0.1)"
+            lineColor={theme.colors.status.violet500}
+            areaColor={theme.colors.status.purple10}
             xDomain={[
               workoutVolumeHistory[0].date,
               workoutVolumeHistory[workoutVolumeHistory.length - 1].date,
@@ -37,8 +43,12 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               Math.min(...workoutVolumeHistory.map((p) => p.volume)) * 0.5,
               Math.max(...workoutVolumeHistory.map((p) => p.volume)) * 1.2,
             ]}
-            tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
-            xAxisLabels={getXAxisLabels(workoutVolumeHistory.map((p) => ({ x: p.date })))}
+            tooltipFormatter={(p) => formatInteger(Math.round(p.y))}
+            xAxisLabels={getXAxisLabels(
+              workoutVolumeHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}
@@ -51,7 +61,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <BarChart
             data={muscleGroupSets.map((m, i) => ({ x: i, y: m.sets }))}
             height={200}
-            barColor="#ec4899"
+            barColor={theme.colors.status.pink500}
             xAxisLabels={getXAxisLabels(
               muscleGroupSets.map((m, i) => ({ x: i })),
               (x) => t(getMuscleGroupTranslationKey(muscleGroupSets[x].muscleGroup))
@@ -60,7 +70,10 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               const translatedMuscleGroup = t(
                 getMuscleGroupTranslationKey(muscleGroupSets[p.x].muscleGroup)
               );
-              return `${translatedMuscleGroup}: ${p.y}`;
+              return t('common.labelColonValue', {
+                label: translatedMuscleGroup,
+                value: formatInteger(Math.round(p.y)),
+              });
             }}
           />
         </ProgressChartSection>

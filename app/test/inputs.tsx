@@ -5,7 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MacroInput } from '../../components/MacroInput';
 import { OptionsSelector } from '../../components/OptionsSelector';
+import { Accordion } from '../../components/theme/Accordion';
 import { CheckRadioBox } from '../../components/theme/CheckRadioBox';
+import { IconPicker } from '../../components/theme/IconPicker';
 import NewNumericalInput from '../../components/theme/NewNumericalInput';
 import { NumericInput } from '../../components/theme/NumericInput';
 import { OptionsMultiSelector } from '../../components/theme/OptionsMultiSelector/OptionsMultiSelector';
@@ -16,10 +18,11 @@ import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { TextInput } from '../../components/theme/TextInput';
 import { ToggleInput } from '../../components/theme/ToggleInput';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 import { TestSection } from './components/TestSection';
 
 export default function InputsTestScreen() {
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('alex@musclog.fit');
   const [targetWeight, setTargetWeight] = useState(85.0);
@@ -34,6 +37,8 @@ export default function InputsTestScreen() {
   const [newNumeric, setNewNumeric] = useState(5);
   const [singleSelection, setSingleSelection] = useState<string | number | undefined>('1');
   const [multiSelection, setMultiSelection] = useState<(string | number)[]>(['a']);
+  const [qaAccordionOpen, setQaAccordionOpen] = useState(false);
+  const [qaIconName, setQaIconName] = useState('restaurant');
 
   const sampleOptions = [
     {
@@ -154,6 +159,7 @@ export default function InputsTestScreen() {
           <StepperInlineInput
             label="Target Weight"
             value={targetWeight}
+            maxFractionDigits={1}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}
@@ -165,6 +171,7 @@ export default function InputsTestScreen() {
           <StepperInput
             label="Weight (KG)"
             value={targetWeight}
+            maxFractionDigits={1}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}
@@ -240,7 +247,10 @@ export default function InputsTestScreen() {
           </View>
         </TestSection>
 
-        <TestSection title="Icons & Pickers" subtitle="Leading, Trailing & Triggers">
+        <TestSection
+          title="Icons & Pickers"
+          subtitle="Leading, trailing triggers — includes PickerButton (native row padding QA)"
+        >
           <TextInput
             label=""
             value=""
@@ -264,6 +274,28 @@ export default function InputsTestScreen() {
             icon={<Clock size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
             onPress={() => {}}
           />
+          <View className="mt-4">
+            <IconPicker
+              label="Icon picker (chevron row QA)"
+              value={qaIconName}
+              onSelect={setQaIconName}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Accordion" subtitle="Header row with chevron — native row padding QA">
+          <Accordion
+            title="Sample section"
+            isOpen={qaAccordionOpen}
+            onToggle={() => setQaAccordionOpen((o) => !o)}
+            count={3}
+          >
+            <View className="p-4">
+              <Text className="text-text-secondary">
+                Accordion body: verify the header chevron is inset on the right on a phone.
+              </Text>
+            </View>
+          </Accordion>
         </TestSection>
 
         <TestSection title="Toggle Input" subtitle="Demo for ToggleInput component">

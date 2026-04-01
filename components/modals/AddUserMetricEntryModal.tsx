@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,18 +7,21 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
-import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+import { TimePickerInput } from './TimePickerInput';
 import { TimePickerModal } from './TimePickerModal';
 
 // UI metric type - subset of UserMetricType for this modal
@@ -58,6 +60,7 @@ export default function AddUserMetricEntryModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(DEFAULT_WEIGHT_KG);
@@ -120,14 +123,6 @@ export default function AddUserMetricEntryModal({
     }
   }, [visible, units]);
 
-  const formatDate = (date: Date) => {
-    return format(date, 'MMM d, yyyy');
-  };
-
-  const formatTime = (date: Date) => {
-    return format(date, 'hh:mm a');
-  };
-
   // Sync PagerView when selectedMetric changes
   useEffect(() => {
     const pageIndex = metricToPageIndex[selectedMetric];
@@ -154,7 +149,7 @@ export default function AddUserMetricEntryModal({
   };
 
   const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedDate(localCalendarDayDate(date));
   };
 
   const handleTimeSelect = (time: Date) => {
@@ -167,11 +162,7 @@ export default function AddUserMetricEntryModal({
       const now = Date.now();
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Combine date and time into a single timestamp
-      // Set the date to midnight for date tracking, but preserve the time component
-      const combinedDate = new Date(selectedDate);
-      combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
-      const dateTimestamp = new Date(combinedDate.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+      const dateTimestamp = localDayStartMs(selectedDate);
 
       const weightKg = displayToKg(weight, units);
       const heightCm = displayToCm(height, units);
@@ -331,7 +322,7 @@ export default function AddUserMetricEntryModal({
 
             <View className="flex-1 items-center">
               <Text className="text-center text-6xl font-extrabold text-text-primary">
-                {config.step < 1 ? value.toFixed(1) : Math.round(value)}
+                {config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value))}
               </Text>
             </View>
 
@@ -361,7 +352,10 @@ export default function AddUserMetricEntryModal({
                 }}
               >
                 <Text className="text-[10px] font-bold text-accent-primary">
-                  +{increment % 1 === 0 ? increment : increment.toFixed(1)}
+                  +
+                  {increment % 1 === 0
+                    ? formatInteger(increment, { useGrouping: false })
+                    : formatDecimal(increment, 1)}
                 </Text>
               </Pressable>
             ))}
@@ -378,23 +372,19 @@ export default function AddUserMetricEntryModal({
         />
 
         {/* Date and Time Sections */}
-        <View className="space-y-3 pb-4">
-          <DateTimeSelectorCard
-            type="date"
-            value={selectedDate}
-            onEdit={handleDateEdit}
-            label={t('bodyMetrics.addEntry.date')}
-            formattedValue={formatDate(selectedDate)}
-            noCard={true}
-          />
-          <DateTimeSelectorCard
-            type="time"
-            value={selectedTime}
-            onEdit={handleTimeEdit}
-            label={t('bodyMetrics.addEntry.time')}
-            formattedValue={formatTime(selectedTime)}
-            noCard={true}
-          />
+        <View className="pb-4">
+          <View style={{ gap: theme.spacing.gap.base }}>
+            <DatePickerInput
+              selectedDate={selectedDate}
+              onPress={handleDateEdit}
+              label={t('bodyMetrics.addEntry.date')}
+            />
+            <TimePickerInput
+              selectedTime={selectedTime}
+              onPress={handleTimeEdit}
+              label={t('bodyMetrics.addEntry.time')}
+            />
+          </View>
 
           {/* Note Section */}
           <View className="mt-3">
@@ -501,6 +491,7 @@ export default function AddUserMetricEntryModal({
         visible={isTimePickerVisible}
         onClose={() => setIsTimePickerVisible(false)}
         selectedTime={selectedTime}
+        title={t('timePicker.selectTime')}
         onTimeSelect={handleTimeSelect}
       />
     </FullScreenModal>

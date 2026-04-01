@@ -50,97 +50,116 @@ function SetCard({
   return (
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={accentStyle}>
-        <Pressable onLongPress={drag} delayLongPress={150} disabled={!drag} style={{ flex: 1 }}>
-          <View className="p-4">
-            {/* Header with grip, title, and remove */}
-            <View className="mb-4 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
-                {/* Grip icon - larger hit target */}
-                <View style={{ marginRight: theme.spacing.gap.sm }}>
-                  <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </View>
-                <Text
-                  className="text-xs font-bold uppercase tracking-widest"
-                  style={{
-                    color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
-                  }}
-                >
-                  {t('workoutDetail.setLabel', { index: displayIndex })}
-                </Text>
-                {item.isPR ? (
-                  <View
-                    style={{ backgroundColor: theme.colors.accent.primary10 }}
-                    className="flex-row items-center rounded px-2 py-0.5"
-                  >
-                    <Text
-                      style={{
-                        color: theme.colors.accent.primary,
-                        fontWeight: theme.typography.fontWeight.extrabold,
-                      }}
-                      className="text-[10px]"
-                    >
-                      PR
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-              <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
-                <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
-                <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{ color: theme.colors.status.errorSolid }}
-                >
-                  {t('workoutDetail.remove')}
-                </Text>
+        <View className="p-4">
+          {/* Header with grip, title, and remove */}
+          <View className="mb-4 flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
+              {/* Grip icon - larger hit target */}
+              <Pressable
+                onLongPress={drag}
+                delayLongPress={150}
+                disabled={!drag}
+                style={{
+                  marginRight: theme.spacing.gap.sm,
+                  padding: theme.spacing.padding.xs,
+                }}
+              >
+                <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
               </Pressable>
+              <Text
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{
+                  color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
+                }}
+              >
+                {t('workoutDetail.setLabel', { index: displayIndex })}
+              </Text>
+              {item.isPR ? (
+                <View
+                  style={{ backgroundColor: theme.colors.accent.primary10 }}
+                  className="flex-row items-center rounded px-2 py-0.5"
+                >
+                  <Text
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontWeight: theme.typography.fontWeight.extrabold,
+                    }}
+                    className="text-[10px]"
+                  >
+                    PR
+                  </Text>
+                </View>
+              ) : null}
             </View>
+            <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
+              <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
+              <Text
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.status.errorSolid }}
+              >
+                {t('workoutDetail.remove')}
+              </Text>
+            </Pressable>
+          </View>
 
-            {/* Inputs */}
-            <View className="mb-4 grid grid-cols-2 gap-4">
+          {/* Inputs */}
+          <View className="mb-4 flex-row gap-4">
+            <View className="flex-1">
               <NewNumericalInput
                 label={t(weightLabelKey)}
                 value={item.weight}
                 onChange={(v) => onChange(item.id, { weight: v })}
                 min={0}
                 step={1}
+                variant="compact"
               />
+            </View>
+            <View className="flex-1">
               <NewNumericalInput
                 label={t('workoutDetail.reps')}
                 value={item.reps}
                 onChange={(v) => onChange(item.id, { reps: v })}
                 min={0}
                 step={1}
+                variant="compact"
               />
             </View>
+          </View>
 
-            <View className="grid grid-cols-2 gap-4">
+          <View className="flex-row gap-4">
+            <View className="flex-1">
               <NewNumericalInput
                 label={t('workoutDetail.partial')}
                 value={item.partialReps}
                 onChange={(v) => onChange(item.id, { partialReps: v })}
                 min={0}
                 step={1}
+                variant="compact"
               />
+            </View>
+            <View className="flex-1">
               <NewNumericalInput
                 label={t('workoutDetail.inputs.restSec')}
                 value={item.rest}
                 onChange={(v) => onChange(item.id, { rest: v })}
                 min={0}
                 step={5}
-              />
-            </View>
-
-            <View className="mt-4">
-              <NewNumericalInput
-                label={t('workoutDetail.rir')}
-                value={item.repsInReserve}
-                onChange={(v) => onChange(item.id, { repsInReserve: v })}
-                min={0}
-                step={1}
+                variant="compact"
               />
             </View>
           </View>
-        </Pressable>
+
+          <View className="mt-4">
+            <NewNumericalInput
+              label={t('workoutDetail.rir')}
+              value={item.repsInReserve}
+              onChange={(v) => onChange(item.id, { repsInReserve: v })}
+              min={0}
+              step={1}
+              variant="compact"
+            />
+          </View>
+        </View>
       </GenericCard>
     </View>
   );
@@ -179,15 +198,23 @@ export default function EditPastWorkoutDataModal({
   };
 
   const handleAdd = () => {
-    const next: SetItem = {
-      id: String(Date.now()),
-      weight: 0,
-      reps: 0,
-      partialReps: 0,
-      rest: 0,
-      repsInReserve: 0,
-    };
-    setSets((s) => [...s, next]);
+    setSets((s) => {
+      const previousSet = s[s.length - 1];
+      const next: SetItem = previousSet
+        ? {
+            ...previousSet,
+            id: String(Date.now()),
+          }
+        : {
+            id: String(Date.now()),
+            weight: 0,
+            reps: 0,
+            partialReps: 0,
+            rest: 0,
+            repsInReserve: 0,
+          };
+      return [...s, next];
+    });
   };
 
   const handleSave = async () => {
@@ -230,13 +257,28 @@ export default function EditPastWorkoutDataModal({
       scrollable={false}
       headerRight={headerRight}
     >
-      <View className="p-4">
+      <View className="flex-1 p-4">
         <DraggableFlatList
           data={sets}
-          scrollEnabled={false}
+          containerStyle={{ flex: 1 }}
+          style={{ flex: 1 }}
+          scrollEnabled
           activationDistance={10}
           keyExtractor={(item) => item.id}
           onDragEnd={({ data }) => setSets(data)}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            <View style={{ marginTop: theme.spacing.gap.base }}>
+              <DashedButton
+                label={t('workoutDetail.addSet')}
+                onPress={handleAdd}
+                size="sm"
+                icon={
+                  <PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />
+                }
+              />
+            </View>
+          }
           renderItem={({ item, drag, isActive, getIndex }: RenderItemParams<SetItem>) => {
             const index = (typeof getIndex === 'function' ? getIndex() : undefined) ?? 0;
             return (
@@ -251,14 +293,6 @@ export default function EditPastWorkoutDataModal({
             );
           }}
         />
-        <View style={{ marginTop: theme.spacing.gap.base }}>
-          <DashedButton
-            label={t('workoutDetail.addSet')}
-            onPress={handleAdd}
-            size="sm"
-            icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
-          />
-        </View>
       </View>
     </FullScreenModal>
   );

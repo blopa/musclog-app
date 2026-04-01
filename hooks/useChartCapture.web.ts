@@ -2,7 +2,9 @@ import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import { formatLocalCalendarDayIso } from '../utils/calendarDate';
 import { showSnackbar } from '../utils/snackbarService';
+import { useTheme } from './useTheme';
 
 function sanitizeFilename(title: string): string {
   return title
@@ -16,40 +18,44 @@ function waitForNextFrame(): Promise<void> {
 }
 
 export function useChartCapture() {
+  const theme = useTheme();
   const captureRef = useRef<View>(null);
   const [isCapturing, setIsCapturing] = useState(false);
 
-  const captureAndShare = useCallback(async (title: string) => {
-    if (!captureRef.current) {
-      return;
-    }
+  const captureAndShare = useCallback(
+    async (title: string) => {
+      if (!captureRef.current) {
+        return;
+      }
 
-    setIsCapturing(true);
-    await waitForNextFrame();
+      setIsCapturing(true);
+      await waitForNextFrame();
 
-    try {
-      const domNode = captureRef.current as unknown as HTMLElement;
-      const dataUrl = await toPng(domNode, {
-        backgroundColor: '#0a1f1a',
-        pixelRatio: 2,
-      });
+      try {
+        const domNode = captureRef.current as unknown as HTMLElement;
+        const dataUrl = await toPng(domNode, {
+          backgroundColor: theme.colors.background.primary,
+          pixelRatio: 2,
+        });
 
-      const date = new Date().toISOString().slice(0, 10);
-      const filename = `musclog-${sanitizeFilename(title)}-${date}.png`;
+        const date = formatLocalCalendarDayIso(new Date());
+        const filename = `musclog-${sanitizeFilename(title)}-${date}.png`;
 
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = filename;
-      a.click();
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = filename;
+        a.click();
 
-      showSnackbar('success', 'Chart saved');
-    } catch (error) {
-      console.error('Chart capture failed:', error);
-      showSnackbar('error', 'Failed to export chart');
-    } finally {
-      setIsCapturing(false);
-    }
-  }, []);
+        showSnackbar('success', 'Chart saved');
+      } catch (error) {
+        console.error('Chart capture failed:', error);
+        showSnackbar('error', 'Failed to export chart');
+      } finally {
+        setIsCapturing(false);
+      }
+    },
+    [theme.colors.background.primary]
+  );
 
   return { captureRef, isCapturing, captureAndShare };
 }

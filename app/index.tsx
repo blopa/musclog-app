@@ -11,6 +11,7 @@ import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySumm
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
+import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
 import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
@@ -24,6 +25,7 @@ import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal'
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { AnimatedContent } from '../components/theme/AnimatedContent';
 import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
@@ -36,9 +38,10 @@ import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
-import { theme } from '../theme';
+import packageJson from '../package.json';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
@@ -54,6 +57,7 @@ declare global {
 const SHOW_NOTIFICATIONS = false;
 
 export default function HomeScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -202,8 +206,8 @@ export default function HomeScreen() {
 
   const handleFoodSearchBarcodePress = useCallback(() => {
     setIsFoodSearchVisible(false);
-    openCamera({ mode: 'barcode-scan' });
-  }, [openCamera]);
+    openCamera({ mode: 'barcode-scan', mealType: selectedMealType });
+  }, [openCamera, selectedMealType]);
 
   // Handle widget action stored by +native-intent.tsx on cold start (camera only —
   // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
@@ -231,7 +235,7 @@ export default function HomeScreen() {
       if (queryParams?.action === 'open-camera') {
         openCamera({ mode: 'barcode-scan' });
       } else if (queryParams?.action === 'open-nutrition') {
-        router.push('/nutrition/food');
+        router.navigate('/nutrition/food');
       }
     };
 
@@ -325,67 +329,78 @@ export default function HomeScreen() {
                 </View>
               </>
             ) : (
-              <>
-                <View className="relative">
-                  <View
-                    className="h-14 w-14 overflow-hidden rounded-full border-4"
-                    style={{
-                      borderColor: dbUser
-                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
-                        : theme.colors.accent.primary,
-                      backgroundColor: dbUser
-                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
-                            .backgroundColor
-                        : theme.colors.accent.primary20,
-                    }}
-                  >
-                    {dbUser?.avatarIcon ? (
-                      <View className="h-full w-full items-center justify-center rounded-full">
-                        {createElement(
-                          getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
-                            .IconComponent,
-                          {
-                            size: 24,
-                            color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
-                              .color,
-                          }
-                        )}
-                      </View>
-                    ) : (
-                      <View
-                        className="h-full w-full items-center justify-center rounded-full"
-                        style={{ backgroundColor: theme.colors.background.imageLight }}
-                      >
-                        <Text className="text-lg font-bold text-text-primary">
-                          {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
-                        </Text>
-                      </View>
-                    )}
+              <AnimatedContent style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <>
+                  <View className="relative">
+                    <View
+                      className="h-14 w-14 overflow-hidden rounded-full border-4"
+                      style={{
+                        borderColor: dbUser
+                          ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                              .color
+                          : theme.colors.accent.primary,
+                        backgroundColor: dbUser
+                          ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                              .backgroundColor
+                          : theme.colors.accent.primary20,
+                      }}
+                    >
+                      {dbUser?.avatarIcon ? (
+                        <View className="h-full w-full items-center justify-center rounded-full">
+                          {createElement(
+                            getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                              .IconComponent,
+                            {
+                              size: 24,
+                              color: getAvatarDisplayProps(
+                                theme,
+                                dbUser.avatarIcon,
+                                dbUser.avatarColor
+                              ).color,
+                            }
+                          )}
+                        </View>
+                      ) : (
+                        <View
+                          className="h-full w-full items-center justify-center rounded-full"
+                          style={{ backgroundColor: theme.colors.background.imageLight }}
+                        >
+                          <Text className="text-lg font-bold text-text-primary">
+                            {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
-                </View>
-                <View>
-                  <Text className="text-sm text-text-secondary">
-                    {t('home.greeting.goodEvening')}
-                  </Text>
-                  <Text className="text-xl font-bold text-text-primary">
-                    {dbUser?.fullName || 'Guest'}
-                  </Text>
-                </View>
-              </>
+                  <View>
+                    <Text className="text-sm text-text-secondary">
+                      {t('home.greeting.goodEvening')}
+                    </Text>
+                    <Text className="text-xl font-bold text-text-primary">
+                      {dbUser?.fullName || 'Guest'}
+                    </Text>
+                  </View>
+                </>
+              </AnimatedContent>
             )}
           </Pressable>
-          {SHOW_NOTIFICATIONS ? (
-            <Pressable
-              className="relative rounded-full bg-bg-overlay p-3"
-              onPress={() => setIsNotificationsVisible(true)}
-            >
-              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-              <View
-                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: theme.colors.status.notificationBadge }}
-              />
-            </Pressable>
-          ) : null}
+          <View className="items-end gap-2">
+            <Text className="text-xs text-text-secondary opacity-40">
+              {`Musclog v${packageJson.version}`}
+            </Text>
+            {SHOW_NOTIFICATIONS ? (
+              <Pressable
+                className="relative rounded-full bg-bg-overlay p-3"
+                onPress={() => setIsNotificationsVisible(true)}
+              >
+                <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
+                <View
+                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: theme.colors.status.notificationBadge }}
+                />
+              </Pressable>
+            ) : null}
+          </View>
         </View>
 
         {/* Daily Summary Card */}
@@ -393,24 +408,46 @@ export default function HomeScreen() {
           {isLoadingNutritionSummary ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
-            <DailySummaryCard
-              calories={dailyCalories}
-              macros={{
-                protein: dailyMacros.protein,
-                carbs: dailyMacros.carbs,
-                fats: dailyMacros.fat,
-              }}
-              menuButton={
-                <MenuButton
-                  onPress={() => setIsGoalsManagementModalVisible(true)}
-                  size="sm"
-                  color={theme.colors.text.primary}
-                />
-              }
-            />
+            <AnimatedContent>
+              <DailySummaryCard
+                calories={{
+                  consumed: dailyCalories.consumed,
+                  remaining: dailyCalories.remaining,
+                  goal: dailyCalories.goal,
+                }}
+                macros={{
+                  protein: {
+                    value: dailyMacros.protein.value,
+                    goal: dailyMacros.protein.goal,
+                  },
+                  carbs: {
+                    value: dailyMacros.carbs.value,
+                    goal: dailyMacros.carbs.goal,
+                  },
+                  fats: {
+                    value: dailyMacros.fat.value,
+                    goal: dailyMacros.fat.goal,
+                  },
+                }}
+                menuButton={
+                  <MenuButton
+                    onPress={() => setIsGoalsManagementModalVisible(true)}
+                    size="sm"
+                    color={theme.colors.text.primary}
+                  />
+                }
+              />
+            </AnimatedContent>
           ) : (
-            <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
+            <AnimatedContent>
+              <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
+            </AnimatedContent>
           )}
+        </View>
+
+        {/* Home Mood Prompt */}
+        <View className="mx-4">
+          <HomeMoodPrompt />
         </View>
 
         {/* Action Buttons */}
@@ -418,7 +455,7 @@ export default function HomeScreen() {
           <ActionButton
             variant="workout"
             label={t('home.actions.startWorkout')}
-            onPress={() => router.push('/workout/workouts')}
+            onPress={() => router.navigate('/workout/workouts')}
           />
           <ActionButton
             variant="food"
@@ -432,7 +469,7 @@ export default function HomeScreen() {
               {t('home.sections.recentFoods')}
             </Text>
             <ShowMoreButton
-              onPress={() => router.push('/nutrition/food')}
+              onPress={() => router.navigate('/nutrition/food')}
               label={t('common.seeAll')}
             />
           </View>
@@ -473,34 +510,38 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentNutritionLogs.length === 0 ? (
-            <WorkoutFoodEmptyState type="food" onButtonPress={() => setIsAddFoodVisible(true)} />
+            <AnimatedContent>
+              <WorkoutFoodEmptyState type="food" onButtonPress={() => setIsAddFoodVisible(true)} />
+            </AnimatedContent>
           ) : (
-            <View className="gap-3">
-              {recentNutritionLogs.slice(0, 2).map((entry) => (
-                <FoodItemCard
-                  key={entry.log.id}
-                  variant="compact"
-                  name={entry.displayName}
-                  calories={Math.round(entry.nutrients.calories)}
-                  protein={Math.round(entry.nutrients.protein)}
-                  carbs={Math.round(entry.nutrients.carbs)}
-                  fat={Math.round(entry.nutrients.fat)}
-                  portion={entry.gramWeight}
-                  image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
-                  mealType={entry.log.type}
-                />
-              ))}
+            <AnimatedContent>
+              <View className="gap-3">
+                {recentNutritionLogs.slice(0, 2).map((entry) => (
+                  <FoodItemCard
+                    key={entry.log.id}
+                    variant="compact"
+                    name={entry.displayName}
+                    calories={entry.nutrients.calories}
+                    protein={entry.nutrients.protein}
+                    carbs={entry.nutrients.carbs}
+                    fat={entry.nutrients.fat}
+                    portion={entry.gramWeight}
+                    image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                    mealType={entry.log.type}
+                  />
+                ))}
 
-              {/* Add Food Button - only show if there's at least one item */}
-              {recentNutritionLogs.length > 0 ? (
-                <DashedButton
-                  label={t('food.meals.addFood')}
-                  onPress={() => setIsAddFoodVisible(true)}
-                  size="sm"
-                  icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                />
-              ) : null}
-            </View>
+                {/* Add Food Button - only show if there's at least one item */}
+                {recentNutritionLogs.length > 0 ? (
+                  <DashedButton
+                    label={t('food.meals.addFood')}
+                    onPress={() => setIsAddFoodVisible(true)}
+                    size="sm"
+                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                  />
+                ) : null}
+              </View>
+            </AnimatedContent>
           )}
         </View>
 
@@ -539,40 +580,44 @@ export default function HomeScreen() {
               ))}
             </View>
           ) : recentWorkouts.length === 0 ? (
-            <WorkoutFoodEmptyState
-              type="workout"
-              onButtonPress={() => router.push('/workout/workouts')}
-            />
+            <AnimatedContent>
+              <WorkoutFoodEmptyState
+                type="workout"
+                onButtonPress={() => router.navigate('/workout/workouts')}
+              />
+            </AnimatedContent>
           ) : (
-            <View className="gap-3">
-              {recentWorkouts.map((workout) => (
-                <DetailedItemCard
-                  key={workout.id}
-                  item={{
-                    name: workout.name,
-                    media: workout.image,
-                    itemOne: { value: workout.calories, icon: Flame },
-                    itemTwo: { value: workout.duration, icon: Clock },
-                    itemThree: {
-                      value: workout.prs !== null ? workout.prs : '--',
-                      icon: Trophy,
-                    },
-                  }}
-                  description={`${workout.date} • ${workout.duration}`}
-                  onPress={() => setSelectedWorkoutId(workout.id)}
-                />
-              ))}
+            <AnimatedContent>
+              <View className="gap-3">
+                {recentWorkouts.map((workout) => (
+                  <DetailedItemCard
+                    key={workout.id}
+                    item={{
+                      name: workout.name,
+                      media: workout.image,
+                      itemOne: { value: workout.calories, icon: Flame },
+                      itemTwo: { value: workout.duration, icon: Clock },
+                      itemThree: {
+                        value: workout.prs !== null ? workout.prs : '--',
+                        icon: Trophy,
+                      },
+                    }}
+                    description={`${workout.date} • ${workout.duration}`}
+                    onPress={() => setSelectedWorkoutId(workout.id)}
+                  />
+                ))}
 
-              {/* Start Workout Button - only show if there's at least one workout */}
-              {recentWorkouts.length > 0 ? (
-                <DashedButton
-                  label={t('startWorkout.label')}
-                  onPress={() => router.push('/workout/workouts')}
-                  size="sm"
-                  icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                />
-              ) : null}
-            </View>
+                {/* Start Workout Button - only show if there's at least one workout */}
+                {recentWorkouts.length > 0 ? (
+                  <DashedButton
+                    label={t('startWorkout.label')}
+                    onPress={() => router.navigate('/workout/workouts')}
+                    size="sm"
+                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                  />
+                ) : null}
+              </View>
+            </AnimatedContent>
           )}
         </View>
 
@@ -590,9 +635,9 @@ export default function HomeScreen() {
           avatarColor: dbUser?.avatarColor,
         }}
         onCoachPress={openCoach}
-        onCyclePress={() => router.push('/cycle')}
+        onCyclePress={() => router.navigate('/cycle')}
         {...(__DEV__ && {
-          onDebugMenuPress: () => router.push('/test/debug'),
+          onDebugMenuPress: () => router.navigate('/test/debug'),
         })}
       />
 

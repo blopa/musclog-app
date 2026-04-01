@@ -1,13 +1,16 @@
-import { format, isSameDay } from 'date-fns';
-import { CalendarDays, ChevronDown } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
-import { theme } from '../../theme';
+import {
+  localCalendarDayDate,
+  localDayClosedRangeMaxMs,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
 type CycleLogModalProps = {
@@ -21,7 +24,9 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const [flow, setFlow] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(initialDate || new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(initialDate || new Date())
+  );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [existingFlowId, setExistingFlowId] = useState<string | null>(null);
   const [existingSymptomId, setExistingSymptomId] = useState<string | null>(null);
@@ -44,7 +49,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   // Reset to initial date or today whenever the modal opens
   useEffect(() => {
     if (visible) {
-      setSelectedDate(initialDate || new Date());
+      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
       resetForm(); // Reset form fields when modal opens
     }
   }, [visible, initialDate]);
@@ -56,21 +61,19 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     }
 
     const loadExistingMetrics = async () => {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      const startMs = localDayStartMs(selectedDate);
+      const endMs = localDayClosedRangeMaxMs(selectedDate);
 
       resetForm(); // Reset form fields before loading new data
 
       const [flowMetrics, symptomMetrics] = await Promise.all([
         UserMetricService.getMetricsHistory('period_flow', {
-          startDate: startOfDay.getTime(),
-          endDate: endOfDay.getTime(),
+          startDate: startMs,
+          endDate: endMs,
         }),
         UserMetricService.getMetricsHistory('period_symptoms', {
-          startDate: startOfDay.getTime(),
-          endDate: endOfDay.getTime(),
+          startDate: startMs,
+          endDate: endMs,
         }),
       ]);
 
@@ -99,7 +102,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const dateTimestamp = selectedDate.getTime();
+      const dateTimestamp = localDayStartMs(selectedDate);
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       if (flow !== null) {
@@ -154,9 +157,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     }
   };
 
-  const isToday = isSameDay(selectedDate, new Date());
-  const dateLabel = isToday ? t('datePicker.today') : format(selectedDate, 'MMM d, yyyy');
-
   return (
     <>
       <CenteredModal
@@ -177,15 +177,14 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         }
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Date Selector */}
-          <Pressable
-            onPress={() => setIsDatePickerVisible(true)}
-            className="mb-6 flex-row items-center gap-3 rounded-xl border-2 border-white/10 px-4 py-3"
-          >
-            <CalendarDays size={18} color={theme.colors.accent.primary} />
-            <Text className="flex-1 font-semibold text-text-primary">{dateLabel}</Text>
-            <ChevronDown size={16} color={theme.colors.text.secondary} />
-          </Pressable>
+          <View className="mb-6">
+            <DatePickerInput
+              hideLabel
+              selectedDate={selectedDate}
+              onPress={() => setIsDatePickerVisible(true)}
+              variant="compact"
+            />
+          </View>
 
           {/* Flow Intensity */}
           <View className="mb-6">
@@ -249,7 +248,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
-        onDateSelect={setSelectedDate}
+        onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
         maxYear={new Date().getFullYear()}
       />
     </>

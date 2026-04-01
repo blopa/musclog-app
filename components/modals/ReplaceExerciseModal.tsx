@@ -210,7 +210,7 @@ export function ReplaceExerciseModal({
                 fontSize: theme.typography.fontSize.base,
               }}
             >
-              {t('replaceExercise.noExercisesMatch', 'No exercises match')}
+              {t('replaceExercise.noExercisesMatch')}
             </Text>
           ) : (
             <>
@@ -245,8 +245,8 @@ export function ReplaceExerciseModal({
                   <Button
                     label={
                       isLoadingMore
-                        ? t('replaceExercise.loadingMore', 'Loading…')
-                        : t('replaceExercise.loadMore', 'Load More')
+                        ? t('replaceExercise.loadingMore')
+                        : t('replaceExercise.loadMore')
                     }
                     onPress={loadMore}
                     size="sm"

@@ -134,20 +134,23 @@ export function UserMenuModal({
                     className="h-14 w-14 overflow-hidden rounded-full border-2"
                     style={{
                       borderColor: user.avatarIcon
-                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color
+                        ? getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor).color
                         : theme.colors.accent.primary,
                       backgroundColor: user.avatarIcon
-                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).backgroundColor
+                        ? getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                            .backgroundColor
                         : theme.colors.background.imageLight,
                     }}
                   >
                     {user.avatarIcon ? (
                       <View className="h-full w-full items-center justify-center rounded-full">
                         {createElement(
-                          getAvatarDisplayProps(user.avatarIcon, user.avatarColor).IconComponent,
+                          getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                            .IconComponent,
                           {
                             size: 24,
-                            color: getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color,
+                            color: getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                              .color,
                           }
                         )}
                       </View>
@@ -182,7 +185,7 @@ export function UserMenuModal({
                   icon={<User size={theme.iconSize.md} color={theme.colors.accent.primary} />}
                   label={t('userMenu.profile')}
                   onPress={() => {
-                    onProfilePress ? onProfilePress() : router.push('/profile');
+                    onProfilePress ? onProfilePress() : router.navigate('/profile');
                     onClose();
                   }}
                 />
@@ -195,7 +198,7 @@ export function UserMenuModal({
                   }
                   label={t('userMenu.progress')}
                   onPress={() => {
-                    onProgressPress ? onProgressPress() : router.push('/progress');
+                    onProgressPress ? onProgressPress() : router.navigate('/progress');
                     onClose();
                   }}
                 />
@@ -206,7 +209,7 @@ export function UserMenuModal({
                   icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
                   label={t('userMenu.cycle')}
                   onPress={() => {
-                    onCyclePress ? onCyclePress() : router.push('/cycle');
+                    onCyclePress ? onCyclePress() : router.navigate('/cycle');
                     onClose();
                   }}
                 />
@@ -217,7 +220,7 @@ export function UserMenuModal({
                   icon={<Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />}
                   label={t('userMenu.workouts')}
                   onPress={() => {
-                    router.push('/workout/workouts');
+                    router.navigate('/workout/workouts');
                     onClose();
                   }}
                 />
@@ -233,7 +236,7 @@ export function UserMenuModal({
                   }
                   label={t('userMenu.food')}
                   onPress={() => {
-                    router.push('/nutrition/food');
+                    router.navigate('/nutrition/food');
                     onClose();
                   }}
                 />
@@ -249,7 +252,7 @@ export function UserMenuModal({
                   }
                   label={t('userMenu.checkin')}
                   onPress={() => {
-                    router.push('/nutrition/checkin-list');
+                    router.navigate('/nutrition/checkin-list');
                     onClose();
                   }}
                 />
@@ -273,7 +276,7 @@ export function UserMenuModal({
                   icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   label={t('userMenu.settings')}
                   onPress={() => {
-                    onSettingsPress ? onSettingsPress() : router.push('/settings');
+                    onSettingsPress ? onSettingsPress() : router.navigate('/settings');
                     onClose();
                   }}
                 />

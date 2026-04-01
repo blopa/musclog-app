@@ -11,9 +11,6 @@ type ViewWithMouseProps = ViewProps & {
   style?: ViewProps['style'] & { cursor?: string; boxShadow?: string };
 };
 
-const DEFAULT_NEON = '#00FFA2';
-const DEFAULT_BORDER = '#1C2623';
-
 const OPACITIES: Record<number, number> = {
   0: 0,
   1: 0.2,
@@ -36,7 +33,7 @@ export function TrainingConsistencyChart({
   data,
   rowsPerColumn = 7,
   columns = 12,
-  accentColor = DEFAULT_NEON,
+  accentColor,
   emptyColor,
   showGlowOnMax = true,
   gridHeight = 128,
@@ -44,6 +41,10 @@ export function TrainingConsistencyChart({
   className,
 }: import('./TrainingConsistencyChart').TrainingConsistencyChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_NEON = theme.colors.status.emeraldLight;
+  const DEFAULT_BORDER = theme.colors.border.dark;
+  const accentColorResolved = accentColor ?? DEFAULT_NEON;
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
@@ -53,8 +54,8 @@ export function TrainingConsistencyChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
-  const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
-  const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
+  const mutedColor = theme.colors.text.tertiary;
+  const textPrimary = theme.colors.text.primary;
 
   const totalCells = rowsPerColumn * columns;
   const cells = data.slice(0, totalCells);
@@ -79,7 +80,7 @@ export function TrainingConsistencyChart({
             borderRadius: theme.borderRadius.xs,
             paddingHorizontal: theme.spacing.padding.sm,
             paddingVertical: theme.spacing.padding.xs,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+            boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
             zIndex: 100,
             alignItems: 'center',
             justifyContent: 'center',
@@ -128,7 +129,7 @@ export function TrainingConsistencyChart({
               style={{
                 fontSize: theme.typography?.fontSize?.xl ?? 20,
                 fontWeight: '700',
-                color: accentColor,
+                color: accentColorResolved,
               }}
             >
               {percentage}%
@@ -186,12 +187,12 @@ export function TrainingConsistencyChart({
                       height: cellHeight,
                       width: '100%',
                       borderRadius: 4,
-                      backgroundColor: isEmpty ? borderColor : accentColor,
+                      backgroundColor: isEmpty ? borderColor : accentColorResolved,
                       opacity: isEmpty ? 1 : opacity,
                       cursor: 'pointer',
                       ...(showGlowOnMax && isMax && !isEmpty
                         ? {
-                            boxShadow: `0 0 ${8}px ${accentColor}66`,
+                            boxShadow: `0 0 ${8}px ${accentColorResolved}66`,
                           }
                         : {}),
                     },
@@ -240,7 +241,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.3,
             }}
           />
@@ -249,7 +250,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.6,
             }}
           />
@@ -258,7 +259,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
             }}
           />
         </View>

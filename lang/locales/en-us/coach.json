@@ -91,7 +91,8 @@
     "share": {
       "title": "Chat with Loggy",
       "noMessages": "There is no chat history to share yet.",
-      "failed": "Failed to share chat history. Please try again."
+      "failed": "Failed to share chat history. Please try again.",
+      "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
     "message": {
       "menuTitle": "Message actions",

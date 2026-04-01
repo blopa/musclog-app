@@ -1,0 +1,53 @@
+{
+  "goalsManagement": {
+    "title": "Управление целями",
+    "subtitle": "Отслеживайте прогресс и историю.",
+    "currentGoals": "ТЕКУЩИЕ ЦЕЛИ",
+    "active": "Активная",
+    "history": "ИСТОРИЯ ЦЕЛЕЙ",
+    "newGoal": "Новая цель",
+    "createGoalDesc": "Установить новые целевые макросы и калории",
+    "createCheckin": "Создать отметку",
+    "createCheckinDesc": "Добавить новую запись отметки питания",
+    "emptyStateMessage": "Создайте новую цель для начала работы",
+    "editGoal": "Редактировать",
+    "deleteGoalAction": "Удалить",
+    "deleteGoal": "Удалить цель",
+    "deleteGoalMessage": "Эта цель будет навсегда удалена из истории.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Вы уверены, что хотите удалить эту цель? Это действие нельзя отменить.",
+      "title": "Цели питания",
+      "searchPlaceholder": "Поиск целей...",
+      "noGoals": "Целей пока нет",
+      "noGoalsDesc": "Установите цели питания, чтобы они отображались здесь",
+      "endOfHistory": "Конец истории целей",
+      "goalOptions": "Параметры цели",
+      "editGoal": "Редактировать цель",
+      "editGoalDesc": "Изменить калории, макросы и целевые значения",
+      "duplicateGoal": "Дублировать цель",
+      "duplicateGoalDesc": "Создать копию для использования как новую цель",
+      "regenerateCheckins": "Пересоздать отметки",
+      "regenerateCheckinsDesc": "Удалить и пересоздать отметки для этой цели",
+      "deleteGoal": "Удалить цель",
+      "deleteGoalDesc": "Удалить эту цель из истории",
+      "subtitleFormat": "{{calories}} ккал • {{phase}} • Цель {{targetWeight}} {{unit}}",
+      "phaseCut": "Сушка",
+      "phaseMaintain": "Поддержание",
+      "phaseBulk": "Набор"
+    },
+    "manageCheckinData": {
+      "title": "Отметки питания",
+      "searchPlaceholder": "Поиск отметок...",
+      "noCheckins": "Отметок пока нет",
+      "noCheckinsDesc": "Отметки создаются при настройке цели питания с расчётом ИИ",
+      "endOfHistory": "Все отметки загружены",
+      "checkinOptions": "Параметры отметки",
+      "editCheckin": "Редактировать отметку",
+      "editCheckinDesc": "Изменить целевые значения отметки",
+      "deleteCheckin": "Удалить отметку",
+      "deleteCheckinDesc": "Навсегда удалить эту отметку",
+      "subtitleFormat": "Цель {{targetWeight}} {{unit}} • {{targetBodyFat}}% жировой массы",
+      "checkinDate": "Дата отметки"
+    }
+  }
+}

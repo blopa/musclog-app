@@ -67,6 +67,7 @@ import type { Theme } from '../../theme';
 import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
@@ -457,6 +458,7 @@ function ComposerWithRestoredText({
   clearFailedMessageText,
   onAttachFile,
   isImageAttachmentEnabled,
+  resetKey,
 }: {
   props: ComposerProps;
   t: TFunction;
@@ -465,6 +467,7 @@ function ComposerWithRestoredText({
   clearFailedMessageText: () => void;
   onAttachFile: () => void;
   isImageAttachmentEnabled: boolean;
+  resetKey: number;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -500,6 +503,7 @@ function ComposerWithRestoredText({
         </Pressable>
       ) : null}
       <Composer
+        key={resetKey}
         {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
           ...props.textInputProps,
@@ -520,7 +524,8 @@ const renderComposer = (
   failedMessageText: string | null,
   clearFailedMessageText: () => void,
   onAttachFile: () => void,
-  isImageAttachmentEnabled: boolean
+  isImageAttachmentEnabled: boolean,
+  resetKey: number
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -530,6 +535,7 @@ const renderComposer = (
     clearFailedMessageText={clearFailedMessageText}
     onAttachFile={onAttachFile}
     isImageAttachmentEnabled={isImageAttachmentEnabled}
+    resetKey={resetKey}
   />
 );
 
@@ -609,7 +615,7 @@ type CoachModalProps = {
 
 export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -658,6 +664,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
   const [isDeleteMessageModalVisible, setIsDeleteMessageModalVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<ExtendedIMessage | null>(null);
+  const [isDeletingMessage, setIsDeletingMessage] = useState(false);
+  const [composerResetKey, setComposerResetKey] = useState(0);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
@@ -711,6 +719,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       if (text || image) {
         sendMessage(text ?? '', image);
         setAttachedImage(null);
+        setComposerResetKey((k) => k + 1);
       }
     },
     [sendMessage, attachedImage]
@@ -824,9 +833,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       }
     } catch (error) {
       console.error('Error picking document:', error);
-      showSnackbar('error', t('coach.errors.filePickFailed'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.errors.filePickFailed'));
     }
   }, [showSnackbar, t]);
 
@@ -858,7 +865,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const handleGoToSettings = useCallback(() => {
     onClose();
-    router.push('/settings');
+    router.navigate('/settings');
   }, [onClose, router]);
 
   const handleSeeAllMeals = useCallback(() => {
@@ -884,7 +891,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               onPress: async () => {
                 setSelectedMessage(null);
                 await Clipboard.setStringAsync(selectedMessage.text ?? '');
-                showSnackbar('success', t('coach.message.copied'), { action: t('snackbar.ok') });
+                showSnackbar('success', t('coach.message.copied'));
               },
             },
             {
@@ -939,6 +946,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
       selectedMealForTracking.mealTypeIdentifier.slice(1);
 
+    const totalIngredientGrams = selectedMealForTracking.ingredients.reduce(
+      (sum, i) => sum + i.grams,
+      0
+    );
+
     return {
       name: ingredientsDesc,
       type: mealLabel,
@@ -946,6 +958,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       protein: selectedMealForTracking.protein,
       carbs: selectedMealForTracking.carbs,
       fat: selectedMealForTracking.fats,
+      grams: totalIngredientGrams > 0 ? totalIngredientGrams : 100,
     };
   }, [selectedMealForTracking]);
 
@@ -953,9 +966,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     try {
       const records = await ChatService.getMessagesByContext(conversationContext);
       if (!records.length) {
-        showSnackbar('error', t('coach.share.noMessages'), {
-          action: t('snackbar.ok'),
-        });
+        showSnackbar('error', t('coach.share.noMessages'));
         return;
       }
 
@@ -968,18 +979,24 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       for (const record of sorted) {
         const senderLabel = record.sender === 'user' ? youLabel : coachLabel;
-        const timestamp = new Date(record.createdAt).toLocaleString();
-        lines.push(`${timestamp} - ${senderLabel}: ${record.message}`);
+        const timestamp = new Date(record.createdAt).toLocaleString(
+          i18n.resolvedLanguage ?? i18n.language
+        );
+        lines.push(
+          t('coach.share.historyLine', {
+            timestamp,
+            sender: senderLabel,
+            message: record.message,
+          })
+        );
       }
 
       await Share.share({ message: lines.join('\n') });
     } catch (err) {
       console.error('[CoachModal] shareHistory failed:', err);
-      showSnackbar('error', t('coach.share.failed'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.share.failed'));
     }
-  }, [conversationContext, showSnackbar, t]);
+  }, [conversationContext, i18n.resolvedLanguage, i18n.language, showSnackbar, t]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);
@@ -987,21 +1004,37 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   }, []);
 
   const handleConfirmClearHistory = useCallback(async () => {
+    setIsClearingHistory(true);
+    await flushLoadingPaint();
     try {
-      setIsClearingHistory(true);
       await clearHistory(conversationContext);
-      showSnackbar('success', t('coach.success.historyCleared'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
       console.error('[CoachModal] clearHistory failed:', err);
-      showSnackbar('error', t('coach.errors.generalError'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsClearingHistory(false);
     }
   }, [clearHistory, conversationContext, showSnackbar, t]);
+
+  const handleConfirmDeleteMessage = useCallback(async () => {
+    if (!messageToDelete) {
+      return;
+    }
+
+    const id = messageToDelete._id;
+    setIsDeletingMessage(true);
+    await flushLoadingPaint();
+    try {
+      await deleteMessage(id);
+      showSnackbar('success', t('coach.message.deleted'));
+    } catch (err) {
+      console.error('[CoachModal] deleteMessage failed:', err);
+      showSnackbar('error', t('coach.errors.generalError'));
+    } finally {
+      setIsDeletingMessage(false);
+    }
+  }, [messageToDelete, deleteMessage, showSnackbar, t]);
 
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [
@@ -1239,9 +1272,18 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         failedMessageText,
         clearFailedMessageText,
         handleAttachFile,
-        pendingIntention === TRACK_MEAL
+        pendingIntention === TRACK_MEAL,
+        composerResetKey
       ),
-    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile, pendingIntention]
+    [
+      t,
+      theme,
+      failedMessageText,
+      clearFailedMessageText,
+      handleAttachFile,
+      pendingIntention,
+      composerResetKey,
+    ]
   );
 
   const gcRenderSend = useCallback(
@@ -1482,18 +1524,12 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           setIsDeleteMessageModalVisible(false);
           setMessageToDelete(null);
         }}
-        onConfirm={async () => {
-          if (messageToDelete) {
-            await deleteMessage(messageToDelete._id);
-            showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
-          }
-          setIsDeleteMessageModalVisible(false);
-          setMessageToDelete(null);
-        }}
+        onConfirm={handleConfirmDeleteMessage}
         title={t('coach.message.delete')}
         message={t('coach.message.deleteDesc')}
         confirmLabel={t('common.delete')}
         variant="destructive"
+        isLoading={isDeletingMessage}
       />
 
       {selectedMealForTracking && mealForLogMealModal ? (
@@ -1503,13 +1539,14 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           meal={mealForLogMealModal}
           ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
-          onLogMeal={async (date, logMealType) => {
+          onLogMeal={async (date, logMealType, portionGrams) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
               selectedMealForTracking.mealTypeIdentifier,
               selectedMealForTracking.ingredients,
               date,
-              logMealType
+              logMealType,
+              portionGrams
             );
             setSelectedMealForTracking(null);
           }}

@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { format } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
 import type { Units } from '../constants/settings';
@@ -8,7 +8,11 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
-import { theme } from '../theme';
+import i18n from '../lang/lang';
+import { type Theme } from '../theme';
+import { localDayStartMs } from './calendarDate';
+import { getDateFnsLocale } from './dateFnsLocale';
+import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
@@ -45,6 +49,9 @@ export type WorkoutHistoryItem = {
 };
 
 export type WorkoutHistorySection = {
+  /** Stable `yyyy-MM` for grouping, merging, and React keys */
+  monthKey: string;
+  /** Localized month heading for display */
   month: string;
   workouts: WorkoutHistoryItem[];
 };
@@ -54,26 +61,35 @@ export type TranslationFunction = (key: string) => string;
 // Formatting Functions
 
 /**
- * Format duration in minutes to readable format
+ * Format duration in minutes for display. Pass `locale` (i18n) so digits/separators match the app.
  */
-export function formatDuration(minutes: number, t: TranslationFunction): string {
+export function formatDuration(minutes: number, t: TranslationFunction, locale: string): string {
   if (minutes < 60) {
-    return `${minutes} ${t('common.min')}`;
+    return `${formatAppInteger(locale, minutes)} ${t('common.min')}`;
   }
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}${t('common.min')}` : `${hours}h`;
+
+  return mins > 0
+    ? `${formatAppInteger(locale, hours)}h ${formatAppInteger(locale, mins)}${t('common.min')}`
+    : `${formatAppInteger(locale, hours)}h`;
 }
 
 /**
- * Format volume with weight unit suffix (kg or lb)
+ * Format volume with weight unit suffix (kg or lb). Pass app locale (i18n) for correct separators.
  */
-export function formatVolume(volume: number, t: TranslationFunction, units: Units): string {
+export function formatVolume(
+  volume: number,
+  t: TranslationFunction,
+  units: Units,
+  locale: string
+): string {
   const unit = t(getWeightUnitI18nKey(units));
   if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}k ${unit}`;
+    return `${formatAppDecimal(locale, volume / 1000, 1)}k ${unit}`;
   }
-  return `${Math.round(volume).toLocaleString()} ${unit}`;
+  return `${formatAppInteger(locale, Math.round(volume))} ${unit}`;
 }
 
 // Workout Classification
@@ -81,7 +97,7 @@ export function formatVolume(volume: number, t: TranslationFunction, units: Unit
 /**
  * Get icon and colors based on workout type
  */
-export function getWorkoutIcon(workoutName: string): IconData {
+export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
   const nameLower = workoutName.toLowerCase();
   if (nameLower.includes('run') || nameLower.includes('cardio')) {
     return {
@@ -90,6 +106,7 @@ export function getWorkoutIcon(workoutName: string): IconData {
       iconBgOpacity: theme.colors.status.emerald10,
     };
   }
+
   if (nameLower.includes('leg') || nameLower.includes('squat')) {
     return {
       icon: Square,
@@ -97,6 +114,7 @@ export function getWorkoutIcon(workoutName: string): IconData {
       iconBgOpacity: theme.colors.accent.primary10,
     };
   }
+
   return {
     icon: Dumbbell,
     iconBgColor: theme.colors.status.indigo600,
@@ -177,12 +195,12 @@ export function normalizeMuscleGroup(group: string): string {
 export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange | undefined {
   if (dateRange === '30') {
     const endDate = Date.now();
-    const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+    const startDate = localDayStartMs(subDays(new Date(), 30));
     return { startDate, endDate };
   }
   if (dateRange === '90') {
     const endDate = Date.now();
-    const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+    const startDate = localDayStartMs(subDays(new Date(), 90));
     return { startDate, endDate };
   }
   // 'custom' date range would need a date picker, skip for now
@@ -196,8 +214,11 @@ export async function processWorkouts(
   workouts: WorkoutLog[],
   filters: WorkoutFilters,
   t: TranslationFunction,
-  units: Units
+  units: Units,
+  theme: Theme
 ): Promise<WorkoutHistoryItem[]> {
+  const locale = getDateFnsLocale(i18n.language);
+  const appLocale = i18n.resolvedLanguage ?? i18n.language;
   const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
     workouts.map(async (workout) => {
       // Calculate duration
@@ -244,16 +265,16 @@ export async function processWorkouts(
       // Format date
       const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
       const workoutDate = new Date(dateTimestamp);
-      const dateStr = format(workoutDate, 'MMM d • hh:mm a');
+      const dateStr = format(workoutDate, 'MMM d • hh:mm a', { locale });
 
       // Get icon and colors
-      const iconData = getWorkoutIcon(workout.workoutName ?? '');
+      const iconData = getWorkoutIcon(theme, workout.workoutName ?? '');
 
       // Format stats
       const stats: { label: string; value: string }[] = [
         {
           label: t('pastWorkoutHistory.stats.duration'),
-          value: formatDuration(durationMinutes, t),
+          value: formatDuration(durationMinutes, t, appLocale),
         },
       ];
 
@@ -261,7 +282,7 @@ export async function processWorkouts(
       if (workout.totalVolume && workout.totalVolume > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.volume'),
-          value: formatVolume(workout.totalVolume, t, units),
+          value: formatVolume(workout.totalVolume, t, units, appLocale),
         });
       }
 
@@ -269,7 +290,7 @@ export async function processWorkouts(
       if (workout.caloriesBurned && workout.caloriesBurned > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.calories'),
-          value: `${workout.caloriesBurned} ${t('common.kcal')}`,
+          value: `${formatAppInteger(appLocale, workout.caloriesBurned)} ${t('common.kcal')}`,
         });
       }
 
@@ -295,11 +316,12 @@ export async function processWorkouts(
  * Group workouts by month
  */
 export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHistorySection[] {
+  const locale = getDateFnsLocale(i18n.language);
   const groupedByMonth = new Map<string, WorkoutHistoryItem[]>();
 
   workouts.forEach((workout) => {
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'MMMM yyyy');
+    const monthKey = format(date, 'yyyy-MM');
 
     if (!groupedByMonth.has(monthKey)) {
       groupedByMonth.set(monthKey, []);
@@ -308,15 +330,12 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
   });
 
   return Array.from(groupedByMonth.entries())
-    .map(([month, workouts]) => ({
-      month,
-      workouts,
+    .map(([monthKey, monthWorkouts]) => ({
+      monthKey,
+      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
+      workouts: monthWorkouts,
     }))
-    .sort((a, b) => {
-      const dateA = new Date(a.month);
-      const dateB = new Date(b.month);
-      return dateB.getTime() - dateA.getTime();
-    });
+    .sort((a, b) => b.monthKey.localeCompare(a.monthKey));
 }
 
 /**
@@ -326,12 +345,13 @@ export function mergeWorkoutSections(
   existing: WorkoutHistorySection[],
   newWorkouts: WorkoutHistoryItem[]
 ): WorkoutHistorySection[] {
+  const locale = getDateFnsLocale(i18n.language);
   // Create a map of existing sections and track existing workout IDs to avoid duplicates
   const sectionMap = new Map<string, WorkoutHistoryItem[]>();
   const existingWorkoutIds = new Set<string>();
 
   existing.forEach((section) => {
-    sectionMap.set(section.month, [...section.workouts]);
+    sectionMap.set(section.monthKey, [...section.workouts]);
     section.workouts.forEach((workout) => {
       existingWorkoutIds.add(workout.id);
     });
@@ -345,7 +365,7 @@ export function mergeWorkoutSections(
     }
 
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'MMMM yyyy');
+    const monthKey = format(date, 'yyyy-MM');
 
     if (!sectionMap.has(monthKey)) {
       sectionMap.set(monthKey, []);
@@ -356,15 +376,12 @@ export function mergeWorkoutSections(
 
   // Convert back to array and sort
   return Array.from(sectionMap.entries())
-    .map(([month, workouts]) => ({
-      month,
+    .map(([monthKey, workouts]) => ({
+      monthKey,
+      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
       workouts: workouts.sort((a, b) => b.dateTimestamp - a.dateTimestamp), // Sort within month (newest first)
     }))
-    .sort((a, b) => {
-      const dateA = new Date(a.month);
-      const dateB = new Date(b.month);
-      return dateB.getTime() - dateA.getTime();
-    });
+    .sort((a, b) => b.monthKey.localeCompare(a.monthKey));
 }
 
 /**

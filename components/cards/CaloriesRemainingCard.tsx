@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 import { MacroCard } from './MacroCard';
@@ -49,7 +50,8 @@ export function CaloriesRemainingCard({
   menuButton,
 }: CaloriesRemainingCardProps) {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const needsVerticalLayout =
     willOverflow(macros.protein.amount, macros.protein.goal) ||
@@ -65,16 +67,19 @@ export function CaloriesRemainingCard({
               <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
               <View className="mb-1 flex-row items-baseline gap-2">
                 <Text className="text-6xl font-bold text-text-primary">
-                  {calories.consumed.toLocaleString(i18n.language, { useGrouping: false })}
+                  {formatInteger(Math.round(calories.consumed), { useGrouping: false })}
                 </Text>
                 <Text className="text-2xl text-text-secondary">
-                  / {calories.total.toLocaleString(i18n.language, { useGrouping: false })}
+                  / {formatInteger(Math.round(calories.total), { useGrouping: false })}
                 </Text>
                 <Text
                   className="ml-auto text-3xl font-semibold"
                   style={{ color: theme.colors.accent.secondary }}
                 >
-                  {calories.percentage}%
+                  {calories.percentage % 1 === 0
+                    ? formatInteger(Math.round(calories.percentage), { useGrouping: false })
+                    : formatRoundedDecimal(calories.percentage, 1)}
+                  %
                 </Text>
               </View>
             </View>

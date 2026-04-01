@@ -8,6 +8,7 @@ import NutritionCheckin from '../database/models/NutritionCheckin';
 import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
+import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
 
 export class NotificationService {
   private static isConfigured = false;
@@ -31,11 +32,13 @@ export class NotificationService {
     });
 
     if (Platform.OS === 'android') {
+      // Use dark theme colors for notification channels as per requirements.
+      // this will not dynamically update if the theme is changed.
       await Notifications.setNotificationChannelAsync('default', {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: darkTheme.colors.status.error,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {

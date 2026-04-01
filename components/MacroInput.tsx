@@ -14,6 +14,8 @@ type MacroInputProps = {
   topRightElement: ReactNode;
   variant?: MacroInputVariant;
   size?: MacroInputSize;
+  /** When true, uses a decimal-friendly keyboard (e.g. custom food macros). */
+  allowDecimals?: boolean;
 };
 
 const getVariantsData = (theme: Theme) => {
@@ -60,6 +62,7 @@ export function MacroInput({
   topRightElement,
   variant = 'default',
   size = 'full',
+  allowDecimals = false,
 }: MacroInputProps) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
@@ -96,7 +99,7 @@ export function MacroInput({
         onChangeText={onChange}
         placeholder="0"
         placeholderTextColor={theme.colors.text.primary12}
-        keyboardType="numeric"
+        keyboardType={allowDecimals ? 'decimal-pad' : 'numeric'}
         selectTextOnFocus
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

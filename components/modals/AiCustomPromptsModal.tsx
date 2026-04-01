@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AiCustomPrompt } from '../../database/models';
 import { useAiCustomPrompts } from '../../hooks/useAiCustomPrompts';
 import { useTheme } from '../../hooks/useTheme';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -26,11 +27,20 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
   const [editingPrompt, setEditingPrompt] = useState<AiCustomPrompt | null>(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [promptToDelete, setPromptToDelete] = useState<AiCustomPrompt | null>(null);
+  const [isDeletingPrompt, setIsDeletingPrompt] = useState(false);
 
   const handleDelete = async () => {
-    if (promptToDelete) {
+    if (!promptToDelete) {
+      return;
+    }
+
+    setIsDeletingPrompt(true);
+    await flushLoadingPaint();
+    try {
       await deletePrompt(promptToDelete.id);
       setPromptToDelete(null);
+    } finally {
+      setIsDeletingPrompt(false);
     }
   };
 
@@ -155,6 +165,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
         message={t('settings.aiSettings.deletePromptConfirm')}
         confirmLabel={t('common.delete')}
         variant="destructive"
+        isLoading={isDeletingPrompt}
       />
     </FullScreenModal>
   );

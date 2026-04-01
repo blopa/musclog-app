@@ -1,8 +1,6 @@
-import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 import {
   Apple,
-  Calendar,
   Check,
   CheckCircle2,
   Coffee,
@@ -14,7 +12,14 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Switch, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  Switch,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import type { MealType } from '../../database/models';
@@ -22,14 +27,19 @@ import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
+import { TextInput } from '../theme/TextInput';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -169,6 +179,8 @@ const MealMacrosSummary = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { width: windowWidth } = useWindowDimensions();
 
   // Calculate progress percentages (simple estimation)
   const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
@@ -240,7 +252,7 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
               }}
             >
-              {Math.round(calories)} {t('common.kcal')}
+              {formatRoundedDecimal(calories, 2)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -269,20 +281,20 @@ const MealMacrosSummary = ({
 
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
-            label={t('food.macros.protein')}
-            value={`${Math.round(macros.protein)}g`}
+            label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
+            value={`${formatRoundedDecimal(macros.protein, 2)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
-            label={t('food.macros.carbs')}
-            value={`${Math.round(macros.carbs)}g`}
+            label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
+            value={`${formatRoundedDecimal(macros.carbs, 2)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
-            label={t('food.macros.fat')}
-            value={`${Math.round(macros.fat)}g`}
+            label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
+            value={`${formatRoundedDecimal(macros.fat, 2)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}
           />
@@ -304,12 +316,15 @@ export function CreateMealModal({
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+  const [mealOptionsMenuVisible, setMealOptionsMenuVisible] = useState(false);
+  const [deleteMealConfirmVisible, setDeleteMealConfirmVisible] = useState(false);
+  const [isDeletingMeal, setIsDeletingMeal] = useState(false);
   const [ingredientToRemoveId, setIngredientToRemoveId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -318,6 +333,7 @@ export function CreateMealModal({
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
 
   const isQuickTrack = mode === 'quickTrack';
+
   const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(
     isQuickTrack ? undefined : meal
   );
@@ -325,6 +341,13 @@ export function CreateMealModal({
   useEffect(() => {
     setMealName(meal?.name ?? '');
   }, [meal]);
+
+  useEffect(() => {
+    if (!visible) {
+      setMealOptionsMenuVisible(false);
+      setDeleteMealConfirmVisible(false);
+    }
+  }, [visible]);
 
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
@@ -396,17 +419,31 @@ export function CreateMealModal({
     setIsConfirmationModalVisible(false);
   };
 
+  const handleConfirmDeleteMeal = async () => {
+    if (!meal) {
+      return;
+    }
+
+    setIsDeletingMeal(true);
+    try {
+      await MealService.deleteMeal(meal.id);
+      onSave?.();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      showSnackbar('error', t('common.deleteFailed'));
+    } finally {
+      setIsDeletingMeal(false);
+    }
+  };
+
   const handleTrack = async () => {
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'));
       return;
     }
     if (saveToMyMeals && !mealName.trim()) {
-      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'));
       return;
     }
 
@@ -431,14 +468,10 @@ export function CreateMealModal({
       }
       onTracked?.();
       onClose();
-      showSnackbar('success', t('food.quickTrackMeal.successMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
-      showSnackbar('error', t('food.quickTrackMeal.errorMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
     }
@@ -447,17 +480,13 @@ export function CreateMealModal({
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
-      showSnackbar('error', t('food.createMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.mealNameRequired'));
       return;
     }
 
     // Validate ingredients
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.createMeal.ingredientsRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.ingredientsRequired'));
       return;
     }
 
@@ -492,9 +521,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
-      showSnackbar('error', t('food.createMeal.saveFailed'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -555,7 +582,11 @@ export function CreateMealModal({
             ? t('food.meals.manageMealData.editMeal')
             : t('food.createMeal.title')
       }
-      headerRight={isQuickTrack ? undefined : <MenuButton size="md" className="p-2" />}
+      headerRight={
+        !isQuickTrack && meal ? (
+          <MenuButton size="md" className="p-2" onPress={() => setMealOptionsMenuVisible(true)} />
+        ) : undefined
+      }
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
@@ -586,49 +617,13 @@ export function CreateMealModal({
       <View className="flex-1 px-4 py-6">
         {/* Meal Name Input Section (create/edit only) */}
         {!isQuickTrack ? (
-          <View className="mb-6 space-y-2">
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
-                marginLeft: theme.spacing.margin.xs,
-              }}
-            >
-              {t('food.createMeal.mealName')}
-            </Text>
-            <View
-              style={{
-                height: theme.components.button.height.md,
-                backgroundColor: theme.colors.background.card,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
-                borderColor: isFocused ? theme.colors.accent.primary : theme.colors.border.light,
-                paddingHorizontal: theme.spacing.padding.base,
-                justifyContent: 'center',
-                shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
-                shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.subtle,
-                shadowRadius: theme.shadows.radius8.shadowRadius,
-                elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
-              }}
-            >
-              <TextInput
-                value={mealName}
-                onChangeText={setMealName}
-                placeholder={t('food.createMeal.mealNamePlaceholder')}
-                placeholderTextColor={theme.colors.text.tertiary}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  color: theme.colors.text.primary,
-                  borderWidth: theme.borderWidth.none,
-                }}
-              />
-            </View>
+          <View className="mb-6">
+            <TextInput
+              label={t('food.createMeal.mealName')}
+              value={mealName}
+              onChangeText={setMealName}
+              placeholder={t('food.createMeal.mealNamePlaceholder')}
+            />
           </View>
         ) : null}
 
@@ -738,7 +733,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {Math.round(item.amount)}g
+                        {formatInteger(Math.round(item.amount))}g
                       </Text>
                       <View
                         style={{
@@ -754,7 +749,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {Math.round(item.calories)} {t('common.kcal')}
+                        {formatRoundedDecimal(item.calories, 2)} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>
@@ -765,50 +760,20 @@ export function CreateMealModal({
               ))
             )}
 
-            <Pressable
-              onPress={() => setIsAddFoodVisible(true)}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing.gap.sm,
-                paddingVertical: theme.spacing.padding.base,
-                marginTop: theme.spacing.padding.sm,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: theme.borderWidth.thin,
-                borderStyle: 'dashed',
-                borderColor: theme.colors.border.dashed,
-                backgroundColor: pressed ? theme.colors.accent.primary5 : 'transparent',
-              })}
-            >
-              <View
-                style={{
-                  width: theme.iconSize.xl,
-                  height: theme.iconSize.xl,
-                  borderRadius: theme.borderRadius.md,
-                  backgroundColor: theme.colors.background.secondaryDark,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Plus
-                  size={theme.iconSize.sm}
-                  color={theme.colors.text.secondary}
-                  strokeWidth={theme.strokeWidth.thick}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                }}
-              >
-                {isQuickTrack
+            <Button
+              variant="dashed"
+              size="sm"
+              width="full"
+              icon={Plus}
+              iconBgColor={theme.colors.background.secondaryDark}
+              label={
+                isQuickTrack
                   ? t('food.quickTrackMeal.addIngredient')
-                  : t('food.createMeal.addFoodItem')}
-              </Text>
-            </Pressable>
+                  : t('food.createMeal.addFoodItem')
+              }
+              onPress={() => setIsAddFoodVisible(true)}
+              style={{ marginTop: theme.spacing.padding.sm }}
+            />
           </View>
         </View>
 
@@ -832,43 +797,12 @@ export function CreateMealModal({
               />
             </View>
             <View className="mb-6">
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: theme.typography.letterSpacing.extraWide,
-                  marginLeft: theme.spacing.margin.xs,
-                  marginBottom: theme.spacing.padding.sm,
-                }}
-              >
-                {t('food.quickTrackMeal.date')}
-              </Text>
-              <Pressable
+              <DatePickerInput
+                label={t('food.quickTrackMeal.date')}
+                selectedDate={selectedDate}
                 onPress={() => setShowDatePicker(true)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: theme.spacing.gap.sm,
-                  padding: theme.spacing.padding.base,
-                  backgroundColor: theme.colors.background.card,
-                  borderRadius: theme.borderRadius.lg,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.border.light,
-                }}
-              >
-                <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.base,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.primary,
-                  }}
-                >
-                  {format(selectedDate, 'yyyy-MM-dd')}
-                </Text>
-              </Pressable>
+                variant="default"
+              />
             </View>
 
             <View className="mb-6">
@@ -927,46 +861,13 @@ export function CreateMealModal({
             </View>
 
             {saveToMyMeals ? (
-              <View className="mb-6 space-y-2">
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.secondary,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.extraWide,
-                    marginLeft: theme.spacing.margin.xs,
-                  }}
-                >
-                  {t('food.quickTrackMeal.mealName')}
-                </Text>
-                <View
-                  style={{
-                    height: theme.components.button.height.md,
-                    backgroundColor: theme.colors.background.card,
-                    borderRadius: theme.borderRadius.md,
-                    borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
-                    borderColor: isFocused
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.light,
-                    paddingHorizontal: theme.spacing.padding.base,
-                    justifyContent: 'center',
-                  }}
-                >
-                  <TextInput
-                    value={mealName}
-                    onChangeText={setMealName}
-                    placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    style={{
-                      fontSize: theme.typography.fontSize.base,
-                      color: theme.colors.text.primary,
-                      borderWidth: theme.borderWidth.none,
-                    }}
-                  />
-                </View>
+              <View className="mb-6">
+                <TextInput
+                  label={t('food.quickTrackMeal.mealName')}
+                  value={mealName}
+                  onChangeText={setMealName}
+                  placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
+                />
               </View>
             ) : null}
           </>
@@ -981,13 +882,35 @@ export function CreateMealModal({
         />
       ) : null}
 
+      {!isQuickTrack && meal ? (
+        <BottomPopUpMenu
+          visible={mealOptionsMenuVisible}
+          onClose={() => setMealOptionsMenuVisible(false)}
+          title={t('food.meals.manageMealData.mealOptions')}
+          items={[
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error,
+              iconBgColor: theme.colors.status.error20,
+              title: t('food.meals.manageMealData.deleteMeal'),
+              description: t('food.meals.manageMealData.deleteMealDesc'),
+              titleColor: theme.colors.status.error,
+              onPress: () => {
+                setMealOptionsMenuVisible(false);
+                setDeleteMealConfirmVisible(true);
+              },
+            },
+          ]}
+        />
+      ) : null}
+
       {isQuickTrack ? (
         <DatePickerModal
           visible={showDatePicker}
           onClose={() => setShowDatePicker(false)}
           selectedDate={selectedDate}
           onDateSelect={(date) => {
-            setSelectedDate(date);
+            setSelectedDate(localCalendarDayDate(date));
             setShowDatePicker(false);
           }}
         />
@@ -1000,6 +923,17 @@ export function CreateMealModal({
         message={t('food.createMeal.deleteIngredientWarning')}
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
+      />
+      <ConfirmationModal
+        visible={deleteMealConfirmVisible}
+        onClose={() => setDeleteMealConfirmVisible(false)}
+        onConfirm={handleConfirmDeleteMeal}
+        title={t('food.meals.manageMealData.deleteMeal')}
+        message={t('food.meals.manageMealData.deleteMealWarning')}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="destructive"
+        isLoading={isDeletingMeal}
       />
     </FullScreenModal>
   );

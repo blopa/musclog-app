@@ -40,7 +40,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
           </Text>
 
           <Button
-            label={t('dailySummaryCard.setGoals', 'Set Goals')}
+            label={t('dailySummaryCard.setGoals')}
             variant="accent"
             size="sm"
             width="full"

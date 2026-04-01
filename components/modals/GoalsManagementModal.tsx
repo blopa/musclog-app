@@ -8,8 +8,11 @@ import { type EatingPhase } from '../../database/models';
 import NutritionGoal from '../../database/models/NutritionGoal';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
+import { localDayStartMs } from '../../utils/calendarDate';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
@@ -66,11 +69,14 @@ function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
+  const [isDeletingGoal, setIsDeletingGoal] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
     mode: 'history',
@@ -93,10 +99,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       bmi: current.targetBmi,
       ffmi: current.targetFfmi,
       goalDate: current.targetDate
-        ? format(new Date(current.targetDate), 'MMM d, yyyy')
+        ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
         : undefined,
     };
-  }, [current]);
+  }, [current, dateFnsLocale]);
 
   const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
     if (!current) {
@@ -114,9 +120,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           const startDate = new Date(goal.createdAt);
           const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
           const dateRange =
-            format(startDate, 'MMM d') === format(endDate, 'MMM d')
-              ? format(startDate, 'MMM d, yyyy')
-              : `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+            format(startDate, 'MMM d', { locale: dateFnsLocale }) ===
+            format(endDate, 'MMM d', { locale: dateFnsLocale })
+              ? format(startDate, 'MMM d, yyyy', { locale: dateFnsLocale })
+              : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
 
           const display: GoalHistoryItem = {
             id: parseInt(goal.id, 10) || index,
@@ -132,7 +139,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
           return { display, raw: goal };
         }),
-    [goals]
+    [goals, dateFnsLocale]
   );
 
   const handleNewGoal = () => {
@@ -152,15 +159,36 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     setConfirmDeleteVisible(true);
   };
 
+  const handleRegenerateCheckins = async (goal: NutritionGoal) => {
+    setIsRegenerating(true);
+    // Use setTimeout to ensure the UI has time to update the loading state
+    // and show the loading indicator before starting the heavy DB operations
+    setTimeout(async () => {
+      try {
+        await NutritionGoalService.regenerateCheckins(goal.id);
+      } catch (error) {
+        console.error('Error regenerating check-ins:', error);
+      } finally {
+        setIsRegenerating(false);
+      }
+    }, 100);
+  };
+
   const handleConfirmDelete = async () => {
     if (!goalToDelete) {
       return;
     }
+
+    setIsDeletingGoal(true);
+    await flushLoadingPaint();
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
       await refresh();
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
+    } finally {
+      setIsDeletingGoal(false);
+      setGoalToDelete(null);
     }
   };
 
@@ -188,9 +216,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         await NutritionGoalService.updateGoal(selectedGoal.id, input);
       } else {
         const startDate = nutritionGoals.goalStartDate;
-        const todayStart = new Date();
-        todayStart.setUTCHours(0, 0, 0, 0);
-        if (startDate != null && startDate < todayStart.getTime()) {
+        const todayStartMs = localDayStartMs(new Date());
+        if (startDate != null && startDate < todayStartMs) {
           await NutritionGoalService.addGoalAtDate(input, startDate);
         } else {
           await NutritionGoalService.saveGoals(input);
@@ -264,7 +291,11 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   <CurrentGoalsCard
                     goal={currentGoal}
                     onEdit={current ? () => handleEditGoal(current) : undefined}
+                    onRegenerateCheckins={
+                      current ? () => handleRegenerateCheckins(current) : undefined
+                    }
                     onDelete={current ? () => handleDeleteGoal(current) : undefined}
+                    isRegenerating={isRegenerating}
                   />
                 </View>
               ) : null}
@@ -288,7 +319,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                           goal={display}
                           isLast={isLast}
                           onEdit={() => handleEditGoal(raw)}
+                          onRegenerateCheckins={() => handleRegenerateCheckins(raw)}
                           onDelete={() => handleDeleteGoal(raw)}
+                          isRegenerating={isRegenerating}
                         />
                       );
                     })}
@@ -325,12 +358,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
       <ConfirmationModal
         visible={confirmDeleteVisible}
-        onClose={() => setConfirmDeleteVisible(false)}
+        onClose={() => {
+          setConfirmDeleteVisible(false);
+          setGoalToDelete(null);
+        }}
         onConfirm={handleConfirmDelete}
         title={t('goalsManagement.deleteGoal')}
         message={t('goalsManagement.deleteGoalMessage')}
         confirmLabel={t('common.delete')}
         variant="destructive"
+        isLoading={isDeletingGoal}
       />
     </>
   );

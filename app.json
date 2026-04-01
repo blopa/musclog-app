@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.4.5",
+    "version": "2.5.7",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
@@ -52,6 +52,12 @@
         {
           "android": {
             "minSdkVersion": 26
+          },
+          "ios": {
+            "deploymentTarget": "16.0"
+          },
+          "gradleProperties": {
+            "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=1g -Dkotlin.daemon.jvm.options=-Xmx2g"
           }
         }
       ],
@@ -96,6 +102,13 @@
             }
           ]
         }
+      ],
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.",
+          "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
+        }
       ]
     ],
     "orientation": "default",
@@ -109,12 +122,16 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "169"
+      "buildNumber": "181",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 169,
+      "versionCode": 181,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
