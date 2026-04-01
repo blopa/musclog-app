@@ -30,7 +30,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
-        { name: 'volume_calculation_type', type: 'string' },
+        { name: 'workout_insights_type', type: 'string', isOptional: true },
         { name: 'icon', type: 'string', isOptional: true },
         { name: 'type', type: 'string', isOptional: true },
         { name: 'week_days_json', type: 'string', isOptional: true },

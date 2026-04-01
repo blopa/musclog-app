@@ -20,9 +20,7 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
   const backgroundColor = isUngroup
     ? theme.colors.status.errorSolid
     : theme.colors.status.emeraldSolid;
-  const borderColor = isUngroup
-    ? theme.colors.status.redDark
-    : theme.colors.status.emeraldDark;
+  const borderColor = isUngroup ? theme.colors.status.redDark : theme.colors.status.emeraldDark;
 
   // Custom icon to match the image (4 dots with a horizontal line)
   const ActionIcon = ({ color }: { color: string }) => (

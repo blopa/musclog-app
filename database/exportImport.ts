@@ -21,6 +21,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
 } from '../constants/settings';
 import { decrypt, encrypt } from '../utils/encryption';
+import { parseWorkoutInsightsType } from '../utils/workoutInsightsType';
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
@@ -246,6 +247,20 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const oldId = raw.id as string | undefined;
         if (!oldId) {
           continue;
+        }
+
+        if (tableName === 'workout_templates') {
+          const newVal = raw.workout_insights_type;
+          const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
+
+          if (newVal != null) {
+            raw.workout_insights_type = parseWorkoutInsightsType(String(newVal));
+          } else if (oldVal != null) {
+            raw.workout_insights_type = parseWorkoutInsightsType(String(oldVal));
+          }
+
+          delete raw.volume_calculation_type;
+          delete raw.volumeCalculationType;
         }
 
         if (tableName === 'user_metrics') {

@@ -59,5 +59,17 @@ export const migrations = schemaMigrations({
         ),
       ],
     },
+
+    // Version 4: Replace volume_calculation_type with workout_insights_type (per-template insights mode).
+    {
+      toVersion: 4,
+      steps: [
+        unsafeExecuteSql('ALTER TABLE workout_templates DROP COLUMN volume_calculation_type;'),
+        addColumns({
+          table: 'workout_templates',
+          columns: [{ name: 'workout_insights_type', type: 'string', isOptional: true }],
+        }),
+      ],
+    },
   ],
 });

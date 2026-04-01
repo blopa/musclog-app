@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { getWeekdayLabels } from '../../utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
+import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -38,7 +39,7 @@ export default function CreateWorkoutModal({
   const {
     workoutTitle,
     description,
-    volumeCalc, // TODO: Rename to workoutInsight here, and everywhere else
+    workoutInsights,
     workoutType,
     icon,
     selectedDays,
@@ -50,7 +51,7 @@ export default function CreateWorkoutModal({
     isEditMode,
     setWorkoutTitle,
     setDescription,
-    setVolumeCalc,
+    setWorkoutInsights,
     setWorkoutType,
     setIcon,
     setFocusedField,
@@ -73,7 +74,9 @@ export default function CreateWorkoutModal({
             icon: (
               <Sparkles
                 size={theme.iconSize.xs}
-                color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
+                color={
+                  workoutInsights === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary
+                }
               />
             ),
           },
@@ -348,8 +351,8 @@ export default function CreateWorkoutModal({
 
             <SegmentedControl
               options={workoutInsightOptions}
-              value={volumeCalc}
-              onValueChange={setVolumeCalc}
+              value={workoutInsights}
+              onValueChange={(v) => setWorkoutInsights(parseWorkoutInsightsType(v))}
             />
 
             <Text

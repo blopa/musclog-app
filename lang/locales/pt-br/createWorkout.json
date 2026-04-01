@@ -18,6 +18,8 @@
     },
     "intelligence": "Inteligência",
     "workoutInsight": {
+      "title": "Insights do treino",
+      "description": "Escolha como o Musclog prepara insights para a próxima sessão. A IA se adapta com base nos dados de recuperação quando ativada.",
       "none": "Nenhum",
       "algorithm": "Algoritmo",
       "ai": "IA"
