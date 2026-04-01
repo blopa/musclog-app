@@ -397,6 +397,9 @@
       "imageUrl": "URL изображения",
       "imageUrlPlaceholder": "Вставьте URL изображения",
       "portionSizes": "Размеры порций",
+      "addPortionSizes": "Добавить размеры порций",
+      "addAnotherPortion": "Добавить ещё порцию",
+      "removePortion": "Убрать порцию",
       "selectPortionSizes": "Выберите размеры порций..."
     },
     "errors": {

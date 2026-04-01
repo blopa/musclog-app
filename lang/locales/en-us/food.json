@@ -397,6 +397,9 @@
       "imageUrl": "Image URL",
       "imageUrlPlaceholder": "Paste image URL",
       "portionSizes": "Portion Sizes",
+      "addPortionSizes": "Add portion sizes",
+      "addAnotherPortion": "Add another portion",
+      "removePortion": "Remove portion",
       "selectPortionSizes": "Select portion sizes..."
     },
     "errors": {

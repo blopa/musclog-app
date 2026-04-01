@@ -1,20 +1,5 @@
-import {
-  Apple,
-  Coffee,
-  Croissant,
-  Droplet,
-  Egg,
-  Flame,
-  Lightbulb,
-  Popcorn,
-  Scale,
-  Search,
-  Soup,
-  UtensilsCrossed,
-  Wind,
-  X,
-} from 'lucide-react-native';
-import { ComponentType, useEffect, useMemo, useState } from 'react';
+import { Search, X } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
@@ -23,6 +8,7 @@ import { FoodPortionService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
@@ -36,31 +22,6 @@ type PortionSizesPickerModalProps = {
   onConfirm: (selectedIds: string[]) => void;
   selectedIds?: string[];
 };
-
-// Map icon names to lucide components
-const ICON_MAP: Record<string, ComponentType<any>> = {
-  droplet: Droplet,
-  scale: Scale,
-  egg: Egg,
-  cup: Popcorn,
-  flame: Flame,
-  lightbulb: Lightbulb,
-  wind: Wind,
-  restaurant: UtensilsCrossed,
-  'ramen-dining': Soup,
-  'dinner-dining': UtensilsCrossed,
-  'bakery-dining': Croissant,
-  'local-cafe': Coffee,
-  nutrition: Apple,
-};
-
-function getIconComponent(iconName?: string | null): ComponentType<any> | null {
-  if (!iconName) {
-    return null;
-  }
-
-  return ICON_MAP[iconName] || null;
-}
 
 export function PortionSizesPickerModal({
   visible,
@@ -99,7 +60,7 @@ export function PortionSizesPickerModal({
   // Portions are already ordered newest-first (see FoodPortionService.getPortionsPaginated)
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
     return (loadedPortions as FoodPortion[]).map((portion: FoodPortion) => {
-      const IconComponent = getIconComponent(portion.icon);
+      const IconComponent = getFoodPortionIconComponent(portion.icon);
       return {
         id: portion.id,
         label: portion.name,
@@ -262,9 +223,7 @@ export function PortionSizesPickerModal({
                   <View style={{ paddingVertical: theme.spacing.padding.base }}>
                     <Button
                       label={
-                        isLoadingMore
-                          ? t('portionSizes.loadingMore')
-                          : t('portionSizes.loadMore')
+                        isLoadingMore ? t('portionSizes.loadingMore') : t('portionSizes.loadMore')
                       }
                       onPress={loadMore}
                       size="sm"

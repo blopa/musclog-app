@@ -397,6 +397,9 @@
       "imageUrl": "URL da Imagem",
       "imageUrlPlaceholder": "Cole a URL da imagem",
       "portionSizes": "Tamanhos de Porção",
+      "addPortionSizes": "Adicionar tamanhos de porção",
+      "addAnotherPortion": "Adicionar outra porção",
+      "removePortion": "Remover porção",
       "selectPortionSizes": "Selecionar tamanhos de porção..."
     },
     "errors": {

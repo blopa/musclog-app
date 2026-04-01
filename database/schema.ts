@@ -183,7 +183,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
-        // Deprecated: use `source === 'app'` for built-in catalog rows (kept for existing DBs).
+        // TODO: delete `is_default` column and add it to the existing (un released) migration number 4
         { name: 'is_default', type: 'boolean' },
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
