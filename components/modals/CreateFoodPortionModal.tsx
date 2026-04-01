@@ -96,7 +96,7 @@ export function CreateFoodPortionModal({
       footer={footer}
     >
       <View className="flex-1 px-4 pt-4">
-        <View className="space-y-6">
+        <View className="flex-col gap-6">
           {/* Portion Name Input */}
           <View className="space-y-2">
             <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
