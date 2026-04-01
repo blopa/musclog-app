@@ -65,7 +65,10 @@ import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { BottomPopUp } from '../BottomPopUp';
-import { FoodNutritionSectionCard } from '../cards/FoodNutritionSectionCard';
+import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '../cards/FoodNutritionSectionCard';
 import { FilterTabs } from '../FilterTabs';
 import { MacroInput } from '../MacroInput';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -347,8 +350,8 @@ export function FoodMealDetailsModal({
     fat: string;
   } | null>(null);
 
-  // Helper function to determine the mode based on available data
-  const getMode = (): 'meal' | 'foodLog' | 'food' | 'barcode' | null => {
+  // How the modal was opened: meal / log / local Food row vs. external catalog (barcode or preloaded search product).
+  const getMode = (): FoodDetailsNutritionSectionMode => {
     if (meal) {
       return 'meal';
     }
@@ -362,7 +365,7 @@ export function FoodMealDetailsModal({
     }
 
     if (barcode || productFromSearch) {
-      return 'barcode';
+      return 'externalProduct';
     }
 
     return null;
@@ -1011,7 +1014,7 @@ export function FoodMealDetailsModal({
   const showCaloriesTooLowWarning = useMemo(() => {
     const rawCal = toFiniteMacro(rawNutritionalData.calories);
     return (
-      mode === 'barcode' &&
+      mode === 'externalProduct' &&
       rawCal > 0 &&
       inferredCaloriesPer100g > 0 &&
       rawCal < inferredCaloriesPer100g * 0.7 &&
@@ -1034,9 +1037,9 @@ export function FoodMealDetailsModal({
         }
       : baseNutritionalData;
 
-  // True when we're in barcode mode, nutrition is settled, no successful refetch yet, and all core macros are zero
+  // External catalog product: nutrition settled, no successful refetch yet, and all core macros are zero
   const hasAllZeroMacros = useMemo(() => {
-    if (mode !== 'barcode' || refetchedProductDetails) {
+    if (mode !== 'externalProduct' || refetchedProductDetails) {
       return false;
     }
     // Wait until local DB lookup finishes so we don't use placeholder zeros before we know local vs remote data.
@@ -1990,7 +1993,7 @@ export function FoodMealDetailsModal({
               disabled={
                 isAddingFood ||
                 (mode === 'meal' && mealAmountGrams < 1) ||
-                (isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog') ||
+                (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
                 (isLoadingMealNutrients && mode === 'meal')
               }
               loading={isAddingFood}
