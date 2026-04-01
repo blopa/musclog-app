@@ -135,6 +135,8 @@ export default function CreateCustomFoodModal({
   const { portions, isLoading: isLoadingPortions } = useFoodPortions({
     mode: 'all',
     visible: visible,
+    // Must match PortionSizesPickerModal so selected user/custom portions resolve for chips
+    includeAllPortionSources: true,
   });
 
   const isSaveDisabled = !foodName.trim();
