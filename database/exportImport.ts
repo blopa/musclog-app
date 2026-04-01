@@ -5,7 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { ENCRYPTION_KEY } from '../constants/database';
+import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '../constants/database';
 import {
   CURRENT_ONBOARDING_VERSION,
   GOOGLE_ACCESS_TOKEN,
@@ -36,8 +36,6 @@ const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
 ]);
-
-const EXPORT_VERSION = 3;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [
@@ -101,7 +99,7 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
  */
 export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   const dbData: ExportDump = {
-    _exportVersion: EXPORT_VERSION,
+    _exportVersion: CURRENT_DATABASE_VERSION,
   };
 
   for (const tableName of RESTORE_ORDER) {
