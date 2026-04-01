@@ -134,7 +134,7 @@ describe('hooks/useWorkoutForm', () => {
 
       expect(result.current.workoutTitle).toBe('');
       expect(result.current.description).toBe('');
-      expect(result.current.volumeCalc).toBe('none');
+      expect(result.current.workoutInsights).toBe('none');
       expect(result.current.selectedDays).toEqual([]);
       expect(result.current.focusedField).toBeNull();
       expect(result.current.isLoading).toBe(false);
@@ -415,7 +415,7 @@ describe('hooks/useWorkoutForm', () => {
         templateId: undefined,
         name: 'New Workout',
         description: 'Description',
-        volumeCalculationType: 'none',
+        workoutInsightsType: 'none',
         type: 'strength',
         icon: undefined,
         weekDaysJson: undefined,
@@ -471,7 +471,7 @@ describe('hooks/useWorkoutForm', () => {
         expect.objectContaining({
           name: 'Trimmed Title',
           description: 'Trimmed Description',
-          volumeCalculationType: 'none',
+          workoutInsightsType: 'none',
           weekDaysJson: undefined,
         })
       );
@@ -496,7 +496,7 @@ describe('hooks/useWorkoutForm', () => {
         templateId: undefined,
         name: 'Test Workout',
         description: undefined, // Empty trimmed description becomes undefined
-        volumeCalculationType: 'none',
+        workoutInsightsType: 'none',
         type: 'strength',
         icon: undefined,
         weekDaysJson: undefined,
@@ -595,14 +595,14 @@ describe('hooks/useWorkoutForm', () => {
       expect(result.current.description).toBe('New Description');
     });
 
-    it('should update volumeCalc', () => {
+    it('should update workoutInsights', () => {
       const { result } = renderHook(() => useWorkoutForm());
 
       act(() => {
-        result.current.setVolumeCalc('total');
+        result.current.setWorkoutInsights('algorithm');
       });
 
-      expect(result.current.volumeCalc).toBe('total');
+      expect(result.current.workoutInsights).toBe('algorithm');
     });
 
     it('should update focusedField', () => {

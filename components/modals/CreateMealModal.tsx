@@ -326,7 +326,9 @@ export function CreateMealModal({
   const [deleteMealConfirmVisible, setDeleteMealConfirmVisible] = useState(false);
   const [isDeletingMeal, setIsDeletingMeal] = useState(false);
   const [ingredientToRemoveId, setIngredientToRemoveId] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(logDate ?? new Date())
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
@@ -372,7 +374,7 @@ export function CreateMealModal({
 
   useEffect(() => {
     if (visible && isQuickTrack && logDate) {
-      setSelectedDate(logDate);
+      setSelectedDate(localCalendarDayDate(logDate));
     }
   }, [visible, isQuickTrack, logDate]);
 

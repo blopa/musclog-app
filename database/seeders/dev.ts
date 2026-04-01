@@ -154,7 +154,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           .create((t) => {
             t.name = 'Grouped Test Workout';
             t.description = 'A workout with two exercises grouped together';
-            t.volumeCalculationType = 'standard';
+            t.workoutInsightsType = 'algorithm';
             t.createdAt = now;
             t.updatedAt = now;
           });
@@ -260,7 +260,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         upperBodyTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = 'Upper Body Power';
           t.description = 'Upper body strength and power workout';
-          t.volumeCalculationType = 'standard';
+          t.workoutInsightsType = 'algorithm';
           t.createdAt = now;
           t.updatedAt = now;
         });
@@ -349,7 +349,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         legDayTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = 'Leg Day / Squats';
           t.description = 'Lower body strength workout';
-          t.volumeCalculationType = 'standard';
+          t.workoutInsightsType = 'algorithm';
           t.createdAt = now;
           t.updatedAt = now;
         });

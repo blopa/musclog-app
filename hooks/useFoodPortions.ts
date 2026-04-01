@@ -8,30 +8,34 @@ import { FoodPortionService } from '../database/services';
 // Utility functions for working with portions
 export const FoodPortionUtils = {
   /**
-   * Get the default portion from an array of portions
+   * Prefer the 100g app catalog portion, else any app catalog portion.
    */
   getDefaultPortion: (portions: FoodPortion[]): FoodPortion | null => {
-    return portions.find((p) => p.isDefault) || null;
+    return (
+      portions.find((p) => p.source === 'app' && p.gramWeight === 100) ||
+      portions.find((p) => p.source === 'app') ||
+      null
+    );
   },
 
   /**
-   * Get non-default portions from an array of portions
+   * User-defined portions (`source !== 'app'`).
    */
   getNonDefaultPortions: (portions: FoodPortion[]): FoodPortion[] => {
-    return portions.filter((p) => !p.isDefault);
+    return portions.filter((p) => p.source !== 'app');
   },
 
   /**
-   * Sort portions with default first, then by name
+   * Sort with app catalog portions first, then by name.
    */
   sortPortions: (portions: FoodPortion[]): FoodPortion[] => {
     return [...portions].sort((a, b) => {
-      if (a.isDefault && !b.isDefault) {
-        return -1;
+      const aApp = a.source === 'app';
+      const bApp = b.source === 'app';
+      if (aApp !== bApp) {
+        return aApp ? -1 : 1;
       }
-      if (!a.isDefault && b.isDefault) {
-        return 1;
-      }
+
       return a.name.localeCompare(b.name);
     });
   },
@@ -43,6 +47,8 @@ export interface UseFoodPortionsParams {
   initialLimit?: number; // For paginated mode, default: 10
   batchSize?: number; // For paginated mode, default: 10
   getAll?: boolean; // For paginated mode: if true, fetch all portions (no pagination)
+  /** Paginated mode without `food`: when true, return all portion sources (not only `source === 'app'`). */
+  includeAllPortionSources?: boolean;
   enableReactivity?: boolean; // Default: true
   visible?: boolean; // For modal visibility control, default: true
   food?: Food; // Optional food to get food-specific portions
@@ -84,6 +90,7 @@ export function useFoodPortions({
   initialLimit = 10,
   batchSize = DEFAULT_BATCH_SIZE,
   getAll = false,
+  includeAllPortionSources = false,
   enableReactivity = true,
   visible = true,
   food,
@@ -122,22 +129,24 @@ export function useFoodPortions({
         setAllPortions(allPortionsData);
         setHasMore(false);
       } else {
-        // Fetch initial batch with pagination
-        const allPortionsData = await FoodPortionService.getAllPortions();
-        const initialPortions = allPortionsData.slice(0, initialLimit);
+        // Newest first (created_at desc); fetch one extra row to detect hasMore
+        const pageSize = initialLimit;
+        const sourceOpt = includeAllPortionSources ? undefined : { source: 'app' as const };
+        const batch = await FoodPortionService.getPortionsPaginated(pageSize + 1, 0, sourceOpt);
 
-        if (initialPortions.length === 0) {
+        if (batch.length === 0) {
           setAllPortions([]);
           setHasMore(false);
           setIsLoading(false);
           return;
         }
 
-        setAllPortions(initialPortions);
-        setCurrentOffset(initialLimit);
+        const hasMoreItems = batch.length > pageSize;
+        const initialPortions = hasMoreItems ? batch.slice(0, pageSize) : batch;
 
-        // Check if there are more portions
-        setHasMore(allPortionsData.length > initialLimit);
+        setAllPortions(initialPortions);
+        setCurrentOffset(initialPortions.length);
+        setHasMore(hasMoreItems);
       }
     } catch (err) {
       console.error('Error loading food portions:', err);
@@ -147,7 +156,7 @@ export function useFoodPortions({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, getAll]);
+  }, [visible, initialLimit, getAll, includeAllPortionSources]);
 
   // Load more portions (pagination)
   const loadMore = useCallback(async () => {
@@ -162,23 +171,27 @@ export function useFoodPortions({
     await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
     try {
-      const allPortionsData = await FoodPortionService.getAllPortions();
-      const nextBatch = allPortionsData.slice(currentOffset, currentOffset + batchSize);
+      const sourceOpt = includeAllPortionSources ? undefined : { source: 'app' as const };
+      const batch = await FoodPortionService.getPortionsPaginated(
+        batchSize + 1,
+        currentOffset,
+        sourceOpt
+      );
 
-      if (nextBatch.length === 0) {
+      if (batch.length === 0) {
         setHasMore(false);
         setIsLoadingMore(false);
         return;
       }
 
-      // Append to existing portions
+      const hasMoreItems = batch.length > batchSize;
+      const nextBatch = hasMoreItems ? batch.slice(0, batchSize) : batch;
+
       setAllPortions((prev) => [...prev, ...nextBatch]);
 
       const newOffset = currentOffset + nextBatch.length;
       setCurrentOffset(newOffset);
-
-      // Check if there are more portions
-      setHasMore(newOffset < allPortionsData.length);
+      setHasMore(hasMoreItems);
     } catch (err) {
       console.error('Error loading more food portions:', err);
       setHasMore(false);
@@ -186,7 +199,7 @@ export function useFoodPortions({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, getAll]);
+  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, getAll, includeAllPortionSources]);
 
   // Load food-specific portions when food changes
   useEffect(() => {
@@ -283,9 +296,13 @@ export function useFoodPortions({
       return foodSpecificPortions;
     }
 
-    // Otherwise, filter default portions from all portions
-    return allPortions.filter((portion) => portion.isDefault);
-  }, [food, foodSpecificPortions, allPortions]);
+    if (includeAllPortionSources) {
+      return allPortions;
+    }
+
+    // Otherwise, show built-in catalog portions (createCommonPortions uses source='app').
+    return allPortions.filter((portion) => portion.source === 'app');
+  }, [food, foodSpecificPortions, allPortions, includeAllPortionSources]);
 
   // Return appropriate type based on mode
   if (mode === 'all') {

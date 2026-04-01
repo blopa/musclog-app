@@ -71,7 +71,9 @@ export function LogMealModal({
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { height: windowHeight } = useWindowDimensions();
   const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
-  const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(initialDate ?? new Date())
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);
@@ -86,6 +88,13 @@ export function LogMealModal({
       setPortionGrams(referenceGrams);
     }
   }, [visible, referenceGrams]);
+
+  useEffect(() => {
+    if (visible) {
+      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
+      setSelectedMealType(initialMealType ?? 'lunch');
+    }
+  }, [visible, initialDate, initialMealType]);
 
   const portionScale = portionGrams / referenceGrams;
 

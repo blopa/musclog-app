@@ -1,8 +1,10 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
+import { CURRENT_DATABASE_VERSION } from '../constants/database';
+
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts
-  version: 3,
+  version: CURRENT_DATABASE_VERSION,
   tables: [
     // 1. Master List of Exercises
     tableSchema({
@@ -28,7 +30,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
-        { name: 'volume_calculation_type', type: 'string' },
+        { name: 'workout_insights_type', type: 'string', isOptional: true },
         { name: 'icon', type: 'string', isOptional: true },
         { name: 'type', type: 'string', isOptional: true },
         { name: 'week_days_json', type: 'string', isOptional: true },
@@ -181,7 +183,6 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
-        { name: 'is_default', type: 'boolean' },
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
         { name: 'created_at', type: 'number' },
@@ -197,7 +198,8 @@ export const schema = appSchema({
       columns: [
         { name: 'food_id', type: 'string', isIndexed: true },
         { name: 'food_portion_id', type: 'string', isIndexed: true },
-        { name: 'is_default', type: 'boolean' }, // Exactly one per food should be true
+        // Per-food default portion among linked global portions.
+        { name: 'is_default', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

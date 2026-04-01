@@ -473,9 +473,9 @@ export default function WorkoutsScreen() {
 
             {/* Normal State - Regular Workouts */}
             {!isLoading && !error && filteredWorkouts.length > 0 ? (
-              <AnimatedContent>
+              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
                 <>
-                  {filteredWorkouts.map((workout, index) => (
+                  {filteredWorkouts.map((workout) => (
                     <WorkoutCard
                       key={workout.id}
                       name={workout.name}

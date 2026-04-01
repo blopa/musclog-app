@@ -4,6 +4,8 @@
     "noResults": "Nenhum Resultado",
     "searchPlaceholder": "Pesquisar porções...",
     "selectTitle": "Selecionar tamanho de porção",
-    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",
+    "loadMore": "Carregar mais",
+    "loadingMore": "Carregando mais..."
   }
 }

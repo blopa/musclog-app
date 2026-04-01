@@ -5,7 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { ENCRYPTION_KEY } from '../constants/database';
+import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '../constants/database';
 import {
   CURRENT_ONBOARDING_VERSION,
   GOOGLE_ACCESS_TOKEN,
@@ -21,6 +21,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
 } from '../constants/settings';
 import { decrypt, encrypt } from '../utils/encryption';
+import { parseWorkoutInsightsType } from '../utils/workoutInsightsType';
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
@@ -36,8 +37,6 @@ const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
 ]);
-
-const EXPORT_VERSION = 3;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [
@@ -101,7 +100,7 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
  */
 export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   const dbData: ExportDump = {
-    _exportVersion: EXPORT_VERSION,
+    _exportVersion: CURRENT_DATABASE_VERSION,
   };
 
   for (const tableName of RESTORE_ORDER) {
@@ -248,6 +247,20 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const oldId = raw.id as string | undefined;
         if (!oldId) {
           continue;
+        }
+
+        if (tableName === 'workout_templates') {
+          const newVal = raw.workout_insights_type;
+          const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
+
+          if (newVal != null) {
+            raw.workout_insights_type = parseWorkoutInsightsType(String(newVal));
+          } else if (oldVal != null) {
+            raw.workout_insights_type = parseWorkoutInsightsType(String(oldVal));
+          }
+
+          delete raw.volume_calculation_type;
+          delete raw.volumeCalculationType;
         }
 
         if (tableName === 'user_metrics') {

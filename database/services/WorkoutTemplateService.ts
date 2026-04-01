@@ -9,6 +9,7 @@ import i18n from '../../lang/lang';
 import { getTheme } from '../../theme';
 import { getWeightUnit } from '../../utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
+import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
@@ -45,7 +46,7 @@ export interface SaveTemplateData {
   templateId?: string;
   name: string;
   description?: string;
-  volumeCalculationType?: string;
+  workoutInsightsType?: string;
   type?: string;
   icon?: string;
   weekDaysJson?: number[];
@@ -206,8 +207,10 @@ export class WorkoutTemplateService {
         await template.update((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
-          t.volumeCalculationType =
-            data.volumeCalculationType ?? t.volumeCalculationType ?? 'standard';
+          t.workoutInsightsType =
+            data.workoutInsightsType != null
+              ? parseWorkoutInsightsType(data.workoutInsightsType)
+              : parseWorkoutInsightsType(t.workoutInsightsType);
           t.type = data.type ?? t.type;
           t.icon = data.icon ?? t.icon;
           t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
@@ -260,7 +263,7 @@ export class WorkoutTemplateService {
         template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
-          t.volumeCalculationType = data.volumeCalculationType || 'standard';
+          t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
           t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
           t.icon = data.icon ?? undefined;
           t.weekDaysJson = data.weekDaysJson || undefined;
@@ -897,7 +900,7 @@ export class WorkoutTemplateService {
       const newTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
         t.name = `${template.name} (Copy)`;
         t.description = template.description;
-        t.volumeCalculationType = template.volumeCalculationType || 'standard';
+        t.workoutInsightsType = parseWorkoutInsightsType(template.workoutInsightsType);
         t.type = template.type ?? DEFAULT_WORKOUT_TYPE;
         t.icon = template.icon ?? undefined;
         t.weekDaysJson = template.weekDaysJson || undefined;

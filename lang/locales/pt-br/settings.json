@@ -216,6 +216,9 @@
       "workoutDuration": "Aviso de Treino Longo",
       "workoutDurationSubtitle": "Alerta se sua sessão durar mais de 5 horas"
     },
+    "supportProject": {
+      "title": "Apoie o projeto"
+    },
     "notifications": "Notificações",
     "termsOfService": "Termos de Serviço",
     "privacyPolicy": "Política de Privacidade"

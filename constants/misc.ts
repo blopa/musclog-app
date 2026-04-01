@@ -40,3 +40,6 @@ export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
 export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
 
 export const UNREAD_CHAT_MESSAGES_COUNT = 'unreadChatMessages';
+
+/** Public donation page (F-Droid and web “Support the Project” link only). */
+export const SUPPORT_PROJECT_DONATION_URL = 'https://musclog.app/en-us/donate';

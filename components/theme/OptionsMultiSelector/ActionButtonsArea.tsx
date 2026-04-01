@@ -33,7 +33,7 @@ export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
   return (
     <View
       style={{
-        alignItems: 'center',
+        alignItems: 'stretch',
         justifyContent: 'center',
         paddingVertical: theme.spacing.padding.md,
         zIndex: theme.zIndex.max,

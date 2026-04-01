@@ -19,6 +19,10 @@ import {
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
 } from '../utils/workout';
+import {
+  DEFAULT_WORKOUT_INSIGHTS_TYPE,
+  parseWorkoutInsightsType,
+} from '../utils/workoutInsightsType';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
 
@@ -47,7 +51,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
   const [workoutTitle, setWorkoutTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [volumeCalc, setVolumeCalc] = useState('none');
+  const [workoutInsights, setWorkoutInsights] = useState(DEFAULT_WORKOUT_INSIGHTS_TYPE);
   const [workoutType, setWorkoutType] = useState<WorkoutType>(DEFAULT_WORKOUT_TYPE);
   const [icon, setIcon] = useState<string | undefined>(undefined);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
@@ -73,7 +77,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
-      setVolumeCalc(template.volumeCalculationType || 'none');
+      setWorkoutInsights(parseWorkoutInsightsType(template.workoutInsightsType));
       setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
       setIcon(template.icon ?? undefined);
 
@@ -175,7 +179,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         templateId: isEditMode ? templateId : undefined,
         name: workoutTitle.trim(),
         description: description.trim() || undefined,
-        volumeCalculationType: volumeCalc,
+        workoutInsightsType: workoutInsights,
         type: workoutType,
         icon: icon ?? undefined,
         weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
@@ -193,7 +197,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
   }, [
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     exercises,
@@ -257,7 +261,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     // State
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     selectedDays,
@@ -272,7 +276,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     // Setters
     setWorkoutTitle,
     setDescription,
-    setVolumeCalc,
+    setWorkoutInsights,
     setWorkoutType,
     setIcon,
     setFocusedField,

@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { getWeekdayLabels } from '../../utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
+import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -38,7 +39,7 @@ export default function CreateWorkoutModal({
   const {
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     selectedDays,
@@ -50,7 +51,7 @@ export default function CreateWorkoutModal({
     isEditMode,
     setWorkoutTitle,
     setDescription,
-    setVolumeCalc,
+    setWorkoutInsights,
     setWorkoutType,
     setIcon,
     setFocusedField,
@@ -62,18 +63,20 @@ export default function CreateWorkoutModal({
     handleDeleteExercises,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
-  const volumeOptions = [
-    { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
-    { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
+  const workoutInsightOptions = [
+    { label: t('createWorkout.workoutInsight.none'), value: 'none' },
+    { label: t('createWorkout.workoutInsight.algorithm'), value: 'algorithm' },
     ...(isAiConfigured
       ? [
           {
-            label: t('createWorkout.volumeCalculation.ai'),
+            label: t('createWorkout.workoutInsight.ai'),
             value: 'ai',
             icon: (
               <Sparkles
                 size={theme.iconSize.xs}
-                color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
+                color={
+                  workoutInsights === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary
+                }
               />
             ),
           },
@@ -343,13 +346,13 @@ export default function CreateWorkoutModal({
                 marginBottom: theme.spacing.padding.base,
               }}
             >
-              {t('createWorkout.volumeCalculation.title')}
+              {t('createWorkout.workoutInsight.title')}
             </Text>
 
             <SegmentedControl
-              options={volumeOptions}
-              value={volumeCalc}
-              onValueChange={setVolumeCalc}
+              options={workoutInsightOptions}
+              value={workoutInsights}
+              onValueChange={(v) => setWorkoutInsights(parseWorkoutInsightsType(v))}
             />
 
             <Text
@@ -360,7 +363,7 @@ export default function CreateWorkoutModal({
                 lineHeight: theme.typography.fontSize.lg,
               }}
             >
-              {t('createWorkout.volumeCalculation.description')}
+              {t('createWorkout.workoutInsight.description')}
             </Text>
           </View>
         </View>

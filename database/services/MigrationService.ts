@@ -7,6 +7,7 @@ import { ENCRYPTION_KEY } from '../../constants/database';
 import i18n from '../../lang/lang';
 import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
 import { decryptDatabaseValue } from '../../utils/encryption';
+import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
 import { database } from '../database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import {
@@ -1165,7 +1166,9 @@ export class MigrationService {
           database.get<WorkoutTemplate>('workout_templates').create((newWorkout) => {
             newWorkout.name = oldWorkout.title || '';
             newWorkout.description = oldWorkout.description || '';
-            newWorkout.volumeCalculationType = oldWorkout.volumeCalculationType || 'standard';
+            newWorkout.workoutInsightsType = parseWorkoutInsightsType(
+              oldWorkout.volumeCalculationType
+            );
             newWorkout.weekDaysJson = this.mapRecurringOnWeek(oldWorkout.recurringOnWeek);
             newWorkout.isArchived = false; // Default to false for old workouts
             newWorkout.createdAt = this.convertTimestamp(oldWorkout.createdAt);
