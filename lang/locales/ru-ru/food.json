@@ -260,6 +260,7 @@
       "macrosPer100g": "На 100г",
       "foodTitle": "Детали продукта",
       "mealTitle": "Детали приёма пищи",
+      "serving": "Порция",
       "servingSize": "Размер порции",
       "portionSize": "Размер части",
       "servings": "Порции",
@@ -291,7 +292,10 @@
       "zeroMacrosNotFoundTitle": "Нет данных из других источников",
       "zeroMacrosNotFoundBody": "Нам не удалось найти данные о питании в других базах данных. Используйте иконку карандаша, чтобы ввести значения самостоятельно.",
       "tryAnotherSource": "Попробовать другой источник >",
-      "tryAnotherSourceNotFound": "Данные о питании из других источников не найдены."
+      "tryAnotherSourceNotFound": "Данные о питании из других источников не найдены.",
+      "caloriesTooLowTitle": "Калории могут быть занижены",
+      "caloriesTooLowBody": "Указанные калории кажутся слишком низкими по сравнению с макросами. Вычисленное значение: {{inferred}} ккал / 100г.",
+      "caloriesTooLowAction": "Обновить до {{inferred}} ккал >"
     },
     "addFoodItemToMeal": {
       "title": "Добавить продукт",

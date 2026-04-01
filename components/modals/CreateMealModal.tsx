@@ -31,6 +31,7 @@ import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { localCalendarDayDate } from '../../utils/calendarDate';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
@@ -321,6 +322,9 @@ export function CreateMealModal({
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+  const [mealOptionsMenuVisible, setMealOptionsMenuVisible] = useState(false);
+  const [deleteMealConfirmVisible, setDeleteMealConfirmVisible] = useState(false);
+  const [isDeletingMeal, setIsDeletingMeal] = useState(false);
   const [ingredientToRemoveId, setIngredientToRemoveId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -337,6 +341,13 @@ export function CreateMealModal({
   useEffect(() => {
     setMealName(meal?.name ?? '');
   }, [meal]);
+
+  useEffect(() => {
+    if (!visible) {
+      setMealOptionsMenuVisible(false);
+      setDeleteMealConfirmVisible(false);
+    }
+  }, [visible]);
 
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
@@ -406,6 +417,24 @@ export function CreateMealModal({
   const cancelRemoveIngredient = () => {
     setIngredientToRemoveId(null);
     setIsConfirmationModalVisible(false);
+  };
+
+  const handleConfirmDeleteMeal = async () => {
+    if (!meal) {
+      return;
+    }
+
+    setIsDeletingMeal(true);
+    try {
+      await MealService.deleteMeal(meal.id);
+      onSave?.();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      showSnackbar('error', t('common.deleteFailed'));
+    } finally {
+      setIsDeletingMeal(false);
+    }
   };
 
   const handleTrack = async () => {
@@ -553,7 +582,11 @@ export function CreateMealModal({
             ? t('food.meals.manageMealData.editMeal')
             : t('food.createMeal.title')
       }
-      headerRight={isQuickTrack ? undefined : <MenuButton size="md" className="p-2" />}
+      headerRight={
+        !isQuickTrack && meal ? (
+          <MenuButton size="md" className="p-2" onPress={() => setMealOptionsMenuVisible(true)} />
+        ) : undefined
+      }
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
@@ -849,6 +882,28 @@ export function CreateMealModal({
         />
       ) : null}
 
+      {!isQuickTrack && meal ? (
+        <BottomPopUpMenu
+          visible={mealOptionsMenuVisible}
+          onClose={() => setMealOptionsMenuVisible(false)}
+          title={t('food.meals.manageMealData.mealOptions')}
+          items={[
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error,
+              iconBgColor: theme.colors.status.error20,
+              title: t('food.meals.manageMealData.deleteMeal'),
+              description: t('food.meals.manageMealData.deleteMealDesc'),
+              titleColor: theme.colors.status.error,
+              onPress: () => {
+                setMealOptionsMenuVisible(false);
+                setDeleteMealConfirmVisible(true);
+              },
+            },
+          ]}
+        />
+      ) : null}
+
       {isQuickTrack ? (
         <DatePickerModal
           visible={showDatePicker}
@@ -868,6 +923,17 @@ export function CreateMealModal({
         message={t('food.createMeal.deleteIngredientWarning')}
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
+      />
+      <ConfirmationModal
+        visible={deleteMealConfirmVisible}
+        onClose={() => setDeleteMealConfirmVisible(false)}
+        onConfirm={handleConfirmDeleteMeal}
+        title={t('food.meals.manageMealData.deleteMeal')}
+        message={t('food.meals.manageMealData.deleteMealWarning')}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="destructive"
+        isLoading={isDeletingMeal}
       />
     </FullScreenModal>
   );

@@ -79,6 +79,7 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
+      '80': 80,
       // Additional padding values for fractional spacing
       '1half': 6, // 1.5 * 4 = 6px
       '2half': 10, // 2.5 * 4 = 10px

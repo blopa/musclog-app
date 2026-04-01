@@ -45,14 +45,18 @@ export function AddMealModal({
           },
         ]
       : []),
-    {
-      icon: Folder,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('addMeal.manageCategories'),
-      description: t('addMeal.manageCategoriesDesc'),
-      onPress: () => onManageCategories?.(),
-    },
+    ...(onManageCategories
+      ? [
+          {
+            icon: Folder,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('addMeal.manageCategories'),
+            description: t('addMeal.manageCategoriesDesc'),
+            onPress: onManageCategories,
+          },
+        ]
+      : []),
   ];
 
   return (

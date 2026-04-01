@@ -817,6 +817,18 @@ export interface components {
       /** @description The list of foods found matching the search criteria. See Food Fields below. */
       foods?: components['schemas']['SearchResultFood'][];
     };
+    FoodMeasure: {
+      /** @description Textual description of the measure (e.g. "1 piece, medium pizza") */
+      disseminationText?: string;
+      /** @description Weight of the measure in grams */
+      gramWeight?: number;
+      id?: number;
+      modifier?: string;
+      rank?: number;
+      measureUnitAbbreviation?: string;
+      measureUnitName?: string;
+      measureUnitId?: number;
+    };
     SearchResultFood: {
       /**
        * @description Unique ID of the food.
@@ -836,6 +848,8 @@ export interface components {
       /** @description Any A unique ID identifying the food within FNDDS. */
       foodCode?: string;
       foodNutrients?: components['schemas']['AbridgedFoodNutrient'][];
+      /** @description Portion/measure options for the food (Survey FNDDS foods). */
+      foodMeasures?: components['schemas']['FoodMeasure'][];
       /**
        * @description Date the item was published to FDC.
        * @example 4/1/2019

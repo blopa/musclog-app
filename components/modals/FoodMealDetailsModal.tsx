@@ -45,6 +45,7 @@ import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate'
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
+  inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
 } from '../../utils/inferCaloriesFromMacros';
 import {
@@ -103,19 +104,33 @@ function inferBarcodeNutritionSource(
   if (explicit === 'usda') {
     return 'usda';
   }
+
   if (explicit === 'musclog') {
     return 'musclog';
   }
+
   if (explicit === 'openfood') {
     return 'openfood';
   }
+
   if (details && isSuccessFoodDetailProductState(details)) {
     return 'openfood';
   }
+
   if (productFromSearch?.source === 'openfood') {
     return 'openfood';
   }
+
   return null;
+}
+
+function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string {
+  if (!productFromSearch || typeof productFromSearch !== 'object') {
+    return '';
+  }
+
+  const product = productFromSearch as { code?: string; gtinUpc?: string };
+  return product.code ?? product.gtinUpc ?? '';
 }
 
 /** Per-100g core macros from a successful product-details payload (used to pick a non-empty alternate source). */
@@ -242,7 +257,7 @@ export function FoodMealDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
-  const { units } = useSettings();
+  const { units, alwaysAllowFoodEditing } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
@@ -355,10 +370,14 @@ export function FoodMealDetailsModal({
 
   const mode = getMode();
 
-  // Sync localCanEdit when the canEdit prop changes.
+  // Sync localCanEdit when the canEdit prop changes or alwaysAllowFoodEditing changes.
   useEffect(() => {
-    setLocalCanEdit(canEdit);
-  }, [canEdit]);
+    if (alwaysAllowFoodEditing && mode !== 'meal') {
+      setLocalCanEdit(true);
+    } else {
+      setLocalCanEdit(canEdit);
+    }
+  }, [canEdit, alwaysAllowFoodEditing, mode]);
 
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
@@ -970,7 +989,36 @@ export function FoodMealDetailsModal({
     mealNutrients,
   ]);
 
-  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(getNutritionalData());
+  // Split raw data from inferred data
+  const rawNutritionalData = getNutritionalData();
+  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(rawNutritionalData);
+
+  // Compute inferred calories from macros for warning display
+  const inferredCaloriesPer100g = useMemo(() => {
+    return inferCaloriesFromMacrosPer100g(
+      rawNutritionalData.protein,
+      rawNutritionalData.carbs,
+      rawNutritionalData.fat,
+      rawNutritionalData.fiber
+    );
+  }, [
+    rawNutritionalData.protein,
+    rawNutritionalData.carbs,
+    rawNutritionalData.fat,
+    rawNutritionalData.fiber,
+  ]);
+
+  const showCaloriesTooLowWarning = useMemo(() => {
+    const rawCal = toFiniteMacro(rawNutritionalData.calories);
+    return (
+      mode === 'barcode' &&
+      rawCal > 0 &&
+      inferredCaloriesPer100g > 0 &&
+      rawCal < inferredCaloriesPer100g * 0.7 &&
+      editedOverrides?.calories == null
+    );
+  }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
+
   const nutritionalData =
     editedOverrides &&
     (editedOverrides.calories != null ||
@@ -1158,6 +1206,74 @@ export function FoodMealDetailsModal({
       loadDefaultSize();
     }
   }, [productFromSearch, productDetails, getDefaultServingSize]);
+
+  const parsedProductServingSize = useMemo(() => {
+    if (productFromSearch?.source === 'usda') {
+      return undefined;
+    }
+
+    const servingStr = productFromSearch?.serving_size;
+    if (!servingStr) {
+      return undefined;
+    }
+
+    const match = String(servingStr).match(/\((\d+)\s*g\)/);
+    if (match) {
+      const g = parseInt(match[1], 10);
+      if (g > 0) {
+        return g;
+      }
+    }
+
+    const num = String(servingStr).match(/(\d+)/);
+    if (num) {
+      const g = parseInt(num[1], 10);
+      if (g > 0) {
+        return g;
+      }
+    }
+
+    return undefined;
+  }, [productFromSearch?.source, productFromSearch?.serving_size]);
+
+  const parsedProductMeasures = useMemo(() => {
+    const result: { name: string; gramWeight: number }[] = [];
+
+    // foodMeasures from search results (Survey FNDDS foods)
+    if (productFromSearch?.source === 'usda') {
+      const measures: { disseminationText?: string; gramWeight?: number }[] =
+        (productFromSearch as any)._raw?.foodMeasures ?? [];
+      for (const m of measures) {
+        if (m.gramWeight && m.gramWeight > 0 && m.disseminationText) {
+          result.push({ name: m.disseminationText, gramWeight: m.gramWeight });
+        }
+      }
+    }
+
+    // foodPortions from detailed food response (Foundation / Survey FNDDS)
+    const detailProduct =
+      (productDetails as any)?.source === 'usda' ? (productDetails as any).product : null;
+    if (detailProduct?.foodPortions) {
+      const portions: { gramWeight?: number; portionDescription?: string; modifier?: string }[] =
+        detailProduct.foodPortions;
+      for (const p of portions) {
+        if (!p.gramWeight || p.gramWeight <= 0) {
+          continue;
+        }
+
+        const name = p.portionDescription || p.modifier;
+        if (!name) {
+          continue;
+        }
+
+        if (!result.some((r) => r.gramWeight === p.gramWeight)) {
+          result.push({ name, gramWeight: p.gramWeight });
+        }
+      }
+    }
+
+    return result.length > 0 ? result : undefined;
+  }, [productFromSearch, productDetails]);
 
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
   const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
@@ -1610,19 +1726,26 @@ export function FoodMealDetailsModal({
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
-    const productCode =
-      (productFromSearch && 'code' in productFromSearch
-        ? (productFromSearch as { code?: string }).code
-        : undefined) ?? '';
+    const productCode = getProductBarcodeFromSearchProduct(productFromSearch);
+
+    const currentBarcode =
+      editedOverrides?.barcode ??
+      food?.barcode ??
+      localFood?.barcode ??
+      barcode ??
+      productCode ??
+      '';
+
     const currentDescription =
       editedOverrides?.description ??
       food?.description ??
       (productFromSearch as any)?.ingredients_text ??
       (productFromSearch as any)?.ingredients ??
       '';
+
     setEditForm({
       name: getFoodMealName(),
-      barcode: barcode ?? productCode ?? '',
+      barcode: currentBarcode,
       description: currentDescription,
       calories: formatAppRoundedDecimal(locale, baseNutritionalData.calories, 2),
       protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
@@ -1639,6 +1762,7 @@ export function FoodMealDetailsModal({
     barcode,
     productFromSearch,
     food,
+    localFood,
     editedOverrides,
     locale,
   ]);
@@ -1663,6 +1787,13 @@ export function FoodMealDetailsModal({
     setEditForm(null);
     setIsEditPopUpVisible(false);
   }, [editForm, decimalSeparator]);
+
+  const handleAcceptInferredCalories = useCallback(() => {
+    setEditedOverrides((prev) => ({
+      ...prev,
+      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+    }));
+  }, [inferredCaloriesPer100g]);
 
   const handleEditFormNumericChange = useCallback(
     (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
@@ -1882,6 +2013,14 @@ export function FoodMealDetailsModal({
             }
             isRefetchingSource={isRefetchingSource}
             alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+            caloriesTooLowWarning={
+              showCaloriesTooLowWarning
+                ? {
+                    inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+                    onAccept: handleAcceptInferredCalories,
+                  }
+                : undefined
+            }
           />
 
           {/* Form Sections */}
@@ -1892,6 +2031,8 @@ export function FoodMealDetailsModal({
                 value={servingSize}
                 onChange={setServingSize}
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                productServingSize={parsedProductServingSize}
+                productMeasures={parsedProductMeasures}
               />
             ) : (
               <ServingSizeSelector

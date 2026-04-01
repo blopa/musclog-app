@@ -520,7 +520,6 @@ export function NutritionGoalsBody({
                   className="min-w-0 flex-1"
                   embedded
                   hideLabel
-                  trailing="none"
                   variant="compact"
                   dateDisplay="single-line"
                   showLeadingIcon={!showIcons}
@@ -849,7 +848,6 @@ export function NutritionGoalsBody({
                   className="min-w-0 flex-1"
                   embedded
                   hideLabel
-                  trailing="none"
                   variant="compact"
                   dateDisplay="single-line"
                   showLeadingIcon={!showIcons}
@@ -906,6 +904,7 @@ export function NutritionGoalsBody({
           </View>
         ) : null}
       </View>
+      <View pointerEvents="none" style={{ height: theme.spacing.padding['80'] }} />
     </ScrollView>
   );
 }

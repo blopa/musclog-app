@@ -13,6 +13,7 @@ import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
+import { calculateSetVolume, getUserBodyWeightKgForVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
 
 /**
@@ -194,6 +195,8 @@ export async function transformWorkoutToDetailData(
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
+  const bodyWeightKg = await getUserBodyWeightKgForVolume();
+
   const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
   sets.forEach((set) => {
     const exerciseId = set.exerciseId ?? '';
@@ -203,15 +206,23 @@ export async function transformWorkoutToDetailData(
     setsByExercise.get(exerciseId)!.push(set);
   });
 
-  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog);
+  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
     sets.forEach((set) => {
       if (set.exerciseId === pr.exerciseId) {
+        const exercise = exerciseMap.get(pr.exerciseId);
+        const setVol = calculateSetVolume(
+          set.weight ?? 0,
+          set.reps ?? 0,
+          set.repsInReserve,
+          exercise?.equipmentType,
+          bodyWeightKg
+        );
         if (
           (pr.type === 'weight' && set.weight === pr.newRecord.weight) ||
           (pr.type === 'reps' && set.reps === pr.newRecord.reps) ||
-          (pr.type === 'volume' && (set.reps ?? 0) * (set.weight ?? 0) === pr.newRecord.volume)
+          (pr.type === 'volume' && Math.abs(setVol - pr.newRecord.volume) < 0.01)
         ) {
           prSetIds.add(set.id);
         }

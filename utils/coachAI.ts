@@ -773,13 +773,20 @@ export async function generateMealPlan(
 ): Promise<GenerateMealPlanResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getGenerateMealPlanPrompt(lang, macroTargets, undefined, context);
+    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const systemPrompt = await getGenerateMealPlanPrompt(
+      lang,
+      macroTargets,
+      undefined,
+      context,
+      includeFoundationFoods
+    );
 
     const userMessage =
       history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
       '\n\nGenerate the meal plan.';
 
-    const fns = getGenerateMealPlanFunctions();
+    const fns = getGenerateMealPlanFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<GenerateMealPlanResponse>(
       config,

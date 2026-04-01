@@ -10,6 +10,10 @@ import {
   isValidBodyFat,
 } from '../../utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
+import {
+  calculateExerciseVolume,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import MenstrualCycle from '../models/MenstrualCycle';
@@ -970,6 +974,7 @@ export class ProgressService {
             .fetch()
         : [];
     const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
+    const bodyWeightKg = await getUserBodyWeightKgForVolume();
 
     // Fetch all sets for all log exercises at once
     const logExIds = allLogExercises.map((le) => le.id);
@@ -1013,7 +1018,15 @@ export class ProgressService {
         const muscleGroup = exercise?.muscleGroup || 'Other';
 
         const sets = setsByLogExId.get(le.id) || [];
-        const volume = sets.reduce((acc, s) => acc + s.reps * s.weight, 0);
+        const volume = calculateExerciseVolume(
+          sets.map((s) => ({
+            weight: s.weight,
+            reps: s.reps,
+            repsInReserve: s.repsInReserve,
+          })),
+          { equipmentType: exercise?.equipmentType },
+          bodyWeightKg
+        );
         muscleGroupVolume[muscleGroup] = (muscleGroupVolume[muscleGroup] || 0) + volume;
       }
       groupedMuscleVol.set(start, muscleGroupVolume);

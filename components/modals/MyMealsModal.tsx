@@ -3,13 +3,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import Meal from '../../database/models/Meal';
-import { MealService } from '../../database/services';
+import { FoodService, MealService, NutritionService } from '../../database/services';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import i18n from '../../lang/lang';
+import AiService from '../../services/AiService';
+import { trackMeal } from '../../utils/coachAI';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -17,6 +21,7 @@ import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { TextInput } from '../theme/TextInput';
 import { AddMealModal } from './AddMealModal';
+import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
@@ -86,6 +91,7 @@ type MyMealsModalProps = {
 
 export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { isAiConfigured } = useSettings();
@@ -106,6 +112,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [editMealId, setEditMealId] = useState<string | null>(null);
   const [deleteMealId, setDeleteMealId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
+  const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
@@ -206,17 +214,79 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setTimeout(() => setCreateMealModalVisible(true), 300); // Wait for modal close animation
   };
 
-  const handleGenerateMealAI = () => {
-    setAddMealModalVisible(false);
-    // TODO: Implement generate meal with AI logic
-    console.log('Generate Meal with AI pressed');
-  };
+  const handleGenerateMealAI = useCallback(() => {
+    if (isGeneratingMealAI) {
+      return;
+    }
 
-  const handleManageCategories = () => {
     setAddMealModalVisible(false);
-    // TODO: Implement manage categories logic
-    console.log('Manage Categories pressed');
-  };
+    setTimeout(() => setGenerateMealContextVisible(true), 300);
+  }, [isGeneratingMealAI]);
+
+  const handleGenerateMealAIWithContext = useCallback(
+    async (context: { description: string; tags: string[] }) => {
+      const aiConfig = await AiService.getAiConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('meals.generateAI.aiNotConfigured'));
+        return;
+      }
+
+      setIsGeneratingMealAI(true);
+      try {
+        const userContent = [
+          context.description.trim(),
+          context.tags.length > 0 ? `Preferences: ${context.tags.join(', ')}` : '',
+        ]
+          .filter(Boolean)
+          .join('. ');
+
+        const result = await trackMeal(aiConfig, userContent);
+        if (!result || result.meals.length === 0) {
+          showSnackbar('error', t('meals.generateAI.errorMessage'));
+          return;
+        }
+
+        // Merge all ingredients across returned meal types into one meal template.
+        // Normalize first: for ingredients matched to foundation foods (foodId present),
+        // the LLM returns 0 macros and expects us to look up the real values from the DB.
+        const allIngredients = result.meals.flatMap((m) => m.ingredients);
+        const normalized = await NutritionService.normalizeAiMealIngredients(allIngredients);
+        const foodItems = await Promise.all(
+          normalized.map(async (ingredient) => {
+            // Reuse the existing food when the LLM matched one; create custom otherwise
+            if (ingredient.foodId) {
+              return { foodId: ingredient.foodId, amount: ingredient.grams };
+            }
+
+            const food = await FoodService.createCustomFood(ingredient.name, {
+              calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
+              protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
+              carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
+              fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
+              fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+            });
+            return { foodId: food.id, amount: ingredient.grams };
+          })
+        );
+
+        const mealName = context.description.trim() || context.tags.join(', ');
+        await MealService.createMealFromFoods(
+          mealName,
+          foodItems,
+          context.description.trim(),
+          true
+        );
+
+        await refresh();
+        showSnackbar('success', t('meals.generateAI.successMessage'));
+      } catch {
+        showSnackbar('error', t('meals.generateAI.errorMessage'));
+      } finally {
+        setIsGeneratingMealAI(false);
+      }
+    },
+    [refresh, showSnackbar, t]
+  );
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -274,7 +344,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     [onClose, refresh]
   );
 
-  const showLoading = isLoading || isTransforming;
+  const showLoading = isLoading || isTransforming || isGeneratingMealAI;
 
   // Helper functions to avoid nested ternaries
   const getEmptyStateTitle = () => {
@@ -298,6 +368,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       visible={visible}
       onClose={onClose}
       title={t('meals.title')}
+      closable={!isGeneratingMealAI}
       headerRight={
         <MenuButton
           size="md"
@@ -316,6 +387,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             value={searchQuery}
             onChangeText={handleSearchChange}
             placeholder={t('meals.searchPlaceholder')}
+            editable={!isGeneratingMealAI}
             icon={<Search size={theme.iconSize.md} color={theme.colors.text.secondary} />}
           />
         </View>
@@ -325,7 +397,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
           <FilterTabs
             tabs={FILTER_TABS}
             activeTab={activeFilter}
-            onTabChange={setActiveFilter}
+            onTabChange={isGeneratingMealAI ? () => {} : setActiveFilter}
             scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.xl }}
           />
         </View>
@@ -348,7 +420,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                {t('meals.loadingMeals')}
+                {isGeneratingMealAI ? t('meals.generateAI.generating') : t('meals.loadingMeals')}
               </Text>
             </View>
           ) : filteredMeals.length === 0 ? (
@@ -412,8 +484,19 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             onClose={() => setAddMealModalVisible(false)}
             onCreateMeal={handleCreateMeal}
             onGenerateMealAI={handleGenerateMealAI}
-            onManageCategories={handleManageCategories}
             isAiEnabled={isAiConfigured}
+          />
+        ) : null}
+        {/* AI Meal Generation Context Modal */}
+        {generateMealContextVisible ? (
+          <AINutritionTrackingContextModal
+            visible={generateMealContextVisible}
+            onClose={() => setGenerateMealContextVisible(false)}
+            onApply={handleGenerateMealAIWithContext}
+            title={t('meals.generateAI.title')}
+            describeLabel={t('meals.generateAI.describeLabel')}
+            placeholder={t('meals.generateAI.placeholder')}
+            applyLabel={t('meals.generateAI.applyLabel')}
           />
         ) : null}
         {/* CreateMealModal (create or edit) */}

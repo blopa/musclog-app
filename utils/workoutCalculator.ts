@@ -1,20 +1,20 @@
+import convert from 'convert';
+
 import { EXERCISE_TYPES } from '../constants/exercises';
-import Exercise, { type EquipmentType } from '../database/models/Exercise';
+import type { EquipmentType } from '../database/models';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
+import { UserMetricService } from '../database/services';
 import { roundToDecimalPlaces } from './roundDecimal';
 
 /**
- * Type representing a set with only the fields needed for volume calculation.
- * Extracted from WorkoutLogSet model.
- * repsInReserve is optional as it may not always be provided.
+ * Set fields needed for volume calculation (matches WorkoutLogSet subset).
  */
-type WorkoutSet = Pick<WorkoutLogSet, 'weight' | 'reps' | 'repsInReserve'>;
+export type WorkoutSetInput = Pick<WorkoutLogSet, 'weight' | 'reps' | 'repsInReserve'>;
 
 /**
- * Type representing an exercise with only the fields needed for volume calculation.
- * Extracted from Exercise model.
+ * Exercise fields needed for volume calculation.
  */
-type ExerciseData = {
+export type ExerciseVolumeData = {
   equipmentType?: EquipmentType | string;
 };
 
@@ -22,8 +22,58 @@ type ExerciseData = {
  * Interface representing an exercise with its sets for volume calculation
  */
 export interface ExerciseWithSets {
-  exercise: ExerciseData;
-  sets: WorkoutSet[];
+  exercise: ExerciseVolumeData;
+  sets: WorkoutSetInput[];
+}
+
+/**
+ * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
+ */
+export async function getUserBodyWeightKgForVolume(): Promise<number> {
+  const weightMetric = await UserMetricService.getLatest('weight');
+  if (!weightMetric) {
+    return 0;
+  }
+
+  const decrypted = await weightMetric.getDecrypted();
+  let kg = decrypted.value;
+  if (decrypted.unit === 'lbs') {
+    kg = convert(decrypted.value, 'lb').to('kg') as number;
+  }
+
+  return kg;
+}
+
+/**
+ * Single-set volume: average 1RM estimate (same formula stack as full workout volume).
+ */
+export function calculateSetVolume(
+  weight: number,
+  reps: number,
+  repsInReserve: number | undefined,
+  equipmentType: string | undefined,
+  bodyWeightKg: number
+): number {
+  const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  return roundToDecimalPlaces(calculateAverage1RM(weight + added, reps, repsInReserve ?? 0));
+}
+
+/**
+ * Total volume for one exercise block (all sets).
+ */
+export function calculateExerciseVolume(
+  sets: WorkoutSetInput[],
+  exercise: ExerciseVolumeData,
+  bodyWeightKg: number
+): number {
+  const added = exercise.equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  let total = 0;
+  for (const set of sets) {
+    const rir = set.repsInReserve ?? 0;
+    total += calculateAverage1RM(set.weight + added, set.reps, rir);
+  }
+
+  return roundToDecimalPlaces(total);
 }
 
 /**
@@ -32,34 +82,104 @@ export interface ExerciseWithSets {
  * Volume is calculated using the average 1RM formula across all standard formulas.
  *
  * @param exercises - Array of exercises with their corresponding sets
- * @param bodyWeight - User's bodyweight in kg/lbs (used for bodyweight exercises)
+ * @param bodyWeightKg - User's bodyweight in kg (used for bodyweight exercises)
  * @returns Total workout volume rounded to 2 decimal places
  */
-export async function calculateWorkoutVolume(
+export function calculateWorkoutVolume(
   exercises: ExerciseWithSets[],
-  bodyWeight: number = 0
-): Promise<number> {
-  try {
-    let totalVolume = 0;
+  bodyWeightKg: number = 0
+): number {
+  let totalVolume = 0;
 
-    for (const { exercise, sets } of exercises) {
-      let addedWeight = 0;
+  for (const { exercise, sets } of exercises) {
+    const addedWeight =
+      exercise?.equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
 
-      if (exercise?.equipmentType === EXERCISE_TYPES.BODY_WEIGHT) {
-        addedWeight = bodyWeight || 0;
-      }
-
-      for (const set of sets) {
-        const rir = set.repsInReserve || 0;
-        totalVolume += calculateAverage1RM(set.weight + addedWeight, set.reps, rir);
-      }
+    for (const set of sets) {
+      const rir = set.repsInReserve ?? 0;
+      totalVolume += calculateAverage1RM(set.weight + addedWeight, set.reps, rir);
     }
-
-    return roundToDecimalPlaces(totalVolume);
-  } catch (error) {
-    console.error('Error calculating workout volume:', error);
-    throw error;
   }
+
+  return roundToDecimalPlaces(totalVolume);
+}
+
+/**
+ * Volume for an in-session or preview UI: groups sets by exerciseId and sums using {@link calculateWorkoutVolume}.
+ */
+export function calculateSessionVolumeFromSets(
+  sets: {
+    exerciseId?: string;
+    weight?: number;
+    reps?: number;
+    repsInReserve?: number;
+    difficultyLevel?: number;
+  }[],
+  exerciseById: Map<string, ExerciseVolumeData>,
+  bodyWeightKg: number,
+  options?: { onlyCompletedSets?: boolean }
+): number {
+  const list = options?.onlyCompletedSets ? sets.filter((s) => (s.difficultyLevel ?? 0) > 0) : sets;
+  const byExercise = new Map<string, typeof list>();
+  for (const s of list) {
+    const id = s.exerciseId ?? '';
+    if (!byExercise.has(id)) {
+      byExercise.set(id, []);
+    }
+    byExercise.get(id)!.push(s);
+  }
+
+  const parts: ExerciseWithSets[] = [];
+  for (const [exerciseId, exerciseSets] of byExercise) {
+    const ex = exerciseById.get(exerciseId);
+    parts.push({
+      exercise: { equipmentType: ex?.equipmentType },
+      sets: exerciseSets.map((s) => ({
+        weight: s.weight ?? 0,
+        reps: s.reps ?? 0,
+        repsInReserve: s.repsInReserve ?? 0,
+      })),
+    });
+  }
+
+  return calculateWorkoutVolume(parts, bodyWeightKg);
+}
+
+/**
+ * Planned volume from template target sets (preview mode).
+ */
+export function calculatePreviewVolumeFromTemplateSets(
+  templateSets: {
+    exerciseId?: string;
+    targetReps?: number;
+    targetWeight?: number;
+  }[],
+  exerciseById: Map<string, ExerciseVolumeData>,
+  bodyWeightKg: number
+): number {
+  const byExercise = new Map<string, typeof templateSets>();
+  for (const s of templateSets) {
+    const id = s.exerciseId ?? '';
+    if (!byExercise.has(id)) {
+      byExercise.set(id, []);
+    }
+    byExercise.get(id)!.push(s);
+  }
+
+  const parts: ExerciseWithSets[] = [];
+  for (const [exerciseId, exerciseSets] of byExercise) {
+    const ex = exerciseById.get(exerciseId);
+    parts.push({
+      exercise: { equipmentType: ex?.equipmentType },
+      sets: exerciseSets.map((s) => ({
+        weight: s.targetWeight ?? 0,
+        reps: s.targetReps ?? 0,
+        repsInReserve: 0,
+      })),
+    });
+  }
+
+  return calculateWorkoutVolume(parts, bodyWeightKg);
 }
 
 /**
@@ -84,32 +204,28 @@ export type FormulaType =
  * @returns Average 1RM across all valid formulas
  */
 export function calculateAverage1RM(weight: number, reps: number, rir: number = 0): number {
-  try {
-    const formulas: FormulaType[] = [
-      'Epley',
-      'Brzycki',
-      'Lander',
-      'Lombardi',
-      'Mayhew',
-      'OConner',
-      'Wathan',
-    ];
-    let total1RM = 0;
-    let validFormulas = 0;
+  const formulas: FormulaType[] = [
+    'Epley',
+    'Brzycki',
+    'Lander',
+    'Lombardi',
+    'Mayhew',
+    'OConner',
+    'Wathan',
+  ];
 
-    formulas.forEach((formula) => {
-      const oneRM = calculate1RM(weight, reps, formula, rir);
-      if (oneRM !== null) {
-        total1RM += oneRM;
-        validFormulas++;
-      }
-    });
+  let total1RM = 0;
+  let validFormulas = 0;
 
-    return validFormulas > 0 ? total1RM / validFormulas : 0;
-  } catch (error) {
-    console.error('Error calculating average 1RM:', error);
-    throw error;
-  }
+  formulas.forEach((formula) => {
+    const oneRM = calculate1RM(weight, reps, formula, rir);
+    if (oneRM !== null) {
+      total1RM += oneRM;
+      validFormulas++;
+    }
+  });
+
+  return validFormulas > 0 ? total1RM / validFormulas : 0;
 }
 
 /**
@@ -172,8 +288,21 @@ export function calculate1RM(
         return null;
       }
     }
-  } catch (error) {
-    console.error('Error calculating 1RM:', error);
-    throw error;
+  } catch {
+    return null;
   }
+}
+
+/**
+ * Estimated 1RM for progressive overload / charts (average formula, same load rules as volume).
+ */
+export function calculateEstimated1RMForSet(
+  weight: number,
+  reps: number,
+  repsInReserve: number | undefined,
+  equipmentType: string | undefined,
+  bodyWeightKg: number
+): number {
+  const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  return calculateAverage1RM(weight + added, reps, repsInReserve ?? 0);
 }

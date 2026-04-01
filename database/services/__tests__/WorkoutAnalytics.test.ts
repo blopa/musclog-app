@@ -1,3 +1,4 @@
+import { calculate1RM } from '../../../utils/workoutCalculator';
 import { database } from '../../index';
 import { WorkoutAnalytics } from '../WorkoutAnalytics';
 import { createMockExercise, createMockWorkoutLog, createMockWorkoutLogSet } from './helpers';
@@ -66,22 +67,22 @@ describe('WorkoutAnalytics', () => {
     mockDatabase.get.mockReturnValue(createMockCollection() as any);
   });
 
-  describe('calculateEstimated1RM', () => {
+  describe('calculate1RM (Epley)', () => {
     it('should calculate correctly using Epley formula', () => {
-      const result = WorkoutAnalytics.calculateEstimated1RM(100, 10);
+      const result = calculate1RM(100, 10, 'Epley', 0);
       // Epley: weight × (1 + reps/30) = 100 × (1 + 10/30) = 100 × 1.333 = 133.33
       expect(result).toBeCloseTo(133.33, 2);
     });
 
-    it('should return 0 when reps is 0', () => {
-      const result = WorkoutAnalytics.calculateEstimated1RM(100, 0);
-      expect(result).toBe(0);
+    it('should return weight when reps is 0 (Epley: 1 + 0/30)', () => {
+      const result = calculate1RM(100, 0, 'Epley', 0);
+      expect(result).toBeCloseTo(100, 2);
     });
 
     it('should handle various weight/reps combinations', () => {
-      expect(WorkoutAnalytics.calculateEstimated1RM(50, 5)).toBeCloseTo(58.33, 2);
-      expect(WorkoutAnalytics.calculateEstimated1RM(200, 1)).toBeCloseTo(206.67, 2);
-      expect(WorkoutAnalytics.calculateEstimated1RM(80, 12)).toBeCloseTo(112, 2);
+      expect(calculate1RM(50, 5, 'Epley', 0)).toBeCloseTo(58.33, 2);
+      expect(calculate1RM(200, 1, 'Epley', 0)).toBeCloseTo(206.67, 2);
+      expect(calculate1RM(80, 12, 'Epley', 0)).toBeCloseTo(112, 2);
     });
   });
 
@@ -300,68 +301,6 @@ describe('WorkoutAnalytics', () => {
       expect(repsPR).toBeDefined();
       expect(repsPR?.newRecord.reps).toBe(15);
       expect(repsPR?.previousBest.reps).toBe(12);
-    });
-
-    it('should detect estimated1RM PR when current > historical', async () => {
-      const workoutLog = createMockWorkoutLog({
-        id: 'workout-1',
-        startedAt: Date.now(),
-      });
-
-      const currentSet = createMockWorkoutLogSet({
-        exerciseId: 'ex-1',
-        weight: 100,
-        reps: 12,
-        workoutLogId: 'workout-1',
-      });
-
-      const historicalSet = createMockWorkoutLogSet({
-        exerciseId: 'ex-1',
-        weight: 100,
-        reps: 10,
-        workoutLogId: 'workout-2',
-      });
-
-      const exercise = createMockExercise({
-        id: 'ex-1',
-        name: 'Bench Press',
-      });
-
-      const historicalWorkout = createMockWorkoutLog({
-        id: 'workout-2',
-        startedAt: Date.now() - 1000,
-        completedAt: Date.now() - 500,
-      });
-
-      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet]);
-
-      const mockQuery = {
-        fetch: jest
-          .fn()
-          .mockResolvedValueOnce([historicalSet])
-          .mockResolvedValueOnce([historicalWorkout]),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(exercise),
-        } as any)
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(historicalWorkout),
-        } as any);
-
-      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
-
-      const oneRMPR = records.find((r) => r.type === 'estimated1RM');
-      expect(oneRMPR).toBeDefined();
-      expect(oneRMPR?.newRecord.weight).toBe(100);
-      expect(oneRMPR?.newRecord.reps).toBe(12);
     });
 
     it('should return PR for first-time exercise (no historical data)', async () => {

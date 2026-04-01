@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
@@ -441,6 +442,20 @@ export class SettingsService {
    */
   static async setShowDailyMoodPrompt(value: boolean) {
     await SettingsService.setBooleanSetting(SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the always allow food editing setting
+   */
+  static async setAlwaysAllowFoodEditing(value: boolean) {
+    await SettingsService.setBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the always allow food editing setting
+   */
+  static async getAlwaysAllowFoodEditing(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
   }
 
   /**

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Share, View } from 'react-native';
 
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '../../context/UnreadChatContext';
@@ -46,10 +45,14 @@ export default function WorkoutSummaryScreen() {
         return;
       }
 
-      // Prevent processing the same workout multiple times
+      // Prevent processing the same workout multiple times.
+      // Must be set before the first await to prevent re-runs triggered by
+      // dependency changes (e.g. units/i18n loading) from racing past this guard.
       if (processedWorkoutRef.current === workoutLogId) {
         return;
       }
+
+      processedWorkoutRef.current = workoutLogId;
 
       try {
         setIsLoading(true);
@@ -143,8 +146,6 @@ export default function WorkoutSummaryScreen() {
           payloadJson: JSON.stringify(workoutCompletedPayload),
         });
 
-        // Mark this workout as processed to prevent duplicate messages
-        processedWorkoutRef.current = workoutLogId;
         setUnreadCount((prev) => prev + 1);
 
         setIsLoading(false);
@@ -236,16 +237,14 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-    <AnimatedContent>
-      <WorkoutSummaryCelebration
-        onGoHome={handleGoHome}
-        onShareSummary={handleShareSummary}
-        onGetFeedback={handleGetFeedback}
-        isGetFeedbackLoading={isFeedbackLoading}
-        totalTime={totalTime}
-        volume={volume}
-        personalRecords={personalRecords}
-      />
-    </AnimatedContent>
+    <WorkoutSummaryCelebration
+      onGoHome={handleGoHome}
+      onShareSummary={handleShareSummary}
+      onGetFeedback={handleGetFeedback}
+      isGetFeedbackLoading={isFeedbackLoading}
+      totalTime={totalTime}
+      volume={volume}
+      personalRecords={personalRecords}
+    />
   );
 }

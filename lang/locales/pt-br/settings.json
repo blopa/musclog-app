@@ -86,6 +86,8 @@
       "anonymousBugReportSubtitle": "Ajude a melhorar o Musclog enviando logs de falhas",
       "dailyMoodPrompt": "Pergunta Diária de Humor",
       "dailyMoodPromptSubtitle": "Mostrar um seletor de humor na tela inicial se ainda não tiver sido registrado hoje",
+      "alwaysAllowFoodEditing": "Sempre Permitir Edição de Alimentos",
+      "alwaysAllowFoodEditingSubtitle": "Forçar que os detalhes dos alimentos sejam editáveis mesmo quando vierem da API",
       "charts": "GRÁFICOS",
       "chartTooltipLeft": "Tooltip à Esquerda",
       "chartTooltipLeftSubtitle": "Mostrar tooltips de dados do gráfico no canto superior esquerdo em vez do superior direito",

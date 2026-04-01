@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native';
 
 import { GEMINI_MODELS } from '../constants/ai';
 import {
+  ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
@@ -81,6 +82,7 @@ type SettingsState = {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  alwaysAllowFoodEditing: boolean;
   isLoading: boolean;
 };
 
@@ -117,6 +119,7 @@ const DEFAULT_STATE: SettingsState = {
   chartTooltipPosition: 'right',
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
+  alwaysAllowFoodEditing: false,
   isLoading: true,
 };
 
@@ -210,6 +213,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
+    alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -247,6 +251,7 @@ export type SettingsContextType = UseSettingsResult & {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  alwaysAllowFoodEditing: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

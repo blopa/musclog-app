@@ -70,6 +70,8 @@
 
 - **Structured Output**: Use `makeSchemaStrict` in `utils/coachAI.ts` for OpenAI function calling to ensure `additionalProperties: false` and all fields are `required`.
 - **Prompts**: System prompts are managed in `utils/prompts.ts`. Append custom user prompts from the `ai_custom_prompts` table.
+- **Foundation foods in every prediction**: All LLM functions that predict food or meal macros (`trackMeal`, `generateMealPlan`, `estimateNutritionFromPhoto`, etc.) **must** read `SettingsService.getSendFoundationFoodsToLlm()` and pass the result to both the system prompt (`getFoundationFoodsPrompt()`) and the function schema (add `foodId` to ingredient properties). This applies to any new prediction feature too.
+- **Foundation food matching**: When foundation foods are enabled, the LLM may match ingredients to existing DB foods and return their `foodId` with **zero macros** — it expects the caller to look up real values. Always call `NutritionService.normalizeAiMealIngredients(ingredients)` on the result before saving or displaying. For ingredients with a `foodId`, reuse the existing food record directly instead of calling `FoodService.createCustomFood`.
 
 ### Platform Specifics
 

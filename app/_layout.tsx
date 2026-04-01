@@ -22,7 +22,7 @@ import { SmartCameraProvider } from '../context/SmartCameraContext';
 import { SnackbarProvider } from '../context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
-import { ExerciseService } from '../database/services';
+import { ExerciseService, FoodPortionService, WorkoutService } from '../database/services';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
@@ -106,12 +106,33 @@ function RootLayout() {
     );
   }, []);
 
+  // Backfill the food_portion `source` field on web only. Native/SQLite handles
+  // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
+  // ignores that step, so we run the JS equivalent here instead.
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    FoodPortionService.backfillPortionSources().catch((err) =>
+      console.warn('[FoodPortionService] backfillPortionSources error:', err)
+    );
+  }, []);
+
   // Sync app exercises on every boot: seeds any exercises that are in the
   // bundled JSON but missing from the DB with source='app'. This is a no-op
   // on most boots once the DB is up to date.
   useEffect(() => {
     ExerciseService.syncAppExercises().catch((err) =>
       console.warn('[ExerciseService] syncAppExercises error:', err)
+    );
+  }, []);
+
+  // Backfill totalVolume for workout logs that have NULL after the v3 migration.
+  // Runs once per boot but exits immediately when there is nothing to do.
+  useEffect(() => {
+    WorkoutService.backfillNullTotalVolumes().catch((err) =>
+      console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
   }, []);
 

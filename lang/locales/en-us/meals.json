@@ -49,6 +49,16 @@
       "cancel": "Cancel",
       "delete": "Delete"
     },
-    "unknownFood": "Unknown"
+    "unknownFood": "Unknown",
+    "generateAI": {
+      "title": "Generate Meals with AI",
+      "describeLabel": "DESCRIBE YOUR PREFERENCES",
+      "placeholder": "e.g. High protein meals for muscle building, I prefer chicken and rice, avoid dairy...",
+      "applyLabel": "Generate Meals",
+      "successMessage": "Meal created successfully!",
+      "errorMessage": "Couldn't generate meals. Please try again.",
+      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
+      "generating": "Generating meals..."
+    }
   }
 }

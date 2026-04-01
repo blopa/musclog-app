@@ -239,18 +239,29 @@ export async function processMealPlanResponse(response: GenerateMealPlanResponse
       let totalCarbs = 0;
       let totalFats = 0;
 
-      for (const ingredient of aiMeal.ingredients) {
-        // Create or find food for each ingredient
-        const food = await FoodService.createCustomFood(ingredient.name, {
-          calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100), // Normalize to 100g
-          protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
-          carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
-          fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
-          fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
-        });
+      // Normalize first: fill in real macros for any ingredient matched to a foundation food
+      const normalizedIngredients = await NutritionService.normalizeAiMealIngredients(
+        aiMeal.ingredients
+      );
+
+      for (const ingredient of normalizedIngredients) {
+        // Reuse the existing food when the LLM matched a foundation food; create custom otherwise
+        let foodId: string;
+        if (ingredient.foodId) {
+          foodId = ingredient.foodId;
+        } else {
+          const food = await FoodService.createCustomFood(ingredient.name, {
+            calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
+            protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
+            carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
+            fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
+            fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+          });
+          foodId = food.id;
+        }
 
         foodItems.push({
-          foodId: food.id,
+          foodId,
           amount: ingredient.grams,
         });
 

@@ -14,6 +14,7 @@ export default class FoodPortion extends Model {
   @field('gram_weight') gramWeight!: number; // How many grams is this portion?
   @field('is_default') isDefault!: boolean; // Whether this is the default portion for foods
   @field('icon') icon?: string; // e.g., 'droplet', 'scale', 'egg', 'cup'
+  @field('source') source?: string; // 'app' or 'user'
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -23,6 +24,10 @@ export default class FoodPortion extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
+    if (this.source === 'app') {
+      throw new Error('Cannot delete a built-in app food portion.');
+    }
+
     await this.update((record) => {
       record.deletedAt = Date.now();
       record.updatedAt = Date.now();
