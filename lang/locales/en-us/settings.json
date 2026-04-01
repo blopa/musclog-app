@@ -216,6 +216,9 @@
       "workoutDuration": "Long Workout Warning",
       "workoutDurationSubtitle": "Alert if your session runs over 5 hours"
     },
+    "supportProject": {
+      "title": "Support the Project"
+    },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy"

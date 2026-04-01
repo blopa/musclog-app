@@ -216,6 +216,9 @@
       "workoutDuration": "Предупреждение о длинной тренировке",
       "workoutDurationSubtitle": "Оповещение, если сессия превышает 5 часов"
     },
+    "supportProject": {
+      "title": "Поддержать проект"
+    },
     "notifications": "Уведомления",
     "termsOfService": "Условия использования",
     "privacyPolicy": "Политика конфиденциальности"
