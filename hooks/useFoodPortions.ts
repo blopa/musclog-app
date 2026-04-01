@@ -8,30 +8,34 @@ import { FoodPortionService } from '../database/services';
 // Utility functions for working with portions
 export const FoodPortionUtils = {
   /**
-   * Get the default portion from an array of portions
+   * Prefer the 100g app catalog portion, else any app catalog portion.
    */
   getDefaultPortion: (portions: FoodPortion[]): FoodPortion | null => {
-    return portions.find((p) => p.isDefault) || null;
+    return (
+      portions.find((p) => p.source === 'app' && p.gramWeight === 100) ||
+      portions.find((p) => p.source === 'app') ||
+      null
+    );
   },
 
   /**
-   * Get non-default portions from an array of portions
+   * User-defined portions (`source !== 'app'`).
    */
   getNonDefaultPortions: (portions: FoodPortion[]): FoodPortion[] => {
-    return portions.filter((p) => !p.isDefault);
+    return portions.filter((p) => p.source !== 'app');
   },
 
   /**
-   * Sort portions with default first, then by name
+   * Sort with app catalog portions first, then by name.
    */
   sortPortions: (portions: FoodPortion[]): FoodPortion[] => {
     return [...portions].sort((a, b) => {
-      if (a.isDefault && !b.isDefault) {
-        return -1;
+      const aApp = a.source === 'app';
+      const bApp = b.source === 'app';
+      if (aApp !== bApp) {
+        return aApp ? -1 : 1;
       }
-      if (!a.isDefault && b.isDefault) {
-        return 1;
-      }
+
       return a.name.localeCompare(b.name);
     });
   },
@@ -283,8 +287,8 @@ export function useFoodPortions({
       return foodSpecificPortions;
     }
 
-    // Otherwise, filter default portions from all portions
-    return allPortions.filter((portion) => portion.isDefault);
+    // Otherwise, show built-in catalog portions (createCommonPortions uses source='app').
+    return allPortions.filter((portion) => portion.source === 'app');
   }, [food, foodSpecificPortions, allPortions]);
 
   // Return appropriate type based on mode

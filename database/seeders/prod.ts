@@ -82,7 +82,7 @@ async function seedUSDAFoundationFoods(): Promise<void> {
         i18n.t('food.portions.100g'),
         100,
         'scale',
-        true
+        'app'
       );
     }
 

@@ -183,6 +183,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        // Deprecated: use `source === 'app'` for built-in catalog rows (kept for existing DBs).
         { name: 'is_default', type: 'boolean' },
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
@@ -199,7 +200,8 @@ export const schema = appSchema({
       columns: [
         { name: 'food_id', type: 'string', isIndexed: true },
         { name: 'food_portion_id', type: 'string', isIndexed: true },
-        { name: 'is_default', type: 'boolean' }, // Exactly one per food should be true
+        // Per-food default portion (not deprecated — unlike `food_portions.is_default`).
+        { name: 'is_default', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

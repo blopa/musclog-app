@@ -513,7 +513,7 @@ export function FoodMealDetailsModal({
           portionName,
           servingSizeGrams,
           undefined, // icon
-          false // isDefault
+          'user'
         );
 
         return newPortion;
