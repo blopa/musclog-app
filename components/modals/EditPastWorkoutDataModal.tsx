@@ -1,8 +1,8 @@
-import { GripVertical, Plus as PlusIcon, Trash2 } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Plus as PlusIcon, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -26,15 +26,19 @@ function SetCard({
   index,
   onChange,
   onRemove,
-  drag,
-  isActive,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }: {
   item: SetItem;
   index: number;
   onChange: (id: string, patch: Partial<SetItem>) => void;
   onRemove: (id: string) => void;
-  drag?: () => void;
-  isActive?: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const theme = useTheme();
   const accentStyle = item.isPR
@@ -51,21 +55,42 @@ function SetCard({
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={accentStyle}>
         <View className="p-4">
-          {/* Header with grip, title, and remove */}
+          {/* Header with arrows, title, and remove */}
           <View className="mb-4 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
-              {/* Grip icon - larger hit target */}
-              <Pressable
-                onLongPress={drag}
-                delayLongPress={150}
-                disabled={!drag}
+              {/* Up/Down arrows */}
+              <View
                 style={{
                   marginRight: theme.spacing.gap.sm,
-                  padding: theme.spacing.padding.xs,
+                  alignItems: 'center',
+                  gap: theme.spacing.gap.xs,
                 }}
               >
-                <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
-              </Pressable>
+                <Pressable
+                  onPress={onMoveUp}
+                  disabled={isFirst}
+                  hitSlop={8}
+                  style={{ opacity: isFirst ? theme.colors.opacity.medium : 1 }}
+                >
+                  <ChevronUp
+                    size={theme.iconSize.md}
+                    color={theme.colors.accent.primary}
+                    strokeWidth={theme.strokeWidth.medium}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={onMoveDown}
+                  disabled={isLast}
+                  hitSlop={8}
+                  style={{ opacity: isLast ? theme.colors.opacity.medium : 1 }}
+                >
+                  <ChevronDown
+                    size={theme.iconSize.md}
+                    color={theme.colors.accent.primary}
+                    strokeWidth={theme.strokeWidth.medium}
+                  />
+                </Pressable>
+              </View>
               <Text
                 className="text-xs font-bold uppercase tracking-widest"
                 style={{
@@ -217,6 +242,28 @@ export default function EditPastWorkoutDataModal({
     });
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index === 0) {
+      return;
+    }
+    setSets((s) => {
+      const next = [...s];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      return next;
+    });
+  };
+
+  const handleMoveDown = (index: number) => {
+    setSets((s) => {
+      if (index === s.length - 1) {
+        return s;
+      }
+      const next = [...s];
+      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+      return next;
+    });
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
 
@@ -257,43 +304,37 @@ export default function EditPastWorkoutDataModal({
       scrollable={false}
       headerRight={headerRight}
     >
-      <View className="flex-1 p-4">
-        <DraggableFlatList
-          data={sets}
-          containerStyle={{ flex: 1 }}
-          style={{ flex: 1 }}
-          scrollEnabled
-          activationDistance={10}
-          keyExtractor={(item) => item.id}
-          onDragEnd={({ data }) => setSets(data)}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={
-            <View style={{ marginTop: theme.spacing.gap.base }}>
-              <DashedButton
-                label={t('workoutDetail.addSet')}
-                onPress={handleAdd}
-                size="sm"
-                icon={
-                  <PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />
-                }
-              />
-            </View>
-          }
-          renderItem={({ item, drag, isActive, getIndex }: RenderItemParams<SetItem>) => {
-            const index = (typeof getIndex === 'function' ? getIndex() : undefined) ?? 0;
-            return (
-              <SetCard
-                item={item}
-                index={index}
-                onChange={handleChange}
-                onRemove={handleRemove}
-                drag={drag}
-                isActive={isActive}
-              />
-            );
-          }}
-        />
-      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: theme.spacing.padding.base }}
+        showsVerticalScrollIndicator={false}
+      >
+        {sets.map((item, index) => (
+          <Animated.View
+            key={item.id}
+            layout={LinearTransition.springify().damping(35).stiffness(360)}
+          >
+            <SetCard
+              item={item}
+              index={index}
+              onChange={handleChange}
+              onRemove={handleRemove}
+              onMoveUp={() => handleMoveUp(index)}
+              onMoveDown={() => handleMoveDown(index)}
+              isFirst={index === 0}
+              isLast={index === sets.length - 1}
+            />
+          </Animated.View>
+        ))}
+        <View style={{ marginTop: theme.spacing.gap.base }}>
+          <DashedButton
+            label={t('workoutDetail.addSet')}
+            onPress={handleAdd}
+            size="sm"
+            icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
+          />
+        </View>
+      </ScrollView>
     </FullScreenModal>
   );
 }
