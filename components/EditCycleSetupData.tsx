@@ -39,8 +39,8 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    initialData?.lastPeriodStartDate ?? new Date()
+  const [selectedDate, setSelectedDate] = useState<Date>(() =>
+    localCalendarDayDate(initialData?.lastPeriodStartDate ?? new Date())
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [cycleLength, setCycleLength] = useState(initialData?.cycleLength ?? 28);

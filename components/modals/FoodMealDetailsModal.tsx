@@ -43,6 +43,7 @@ import {
 } from '../../types/guards/openFoodFacts';
 import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
+import { formatDisplayGrams } from '../../utils/formatDisplayWeight';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
@@ -62,7 +63,7 @@ import {
 import { getProductName } from '../../utils/productName';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
-import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
+import { getMassUnitLabel } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { BottomPopUp } from '../BottomPopUp';
 import {
@@ -288,7 +289,7 @@ export function FoodMealDetailsModal({
     initialMealType ?? inferMealTypeFromTime()
   );
   const [selectedDate, setSelectedDate] = useState(() =>
-    initialDate ? new Date(initialDate) : new Date()
+    localCalendarDayDate(initialDate ? new Date(initialDate) : new Date())
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
@@ -385,7 +386,7 @@ export function FoodMealDetailsModal({
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
     if (visible && initialDate && !foodLog) {
-      setSelectedDate(new Date(initialDate));
+      setSelectedDate(localCalendarDayDate(new Date(initialDate)));
     }
   }, [visible, initialDate, foodLog]);
 
@@ -476,17 +477,15 @@ export function FoodMealDetailsModal({
     );
   }, [productFromSearch, productDetails]);
 
-  // Helper function to generate portion name based on serving size and units
-  const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
-    if (servingSizeGrams === 100) {
-      const unitLabel = getMassUnitLabel(units);
-      return units === 'imperial' ? `3.5${unitLabel}` : `100${unitLabel}`;
-    }
-
-    const displayWeight = gramsToDisplay(servingSizeGrams, units);
-    const unitLabel = getMassUnitLabel(units);
-    return `${displayWeight}${unitLabel}`;
-  }, []);
+  /** User-visible portion label (stored on `FoodPortion.name`); uses locale for decimal separator. */
+  const generatePortionName = useCallback(
+    (servingSizeGrams: number, unitsParam: Units): string => {
+      const amount = formatDisplayGrams(locale, unitsParam, servingSizeGrams);
+      const unitLabel = getMassUnitLabel(unitsParam);
+      return `${amount}${unitLabel}`;
+    },
+    [locale]
+  );
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
   const matchServingSizeToPortion = useCallback(
@@ -696,9 +695,9 @@ export function FoodMealDetailsModal({
     }
 
     try {
-      setSelectedDate(new Date(foodLog.date));
+      setSelectedDate(localCalendarDayDate(new Date(foodLog.date)));
     } catch (e) {
-      setSelectedDate(new Date());
+      setSelectedDate(localCalendarDayDate(new Date()));
     }
 
     let cancelled = false;
@@ -1017,7 +1016,7 @@ export function FoodMealDetailsModal({
       mode === 'externalProduct' &&
       rawCal > 0 &&
       inferredCaloriesPer100g > 0 &&
-      rawCal < inferredCaloriesPer100g * 0.7 &&
+      (rawCal < inferredCaloriesPer100g * 0.7 || rawCal > inferredCaloriesPer100g * 1.3) &&
       editedOverrides?.calories == null
     );
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);

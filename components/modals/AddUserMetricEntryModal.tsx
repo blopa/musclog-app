@@ -67,7 +67,7 @@ export default function AddUserMetricEntryModal({
   const [bodyFat, setBodyFat] = useState(15.0);
   const [height, setHeight] = useState(DEFAULT_HEIGHT_CM);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [note, setNote] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);

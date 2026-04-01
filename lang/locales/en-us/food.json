@@ -293,8 +293,8 @@
       "zeroMacrosNotFoundBody": "We couldn't find nutrition data from other databases. Use the pencil icon to enter values yourself.",
       "tryAnotherSource": "Try another source >",
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
-      "caloriesTooLowTitle": "Calories may be too low",
-      "caloriesTooLowBody": "The reported calories seem too low compared to the macros. Inferred value: {{inferred}} kcal / 100g.",
+      "caloriesTooLowTitle": "Calories don't match the macros",
+      "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} kcal / 100g.",
       "caloriesTooLowAction": "Update to {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {

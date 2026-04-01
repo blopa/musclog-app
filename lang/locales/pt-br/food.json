@@ -293,8 +293,8 @@
       "zeroMacrosNotFoundBody": "Não encontramos dados nutricionais em outras bases. Use o ícone de lápis para informar os valores manualmente.",
       "tryAnotherSource": "Tentar outra fonte >",
       "tryAnotherSourceNotFound": "Nenhum dado nutricional encontrado em outras fontes.",
-      "caloriesTooLowTitle": "Calorias podem estar muito baixas",
-      "caloriesTooLowBody": "As calorias reportadas parecem muito baixas comparadas aos macros. Valor inferido: {{inferred}} kcal / 100g.",
+      "caloriesTooLowTitle": "Calorias não correspondem aos macros",
+      "caloriesTooLowBody": "As calorias reportadas não correspondem ao que os macros sugerem. Valor inferido: {{inferred}} kcal / 100g.",
       "caloriesTooLowAction": "Atualizar para {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {

@@ -48,6 +48,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
@@ -806,7 +807,7 @@ export function FoodSearchModal({
 
     // TypeScript: assign to const to narrow the type after the guard check
     const currentMealType: MealType = mealType;
-    const targetDate = logDate ?? new Date();
+    const targetDate = localCalendarDayDate(logDate ?? new Date());
     setIsAddingSameAsYesterday(true);
     try {
       for (const log of yesterdayMealData.logs) {
