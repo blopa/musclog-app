@@ -38,8 +38,6 @@ export class FoodPortionService {
       return await database.get<FoodPortion>('food_portions').create((portion) => {
         portion.name = name;
         portion.gramWeight = gramWeight;
-        // Deprecated: `food_portions.is_default` — use `source === 'app'` for built-in catalog rows.
-        portion.isDefault = false;
         if (icon) {
           portion.icon = icon;
         }

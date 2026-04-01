@@ -12,8 +12,6 @@ export default class FoodPortion extends Model {
 
   @field('name') name!: string; // e.g., "Slice", "Cup", "Bowl"
   @field('gram_weight') gramWeight!: number; // How many grams is this portion?
-  /** @deprecated Use `source === 'app'` for built-in catalog portions. Kept for DB compatibility. */
-  @field('is_default') isDefault!: boolean;
   @field('icon') icon?: string; // e.g., 'droplet', 'scale', 'egg', 'cup'
   /** `'app'` = seeded common portions; `'user'` = user-created. */
   @field('source') source?: string; // 'app' or 'user'
@@ -56,17 +54,6 @@ export default class FoodPortion extends Model {
   async updateIcon(icon: string | undefined): Promise<void> {
     await this.update((record) => {
       record.icon = icon;
-      record.updatedAt = Date.now();
-    });
-  }
-
-  /**
-   * @deprecated `food_portions.is_default` is unused; prefer `source === 'app'` for catalog portions.
-   */
-  @writer
-  async updateIsDefault(isDefault: boolean): Promise<void> {
-    await this.update((record) => {
-      record.isDefault = isDefault;
       record.updatedAt = Date.now();
     });
   }
