@@ -17,9 +17,7 @@
       "other": "Outro"
     },
     "intelligence": "Inteligência",
-    "volumeCalculation": {
-      "title": "Cálculo de Volume",
-      "description": "Escolha como o Musclog calcula o volume ideal para sua próxima sessão. A IA se adapta com base nos dados de recuperação.",
+    "workoutInsight": {
       "none": "Nenhum",
       "algorithm": "Algoritmo",
       "ai": "IA"

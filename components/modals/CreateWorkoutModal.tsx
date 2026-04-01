@@ -38,7 +38,7 @@ export default function CreateWorkoutModal({
   const {
     workoutTitle,
     description,
-    volumeCalc,
+    volumeCalc, // TODO: Rename to workoutInsight here, and everywhere else
     workoutType,
     icon,
     selectedDays,
@@ -62,13 +62,13 @@ export default function CreateWorkoutModal({
     handleDeleteExercises,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
-  const volumeOptions = [
-    { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
-    { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
+  const workoutInsightOptions = [
+    { label: t('createWorkout.workoutInsight.none'), value: 'none' },
+    { label: t('createWorkout.workoutInsight.algorithm'), value: 'algorithm' },
     ...(isAiConfigured
       ? [
           {
-            label: t('createWorkout.volumeCalculation.ai'),
+            label: t('createWorkout.workoutInsight.ai'),
             value: 'ai',
             icon: (
               <Sparkles
@@ -343,11 +343,11 @@ export default function CreateWorkoutModal({
                 marginBottom: theme.spacing.padding.base,
               }}
             >
-              {t('createWorkout.volumeCalculation.title')}
+              {t('createWorkout.workoutInsight.title')}
             </Text>
 
             <SegmentedControl
-              options={volumeOptions}
+              options={workoutInsightOptions}
               value={volumeCalc}
               onValueChange={setVolumeCalc}
             />
@@ -360,7 +360,7 @@ export default function CreateWorkoutModal({
                 lineHeight: theme.typography.fontSize.lg,
               }}
             >
-              {t('createWorkout.volumeCalculation.description')}
+              {t('createWorkout.workoutInsight.description')}
             </Text>
           </View>
         </View>
