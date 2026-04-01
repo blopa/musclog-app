@@ -4,6 +4,8 @@
     "noResults": "Нет результатов",
     "searchPlaceholder": "Поиск порций...",
     "selectTitle": "Выберите размер порции",
-    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",
+    "loadMore": "Загрузить ещё",
+    "loadingMore": "Загрузка..."
   }
 }

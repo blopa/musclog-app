@@ -73,12 +73,21 @@ export class FoodPortionService {
   }
 
   /**
-   * Get portions paginated (for data log modal), sorted by created_at desc
+   * Get portions paginated, sorted by created_at desc (newest first).
+   * Optional `source` limits to app catalog or user-created rows.
    */
-  static async getPortionsPaginated(limit: number, offset: number): Promise<FoodPortion[]> {
-    let query = database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+  static async getPortionsPaginated(
+    limit: number,
+    offset: number,
+    options?: { source?: 'app' | 'user' }
+  ): Promise<FoodPortion[]> {
+    const clauses = [
+      Q.where('deleted_at', Q.eq(null)),
+      ...(options?.source ? [Q.where('source', options.source)] : []),
+      Q.sortBy('created_at', Q.desc),
+    ];
+
+    let query = database.get<FoodPortion>('food_portions').query(...clauses);
 
     if (limit > 0) {
       if (offset > 0) {

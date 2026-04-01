@@ -75,9 +75,19 @@ export function PortionSizesPickerModal({
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
-  // Load food portions from database
-  const { portions, isLoading, refresh } = useFoodPortions({
-    mode: 'all',
+  // Paginated global portions (newest first); app + user-created via includeAllPortionSources
+  const {
+    portions: loadedPortions,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+  } = useFoodPortions({
+    mode: 'paginated',
+    initialLimit: 20,
+    batchSize: 20,
+    includeAllPortionSources: true,
     visible,
   });
 
@@ -86,9 +96,9 @@ export function PortionSizesPickerModal({
     setLocalSelectedIds(selectedIds);
   }, [selectedIds]);
 
-  // Convert food portions to selector options
+  // Portions are already ordered newest-first (see FoodPortionService.getPortionsPaginated)
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
-    return (portions as FoodPortion[]).map((portion: FoodPortion) => {
+    return (loadedPortions as FoodPortion[]).map((portion: FoodPortion) => {
       const IconComponent = getIconComponent(portion.icon);
       return {
         id: portion.id,
@@ -99,7 +109,7 @@ export function PortionSizesPickerModal({
         iconColor: theme.colors.text.black,
       };
     });
-  }, [portions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
+  }, [loadedPortions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
@@ -228,7 +238,6 @@ export function PortionSizesPickerModal({
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
               </View>
             ) : (
-              /* OptionsMultiSelector */
               <View style={{ flex: 1 }}>
                 {filteredOptions.length > 0 ? (
                   <OptionsMultiSelector
@@ -249,6 +258,24 @@ export function PortionSizesPickerModal({
                     </Text>
                   </View>
                 )}
+                {hasMore ? (
+                  <View style={{ paddingVertical: theme.spacing.padding.base }}>
+                    <Button
+                      label={
+                        isLoadingMore
+                          ? t('portionSizes.loadingMore')
+                          : t('portionSizes.loadMore')
+                      }
+                      onPress={loadMore}
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoadingMore}
+                      loading={isLoadingMore}
+                      width="full"
+                      iconPosition="left"
+                    />
+                  </View>
+                ) : null}
               </View>
             )}
           </View>
