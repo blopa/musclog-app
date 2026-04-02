@@ -22,6 +22,7 @@ import { SmartCameraProvider } from '../context/SmartCameraContext';
 import { SnackbarProvider } from '../context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
+import { WebModalShellProvider } from '../context/WebModalShellContext';
 import { ExerciseService, FoodPortionService, WorkoutService } from '../database/services';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
@@ -203,46 +204,50 @@ function RootLayout() {
   }, []);
 
   return (
-    <GestureHandlerRootView>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <Sentry.ErrorBoundary
-            onError={(error, errorInfo) => {
-              // Use our consent-aware captureException
-              captureException(error, {
-                data: {
-                  react: {
-                    componentStack: errorInfo,
+    <GestureHandlerRootView
+      style={Platform.OS === 'web' ? { flex: 1, minHeight: '100%', width: '100%' } : { flex: 1 }}
+    >
+      <WebModalShellProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider>
+            <Sentry.ErrorBoundary
+              onError={(error, errorInfo) => {
+                // Use our consent-aware captureException
+                captureException(error, {
+                  data: {
+                    react: {
+                      componentStack: errorInfo,
+                    },
                   },
-                },
-              });
-            }}
-            fallback={({ error, resetError }) => (
-              <ErrorFallbackScreen
-                error={error instanceof Error ? error : new Error(String(error))}
-                resetError={resetError}
-              />
-            )}
-          >
-            <SettingsProvider>
-              <MenstrualCycleProvider>
-                <ThemeProvider>
-                  <LanguageInitializer />
-                  <UnreadChatProvider>
-                    <SnackbarProvider>
-                      <SmartCameraProvider>
-                        <CoachProvider>
-                          <AppContent />
-                        </CoachProvider>
-                      </SmartCameraProvider>
-                    </SnackbarProvider>
-                  </UnreadChatProvider>
-                </ThemeProvider>
-              </MenstrualCycleProvider>
-            </SettingsProvider>
-          </Sentry.ErrorBoundary>
-        </SafeAreaProvider>
-      </QueryClientProvider>
+                });
+              }}
+              fallback={({ error, resetError }) => (
+                <ErrorFallbackScreen
+                  error={error instanceof Error ? error : new Error(String(error))}
+                  resetError={resetError}
+                />
+              )}
+            >
+              <SettingsProvider>
+                <MenstrualCycleProvider>
+                  <ThemeProvider>
+                    <LanguageInitializer />
+                    <UnreadChatProvider>
+                      <SnackbarProvider>
+                        <SmartCameraProvider>
+                          <CoachProvider>
+                            <AppContent />
+                          </CoachProvider>
+                        </SmartCameraProvider>
+                      </SnackbarProvider>
+                    </UnreadChatProvider>
+                  </ThemeProvider>
+                </MenstrualCycleProvider>
+              </SettingsProvider>
+            </Sentry.ErrorBoundary>
+          </SafeAreaProvider>
+        </QueryClientProvider>
+      </WebModalShellProvider>
     </GestureHandlerRootView>
   );
 }

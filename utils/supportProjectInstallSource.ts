@@ -9,7 +9,7 @@ export const ANDROID_FDROID_INSTALLER = 'org.fdroid.fdroid';
  */
 export function isSupportProjectListLinkVisible(
   os: typeof Platform.OS,
-  installerPackageName: string,
+  installerPackageName: string
 ): boolean {
   if (os === 'web') {
     return true;

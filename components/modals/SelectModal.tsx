@@ -1,7 +1,9 @@
 import { Check } from 'lucide-react-native';
-import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
+import { ShellAwareModal } from '../ShellAwareModal';
 
 interface SelectOption {
   label: string;
@@ -27,24 +29,10 @@ export function SelectModal({
 }: SelectModalProps) {
   const theme = useTheme();
 
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
-    <Modal
+    <ShellAwareModal
       visible={visible}
       transparent
       animationType="fade"
@@ -110,6 +98,6 @@ export function SelectModal({
           </ScrollView>
         </Pressable>
       </Pressable>
-    </Modal>
+    </ShellAwareModal>
   );
 }

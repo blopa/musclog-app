@@ -34,7 +34,7 @@ const WebCameraView = ({
 
   return (
     <View
-      // make the camera view cover the whole viewport on web
+      // Absolute fill of the parent (e.g. SmartCameraModal / FullScreenModal shell), not the browser viewport
       style={[
         {
           position: 'absolute',

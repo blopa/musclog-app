@@ -1,11 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject } from 'react';
-import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks/useTheme';
+import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
 import { BottomButtonWrapper } from '../BottomButtonWrapper';
+import { ShellAwareModal } from '../ShellAwareModal';
 
 type FullScreenModalProps = {
   visible: boolean;
@@ -40,26 +42,7 @@ export function FullScreenModal({
 }: FullScreenModalProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  // Web-specific styles for proper viewport positioning
-  const webModalStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          // dvh (dynamic viewport height) always equals the *current* visible
-          // height — it shrinks when Chrome's address bar is visible, unlike
-          // 100vh which is the *large* (address-bar-hidden) viewport height.
-          // Using 100vh causes the modal to be taller than the screen when the
-          // address bar is shown, pushing the bottom button below the fold.
-          height: '100dvh',
-          // Prevent browser swipe-to-go-back gesture
-          touchAction: 'pan-y',
-        } as any)
-      : {};
+  const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   // Web-specific ScrollView styles to prevent browser gestures
   const webScrollViewStyle =
@@ -71,7 +54,7 @@ export function FullScreenModal({
       : {};
 
   return (
-    <Modal
+    <ShellAwareModal
       visible={visible}
       transparent={false}
       animationType="slide"
@@ -146,6 +129,6 @@ export function FullScreenModal({
           ) : null}
         </View>
       </View>
-    </Modal>
+    </ShellAwareModal>
   );
 }

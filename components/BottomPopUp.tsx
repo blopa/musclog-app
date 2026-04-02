@@ -4,7 +4,6 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Keyboard,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -15,6 +14,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../hooks/useTheme';
+import { useWebModalLayerStyle } from '../utils/webPhoneFrame';
+import { ShellAwareModal } from './ShellAwareModal';
 
 type BottomPopUpProps = {
   visible: boolean;
@@ -115,26 +116,10 @@ export function BottomPopUp({
     }
   }, [visible, slideAnim, theme.size]);
 
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          // 100dvh (dynamic viewport height) always matches the *current* visible
-          // height. 100vh is the *large* viewport (address bar hidden), so when
-          // Chrome's address bar is visible the backdrop is taller than the screen
-          // and justify-end pushes the sheet below the fold.
-          height: '100dvh',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <Modal
+    <ShellAwareModal
       visible={visible}
       transparent
       animationType="fade"
@@ -254,6 +239,6 @@ export function BottomPopUp({
           </Animated.View>
         </View>
       </View>
-    </Modal>
+    </ShellAwareModal>
   );
 }

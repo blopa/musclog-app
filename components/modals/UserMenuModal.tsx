@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useNavigationItems } from '../../hooks/useNavigationItems';
@@ -21,6 +21,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { getAvatarDisplayProps } from '../../utils/avatarUtils';
+import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
+import { ShellAwareModal } from '../ShellAwareModal';
 
 type UserMenuModalProps = {
   visible: boolean;
@@ -78,22 +80,10 @@ export function UserMenuModal({
   const isInNav = (item: string) =>
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
 
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <Modal
+    <ShellAwareModal
       visible={visible}
       transparent
       animationType="fade"
@@ -302,6 +292,6 @@ export function UserMenuModal({
           </View>
         </SafeAreaView>
       </Pressable>
-    </Modal>
+    </ShellAwareModal>
   );
 }
