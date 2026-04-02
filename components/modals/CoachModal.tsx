@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
+  Bot,
   ClipboardList,
   Copy,
   Dumbbell,
@@ -62,6 +63,7 @@ import {
   useChatMessages,
 } from '../../hooks/useChatMessages';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { type TrackMealIngredient } from '../../utils/coachAI';
@@ -620,6 +622,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const router = useRouter();
 
   const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
+  const { isCodexConnected } = useSettings();
   const {
     messages,
     pendingCoachMessage,
@@ -1402,6 +1405,20 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           <View className="flex-1">
             <View className="flex-row flex-wrap items-baseline gap-1.5">
               <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+              {isCodexConnected ? (
+                <View
+                  className="flex-row items-center gap-1 rounded-full px-2 py-0.5"
+                  style={{ backgroundColor: theme.colors.status.success20 }}
+                >
+                  <Bot size={10} color={theme.colors.status.success} />
+                  <Text
+                    className="text-[8px] font-bold uppercase"
+                    style={{ color: theme.colors.status.success }}
+                  >
+                    Codex
+                  </Text>
+                </View>
+              ) : null}
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>

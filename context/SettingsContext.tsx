@@ -46,6 +46,7 @@ import {
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
+import { OpenAiCodexAuthService } from '../services/OpenAiCodexAuthService';
 import { GOOGLE_AUTH_CHANGED_EVENT, isGoogleSignedIn } from '../utils/googleAuth';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
@@ -243,6 +244,7 @@ export type SettingsContextType = UseSettingsResult & {
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
   isSignedInWithGoogle: boolean;
+  isCodexConnected: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -259,6 +261,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isCodexConnected, setIsCodexConnected] = useState(false);
 
   useEffect(() => {
     const checkGoogleAuth = () => {
@@ -267,11 +270,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         .catch(() => {});
     };
 
-    checkGoogleAuth();
+    const checkCodexAuth = () => {
+      OpenAiCodexAuthService.isConnected()
+        .then(setIsCodexConnected)
+        .catch(() => {});
+    };
 
-    const subscription = AppState.addEventListener('change', (appState) => {
+    checkGoogleAuth();
+    checkCodexAuth();
+
+    const appStateSubscription = AppState.addEventListener('change', (appState) => {
       if (appState === 'active') {
         checkGoogleAuth();
+        checkCodexAuth();
       }
     });
 
@@ -279,8 +290,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
     }
 
+    // Check Codex status every 30 seconds to catch potential re-auth or logout
+    const codexInterval = setInterval(checkCodexAuth, 30000);
+
     return () => {
-      subscription.remove();
+      appStateSubscription.remove();
+      clearInterval(codexInterval);
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         window.removeEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
       }
@@ -308,11 +323,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const isAiConfigured = useMemo(() => {
     return (
       isGoogleConnected ||
+      isCodexConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
   }, [
     isGoogleConnected,
+    isCodexConnected,
     state.enableGoogleGemini,
     state.googleGeminiApiKey,
     state.enableOpenAi,
@@ -324,10 +341,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       ...state,
       isAiConfigured,
       isSignedInWithGoogle: isGoogleConnected,
+      isCodexConnected,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiConfigured, isGoogleConnected]
+    [state, isAiConfigured, isGoogleConnected, isCodexConnected]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

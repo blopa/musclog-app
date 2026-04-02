@@ -37,3 +37,17 @@ export const OPENAI_MODELS = {
   GPT_O3: { model: 'o3', value: 'o3' },
   GPT_O3_PRO: { model: 'o3-pro', value: 'o3-pro' },
 } as const;
+
+export const OPENAI_CODEX_CONFIG = {
+  issuer: 'https://auth.openai.com',
+  clientId: process.env.EXPO_PUBLIC_MUSCLOG_CLIENT_ID_FROM_DASHBOARD || 'app_EMoamEEZ73f0CkXaXp7hrann',
+  redirectUrl: 'com.werules.logger://oauth',
+  scopes: ['openid', 'profile', 'email', 'api.codex.request', 'offline_access'],
+  usePKCE: true,
+  // The 2026 spec requires a specific base URL for Codex
+  baseUrl: 'https://api.openai.com/v1/codex',
+  model: 'gpt-5.2-codex',
+};
+
+export const OPENAI_CODEX_COMPATIBILITY_HEADER = 'X-OpenClaw-Compatibility';
+export const OPENAI_CODEX_REMAINING_HOURS_HEADER = 'x-ratelimit-remaining-subscription-hours';
