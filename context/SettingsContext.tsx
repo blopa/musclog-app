@@ -290,10 +290,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
     }
 
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
-    }
-
     // Check Codex status every 30 seconds to catch potential re-auth or logout
     const codexInterval = setInterval(checkCodexAuth, 30000);
 
