@@ -243,7 +243,15 @@
       "errorMessage": "Algo deu errado. Por favor, tente novamente."
     },
     "portions": {
-      "100g": "Padrão"
+      "100g": "Padrão",
+      "twoSlices": "Duas fatias",
+      "cup": "Xícara",
+      "tbsp": "Colher de sopa",
+      "tsp": "Colher de chá",
+      "oz": "Onça",
+      "50g": "Meia porção",
+      "200g": "Porção dupla",
+      "250g": "Porção grande"
     },
     "common": {
       "kcal": "kcal"

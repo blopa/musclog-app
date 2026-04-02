@@ -54,7 +54,7 @@ import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
-import { localCalendarDayDate } from '../../utils/calendarDate';
+import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '../../utils/calendarDate';
 import { getMealCritique } from '../../utils/coachAI';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
@@ -1381,7 +1381,11 @@ export default function FoodScreen() {
         onConfirm={handleConfirmFoodMove}
         mode="move"
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        sourceDate={
+          selectedFoodItem
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : selectedDate
+        }
         isLoading={isFoodMoveLoading}
       />
 
@@ -1396,7 +1400,11 @@ export default function FoodScreen() {
         mode="split"
         title={t('food.actions.splitFoodModalTitle')}
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        sourceDate={
+          selectedFoodItem
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : selectedDate
+        }
         isLoading={isFoodSplitLoading}
       />
 
@@ -1414,7 +1422,9 @@ export default function FoodScreen() {
           selectedFoodItem && isDuplicateMode ? selectedFoodItem.log.type : undefined
         }
         initialDate={
-          selectedFoodItem && isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined
+          selectedFoodItem && isDuplicateMode
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : undefined
         }
         initialServingSize={
           selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined

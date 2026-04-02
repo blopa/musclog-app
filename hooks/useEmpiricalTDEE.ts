@@ -1,15 +1,15 @@
-import { addDays } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '../database/services';
-import { localDayStartMs } from '../utils/calendarDate';
+import {
+  localCalendarWeekIndexSince,
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+} from '../utils/calendarDate';
 import { calculateTDEE, lbsToKg } from '../utils/nutritionCalculator';
 import { useSettings } from './useSettings';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const MS_PER_WEEK = 7 * MS_PER_DAY;
 
 function average(values: number[]): number {
   if (values.length === 0) {
@@ -18,17 +18,13 @@ function average(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function weekIndex(dateTs: number, startTs: number): number {
-  return Math.floor((dateTs - startTs) / MS_PER_WEEK);
-}
-
 function bucketByWeek(
   points: { date: number; valueKg: number }[],
   startTs: number
 ): Map<number, { date: number; valueKg: number }[]> {
   const map = new Map<number, { date: number; valueKg: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
@@ -43,7 +39,7 @@ function bucketByWeekBodyFat(
 ): Map<number, { date: number; value: number }[]> {
   const map = new Map<number, { date: number; value: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
@@ -78,7 +74,7 @@ async function getHistoricalNutritionParamsCustom(options: {
 
   const endTs = localDayStartMs(asOfDate);
   const endOfDay = new Date(endTs);
-  const startTs = localDayStartMs(addDays(endOfDay, -lookbackDays));
+  const startTs = localDayKeyPlusCalendarDays(endTs, -lookbackDays);
   const startOfRange = new Date(startTs);
 
   const dateRange = { startDate: startTs, endDate: endTs };

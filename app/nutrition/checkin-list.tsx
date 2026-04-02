@@ -12,6 +12,7 @@ import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useNutritionCheckins } from '../../hooks/useNutritionCheckins';
 import { useTheme } from '../../hooks/useTheme';
+import { getLocalCalendarYear } from '../../utils/calendarDate';
 
 export default function CheckinListScreen() {
   const theme = useTheme();
@@ -23,11 +24,11 @@ export default function CheckinListScreen() {
   });
 
   const [selectedCheckinId, setSelectedCheckinId] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const [selectedYear, setSelectedYear] = useState(getLocalCalendarYear(new Date()).toString());
   const [isYearModalVisible, setIsYearModalVisible] = useState(false);
 
   const years = useMemo(() => {
-    const currentYear = new Date().getFullYear();
+    const currentYear = getLocalCalendarYear(new Date());
     const startYear = currentYear - 100;
     const list = [];
     for (let y = currentYear; y >= startYear; y--) {
@@ -45,7 +46,7 @@ export default function CheckinListScreen() {
       if (c.status === 'pending') {
         m.push(c);
       } else {
-        const year = new Date(c.checkinDate).getFullYear().toString();
+        const year = getLocalCalendarYear(new Date(c.checkinDate)).toString();
         if (year === selectedYear) {
           h.push(c);
         }

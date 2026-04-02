@@ -1,8 +1,12 @@
-import { subDays, subMonths, subYears } from 'date-fns';
+import { subMonths, subYears } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ProgressData, ProgressService } from '../database/services/ProgressService';
-import { localDayClosedRangeMaxMs, localDayStartMs } from '../utils/calendarDate';
+import {
+  localDayClosedRangeMaxMs,
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+} from '../utils/calendarDate';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';
 
@@ -42,13 +46,13 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
 
         switch (preset) {
           case '7d':
-            start = localDayStartMs(subDays(today, 7));
+            start = localDayKeyPlusCalendarDaysFromNow(-7);
             break;
           case '30d':
-            start = localDayStartMs(subDays(today, 30));
+            start = localDayKeyPlusCalendarDaysFromNow(-30);
             break;
           case '90d':
-            start = localDayStartMs(subDays(today, 90));
+            start = localDayKeyPlusCalendarDaysFromNow(-90);
             break;
           case '6m':
             start = localDayStartMs(subMonths(today, 6));
@@ -60,7 +64,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
             start = localDayStartMs(subYears(today, 10)); // Fallback for "all"
             break;
           default:
-            start = localDayStartMs(subDays(today, 30));
+            start = localDayKeyPlusCalendarDaysFromNow(-30);
         }
       }
 

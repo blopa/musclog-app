@@ -1,7 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
+import {
+  localDayStartFromUtcMs,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+} from '../../utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -166,8 +170,6 @@ export interface ProgressData {
   moodVolumeHistory: MoodVolumePoint[];
   moodMacrosHistory: MoodMacrosPoint[];
 }
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export class ProgressService {
   /**
@@ -406,11 +408,12 @@ export class ProgressService {
         Math.abs(curr.date - wp.date) < Math.abs(prev.date - wp.date) ? curr : prev
       );
 
-      if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_DAY) {
+      if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_SOLAR_DAY) {
         let weightKg = wp.value;
         if (isImperial) {
           weightKg = convert(wp.value, 'lb').to('kg') as number;
         }
+
         const ffmi = ffmiFromWeightHeightAndBodyFat(weightKg, heightM, closestFat.value);
         history.push({ date: wp.date, value: ffmi });
       }
@@ -493,7 +496,7 @@ export class ProgressService {
     const firstDate = points[0].date;
 
     for (const p of points) {
-      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || [];
       existing.push(p.value);
       weeksMap.set(weekIndex, existing);
@@ -501,7 +504,7 @@ export class ProgressService {
 
     return Array.from(weeksMap.entries())
       .map(([index, values]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
+        date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
         value: values.reduce((a, b) => a + b, 0) / values.length,
       }))
       .sort((a, b) => a.date - b.date);
@@ -515,7 +518,7 @@ export class ProgressService {
     const firstDate = daily[0].date;
 
     for (const d of daily) {
-      const weekIndex = Math.floor((d.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((d.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || [];
       existing.push(d);
       weeksMap.set(weekIndex, existing);
@@ -537,7 +540,7 @@ export class ProgressService {
 
         const count = days.length;
         return {
-          date: firstDate + index * 7 * MS_PER_DAY,
+          date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
           calories: sum.calories / count,
           protein: sum.protein / count,
           carbs: sum.carbs / count,
@@ -556,14 +559,14 @@ export class ProgressService {
     const firstDate = points[0].date;
 
     for (const p of points) {
-      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || 0;
       weeksMap.set(weekIndex, existing + p.volume);
     }
 
     return Array.from(weeksMap.entries())
       .map(([index, volume]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
+        date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
         volume,
       }))
       .sort((a, b) => a.date - b.date);
@@ -812,11 +815,13 @@ export class ProgressService {
       const prevStart = sortedStarts[i - 1];
       const data = groupedData.get(start)!;
 
-      const weight = weightPoints.find((wp) => Math.abs(wp.date - start) < MS_PER_DAY);
-      const prevWeight = weightPoints.find((wp) => Math.abs(wp.date - prevStart) < MS_PER_DAY);
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - start) < MS_PER_SOLAR_DAY);
+      const prevWeight = weightPoints.find(
+        (wp) => Math.abs(wp.date - prevStart) < MS_PER_SOLAR_DAY
+      );
 
-      const fat = fatPoints.find((fp) => Math.abs(fp.date - start) < MS_PER_DAY);
-      const prevFat = fatPoints.find((fp) => Math.abs(fp.date - prevStart) < MS_PER_DAY);
+      const fat = fatPoints.find((fp) => Math.abs(fp.date - start) < MS_PER_SOLAR_DAY);
+      const prevFat = fatPoints.find((fp) => Math.abs(fp.date - prevStart) < MS_PER_SOLAR_DAY);
 
       if (weight && prevWeight) {
         history.push({
@@ -856,16 +861,16 @@ export class ProgressService {
 
     const step =
       aggregation === 'daily'
-        ? MS_PER_DAY
+        ? MS_PER_SOLAR_DAY
         : aggregation === 'weekly'
-          ? MS_PER_DAY * 7
-          : MS_PER_DAY * 30;
+          ? MS_PER_SOLAR_DAY * 7
+          : MS_PER_SOLAR_DAY * 30;
 
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);
 
       // Determine phase
-      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_DAY);
+      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_SOLAR_DAY);
       const cycleDay = ((daysSinceStart % c.avgCycleLength) + c.avgCycleLength) % c.avgCycleLength;
 
       let phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
@@ -890,7 +895,7 @@ export class ProgressService {
             workoutsInPeriod.length
           : 0;
 
-      const weight = weightPoints.find((wp) => Math.abs(wp.date - dayTs) < MS_PER_DAY);
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - dayTs) < MS_PER_SOLAR_DAY);
       const energiesInPeriod = energyPoints.filter((ep) => {
         const start = this.getStartOfAggregation(ep.date, aggregation);
         return start === dayTs;

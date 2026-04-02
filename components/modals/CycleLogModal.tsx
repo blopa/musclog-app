@@ -4,6 +4,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
 import {
+  getLocalCalendarYear,
   localCalendarDayDate,
   localDayClosedRangeMaxMs,
   localDayStartMs,
@@ -249,7 +250,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
-        maxYear={new Date().getFullYear()}
+        maxYear={getLocalCalendarYear(new Date())}
       />
     </>
   );

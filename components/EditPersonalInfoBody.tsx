@@ -9,7 +9,11 @@ import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
-import { localCalendarDayDate } from '../utils/calendarDate';
+import {
+  formatLocalCalendarDayMmDdYyyy,
+  getLocalCalendarYear,
+  localCalendarDayDate,
+} from '../utils/calendarDate';
 import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
 import { AvatarSelector } from './AvatarSelector';
 import { DatePickerInput } from './modals/DatePickerInput';
@@ -75,19 +79,11 @@ export function EditPersonalInfoBody({
   const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  // Helper function to convert Date object to DOB string
-  const formatDateToDob = (date: Date): string => {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
-
   const currentDate = parseDobDisplayStringToPickerDate(dob);
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    const newDob = formatDateToDob(localCalendarDayDate(date));
+    const newDob = formatLocalCalendarDayMmDdYyyy(localCalendarDayDate(date));
     setDob(newDob);
   };
 
@@ -248,7 +244,7 @@ export function EditPersonalInfoBody({
         selectedDate={currentDate}
         onDateSelect={handleDateSelect}
         minYear={1900}
-        maxYear={new Date().getFullYear()}
+        maxYear={getLocalCalendarYear(new Date())}
         quickDates={[
           { label: t('datePicker.xYearsAgo', { count: 20 }), date: subYears(new Date(), 20) },
           { label: t('datePicker.xYearsAgo', { count: 30 }), date: subYears(new Date(), 30) },

@@ -41,7 +41,11 @@ import {
   isSuccessFoodDetailProductState,
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import { formatDisplayGrams } from '../../utils/formatDisplayWeight';
 import {
@@ -697,7 +701,7 @@ export function FoodMealDetailsModal({
     }
 
     try {
-      setSelectedDate(localCalendarDayDate(new Date(foodLog.date)));
+      setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
     } catch (e) {
       setSelectedDate(localCalendarDayDate(new Date()));
     }

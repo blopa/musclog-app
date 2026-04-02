@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addDays } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
@@ -35,7 +34,11 @@ import {
   UserService,
 } from '../database/services';
 import AiService from '../services/AiService';
-import { formatLocalCalendarDayIso, localCalendarDayDate } from '../utils/calendarDate';
+import {
+  formatLocalCalendarDayIso,
+  localCalendarDayDate,
+  localCalendarDayPlusDays,
+} from '../utils/calendarDate';
 import {
   AiCreditsError,
   type ChatHistoryEntry,
@@ -639,7 +642,7 @@ export function useChatMessages(
           }
         } else if (pendingIntention === ANALYZE_PROGRESS) {
           const end = localCalendarDayDate(new Date());
-          const start = localCalendarDayDate(addDays(end, -7));
+          const start = localCalendarDayPlusDays(end, -7);
           const startDate = formatLocalCalendarDayIso(start);
           const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
@@ -668,7 +671,7 @@ export function useChatMessages(
           setPendingIntention(null);
         } else if (pendingIntention === NUTRITION_CHECK) {
           const end = localCalendarDayDate(new Date());
-          const start = localCalendarDayDate(addDays(end, -7));
+          const start = localCalendarDayPlusDays(end, -7);
           const startDate = formatLocalCalendarDayIso(start);
           const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
@@ -765,7 +768,7 @@ export function useChatMessages(
         // 5c. If the AI returned a memory about the user, persist it
         if (reply.rememberMe?.trim()) {
           await AiCustomPromptService.createPrompt(
-            `Memory from ${new Date().toLocaleDateString()}`,
+            `Memory from ${formatLocalCalendarDayIso(new Date())}`,
             reply.rememberMe.trim(),
             true,
             conversationContext,

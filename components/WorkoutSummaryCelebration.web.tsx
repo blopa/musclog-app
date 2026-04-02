@@ -1,5 +1,6 @@
 import {
   Dumbbell,
+  Flame,
   Home,
   MessageCircle,
   Star,
@@ -19,6 +20,7 @@ type WorkoutSummaryCelebrationProps = {
   totalTime?: string;
   volume?: string;
   personalRecords?: number;
+  caloriesBurned?: number;
 };
 
 type StatRowProps = {
@@ -102,6 +104,7 @@ export function WorkoutSummaryCelebration({
   totalTime = '0m',
   volume = '0 kg',
   personalRecords = 0,
+  caloriesBurned,
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -283,6 +286,18 @@ export function WorkoutSummaryCelebration({
             iconSize={theme.iconSize.lg}
             showDivider
           />
+          {caloriesBurned && caloriesBurned > 0 ? (
+            <StatRow
+              icon={Flame}
+              label={t('workoutSummary.caloriesBurned')}
+              value={String(caloriesBurned)}
+              valueSuffix="kcal"
+              iconBgColor={theme.colors.status.error10}
+              iconColor={theme.colors.status.error}
+              iconSize={theme.iconSize.lg}
+              showDivider
+            />
+          ) : null}
           <StatRow
             icon={TrendingUp}
             label={t('workoutSummary.personalRecords')}

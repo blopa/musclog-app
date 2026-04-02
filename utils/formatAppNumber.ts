@@ -65,6 +65,22 @@ import { roundToDecimalPlaces } from './roundDecimal';
  *   `value: string` (callers pre-format), time `HH:MM:SS`, CSS `%` widths.
  * - **Not display strings:** `roundToDecimalPlaces` in services / `MyMealsModal` AI→`createCustomFood`,
  *   `utils/nutritionCalculator` `parseFloat(.toFixed())` — **numeric** pipeline for DB/API.
+ *
+ * ### Deep scan (2026-03) — `kgToDisplay` / `gramsToDisplay` vs locale
+ *
+ * Raw `kgToDisplay` / `gramsToDisplay` return **numbers** (still using `.` internally). **UI must not**
+ * stringify them for users except via `useFormatAppNumber` / `formatDisplayWeightKg` / `formatDisplayGrams`
+ * / chart helpers. Verified: `FoodItemCard` (`MacroItem` → `formatRoundedDecimal`), `nutrition-goals-results`
+ * (`formatDecimal` / `formatInteger`), `CheckinDetailsModal` weight rows, `BodyMetricsHistoryModal` deltas,
+ * `profile` stats, `FreeSessionExerciseCompleteModal` volume, `ServingSizeSelector` quick tabs, `StepperInput`
+ * / `StepperInlineInput` `formatValue`. **Typing** locale (comma vs dot) lives in `localizedDecimalInput.ts`;
+ * **display** locale lives here — keep both when adding numeric fields.
+ *
+ * ### Ongoing checklist (new UI)
+ *
+ * 1. User-visible number → `useFormatAppNumber()` or `formatDisplayWeight*` / `foodDisplay` helpers.
+ * 2. Avoid `toFixed` / `` `${n}` `` in `Text` for amounts (see regression grep above).
+ * 3. `t('key', { count: n })` / `t('key', { value: n })` → pass **pre-formatted** strings if separators matter.
  */
 
 const formatterCache = new Map<string, Intl.NumberFormat>();

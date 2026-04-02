@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { DailyNutrition, MetricPoint } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarChart } from '../charts/BarChart';
 import { BarLineChart } from '../charts/BarLineChart';
@@ -19,11 +20,6 @@ interface NutritionChartsProps {
 }
 
 type NutritionView = 'calories' | 'macros' | 'combined' | 'macrosCombined';
-
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
 
 export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
   const { t } = useTranslation();
@@ -116,7 +112,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
     () =>
       getXAxisLabels(
         nutritionHistory.map((d) => ({ x: d.date })),
-        formatDate
+        formatLocalCalendarDayDdMm
       ),
     [nutritionHistory]
   );

@@ -5,6 +5,7 @@ import NutritionLog from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
 import {
   localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from '../utils/calendarDate';
@@ -50,7 +51,9 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
     let mounted = true;
     setIsLoadingYesterday(true);
     const baseDay = localCalendarDayDate(logDate ?? new Date());
-    const yesterdayDay = new Date(localDayKeyPlusCalendarDays(localDayStartMs(baseDay), -1));
+    const yesterdayDay = localCalendarDayDateFromDayKeyMs(
+      localDayKeyPlusCalendarDays(localDayStartMs(baseDay), -1)
+    );
 
     const doTask = async () => {
       try {

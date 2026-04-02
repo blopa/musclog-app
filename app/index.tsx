@@ -1,9 +1,9 @@
 import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
@@ -40,6 +40,7 @@ import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import packageJson from '../package.json';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+import { isSameLocalCalendarDay, localCalendarDayDate } from '../utils/calendarDate';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 import { captureException } from '../utils/sentry';
 import { showSnackbar } from '../utils/snackbarService';
@@ -61,11 +62,34 @@ export default function HomeScreen() {
   const { isAiConfigured } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
+
+  // TODO: why is action not being used here?
   const params = useLocalSearchParams<{ action?: string }>();
   const navigationState = useRootNavigationState();
 
-  // Memoize today's date to prevent infinite re-renders
-  const today = useMemo(() => new Date(), []);
+  const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
+
+  useEffect(() => {
+    const syncToday = () => {
+      setToday((prev) => {
+        const now = new Date();
+        return isSameLocalCalendarDay(prev, now) ? prev : localCalendarDayDate(now);
+      });
+    };
+
+    syncToday();
+    const appSub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') {
+        syncToday();
+      }
+    });
+
+    const intervalId = setInterval(syncToday, 60_000);
+    return () => {
+      appSub.remove();
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const {
     calories: dailyCalories,
