@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Modal } from 'react-native';
+import { Modal as RNModal } from 'react-native';
 
 export type ShellAwareModalProps = {
   visible: boolean;
@@ -11,7 +11,7 @@ export type ShellAwareModalProps = {
   statusBarTranslucent?: boolean;
 };
 
-export function ShellAwareModal({
+export function Modal({
   visible,
   children,
   transparent = false,
@@ -21,7 +21,7 @@ export function ShellAwareModal({
   statusBarTranslucent,
 }: ShellAwareModalProps) {
   return (
-    <Modal
+    <RNModal
       visible={visible}
       transparent={transparent}
       animationType={animationType}
@@ -30,6 +30,6 @@ export function ShellAwareModal({
       statusBarTranslucent={statusBarTranslucent}
     >
       {children}
-    </Modal>
+    </RNModal>
   );
 }

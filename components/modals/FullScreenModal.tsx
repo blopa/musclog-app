@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
 import { BottomButtonWrapper } from '../BottomButtonWrapper';
-import { ShellAwareModal } from '../ShellAwareModal';
+import { Modal } from '../theme/Modal';
 
 type FullScreenModalProps = {
   visible: boolean;
@@ -54,7 +54,7 @@ export function FullScreenModal({
       : {};
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent={false}
       animationType="slide"
@@ -129,6 +129,6 @@ export function FullScreenModal({
           ) : null}
         </View>
       </View>
-    </ShellAwareModal>
+    </Modal>
   );
 }

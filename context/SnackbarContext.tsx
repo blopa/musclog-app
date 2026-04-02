@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ShellAwareModal } from '../components/ShellAwareModal';
 import { Snackbar, type SnackbarType } from '../components/Snackbar';
+import { Modal } from '../components/theme/Modal';
 import { useTheme } from '../hooks/useTheme';
 import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
 import { useWebBottomDockLayerStyle } from '../utils/webPhoneFrame';
@@ -106,12 +106,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         </View>
       ) : (
         /* Native: wrap in a transparent Modal so snackbars appear above ALL other modals */
-        <ShellAwareModal
-          visible={snackbars.length > 0}
-          transparent
-          animationType="none"
-          statusBarTranslucent
-        >
+        <Modal visible={snackbars.length > 0} transparent animationType="none" statusBarTranslucent>
           <View style={{ flex: 1, pointerEvents: 'box-none' }}>
             <View
               style={{
@@ -126,7 +121,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
               {snackbarList}
             </View>
           </View>
-        </ShellAwareModal>
+        </Modal>
       )}
     </SnackbarContext.Provider>
   );

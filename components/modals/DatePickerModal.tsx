@@ -25,8 +25,8 @@ import { useTheme } from '../../hooks/useTheme';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { localCalendarDayDate } from '../../utils/calendarDate';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
 import { Button } from '../theme/Button';
+import { Modal } from '../theme/Modal';
 import { FullScreenModal } from './FullScreenModal';
 
 type QuickDateOption = {
@@ -317,7 +317,7 @@ export function DatePickerModal({
 
       {/* Month/Year Picker Modal */}
       {isMonthYearPickerVisible ? (
-        <ShellAwareModal
+        <Modal
           visible={isMonthYearPickerVisible}
           transparent
           animationType="fade"
@@ -433,7 +433,7 @@ export function DatePickerModal({
               </View>
             </Pressable>
           </Pressable>
-        </ShellAwareModal>
+        </Modal>
       ) : null}
     </FullScreenModal>
   );

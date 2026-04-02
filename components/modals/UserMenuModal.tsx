@@ -22,7 +22,7 @@ import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { getAvatarDisplayProps } from '../../utils/avatarUtils';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
+import { Modal } from '../theme/Modal';
 
 type UserMenuModalProps = {
   visible: boolean;
@@ -83,7 +83,7 @@ export function UserMenuModal({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -292,6 +292,6 @@ export function UserMenuModal({
           </View>
         </SafeAreaView>
       </Pressable>
-    </ShellAwareModal>
+    </Modal>
   );
 }

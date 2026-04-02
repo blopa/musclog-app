@@ -6,8 +6,8 @@ import { Animated, Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
 import { Button } from '../theme/Button';
+import { Modal } from '../theme/Modal';
 
 type EndWorkoutModalProps = {
   visible: boolean;
@@ -66,7 +66,7 @@ export function EndWorkoutModal({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -206,6 +206,6 @@ export function EndWorkoutModal({
           </Animated.View>
         </Pressable>
       </Pressable>
-    </ShellAwareModal>
+    </Modal>
   );
 }

@@ -3,7 +3,7 @@ import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
+import { Modal } from '../theme/Modal';
 
 interface SelectOption {
   label: string;
@@ -32,7 +32,7 @@ export function SelectModal({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -98,6 +98,6 @@ export function SelectModal({
           </ScrollView>
         </Pressable>
       </Pressable>
-    </ShellAwareModal>
+    </Modal>
   );
 }

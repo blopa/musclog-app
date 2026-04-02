@@ -5,7 +5,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
+import { Modal } from '../theme/Modal';
 
 type CenteredModalProps = {
   visible: boolean;
@@ -33,7 +33,7 @@ export function CenteredModal({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -97,6 +97,6 @@ export function CenteredModal({
           </View>
         </View>
       </View>
-    </ShellAwareModal>
+    </Modal>
   );
 }

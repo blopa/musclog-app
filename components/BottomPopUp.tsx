@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../hooks/useTheme';
 import { useWebModalLayerStyle } from '../utils/webPhoneFrame';
-import { ShellAwareModal } from './ShellAwareModal';
+import { Modal } from './theme/Modal';
 
 type BottomPopUpProps = {
   visible: boolean;
@@ -119,7 +119,7 @@ export function BottomPopUp({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -239,6 +239,6 @@ export function BottomPopUp({
           </Animated.View>
         </View>
       </View>
-    </ShellAwareModal>
+    </Modal>
   );
 }

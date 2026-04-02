@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Modal, Platform, View } from 'react-native';
+import { Modal as RNModal, Platform, View } from 'react-native';
 
-import { useWebModalShellHost } from '../context/WebModalShellContext';
-import { useWebDesktopPhoneFrame } from '../utils/webPhoneFrame';
+import { useWebModalShellHost } from '../../context/WebModalShellContext';
+import { useWebDesktopPhoneFrame } from '../../utils/webPhoneFrame';
 
 export type ShellAwareModalProps = {
   visible: boolean;
@@ -20,7 +20,7 @@ export type ShellAwareModalProps = {
  * On web in the desktop phone frame, portals modal content into the shell host so layers stay inside the frame.
  * Otherwise uses React Native `Modal` (including react-native-web’s body portal).
  */
-export function ShellAwareModal({
+export function Modal({
   visible,
   children,
   transparent = false,
@@ -82,7 +82,7 @@ export function ShellAwareModal({
   }
 
   return (
-    <Modal
+    <RNModal
       visible={visible}
       transparent={transparent}
       animationType={animationType}
@@ -91,6 +91,6 @@ export function ShellAwareModal({
       statusBarTranslucent={statusBarTranslucent}
     >
       {children}
-    </Modal>
+    </RNModal>
   );
 }

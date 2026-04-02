@@ -5,8 +5,8 @@ import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { ShellAwareModal } from '../ShellAwareModal';
 import { Button } from '../theme/Button';
+import { Modal } from '../theme/Modal';
 
 export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
 
@@ -62,7 +62,7 @@ export function ConfirmationModal({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
-    <ShellAwareModal
+    <Modal
       visible={visible}
       transparent
       animationType="fade"
@@ -173,6 +173,6 @@ export function ConfirmationModal({
           </View>
         </Pressable>
       </Pressable>
-    </ShellAwareModal>
+    </Modal>
   );
 }
