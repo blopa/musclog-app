@@ -74,13 +74,6 @@
         "energyDescription": "Antecipar quedas e ajustar intensidade conforme necessário."
       }
     },
-    "connectGoogle": {
-      "title": "Conectar Sua Conta Google",
-      "welcome": "Bem-vindo, {{name}}",
-      "welcomeDescription": "Você está conectado — personalize sua experiência antes de continuar.",
-      "continue": "Continuar",
-      "error": "Erro"
-    },
     "healthConnect": {
       "connectYour": "Conecte Sua",
       "health": "Saúde",
@@ -106,7 +99,7 @@
       "appName": "Musclog",
       "tagline": "Levante, Registre, Repita",
       "description": "Acompanhe seu progresso com insights baseados em dados e alcance seus objetivos de fitness.",
-      "connectGoogle": "Ver Termos",
+      "viewTerms": "Ver Termos",
       "preparingApp": "Preparando o app para você...",
       "migratingPreamble": "Atualizando do Musclog anterior — estamos trazendo seus dados.",
       "migratingData": "Migrando seus dados...",

@@ -306,7 +306,7 @@ export default function LandingScreen() {
                       textDecorationLine: 'underline',
                     }}
                   >
-                    {t('onboarding.landing.connectGoogle')}
+                    {t('onboarding.landing.viewTerms')}
                   </Text>
                 </View>
               </>

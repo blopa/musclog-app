@@ -9,11 +9,6 @@
     "failedToEnableSync": "Falha ao ativar sincronização do Health Connect.",
     "failedToDisableSync": "Falha ao desativar sincronização do Health Connect.",
     "syncDisabledMessage": "A sincronização do Health Connect foi desativada.",
-    "googleAuth": {
-      "failedToSignIn": "Falha ao fazer login com Google.",
-      "failedToInitiateSignIn": "Falha ao iniciar login com Google.",
-      "signInError": "Falha ao fazer login com Google: {{error}}"
-    },
     "healthConnect": {
       "noPermissionsGranted": "Nenhuma permissão do Health Connect concedida",
       "sdkNotAvailable": "O Health Connect não está disponível neste dispositivo. Por favor, instale-o da Play Store.",

@@ -513,7 +513,7 @@ export default function OnboardingScreen() {
     } else {
       // Navigate to home when on last step
       if (!__DEV__ && Platform.OS === 'web') {
-        router.navigate('/onboarding/connect-with-google');
+        router.navigate('/onboarding/fitness-info');
       } else {
         router.navigate('/onboarding/health-connect');
       }
@@ -540,7 +540,7 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               if (!__DEV__ && Platform.OS === 'web') {
-                router.navigate('/onboarding/connect-with-google');
+                router.navigate('/onboarding/fitness-info');
               } else {
                 router.navigate('/onboarding/health-connect');
               }

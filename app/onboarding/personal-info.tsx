@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subYears } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -12,7 +11,6 @@ import {
 } from '../../components/EditPersonalInfoBody';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
-import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
@@ -56,9 +54,8 @@ export default function PersonalInfo() {
             avatarColor: user.avatarColor || undefined,
           });
         } else {
-          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
           setInitialData({
-            fullName: tempName || '',
+            fullName: '',
             email: '',
             dob: '',
             gender: 'other',

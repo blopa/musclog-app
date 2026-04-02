@@ -13,8 +13,6 @@ export type SettingType =
   | 'distance_unit'
   | 'data_sync_enabled'
   | 'sync_wifi_only'
-  | 'google_refresh_token_type'
-  | 'google_oauth_gemini_enabled_type'
   | 'health_connect_sync_enabled'
   | 'health_connect_last_sync'
   | 'health_connect_sync_in_progress'

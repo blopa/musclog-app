@@ -21,7 +21,6 @@ import { BrowseTemplatesModal } from '../../components/modals/BrowseTemplatesMod
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
 import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortionModal';
@@ -185,9 +184,6 @@ export default function ModalsTestScreen() {
 
   // Add Exercise Modal
   const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
-
-  // Connect Google Account Modal
-  const [isConnectGoogleAccountVisible, setIsConnectGoogleAccountVisible] = useState(false);
 
   // Add Food Item to Meal Modal
   const [isAddFoodItemToMealVisible, setIsAddFoodItemToMealVisible] = useState(false);
@@ -729,22 +725,6 @@ export default function ModalsTestScreen() {
               onPress={() => setIsBarcodeCameraVisible(true)}
             />
           </View>
-          <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
-              Connect Google Account Modal
-            </Text>
-            <Text className="mb-4 text-sm text-text-secondary">
-              Modal for connecting Google account for AI features.
-            </Text>
-            {/* Connect Google Account Modal Button */}
-            <Button
-              label="Open Connect Google Account Modal"
-              variant="accent"
-              width="full"
-              onPress={() => setIsConnectGoogleAccountVisible(true)}
-            />
-          </View>
-
           {/* Notifications Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Notifications Modal</Text>
@@ -1920,7 +1900,6 @@ export default function ModalsTestScreen() {
       <AISettingsModal
         visible={isAiSettingsVisible}
         onClose={() => setIsAiSettingsVisible(false)}
-        onConnectGoogleAccount={() => console.log('Connect Google pressed')}
         onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
       />
@@ -1936,13 +1915,6 @@ export default function ModalsTestScreen() {
         onClose={() => setIsFilterWorkoutsVisible(false)}
         onApplyFilters={(filters) => console.log('Applied filters:', filters)}
         onClearFilters={() => console.log('Cleared filters')}
-      />
-
-      <ConnectGoogleAccountModal
-        visible={isConnectGoogleAccountVisible}
-        onClose={() => setIsConnectGoogleAccountVisible(false)}
-        onConnect={() => console.log('Google Account Connected')}
-        onMaybeLater={() => console.log('Maybe Later pressed')}
       />
 
       <AddFoodItemToMealModal

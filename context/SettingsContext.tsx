@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import { AppState, Platform } from 'react-native';
 
 import { GEMINI_MODELS } from '../constants/ai';
 import {
@@ -46,7 +45,6 @@ import {
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
-import { GOOGLE_AUTH_CHANGED_EVENT, isGoogleSignedIn } from '../utils/googleAuth';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 type SettingsState = {
@@ -242,7 +240,6 @@ export type SettingsContextType = UseSettingsResult & {
   useOcrBeforeAi: boolean;
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
-  isSignedInWithGoogle: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -258,34 +255,6 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
-  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
-
-  useEffect(() => {
-    const checkGoogleAuth = () => {
-      isGoogleSignedIn()
-        .then(setIsGoogleConnected)
-        .catch(() => {});
-    };
-
-    checkGoogleAuth();
-
-    const subscription = AppState.addEventListener('change', (appState) => {
-      if (appState === 'active') {
-        checkGoogleAuth();
-      }
-    });
-
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
-    }
-
-    return () => {
-      subscription.remove();
-      if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        window.removeEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
@@ -307,27 +276,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const isAiConfigured = useMemo(() => {
     return (
-      isGoogleConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
-  }, [
-    isGoogleConnected,
-    state.enableGoogleGemini,
-    state.googleGeminiApiKey,
-    state.enableOpenAi,
-    state.openAiApiKey,
-  ]);
+  }, [state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
 
   const value = useMemo(
     () => ({
       ...state,
       isAiConfigured,
-      isSignedInWithGoogle: isGoogleConnected,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiConfigured, isGoogleConnected]
+    [state, isAiConfigured]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

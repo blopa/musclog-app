@@ -74,13 +74,6 @@
         "energyDescription": "Anticipate lows and adjust intensity accordingly."
       }
     },
-    "connectGoogle": {
-      "title": "Connect Your Google Account",
-      "welcome": "Welcome, {{name}}",
-      "welcomeDescription": "You're connected — personalize your experience before continuing.",
-      "continue": "Continue",
-      "error": "Error"
-    },
     "healthConnect": {
       "connectYour": "Connect Your",
       "health": "Health",
@@ -106,7 +99,7 @@
       "appName": "Musclog",
       "tagline": "Lift, Log, Repeat",
       "description": "Track your progress with data-driven insights and crush your fitness goals.",
-      "connectGoogle": "View Terms",
+      "viewTerms": "View Terms",
       "preparingApp": "Preparing the app for you...",
       "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
       "migratingData": "Migrating your data...",

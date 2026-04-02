@@ -1,8 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subYears } from 'date-fns';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
-import { TEMP_GOOGLE_USER_NAME } from '../constants/misc';
 import { SettingsService, UserMetricService, UserService } from '../database/services';
 import type { FitnessDetails } from '../types/fitnessDetails';
 import { localCalendarDayDate, localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
@@ -125,20 +123,11 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
 
   let user = await UserService.getCurrentUser();
   if (!user) {
-    let fullName = uniqueNamesGenerator({
+    const fullName = uniqueNamesGenerator({
       dictionaries: [names],
       style: 'capital',
       separator: ' ',
     });
-
-    try {
-      const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
-      if (tempName && tempName.length > 0) {
-        fullName = tempName;
-      }
-    } catch (e) {
-      console.warn('Failed to read TEMP_GOOGLE_USER_NAME from storage', e);
-    }
 
     user = await UserService.initializeUser({
       fullName,

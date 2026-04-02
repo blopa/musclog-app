@@ -10,19 +10,17 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
 import { ENCRYPTION_KEY } from '../../constants/database';
-import { GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE } from '../../constants/misc';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { useUnreadChat } from '../../context/UnreadChatContext';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
-import { GoogleAuthService, MigrationService, UserService } from '../../database/services';
+import { MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useTheme } from '../../hooks/useTheme';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
-import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 import { formatDuration } from '../../utils/workout';
 
@@ -53,7 +51,7 @@ const APP_SCREENS = [
     category: 'Onboarding',
   },
   { name: 'Health Connect', route: '/onboarding/health-connect', category: 'Onboarding' },
-  { name: 'Connect with Google', route: '/onboarding/connect-with-google', category: 'Onboarding' },
+  { name: 'Fitness Info', route: '/onboarding/fitness-info', category: 'Onboarding' },
   { name: 'Test: Buttons', route: '/test/buttons', category: 'Test' },
   { name: 'Test: Cards', route: '/test/cards', category: 'Test' },
   { name: 'Test: Empty States', route: '/test/empty-states', category: 'Test' },
@@ -82,7 +80,6 @@ export default function DebugTestScreen() {
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
   const { checkMigrationData, migrationSummary, checkingOldDatabase } = useOldDatabaseMigration();
   const [migrationService] = useState(() => new MigrationService());
-  const [googleDebugInfo, setGoogleDebugInfo] = useState<Record<string, string> | null>(null);
   const [unreadInput, setUnreadInput] = useState('');
   const unreadCount = useUnreadChatMessages();
   const { setUnreadCount, clearUnreadCount } = useUnreadChat();
@@ -283,28 +280,6 @@ export default function DebugTestScreen() {
       newExpanded.add(tableName);
     }
     setExpandedTables(newExpanded);
-  };
-
-  const logGoogleAuthDebug = async () => {
-    const signedIn = await isGoogleSignedIn();
-    const accessToken = await getAccessToken();
-    const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-    const refreshToken = await GoogleAuthService.getRefreshToken();
-    const accessTokenRaw = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
-    const expirationRaw = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
-
-    const info = {
-      isGoogleSignedIn: String(signedIn),
-      oauthGeminiEnabled: String(oauthGeminiEnabled),
-      hasRefreshToken: refreshToken ? `yes (${refreshToken.slice(0, 10)}...)` : 'no',
-      accessToken: accessToken ? `${accessToken.slice(0, 20)}...` : 'null',
-      accessTokenRaw: accessTokenRaw ? `${accessTokenRaw.slice(0, 20)}...` : 'null',
-      tokenExpiration: expirationRaw ? new Date(parseInt(expirationRaw, 10)).toISOString() : 'null',
-      tokenExpired: expirationRaw ? String(Date.now() > parseInt(expirationRaw, 10)) : 'unknown',
-    };
-
-    console.log('[GoogleAuth Debug]', JSON.stringify(info, null, 2));
-    setGoogleDebugInfo(info);
   };
 
   const applyUnreadCount = async () => {
@@ -597,30 +572,6 @@ export default function DebugTestScreen() {
               size="sm"
               variant="secondary"
             />
-          </View>
-
-          {/* Google Auth Debug */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Google Auth Debug</Text>
-            <Text className="mb-2 text-sm text-text-secondary">
-              Logs access token and OAuth state to console + displays here.
-            </Text>
-            <Button
-              onPress={logGoogleAuthDebug}
-              label="Log Google Auth Info"
-              size="sm"
-              variant="secondary"
-            />
-            {googleDebugInfo ? (
-              <View className="gap-1 rounded-lg border border-border-light bg-bg-primary p-3">
-                {Object.entries(googleDebugInfo).map(([key, value]) => (
-                  <View key={key} className="flex-row flex-wrap gap-1">
-                    <Text className="text-xs font-bold text-text-secondary">{key}:</Text>
-                    <Text className="text-xs text-text-primary">{value}</Text>
-                  </View>
-                ))}
-              </View>
-            ) : null}
           </View>
 
           {/* Unread Messages Debug */}
