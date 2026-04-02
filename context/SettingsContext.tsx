@@ -47,6 +47,7 @@ import {
 import { database } from '../database';
 import Setting from '../database/models/Setting';
 import { GOOGLE_AUTH_CHANGED_EVENT, isGoogleSignedIn } from '../utils/googleAuth';
+import { isOpenAISignedIn, OPENAI_AUTH_CHANGED_EVENT } from '../utils/openAIAuth';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 type SettingsState = {
@@ -243,6 +244,7 @@ export type SettingsContextType = UseSettingsResult & {
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
   isSignedInWithGoogle: boolean;
+  isOpenAIConnected: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -259,30 +261,36 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isOpenAIConnected, setIsOpenAIConnected] = useState(false);
 
   useEffect(() => {
-    const checkGoogleAuth = () => {
+    const checkAuth = () => {
       isGoogleSignedIn()
         .then(setIsGoogleConnected)
         .catch(() => {});
+      isOpenAISignedIn()
+        .then(setIsOpenAIConnected)
+        .catch(() => {});
     };
 
-    checkGoogleAuth();
+    checkAuth();
 
     const subscription = AppState.addEventListener('change', (appState) => {
       if (appState === 'active') {
-        checkGoogleAuth();
+        checkAuth();
       }
     });
 
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
+      window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkAuth);
+      window.addEventListener(OPENAI_AUTH_CHANGED_EVENT, checkAuth);
     }
 
     return () => {
       subscription.remove();
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        window.removeEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
+        window.removeEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkAuth);
+        window.removeEventListener(OPENAI_AUTH_CHANGED_EVENT, checkAuth);
       }
     };
   }, []);
@@ -308,11 +316,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const isAiConfigured = useMemo(() => {
     return (
       isGoogleConnected ||
+      isOpenAIConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
   }, [
     isGoogleConnected,
+    isOpenAIConnected,
     state.enableGoogleGemini,
     state.googleGeminiApiKey,
     state.enableOpenAi,
@@ -324,10 +334,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       ...state,
       isAiConfigured,
       isSignedInWithGoogle: isGoogleConnected,
+      isOpenAIConnected,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiConfigured, isGoogleConnected]
+    [state, isAiConfigured, isGoogleConnected, isOpenAIConnected]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

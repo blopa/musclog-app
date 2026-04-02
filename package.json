@@ -85,6 +85,7 @@
     "expo-camera": "17.0.10",
     "expo-clipboard": "8.0.8",
     "expo-constants": "18.0.13",
+    "expo-crypto": "^55.0.10",
     "expo-device": "~8.0.10",
     "expo-document-picker": "14.0.8",
     "expo-file-system": "19.0.21",

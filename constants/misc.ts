@@ -15,13 +15,24 @@ export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/userinfo.profile',
 ].join(' ');
 
+// OpenAI OAuth Configuration
+export const OPENAI_CLIENT_ID = 'app_EMoamEEZ73f0CkXaXp7hrann';
+export const OPENAI_AUTH_URL = 'https://auth.openai.com/oauth/authorize';
+export const OPENAI_TOKEN_URL = 'https://auth.openai.com/oauth/token';
+export const OPENAI_SCOPES = ['openid', 'profile', 'email', 'offline_access'].join(' ');
+
 // Setting Types (stored in WatermelonDB)
 export const GOOGLE_REFRESH_TOKEN_TYPE = 'google_refresh_token_type';
 export const GOOGLE_OAUTH_GEMINI_ENABLED_TYPE = 'google_oauth_gemini_enabled_type';
 
-// AsyncStorage Keys (for short-lived tokens)
+// AsyncStorage Keys
 export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';
 export const GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE = 'googleAccessTokenExpirationDate';
+export const OPENAI_ACCESS_TOKEN = 'openAiAccessToken';
+export const OPENAI_ACCESS_TOKEN_EXPIRATION_DATE = 'openAiAccessTokenExpirationDate';
+export const OPENAI_REFRESH_TOKEN = 'openAiRefreshToken';
+export const OPENAI_OAUTH_ENABLED = 'openAiOAuthEnabled';
+
 export const LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN = 'lastTimeGoogleAuthErrorWasShown';
 export const TEMP_GOOGLE_USER_NAME = 'tempGoogleUserName';
 export const TEMP_GOOGLE_AUTH_CODE = 'googleAuthCode';
