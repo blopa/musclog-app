@@ -4,8 +4,10 @@ import {
   ChevronDown,
   ChevronRight,
   Dumbbell,
+  LogOut,
   ScanText,
   Settings2,
+  Zap,
 } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +17,7 @@ import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { OpenAiCodexAuthService } from '../../services/OpenAiCodexAuthService';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { deleteAllData } from '../../utils/googleAuth';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -219,6 +222,18 @@ export function AISettingsModal({
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
 
   const { isSignedInWithGoogle: isGoogleConnected } = useSettings();
+  const [isCodexConnected, setIsCodexConnected] = useState(false);
+  const [isConnectingCodex, setIsConnectingCodex] = useState(false);
+
+  useEffect(() => {
+    const checkCodex = async () => {
+      const connected = await OpenAiCodexAuthService.isConnected();
+      setIsCodexConnected(connected);
+    };
+    if (visible) {
+      checkCodex();
+    }
+  }, [visible]);
 
   // Use debounced settings for instant UI updates
   const {
@@ -245,6 +260,23 @@ export function AISettingsModal({
       flushAllPendingChanges();
     }
   }, [visible, flushAllPendingChanges]);
+
+  const handleConnectCodex = async () => {
+    setIsConnectingCodex(true);
+    try {
+      const success = await OpenAiCodexAuthService.login();
+      if (success) {
+        setIsCodexConnected(true);
+      }
+    } finally {
+      setIsConnectingCodex(false);
+    }
+  };
+
+  const handleDisconnectCodex = async () => {
+    await OpenAiCodexAuthService.logout();
+    setIsCodexConnected(false);
+  };
 
   const handleDisconnectGoogle = async () => {
     setIsDisconnectingGoogle(true);
@@ -422,7 +454,74 @@ export function AISettingsModal({
           onModelPress={() => setGeminiModelMenuVisible(true)}
         />
 
-        {/* OpenAI Integration Section */}
+        {/* OpenAI Codex Integration Section (2026 Subscription Model) */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.status.indigo }}
+          >
+            {t('settings.aiSettings.openAiCodexIntegration')}
+          </Text>
+          <View
+            style={{
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.lg,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.border.light,
+              overflow: 'hidden',
+              padding: theme.spacing.padding.base,
+            }}
+          >
+            {isCodexConnected ? (
+              <View>
+                <View className="mb-4 flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-3">
+                    <View
+                      style={{
+                        width: theme.size['8'],
+                        height: theme.size['8'],
+                        borderRadius: theme.borderRadius.full / 2,
+                        backgroundColor: theme.colors.status.success20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Bot size={theme.iconSize.md} color={theme.colors.status.success} />
+                    </View>
+                    <Text className="text-sm font-medium text-text-primary">
+                      {t('settings.aiSettings.connectedToCodex')}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={handleDisconnectCodex}
+                    className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-bg-card-elevated"
+                  >
+                    <LogOut size={theme.iconSize.sm} color={theme.colors.status.error} />
+                  </Pressable>
+                </View>
+                <Button
+                  label={t('settings.aiSettings.disconnectCodex')}
+                  onPress={handleDisconnectCodex}
+                  variant="outline"
+                  size="sm"
+                  width="full"
+                />
+              </View>
+            ) : (
+              <Button
+                label={t('settings.aiSettings.connectCodex')}
+                onPress={handleConnectCodex}
+                variant="accent"
+                size="sm"
+                width="full"
+                loading={isConnectingCodex}
+                icon={Zap}
+              />
+            )}
+          </View>
+        </View>
+
+        {/* OpenAI API Integration Section */}
         <AIIntegrationCard
           sectionTitle={t('settings.aiSettings.openAiIntegration')}
           sectionTitleColor={theme.colors.accent.primary}

@@ -1,0 +1,297 @@
+ INFO  Accepting connections at http://localhost:8081
+ HTTP  4/2/2026 9:26:55 AM ::1 GET /musclog-app/
+ HTTP  4/2/2026 9:26:55 AM ::1 Returned 200 in 22 ms
+ HTTP  4/2/2026 9:26:55 AM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/2/2026 9:26:55 AM ::1 GET /musclog-app/_expo/static/css/web-501d9568442c7d69f033eae73c28db83.css
+ HTTP  4/2/2026 9:26:55 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:26:55 AM ::1 GET /musclog-app/_expo/static/js/web/index-5b5f7df2c0dcd2a221b4e54c8d08dd4e.js
+ HTTP  4/2/2026 9:26:55 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:55 AM ::1 Returned 200 in 68 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise1.0424caf0852ef4794c3fba910c562c55.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise2.3758f6dbaf1e78b4ba4f6d89de1da062.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise3.c26b943a506d5cbe3596d579a6e4ce07.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise4.16e472c35202107128dca7c84198f013.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise5.512d5a4a7c619792aa37a529ced2caf7.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise6.5493e7ab09ca182328d81fc57d9866c4.png
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 16 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 18 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 17 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 14 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 19 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 15 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise7.727172e017367ce9d19300f2f6177b44.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise8.c20476ac69d7197721dbdc5ce61fbd4b.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise9.4a50dd7fa4f9efa191b21057cfed4c7f.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise10.6e878758271381b95c6e36428ec5755a.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise11.19cc01e2c077dd209bbc516cccfe238b.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise12.c7bf5225c605eb209222e5dde4f18828.png
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 15 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 15 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 15 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 19 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 22 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 21 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise13.a0fa3dbd87adf6dd9f4365f27334a0b1.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise14.bd7c46cc39c09de4cfe77386ad666889.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise15.454b13cc2a9921f8a5d239ae9285f571.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise16.09e1e4b5f556073e624ec7a78b371fbf.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise17.de0fec685adca4da48538a657ac2914d.png
+ HTTP  4/2/2026 9:26:57 AM ::1 GET /musclog-app/assets/assets/exercises/exercise18.0aaff094ab3d1d1324963a246e2b39fc.png
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 10 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 12 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 14 ms
+ HTTP  4/2/2026 9:26:57 AM ::1 Returned 200 in 15 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise19.bccbc78c73a6b677428596d0037ac8fb.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise20.f08d668188c07539cbd7110765a5df62.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise21.f8a41a622cce768880630ecf0f30e052.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise22.4b239a9ffb6d84bbd18c5085129479b6.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 5 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise23.e9479a4c7502a324da2a159956b354c5.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise24.dfcd8dc5b170e6581c80a7507f8fd484.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 7 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise25.2fed66ca2a97c6b22393964fa597e726.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 10 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 10 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 10 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise26.b7ddc3621c3ea09866a0c85692f39f2d.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise27.d7b3baa5ba238861c724738bc12700e1.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise28.18f2947cc042fc4947e560562e129d15.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 13 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 6 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 11 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise29.2b76054746b7c09001f7ad8c4c74587b.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise30.77e1593cb42128f1b1d3b39347b2f031.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise31.91c544d991d57011a679ca4aefbbd2ac.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise32.9262e3ff3020f8f2186578f74cee9040.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise33.13bad9c26e94a3600ba356c2ca1b18fc.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise34.984642f0993a5478163042376280b7a0.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise38.7ffdc1eb81b3540887b0c516134a3ed4.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise39.3507c5acde0f332d5ad18a0a7f5ac81a.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 6 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 5 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise41.dce4381d2a9e2ed28e5658a8264723e2.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise47.2d8c4b9099376ef39d72dc22c5e685df.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise48.6efbf73131b07c6ecab430978af49f88.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise49.bd35ffe0e50f2088bd06eaee7b44caaa.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise51.968b5d2fbe7680bf73700120f19e039f.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise52.f68fe8aa40e169d39c707813b1afe871.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 5 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 10 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise53.b53578abcfca072dcef5c7eccee28fe6.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise64.cb3de1deabf32280145b5ce6bc9b962d.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise65.389c3344a5613b5551ab0a549d9b1412.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise84.767ab409d51f80e90d1f431968a60220.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise85.904b2eb5654265305e031bbb2498fdd7.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise86.33f9b9efc11e1dc9f7148a924b315937.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise89.f7ee53be385ebc6528fabc5d582114d4.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise90.8737766a294341f488db7dd7eabf0d9b.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise91.1a6d4a737b8a24ab2731959870e3e0ab.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise94.4f529df93d49701c4362eab7e46c82c0.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise105.98e91fbe43d49c086739383a20681189.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise106.cc1633a5471d1f91255c2cac012fd74a.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 7 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 13 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 9 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 14 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise107.3e0a12d9f74301330d8c8de004420cb6.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise108.93f9eab3cd180d2ebb08015d01354e46.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise109.886f6b865fbac3e8b40c72e81d309169.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise110.1cf082e55a3a50be5010dbe7beb96f9f.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 7 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 6 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise111.3e196dea603840ca3d37ef76bf557713.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise112.38f9fdd73079470e17816a77a3bf16b4.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise113.f881a871070b22b9332d6eb717635f6b.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/exercise118.b626d8ddf97a06aa64c9fb60d18a582b.png
+ HTTP  4/2/2026 9:26:58 AM ::1 GET /musclog-app/assets/assets/exercises/fallback.97ebe2319494cb308f8a6a0b3c9442eb.png
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 20 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 7 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 8 ms
+ HTTP  4/2/2026 9:26:58 AM ::1 Returned 200 in 11 ms
+ HTTP  4/2/2026 9:27:02 AM ::1 GET /musclog-app/onboarding/landing
+ HTTP  4/2/2026 9:27:02 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:27:02 AM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/2/2026 9:27:02 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:27:02 AM ::1 GET /musclog-app/_expo/static/css/web-501d9568442c7d69f033eae73c28db83.css
+ HTTP  4/2/2026 9:27:02 AM ::1 Returned 304 in 3 ms
+ HTTP  4/2/2026 9:27:02 AM ::1 GET /musclog-app/_expo/static/js/web/index-5b5f7df2c0dcd2a221b4e54c8d08dd4e.js
+ HTTP  4/2/2026 9:27:02 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:27:07 AM ::1 GET /musclog-app/test/modals
+ HTTP  4/2/2026 9:27:07 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:27:07 AM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/2/2026 9:27:07 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:27:07 AM ::1 GET /musclog-app/_expo/static/css/web-501d9568442c7d69f033eae73c28db83.css
+ HTTP  4/2/2026 9:27:07 AM ::1 Returned 304 in 2 ms
+ HTTP  4/2/2026 9:27:07 AM ::1 GET /musclog-app/_expo/static/js/web/index-5b5f7df2c0dcd2a221b4e54c8d08dd4e.js
+ HTTP  4/2/2026 9:27:07 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:27:08 AM ::1 HEAD /
+ HTTP  4/2/2026 9:27:08 AM ::1 HEAD /
+ HTTP  4/2/2026 9:27:08 AM ::1 Returned 200 in 18 ms
+ HTTP  4/2/2026 9:27:08 AM ::1 Returned 200 in 18 ms
+ HTTP  4/2/2026 9:31:50 AM ::1 GET /musclog-app/
+ HTTP  4/2/2026 9:31:50 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:50 AM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/2/2026 9:31:50 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:50 AM ::1 GET /musclog-app/_expo/static/css/web-501d9568442c7d69f033eae73c28db83.css
+ HTTP  4/2/2026 9:31:50 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:50 AM ::1 GET /musclog-app/_expo/static/js/web/index-5b5f7df2c0dcd2a221b4e54c8d08dd4e.js
+ HTTP  4/2/2026 9:31:50 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:53 AM ::1 GET /musclog-app/
+ HTTP  4/2/2026 9:31:53 AM ::1 Returned 304 in 3 ms
+ HTTP  4/2/2026 9:31:53 AM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/2/2026 9:31:53 AM ::1 GET /musclog-app/_expo/static/css/web-501d9568442c7d69f033eae73c28db83.css
+ HTTP  4/2/2026 9:31:53 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:31:53 AM ::1 Returned 304 in 2 ms
+ HTTP  4/2/2026 9:31:53 AM ::1 GET /musclog-app/_expo/static/js/web/index-5b5f7df2c0dcd2a221b4e54c8d08dd4e.js
+ HTTP  4/2/2026 9:31:53 AM ::1 Returned 304 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise1.0424caf0852ef4794c3fba910c562c55.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise2.3758f6dbaf1e78b4ba4f6d89de1da062.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise3.c26b943a506d5cbe3596d579a6e4ce07.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise4.16e472c35202107128dca7c84198f013.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise5.512d5a4a7c619792aa37a529ced2caf7.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise6.5493e7ab09ca182328d81fc57d9866c4.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 7 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise7.727172e017367ce9d19300f2f6177b44.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise8.c20476ac69d7197721dbdc5ce61fbd4b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise9.4a50dd7fa4f9efa191b21057cfed4c7f.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise10.6e878758271381b95c6e36428ec5755a.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise11.19cc01e2c077dd209bbc516cccfe238b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise12.c7bf5225c605eb209222e5dde4f18828.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise13.a0fa3dbd87adf6dd9f4365f27334a0b1.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise14.bd7c46cc39c09de4cfe77386ad666889.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise15.454b13cc2a9921f8a5d239ae9285f571.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise16.09e1e4b5f556073e624ec7a78b371fbf.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 4 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise17.de0fec685adca4da48538a657ac2914d.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise18.0aaff094ab3d1d1324963a246e2b39fc.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise19.bccbc78c73a6b677428596d0037ac8fb.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise20.f08d668188c07539cbd7110765a5df62.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise21.f8a41a622cce768880630ecf0f30e052.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise22.4b239a9ffb6d84bbd18c5085129479b6.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise23.e9479a4c7502a324da2a159956b354c5.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise24.dfcd8dc5b170e6581c80a7507f8fd484.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise25.2fed66ca2a97c6b22393964fa597e726.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise26.b7ddc3621c3ea09866a0c85692f39f2d.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise27.d7b3baa5ba238861c724738bc12700e1.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise28.18f2947cc042fc4947e560562e129d15.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise29.2b76054746b7c09001f7ad8c4c74587b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise30.77e1593cb42128f1b1d3b39347b2f031.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise31.91c544d991d57011a679ca4aefbbd2ac.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise32.9262e3ff3020f8f2186578f74cee9040.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise33.13bad9c26e94a3600ba356c2ca1b18fc.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise34.984642f0993a5478163042376280b7a0.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise38.7ffdc1eb81b3540887b0c516134a3ed4.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise39.3507c5acde0f332d5ad18a0a7f5ac81a.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise41.dce4381d2a9e2ed28e5658a8264723e2.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 0 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise47.2d8c4b9099376ef39d72dc22c5e685df.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise48.6efbf73131b07c6ecab430978af49f88.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise49.bd35ffe0e50f2088bd06eaee7b44caaa.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise51.968b5d2fbe7680bf73700120f19e039f.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise52.f68fe8aa40e169d39c707813b1afe871.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise53.b53578abcfca072dcef5c7eccee28fe6.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise64.cb3de1deabf32280145b5ce6bc9b962d.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise65.389c3344a5613b5551ab0a549d9b1412.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise84.767ab409d51f80e90d1f431968a60220.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise85.904b2eb5654265305e031bbb2498fdd7.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise86.33f9b9efc11e1dc9f7148a924b315937.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise89.f7ee53be385ebc6528fabc5d582114d4.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise90.8737766a294341f488db7dd7eabf0d9b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise91.1a6d4a737b8a24ab2731959870e3e0ab.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise94.4f529df93d49701c4362eab7e46c82c0.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise105.98e91fbe43d49c086739383a20681189.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise106.cc1633a5471d1f91255c2cac012fd74a.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise107.3e0a12d9f74301330d8c8de004420cb6.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 3 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise108.93f9eab3cd180d2ebb08015d01354e46.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise109.886f6b865fbac3e8b40c72e81d309169.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise110.1cf082e55a3a50be5010dbe7beb96f9f.png
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise111.3e196dea603840ca3d37ef76bf557713.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise112.38f9fdd73079470e17816a77a3bf16b4.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise113.f881a871070b22b9332d6eb717635f6b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 1 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/exercise118.b626d8ddf97a06aa64c9fb60d18a582b.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms
+ HTTP  4/2/2026 9:31:54 AM ::1 GET /musclog-app/assets/assets/exercises/fallback.97ebe2319494cb308f8a6a0b3c9442eb.png
+ HTTP  4/2/2026 9:31:54 AM ::1 Returned 200 in 2 ms

@@ -38,6 +38,7 @@ import { useSyncTracking } from '../hooks/useSyncTracking';
 import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
+import { OpenAiCodexAuthService } from '../services/OpenAiCodexAuthService';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
 import {
@@ -55,6 +56,7 @@ export default function ProfileScreen() {
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
   const { isSyncing, syncNow } = useSyncTracking();
+  const [isCodexConnected, setIsCodexConnected] = useState(false);
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
   const [isEditFitnessVisible, setIsEditFitnessVisible] = useState(false);
@@ -89,6 +91,14 @@ export default function ProfileScreen() {
   useEffect(() => {
     syncNow();
   }, [syncNow]);
+
+  useEffect(() => {
+    const checkCodex = async () => {
+      const connected = await OpenAiCodexAuthService.isConnected();
+      setIsCodexConnected(connected);
+    };
+    checkCodex();
+  }, []);
 
   // Transform metrics and user data into stats array format
   const stats = useMemo(() => {
@@ -329,9 +339,25 @@ export default function ProfileScreen() {
                     <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
                   </Pressable>
                 </View>
-                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
-                  {dbUser?.fullName || t('profile.loading')}
-                </Text>
+                <View className="mb-3 flex-row items-center justify-center gap-2">
+                  <Text className="text-center text-3xl font-bold text-text-primary">
+                    {dbUser?.fullName || t('profile.loading')}
+                  </Text>
+                  {isCodexConnected ? (
+                    <View
+                      className="flex-row items-center gap-1 rounded-full px-2 py-0.5"
+                      style={{ backgroundColor: theme.colors.status.success20 }}
+                    >
+                      <CheckCircle size={12} color={theme.colors.status.success} />
+                      <Text
+                        className="text-[10px] font-bold uppercase"
+                        style={{ color: theme.colors.status.success }}
+                      >
+                        Codex
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
                 {dbUser?.fitnessGoal ? (
                   <Text className="text-center text-base text-text-primary">
                     {t('profile.goal')}:{' '}

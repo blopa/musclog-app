@@ -1,19 +1,33 @@
-import { GEMINI_MODELS } from '../constants/ai';
+import { GEMINI_MODELS, OPENAI_CODEX_CONFIG } from '../constants/ai';
 import { GoogleAuthService, SettingsService } from '../database/services';
 import type { CoachAIConfig } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
+import { OpenAiCodexAuthService } from './OpenAiCodexAuthService';
 
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings and Google Auth state.
    * Priority:
-   * 1. Google OAuth (Gemini)
-   * 2. Manual Gemini API Key
-   * 3. OpenAI API Key
+   * 1. OpenAI Codex OAuth (User's subscription)
+   * 2. Google OAuth (Gemini)
+   * 3. Manual Gemini API Key
+   * 4. OpenAI API Key
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
-      // 1. Priority: Google OAuth access token (user signed in with Google)
+      // 1. Priority: OpenAI Codex OAuth (User's personal subscription)
+      const codexToken = await OpenAiCodexAuthService.getValidAccessToken();
+      if (codexToken) {
+        return {
+          provider: 'openai',
+          accessToken: codexToken,
+          model: OPENAI_CODEX_CONFIG.model,
+          language: await SettingsService.getLanguage(),
+          isCodex: true,
+        };
+      }
+
+      // 2. Priority: Google OAuth access token (user signed in with Google)
       const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
       if (oauthGeminiEnabled) {
         const accessToken = await getAccessToken();

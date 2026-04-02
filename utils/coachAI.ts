@@ -1,8 +1,10 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
+import { OPENAI_CODEX_COMPATIBILITY_HEADER, OPENAI_CODEX_CONFIG, OPENAI_CODEX_REMAINING_HOURS_HEADER } from '../constants/ai';
 import { SettingsService } from '../database/services';
 import i18n from '../lang/lang';
+import { showSnackbar } from './snackbarService';
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
@@ -76,6 +78,7 @@ export type CoachAIConfig = {
   accessToken?: string;
   model: string;
   language?: string; // Re-introduced from old code
+  isCodex?: boolean;
 };
 
 export type ChatHistoryEntry = {
@@ -365,7 +368,12 @@ async function sendViaOpenAI(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey || config.accessToken,
+    baseURL: config.isCodex ? OPENAI_CODEX_CONFIG.baseUrl : undefined,
+    defaultHeaders: config.isCodex ? { [OPENAI_CODEX_COMPATIBILITY_HEADER]: 'true' } : undefined,
+    dangerouslyAllowBrowser: true,
+  });
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
@@ -395,6 +403,19 @@ async function sendViaOpenAI(
     });
 
     const raw = completion.choices[0]?.message?.content ?? '{}';
+
+    // Handle Subscription Health monitoring for Codex
+    if (config.isCodex) {
+      const responseHeaders = (completion as any)._headers;
+      if (responseHeaders) {
+        const remainingHours = responseHeaders.get?.(OPENAI_CODEX_REMAINING_HOURS_HEADER) ||
+                              responseHeaders[OPENAI_CODEX_REMAINING_HOURS_HEADER.toLowerCase()];
+        if (remainingHours && parseFloat(remainingHours) <= 0) {
+          showSnackbar('error', i18n.t('coach.errors.codexQuotaExceeded'));
+        }
+      }
+    }
+
     return parseCoachResponse(raw);
   } catch (error: any) {
     console.error('[coachAI] sendViaOpenAI error:', error);
@@ -437,7 +458,12 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey || config.accessToken,
+    baseURL: config.isCodex ? OPENAI_CODEX_CONFIG.baseUrl : undefined,
+    defaultHeaders: config.isCodex ? { [OPENAI_CODEX_COMPATIBILITY_HEADER]: 'true' } : undefined,
+    dangerouslyAllowBrowser: true,
+  });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -475,7 +501,12 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey || config.accessToken,
+    baseURL: config.isCodex ? OPENAI_CODEX_CONFIG.baseUrl : undefined,
+    defaultHeaders: config.isCodex ? { [OPENAI_CODEX_COMPATIBILITY_HEADER]: 'true' } : undefined,
+    dangerouslyAllowBrowser: true,
+  });
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -542,7 +573,12 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey || config.accessToken,
+    baseURL: config.isCodex ? OPENAI_CODEX_CONFIG.baseUrl : undefined,
+    defaultHeaders: config.isCodex ? { [OPENAI_CODEX_COMPATIBILITY_HEADER]: 'true' } : undefined,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -618,7 +654,12 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey || config.accessToken,
+    baseURL: config.isCodex ? OPENAI_CODEX_CONFIG.baseUrl : undefined,
+    defaultHeaders: config.isCodex ? { [OPENAI_CODEX_COMPATIBILITY_HEADER]: 'true' } : undefined,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
