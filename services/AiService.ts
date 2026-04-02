@@ -18,8 +18,7 @@ export class AiService {
           provider: 'gemini',
           apiKey: geminiKey,
           model:
-            (await SettingsService.getGoogleGeminiModel()) ||
-            GEMINI_MODELS.GEMINI_2_5_FLASH.value,
+            (await SettingsService.getGoogleGeminiModel()) || GEMINI_MODELS.GEMINI_2_5_FLASH.value,
           language: await SettingsService.getLanguage(),
         };
       }

@@ -216,6 +216,7 @@ export const schema = appSchema({
         { name: 'description', type: 'string', isOptional: true },
         { name: 'image_url', type: 'string', isOptional: true }, // URL to meal image
         { name: 'is_favorite', type: 'boolean' },
+        { name: 'prepared_weight_grams', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

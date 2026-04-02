@@ -331,7 +331,9 @@
       "deleteIngredientWarning": "Tem certeza de que deseja remover este ingrediente?",
       "mealNameRequired": "Por favor, digite um nome para a refeição",
       "ingredientsRequired": "Por favor, adicione pelo menos um ingrediente",
-      "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente."
+      "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente.",
+      "preparedWeight": "Peso preparado (g)",
+      "preparedWeightHelper": "Opcional — peso após o cozimento"
     },
     "aiCamera": {
       "requestingPermission": "Solicitando permissão da câmera...",
