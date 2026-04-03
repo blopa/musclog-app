@@ -10,6 +10,7 @@ import type { Units } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
 import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
+import { formatDisplayWeightKg } from '../utils/formatDisplayWeight';
 import { kgToDisplay } from '../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../utils/units';
 import { healthConnectService, HealthConnectStatus } from './healthConnect';
@@ -168,9 +169,10 @@ export async function writeWorkoutToHealthConnect(
     }
 
     if (payload.totalVolume != null && payload.totalVolume > 0) {
+      const locale = i18n.resolvedLanguage ?? i18n.language;
       noteParts.push(
         i18n.t('healthConnect.workoutVolumeNote', {
-          volume: formatAppInteger(i18n.resolvedLanguage ?? i18n.language, payload.totalVolume),
+          volume: formatDisplayWeightKg(locale, units, payload.totalVolume),
           unit: unitLabel,
         })
       );
