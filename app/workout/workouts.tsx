@@ -34,6 +34,7 @@ import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
+import { captureException } from '../../utils/sentry';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -219,16 +220,20 @@ export default function WorkoutsScreen() {
   }, [featuredWorkout, searchQuery, activeFilter]);
 
   // Helper function to start a workout and show overview modal
-  const handleStartWorkout = useCallback(async (templateId: string) => {
-    try {
-      const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
-      setSelectedWorkoutLogId(workoutLog.id);
-      setIsWorkoutOverviewVisible(true);
-    } catch (err) {
-      console.error('Error starting workout:', err);
-      // Show error to user (you might want to add an alert here)
-    }
-  }, []);
+  const handleStartWorkout = useCallback(
+    async (templateId: string) => {
+      try {
+        const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
+        setSelectedWorkoutLogId(workoutLog.id);
+        setIsWorkoutOverviewVisible(true);
+      } catch (err) {
+        console.error('Error starting workout:', err);
+        captureException(err, { data: { context: 'workouts.handleStartWorkout' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
+      }
+    },
+    [showSnackbar, t]
+  );
 
   // Helper function to open preview modal (now synchronous!)
   const handlePreviewWorkout = useCallback(
@@ -712,6 +717,8 @@ export default function WorkoutsScreen() {
               await log.markAsDeleted();
             } catch (err) {
               console.error('Error canceling workout:', err);
+              captureException(err, { data: { context: 'workouts.cancelWorkout' } });
+              showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }
         }}

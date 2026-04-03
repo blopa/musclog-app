@@ -6,6 +6,8 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { GenericCard } from '../cards/GenericCard';
 import DashedButton from '../theme/DashedButton';
 import NewNumericalInput from '../theme/NewNumericalInput';
@@ -276,6 +278,8 @@ export default function EditPastWorkoutDataModal({
     } catch (err) {
       setIsSaving(false);
       console.error('Failed to save sets:', err);
+      captureException(err, { data: { context: 'EditPastWorkoutDataModal.handleSave' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 

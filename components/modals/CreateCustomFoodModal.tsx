@@ -190,6 +190,8 @@ export default function CreateCustomFoodModal({
 
         // Determine serving amount/unit based on selected portion
         let servingAmount = 100;
+
+        // TODO: shouldn't we check if user uses metric or imperial?
         let servingUnit = 'g';
 
         if (selectedPortionIds.length > 0) {
