@@ -303,7 +303,8 @@
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
       "caloriesTooLowTitle": "Calories don't match the macros",
       "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Update to {{inferred}} kcal >"
+      "caloriesTooLowAction": "Update to {{inferred}} kcal >",
+      "macrosPer100gLabel": "per {{amount}}{{unit}}"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",

@@ -20,6 +20,7 @@ import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout
 import { XAxisLabel } from '../../utils/chartUtils';
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
+import { displayToKg } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
@@ -650,7 +651,7 @@ export default function PastWorkoutDetailModal({
                 setId: s.id,
                 exerciseId: isNew ? editingExerciseId : undefined,
                 reps: s.reps,
-                weight: s.weight,
+                weight: displayToKg(s.weight, units),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,

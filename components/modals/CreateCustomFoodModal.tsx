@@ -31,7 +31,7 @@ import {
   X,
   Zap,
 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -40,6 +40,7 @@ import FoodPortion from '../../database/models/FoodPortion';
 import { FoodService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
 import {
@@ -49,6 +50,7 @@ import {
 } from '../../utils/localizedDecimalInput';
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
+import { getMassUnitLabel } from '../../utils/unitConversion';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
@@ -79,6 +81,8 @@ export default function CreateCustomFoodModal({
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
+  const { units } = useSettings();
+  const massUnit = getMassUnitLabel(units);
   const [foodName, setFoodName] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
@@ -189,10 +193,9 @@ export default function CreateCustomFoodModal({
         };
 
         // Determine serving amount/unit based on selected portion
-        let servingAmount = 100;
+        let servingAmount = units === 'imperial' ? 3.5 : 100;
 
-        // TODO: shouldn't we check if user uses metric or imperial?
-        let servingUnit = 'g';
+        let servingUnit = units === 'imperial' ? 'oz' : 'g';
 
         if (selectedPortionIds.length > 0) {
           // Use the first selected portion as the default serving size
@@ -796,11 +799,24 @@ export default function CreateCustomFoodModal({
           </View>
 
           {/* Macronutrients Header */}
-          <View className="flex-row items-center gap-2">
-            <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-            <Text className="text-xl font-bold text-text-primary">
-              {t('food.newCustomFood.macronutrients')}
-            </Text>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients')}
+              </Text>
+            </View>
+            <View
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: theme.colors.background.secondaryDark }}
+            >
+              <Text className="text-xs font-bold text-text-secondary">
+                {t('food.foodDetails.macrosPer100gLabel', {
+                  amount: units === 'imperial' ? '3.5' : '100',
+                  unit: massUnit,
+                })}
+              </Text>
+            </View>
           </View>
 
           {/* Calories */}

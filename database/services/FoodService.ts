@@ -234,6 +234,12 @@ export class FoodService {
     }
     // For 'g' or other units, assume gramWeight = servingAmount
 
+    // Ensure gramWeight is positive to avoid division by zero
+    const safeGramWeight = Math.max(gramWeight, 1);
+
+    // Normalize nutrition data to per-100g base (app convention)
+    const normalize = (val?: number) => (val != null ? (val / safeGramWeight) * 100 : undefined);
+
     const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
     const portion = await FoodPortionService.createFoodPortion(portionName, gramWeight);
 
@@ -246,17 +252,17 @@ export class FoodService {
         food.brand = brand;
         food.description = description;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = normalize(nutritionData.calories) ?? 0;
+        food.protein = normalize(nutritionData.protein) ?? 0;
+        food.carbs = normalize(nutritionData.carbs) ?? 0;
+        food.fat = normalize(nutritionData.fat) ?? 0;
+        food.fiber = normalize(nutritionData.fiber) ?? 0;
 
         // Store micros
         const micros = {
-          sugar: nutritionData.sugar,
-          saturatedFat: nutritionData.saturatedFat,
-          sodium: nutritionData.sodium,
+          sugar: normalize(nutritionData.sugar),
+          saturatedFat: normalize(nutritionData.saturatedFat),
+          sodium: normalize(nutritionData.sodium),
         };
 
         food.micros = Object.fromEntries(

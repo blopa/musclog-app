@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useSettings } from '../../hooks/useSettings';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { getAvatarIcon } from '../../utils/avatarUtils';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { AvatarSelector } from '../AvatarSelector';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
@@ -38,42 +40,45 @@ export function CreateFoodPortionModal({
   onClose,
   onCreatePortion,
 }: CreateFoodPortionModalProps) {
+  const { units } = useSettings();
+  const massUnit = getMassUnitLabel(units);
   const [portionName, setPortionName] = useState('');
-  const [weight, setWeight] = useState(100);
+  const [displayWeight, setDisplayWeight] = useState(100);
   const [selectedIcon, setSelectedIcon] = useState<FoodIcon>('ramen-dining');
   const { t } = useTranslation();
 
+  // Initialize display weight based on units when modal becomes visible
+  useEffect(() => {
+    if (visible) {
+      const initialGrams = 100;
+      setDisplayWeight(gramsToDisplay(initialGrams, units));
+    }
+  }, [visible, units]);
+
   const handleCreatePortion = () => {
-    if (portionName.trim() && weight && selectedIcon) {
+    if (portionName.trim() && displayWeight && selectedIcon) {
+      const gramWeight = displayToGrams(displayWeight, units);
       onCreatePortion?.({
         name: portionName.trim(),
-        weight: weight,
+        weight: gramWeight,
         icon: selectedIcon,
       });
       // Reset form
       setPortionName('');
-      setWeight(100);
+      setDisplayWeight(gramsToDisplay(100, units));
       setSelectedIcon('ramen-dining');
       onClose();
     }
   };
 
-  const handleCancel = () => {
-    // Reset form
-    setPortionName('');
-    setWeight(100);
-    setSelectedIcon('ramen-dining');
-    onClose();
-  };
-
   const incrementWeight = () => {
-    setWeight(weight + 10);
+    const step = units === 'imperial' ? 0.5 : 10;
+    setDisplayWeight((prev) => Math.round((prev + step) * 10) / 10);
   };
 
   const decrementWeight = () => {
-    if (weight > 0) {
-      setWeight(weight - 10);
-    }
+    const step = units === 'imperial' ? 0.5 : 10;
+    setDisplayWeight((prev) => Math.max(0, Math.round((prev - step) * 10) / 10));
   };
 
   const footer = (
@@ -113,13 +118,13 @@ export function CreateFoodPortionModal({
 
           {/* Weight Input */}
           <StepperInput
-            label={t('weightGrams')}
-            value={weight}
-            maxFractionDigits={0}
+            label={units === 'imperial' ? t('food.unitOz') : t('weightGrams')}
+            value={displayWeight}
+            maxFractionDigits={units === 'imperial' ? 1 : 0}
             onIncrement={incrementWeight}
             onDecrement={decrementWeight}
-            onChangeValue={setWeight}
-            unit="g"
+            onChangeValue={setDisplayWeight}
+            unit={massUnit}
           />
 
           {/* Icon Selection */}

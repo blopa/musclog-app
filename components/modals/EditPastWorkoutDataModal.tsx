@@ -8,6 +8,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
+import { kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import DashedButton from '../theme/DashedButton';
 import NewNumericalInput from '../theme/NewNumericalInput';
@@ -208,13 +209,21 @@ export default function EditPastWorkoutDataModal({
   initialSets,
 }: EditPastWorkoutDataModalProps) {
   const theme = useTheme();
-  const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
+  const { units } = useSettings();
+  const [sets, setSets] = useState<SetItem[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
-    setSets(initialSets ?? []);
-  }, [initialSets, visible]);
+    if (visible && initialSets) {
+      setSets(
+        initialSets.map((s) => ({
+          ...s,
+          weight: kgToDisplay(s.weight, units),
+        }))
+      );
+    }
+  }, [initialSets, visible, units]);
 
   const handleChange = (id: string, patch: Partial<SetItem>) => {
     setSets((s) => s.map((it) => (it.id === id ? { ...it, ...patch } : it)));

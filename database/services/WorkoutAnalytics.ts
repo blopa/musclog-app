@@ -4,6 +4,7 @@ import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
 } from '../../utils/calendarDate';
+import { kgToDisplay } from '../../utils/unitConversion';
 import {
   calculateEstimated1RMForSet,
   calculateSetVolume,
@@ -530,7 +531,8 @@ export class WorkoutAnalytics {
     const best = dataPoints.reduce((max, dp) => (dp.weight > max.weight ? dp : max), dataPoints[0]);
     const units = await SettingsService.getUnits();
     const unit = units === 'imperial' ? 'lbs' : 'kg';
-    return { weight: Math.round(best.weight * 10) / 10, unit };
+    const displayWeight = kgToDisplay(best.weight, units);
+    return { weight: Math.round(displayWeight * 10) / 10, unit };
   }
 
   /**

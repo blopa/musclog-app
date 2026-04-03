@@ -408,7 +408,10 @@ export default function WorkoutSessionScreen() {
     return done === logSets.length;
   }, []);
 
-  const handleCompleteSet = async (rpe: number) => {
+  const handleCompleteSet = async (
+    rpe: number,
+    overrides?: { weight: number; reps: number; partials: number }
+  ) => {
     if (!currentSetData || !workoutLog) {
       return;
     }
@@ -426,9 +429,9 @@ export default function WorkoutSessionScreen() {
 
       await workoutLog.updateSet(currentSetData.set.id, {
         difficultyLevel: rpe,
-        weight: displayToKg(weight, units),
-        reps,
-        partials,
+        weight: displayToKg(overrides?.weight ?? weight, units),
+        reps: overrides?.reps ?? reps,
+        partials: overrides?.partials ?? partials,
         restTimeAfter: restTime,
       });
 
@@ -1104,7 +1107,15 @@ export default function WorkoutSessionScreen() {
             repsInReserve={repsInReserve}
             initialRpe={8}
             onConfirm={(data) => {
-              handleCompleteSet(data.rpe);
+              setWeight(data.weight);
+              setReps(data.reps);
+              setPartials(data.partials);
+              setRepsInReserve(data.repsInReserve);
+              handleCompleteSet(data.rpe, {
+                weight: data.weight,
+                reps: data.reps,
+                partials: data.partials,
+              });
             }}
             isSaving={isSaving}
             onEditSetDetails={(data) => {
