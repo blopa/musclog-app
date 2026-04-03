@@ -18,6 +18,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { healthConnectService } from '../../services/healthConnect';
 import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { XAxisLabel } from '../../utils/chartUtils';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
@@ -490,6 +492,10 @@ export default function PastWorkoutDetailModal({
       }
     } catch (err) {
       console.error('Failed to save workout to Health Connect:', err);
+      captureException(err, {
+        data: { context: 'PastWorkoutDetailModal.handleSaveToHealthConnect' },
+      });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSavingToHC(false);
     }
@@ -658,6 +664,8 @@ export default function PastWorkoutDetailModal({
               await reload();
             } catch (err) {
               console.error('Failed to save edited sets:', err);
+              captureException(err, { data: { context: 'PastWorkoutDetailModal.saveEditedSets' } });
+              showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }}
           workoutId={workoutId!}

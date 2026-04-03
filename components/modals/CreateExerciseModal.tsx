@@ -9,6 +9,7 @@ import { type MuscleGroup } from '../../database/models';
 import { ExerciseService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { saveExerciseImage } from '../../utils/file';
+import { captureException } from '../../utils/sentry';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
@@ -103,6 +104,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       onClose();
     } catch (error) {
       console.error('Error creating exercise:', error);
+      captureException(error, { data: { context: 'CreateExerciseModal.handleSave' } });
       showSnackbar('error', t('exercises.createExercise.createError'));
     } finally {
       setIsCreating(false);
@@ -130,6 +132,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         setImageUri(permanentUri);
       } catch (err) {
         console.error('Error saving exercise image:', err);
+        captureException(err, { data: { context: 'CreateExerciseModal.handleUploadImage' } });
         showSnackbar('error', t('exercises.createExercise.createError'));
       }
     }

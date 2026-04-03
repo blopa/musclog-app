@@ -11,6 +11,7 @@ import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
@@ -250,6 +251,7 @@ export default function AddUserMetricEntryModal({
       onClose();
     } catch (error) {
       console.error('Error saving user metrics:', error);
+      captureException(error, { data: { context: 'AddUserMetricEntryModal.handleSave' } });
       showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
     } finally {
       setIsSaving(false);

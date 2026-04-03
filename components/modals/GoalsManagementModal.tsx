@@ -192,6 +192,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       await refresh();
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
+      captureException(error, { data: { context: 'GoalsManagementModal.handleConfirmDelete' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsDeletingGoal(false);
       setGoalToDelete(null);
@@ -233,6 +235,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       setNutritionGoalsModalVisible(false);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
+      captureException(error, {
+        data: { context: 'GoalsManagementModal.handleSaveNutritionGoals' },
+      });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 

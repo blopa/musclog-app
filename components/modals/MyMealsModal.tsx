@@ -14,6 +14,7 @@ import i18n from '../../lang/lang';
 import AiService from '../../services/AiService';
 import { trackMeal } from '../../utils/coachAI';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
+import { captureException } from '../../utils/sentry';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -327,6 +328,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       await refresh();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      captureException(error, { data: { context: 'MyMealsModal.handleConfirmDelete' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsDeleting(false);
       setDeleteMealId(null);

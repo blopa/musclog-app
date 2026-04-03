@@ -32,6 +32,7 @@ import {
 } from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
 import { performOcr } from '../../utils/ocr';
+import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
 import { CameraView, useCameraPermissions } from '../CameraView';
@@ -497,6 +498,7 @@ export default function SmartCameraModal({
         setSelectedMealForLogging(null);
       } catch (error) {
         console.error('Error logging meal:', error);
+        captureException(error, { data: { context: 'SmartCameraModal.handleLogMeal' } });
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },

@@ -32,6 +32,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { localCalendarDayDate } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
@@ -445,6 +446,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleDeleteMeal' } });
       showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeletingMeal(false);
@@ -485,6 +487,7 @@ export function CreateMealModal({
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleTrack' } });
       showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
@@ -540,6 +543,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleSave' } });
       showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);

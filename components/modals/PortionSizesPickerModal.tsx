@@ -9,6 +9,8 @@ import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
@@ -122,6 +124,8 @@ export function PortionSizesPickerModal({
       }
     } catch (err) {
       console.error('Error creating food portion:', err);
+      captureException(err, { data: { context: 'PortionSizesPickerModal.handleCreatePortion' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setCreateModalVisible(false);
     }

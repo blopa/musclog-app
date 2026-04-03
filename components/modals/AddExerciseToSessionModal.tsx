@@ -13,6 +13,7 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
+import { captureException } from '../../utils/sentry';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
@@ -194,6 +195,7 @@ export function AddExerciseToSessionModal({
       onClose();
     } catch (err) {
       console.error('Error adding exercise to session:', err);
+      captureException(err, { data: { context: 'AddExerciseToSessionModal.handleSubmit' } });
       showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
     } finally {
       setIsSubmitting(false);

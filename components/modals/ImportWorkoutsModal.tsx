@@ -16,6 +16,7 @@ import { ExerciseService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { parsePastWorkouts } from '../../utils/coachAI';
+import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { processParsedWorkouts } from '../../utils/workoutAI';
 import { FullScreenModal } from './FullScreenModal';
@@ -72,6 +73,7 @@ export function ImportWorkoutsModal({
       }
     } catch (error) {
       console.error('[ImportWorkouts] Error:', error);
+      captureException(error, { data: { context: 'ImportWorkoutsModal.handleProcess' } });
       showSnackbar('error', t('workout.import.processingFailed'));
     } finally {
       setIsProcessing(false);

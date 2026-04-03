@@ -25,6 +25,7 @@ import {
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
 } from '../../utils/nutritionCalculator';
+import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
@@ -154,6 +155,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
       onClose();
     } catch (e) {
+      captureException(e, { data: { context: 'CheckinDetailsModal.handleSave' } });
       showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);
     }
