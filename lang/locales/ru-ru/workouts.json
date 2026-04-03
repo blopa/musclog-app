@@ -51,7 +51,8 @@
       "noExercisesFound": "Упражнений по запросу «{{query}}» не найдено",
       "noExercisesAvailable": "Нет доступных упражнений для {{muscle}}",
       "exerciseDescription": "{{sets}} подх. × {{reps}} повт.",
-      "exerciseDescriptionWithWeight": "{{sets}} подх. × {{reps}} повт. @ {{weight}}{{unit}}"
+      "exerciseDescriptionWithWeight": "{{sets}} подх. × {{reps}} повт. @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} подх. × {{reps}} повт. @"
     },
     "filterWorkouts": {
       "title": "Фильтр тренировок",

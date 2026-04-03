@@ -13,7 +13,7 @@ import {
   type ExerciseMetadata,
   exercisesToWorkoutFormat,
   extractExerciseMetadata,
-  formatExerciseDescription,
+  formatExerciseListRowMeta,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
@@ -93,7 +93,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         sets
       );
 
-      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
+      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout, units);
       setExercises(exerciseOptions);
 
       const metadataMap = new Map<string, ExerciseMetadata>();
@@ -107,7 +107,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     } finally {
       setIsLoading(false);
     }
-  }, [isEditMode, templateId, t, showSnackbar]);
+  }, [isEditMode, templateId, t, showSnackbar, units]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -242,19 +242,33 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         prev.map((ex) => {
           if (ex.id === exerciseId) {
             const meta = exerciseMetadata.get(exerciseId);
-            const baseDescription = meta
-              ? formatExerciseDescription(meta.sets, meta.reps)
-              : ex.description.replace(' • 📝', '');
+            if (meta) {
+              const row = formatExerciseListRowMeta(
+                meta.sets,
+                meta.reps,
+                meta.weight,
+                meta.isBodyweight,
+                units
+              );
+              const baseDescription = notes ? `${row.description} • 📝` : row.description;
+              return {
+                ...ex,
+                description: baseDescription,
+                trailingHighlight: row.trailingHighlight,
+              };
+            }
+            const baseDescription = ex.description.replace(' • 📝', '');
             return {
               ...ex,
               description: notes ? `${baseDescription} • 📝` : baseDescription,
+              trailingHighlight: undefined,
             };
           }
           return ex;
         })
       );
     },
-    [exerciseMetadata]
+    [exerciseMetadata, units]
   );
 
   return {

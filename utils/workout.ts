@@ -121,6 +121,37 @@ export function formatExerciseDescription(
   return i18n.t('workouts.addExercise.exerciseDescription', { sets, reps });
 }
 
+/**
+ * Subtitle + optional weight highlight for exercise rows (e.g. template editor list).
+ */
+export function formatExerciseListRowMeta(
+  sets: number,
+  reps: number,
+  weight?: number,
+  isBodyweight?: boolean,
+  units?: Units,
+  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? 'en-US'
+): { description: string; trailingHighlight?: string } {
+  if (weight !== undefined && weight > 0 && !isBodyweight && units) {
+    const displayWeight = kgToDisplay(weight, units);
+    const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+    const unit = getWeightUnit(units);
+    const weightStr =
+      rounded % 1 === 0
+        ? formatAppInteger(appNumberLocale, Math.round(rounded))
+        : formatAppDecimal(appNumberLocale, rounded, 1);
+
+    return {
+      description: i18n.t('workouts.addExercise.exerciseDescriptionLead', { sets, reps }),
+      trailingHighlight: `${weightStr}${unit}`,
+    };
+  }
+
+  return {
+    description: i18n.t('workouts.addExercise.exerciseDescription', { sets, reps }),
+  };
+}
+
 // ============================================================================
 // Exercise Option Creation
 // ============================================================================
@@ -158,18 +189,20 @@ export function createExerciseOption(
 
   const isBodyweightType = isBodyweightExercise(exercise.equipmentType) || isBodyweight;
   const iconConfig = getExerciseIconConfig(theme, isBodyweightType);
+  const row = formatExerciseListRowMeta(
+    sets,
+    reps,
+    weight,
+    isBodyweightType,
+    units,
+    i18n.resolvedLanguage ?? i18n.language
+  );
 
   return {
     id: exercise.id,
     label: exercise.name ?? '',
-    description: formatExerciseDescription(
-      sets,
-      reps,
-      weight,
-      isBodyweightType,
-      units,
-      i18n.resolvedLanguage ?? i18n.language
-    ),
+    description: row.description,
+    trailingHighlight: row.trailingHighlight,
     icon: iconConfig.icon,
     iconBgColor: iconConfig.iconBgColor,
     iconColor: iconConfig.iconColor,
@@ -273,17 +306,23 @@ export function exercisesToWorkoutFormat(
  * Transform exercises from WorkoutTemplateService to SelectorOption format
  */
 export function transformExercisesToOptions(
-  exercisesInWorkout: ExerciseInWorkout[]
+  exercisesInWorkout: ExerciseInWorkout[],
+  units: Units
 ): SelectorOption<string>[] {
-  return exercisesInWorkout.map((ex) => ({
-    id: ex.id,
-    label: ex.label,
-    description: ex.notes ? `${ex.description} • 📝` : ex.description,
-    icon: ex.icon,
-    iconBgColor: ex.iconBgColor,
-    iconColor: ex.iconColor,
-    groupId: ex.groupId,
-  }));
+  return exercisesInWorkout.map((ex) => {
+    const row = formatExerciseListRowMeta(ex.sets, ex.reps, ex.weight, ex.isBodyweight, units);
+    const description = ex.notes ? `${row.description} • 📝` : row.description;
+    return {
+      id: ex.id,
+      label: ex.label,
+      description,
+      trailingHighlight: row.trailingHighlight,
+      icon: ex.icon,
+      iconBgColor: ex.iconBgColor,
+      iconColor: ex.iconColor,
+      groupId: ex.groupId,
+    };
+  });
 }
 
 /**

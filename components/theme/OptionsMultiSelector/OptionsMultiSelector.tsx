@@ -326,6 +326,7 @@ export function OptionsMultiSelector<T extends string | number>({
                     alignItems: 'center',
                     gap: theme.spacing.gap.base,
                     flex: 1,
+                    minWidth: 0,
                   }}
                 >
                   <View
@@ -340,7 +341,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   >
                     <Icon size={theme.iconSize.lg} color={option.iconColor} />
                   </View>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, minWidth: 0 }}>
                     <Text
                       style={{
                         fontSize: theme.typography.fontSize.base,
@@ -361,32 +362,54 @@ export function OptionsMultiSelector<T extends string | number>({
                     </Text>
                   </View>
                 </View>
-                {showCheckboxes ? (
-                  <View
-                    style={{
-                      width: theme.size['6'],
-                      height: theme.size['6'],
-                      borderRadius: theme.borderRadius.sm,
-                      borderWidth: theme.borderWidth.medium,
-                      borderColor: selected
-                        ? theme.colors.accent.primary
-                        : theme.colors.border.default,
-                      backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {selected ? (
-                      <Check
-                        size={theme.iconSize.xs}
-                        color={theme.colors.text.black}
-                        strokeWidth={theme.strokeWidth.thick}
-                      />
-                    ) : null}
-                  </View>
-                ) : (
-                  <View />
-                )}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    gap: theme.spacing.gap.sm,
+                    marginLeft: theme.spacing.gap.sm,
+                  }}
+                >
+                  {option.trailingHighlight ? (
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        fontSize: theme.typography.fontSize.lg,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        color: theme.colors.accent.primary,
+                      }}
+                    >
+                      {option.trailingHighlight}
+                    </Text>
+                  ) : null}
+                  {showCheckboxes ? (
+                    <View
+                      style={{
+                        width: theme.size['6'],
+                        height: theme.size['6'],
+                        borderRadius: theme.borderRadius.sm,
+                        borderWidth: theme.borderWidth.medium,
+                        borderColor: selected
+                          ? theme.colors.accent.primary
+                          : theme.colors.border.default,
+                        backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {selected ? (
+                        <Check
+                          size={theme.iconSize.xs}
+                          color={theme.colors.text.black}
+                          strokeWidth={theme.strokeWidth.thick}
+                        />
+                      ) : null}
+                    </View>
+                  ) : option.trailingHighlight ? null : (
+                    <View />
+                  )}
+                </View>
               </View>
             )}
           </Pressable>
