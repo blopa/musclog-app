@@ -14,7 +14,7 @@ const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
 
 export function useOnboardingFitnessData() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
@@ -24,12 +24,15 @@ export function useOnboardingFitnessData() {
     undefined
   );
 
-  const defaultDobFallback = useCallback(() => defaultAdultDobDisplayString(), []);
+  const defaultDobFallback = useCallback(
+    () => defaultAdultDobDisplayString(25, i18n.language),
+    [i18n.language]
+  );
 
   useEffect(() => {
     const loadFitnessData = async () => {
       try {
-        const loaded = await loadFitnessDetailsInitialData(units);
+        const loaded = await loadFitnessDetailsInitialData(units, i18n.language);
         if (!loaded.dob?.trim()) {
           loaded.dob = defaultDobFallback();
         }
@@ -55,7 +58,7 @@ export function useOnboardingFitnessData() {
     if (!isSettingsLoading) {
       loadFitnessData();
     }
-  }, [units, isSettingsLoading, defaultDobFallback]);
+  }, [units, isSettingsLoading, defaultDobFallback, i18n.language]);
 
   const saveFitnessData = useCallback(
     async (data: FitnessDetails): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {

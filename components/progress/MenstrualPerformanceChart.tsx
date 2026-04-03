@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MenstrualPhasePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { MultipleLinesChart } from '../charts/MultipleLinesChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -14,7 +14,7 @@ interface MenstrualPerformanceChartProps {
 }
 
 export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
@@ -48,7 +48,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatLocalCalendarDayDdMm
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
   const series = [
     {

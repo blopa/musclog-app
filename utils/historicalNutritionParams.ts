@@ -73,18 +73,20 @@ export async function getHistoricalNutritionParams(options: {
 }): Promise<HistoricalNutritionParams | null> {
   const { asOfDate = new Date(), useWeeklyAverages = true } = options;
 
-  const endTs = localDayStartMs(asOfDate);
-  const endOfDay = new Date(endTs);
-  const startTs = localDayKeyPlusCalendarDays(endTs, -LOOKBACK_DAYS);
+  /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
+  const endDayStartTs = localDayStartMs(asOfDate);
+  /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
+  const inclusiveRangeEndDate = new Date(endDayStartTs);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -LOOKBACK_DAYS);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endTs };
+  const dateRange = { startDate: startTs, endDate: endDayStartTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
-    NutritionService.getRangeNutrients(startOfRange, endOfDay),
-    NutritionService.getNutritionLogsForDateRange(startOfRange, endOfDay),
+    NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
+    NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
   const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;

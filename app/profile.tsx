@@ -49,7 +49,7 @@ import { showSnackbar } from '../utils/snackbarService';
 
 export default function ProfileScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -460,7 +460,7 @@ export default function ProfileScreen() {
         initialData={
           dbUser && metrics
             ? {
-                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth),
+                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth, i18n.language),
                 gender: dbUser.gender,
                 units,
                 weight: metrics.weight?.toString() || '',

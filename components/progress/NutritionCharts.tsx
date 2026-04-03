@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { DailyNutrition, MetricPoint } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarChart } from '../charts/BarChart';
 import { BarLineChart } from '../charts/BarLineChart';
@@ -22,7 +22,7 @@ interface NutritionChartsProps {
 type NutritionView = 'calories' | 'macros' | 'combined' | 'macrosCombined';
 
 export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
@@ -112,9 +112,9 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
     () =>
       getXAxisLabels(
         nutritionHistory.map((d) => ({ x: d.date })),
-        formatLocalCalendarDayDdMm
+        (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
       ),
-    [nutritionHistory]
+    [nutritionHistory, i18n.language]
   );
 
   const macroColors = useMemo(

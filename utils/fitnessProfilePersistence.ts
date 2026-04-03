@@ -4,10 +4,11 @@ import { names, uniqueNamesGenerator } from 'unique-names-generator';
 import { SettingsService, UserMetricService, UserService } from '../database/services';
 import type { FitnessDetails } from '../types/fitnessDetails';
 import {
-  formatLocalCalendarDayMmDdYyyy,
+  formatLocalCalendarDayNumericIntl,
   localCalendarDayDate,
   localDayClosedRangeMaxMs,
   localDayStartMs,
+  localDayStartMsFromIsoDateOnly,
   parseLocalCalendarDate,
 } from './calendarDate';
 import {
@@ -19,9 +20,15 @@ import {
   storedWeightToKg,
 } from './unitConversion';
 
-/** Display DOB as MM/DD/YYYY for forms (matches parseMmDdYyyyDateOfBirth). */
-export function formatDateOfBirthFromTimestamp(timestamp: number): string {
-  return formatLocalCalendarDayMmDdYyyy(timestamp);
+/**
+ * Display DOB using the user's locale (numeric day/month/year).
+ * For parsing user input back to storage, use {@link parseDobStringToLocalDayStartMs}.
+ */
+export function formatDateOfBirthFromTimestamp(
+  timestamp: number,
+  localeTag: string = 'en-US'
+): string {
+  return formatLocalCalendarDayNumericIntl(timestamp, localeTag);
 }
 
 /** Default adult DOB when none is provided: start of local calendar day N years ago. */
@@ -29,9 +36,9 @@ export function defaultAdultDobLocalDayStartMs(ageYears = 25): number {
   return localDayStartMs(subYears(new Date(), ageYears));
 }
 
-/** Same as {@link defaultAdultDobLocalDayStartMs} but formatted for MM/DD/YYYY fields. */
-export function defaultAdultDobDisplayString(ageYears = 25): string {
-  return formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(ageYears));
+/** Same as {@link defaultAdultDobLocalDayStartMs} but formatted for display fields. */
+export function defaultAdultDobDisplayString(ageYears = 25, localeTag = 'en-US'): string {
+  return formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(ageYears), localeTag);
 }
 
 export function parseMmDdYyyyDateOfBirthToLocalDayStartMs(dob: string): number {
@@ -43,6 +50,18 @@ export function parseMmDdYyyyDateOfBirthToLocalDayStartMs(dob: string): number {
   const day = parseInt(parts[1], 10);
   const year = parseInt(parts[2], 10);
   return localDayStartMs(new Date(year, month, day));
+}
+
+/**
+ * Parse DOB from UI: prefers unambiguous `yyyy-MM-dd`, then legacy US `MM/DD/YYYY`.
+ */
+export function parseDobStringToLocalDayStartMs(dob: string): number {
+  const s = dob.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    return localDayStartMsFromIsoDateOnly(s);
+  }
+
+  return parseMmDdYyyyDateOfBirthToLocalDayStartMs(s);
 }
 
 /**
@@ -70,7 +89,8 @@ export function parseDobDisplayStringToPickerDate(dobString: string): Date {
  * Load initial fitness form data from user + latest metrics (same source as onboarding).
  */
 export async function loadFitnessDetailsInitialData(
-  units: 'imperial' | 'metric'
+  units: 'imperial' | 'metric',
+  localeTag: string = 'en-US'
 ): Promise<Partial<FitnessDetails>> {
   const user = await UserService.getCurrentUser();
   const latestWeight = await UserMetricService.getLatest('weight');
@@ -96,7 +116,7 @@ export async function loadFitnessDetailsInitialData(
 
   if (user) {
     return {
-      dob: user.getAge() > 0 ? formatDateOfBirthFromTimestamp(user.dateOfBirth) : '',
+      dob: user.getAge() > 0 ? formatDateOfBirthFromTimestamp(user.dateOfBirth, localeTag) : '',
       units,
       weight: String(weightDisplay),
       height: String(heightDisplay),
@@ -128,9 +148,7 @@ export async function loadFitnessDetailsInitialData(
  * Mirrors onboarding `saveFitnessData` behavior.
  */
 export async function persistFitnessDetails(data: FitnessDetails): Promise<void> {
-  const dateOfBirthMs = data.dob?.trim()
-    ? parseMmDdYyyyDateOfBirthToLocalDayStartMs(data.dob)
-    : undefined;
+  const dateOfBirthMs = data.dob?.trim() ? parseDobStringToLocalDayStartMs(data.dob) : undefined;
 
   let user = await UserService.getCurrentUser();
   if (!user) {

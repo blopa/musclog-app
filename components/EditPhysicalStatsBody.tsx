@@ -6,7 +6,7 @@ import { type Gender } from '../database/models';
 import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
 import {
-  formatLocalCalendarDayMmDdYyyy,
+  formatLocalCalendarDayIso,
   getLocalCalendarYear,
   localCalendarDayDate,
 } from '../utils/calendarDate';
@@ -52,7 +52,7 @@ export function EditPhysicalStatsBody({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const handleDateSelect = useCallback((date: Date) => {
-    setDob(formatLocalCalendarDayMmDdYyyy(localCalendarDayDate(date)));
+    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
   }, []);
 
   useEffect(() => {
