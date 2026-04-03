@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
@@ -14,8 +13,7 @@ import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import {
   calculatePreviewVolumeFromTemplateSets,
@@ -25,12 +23,6 @@ import {
 import { Button } from '../theme/Button';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
-
-// TODO: dont we have a generic function for this already somewhere?
-function displayWorkoutSetWeightKg(weightKg: number, units: Units): number {
-  const d = kgToDisplay(weightKg, units);
-  return d % 1 === 0 ? d : Math.round(d * 10) / 10;
-}
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
@@ -129,7 +121,7 @@ export function WorkoutSessionHistoryModal({
         const transformedSets = exerciseSets.map((set, setIndex) => {
           return {
             setNumber: setIndex + 1,
-            weight: displayWorkoutSetWeightKg(set.targetWeight ?? 0, units),
+            weight: displayWeightKgNumeric(set.targetWeight ?? 0, units),
             reps: set.targetReps ?? 0,
             partials: 0, // Templates don't have partials
             isCurrent: false, // No current set in preview
@@ -205,7 +197,7 @@ export function WorkoutSessionHistoryModal({
           const isCurrent = (set.setOrder ?? 0) === currentSetOrder;
           return {
             setNumber: setIndex + 1,
-            weight: displayWorkoutSetWeightKg(set.weight ?? 0, units),
+            weight: displayWeightKgNumeric(set.weight ?? 0, units),
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,

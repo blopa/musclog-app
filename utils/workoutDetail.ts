@@ -11,7 +11,7 @@ import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../data
 import { type Theme } from '../theme';
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
-import { kgToDisplay } from './unitConversion';
+import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
 import { calculateSetVolume, getUserBodyWeightKgForVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
@@ -64,8 +64,7 @@ function formatWeight(
   appNumberLocale: string
 ): string {
   const unitKey = getWeightUnitI18nKey(units);
-  const displayWeight = kgToDisplay(weight, units);
-  const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+  const rounded = displayWeightKgNumeric(weight, units);
   const weightStr =
     rounded % 1 === 0
       ? formatAppInteger(appNumberLocale, Math.round(rounded))
