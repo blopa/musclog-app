@@ -5,7 +5,6 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_CURRENT_STEP,
   ONBOARDING_VERSION,
-  TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
 } from '../constants/misc';
 
@@ -55,11 +54,7 @@ export const setOnboardingCompleted = async (
     [ONBOARDING_VERSION, version],
   ]);
 
-  await AsyncStorage.multiRemove([
-    ONBOARDING_CURRENT_STEP,
-    TEMP_GOOGLE_USER_NAME,
-    TEMP_NUTRITION_PLAN,
-  ]);
+  await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_NUTRITION_PLAN]);
 };
 
 /**
@@ -69,14 +64,13 @@ export const resetOnboarding = async (): Promise<void> => {
   await AsyncStorage.multiRemove([
     ONBOARDING_COMPLETED,
     ONBOARDING_VERSION,
-    TEMP_GOOGLE_USER_NAME,
     ONBOARDING_CURRENT_STEP,
     TEMP_NUTRITION_PLAN,
   ]);
 };
 
 /**
- * Persist the current onboarding step (route) so the app can restore it after external auth
+ * Persist the current onboarding step (route) so the app can restore it
  */
 export const setCurrentOnboardingStep = async (route: string): Promise<void> => {
   try {

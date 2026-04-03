@@ -2,10 +2,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Flag, Save, Trash2, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Modal, Platform, Pressable, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
 import { Button } from '../theme/Button';
+import { Modal } from '../theme/Modal';
 
 type EndWorkoutModalProps = {
   visible: boolean;
@@ -61,22 +63,7 @@ export function EndWorkoutModal({
     }
   }, [visible, scaleAnim, opacityAnim]);
 
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
     <Modal

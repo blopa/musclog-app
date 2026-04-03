@@ -28,14 +28,18 @@ import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { localCalendarDayDate } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
+import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -317,6 +321,10 @@ export function CreateMealModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { units } = useSettings();
+  const massUnit = getMassUnitLabel(units);
+  const stepDisplay = units === 'imperial' ? 0.5 : 10;
+  const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -333,6 +341,7 @@ export function CreateMealModal({
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
+  const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);
 
   const isQuickTrack = mode === 'quickTrack';
 
@@ -342,6 +351,7 @@ export function CreateMealModal({
 
   useEffect(() => {
     setMealName(meal?.name ?? '');
+    setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
   }, [meal]);
 
   useEffect(() => {
@@ -391,17 +401,20 @@ export function CreateMealModal({
     );
   }, [ingredients]);
 
-  // Total meal weight in grams (quickTrack: for serving selector and scaling)
+  // Total meal weight in grams (sum of raw ingredients)
   const totalMealGrams = useMemo(
     () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
     [ingredients]
   );
 
+  // Reference grams for scaling: prepared weight if set, otherwise raw ingredient sum
+  const referenceMealGrams = preparedWeightGrams ?? totalMealGrams;
+
   useEffect(() => {
     if (isQuickTrack) {
-      setMealAmountGrams(totalMealGrams);
+      setMealAmountGrams(referenceMealGrams);
     }
-  }, [isQuickTrack, totalMealGrams]);
+  }, [isQuickTrack, referenceMealGrams]);
 
   const handleRemoveIngredient = (foodId: string) => {
     setIngredientToRemoveId(foodId);
@@ -433,6 +446,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleDeleteMeal' } });
       showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeletingMeal(false);
@@ -458,7 +472,7 @@ export function CreateMealModal({
           ''
         );
       }
-      const scale = totalMealGrams > 0 ? mealAmountGrams / totalMealGrams : 1;
+      const scale = referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
@@ -473,6 +487,7 @@ export function CreateMealModal({
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleTrack' } });
       showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
@@ -496,7 +511,10 @@ export function CreateMealModal({
     try {
       if (meal) {
         // Edit mode: update name, remove deleted foods, add new foods
-        await MealService.updateMeal(meal.id, { name: mealName.trim() });
+        await MealService.updateMeal(meal.id, {
+          name: mealName.trim(),
+          preparedWeightGrams: preparedWeightGrams || null,
+        });
         for (const mealFoodId of removedMealFoodIdsRef.current) {
           await MealService.removeFoodFromMeal(mealFoodId);
         }
@@ -512,7 +530,9 @@ export function CreateMealModal({
             foodId: ing.foodId,
             amount: ing.amount,
           })),
-          '' // No description for now
+          '', // TODO: implement way to write description
+          false,
+          preparedWeightGrams || undefined
         );
       }
 
@@ -523,6 +543,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleSave' } });
       showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);
@@ -632,16 +653,16 @@ export function CreateMealModal({
         {/* Total Nutrition Card */}
         <MealMacrosSummary
           calories={
-            isQuickTrack && totalMealGrams > 0
-              ? totalMacros.calories * (mealAmountGrams / totalMealGrams)
+            isQuickTrack && referenceMealGrams > 0
+              ? totalMacros.calories * (mealAmountGrams / referenceMealGrams)
               : totalMacros.calories
           }
           macros={
-            isQuickTrack && totalMealGrams > 0
+            isQuickTrack && referenceMealGrams > 0
               ? {
-                  protein: totalMacros.protein * (mealAmountGrams / totalMealGrams),
-                  carbs: totalMacros.carbs * (mealAmountGrams / totalMealGrams),
-                  fat: totalMacros.fat * (mealAmountGrams / totalMealGrams),
+                  protein: totalMacros.protein * (mealAmountGrams / referenceMealGrams),
+                  carbs: totalMacros.carbs * (mealAmountGrams / referenceMealGrams),
+                  fat: totalMacros.fat * (mealAmountGrams / referenceMealGrams),
                 }
               : totalMacros
           }
@@ -779,6 +800,42 @@ export function CreateMealModal({
           </View>
         </View>
 
+        {/* Prepared weight input (create/edit mode only) */}
+        {!isQuickTrack ? (
+          <View className="mb-6">
+            <StepperInput
+              label={t('food.createMeal.preparedWeight')}
+              value={gramsToDisplay(preparedWeightGrams ?? totalMealGrams, units)}
+              onIncrement={() => {
+                const current = preparedWeightGrams ?? totalMealGrams;
+                const next = Math.round(current + stepAmount);
+                setPreparedWeightGrams(next > 0 ? next : undefined);
+              }}
+              onDecrement={() => {
+                const current = preparedWeightGrams ?? totalMealGrams;
+                const next = Math.round(current - stepAmount);
+                setPreparedWeightGrams(next > 0 ? next : undefined);
+              }}
+              onChangeValue={(displayVal) => {
+                const grams = Math.round(displayToGrams(displayVal, units));
+                setPreparedWeightGrams(grams > 0 ? grams : undefined);
+              }}
+              unit={massUnit}
+              step={stepDisplay}
+              maxFractionDigits={units === 'imperial' ? 1 : 0}
+            />
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.secondary,
+                marginTop: theme.spacing.padding.sm,
+              }}
+            >
+              {t('food.createMeal.preparedWeightHelper')}
+            </Text>
+          </View>
+        ) : null}
+
         {/* Quick Track: Serving size (grams), date, meal type, save toggle, optional meal name */}
         {isQuickTrack ? (
           <>
@@ -787,12 +844,12 @@ export function CreateMealModal({
                 value={mealAmountGrams}
                 onChange={(v) => setMealAmountGrams(Math.round(v))}
                 quickSizes={
-                  totalMealGrams > 0
+                  referenceMealGrams > 0
                     ? [
-                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
-                        { label: '1×', value: totalMealGrams },
-                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
-                        { label: '2×', value: totalMealGrams * 2 },
+                        { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
+                        { label: '1×', value: referenceMealGrams },
+                        { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
+                        { label: '2×', value: referenceMealGrams * 2 },
                       ]
                     : []
                 }

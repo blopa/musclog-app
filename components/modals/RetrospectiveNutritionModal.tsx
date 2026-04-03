@@ -16,6 +16,7 @@ import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { formatLocalCalendarDayIso } from '../../utils/calendarDate';
 import { parseRetrospectiveNutrition } from '../../utils/coachAI';
+import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -67,6 +68,7 @@ export function RetrospectiveNutritionModal({
       onClose();
     } catch (error) {
       console.error('[RetrospectiveNutrition] Error:', error);
+      captureException(error, { data: { context: 'RetrospectiveNutritionModal.handleProcess' } });
       showSnackbar('error', t('nutrition.processingFailed'));
     } finally {
       setIsProcessing(false);

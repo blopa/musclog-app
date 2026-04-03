@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { subYears } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,23 +10,16 @@ import {
 } from '../../components/EditPersonalInfoBody';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
-import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { parseMmDdYyyyDateOfBirthToLocalDayStartMs } from '../../utils/fitnessProfilePersistence';
+import {
+  defaultAdultDobLocalDayStartMs,
+  formatDateOfBirthFromTimestamp,
+  parseMmDdYyyyDateOfBirthToLocalDayStartMs,
+} from '../../utils/fitnessProfilePersistence';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
-
-// Helper function to format date of birth timestamp to MM/DD/YYYY
-function formatDateOfBirth(timestamp: number): string {
-  const date = new Date(timestamp);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-}
 
 export default function PersonalInfo() {
   const theme = useTheme();
@@ -50,15 +41,14 @@ export default function PersonalInfo() {
           setInitialData({
             fullName: user.fullName || '',
             email: user.email || '',
-            dob: formatDateOfBirth(user.dateOfBirth),
+            dob: formatDateOfBirthFromTimestamp(user.dateOfBirth),
             gender: user.gender,
             avatarIcon: user.avatarIcon || undefined,
             avatarColor: user.avatarColor || undefined,
           });
         } else {
-          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
           setInitialData({
-            fullName: tempName || '',
+            fullName: '',
             email: '',
             dob: '',
             gender: 'other',
@@ -98,7 +88,7 @@ export default function PersonalInfo() {
       } else {
         await UserService.initializeUser({
           fullName: data.fullName,
-          dateOfBirth: dateOfBirthFromForm ?? localDayStartMs(subYears(new Date(), 25)),
+          dateOfBirth: dateOfBirthFromForm ?? defaultAdultDobLocalDayStartMs(),
           gender: data.gender as Gender,
           email: data.email,
           avatarIcon: data.avatarIcon,

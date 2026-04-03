@@ -1,5 +1,5 @@
 import type { Locale } from 'date-fns';
-import { format, isThisWeek, isToday, isYesterday, subDays, subMonths, subYears } from 'date-fns';
+import { format, isThisWeek, isToday, isYesterday, subMonths, subYears } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,7 +14,7 @@ import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
-import { localDayStartMs } from '../../utils/calendarDate';
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
@@ -152,7 +152,7 @@ export default function BodyMetricsHistoryModal({
     const today = new Date();
     let startDate = endDate;
     if (selectedPeriod === '30D') {
-      startDate = localDayStartMs(subDays(today, 30));
+      startDate = localDayKeyPlusCalendarDaysFromNow(-30);
     } else if (selectedPeriod === '3M') {
       startDate = localDayStartMs(subMonths(today, 3));
     } else if (selectedPeriod === '6M') {

@@ -18,6 +18,7 @@ type WorkoutSummaryCelebrationProps = {
   totalTime?: string; // e.g., "45m"
   volume?: string; // e.g., "12,450 kg"
   personalRecords?: number; // e.g., 2
+  caloriesBurned?: number; // e.g., 350
 };
 
 // TODO: UI issue here
@@ -29,6 +30,7 @@ export function WorkoutSummaryCelebration({
   totalTime = '45m',
   volume = '12,450 kg',
   personalRecords = 2,
+  caloriesBurned,
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -137,6 +139,7 @@ export function WorkoutSummaryCelebration({
             totalTime={totalTime}
             volume={volume}
             personalRecords={personalRecords}
+            caloriesBurned={caloriesBurned}
           />
 
           {/* Spacer */}

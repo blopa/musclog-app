@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MoodPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -20,11 +21,6 @@ const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
   'good',
   'great',
 ];
-
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
 
 export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
   const { t } = useTranslation();
@@ -65,7 +61,7 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
   const chartData = data.map((d) => ({ x: d.date, y: d.mood }));
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    formatLocalCalendarDayDdMm
   );
 
   const yAxisLabels = [

@@ -15,6 +15,7 @@
     "getFeedback": "Obter Feedback de IA",
     "gettingFeedback": "Obtendo feedback...",
     "completedMessage": "Você completou o treino {{workoutName}}",
-    "completedSummary": "Treino completado: {{workoutName}}"
+    "completedSummary": "Treino completado: {{workoutName}}",
+    "caloriesBurned": "Calorias Queimadas"
   }
 }

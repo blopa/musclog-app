@@ -5,6 +5,20 @@ import { database } from '../index';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 
+/** Matches {@link FoodPortionService.createCommonPortions} i18n keys that were persisted literally in `name`. */
+const PORTION_DISPLAY_NAME_I18N_KEYS = [
+  'food.portions.slice',
+  'food.portions.twoSlices',
+  'food.portions.cup',
+  'food.portions.tbsp',
+  'food.portions.tsp',
+  'food.portions.oz',
+  'food.portions.100g',
+  'food.portions.50g',
+  'food.portions.200g',
+  'food.portions.250g',
+] as const;
+
 export class FoodPortionService {
   /**
    * Non-deleted portion with this exact gram_weight, if any (at most one should exist after dedupe).
@@ -206,6 +220,39 @@ export class FoodPortionService {
         const source: 'app' | 'user' = i < appPortionCount ? 'app' : 'user';
         await portion.update((record) => {
           record.source = source;
+          record.updatedAt = Date.now();
+        });
+      }
+    });
+  }
+
+  /**
+   * Some installs stored `name` as the raw i18n key (e.g. `"food.portions.tbsp"`) when the locale
+   * bundle was not available at seed time. Rewrites those rows to `i18n.t(name)` for the active
+   * language. Skips rows where the key has no translation (still equals the key after `t()`).
+   */
+  static async fixPortionNamesStoredAsI18nKeys(): Promise<void> {
+    const rows = await database
+      .get<FoodPortion>('food_portions')
+      .query(
+        Q.where('name', Q.oneOf([...PORTION_DISPLAY_NAME_I18N_KEYS])),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (rows.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (const portion of rows) {
+        const translated = i18n.t(portion.name);
+        if (translated === portion.name) {
+          continue;
+        }
+
+        await portion.update((record) => {
+          record.name = translated;
           record.updatedAt = Date.now();
         });
       }

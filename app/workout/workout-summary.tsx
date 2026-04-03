@@ -245,6 +245,7 @@ export default function WorkoutSummaryScreen() {
       totalTime={totalTime}
       volume={volume}
       personalRecords={personalRecords}
+      caloriesBurned={caloriesBurned}
     />
   );
 }

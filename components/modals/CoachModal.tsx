@@ -68,6 +68,7 @@ import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
+import { captureException } from '../../utils/sentry';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
@@ -994,6 +995,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await Share.share({ message: lines.join('\n') });
     } catch (err) {
       console.error('[CoachModal] shareHistory failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleShareHistory' } });
       showSnackbar('error', t('coach.share.failed'));
     }
   }, [conversationContext, i18n.resolvedLanguage, i18n.language, showSnackbar, t]);
@@ -1011,6 +1013,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
       console.error('[CoachModal] clearHistory failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleConfirmClearHistory' } });
       showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsClearingHistory(false);
@@ -1030,6 +1033,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       showSnackbar('success', t('coach.message.deleted'));
     } catch (err) {
       console.error('[CoachModal] deleteMessage failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleConfirmDeleteMessage' } });
       showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsDeletingMessage(false);

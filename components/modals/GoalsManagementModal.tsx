@@ -13,6 +13,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { localDayStartMs } from '../../utils/calendarDate';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
@@ -168,6 +170,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         await NutritionGoalService.regenerateCheckins(goal.id);
       } catch (error) {
         console.error('Error regenerating check-ins:', error);
+        captureException(error, {
+          data: { context: 'GoalsManagementModal.handleRegenerateCheckins' },
+        });
+        showSnackbar('error', t('errors.somethingWentWrong'));
       } finally {
         setIsRegenerating(false);
       }
@@ -186,6 +192,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       await refresh();
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
+      captureException(error, { data: { context: 'GoalsManagementModal.handleConfirmDelete' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsDeletingGoal(false);
       setGoalToDelete(null);
@@ -227,6 +235,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       setNutritionGoalsModalVisible(false);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
+      captureException(error, {
+        data: { context: 'GoalsManagementModal.handleSaveNutritionGoals' },
+      });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 

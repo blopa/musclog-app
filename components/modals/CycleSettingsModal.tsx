@@ -4,6 +4,8 @@ import { View } from 'react-native';
 
 import type MenstrualCycle from '../../database/models/MenstrualCycle';
 import { localDayStartMs } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { type CycleSetupData, EditCycleSetupData } from '../EditCycleSetupData';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -49,6 +51,8 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
       handleClose();
     } catch (error) {
       console.error('Error updating cycle settings:', error);
+      captureException(error, { data: { context: 'CycleSettingsModal.handleSave' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }

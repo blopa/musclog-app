@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Download, Dumbbell } from 'lucide-react-native';
@@ -18,6 +17,7 @@ import { verifyDatabaseTables } from '../../database/verify';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { importDatabase, shouldSeedDevData } from '../../utils/file';
+import { captureException } from '../../utils/sentry';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -68,6 +68,8 @@ export default function LandingScreen() {
         }
       } catch (error) {
         console.error('Error initializing app:', error);
+        captureException(error, { data: { context: 'landing.initializeApp' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
       } finally {
         setIsInitializing(false);
       }
@@ -306,7 +308,7 @@ export default function LandingScreen() {
                       textDecorationLine: 'underline',
                     }}
                   >
-                    {t('onboarding.landing.connectGoogle')}
+                    {t('onboarding.landing.viewTerms')}
                   </Text>
                 </View>
               </>

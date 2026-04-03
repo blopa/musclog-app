@@ -19,12 +19,14 @@ import {
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { localCalendarDayDate } from '../../utils/calendarDate';
+import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
 import { Button } from '../theme/Button';
+import { Modal } from '../theme/Modal';
 import { FullScreenModal } from './FullScreenModal';
 
 type QuickDateOption = {
@@ -53,6 +55,7 @@ export function DatePickerModal({
 }: DatePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const webMonthYearLayerStyle = useWebModalLayerStyle({ variant: 'centered' });
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
   const [isMonthYearPickerVisible, setIsMonthYearPickerVisible] = useState(false);
@@ -319,10 +322,11 @@ export function DatePickerModal({
           transparent
           animationType="fade"
           onRequestClose={() => setIsMonthYearPickerVisible(false)}
+          statusBarTranslucent={Platform.OS !== 'web'}
         >
           <Pressable
             className="flex-1 items-center justify-center p-4"
-            style={{ backgroundColor: theme.colors.overlay.black60 }}
+            style={[{ backgroundColor: theme.colors.overlay.black60 }, webMonthYearLayerStyle]}
             onPress={() => setIsMonthYearPickerVisible(false)}
           >
             <Pressable

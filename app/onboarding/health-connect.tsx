@@ -211,7 +211,7 @@ export default function HealthConnectScreen() {
 
                   if (hasAnyPermission) {
                     // Already has at least one permission, navigate to next screen
-                    router.navigate('/onboarding/connect-with-google');
+                    router.navigate('/onboarding/fitness-info');
                     return;
                   }
 
@@ -225,7 +225,7 @@ export default function HealthConnectScreen() {
                   }
 
                   // Navigate to next screen regardless of granted permissions
-                  router.navigate('/onboarding/connect-with-google');
+                  router.navigate('/onboarding/fitness-info');
                 } catch (error) {
                   console.error('Error setting up Health Connect:', error);
                 } finally {
@@ -242,7 +242,7 @@ export default function HealthConnectScreen() {
             <MaybeLaterButton
               onPress={() => {
                 // Navigate away or skip
-                router.navigate('/onboarding/connect-with-google');
+                router.navigate('/onboarding/fitness-info');
               }}
               text={t('onboarding.healthConnect.maybeLater')}
             />

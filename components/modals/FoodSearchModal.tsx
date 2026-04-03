@@ -50,6 +50,7 @@ import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUni
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
 import { localCalendarDayDate } from '../../utils/calendarDate';
 import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
+import { captureException } from '../../utils/sentry';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { Button } from '../theme/Button';
@@ -825,6 +826,7 @@ export function FoodSearchModal({
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
       console.error('Error logging same as yesterday:', err);
+      captureException(err, { data: { context: 'FoodSearchModal.handleSameAsYesterday' } });
       showSnackbar('error', t('foodSearch.sameAsYesterdayError'));
     } finally {
       setIsAddingSameAsYesterday(false);

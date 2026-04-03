@@ -9,11 +9,6 @@
     "failedToEnableSync": "Не удалось включить синхронизацию Health Connect.",
     "failedToDisableSync": "Не удалось отключить синхронизацию Health Connect.",
     "syncDisabledMessage": "Синхронизация Health Connect отключена.",
-    "googleAuth": {
-      "failedToSignIn": "Не удалось войти через Google.",
-      "failedToInitiateSignIn": "Не удалось инициировать вход через Google.",
-      "signInError": "Не удалось войти через Google: {{error}}"
-    },
     "healthConnect": {
       "noPermissionsGranted": "Разрешения Health Connect не предоставлены",
       "sdkNotAvailable": "Health Connect недоступен на этом устройстве. Пожалуйста, установите его из Play Store.",

@@ -14,6 +14,7 @@ import {
   UserMetricService,
   WorkoutTemplateService,
 } from '../../../database/services';
+import { localDayStartFromUtcMs } from '../../../utils/calendarDate';
 import { displayToCm, displayToKg } from '../../../utils/unitConversion';
 import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
 import type { DataLogModalVariant } from '../DataLogModal';
@@ -889,11 +890,12 @@ export async function createRecord(
         unit = 'cm';
       }
 
+      const rawDate = (values.date as number) ?? Date.now();
       await UserMetricService.createMetric({
         type,
         value,
         unit,
-        date: (values.date as number) ?? Date.now(),
+        date: localDayStartFromUtcMs(rawDate),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       break;

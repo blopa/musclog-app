@@ -4,10 +4,13 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
 import {
+  getLocalCalendarYear,
   localCalendarDayDate,
   localDayClosedRangeMaxMs,
   localDayStartMs,
 } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
@@ -144,6 +147,8 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
       onClose();
     } catch (error) {
       console.error('Error saving cycle log:', error);
+      captureException(error, { data: { context: 'CycleLogModal.handleSave' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }
@@ -249,7 +254,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
-        maxYear={new Date().getFullYear()}
+        maxYear={getLocalCalendarYear(new Date())}
       />
     </>
   );

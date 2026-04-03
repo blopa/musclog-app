@@ -15,6 +15,7 @@
     "getFeedback": "Get AI Feedback",
     "gettingFeedback": "Getting feedback...",
     "completedMessage": "You have completed the {{workoutName}} workout",
-    "completedSummary": "Workout completed: {{workoutName}}"
+    "completedSummary": "Workout completed: {{workoutName}}",
+    "caloriesBurned": "Calories Burned"
   }
 }

@@ -15,7 +15,6 @@ import { NotificationsSettingsModal } from '../components/modals/NotificationsSe
 import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
 import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { SettingsService } from '../database/services/SettingsService';
-import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 
@@ -24,7 +23,6 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { googleGeminiApiKey, googleGeminiModel, openAiApiKey, openAiModel } = useSettings();
-  const { promptAsync } = useGoogleAuth();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
@@ -200,7 +198,6 @@ export default function SettingsScreen() {
       <AISettingsModal
         visible={isAISettingsVisible}
         onClose={() => setAISettingsVisible(false)}
-        onConnectGoogleAccount={() => promptAsync(false)}
         googleGeminiApiKey={googleGeminiApiKey}
         onGoogleGeminiApiKeyChange={handleGoogleGeminiApiKeyChange}
         geminiModel={googleGeminiModel}

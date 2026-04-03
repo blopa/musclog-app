@@ -1,10 +1,18 @@
 import { addDays } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 import {
+  formatLocalCalendarDayDdMm,
   formatLocalCalendarDayIso,
+  formatLocalCalendarDayMmDdYyyy,
+  formatLocalCalendarMonthKey,
+  formatLocalMonthYearLongFromMonthKey,
+  getLocalCalendarYear,
   isSameLocalCalendarDay,
   localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
   localCalendarDayPlusDays,
+  localCalendarWeekIndexSince,
   localDayClosedRangeMaxMs,
   localDayHalfOpenRange,
   localDayKeyPlusCalendarDays,
@@ -13,6 +21,7 @@ import {
   localDayStartMs,
   localDayStartMsFromIsoDateOnly,
   localNextDayStartMsFromDate,
+  MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
 } from '../calendarDate';
 
@@ -37,6 +46,17 @@ describe('calendarDate', () => {
     expect(normalized.getTime()).toBe(localDayStartMs(withTime));
     expect(normalized.getHours()).toBe(0);
     expect(normalized.getMinutes()).toBe(0);
+  });
+
+  it('localCalendarDayDateFromDayKeyMs matches localCalendarDayDate(new Date(ms))', () => {
+    const key = localDayStartMs(new Date(2026, 3, 8, 18, 0, 0));
+    expect(localCalendarDayDateFromDayKeyMs(key).getTime()).toBe(
+      localCalendarDayDate(new Date(key)).getTime()
+    );
+  });
+
+  it('MS_PER_SOLAR_DAY is 24h in ms', () => {
+    expect(MS_PER_SOLAR_DAY).toBe(86_400_000);
   });
 
   it('localDayStartFromUtcMs normalizes instants to local day start', () => {
@@ -90,6 +110,43 @@ describe('calendarDate', () => {
 
   it('formatLocalCalendarDayIso: yyyy-MM-dd in local calendar', () => {
     expect(formatLocalCalendarDayIso(new Date(2026, 6, 3, 15, 0, 0))).toBe('2026-07-03');
+  });
+
+  it('getLocalCalendarYear matches local calendar', () => {
+    expect(getLocalCalendarYear(new Date(2026, 0, 15))).toBe(2026);
+  });
+
+  it('formatLocalCalendarMonthKey: yyyy-MM', () => {
+    expect(formatLocalCalendarMonthKey(new Date(2026, 2, 8, 12, 0, 0))).toBe('2026-03');
+  });
+
+  it('formatLocalMonthYearLongFromMonthKey uses local first of month', () => {
+    expect(formatLocalMonthYearLongFromMonthKey('2026-03', enUS)).toMatch(/March 2026/);
+  });
+
+  it('formatLocalCalendarDayMmDdYyyy: accepts Date or day-key ms', () => {
+    const d = new Date(2026, 6, 3, 15, 0, 0);
+    expect(formatLocalCalendarDayMmDdYyyy(d)).toBe('07/03/2026');
+    expect(formatLocalCalendarDayMmDdYyyy(localDayStartMs(d))).toBe('07/03/2026');
+  });
+
+  it('formatLocalCalendarDayDdMm: accepts Date or day-key ms', () => {
+    const d = new Date(2026, 6, 3, 15, 0, 0);
+    expect(formatLocalCalendarDayDdMm(d)).toBe('03/07');
+    expect(formatLocalCalendarDayDdMm(localDayStartMs(d))).toBe('03/07');
+  });
+
+  it('localCalendarWeekIndexSince: rolling 7-calendar-day buckets from range start', () => {
+    const start = localDayStartMs(new Date(2026, 0, 1, 12, 0, 0));
+    expect(localCalendarWeekIndexSince(localDayStartMs(new Date(2026, 0, 1, 8, 0, 0)), start)).toBe(
+      0
+    );
+    expect(localCalendarWeekIndexSince(localDayStartMs(new Date(2026, 0, 8, 0, 0, 0)), start)).toBe(
+      1
+    );
+    expect(
+      localCalendarWeekIndexSince(localDayStartMs(new Date(2026, 0, 7, 23, 0, 0)), start)
+    ).toBe(0);
   });
 
   it('localCalendarDayPlusDays matches addDays + local start', () => {

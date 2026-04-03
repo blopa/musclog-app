@@ -1,10 +1,10 @@
-import { subYears } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSnackbar } from '../context/SnackbarContext';
 import type { FitnessDetails } from '../types/fitnessDetails';
 import {
+  defaultAdultDobDisplayString,
   loadFitnessDetailsInitialData,
   persistFitnessDetails,
 } from '../utils/fitnessProfilePersistence';
@@ -24,15 +24,7 @@ export function useOnboardingFitnessData() {
     undefined
   );
 
-  const defaultDobFallback = useCallback(() => {
-    const fmt = (d: Date) => {
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${month}/${day}/${year}`;
-    };
-    return fmt(subYears(new Date(), 25));
-  }, []);
+  const defaultDobFallback = useCallback(() => defaultAdultDobDisplayString(), []);
 
   useEffect(() => {
     const loadFitnessData = async () => {

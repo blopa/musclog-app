@@ -44,6 +44,8 @@ import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
 } from '../utils/fitnessProfilePersistence';
+import { captureException } from '../utils/sentry';
+import { showSnackbar } from '../utils/snackbarService';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -250,6 +252,8 @@ export default function ProfileScreen() {
       });
     } catch (err) {
       console.error('Failed to save personal info:', err);
+      captureException(err, { data: { context: 'profile.handleSavePersonalInfo' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
@@ -258,6 +262,8 @@ export default function ProfileScreen() {
       await persistFitnessDetails(data);
     } catch (err) {
       console.error('Failed to save fitness details:', err);
+      captureException(err, { data: { context: 'profile.handleSaveFitnessDetails' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 

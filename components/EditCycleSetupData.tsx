@@ -15,7 +15,7 @@ import { Text, View } from 'react-native';
 import { type BirthControlType } from '../database/models';
 import { SyncGoal } from '../database/models/MenstrualCycle';
 import { useTheme } from '../hooks/useTheme';
-import { localCalendarDayDate } from '../utils/calendarDate';
+import { getLocalCalendarYear, localCalendarDayDate } from '../utils/calendarDate';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -216,7 +216,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
           setSelectedDate(localCalendarDayDate(date));
           setIsDatePickerVisible(false);
         }}
-        maxYear={new Date().getFullYear()}
+        maxYear={getLocalCalendarYear(new Date())}
       />
 
       <BottomPopUpMenu

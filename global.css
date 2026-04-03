@@ -13,6 +13,20 @@ body {
 	height: 100%;
 }
 
+/*
+ * Modal portal host (WebModalShellContext.web.tsx). RN `pointerEvents="box-none"` maps to
+ * non-standard HTML `pointer-events: box-none` (ignored → effective `auto`), which steals clicks.
+ * Host: none !important (also enforced in useLayoutEffect). Direct portaled root opts back in.
+ */
+.expo-web-app-shell #expo-web-modal-shell-host {
+	pointer-events: none !important;
+}
+
+/* Scope to host only — restores hits for the whole portaled RN subtree (not only direct child). */
+.expo-web-app-shell #expo-web-modal-shell-host * {
+	pointer-events: auto !important;
+}
+
 /* Default: full-bleed (phones, tablets, Chrome device toolbar — narrow viewports). */
 .expo-web-body {
 	margin: 0;
@@ -57,6 +71,7 @@ body {
 /*
  * Desktop-only: dot grid + centered phone frame. Uses min-width (not UA) so Chrome
  * device emulation (~430px) stays full-bleed like a real phone.
+ * Keep 1024 in sync with WEB_DESKTOP_PHONE_FRAME_MIN_WIDTH in utils/webPhoneFrame.ts.
  */
 @media (min-width: 1024px) {
 	.expo-web-body {

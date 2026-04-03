@@ -8,12 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '../constants/database';
 import {
   CURRENT_ONBOARDING_VERSION,
-  GOOGLE_ACCESS_TOKEN,
-  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-  TEMP_GOOGLE_AUTH_CODE,
-  TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
 } from '../constants/misc';
 import {
@@ -29,14 +25,7 @@ import type UserMetric from './models/UserMetric';
 import { FoodPortionService } from './services';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
-const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
-  ENCRYPTION_KEY,
-  GOOGLE_ACCESS_TOKEN,
-  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
-  TEMP_GOOGLE_AUTH_CODE,
-  TEMP_GOOGLE_USER_NAME,
-  TEMP_NUTRITION_PLAN,
-]);
+const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [

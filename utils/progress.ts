@@ -1,4 +1,4 @@
-import { localDayStartFromUtcMs } from './calendarDate';
+import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from './calendarDate';
 
 export interface MetricPoint {
   date: number;
@@ -14,8 +14,6 @@ export interface EmpiricalTDEEWindow {
   finalFat?: number;
   empiricalDays: number;
 }
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
  * Calculates the tracking window and anchor values for empirical TDEE.
@@ -82,7 +80,7 @@ export function calculateEmpiricalTDEEWindow(
     finalFat = fatPoints[fatPoints.length - 1]?.value;
   }
 
-  const empiricalDays = Math.max(0, Math.ceil((empiricalEnd - empiricalStart) / MS_PER_DAY));
+  const empiricalDays = Math.max(0, Math.ceil((empiricalEnd - empiricalStart) / MS_PER_SOLAR_DAY));
 
   return {
     empiricalStart,

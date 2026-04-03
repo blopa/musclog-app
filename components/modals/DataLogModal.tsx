@@ -34,6 +34,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
+import { captureException } from '../../utils/sentry';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -856,6 +857,8 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Toggle favorite failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleToggleFavorite' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
@@ -890,6 +893,7 @@ export function DataLogModal({
         showSnackbar('success', t('common.success'));
       } catch (error) {
         console.error('Regenerate check-ins failed:', error);
+        captureException(error, { data: { context: 'DataLogModal.handleRegenerateCheckins' } });
         showSnackbar('error', t('common.error'));
       } finally {
         setIsRegenerating(false);
@@ -936,6 +940,7 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Duplicate failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleDuplicate' } });
       showSnackbar('error', t('common.duplicateFailed'));
     } finally {
       setIsDuplicating(false);
@@ -1024,6 +1029,7 @@ export function DataLogModal({
       setDeleteModalVisible(false);
     } catch (error) {
       console.error('Delete failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleDelete' } });
       showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeleting(false);
@@ -1526,8 +1532,8 @@ export function DataLogModal({
       {createFoodModalVisible ? (
         <CreateCustomFoodModal
           visible={createFoodModalVisible}
-          onClose={() => setCreateFoodModalVisible(false)}
-          onSave={() => {
+          trackFoodAfterSave={true}
+          onClose={() => {
             refresh();
             setCreateFoodModalVisible(false);
           }}

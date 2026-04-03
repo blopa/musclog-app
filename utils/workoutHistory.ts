@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { format, parseISO, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
 import type { Units } from '../constants/settings';
@@ -10,7 +10,11 @@ import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
 import i18n from '../lang/lang';
 import { type Theme } from '../theme';
-import { localDayStartMs } from './calendarDate';
+import {
+  formatLocalCalendarMonthKey,
+  formatLocalMonthYearLongFromMonthKey,
+  localDayKeyPlusCalendarDaysFromNow,
+} from './calendarDate';
 import { getDateFnsLocale } from './dateFnsLocale';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
@@ -195,12 +199,12 @@ export function normalizeMuscleGroup(group: string): string {
 export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange | undefined {
   if (dateRange === '30') {
     const endDate = Date.now();
-    const startDate = localDayStartMs(subDays(new Date(), 30));
+    const startDate = localDayKeyPlusCalendarDaysFromNow(-30);
     return { startDate, endDate };
   }
   if (dateRange === '90') {
     const endDate = Date.now();
-    const startDate = localDayStartMs(subDays(new Date(), 90));
+    const startDate = localDayKeyPlusCalendarDaysFromNow(-90);
     return { startDate, endDate };
   }
   // 'custom' date range would need a date picker, skip for now
@@ -321,7 +325,7 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
 
   workouts.forEach((workout) => {
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'yyyy-MM');
+    const monthKey = formatLocalCalendarMonthKey(date);
 
     if (!groupedByMonth.has(monthKey)) {
       groupedByMonth.set(monthKey, []);
@@ -332,7 +336,7 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
   return Array.from(groupedByMonth.entries())
     .map(([monthKey, monthWorkouts]) => ({
       monthKey,
-      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
+      month: formatLocalMonthYearLongFromMonthKey(monthKey, locale),
       workouts: monthWorkouts,
     }))
     .sort((a, b) => b.monthKey.localeCompare(a.monthKey));
@@ -365,7 +369,7 @@ export function mergeWorkoutSections(
     }
 
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'yyyy-MM');
+    const monthKey = formatLocalCalendarMonthKey(date);
 
     if (!sectionMap.has(monthKey)) {
       sectionMap.set(monthKey, []);
@@ -378,7 +382,7 @@ export function mergeWorkoutSections(
   return Array.from(sectionMap.entries())
     .map(([monthKey, workouts]) => ({
       monthKey,
-      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
+      month: formatLocalMonthYearLongFromMonthKey(monthKey, locale),
       workouts: workouts.sort((a, b) => b.dateTimestamp - a.dateTimestamp), // Sort within month (newest first)
     }))
     .sort((a, b) => b.monthKey.localeCompare(a.monthKey));

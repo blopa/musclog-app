@@ -1,11 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subYears } from 'date-fns';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
-import { TEMP_GOOGLE_USER_NAME } from '../constants/misc';
 import { SettingsService, UserMetricService, UserService } from '../database/services';
 import type { FitnessDetails } from '../types/fitnessDetails';
-import { localCalendarDayDate, localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
+import {
+  formatLocalCalendarDayMmDdYyyy,
+  localCalendarDayDate,
+  localDayClosedRangeMaxMs,
+  localDayStartMs,
+  parseLocalCalendarDate,
+} from './calendarDate';
 import {
   cmToDisplay,
   displayToCm,
@@ -17,11 +21,17 @@ import {
 
 /** Display DOB as MM/DD/YYYY for forms (matches parseMmDdYyyyDateOfBirth). */
 export function formatDateOfBirthFromTimestamp(timestamp: number): string {
-  const date = new Date(timestamp);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
+  return formatLocalCalendarDayMmDdYyyy(timestamp);
+}
+
+/** Default adult DOB when none is provided: start of local calendar day N years ago. */
+export function defaultAdultDobLocalDayStartMs(ageYears = 25): number {
+  return localDayStartMs(subYears(new Date(), ageYears));
+}
+
+/** Same as {@link defaultAdultDobLocalDayStartMs} but formatted for MM/DD/YYYY fields. */
+export function defaultAdultDobDisplayString(ageYears = 25): string {
+  return formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(ageYears));
 }
 
 export function parseMmDdYyyyDateOfBirthToLocalDayStartMs(dob: string): number {
@@ -45,8 +55,7 @@ export function parseDobDisplayStringToPickerDate(dobString: string): Date {
     return localCalendarDayDate(new Date());
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    const [y, m, d] = s.split('-').map(Number);
-    return localCalendarDayDate(new Date(y, m - 1, d));
+    return localCalendarDayDate(parseLocalCalendarDate(s));
   }
   const parts = s.split('/');
   if (parts.length === 3) {
@@ -125,24 +134,15 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
 
   let user = await UserService.getCurrentUser();
   if (!user) {
-    let fullName = uniqueNamesGenerator({
+    const fullName = uniqueNamesGenerator({
       dictionaries: [names],
       style: 'capital',
       separator: ' ',
     });
 
-    try {
-      const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
-      if (tempName && tempName.length > 0) {
-        fullName = tempName;
-      }
-    } catch (e) {
-      console.warn('Failed to read TEMP_GOOGLE_USER_NAME from storage', e);
-    }
-
     user = await UserService.initializeUser({
       fullName,
-      dateOfBirth: dateOfBirthMs ?? localDayStartMs(subYears(new Date(), 25)),
+      dateOfBirth: dateOfBirthMs ?? defaultAdultDobLocalDayStartMs(),
       gender: data.gender,
       fitnessGoal: data.fitnessGoal,
       weightGoal: data.weightGoal,

@@ -74,6 +74,8 @@ import {
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { formatAppDecimal } from '../../utils/formatAppNumber';
 import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
@@ -460,7 +462,8 @@ export default function WorkoutSessionScreen() {
       setTimeout(() => setIsLogSetModalVisible(false), 0);
     } catch (err) {
       console.error('Error completing set:', err);
-      // Show error to user
+      captureException(err, { data: { context: 'workout-session.handleCompleteSet' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }
@@ -503,6 +506,8 @@ export default function WorkoutSessionScreen() {
       }
     } catch (err) {
       console.error('Error skipping set:', err);
+      captureException(err, { data: { context: 'workout-session.handleSkipSet' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }
@@ -534,6 +539,8 @@ export default function WorkoutSessionScreen() {
       await refresh();
     } catch (err) {
       console.error('Error updating set:', err);
+      captureException(err, { data: { context: 'workout-session.handleEditSet' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }
@@ -569,6 +576,8 @@ export default function WorkoutSessionScreen() {
       await refresh();
     } catch (err) {
       console.error('Error replacing exercise:', err);
+      captureException(err, { data: { context: 'workout-session.handleReplaceExercise' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }
@@ -590,6 +599,8 @@ export default function WorkoutSessionScreen() {
       setIsEndWorkoutModalVisible(false);
     } catch (err) {
       console.error('Error completing workout:', err);
+      captureException(err, { data: { context: 'workout-session.handleFinishWorkout' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }

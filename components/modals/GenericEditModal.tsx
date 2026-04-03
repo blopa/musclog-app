@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { localDayStartMs } from '../../utils/calendarDate';
+import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
@@ -69,6 +70,7 @@ export function GenericEditModal({
       onClose();
     } catch (error) {
       console.error('Error saving record:', error);
+      captureException(error, { data: { context: 'GenericEditModal.handleSave' } });
       const errorMessage = error instanceof Error ? error.message : t('common.saveError');
       showSnackbar('error', errorMessage, {
         subtitle: t('common.saveErrorSubtitle'),

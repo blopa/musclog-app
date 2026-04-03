@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MoodCaloriesPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -12,11 +13,6 @@ import { ProgressChartSection } from './ProgressChartSection';
 interface MoodCaloriesChartProps {
   allData: Record<TimeAggregation, MoodCaloriesPoint[]>;
 }
-
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
 
 const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
   'poor',
@@ -68,7 +64,7 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    formatLocalCalendarDayDdMm
   );
 
   return (

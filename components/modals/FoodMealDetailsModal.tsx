@@ -41,7 +41,11 @@ import {
   isSuccessFoodDetailProductState,
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import { formatDisplayGrams } from '../../utils/formatDisplayWeight';
 import {
@@ -655,13 +659,15 @@ export function FoodMealDetailsModal({
           fiber: roundToDecimalPlaces(nutrients.fiber),
         });
         if (mealWithFoods?.foods) {
-          let totalGrams = 0;
+          let rawGrams = 0;
           for (const mf of mealWithFoods.foods) {
-            totalGrams += await mf.getGramWeight();
+            rawGrams += await mf.getGramWeight();
           }
-          const rounded = Math.round(totalGrams);
-          setTotalMealGrams(rounded);
-          setMealAmountGrams(rounded > 0 ? rounded : 100);
+          // Use prepared weight as the portion reference when the user set it,
+          // otherwise fall back to the raw ingredient sum.
+          const referenceGrams = Math.round(meal.preparedWeightGrams ?? rawGrams);
+          setTotalMealGrams(referenceGrams);
+          setMealAmountGrams(referenceGrams > 0 ? referenceGrams : 100);
         } else {
           setTotalMealGrams(0);
           setMealAmountGrams(100);
@@ -695,7 +701,7 @@ export function FoodMealDetailsModal({
     }
 
     try {
-      setSelectedDate(localCalendarDayDate(new Date(foodLog.date)));
+      setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
     } catch (e) {
       setSelectedDate(localCalendarDayDate(new Date()));
     }

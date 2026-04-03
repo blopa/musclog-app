@@ -17,7 +17,6 @@ import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
 import enUsCamera from './locales/en-us/camera.json';
 import enUsCoach from './locales/en-us/coach.json';
 import enUsCommon from './locales/en-us/common.json';
-import enUsConnectGoogleAccount from './locales/en-us/connectGoogleAccount.json';
 import enUsCreateWorkout from './locales/en-us/createWorkout.json';
 import enUsCurrentGoalsCard from './locales/en-us/currentGoalsCard.json';
 import enUsCycle from './locales/en-us/cycle.json';
@@ -78,7 +77,6 @@ import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
-import enUsYourGoogleAuthExpiredReauth from './locales/en-us/your_google_auth_expired_reauth.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -88,7 +86,6 @@ import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
 import ptBrCamera from './locales/pt-br/camera.json';
 import ptBrCoach from './locales/pt-br/coach.json';
 import ptBrCommon from './locales/pt-br/common.json';
-import ptBrConnectGoogleAccount from './locales/pt-br/connectGoogleAccount.json';
 import ptBrCreateWorkout from './locales/pt-br/createWorkout.json';
 import ptBrCurrentGoalsCard from './locales/pt-br/currentGoalsCard.json';
 import ptBrCycle from './locales/pt-br/cycle.json';
@@ -149,7 +146,6 @@ import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
 import ptBrWorkouts from './locales/pt-br/workouts.json';
 import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
-import ptBrYourGoogleAuthExpiredReauth from './locales/pt-br/your_google_auth_expired_reauth.json';
 // ru-ru
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
@@ -159,7 +155,6 @@ import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
 import ruRuCamera from './locales/ru-ru/camera.json';
 import ruRuCoach from './locales/ru-ru/coach.json';
 import ruRuCommon from './locales/ru-ru/common.json';
-import ruRuConnectGoogleAccount from './locales/ru-ru/connectGoogleAccount.json';
 import ruRuCreateWorkout from './locales/ru-ru/createWorkout.json';
 import ruRuCurrentGoalsCard from './locales/ru-ru/currentGoalsCard.json';
 import ruRuCycle from './locales/ru-ru/cycle.json';
@@ -220,7 +215,6 @@ import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
 import ruRuWorkouts from './locales/ru-ru/workouts.json';
 import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
-import ruRuYourGoogleAuthExpiredReauth from './locales/ru-ru/your_google_auth_expired_reauth.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
@@ -240,7 +234,6 @@ const resources = {
       ...enUsCamera,
       ...enUsCoach,
       ...enUsCommon,
-      ...enUsConnectGoogleAccount,
       ...enUsCreateWorkout,
       ...enUsCurrentGoalsCard,
       ...enUsCycle,
@@ -301,7 +294,6 @@ const resources = {
       ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
       ...enUsWorkouts,
-      ...enUsYourGoogleAuthExpiredReauth,
     },
   },
   [PT_BR]: {
@@ -315,7 +307,6 @@ const resources = {
       ...ptBrCamera,
       ...ptBrCoach,
       ...ptBrCommon,
-      ...ptBrConnectGoogleAccount,
       ...ptBrCreateWorkout,
       ...ptBrCurrentGoalsCard,
       ...ptBrCycle,
@@ -376,7 +367,6 @@ const resources = {
       ...ptBrWorkoutLogs,
       ...ptBrWorkoutTemplateSets,
       ...ptBrWorkouts,
-      ...ptBrYourGoogleAuthExpiredReauth,
     },
   },
   [RU_RU]: {
@@ -390,7 +380,6 @@ const resources = {
       ...ruRuCamera,
       ...ruRuCoach,
       ...ruRuCommon,
-      ...ruRuConnectGoogleAccount,
       ...ruRuCreateWorkout,
       ...ruRuCurrentGoalsCard,
       ...ruRuCycle,
@@ -451,7 +440,6 @@ const resources = {
       ...ruRuWorkoutLogs,
       ...ruRuWorkoutTemplateSets,
       ...ruRuWorkouts,
-      ...ruRuYourGoogleAuthExpiredReauth,
     },
   },
 };

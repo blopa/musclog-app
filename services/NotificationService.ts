@@ -9,6 +9,7 @@ import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
 import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '../utils/calendarDate';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -371,15 +372,16 @@ export class NotificationService {
       return;
     }
 
-    // Fetch pending check-ins for the next 30 days
-    const now = Date.now();
-    const thirtyDaysFromNow = now + 30 * 24 * 60 * 60 * 1000;
+    // Fetch pending check-ins for the next 30 calendar days.
+    // checkin_date stores local-midnight ms, so both bounds must be calendar-day keys.
+    const todayDayStart = localDayStartMs(new Date());
+    const thirtyDaysFromNow = localDayKeyPlusCalendarDaysFromNow(30);
 
     const checkins = await database
       .get<NutritionCheckin>('nutrition_checkins')
       .query(
         Q.or(Q.where('status', Q.eq('pending')), Q.where('status', Q.eq(null))),
-        Q.where('checkin_date', Q.between(now, thirtyDaysFromNow)),
+        Q.where('checkin_date', Q.between(todayDayStart, thirtyDaysFromNow)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -389,7 +391,7 @@ export class NotificationService {
       // Set to 8 AM local time on the check-in day
       date.setHours(8, 0, 0, 0);
 
-      if (date.getTime() <= now) {
+      if (date.getTime() <= Date.now()) {
         // If it's already past 8 AM on the day or the day has passed, show immediately
         await Notifications.scheduleNotificationAsync({
           content: {
