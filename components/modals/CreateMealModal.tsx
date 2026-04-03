@@ -804,7 +804,7 @@ export function CreateMealModal({
         {!isQuickTrack ? (
           <View className="mb-6">
             <StepperInput
-              label={t('food.createMeal.preparedWeight')}
+              label={t('food.createMeal.preparedWeight', { unit: massUnit })}
               value={gramsToDisplay(preparedWeightGrams ?? totalMealGrams, units)}
               onIncrement={() => {
                 const current = preparedWeightGrams ?? totalMealGrams;

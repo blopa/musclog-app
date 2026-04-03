@@ -4,8 +4,10 @@ import { database } from '../../../database';
 import UserMetric from '../../../database/models/UserMetric';
 import { useSettings } from '../../../hooks/useSettings';
 import {
-  cmToDisplay,
+  isLengthMetricType,
+  isWeightMetricType,
   kgToDisplay,
+  metricValueToDisplay,
   storedHeightToCm,
   storedWeightToKg,
 } from '../../../utils/unitConversion';
@@ -70,14 +72,17 @@ export function useEditRecord(
 
         let values = await getInitialValues(entityType, record);
 
-        if (entityType === 'userMetric' && (values.type === 'weight' || values.type === 'height')) {
-          const decrypted = await (record as UserMetric).getDecrypted();
-          const rawValue = (values.value as number) ?? 0;
-          const displayValue =
-            values.type === 'weight'
-              ? kgToDisplay(storedWeightToKg(rawValue, decrypted.unit), units)
-              : cmToDisplay(storedHeightToCm(rawValue, decrypted.unit), units);
-          values = { ...values, value: displayValue };
+        if (entityType === 'userMetric') {
+          const type = values.type as string;
+          if (isWeightMetricType(type) || isLengthMetricType(type)) {
+            const decrypted = await (record as UserMetric).getDecrypted();
+            const rawValue = (values.value as number) ?? 0;
+            // Normalize legacy stored units to metric, then convert to display
+            const normalizedValue = isWeightMetricType(type)
+              ? storedWeightToKg(rawValue, decrypted.unit)
+              : storedHeightToCm(rawValue, decrypted.unit);
+            values = { ...values, value: metricValueToDisplay(normalizedValue, type, units) };
+          }
         }
 
         if (entityType === 'nutritionGoal' && values.targetWeight != null) {

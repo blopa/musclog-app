@@ -6,7 +6,6 @@ import {
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '../../utils/calendarDate';
-import { cmToDisplay, kgToDisplay } from '../../utils/unitConversion';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -15,6 +14,7 @@ import {
   isValidBodyFat,
 } from '../../utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
+import { cmToDisplay, kgToDisplay } from '../../utils/unitConversion';
 import {
   calculateExerciseVolume,
   getUserBodyWeightKgForVolume,

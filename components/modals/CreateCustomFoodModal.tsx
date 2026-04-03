@@ -40,6 +40,7 @@ import FoodPortion from '../../database/models/FoodPortion';
 import { FoodService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
 import {
@@ -49,6 +50,7 @@ import {
 } from '../../utils/localizedDecimalInput';
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
+import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
@@ -76,6 +78,7 @@ export default function CreateCustomFoodModal({
   isAiEnabled = true,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
+  const { units } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
@@ -693,7 +696,9 @@ export default function CreateCustomFoodModal({
                 ) : null}
                 {selectedPortionsOrdered.map((portion) => {
                   const IconComponent = getFoodPortionIconComponent(portion.icon) ?? Scale;
-                  const gramsLabel = formatInteger(Math.round(portion.gramWeight));
+                  const displayWeight = gramsToDisplay(portion.gramWeight, units);
+                  const gramsLabel = formatInteger(Math.round(displayWeight));
+                  const massUnit = getMassUnitLabel(units);
                   return (
                     <View
                       key={portion.id}
@@ -747,7 +752,7 @@ export default function CreateCustomFoodModal({
                             color: theme.colors.text.white,
                           }}
                         >
-                          {`(${gramsLabel}g)`}
+                          {`(${gramsLabel}${massUnit})`}
                         </Text>
                       </View>
                       <Pressable

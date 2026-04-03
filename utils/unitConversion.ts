@@ -1,6 +1,94 @@
 import convert from 'convert';
 
 import type { Units } from '../constants/settings';
+import type { UserMetricType } from '../database/models';
+
+/** Metric types stored in kg that need kg↔lbs conversion. */
+const WEIGHT_METRIC_TYPES: ReadonlySet<UserMetricType> = new Set([
+  'weight',
+  'muscle_mass',
+  'lean_body_mass',
+]);
+
+/** Metric types stored in cm that need cm↔in conversion. */
+const LENGTH_METRIC_TYPES: ReadonlySet<UserMetricType> = new Set([
+  'height',
+  'chest',
+  'waist',
+  'hips',
+  'arms',
+  'thighs',
+  'calves',
+  'neck',
+  'shoulders',
+]);
+
+/** Check whether a metric type is stored in kg (needs weight conversion). */
+export function isWeightMetricType(type: string): boolean {
+  return WEIGHT_METRIC_TYPES.has(type as UserMetricType);
+}
+
+/** Check whether a metric type is stored in cm (needs length conversion). */
+export function isLengthMetricType(type: string): boolean {
+  return LENGTH_METRIC_TYPES.has(type as UserMetricType);
+}
+
+/**
+ * Convert a stored metric value to its display value based on its type and user units.
+ * Weight types: kg → lbs (imperial) or passthrough.
+ * Length types: cm → in (imperial) or passthrough.
+ * Other types: passthrough (%, kcal, mood, etc.).
+ */
+export function metricValueToDisplay(value: number, type: string, units: Units): number {
+  if (isWeightMetricType(type)) {
+    return kgToDisplay(value, units);
+  }
+
+  if (isLengthMetricType(type)) {
+    return cmToDisplay(value, units);
+  }
+
+  return value;
+}
+
+/**
+ * Convert a user-entered display value back to storage units based on its type and user units.
+ * Weight types: lbs → kg (imperial) or passthrough.
+ * Length types: in → cm (imperial) or passthrough.
+ * Other types: passthrough.
+ */
+export function displayValueToMetric(value: number, type: string, units: Units): number {
+  if (isWeightMetricType(type)) {
+    return displayToKg(value, units);
+  }
+
+  if (isLengthMetricType(type)) {
+    return displayToCm(value, units);
+  }
+
+  return value;
+}
+
+/**
+ * Return the display unit label for a metric type given the user's unit system.
+ * Weight types: 'kg' or 'lbs'. Length types: 'cm' or 'in'.
+ * Other types: the stored unit as-is (e.g. '%', 'kcal', undefined).
+ */
+export function metricDisplayUnit(
+  type: string,
+  units: Units,
+  storedUnit?: string
+): string | undefined {
+  if (isWeightMetricType(type)) {
+    return units === 'imperial' ? 'lbs' : 'kg';
+  }
+
+  if (isLengthMetricType(type)) {
+    return units === 'imperial' ? 'in' : 'cm';
+  }
+
+  return storedUnit;
+}
 
 /**
  * Convert weight from storage (kg) to display value.

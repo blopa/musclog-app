@@ -340,7 +340,7 @@
       "mealNameRequired": "Please enter a meal name",
       "ingredientsRequired": "Please add at least one ingredient",
       "saveFailed": "Failed to save meal. Please try again.",
-      "preparedWeight": "Prepared weight (g)",
+      "preparedWeight": "Prepared weight ({{unit}})",
       "preparedWeightHelper": "Optional — weight after cooking"
     },
     "aiCamera": {

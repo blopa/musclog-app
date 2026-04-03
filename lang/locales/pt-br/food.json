@@ -340,7 +340,7 @@
       "mealNameRequired": "Por favor, digite um nome para a refeição",
       "ingredientsRequired": "Por favor, adicione pelo menos um ingrediente",
       "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente.",
-      "preparedWeight": "Peso preparado (g)",
+      "preparedWeight": "Peso preparado ({{unit}})",
       "preparedWeightHelper": "Opcional — peso após o cozimento"
     },
     "aiCamera": {

@@ -4,7 +4,7 @@ import {
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from './calendarDate';
-import { lbsToKg } from './nutritionCalculator';
+import { storedWeightToKg } from './unitConversion';
 
 const LOOKBACK_DAYS = 30;
 const MIN_DAYS_WITH_NUTRITION = 7;
@@ -69,10 +69,9 @@ export interface HistoricalNutritionParams {
  */
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
-  units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
-  const { asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
+  const { asOfDate = new Date(), useWeeklyAverages = true } = options;
 
   const endTs = localDayStartMs(asOfDate);
   const endOfDay = new Date(endTs);
@@ -96,8 +95,7 @@ export async function getHistoricalNutritionParams(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
-      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
+      const valueKg = storedWeightToKg(d.value, d.unit);
       return { date: m.date, valueKg };
     })
   );

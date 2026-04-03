@@ -6,8 +6,8 @@ import {
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from '../utils/calendarDate';
-import { calculateTDEE, lbsToKg } from '../utils/nutritionCalculator';
-import { useSettings } from './useSettings';
+import { calculateTDEE } from '../utils/nutritionCalculator';
+import { storedWeightToKg } from '../utils/unitConversion';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
 
@@ -61,14 +61,12 @@ async function getHistoricalNutritionParamsCustom(options: {
   lookbackDays: number;
   minNutritionDays: number;
   asOfDate?: Date;
-  units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
   const {
     lookbackDays,
     minNutritionDays,
     asOfDate = new Date(),
-    units = 'metric',
     useWeeklyAverages = true,
   } = options;
 
@@ -94,8 +92,7 @@ async function getHistoricalNutritionParamsCustom(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
-      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
+      const valueKg = storedWeightToKg(d.value, d.unit);
       return { date: m.date, valueKg };
     })
   );
@@ -196,7 +193,6 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
 
   const { user, isLoading: userLoading } = useUser();
   const { metrics, isLoading: metricsLoading } = useUserMetrics();
-  const { units } = useSettings();
   const [historicalData, setHistoricalData] = useState<HistoricalNutritionParams | null>(null);
   const [historicalLoading, setHistoricalLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -211,7 +207,6 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         const data = await getHistoricalNutritionParamsCustom({
           lookbackDays,
           minNutritionDays,
-          units,
           useWeeklyAverages,
         });
 
@@ -226,7 +221,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
     };
 
     fetchHistoricalData();
-  }, [lookbackDays, minNutritionDays, units, useWeeklyAverages]);
+  }, [lookbackDays, minNutritionDays, useWeeklyAverages]);
 
   // Calculate TDEE when data is available
   const { tdee, usedEmpiricalData } = useMemo(() => {
