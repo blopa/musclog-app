@@ -6,6 +6,7 @@ import {
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '../../utils/calendarDate';
+import { cmToDisplay, kgToDisplay } from '../../utils/unitConversion';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -199,8 +200,8 @@ export class ProgressService {
           : decHeight.value;
     }
 
-    const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial);
-    const fatPoints = await this.decryptMetricPoints(fatMetrics, false);
+    const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial, true);
+    const fatPoints = await this.decryptMetricPoints(fatMetrics, false, true); // Body fat % - no unit conversion needed
 
     // 2. Fetch Nutrition
     const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
@@ -239,7 +240,8 @@ export class ProgressService {
     for (const type of measurementTypes) {
       const metrics = await UserMetricService.getMetricsHistory(type, dateRange);
       if (metrics.length > 0) {
-        measurementsHistory[type] = await this.decryptMetricPoints(metrics, isImperial);
+        // Body measurements are stored in cm, convert to inches for imperial
+        measurementsHistory[type] = await this.decryptMetricPoints(metrics, isImperial, false);
       }
     }
 
@@ -347,14 +349,25 @@ export class ProgressService {
 
   private static async decryptMetricPoints(
     metrics: UserMetric[],
-    _isImperial: boolean
+    isImperial: boolean,
+    isWeight: boolean = true
   ): Promise<MetricPoint[]> {
     const points = await Promise.all(
       metrics.map(async (m) => {
         const d = await m.getDecrypted();
-        // The value returned by getDecrypted should already be converted or we should convert it here
-        // Based on UserMetricService, we store what user entered.
-        return { date: m.date, value: d.value };
+        // Database stores values in metric (kg for weight, cm for measurements)
+        // Convert to display units if user has imperial selected
+        let value = d.value;
+        if (isImperial) {
+          if (isWeight) {
+            // Weight: convert kg to lbs
+            value = kgToDisplay(d.value, 'imperial');
+          } else {
+            // Measurements: convert cm to inches
+            value = cmToDisplay(d.value, 'imperial');
+          }
+        }
+        return { date: m.date, value };
       })
     );
     return points.sort((a, b) => a.date - b.date);
