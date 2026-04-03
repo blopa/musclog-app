@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Share, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
@@ -28,6 +28,7 @@ import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
@@ -84,6 +85,7 @@ export default function WorkoutsScreen() {
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
 
   const handleConfirmDeleteWorkout = useCallback(async () => {
     if (!selectedWorkoutId) {
@@ -567,7 +569,7 @@ export default function WorkoutsScreen() {
           setIsMenuVisible(false);
           try {
             const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
-            await Share.share({ message });
+            await shareText(message);
           } catch (err) {
             console.error('Error sharing workout:', err);
             showSnackbar('error', t('common.error'));

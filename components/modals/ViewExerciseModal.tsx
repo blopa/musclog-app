@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Linking, ScrollView, Share, Text, View } from 'react-native';
+import { Image, Linking, ScrollView, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
@@ -13,6 +13,7 @@ import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
 import { ExerciseService, WorkoutAnalytics } from '../../database/services';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
@@ -61,6 +62,7 @@ export default function ViewExerciseModal({
   const { locale, formatRoundedDecimal } = useFormatAppNumber();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [exercise, setExercise] = useState<ExerciseModel | null>(null);
   const [personalBest, setPersonalBest] = useState<{ value: number; unit: string } | null>(null);
@@ -270,10 +272,7 @@ export default function ViewExerciseModal({
     const muscleGroup = exercise?.muscleGroup ?? '';
     const equipment = exercise?.equipmentType ?? '';
     const message = [name, muscleGroup, equipment].filter(Boolean).join(' · ');
-    Share.share({
-      message,
-      title: name,
-    }).catch(() => {});
+    shareText(message, { title: name }).catch(() => {});
   };
 
   const handleDuplicate = async () => {

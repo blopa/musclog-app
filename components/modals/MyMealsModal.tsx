@@ -1,13 +1,14 @@
 import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Share, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import Meal from '../../database/models/Meal';
 import { FoodService, MealService, NutritionService } from '../../database/services';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import i18n from '../../lang/lang';
@@ -95,6 +96,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { shareText } = useNativeShareText();
   const { isAiConfigured } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -354,16 +356,13 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             ? `${ingredientLines.join('\n')}\n\n${description}`
             : ingredientLines.join('\n');
 
-        await Share.share({
-          message,
-          title: meal.name ?? undefined,
-        });
+        await shareText(message, { title: meal.name ?? undefined });
       } catch (error) {
         captureException(error, { data: { context: 'MyMealsModal.handleShareMealAsRecipe' } });
         showSnackbar('error', t('errors.somethingWentWrong'));
       }
     },
-    [formatRoundedDecimal, showSnackbar, t]
+    [formatRoundedDecimal, shareText, showSnackbar, t]
   );
 
   const handleConfirmDelete = async () => {

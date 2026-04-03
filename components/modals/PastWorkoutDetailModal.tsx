@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, ScrollView, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import { database } from '../../database';
@@ -13,6 +13,7 @@ import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -406,6 +407,7 @@ export default function PastWorkoutDetailModal({
     });
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
+  const { shareText } = useNativeShareText();
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
@@ -429,7 +431,7 @@ export default function PastWorkoutDetailModal({
         calories: formatInteger(workout.calories),
       });
 
-      await Share.share({ message });
+      await shareText(message);
     } catch (err) {
       console.error('Failed to share workout:', err);
     }
