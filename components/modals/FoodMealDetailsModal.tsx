@@ -17,7 +17,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } fro
 
 import type { Units } from '../../constants/settings';
 import { useSnackbar } from '../../context/SnackbarContext';
-import type { MicrosData, DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
+import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '../../database/models';
 import Food from '../../database/models/Food';
 import FoodPortion from '../../database/models/FoodPortion';
 import Meal from '../../database/models/Meal';
