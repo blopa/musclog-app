@@ -331,6 +331,7 @@
       "estimated": "Estimado",
       "mealName": "Nome da Refeição",
       "mealNamePlaceholder": "ex: Smoothie Pós-Treino",
+      "mealDescriptionPlaceholder": "Opcional — notas de preparo, quando costuma comer, etc.",
       "ingredients": "Ingredientes ({{count}})",
       "editList": "Editar Lista",
       "noIngredients": "Sem Ingredientes",

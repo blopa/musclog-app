@@ -327,6 +327,7 @@ export function CreateMealModal({
   const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
+  const [mealDescription, setMealDescription] = useState('');
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
@@ -351,6 +352,7 @@ export function CreateMealModal({
 
   useEffect(() => {
     setMealName(meal?.name ?? '');
+    setMealDescription(meal?.description ?? '');
     setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
   }, [meal]);
 
@@ -469,7 +471,7 @@ export function CreateMealModal({
         await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({ foodId: ing.foodId, amount: ing.amount })),
-          ''
+          mealDescription.trim()
         );
       }
       const scale = referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
@@ -513,6 +515,7 @@ export function CreateMealModal({
         // Edit mode: update name, remove deleted foods, add new foods
         await MealService.updateMeal(meal.id, {
           name: mealName.trim(),
+          description: mealDescription.trim(),
           preparedWeightGrams: preparedWeightGrams || null,
         });
         for (const mealFoodId of removedMealFoodIdsRef.current) {
@@ -530,7 +533,7 @@ export function CreateMealModal({
             foodId: ing.foodId,
             amount: ing.amount,
           })),
-          '', // TODO: implement way to write description
+          mealDescription.trim(),
           false,
           preparedWeightGrams || undefined
         );
@@ -647,6 +650,17 @@ export function CreateMealModal({
               onChangeText={setMealName}
               placeholder={t('food.createMeal.mealNamePlaceholder')}
             />
+            <View style={{ marginTop: theme.spacing.margin.lg }}>
+              <TextInput
+                label={t('common.description')}
+                value={mealDescription}
+                onChangeText={setMealDescription}
+                placeholder={t('food.createMeal.mealDescriptionPlaceholder')}
+                multiline
+                numberOfLines={4}
+                selectTextOnFocus={false}
+              />
+            </View>
           </View>
         ) : null}
 
@@ -927,6 +941,17 @@ export function CreateMealModal({
                   onChangeText={setMealName}
                   placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
                 />
+                <View style={{ marginTop: theme.spacing.margin.lg }}>
+                  <TextInput
+                    label={t('common.description')}
+                    value={mealDescription}
+                    onChangeText={setMealDescription}
+                    placeholder={t('food.createMeal.mealDescriptionPlaceholder')}
+                    multiline
+                    numberOfLines={4}
+                    selectTextOnFocus={false}
+                  />
+                </View>
               </View>
             ) : null}
           </>

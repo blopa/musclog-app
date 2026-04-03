@@ -331,6 +331,7 @@
       "estimated": "Estimated",
       "mealName": "Meal Name",
       "mealNamePlaceholder": "e.g. Post-Workout Smoothie",
+      "mealDescriptionPlaceholder": "Optional — prep notes, when you eat this, etc.",
       "ingredients": "Ingredients ({{count}})",
       "editList": "Edit List",
       "noIngredients": "No Ingredients",

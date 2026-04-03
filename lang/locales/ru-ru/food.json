@@ -331,6 +331,7 @@
       "estimated": "Оценочно",
       "mealName": "Название приёма пищи",
       "mealNamePlaceholder": "например, Смузи после тренировки",
+      "mealDescriptionPlaceholder": "Необязательно — заметки о приготовлении, когда обычно едите и т. п.",
       "ingredients": "Ингредиенты ({{count}})",
       "editList": "Редактировать список",
       "noIngredients": "Нет ингредиентов",
