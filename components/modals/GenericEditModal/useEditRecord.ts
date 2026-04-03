@@ -4,6 +4,7 @@ import { database } from '../../../database';
 import UserMetric from '../../../database/models/UserMetric';
 import { useSettings } from '../../../hooks/useSettings';
 import {
+  gramsToDisplay,
   isLengthMetricType,
   isWeightMetricType,
   kgToDisplay,
@@ -96,6 +97,13 @@ export function useEditRecord(
           values = {
             ...values,
             targetWeight: kgToDisplay(values.targetWeight as number, units),
+          };
+        }
+
+        if (entityType === 'foodPortion' && values.gramWeight != null) {
+          values = {
+            ...values,
+            gramWeight: gramsToDisplay(values.gramWeight as number, units),
           };
         }
 

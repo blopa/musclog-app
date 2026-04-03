@@ -1,3 +1,16 @@
+/**
+ * Unit conversion for user settings (metric vs imperial).
+ *
+ * **Storage (DB)** is always metric: body weights in kg, lengths in cm, food portions in g,
+ * workout set weights in kg.
+ *
+ * **Use these at UI boundaries:**
+ * - Body metrics by `UserMetricType`: {@link metricValueToDisplay} / {@link displayValueToMetric}
+ * - Workout / barbell weight (kg stored): {@link kgToDisplay} / {@link displayToKg}
+ * - Food mass (grams stored): {@link gramsToDisplay} / {@link displayToGrams}
+ *
+ * Macros (protein, carbs, etc.) stay in grams for both systems per product rules.
+ */
 import convert from 'convert';
 
 import type { Units } from '../constants/settings';

@@ -17,7 +17,10 @@ import {
 import { localDayStartFromUtcMs } from '../../../utils/calendarDate';
 import {
   displayToCm,
+  displayToGrams,
   displayToKg,
+  getMassUnitLabel,
+  gramsToDisplay,
   isLengthMetricType,
   isWeightMetricType,
 } from '../../../utils/unitConversion';
@@ -194,10 +197,12 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
         {
           type: 'number',
           key: 'gramWeight',
-          label: 'food.foodDetails.grams',
+          label:
+            units === 'imperial' ? 'food.portionSizes.oz' : 'food.foodDetails.grams',
           min: 0,
-          step: 1,
-          unit: 'g',
+          step: units === 'imperial' ? 0.1 : 1,
+          maxFractionDigits: units === 'imperial' ? 2 : 0,
+          unit: getMassUnitLabel(units ?? 'metric'),
           required: true,
         },
         {
@@ -649,13 +654,19 @@ export async function saveRecord(
       });
       break;
 
-    case 'foodPortion':
+    case 'foodPortion': {
+      let gramWeight = values.gramWeight as number | undefined;
+      if (gramWeight != null && context?.units) {
+        gramWeight = Math.round(displayToGrams(gramWeight, context.units));
+      }
+
       await FoodPortionService.updateFoodPortion(recordId, {
         name: values.name as string | undefined,
-        gramWeight: values.gramWeight as number | undefined,
+        gramWeight,
         icon: values.icon as string | undefined,
       });
       break;
+    }
 
     case 'userMetric': {
       const type = values.type as string | undefined;
@@ -803,7 +814,10 @@ export function getCreateFields(entityType: DataLogModalVariant, units?: Units):
 /**
  * Get default (empty) initial values for creating a new record.
  */
-export function getCreateInitialValues(entityType: DataLogModalVariant): EditFormValues {
+export function getCreateInitialValues(
+  entityType: DataLogModalVariant,
+  units?: Units
+): EditFormValues {
   switch (entityType) {
     case 'chatMessage':
       return { message: '', sender: 'user', context: 'general' };
@@ -861,7 +875,11 @@ export function getCreateInitialValues(entityType: DataLogModalVariant): EditFor
       };
 
     case 'foodPortion':
-      return { name: '', gramWeight: 100, icon: '' };
+      return {
+        name: '',
+        gramWeight: gramsToDisplay(100, units ?? 'metric'),
+        icon: '',
+      };
 
     case 'workoutTemplate':
       return { name: '', description: '', icon: '', isArchived: false };

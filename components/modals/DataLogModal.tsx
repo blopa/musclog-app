@@ -1595,7 +1595,7 @@ export function DataLogModal({
           onClose={() => setCreateGenericModalVisible(false)}
           title={getCreateModalTitle(variant, t)}
           fields={getCreateFields(variant, units)}
-          initialValues={getCreateInitialValues(variant)}
+          initialValues={getCreateInitialValues(variant, units)}
           onSave={async (values) => {
             await createRecord(variant, values, { units });
             await refresh();
