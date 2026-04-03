@@ -410,7 +410,8 @@
       "addPortionSizes": "Add portion sizes",
       "addAnotherPortion": "Add another portion",
       "removePortion": "Remove portion",
-      "selectPortionSizes": "Select portion sizes..."
+      "selectPortionSizes": "Select portion sizes...",
+      "errorSaving": "Failed to save custom food. Please try again."
     },
     "errors": {
       "refreshFailed": "Refresh Failed"

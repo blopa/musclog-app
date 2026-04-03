@@ -454,10 +454,6 @@ export default function SmartCameraModal({
     setIsNewCustomFoodModalVisible(false);
   }, []);
 
-  const handleNewCustomFoodSave = useCallback((data: any) => {
-    setIsNewCustomFoodModalVisible(false);
-  }, []);
-
   const handleTrackCustomMeal = useCallback(() => {
     setIsLogMealModalVisible(true);
   }, []);
@@ -1065,8 +1061,8 @@ export default function SmartCameraModal({
         {isNewCustomFoodModalVisible ? (
           <CreateCustomFoodModal
             visible={isNewCustomFoodModalVisible}
+            trackFoodAfterSave={true}
             onClose={handleNewCustomFoodClose}
-            onSave={handleNewCustomFoodSave}
             isAiEnabled={isAiEnabled}
           />
         ) : null}

@@ -410,7 +410,8 @@
       "addPortionSizes": "Добавить размеры порций",
       "addAnotherPortion": "Добавить ещё порцию",
       "removePortion": "Убрать порцию",
-      "selectPortionSizes": "Выберите размеры порций..."
+      "selectPortionSizes": "Выберите размеры порций...",
+      "errorSaving": "Не удалось сохранить пользовательский продукт. Попробуйте снова."
     },
     "errors": {
       "refreshFailed": "Обновление не удалось"

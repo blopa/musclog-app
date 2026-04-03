@@ -410,7 +410,8 @@
       "addPortionSizes": "Adicionar tamanhos de porção",
       "addAnotherPortion": "Adicionar outra porção",
       "removePortion": "Remover porção",
-      "selectPortionSizes": "Selecionar tamanhos de porção..."
+      "selectPortionSizes": "Selecionar tamanhos de porção...",
+      "errorSaving": "Falha ao salvar alimento personalizado. Por favor, tente novamente."
     },
     "errors": {
       "refreshFailed": "Falha ao Atualizar"

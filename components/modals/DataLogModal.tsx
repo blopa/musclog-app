@@ -1526,8 +1526,8 @@ export function DataLogModal({
       {createFoodModalVisible ? (
         <CreateCustomFoodModal
           visible={createFoodModalVisible}
-          onClose={() => setCreateFoodModalVisible(false)}
-          onSave={() => {
+          trackFoodAfterSave={true}
+          onClose={() => {
             refresh();
             setCreateFoodModalVisible(false);
           }}

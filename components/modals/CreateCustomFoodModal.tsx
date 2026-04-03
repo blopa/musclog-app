@@ -47,6 +47,8 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '../../utils/localizedDecimalInput';
+import { captureException } from '../../utils/sentry';
+import { showSnackbar } from '../../utils/snackbarService';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
@@ -219,6 +221,8 @@ export default function CreateCustomFoodModal({
         setIsFoodDetailsVisible(true);
       } catch (err) {
         console.error('Error creating custom food:', err);
+        captureException(err, { data: { context: 'CreateCustomFoodModal.handleSave' } });
+        showSnackbar('error', t('food.newCustomFood.errorSaving'));
       } finally {
         setIsSaving(false);
       }

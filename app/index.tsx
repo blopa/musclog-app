@@ -31,7 +31,7 @@ import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { useSmartCamera } from '../context/SmartCameraContext';
 import { type MealType } from '../database/models';
-import { FoodService, NutritionGoalService } from '../database/services';
+import { NutritionGoalService } from '../database/services';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
@@ -42,7 +42,6 @@ import packageJson from '../package.json';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '../utils/calendarDate';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
-import { captureException } from '../utils/sentry';
 import { showSnackbar } from '../utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
@@ -178,42 +177,6 @@ export default function HomeScreen() {
       } catch (error) {
         console.error('Failed to save nutrition goals:', error);
         showSnackbar('error', t('errors.somethingWentWrong'));
-      }
-    },
-    [t]
-  );
-
-  const handleSaveCustomFood = useCallback(
-    async (data: any) => {
-      try {
-        await FoodService.createCustomFood(
-          data.name,
-          {
-            calories: data.calories,
-            protein: data.protein,
-            carbs: data.carbs,
-            fat: data.fat,
-            fiber: data.fiber,
-            sugar: data.sugar,
-            saturatedFat: data.saturatedFat,
-            sodium: data.sodium,
-          },
-          data.servingAmount,
-          data.servingUnit,
-          data.brand
-        );
-        setIsCreateCustomFoodVisible(false);
-        showSnackbar('success', t('nutrition.index.handleSaveCustomFood'));
-      } catch (error) {
-        console.error('Failed to create custom food:', error);
-
-        captureException(error, {
-          data: {
-            context: 'index.handleSaveCustomFood',
-          },
-        });
-
-        showSnackbar('error', t('food.foodDetails.errorMessage'));
       }
     },
     [t]
@@ -708,8 +671,8 @@ export default function HomeScreen() {
       {/* Create Custom Food Modal */}
       <CreateCustomFoodModal
         visible={isCreateCustomFoodVisible}
+        trackFoodAfterSave={true}
         onClose={handleCloseCreateCustomFood}
-        onSave={handleSaveCustomFood}
         isAiEnabled={isAiConfigured}
       />
     </MasterLayout>
