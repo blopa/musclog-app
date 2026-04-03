@@ -1,7 +1,7 @@
-import { Pencil, Search, Trash2, Utensils } from 'lucide-react-native';
+import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Share, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import Meal from '../../database/models/Meal';
@@ -317,6 +317,55 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setDeleteMealId(mealId);
   };
 
+  const handleShareMealAsRecipe = useCallback(
+    async (mealId: string) => {
+      setMenuMealId(null);
+      try {
+        const data = await MealService.getMealWithFoods(mealId);
+        if (!data) {
+          showSnackbar('error', t('errors.somethingWentWrong'));
+          return;
+        }
+
+        const { meal, foods } = data;
+        const ingredientLines: string[] = [];
+
+        for (const mealFood of foods) {
+          const grams = await mealFood.getGramWeight();
+          const food = await mealFood.food;
+          const name = food?.name?.trim() || t('food.unknownFood');
+          const gramsStr = formatRoundedDecimal(grams, 2);
+          ingredientLines.push(
+            t('food.meals.manageMealData.shareRecipeIngredientLine', {
+              grams: gramsStr,
+              name,
+            })
+          );
+        }
+
+        if (ingredientLines.length === 0) {
+          showSnackbar('error', t('food.meals.manageMealData.shareRecipeNoIngredients'));
+          return;
+        }
+
+        const description = meal.description?.trim() ?? '';
+        const message =
+          description.length > 0
+            ? `${ingredientLines.join('\n')}\n\n${description}`
+            : ingredientLines.join('\n');
+
+        await Share.share({
+          message,
+          title: meal.name ?? undefined,
+        });
+      } catch (error) {
+        captureException(error, { data: { context: 'MyMealsModal.handleShareMealAsRecipe' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
+      }
+    },
+    [formatRoundedDecimal, showSnackbar, t]
+  );
+
   const handleConfirmDelete = async () => {
     if (!deleteMealId) {
       return;
@@ -538,6 +587,16 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                 title: t('food.meals.manageMealData.editMeal'),
                 description: t('food.meals.manageMealData.editMealDesc'),
                 onPress: () => handleEditMeal(menuMealId),
+              },
+              {
+                icon: Share2,
+                iconColor: theme.colors.text.primary,
+                iconBgColor: theme.colors.background.iconDarker,
+                title: t('food.meals.manageMealData.shareMealAsRecipe'),
+                description: t('food.meals.manageMealData.shareMealAsRecipeDesc'),
+                onPress: () => {
+                  void handleShareMealAsRecipe(menuMealId);
+                },
               },
               {
                 icon: Trash2,
