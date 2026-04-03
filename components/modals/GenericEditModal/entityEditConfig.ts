@@ -197,8 +197,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
         {
           type: 'number',
           key: 'gramWeight',
-          label:
-            units === 'imperial' ? 'food.portionSizes.oz' : 'food.foodDetails.grams',
+          label: units === 'imperial' ? 'food.portionSizes.oz' : 'food.foodDetails.grams',
           min: 0,
           step: units === 'imperial' ? 0.1 : 1,
           maxFractionDigits: units === 'imperial' ? 2 : 0,

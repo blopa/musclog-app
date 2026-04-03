@@ -197,3 +197,91 @@ export function storedHeightToCm(value: number, storedUnit?: string | null): num
   }
   return value;
 }
+
+/**
+ * Prepare metric data for database storage.
+ * Converts user input (in display units) to metric (kg, cm, g).
+ *
+ * @param data - The data object containing values to convert
+ * @param fields - Array of field configurations with key and type
+ * @param units - User's unit preference ('metric' or 'imperial')
+ * @returns New object with converted values
+ *
+ * @example
+ * ```typescript
+ * const saveData = prepareMetricDataToSave(
+ *   { targetWeight: 180, height: 72 },
+ *   [{ key: 'targetWeight', type: 'weight' }, { key: 'height', type: 'length' }],
+ *   'imperial'
+ * );
+ * // Result: { targetWeight: 81.6, height: 182.88 }
+ * ```
+ */
+export function prepareMetricDataToSave<T extends Record<string, any>>(
+  data: T,
+  fields: { key: keyof T; type: 'weight' | 'length' | 'mass' }[],
+  units: Units
+): T {
+  const result = { ...data };
+  for (const { key, type } of fields) {
+    const value = result[key];
+    if (typeof value === 'number') {
+      switch (type) {
+        case 'weight':
+          (result as any)[key] = displayToKg(value, units);
+          break;
+        case 'length':
+          (result as any)[key] = displayToCm(value, units);
+          break;
+        case 'mass':
+          (result as any)[key] = displayToGrams(value, units);
+          break;
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Prepare metric data from database for display.
+ * Converts stored metric values (kg, cm, g) to display units.
+ *
+ * @param data - The data object containing metric values from DB
+ * @param fields - Array of field configurations with key and type
+ * @param units - User's unit preference ('metric' or 'imperial')
+ * @returns New object with converted values for display
+ *
+ * @example
+ * ```typescript
+ * const displayData = prepareMetricDataToDisplay(
+ *   { weight: 75 },
+ *   [{ key: 'weight', type: 'weight' }],
+ *   'imperial'
+ * );
+ * // Result: { weight: 165.3 }
+ * ```
+ */
+export function prepareMetricDataToDisplay<T extends Record<string, any>>(
+  data: T,
+  fields: { key: keyof T; type: 'weight' | 'length' | 'mass' }[],
+  units: Units
+): T {
+  const result = { ...data };
+  for (const { key, type } of fields) {
+    const value = result[key];
+    if (typeof value === 'number') {
+      switch (type) {
+        case 'weight':
+          (result as any)[key] = kgToDisplay(value, units);
+          break;
+        case 'length':
+          (result as any)[key] = cmToDisplay(value, units);
+          break;
+        case 'mass':
+          (result as any)[key] = gramsToDisplay(value, units);
+          break;
+      }
+    }
+  }
+  return result;
+}
