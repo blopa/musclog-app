@@ -18,6 +18,7 @@ npm install -D @types/axios
 ### Implementation
 
 **src/services/ocr/GoogleCloudOCR.ts:**
+
 ```typescript
 import axios from 'axios';
 import { Platform } from 'react-native';
@@ -103,7 +104,7 @@ export class GoogleCloudOCRService {
       return {
         text: mainAnnotation.description || '',
         confidence: mainAnnotation.confidence ?? 0.95,
-        bounds: mainAnnotation.boundingPoly?.vertices.map(v => ({
+        bounds: mainAnnotation.boundingPoly?.vertices.map((v) => ({
           x: v.x || 0,
           y: v.y || 0,
         })),
@@ -125,17 +126,13 @@ export class GoogleCloudOCRService {
    * Batch recognize multiple images
    */
   async recognizeMultiple(imagePaths: string[]): Promise<OCRResult[]> {
-    const results = await Promise.allSettled(
-      imagePaths.map(path => this.recognizeText(path))
-    );
+    const results = await Promise.allSettled(imagePaths.map((path) => this.recognizeText(path)));
 
     return results.map((result, index) => {
       if (result.status === 'fulfilled') {
         return result.value;
       } else {
-        console.warn(
-          `Failed to recognize image ${index}: ${result.reason}`
-        );
+        console.warn(`Failed to recognize image ${index}: ${result.reason}`);
         return {
           text: '',
           confidence: 0,
@@ -152,12 +149,11 @@ if (!googleApiKey && !__DEV__) {
   throw new Error('GOOGLE_CLOUD_VISION_API_KEY not set in production');
 }
 
-export const googleCloudOCR = new GoogleCloudOCRService(
-  googleApiKey || 'dev-key-simulator'
-);
+export const googleCloudOCR = new GoogleCloudOCRService(googleApiKey || 'dev-key-simulator');
 ```
 
 **Usage:**
+
 ```typescript
 import { googleCloudOCR, OCRResult } from './services/ocr/GoogleCloudOCR';
 
@@ -173,6 +169,7 @@ async function scanDocument(imagePath: string) {
 ```
 
 **Environment Setup:**
+
 ```bash
 # .env.local (simulator development)
 GOOGLE_CLOUD_VISION_API_KEY=your-api-key-here
@@ -199,6 +196,7 @@ cd ios && pod install
 ### Implementation
 
 **src/services/ocr/GutenOCRService.ts:**
+
 ```typescript
 import { createWorker, Worker } from '@gutenye/ocr-react-native';
 import * as FileSystem from 'expo-file-system';
@@ -260,10 +258,7 @@ export class GutenOCRService {
 
     try {
       // Guten OCR expects file:// URI on native
-      const fileUri =
-        imagePath.startsWith('file://')
-          ? imagePath
-          : `file://${imagePath}`;
+      const fileUri = imagePath.startsWith('file://') ? imagePath : `file://${imagePath}`;
 
       const result = await this.worker.recognize(fileUri);
 
@@ -282,9 +277,7 @@ export class GutenOCRService {
 
       // Calculate average confidence
       const confidence =
-        blocks.length > 0
-          ? blocks.reduce((sum, b) => sum + b.confidence, 0) / blocks.length
-          : 1.0;
+        blocks.length > 0 ? blocks.reduce((sum, b) => sum + b.confidence, 0) / blocks.length : 1.0;
 
       return {
         text,
@@ -346,6 +339,7 @@ export async function cleanupGutenOCR(): Promise<void> {
 ```
 
 **Usage with App Lifecycle:**
+
 ```typescript
 import { useEffect } from 'react';
 import { getGutenOCRService, cleanupGutenOCR } from './services/ocr/GutenOCRService';
@@ -371,6 +365,7 @@ export function OCRApp() {
 ```
 
 **Recognize Document:**
+
 ```typescript
 async function scanWithGutenOCR(imagePath: string) {
   try {
@@ -401,14 +396,13 @@ cd ios && pod install
 ### Implementation
 
 **src/services/ocr/VisionOCRService.ts:**
+
 ```typescript
 import { Platform } from 'react-native';
 
 // Import platform-specific implementation
 const TextRecognition =
-  Platform.OS === 'ios'
-    ? require('react-native-text-recognition').default
-    : null;
+  Platform.OS === 'ios' ? require('react-native-text-recognition').default : null;
 
 export interface OCRResult {
   text: string;
@@ -452,28 +446,24 @@ export const visionOCR = new VisionOCRService();
 ```
 
 **iOS-only Implementation:**
+
 ```typescript
 // src/services/ocr/OCRService.ios.ts
 import { visionOCR, OCRResult } from './VisionOCRService';
 
-export const recognizeText = async (
-  imagePath: string
-): Promise<OCRResult> => {
+export const recognizeText = async (imagePath: string): Promise<OCRResult> => {
   return visionOCR.recognizeText(imagePath);
 };
 ```
 
 **Android Placeholder:**
+
 ```typescript
 // src/services/ocr/OCRService.android.ts
 import { OCRResult } from './VisionOCRService';
 
-export const recognizeText = async (
-  imagePath: string
-): Promise<OCRResult> => {
-  throw new Error(
-    'OCR not implemented for Android. Use Guten OCR or Cloud API.'
-  );
+export const recognizeText = async (imagePath: string): Promise<OCRResult> => {
+  throw new Error('OCR not implemented for Android. Use Guten OCR or Cloud API.');
 };
 ```
 
@@ -484,6 +474,7 @@ export const recognizeText = async (
 **Best for Production: Tries multiple providers with fallback**
 
 **src/services/ocr/HybridOCRService.ts:**
+
 ```typescript
 import { Platform } from 'react-native';
 import { googleCloudOCR } from './GoogleCloudOCR';
@@ -547,16 +538,11 @@ export class HybridOCRService {
           return { ...gutenResult, source: 'guten' };
 
         case 'cloud':
-          const cloudResult = await googleCloudOCR.recognizeText(
-            imagePath
-          );
+          const cloudResult = await googleCloudOCR.recognizeText(imagePath);
           return { ...cloudResult, source: 'cloud' };
       }
     } catch (primaryError) {
-      console.warn(
-        `iOS primary strategy (${primaryStrategy}) failed:`,
-        primaryError
-      );
+      console.warn(`iOS primary strategy (${primaryStrategy}) failed:`, primaryError);
 
       if (!this.config.iosUseFallback || this.config.offlineMode) {
         throw primaryError;
@@ -564,9 +550,7 @@ export class HybridOCRService {
 
       // Fallback to cloud if available
       try {
-        const cloudResult = await googleCloudOCR.recognizeText(
-          imagePath
-        );
+        const cloudResult = await googleCloudOCR.recognizeText(imagePath);
         return { ...cloudResult, source: 'cloud' };
       } catch (fallbackError) {
         throw new Error(
@@ -600,6 +584,7 @@ export const hybridOCR = new HybridOCRService({
 ```
 
 **Usage:**
+
 ```typescript
 const result = await hybridOCR.recognizeText(imagePath);
 console.log(`Recognized with ${result.source}: ${result.text}`);
@@ -609,7 +594,8 @@ console.log(`Recognized with ${result.source}: ${result.text}`);
 
 ## Testing Setup
 
-**src/services/ocr/__tests__/OCRService.test.ts:**
+**src/services/ocr/**tests**/OCRService.test.ts:**
+
 ```typescript
 import { hybridOCR } from '../HybridOCRService';
 import * as FileSystem from 'expo-file-system';
@@ -641,6 +627,7 @@ describe('OCR Services', () => {
 ## Troubleshooting
 
 ### Google Cloud Vision
+
 **Issue:** "Invalid API key"  
 **Solution:** Verify API key in Google Cloud Console > Vision API > Credentials
 
@@ -648,6 +635,7 @@ describe('OCR Services', () => {
 **Solution:** Check billing in Google Cloud Console > Billing
 
 ### Guten OCR
+
 **Issue:** "Model download failed"  
 **Solution:** Ensure sufficient disk space (100MB+); check internet connection
 
@@ -655,6 +643,7 @@ describe('OCR Services', () => {
 **Solution:** Ensure using JSC, not Hermes engine
 
 ### Vision Framework
+
 **Issue:** "Framework not found"  
 **Solution:** Run `cd ios && pod install` again; check deployment target ≥ 13.0
 
@@ -665,10 +654,10 @@ describe('OCR Services', () => {
 On M1 MacBook Air simulator:
 
 | Solution | First Run | Subsequent | Accuracy | Bundle Size |
-|----------|-----------|-----------|----------|-------------|
-| Vision | 200ms | 150ms | 92% | +0MB |
-| Guten | 800ms | 300ms | 88% | +95MB |
-| Cloud | 2500ms | 2500ms | 96% | +0MB |
+| -------- | --------- | ---------- | -------- | ----------- |
+| Vision   | 200ms     | 150ms      | 92%      | +0MB        |
+| Guten    | 800ms     | 300ms      | 88%      | +95MB       |
+| Cloud    | 2500ms    | 2500ms     | 96%      | +0MB        |
 
 ---
 

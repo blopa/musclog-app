@@ -1,7 +1,7 @@
 /**
  * Shared OCR Service Implementation using Guten OCR (@gutenye/ocr-react-native)
  * Uses ONNX Runtime for on-device processing - works perfectly on arm64 simulators
- * 
+ *
  * Why Guten OCR?
  * - ONNX Runtime compiles natively for arm64 architecture (no binary issues)
  * - No architecture compatibility issues like ML Kit on Apple Silicon simulators
@@ -10,7 +10,9 @@
  * - Better performance than cloud APIs
  */
 
-import * as FileSystem from 'expo-file-system';
+import { deleteAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system';
+import { cacheDirectory, EncodingType } from 'expo-file-system/legacy';
+
 import type { OcrResult } from './OcrService';
 
 // We'll use a lazy-loaded worker approach for better performance
@@ -74,8 +76,8 @@ export async function recognizeText(
     // For now, we provide a placeholder that you can enhance
 
     // Read the image file
-    const imageData = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
+    const imageData = await readAsStringAsync(imageUri, {
+      encoding: EncodingType.Base64,
     });
 
     // For this implementation, we use Guten OCR (@gutenye/ocr-react-native)
@@ -144,18 +146,18 @@ async function performOcrRecognition(
     // Convert base64 image data to the format expected by Guten OCR
     // Guten OCR expects either a file path or image buffer
     // Since we have base64, we'll need to write it to a temporary file
-    const tempFileUri = `${FileSystem.cacheDirectory}ocr_temp_${Date.now()}.png`;
+    const tempFileUri = `${cacheDirectory}ocr_temp_${Date.now()}.png`;
 
     // Write the base64 data to a temporary file
-    await FileSystem.writeAsStringAsync(tempFileUri, imageData, {
-      encoding: FileSystem.EncodingType.Base64,
+    await writeAsStringAsync(tempFileUri, imageData, {
+      encoding: EncodingType.Base64,
     });
 
     // Perform OCR recognition
     const result = await recognizer.recognize(tempFileUri);
 
     // Clean up temporary file
-    await FileSystem.deleteAsync(tempFileUri, { idempotent: true });
+    await deleteAsync(tempFileUri, { idempotent: true });
 
     // Transform Guten OCR result to our expected format
     const text = result.text || '';

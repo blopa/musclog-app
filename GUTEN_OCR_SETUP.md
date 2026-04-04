@@ -13,6 +13,7 @@
 ## 🚀 Next Steps to Complete Setup
 
 ### Step 1: Install Guten OCR (Already Done ✅)
+
 ```bash
 npm install @gutenye/ocr-react-native
 ```
@@ -43,20 +44,22 @@ async function performOcrRecognition(
     // Convert base64 to image buffer/path
     // Guten OCR expects file:// or file path
     // For this integration, we need to handle the base64 data
-    
+
     // This is a simplified approach - in production you may need to:
     // 1. Save base64 to a temp file
     // 2. Pass that file path to the worker
-    
+
     const result = await ocrWorker.recognize(imageData);
-    
+
     return {
       text: result.text || '',
       confidence: result.confidence || 0.8,
       blocks: result.blocks || [],
     };
   } catch (error) {
-    throw new Error(`Guten OCR recognition failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Guten OCR recognition failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 ```
@@ -80,9 +83,7 @@ export async function recognizeText(
 
     // Guten OCR works with file paths, not base64
     // If imageUri is already a file path, use it directly
-    const filePath = imageUri.startsWith('file://')
-      ? imageUri
-      : `file://${imageUri}`;
+    const filePath = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
 
     const recognitionResult = await performOcrRecognition(filePath, language);
 
@@ -103,11 +104,13 @@ export async function recognizeText(
 ```
 
 ### Step 4: Run Pod Install (iOS)
+
 ```bash
 cd ios && pod install && cd ..
 ```
 
 ### Step 5: Test on iOS Simulator
+
 ```bash
 npm run ios
 ```
@@ -115,6 +118,7 @@ npm run ios
 This should now work perfectly on Apple Silicon simulators without any architecture errors!
 
 ### Step 6: Test on Android
+
 ```bash
 npm run android
 ```
@@ -122,6 +126,7 @@ npm run android
 ## 🧪 Testing the Implementation
 
 ### 1. Basic Usage in a Component
+
 ```typescript
 import { useOcr } from '@/hooks/useOcr';
 import { Button, Text, View } from 'react-native';
@@ -152,6 +157,7 @@ export function MyOcrComponent() {
 ```
 
 ### 2. Direct Service Usage
+
 ```typescript
 import * as OcrService from '@/services/OcrService';
 
@@ -167,36 +173,42 @@ await OcrService.terminateOcr();
 ```
 
 ### 3. Test with Sample Images
+
 1. Add test images to your project
 2. Load them with `expo-image-picker`
 3. Pass the URI to `recognizeText()`
 
 ## 🎯 Key Differences from Previous Approaches
 
-| Feature | ML Kit | Vision Framework | Guten OCR (Current) |
-|---------|--------|------------------|---------------------|
-| iOS Simulator (Apple Silicon) | ❌ Fails | ⚠️ Build issues | ✅ Works perfectly |
-| Android | ✅ Works | ❌ N/A | ✅ Works |
-| Architecture Issues | 🔴 arm64 mismatch | 🔴 Modulemap issues | ✅ Native support |
-| Offline Capability | ✅ Yes | ✅ Yes | ✅ Yes |
-| Processing Speed | Fast | Very Fast | Medium |
-| Bundle Size | Moderate | Small | Large |
-| Maintenance | Active | Unmaintained | Active |
+| Feature                       | ML Kit            | Vision Framework    | Guten OCR (Current) |
+| ----------------------------- | ----------------- | ------------------- | ------------------- |
+| iOS Simulator (Apple Silicon) | ❌ Fails          | ⚠️ Build issues     | ✅ Works perfectly  |
+| Android                       | ✅ Works          | ❌ N/A              | ✅ Works            |
+| Architecture Issues           | 🔴 arm64 mismatch | 🔴 Modulemap issues | ✅ Native support   |
+| Offline Capability            | ✅ Yes            | ✅ Yes              | ✅ Yes              |
+| Processing Speed              | Fast              | Very Fast           | Medium              |
+| Bundle Size                   | Moderate          | Small               | Large               |
+| Maintenance                   | Active            | Unmaintained        | Active              |
 
 ## 🛠️ Troubleshooting
 
 ### Issue: "Worker not initialized" error
+
 **Solution:** Make sure `autoInitialize: true` is set in the `useOcr` hook, or explicitly call `initialize()` before `recognizeText()`.
 
 ### Issue: Image not recognized
+
 **Solution:** Make sure the image path is correct. Guten OCR expects:
+
 - `file:///path/to/image.jpg` on native platforms
 - Absolute paths, not relative paths
 
 ### Issue: Large bundle size
+
 **Solution:** Guten OCR includes model files. This is normal. You can optimize by only including specific language models. See OCR_Implementation_Guide.md for advanced configuration.
 
 ### Issue: Slow processing on first call
+
 **Solution:** First-time initialization loads the ONNX models. This is normal. Subsequent calls will be faster.
 
 ## 📚 Additional Resources

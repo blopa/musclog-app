@@ -24,11 +24,11 @@
 
 There were **three independent, compounding issues** that all had to be resolved before the simulator build succeeded:
 
-| # | Error | Root Cause |
-|---|-------|------------|
-| 1 | `ld: library 'Pods-MusclogLiftLogRepeat' not found` | Xcode 26 regression: implicit cross-project dependencies stopped working |
-| 2 | `found architecture 'x86_64', required architecture 'arm64'` | Pods xcconfigs excluded arm64 for the simulator |
-| 3 | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator |
+| #   | Error                                                                          | Root Cause                                                                  |
+| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| 1   | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                            | Xcode 26 regression: implicit cross-project dependencies stopped working    |
+| 2   | `found architecture 'x86_64', required architecture 'arm64'`                   | Pods xcconfigs excluded arm64 for the simulator                             |
+| 3   | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator |
 
 Each issue surfaced only after the previous one was fixed.
 
@@ -178,6 +178,7 @@ ld: building for 'iOS-simulator', but linking in object file
 ### Investigation
 
 The `opencv2.framework` is a **fat (universal) binary** containing two architecture slices:
+
 - `x86_64` — for Intel Mac simulator (old, irrelevant now)
 - `arm64` — for Apple Silicon simulator AND for iPhone device
 
@@ -232,6 +233,7 @@ end
 ```
 
 **Failed for two reasons:**
+
 1. `vtool` platform names are `ios` and `iossim` — not `iphoneos` and `iphonesimulator`.
 2. Even with the correct name (`iossim`), `LC_BUILD_VERSION` is 24 bytes while `LC_VERSION_MIN_IPHONEOS` is only 16 bytes. vtool cannot replace a smaller load command with a larger one in-place without rewriting the entire binary. It silently did nothing.
 
@@ -282,6 +284,7 @@ Wrote a Python script to parse the AR binary manually (avoiding the filename col
 Instead of extracting and repacking (which loses duplicate-named members), we can **patch the bytes directly inside the AR archive in memory**, then write the modified bytes back. The AR structure is simple enough to parse without any external tools.
 
 The plan:
+
 1. Read the entire fat binary into a `bytearray`.
 2. Use `lipo -thin arm64` to find the byte offset and size of the arm64 slice.
 3. Walk the AR archive format within that slice in-place.
@@ -401,6 +404,7 @@ python3 fix_opencv_simulator.py
 ```
 
 Expected output:
+
 ```
 Architectures in the fat file: ios/Pods/OpenCV/opencv2.framework/opencv2 are: x86_64 arm64
 Found 738 Mach-O members, patched 738 LC_VERSION_MIN_IPHONEOS commands.
@@ -430,27 +434,32 @@ Then re-run the patch script if needed.
 
 ### `ios/MusclogLiftLogRepeat.xcodeproj/project.pbxproj`
 
-| Change | What was added/modified |
-|--------|------------------------|
-| Added `PBXFileReference` | Points to `Pods/Pods.xcodeproj` |
-| Added `PBXContainerItemProxy` | References `Pods-MusclogLiftLogRepeat` target inside `Pods.xcodeproj` |
-| Added `PBXTargetDependency` | Wraps the proxy |
-| Updated main target `dependencies` | From `()` to `(AF0E8295EA1C4ED79216E101)` |
-| `EXCLUDED_ARCHS[sdk=iphonesimulator*]` | Set to `""` (was `arm64` or inherited) |
+| Change                                 | What was added/modified                                               |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| Added `PBXFileReference`               | Points to `Pods/Pods.xcodeproj`                                       |
+| Added `PBXContainerItemProxy`          | References `Pods-MusclogLiftLogRepeat` target inside `Pods.xcodeproj` |
+| Added `PBXTargetDependency`            | Wraps the proxy                                                       |
+| Updated main target `dependencies`     | From `()` to `(AF0E8295EA1C4ED79216E101)`                             |
+| `EXCLUDED_ARCHS[sdk=iphonesimulator*]` | Set to `""` (was `arm64` or inherited)                                |
 
 ### `ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig`
+
 - Removed: `EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64`
 
 ### `ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig`
+
 - Removed: `EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64`
 
 ### `ios/Pods/Target Support Files/OpenCV/OpenCV.debug.xcconfig`
+
 - Removed: `EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64`
 
 ### `ios/Pods/Target Support Files/OpenCV/OpenCV.release.xcconfig`
+
 - Removed: `EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64`
 
 ### `ios/Pods/OpenCV/opencv2.framework/opencv2`
+
 - Binary patched in-place: 738 `LC_VERSION_MIN_IPHONEOS` (0x25) load commands changed to 0x35 in the arm64 AR archive slice.
 
 ---

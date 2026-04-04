@@ -29,23 +29,26 @@ START: Need OCR on iOS simulator (Apple Silicon)?
 
 ## Setup Time Estimates
 
-| Solution | Setup Time | Debugging | Total | Recommendation |
-|----------|-----------|-----------|-------|-----------------|
-| Google Cloud Vision | 5 min | 5 min | **10 min** | ✅ START HERE |
-| Guten OCR | 15 min | 20 min | 35 min | ⏩ Next week |
-| Vision Framework | 10 min | 15 min | 25 min | 📦 Only if iOS-only |
+| Solution            | Setup Time | Debugging | Total      | Recommendation      |
+| ------------------- | ---------- | --------- | ---------- | ------------------- |
+| Google Cloud Vision | 5 min      | 5 min     | **10 min** | ✅ START HERE       |
+| Guten OCR           | 15 min     | 20 min    | 35 min     | ⏩ Next week        |
+| Vision Framework    | 10 min     | 15 min    | 25 min     | 📦 Only if iOS-only |
 
 ---
 
 ## Specific Recommendations by Scenario
 
 ### Scenario 1: "I just need OCR to work on simulator TODAY"
+
 **→ Use Google Cloud Vision API**
+
 - 10 minutes to integration
 - 100% works on M1/M2/M3 simulator
 - No build issues
 
 **Setup:**
+
 ```bash
 npm install axios
 # Add API key to .env
@@ -55,12 +58,15 @@ npm install axios
 ---
 
 ### Scenario 2: "I need offline OCR that works on both platforms"
+
 **→ Use Guten OCR (@gutenye/ocr-react-native)**
+
 - Works identically on iOS & Android simulators
 - No internet required
 - Good accuracy (PaddleOCR-based)
 
 **Setup:**
+
 ```bash
 npm install @gutenye/ocr-react-native @gutenye/ocr-models
 cd ios && pod install
@@ -70,13 +76,16 @@ cd ios && pod install
 ---
 
 ### Scenario 3: "I want the absolute fastest iOS solution"
+
 **→ Use Vision Framework (react-native-text-recognition)**
+
 - Fastest recognition speed (200ms)
 - Zero simulator issues
 - Zero external dependencies
 
 **Caveat:** Unmaintained, iOS-only  
 **Setup:**
+
 ```bash
 npm install react-native-text-recognition
 cd ios && pod install
@@ -86,13 +95,16 @@ cd ios && pod install
 ---
 
 ### Scenario 4: "I'm building a production app with all platforms"
+
 **→ Use HybridOCRService (multi-tier strategy)**
+
 - Vision on iOS (if available)
 - Cloud fallback for quality/compatibility
 - Guten on Android
 - Graceful degradation
 
 **Setup:**
+
 ```bash
 npm install axios @gutenye/ocr-react-native react-native-text-recognition
 # Copy HybridOCRService.ts from implementation guide
@@ -103,6 +115,7 @@ npm install axios @gutenye/ocr-react-native react-native-text-recognition
 ## Known Issues & Workarounds
 
 ### ❌ Problem: "ML Kit binary mismatch on M1/M2 simulator"
+
 **Why:** Google Play Services doesn't provide arm64-simulator slice  
 **Solution:** Use Cloud API or Vision Framework instead  
 **Estimated fix time:** Unlikely (Google's limitation)
@@ -110,8 +123,10 @@ npm install axios @gutenye/ocr-react-native react-native-text-recognition
 ---
 
 ### ❌ Problem: "Pod install fails for native module"
+
 **Why:** CocoaPods doesn't have proper binary for M1  
 **Solution:**
+
 ```bash
 # Try explicit architecture
 export ARCHS=arm64
@@ -124,8 +139,10 @@ arch -x86_64 pod install
 ---
 
 ### ❌ Problem: "Guten OCR model download hangs on simulator"
+
 **Why:** First-time model download can be large (50-100MB)  
 **Solution:**
+
 ```typescript
 // Pre-download models
 const service = getGutenOCRService();
@@ -136,8 +153,10 @@ await service.initialize(); // Block on app start
 ---
 
 ### ❌ Problem: "Google Cloud API key leaked in code"
+
 **Why:** Hardcoded API key  
 **Solution:**
+
 ```bash
 # Use environment-based API key
 # NEVER commit .env files
@@ -149,6 +168,7 @@ echo ".env.local" >> .gitignore
 ## Environment Setup Checklist
 
 ### For Google Cloud Vision API:
+
 - [ ] Create Google Cloud project
 - [ ] Enable Vision API
 - [ ] Create service account (or use API key)
@@ -156,6 +176,7 @@ echo ".env.local" >> .gitignore
 - [ ] Test with `npm test -- GoogleCloudOCR`
 
 ### For Guten OCR:
+
 - [ ] Run `cd ios && pod install`
 - [ ] Ensure min 100MB free disk space
 - [ ] First initialization will download models (~50MB)
@@ -163,6 +184,7 @@ echo ".env.local" >> .gitignore
 - [ ] Verify offline mode works
 
 ### For Vision Framework:
+
 - [ ] Verify deployment target ≥ iOS 13.0 in Podfile
 - [ ] Run `cd ios && pod install`
 - [ ] Check Build Settings → Library Search Paths
@@ -173,6 +195,7 @@ echo ".env.local" >> .gitignore
 ## Migration Path (Recommended Phasing)
 
 ### Phase 1: Get Simulator Working (Week 1)
+
 ```text
 Implement GoogleCloudOCR
 ├─ 5 min: npm install axios
@@ -182,6 +205,7 @@ Implement GoogleCloudOCR
 ```
 
 ### Phase 2: Add On-Device Option (Week 2-3)
+
 ```text
 Add GutenOCRService as alternative
 ├─ 15 min: npm install imports
@@ -191,6 +215,7 @@ Add GutenOCRService as alternative
 ```
 
 ### Phase 3: Optimize iOS (Week 4, optional)
+
 ```text
 Switch to Vision Framework for iOS
 ├─ 10 min: npm install react-native-text-recognition
@@ -200,6 +225,7 @@ Switch to Vision Framework for iOS
 ```
 
 ### Phase 4: Implement Hybrid Strategy (Week 5, production-ready)
+
 ```text
 Unify all approaches
 ├─ 20 min: Create HybridOCRService
@@ -213,11 +239,13 @@ Unify all approaches
 ## Code Snippets Quick Reference
 
 ### Google Cloud (Simplest)
+
 ```typescript
 const result = await googleCloudOCR.recognizeText(imagePath);
 ```
 
 ### Guten (Best On-Device)
+
 ```typescript
 const service = getGutenOCRService();
 await service.initialize();
@@ -225,11 +253,13 @@ const result = await service.recognizeText(imagePath);
 ```
 
 ### Vision (Fastest iOS)
+
 ```typescript
 const result = await visionOCR.recognizeText(imagePath);
 ```
 
 ### Hybrid (Production-Safe)
+
 ```typescript
 const result = await hybridOCR.recognizeText(imagePath);
 // Automatically uses best strategy per platform
@@ -240,25 +270,28 @@ const result = await hybridOCR.recognizeText(imagePath);
 ## Performance Reference
 
 ### Speeds (M1 simulator)
-| Library | First | Subsequent | Notes |
-|---------|-------|-----------|-------|
-| Vision | 200ms | 150ms | Fastest, iOS only |
-| Guten | 800ms | 300ms | Great accuracy |
-| Cloud | 2500ms | 2500ms | Network bound |
+
+| Library | First  | Subsequent | Notes             |
+| ------- | ------ | ---------- | ----------------- |
+| Vision  | 200ms  | 150ms      | Fastest, iOS only |
+| Guten   | 800ms  | 300ms      | Great accuracy    |
+| Cloud   | 2500ms | 2500ms     | Network bound     |
 
 ### Accuracy (general English text)
-| Library | Accuracy | Languages |
-|---------|----------|-----------|
-| Vision | 92% | iOS dictation only |
-| Guten | 88% | 100+ languages |
-| Cloud | 96% | 50+ languages |
+
+| Library | Accuracy | Languages          |
+| ------- | -------- | ------------------ |
+| Vision  | 92%      | iOS dictation only |
+| Guten   | 88%      | 100+ languages     |
+| Cloud   | 96%      | 50+ languages      |
 
 ### Bundle Impact (compressed)
-| Library | Size | Extracted |
-|---------|------|-----------|
-| Vision | +0MB | +0MB (native) |
-| Guten | +15MB | +95MB (models) |
-| Cloud | +0MB | +0MB (HTTP only) |
+
+| Library | Size  | Extracted        |
+| ------- | ----- | ---------------- |
+| Vision  | +0MB  | +0MB (native)    |
+| Guten   | +15MB | +95MB (models)   |
+| Cloud   | +0MB  | +0MB (HTTP only) |
 
 ---
 
@@ -287,22 +320,26 @@ npx react-native run-ios --device="MuscLogTestSim"
 ## Support Resources
 
 ### Google Cloud Vision
+
 - Docs: https://cloud.google.com/vision/docs/text-detection
 - Pricing: https://cloud.google.com/vision/pricing
 - Quotas: https://cloud.google.com/docs/quotas
 - Issues: Stack Overflow tag `google-cloud-vision`
 
 ### Guten OCR
+
 - GitHub: https://github.com/gutenye/guten-ocr
 - Issues: https://github.com/gutenye/guten-ocr/issues
 - Discord: (Check GitHub for community)
 
 ### React Native Vision Camera
+
 - Docs: https://react-native-vision-camera.com
 - Plugins: https://react-native-vision-camera.com/docs/guides/frame-processor-plugins-community
 - Repository: https://github.com/mrousavy/react-native-vision-camera
 
 ### Apple Vision Framework
+
 - Apple Docs: https://developer.apple.com/documentation/vision/vnrecognizetext…
 - Simulator Quirks: https://developer.apple.com/forums/
 
@@ -310,14 +347,14 @@ npx react-native run-ios --device="MuscLogTestSim"
 
 ## Common Error Messages & Solutions
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `GOOGLE_CLOUD_VISION_API_KEY not set` | Missing env var | Add to `.env.local` |
-| `Could not find or use auto-linked library` | Xcode 12+ issue | Add `$(SDKROOT)/usr/lib/swift` to Build Settings |
-| `Pod install fails` | CocoaPods M1 issue | Use `arch -arm64 pod install` |
-| `WASM runtime error` | Using Hermes engine | Switch to JSC (default) |
-| `Model download hangs` | Slow network | Check internet; pre-download during init |
-| `403 Quota exceeded` | Cloud API limit | Check Google Cloud billing |
+| Error                                       | Cause               | Fix                                              |
+| ------------------------------------------- | ------------------- | ------------------------------------------------ |
+| `GOOGLE_CLOUD_VISION_API_KEY not set`       | Missing env var     | Add to `.env.local`                              |
+| `Could not find or use auto-linked library` | Xcode 12+ issue     | Add `$(SDKROOT)/usr/lib/swift` to Build Settings |
+| `Pod install fails`                         | CocoaPods M1 issue  | Use `arch -arm64 pod install`                    |
+| `WASM runtime error`                        | Using Hermes engine | Switch to JSC (default)                          |
+| `Model download hangs`                      | Slow network        | Check internet; pre-download during init         |
+| `403 Quota exceeded`                        | Cloud API limit     | Check Google Cloud billing                       |
 
 ---
 
@@ -341,6 +378,7 @@ npx react-native run-ios --device="MuscLogTestSim"
    - Cloud API for fallback
 
 **Expected Timeline:**
+
 - Week 1: Simulator working with Cloud API
 - Week 2-3: Add on-device with Guten OCR
 - Week 3-4: Production-ready hybrid service

@@ -10,6 +10,7 @@
 The ML Kit approach you're currently testing has known limitations with iOS simulators on Apple Silicon. This research identifies 5 proven alternatives spanning pure JavaScript solutions, Vision framework wrappers, and cloud APIs—each addressing the simulator compatibility gap differently.
 
 **Critical Finding:** The cleanest iOS simulator solution combines:
+
 1. **Vision framework wrapper** (native, no external deps) - `react-native-text-recognition`
 2. **Backup: Cloud-based** (zero native issues) - Google Cloud Vision API / AWS Textract
 3. **Hybrid approach** (best compatibility) - `Guten OCR` (ONNX Runtime) for on-device fallback
@@ -19,6 +20,7 @@ The ML Kit approach you're currently testing has known limitations with iOS simu
 ## Problem Context
 
 Your ML Kit issue stems from:
+
 - Binary framework distribution mismatches between simulator (arm64) and physical devices (arm64)
 - Google Play Services dependency requiring additional workarounds
 - Firebase SDK simulator support gaps on Apple Silicon
@@ -29,12 +31,14 @@ Your ML Kit issue stems from:
 ## Top 5 Viable Alternatives
 
 ### 1. **react-native-text-recognition** (Vision Framework Wrapper)
+
 **NPM:** `react-native-text-recognition`  
 **Latest Version:** 1.0.2 (Published 2 years ago)  
 **Maintenance Status:** ⚠️ Largely unmaintained (author seeking contributors)  
 **Architecture:** Native Swift/Objective-C wrapping iOS Vision framework
 
 #### Pros:
+
 - ✅ **Pure Vision framework** — No external ML Kit dependency, no binary issues
 - ✅ **Zero simulator issues** — Uses native iOS APIs that work flawlessly on arm64 simulator
 - ✅ **Low overhead** — Direct Access to Apple's optimized VisionKit
@@ -43,6 +47,7 @@ Your ML Kit issue stems from:
 - ✅ **Reliable on Apple Silicon** — No architecture mismatch possible
 
 #### Cons:
+
 - ❌ **Unmaintained** — No recent updates, minimal community support
 - ❌ **iOS-only** — Android requires Firebase ML fallback (defeats purpose)
 - ❌ **Limited accuracy** — iOS Vision has lower OCR accuracy than Google ML Kit
@@ -50,11 +55,13 @@ Your ML Kit issue stems from:
 - ❌ **Low adoption** — Only 733 weekly npm downloads
 
 #### iOS Simulator Compatibility: **9/10**
+
 - Native iOS APIs work perfectly on arm64 simulator
 - No external binary dependencies
 - Tested baseline: Works reliably on M1/M2/M3 machines
 
 #### Integration Path:
+
 ```typescript
 // ios/index.ts
 import TextRecognition from 'react-native-text-recognition';
@@ -78,12 +85,14 @@ export { recognizeTextIOS as recognizeText };
 ---
 
 ### 2. **Guten OCR (@gutenye/ocr-react-native)** (ONNX Runtime - Pure ML)
+
 **NPM:** `@gutenye/ocr-react-native`  
 **Latest Version:** 1.4.8 (Updated 1 year ago)  
 **Maintenance Status:** ✅ Actively maintained  
 **Architecture:** PaddleOCR via ONNX Runtime (JavaScript/native bridge)
 
 #### Pros:
+
 - ✅ **Full cross-platform** — Works identically on iOS sim, Android, and web
 - ✅ **High accuracy** — Based on PaddleOCR, Chinese-optimized model
 - ✅ **No external services** — Entirely on-device, offline-capable
@@ -94,6 +103,7 @@ export { recognizeTextIOS as recognizeText };
 - ✅ **Better accuracy than Vision** — Production-grade PaddleOCR engine
 
 #### Cons:
+
 - ❌ **Model size** — Large ONNX models (50-100MB per language)
 - ❌ **Installation complexity** — Requires build toolchain for native modules
 - ⚠️ **Slower than Vision** — ONNX runtime overhead vs native GPU acceleration
@@ -101,11 +111,13 @@ export { recognizeTextIOS as recognizeText };
 - ⚠️ **Bundle size impact** — Significant app size increase
 
 #### iOS Simulator Compatibility: **9/10**
+
 - ONNX Runtime fully supports arm64 architecture
 - No Apple Silicon-specific issues reported in community
 - Works seamlessly with Expo and bare React Native
 
 #### Integration Path:
+
 ```typescript
 // Shared implementation (ios/android)
 import { createWorker } from '@gutenye/ocr-react-native';
@@ -118,7 +130,7 @@ export const initializeOCR = async () => {
 
 export const recognizeText = async (imagePath: string) => {
   if (!ocrWorker) await initializeOCR();
-  
+
   try {
     const result = await ocrWorker.recognize(imagePath);
     return result.data.text;
@@ -139,11 +151,13 @@ export const terminateOCR = async () => {
 ---
 
 ### 3. **Vision Camera OCR Plugins** (Frame Processor Ecosystem)
+
 **Recommended Plugin:** `react-native-vision-camera-ocr-plus` (1.2.4, maintained fork)  
 **Alternative:** `vision-camera-ocr` (older, unmaintained)  
 **Architecture:** ML Kit via Vision Camera frame processor
 
 #### Pros:
+
 - ✅ **Excellent video integration** — Real-time stream processing
 - ✅ **Popular ecosystem** — 472k weekly downloads (base library)
 - ✅ **Frame processor plugins** — Dynamsoft, Tesseract variants available
@@ -151,27 +165,33 @@ export const terminateOCR = async () => {
 - ✅ **Best for camera apps** — Optimized for continuous frame input
 
 #### Cons:
+
 - ❌ **Inherits ML Kit simulator issues** — Same architecture mismatch problem
 - ❌ **Complex setup** — Requires vision-camera + native compilation
 - ❌ **Babel worklet configuration** — Additional build complexity
 - ⚠️ **Overhead for single images** — Overkill if not doing video processing
 
 #### iOS Simulator Compatibility: **3/10**
+
 - **Poor simulator support** — ML Kit dependency causes arm64 issues
 - Not recommended for simulator-primary development
 - Better on physical devices
 
 #### Note:
+
 The vision-camera ecosystem itself works perfectly (tested on GitHub); the issue is the ML Kit backend.
 
 ---
 
 ### 4. **Cloud-Based OCR Services** (Zero Native Issues)
+
 **Recommended:** Google Cloud Vision API / AWS Textract  
 **Integration Pattern:** HTTP requests to cloud services
 
 #### Options:
+
 **Google Cloud Vision API**
+
 - ✅ Best accuracy in industry
 - ✅ Supports 50+ languages
 - ✅ Document text detection specialized variant
@@ -179,6 +199,7 @@ The vision-camera ecosystem itself works perfectly (tested on GitHub); the issue
 - ❌ Per-request billing (~$0.0015 per image)
 
 **AWS Textract**
+
 - ✅ Specialized document extraction
 - ✅ Table recognition
 - ✅ Form field detection
@@ -186,17 +207,20 @@ The vision-camera ecosystem itself works perfectly (tested on GitHub); the issue
 - ❌ Complex AWS credential setup
 
 **Cloudinary OCR**
+
 - ✅ Built into image transformation pipeline
 - ✅ Pay-as-you-upload model
 - ❌ Less accurate for general text
 - ❌ Vendor lock-in
 
 #### iOS Simulator Compatibility: **10/10**
+
 - Pure HTTP requests — zero native compatibility issues
 - Works identically on simulator, device, web
 - No binary dependencies whatsoever
 
 #### Integration Path:
+
 ```typescript
 // Shared cloud implementation
 import axios from 'axios';
@@ -207,19 +231,21 @@ const GOOGLE_CLOUD_VISION_API_KEY = process.env.GOOGLE_CLOUD_API_KEY;
 export const recognizeTextCloud = async (imagePath: string) => {
   try {
     const imageData = await fs.readFile(imagePath, 'base64');
-    
+
     const response = await axios.post(
       `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_CLOUD_VISION_API_KEY}`,
       {
-        requests: [{
-          image: { content: imageData },
-          features: [{ type: 'TEXT_DETECTION', maxResults: 10 }],
-        }],
+        requests: [
+          {
+            image: { content: imageData },
+            features: [{ type: 'TEXT_DETECTION', maxResults: 10 }],
+          },
+        ],
       }
     );
 
     const annotations = response.data.responses[0].textAnnotations || [];
-    return annotations.map(text => ({
+    return annotations.map((text) => ({
       text: text.description,
       confidence: text.confidence,
       bounds: text.boundingPoly,
@@ -232,6 +258,7 @@ export const recognizeTextCloud = async (imagePath: string) => {
 ```
 
 #### Pros:
+
 - ✅ **Zero compatibility issues** — Simulator/device/web parity
 - ✅ **Best accuracy** — Industry-leading recognition
 - ✅ **No model management** — Always latest algorithms
@@ -239,6 +266,7 @@ export const recognizeTextCloud = async (imagePath: string) => {
 - ✅ **Multi-language** — All languages supported out-of-box
 
 #### Cons:
+
 - ❌ **Requires internet** — Offline capability impossible
 - ❌ **Latency** — Network roundtrip (200-500ms typical)
 - ❌ **Costs** — Per-image billing adds up
@@ -246,17 +274,20 @@ export const recognizeTextCloud = async (imagePath: string) => {
 - ❌ **Privacy** — Images sent to third-party servers
 
 #### Best Use Case:
+
 Production apps with backend infrastructure. Not suitable for offline-first design.
 
 ---
 
 ### 5. **Tesseract.js (WebAssembly)** (Pure JavaScript)
+
 **NPM:** `tesseract.js`  
 **Latest Version:** 7.0.0 (Published 4 months ago)  
 **Maintenance Status:** ✅ Actively maintained  
 **Architecture:** Tesseract OCR via WebAssembly
 
 #### Pros:
+
 - ✅ **Pure JavaScript** — No native compilation
 - ✅ **Cross-platform** — Works on iOS, Android, web identically
 - ✅ **Offline** — Entire engine runs locally
@@ -266,6 +297,7 @@ Production apps with backend infrastructure. Not suitable for offline-first desi
 - ✅ **Large community** — 922k weekly npm downloads
 
 #### Cons:
+
 - ❌ **Poor React Native support** — Built for browser first
 - ❌ **Performance** — WebAssembly slower than native (3-5x slower)
 - ❌ **Bundle size** — WASM modules are large (50-100MB for full engine)
@@ -274,6 +306,7 @@ Production apps with backend infrastructure. Not suitable for offline-first desi
 - ⚠️ **Simulator-specific issue** — WASM support in React Native Hermes is incomplete
 
 #### iOS Simulator Compatibility: **5/10**
+
 - WebAssembly runs on arm64 simulator
 - **BUT:** React Native's JavaScript engine (JavaScriptCore) has WASM limitations
 - Hermes engine doesn't support WASM
@@ -281,6 +314,7 @@ Production apps with backend infrastructure. Not suitable for offline-first desi
 - Works better in web view wrapper than native bridge
 
 #### Not Recommended For:
+
 - This use case (React Native native) — designed for browser/Node.js
 - Consider only if wrapping in WebView component
 
@@ -288,18 +322,18 @@ Production apps with backend infrastructure. Not suitable for offline-first desi
 
 ## Comparative Analysis Table
 
-| Criterion | Vision Framework | Guten OCR | Vision Camera | Cloud API | Tesseract.js |
-|-----------|------------------|-----------|---------------|-----------|--------------|
-| **iOS Sim on Apple Silicon** | 9/10 | 9/10 | 3/10 | 10/10 | 5/10 |
-| **Accuracy** | Good | Excellent | Excellent | Excellent | Fair |
-| **Speed** | Very Fast | Medium | Fast | Slow | Very Slow |
-| **Offline** | Yes | Yes | Yes | No | Yes |
-| **Setup Ease** | Easy | Medium | Complex | Easy | Medium |
-| **Bundle Size** | Minimal | Large | Medium | Minimal | Huge |
-| **Maintenance** | Unmaintained | Active | Active | N/A | Active |
-| **Cross-platform** | iOS only | Full | Full | Full | Full |
-| **Real-time** | Poor | Good | Excellent | Good | Poor |
-| **Cost** | Free | Free | Free | Paid | Free |
+| Criterion                    | Vision Framework | Guten OCR | Vision Camera | Cloud API | Tesseract.js |
+| ---------------------------- | ---------------- | --------- | ------------- | --------- | ------------ |
+| **iOS Sim on Apple Silicon** | 9/10             | 9/10      | 3/10          | 10/10     | 5/10         |
+| **Accuracy**                 | Good             | Excellent | Excellent     | Excellent | Fair         |
+| **Speed**                    | Very Fast        | Medium    | Fast          | Slow      | Very Slow    |
+| **Offline**                  | Yes              | Yes       | Yes           | No        | Yes          |
+| **Setup Ease**               | Easy             | Medium    | Complex       | Easy      | Medium       |
+| **Bundle Size**              | Minimal          | Large     | Medium        | Minimal   | Huge         |
+| **Maintenance**              | Unmaintained     | Active    | Active        | N/A       | Active       |
+| **Cross-platform**           | iOS only         | Full      | Full          | Full      | Full         |
+| **Real-time**                | Poor             | Good      | Excellent     | Good      | Poor         |
+| **Cost**                     | Free             | Free      | Free          | Paid      | Free         |
 
 ---
 
@@ -384,6 +418,7 @@ export async function scanDocument(imagePath: string) {
 ### Why ML Kit Fails on iOS Simulator (Technical Details)
 
 From the Vision Camera repository analysis:
+
 - ML Kit Google Play Services SDK provides **precompiled xcframework files**
 - These frameworks have **two slices**: arm64 (device) and x86_64 (old Intel simulator)
 - Apple Silicon simulators expect **arm64 slice** built differently (simulator variant)
@@ -464,6 +499,7 @@ export class HybridOCRService implements OCRService {
 ## Community Solutions (Lesser-Known)
 
 ### Anyline OCR React Native Module
+
 - **NPM:** `anyline-ocr-react-native-module`
 - **Status:** Commercial SDK (version 55.9.0, recent updates)
 - **Pros:** Specialized for numeric/document scanning; great simulator support
@@ -472,6 +508,7 @@ export class HybridOCRService implements OCRService {
 - **iOS Sim Compatibility:** 9/10 (enterprise-grade reliability)
 
 ### Dynamsoft Label Recognizer (Vision Camera Plugin)
+
 - **NPM:** `vision-camera-dynamsoft-label-recognizer`
 - **Status:** Free tier available; enterprise support
 - **Pros:** Specialized for barcodes/labels/documents; frame processor plugin
@@ -484,7 +521,7 @@ export class HybridOCRService implements OCRService {
 
 ### Best Path Forward
 
-1. **Immediate (Simulator Development):** 
+1. **Immediate (Simulator Development):**
    - Switch to **Google Cloud Vision API** for development
    - Minimal config (API key only), 100% reliable on simulator
    - Cost: ~$0.002 per development test image
@@ -503,7 +540,7 @@ export class HybridOCRService implements OCRService {
 
 ```
 Week 1:  Add cloud API integration → unblock simulator testing
-Week 2-3: Integrate Guten OCR        → reduce cloud dependency  
+Week 2-3: Integrate Guten OCR        → reduce cloud dependency
 Week 4:  Optimize Vision framework   → iOS-specific boost (optional)
 ```
 
@@ -525,11 +562,13 @@ Before committing to any library:
 ## References & Testing Resources
 
 **GitHub Issues to Monitor:**
+
 - react-native-ml-kit: "Apple Silicon simulator" issues
 - react-native-vision-camera: "arm64 simulator" discussions
 - ios-firebase-sdk: Binary compatibility threads
 
 **Recommended Setup for Testing:**
+
 ```bash
 # Test Vision Framework (fastest)
 cd ios && pod install
@@ -545,6 +584,7 @@ xcrun simctl list devices | grep "iPhone.*"
 ## Conclusion
 
 **For iOS simulator development on Apple Silicon:**
+
 1. **Cleanest solution:** Google Cloud Vision API (short term)
 2. **Most reliable on-device:** Guten OCR (long term)
 3. **Native iOS optimization:** Vision framework (if unmaintained status resolves)

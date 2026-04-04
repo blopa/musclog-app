@@ -54,10 +54,7 @@ export interface OcrElement {
  * @param language Optional language code (defaults to 'eng' for English)
  * @returns Promise resolving to OCR result with recognized text
  */
-export function recognizeText(
-  imageUri: string,
-  language?: string
-): Promise<OcrResult> {
+export function recognizeText(imageUri: string, language?: string): Promise<OcrResult> {
   throw new Error('Not implemented - use platform-specific implementation');
 }
 
@@ -83,4 +80,3 @@ export async function initializeOcr(language?: string): Promise<void> {
 export async function terminateOcr(): Promise<void> {
   throw new Error('Not implemented - use platform-specific implementation');
 }
-

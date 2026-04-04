@@ -13,9 +13,10 @@
  * Usage in a component:
  */
 
-import { Button, Text, View, ActivityIndicator } from 'react-native';
-import { useOcr } from '@/hooks/useOcr';
 import { useState } from 'react';
+import { ActivityIndicator, Button, Text, View } from 'react-native';
+
+import { useOcr } from '@/hooks/useOcr';
 
 export function OcrExample() {
   const { result, loading, error, isInitialized, recognizeText, initialize } = useOcr({
@@ -70,18 +71,14 @@ export function OcrExample() {
       </View>
 
       {/* Pick Image Button */}
-      <Button
-        title="Pick Image"
-        onPress={handlePickImage}
-        disabled={!isInitialized}
-      />
+      <Button title="Pick Image" onPress={handlePickImage} disabled={!isInitialized} />
 
       {/* Selected Image Display */}
-      {selectedImage && (
+      {selectedImage ? (
         <Text style={{ fontSize: 12, color: '#666' }}>
           Selected: {selectedImage.split('/').pop()}
         </Text>
-      )}
+      ) : null}
 
       {/* Recognize Button */}
       <Button
@@ -91,10 +88,10 @@ export function OcrExample() {
       />
 
       {/* Loading Indicator */}
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
 
       {/* Results */}
-      {result && (
+      {result ? (
         <View
           style={{
             backgroundColor: '#f5f5f5',
@@ -106,29 +103,25 @@ export function OcrExample() {
           <Text style={{ fontWeight: '600' }}>Recognized Text:</Text>
           <Text selectable>{result.text}</Text>
 
-          {result.processingTimeMs && (
+          {result.processingTimeMs ? (
             <Text style={{ fontSize: 12, color: '#666' }}>
               Processing time: {result.processingTimeMs}ms
             </Text>
-          )}
+          ) : null}
 
           {/* Block Details (if available) */}
-          {result.blocks && result.blocks.length > 0 && (
+          {result.blocks && result.blocks.length > 0 ? (
             <View style={{ marginTop: 8, gap: 4 }}>
               <Text style={{ fontWeight: '500', fontSize: 12 }}>
                 Blocks detected: {result.blocks.length}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
-      )}
+      ) : null}
 
       {/* Error Display */}
-      {error && (
-        <Text style={{ color: 'red', fontSize: 12 }}>
-          Error: {error.message}
-        </Text>
-      )}
+      {error ? <Text style={{ color: 'red', fontSize: 12 }}>Error: {error.message}</Text> : null}
     </View>
   );
 }
@@ -151,4 +144,3 @@ export function OcrExample() {
  * // Cleanup
  * await OcrService.terminateOcr();
  */
-

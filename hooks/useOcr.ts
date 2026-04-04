@@ -4,9 +4,10 @@
  * and on Android devices
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import * as OcrService from '@/services/OcrService';
+import { useCallback, useEffect, useState } from 'react';
+
 import type { OcrResult } from '@/services/OcrService';
+import * as OcrService from '@/services/OcrService';
 
 interface UseOcrState {
   result: OcrResult | null;
@@ -60,10 +61,7 @@ export function useOcr(options: UseOcrOptions = {}) {
           await OcrService.initializeOcr(recognitionLanguage || language);
         }
 
-        const result = await OcrService.recognizeText(
-          imageUri,
-          recognitionLanguage || language
-        );
+        const result = await OcrService.recognizeText(imageUri, recognitionLanguage || language);
         setState((prev) => ({
           ...prev,
           result,

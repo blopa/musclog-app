@@ -7,5 +7,9 @@
 import type { OcrResult } from './OcrService';
 
 // Import Guten OCR - shared implementation for both iOS and Android
-export { recognizeText, getAvailableLanguages, initializeOcr, terminateOcr } from './OcrServiceShared';
-
+export {
+  getAvailableLanguages,
+  initializeOcr,
+  recognizeText,
+  terminateOcr,
+} from './OcrServiceShared';
