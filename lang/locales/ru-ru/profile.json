@@ -11,6 +11,12 @@
     "syncing": {
       "healthKit": "Синхронизация с HealthKit..."
     },
+    "bmiStatus": {
+      "underweight": "Недостаточный вес",
+      "normal": "Нормальный вес",
+      "overweight": "Избыточный вес",
+      "obese": "Ожирение"
+    },
     "gender": {
       "male": "Мужской",
       "female": "Женский",

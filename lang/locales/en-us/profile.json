@@ -11,6 +11,12 @@
     "syncing": {
       "healthKit": "Syncing with HealthKit..."
     },
+    "bmiStatus": {
+      "underweight": "Underweight",
+      "normal": "Normal weight",
+      "overweight": "Overweight",
+      "obese": "Obese"
+    },
     "gender": {
       "male": "Male",
       "female": "Female",
