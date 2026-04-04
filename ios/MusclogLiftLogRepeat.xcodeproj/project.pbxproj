@@ -3,8 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		51214D45C20A4F599D6C7371 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B963AE7B5F67531C95022CA7ABE42D0;
+			remoteInfo = "Pods-MusclogLiftLogRepeat";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXBuildFile section */
 		0F2C7D67B274D1959E2BEA7D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CC71A87E0F795AD690F5F7 /* ExpoModulesProvider.swift */; };
@@ -30,6 +40,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MusclogLiftLogRepeat/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; };
+		E8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +172,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				AF0E8295EA1C4ED79216E101 /* PBXTargetDependency */,
 			);
 			name = MusclogLiftLogRepeat;
 			productName = MusclogLiftLogRepeat;
@@ -169,11 +181,19 @@
 		};
 /* End PBXNativeTarget section */
 
+/* Begin PBXTargetDependency section */
+		AF0E8295EA1C4ED79216E101 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Pods-MusclogLiftLogRepeat";
+			targetProxy = 51214D45C20A4F599D6C7371 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
@@ -424,6 +444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -455,6 +476,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

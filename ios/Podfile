@@ -63,5 +63,18 @@ target 'MusclogLiftLogRepeat' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+    
+    # Fix for iOS 26.4 simulator (arm64 only, no x86_64)
+    # Remove EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 from all pod targets
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+      end
+    end
+    
+    # Also fix the main project
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+    end
   end
 end
