@@ -182,6 +182,18 @@ PODS:
   - GoogleMLKit/TextRecognition (9.0.0):
     - GoogleMLKit/MLKitCore
     - MLKitTextRecognition (~> 7.0.0)
+  - GoogleMLKit/TextRecognitionChinese (9.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognitionChinese (~> 6.0.0)
+  - GoogleMLKit/TextRecognitionDevanagari (9.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognitionDevanagari (~> 6.0.0)
+  - GoogleMLKit/TextRecognitionJapanese (9.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognitionJapanese (~> 6.0.0)
+  - GoogleMLKit/TextRecognitionKorean (9.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognitionKorean (~> 6.0.0)
   - GoogleToolboxForMac/Defines (4.2.1)
   - GoogleToolboxForMac/Logger (4.2.1):
     - GoogleToolboxForMac/Defines (= 4.2.1)
@@ -228,8 +240,24 @@ PODS:
     - MLKitCommon (~> 14.0)
     - MLKitTextRecognitionCommon (= 6.0.0)
     - MLKitVision (~> 10.0)
+  - MLKitTextRecognitionChinese (6.0.0):
+    - MLKitCommon (~> 14.0)
+    - MLKitTextRecognitionCommon (= 6.0.0)
+    - MLKitVision (~> 10.0)
   - MLKitTextRecognitionCommon (6.0.0):
     - MLKitCommon (~> 14.0)
+    - MLKitVision (~> 10.0)
+  - MLKitTextRecognitionDevanagari (6.0.0):
+    - MLKitCommon (~> 14.0)
+    - MLKitTextRecognitionCommon (= 6.0.0)
+    - MLKitVision (~> 10.0)
+  - MLKitTextRecognitionJapanese (6.0.0):
+    - MLKitCommon (~> 14.0)
+    - MLKitTextRecognitionCommon (= 6.0.0)
+    - MLKitVision (~> 10.0)
+  - MLKitTextRecognitionKorean (6.0.0):
+    - MLKitCommon (~> 14.0)
+    - MLKitTextRecognitionCommon (= 6.0.0)
     - MLKitVision (~> 10.0)
   - MLKitVision (10.0.0):
     - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
@@ -1758,6 +1786,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-text-recognition (1.0.2):
+    - React-Core
   - React-NativeModulesApple (0.81.5):
     - hermes-engine
     - React-callinvoker
@@ -2224,6 +2254,10 @@ PODS:
     - Yoga
   - RnMlkitOcr (0.3.1):
     - GoogleMLKit/TextRecognition (= 9.0.0)
+    - GoogleMLKit/TextRecognitionChinese (= 9.0.0)
+    - GoogleMLKit/TextRecognitionDevanagari (= 9.0.0)
+    - GoogleMLKit/TextRecognitionJapanese (= 9.0.0)
+    - GoogleMLKit/TextRecognitionKorean (= 9.0.0)
     - React-Core
   - RNReanimated (4.1.7):
     - hermes-engine
@@ -2586,6 +2620,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
+  - react-native-text-recognition (from `../node_modules/react-native-text-recognition`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -2647,7 +2682,11 @@ SPEC REPOS:
     - MLKitBarcodeScanning
     - MLKitCommon
     - MLKitTextRecognition
+    - MLKitTextRecognitionChinese
     - MLKitTextRecognitionCommon
+    - MLKitTextRecognitionDevanagari
+    - MLKitTextRecognitionJapanese
+    - MLKitTextRecognitionKorean
     - MLKitVision
     - nanopb
     - PromisesObjC
@@ -2821,6 +2860,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
+  react-native-text-recognition:
+    :path: "../node_modules/react-native-text-recognition"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -2967,7 +3008,11 @@ SPEC CHECKSUMS:
   MLKitBarcodeScanning: 39de223e7b1b8a8fbf10816a536dd292d8a39343
   MLKitCommon: 47d47b50a031d00db62f1b0efe5a1d8b09a3b2e6
   MLKitTextRecognition: c0ad24510481dfc8893ad15dfcb8a5f05ed9e826
+  MLKitTextRecognitionChinese: b69210723ed8cc9bc7b2e7847001880b0dcbb7f8
   MLKitTextRecognitionCommon: 234ceb1cfdfb5fceb4fd664943046609a2961cc2
+  MLKitTextRecognitionDevanagari: 326281ad520172466dd6dd6a784fa03fb8ab9e37
+  MLKitTextRecognitionJapanese: 965f89fd8ad3a02eb466106522ed08ea19f30f61
+  MLKitTextRecognitionKorean: 22c8d6a73f519fa9732873993a30b067f8deccb1
   MLKitVision: 39a5a812db83c4a0794445088e567f3631c11961
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroModules: 00c15fcce98b504f21bd5b0c99276db161efcb39
@@ -3014,6 +3059,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 37e680fc4cace3c0030ee46e8987d24f5d3bdab2
   react-native-skia: 05327e7acee05e7c27b68a5da0bc80d65f5d790c
   react-native-slider: 8c562583722c396a3682f451f0b6e68e351ec3b9
+  react-native-text-recognition: 2f93fddd03668fc4011dfdb1895324c710a026ca
   React-NativeModulesApple: 8969913947d5b576de4ed371a939455a8daf28aa
   React-oscompat: ce47230ed20185e91de62d8c6d139ae61763d09c
   React-perflogger: 02b010e665772c7dcb859d85d44c1bfc5ac7c0e4
@@ -3051,7 +3097,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: be0e44bcb9ed0607c7c5f47dbedd88cf091f6791
   RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e
   RNGestureHandler: 2914750df066d89bf9d8f48a10ad5f0051108ac3
-  RnMlkitOcr: 07727eb6ffdc6f45fd6b50589420735968877d0a
+  RnMlkitOcr: c080ed8b1aed4fe4ad6d20a54c8221bd56a7f1cc
   RNReanimated: 41f496c18437fd0aa841234917af84e98fd5b9a2
   RNScreens: d8d6f1792f6e7ac12b0190d33d8d390efc0c1845
   RNSentry: 41979b419908128847ef662cc130a400b7576fa9
@@ -3066,6 +3112,6 @@ SPEC CHECKSUMS:
   Yoga: 5934998fbeaef7845dbf698f698518695ab4cd1a
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: fbc2fbf9d7a13838f571432f1341bf43bf405e23
+PODFILE CHECKSUM: a95252ba0758fe7bb85a1b2987f86d7875c2a397
 
 COCOAPODS: 1.16.2

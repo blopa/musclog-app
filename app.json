@@ -65,13 +65,6 @@
       "expo-web-browser",
       "@react-native-community/datetimepicker",
       [
-        "rn-mlkit-ocr",
-        {
-          "ocrModels": ["latin"],
-          "ocrUseBundled": true
-        }
-      ],
-      [
         "expo-asset",
         {
           "assets": ["./assets/exercises"]
