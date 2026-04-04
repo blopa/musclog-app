@@ -15,7 +15,7 @@ import {
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { NavItemKey } from '../constants/settings';
 import { useNavigationItems } from '../hooks/useNavigationItems';
@@ -41,6 +41,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const unreadChatMessages = useUnreadChatMessages();
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
+  const insets = useSafeAreaInsets();
 
   const isPathActive = useCallback(
     (path: string) => {
@@ -320,10 +321,12 @@ export const NavigationMenu = memo(function NavigationMenu({
   return (
     <View
       className="absolute bottom-0 left-0 right-0 border-t border-border-dark"
-      style={{ backgroundColor: theme.colors.background.secondaryDark }}
+      style={{
+        backgroundColor: theme.colors.background.secondaryDark,
+        paddingBottom: insets.bottom,
+      }}
     >
-      <SafeAreaView edges={['bottom']}>
-        <View className="relative flex-row items-stretch px-6 py-4">
+      <View className="relative flex-row items-stretch px-6 py-4">
           {/* Home - always fixed */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
@@ -385,7 +388,6 @@ export const NavigationMenu = memo(function NavigationMenu({
           {/* Slot 3 - customizable */}
           {renderNavSlot(navSlot3)}
         </View>
-      </SafeAreaView>
     </View>
   );
 });

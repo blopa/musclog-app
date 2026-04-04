@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
+import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
@@ -166,7 +166,7 @@ export default function ProgressScreen() {
   ];
 
   return (
-    <MasterLayout>
+    <MasterLayout showNavigationMenu={false}>
       <Stack.Screen
         options={{
           title: t('progress.title'),
