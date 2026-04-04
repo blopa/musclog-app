@@ -49,6 +49,7 @@
     "prebuild-ios-device": "EXPO_IS_SIMULATOR_BUILD=false expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install",
     "run-ios": "expo run:ios",
     "run-ios-device": "expo run:ios --device",
+    "ios-simulator": "expo run:ios --device",
     "patch-ios-project": "node scripts/fix-ios-project.js",
     "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
   },
