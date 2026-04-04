@@ -77,19 +77,35 @@ So yes, `ios/` files will change every time you run prebuild - **this is expecte
 
 ### Development Workflow
 
-**For regular development** (after pulling changes or updating deps):
+**Important**: After `expo prebuild --clean`, the `ios/` directory is regenerated and loses some fixes. You need to run additional steps:
+
+**Quick fix after prebuild:**
 
 ```bash
-# Clean prebuild + pod install (patches run automatically during pod install)
-npm run prebuild:ios
+# 1. Fix project.pbxproj (adds PBXTargetDependency)
+node scripts/fix-ios-project.js
 
-# This runs: expo prebuild -p ios --clean && cd ios && pod install
+# 2. Fix xcconfigs (remove EXCLUDED_ARCHS)
+sed -i '' '/EXCLUDED_ARCHS\[sdk=iphonesimulator\*\] = arm64/d' "ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig"
+sed -i '' '/EXCLUDED_ARCHS\[sdk=iphonesimulator\*\] = arm64/d' "ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig"
+
+# 3. Run binary patches
+python3 fix_opencv_simulator.py
+python3 fix_mlimage_simulator.py
+python3 fix_mlkit_simulator.py
+```
+
+**Or use npm run prebuild:ios (handles step 1):**
+
+```bash
+npm run prebuild:ios
+# Then manually run the xcconfig fix and binary patches
 ```
 
 **For EAS builds** (production):
 
 ```bash
-# The config plugin patches the Podfile, and EAS runs pod install automatically
+# The config plugin patches the Podfile, but you'll need to add a pre-build script
 eas build -p ios --profile development
 ```
 
@@ -749,7 +765,7 @@ npx expo run:ios
 | Error                                                                                                | Fix                                                                                                  |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                                                  | Commit the `project.pbxproj` changes from Section 3 to git, or re-apply them manually after prebuild |
-| `found architecture 'x86_64', required architecture 'arm64'`                                         | Run `npm run prebuild:ios` or `cd ios && pod install`                                                |
+| `found architecture 'x86_64', required architecture 'arm64'`                                         | Run the sed command to remove EXCLUDED_ARCHS from xcconfigs (Section 4)                                |
 | `building for 'iOS-simulator', but linking in object file ... opencv2[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                                      |
 | `building for 'iOS-simulator', but linking in object file ... MLImage[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                                      |
 | `building for 'iOS-simulator', but linking in object file ... MLKitCommon[arm64]... built for 'iOS'` | Run `cd ios && pod install` to re-apply patches                                                      |
