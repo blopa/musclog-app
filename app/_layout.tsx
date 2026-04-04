@@ -2,26 +2,17 @@ import '../database';
 import '../lang/lang';
 import '../global.css';
 
-import { cssInterop } from 'nativewind';
 import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
 import { Stack } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { cssInterop } from 'nativewind';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { FlatList, Platform, ScrollView, SectionList, TouchableOpacity } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList, ScrollView, SectionList, TouchableOpacity } from 'react-native';
-
-// Fix NativeWind className support on iOS for these components
-// These components don't properly support className on iOS without cssInterop
-cssInterop(SafeAreaView, { className: 'style' });
-cssInterop(TouchableOpacity, { className: 'style' });
-cssInterop(FlatList, { className: 'style' });
-cssInterop(ScrollView, { className: 'style' });
-cssInterop(SectionList, { className: 'style' });
 
 import { CoachProvider } from '../components/CoachContext';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
@@ -35,6 +26,14 @@ import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
 import { WebModalShellProvider } from '../context/WebModalShellContext';
 import { captureException } from '../utils/sentry';
+
+// Fix NativeWind className support on iOS for these components
+// These components don't properly support className on iOS without cssInterop
+cssInterop(SafeAreaView, { className: 'style' });
+cssInterop(TouchableOpacity, { className: 'style' });
+cssInterop(FlatList, { className: 'style' });
+cssInterop(ScrollView, { className: 'style' });
+cssInterop(SectionList, { className: 'style' });
 
 const queryClient = new QueryClient({
   defaultOptions: {

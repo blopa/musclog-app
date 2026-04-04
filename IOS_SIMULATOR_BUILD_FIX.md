@@ -765,7 +765,7 @@ npx expo run:ios
 | Error                                                                                                | Fix                                                                                                  |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                                                  | Commit the `project.pbxproj` changes from Section 3 to git, or re-apply them manually after prebuild |
-| `found architecture 'x86_64', required architecture 'arm64'`                                         | Run the sed command to remove EXCLUDED_ARCHS from xcconfigs (Section 4)                                |
+| `found architecture 'x86_64', required architecture 'arm64'`                                         | Run the sed command to remove EXCLUDED_ARCHS from xcconfigs (Section 4)                              |
 | `building for 'iOS-simulator', but linking in object file ... opencv2[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                                      |
 | `building for 'iOS-simulator', but linking in object file ... MLImage[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                                      |
 | `building for 'iOS-simulator', but linking in object file ... MLKitCommon[arm64]... built for 'iOS'` | Run `cd ios && pod install` to re-apply patches                                                      |

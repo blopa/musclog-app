@@ -68,7 +68,7 @@ function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
         {icon}
       </View>
       <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
-      {isLoading && <ActivityIndicator size="small" color="#10B981" />}
+      {isLoading ? <ActivityIndicator size="small" color="#10B981" /> : null}
     </Pressable>
   );
 }
@@ -321,9 +321,9 @@ export function UserMenuModal({
                   <Text className="flex-1 text-lg font-semibold text-text-primary">
                     {t('userMenu.debugPage')}
                   </Text>
-                  {loadingItem === 'debug' && (
+                  {loadingItem === 'debug' ? (
                     <ActivityIndicator size="small" color="#10B981" />
-                  )}
+                  ) : null}
                 </Pressable>
               ) : null}
             </View>
