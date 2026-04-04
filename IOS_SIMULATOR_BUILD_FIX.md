@@ -27,11 +27,11 @@
 
 There were **multiple independent, compounding issues** that all had to be resolved before the simulator build succeeded:
 
-| #   | Error                                                                          | Root Cause                                                                  | Quick Fix |
-| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | --------- |
-| 1   | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                            | Xcode 26 regression: implicit cross-project dependencies stopped working    | See Section 3 |
-| 2   | `found architecture 'x86_64', required architecture 'arm64'`                   | Pods xcconfigs excluded arm64 for the simulator                             | See Section 4 |
-| 3   | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator | `python3 fix_opencv_simulator.py` |
+| #   | Error                                                                          | Root Cause                                                                  | Quick Fix                                                               |
+| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1   | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                            | Xcode 26 regression: implicit cross-project dependencies stopped working    | See Section 3                                                           |
+| 2   | `found architecture 'x86_64', required architecture 'arm64'`                   | Pods xcconfigs excluded arm64 for the simulator                             | See Section 4                                                           |
+| 3   | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator | `python3 fix_opencv_simulator.py`                                       |
 | 4   | MLImage/MLKit linking errors                                                   | MLKit frameworks also tagged for iOS device instead of simulator            | `python3 fix_mlimage_simulator.py` and `python3 fix_mlkit_simulator.py` |
 
 Each issue surfaced only after the previous one was fixed.
@@ -61,30 +61,35 @@ The config plugin has already been added to `app.json`:
 ```json
 {
   "expo": {
-    "plugins": [
-      "./plugins/withIosSimulatorBuildFix"
-    ]
+    "plugins": ["./plugins/withIosSimulatorBuildFix"]
   }
 }
 ```
+
+### Understanding the Workflow
+
+**Important**: `expo prebuild --clean` **always regenerates** the `ios/` directory from scratch - this is by design. The workflow is:
+
+1. **`expo prebuild -p ios --clean`** - Generates fresh iOS project files (wipes any previous changes)
+2. **`pod install`** - Downloads CocoaPods dependencies AND runs our patches via the `post_install` hook
+
+So yes, `ios/` files will change every time you run prebuild - **this is expected**! The patches are re-applied during `pod install`.
 
 ### Development Workflow
 
 **For regular development** (after pulling changes or updating deps):
 
 ```bash
-# Clean prebuild + auto-patch (recommended)
+# Clean prebuild + pod install (patches run automatically during pod install)
 npm run prebuild:ios
 
-# Or manually run patches after a regular prebuild
-expo prebuild -p ios --clean
-npm run patch-ios-frameworks
+# This runs: expo prebuild -p ios --clean && cd ios && pod install
 ```
 
 **For EAS builds** (production):
 
 ```bash
-# The config plugin runs automatically during EAS build
+# The config plugin patches the Podfile, and EAS runs pod install automatically
 eas build -p ios --profile development
 ```
 
@@ -92,10 +97,17 @@ eas build -p ios --profile development
 
 The `withIosSimulatorBuildFix` plugin (`plugins/withIosSimulatorBuildFix.js`):
 
-1. **Modifies Podfile** - Adds the `EXCLUDED_ARCHS[sdk=iphonesimulator*] = ''` fix to the `post_install` hook
-2. **Runs binary patches** - Executes the Python scripts to patch framework binaries (only if they exist)
+1. **Modifies Podfile** - Adds the `EXCLUDED_ARCHS[sdk=iphonesimulator*] = ''` fix
+2. **Adds post_install hook** - Embeds the binary patch commands to run AFTER `pod install`
+
+When `pod install` runs, it will:
+
+- Download all CocoaPods dependencies
+- Run the `post_install` hook which executes the Python patch scripts
+- Patch OpenCV, MLImage, and MLKit frameworks
 
 This ensures fixes are applied consistently across:
+
 - Local development (`expo run:ios`)
 - EAS builds (`eas build`)
 - CI/CD pipelines
@@ -107,14 +119,14 @@ project-root/
 ├── app.json                          # Has plugin reference
 ├── package.json                      # Has npm scripts
 ├── plugins/
-│   └── withIosSimulatorBuildFix.js   # Expo config plugin (build-time)
-├── fix_opencv_simulator.py           # Binary patch script (build-time)
-├── fix_mlimage_simulator.py          # Binary patch script (build-time)
-├── fix_mlkit_simulator.py            # Binary patch script (build-time)
-└── ios/                              # Generated by prebuild (don't edit!)
+│   └── withIosSimulatorBuildFix.js   # Expo config plugin
+├── fix_opencv_simulator.py           # Binary patch script
+├── fix_mlimage_simulator.py          # Binary patch script
+├── fix_mlkit_simulator.py            # Binary patch script
+└── ios/                              # Generated by prebuild (regenerated on each prebuild!)
 ```
 
-**Important**: Never manually edit files in `ios/` - they get wiped on `expo prebuild`. The plugin handles all modifications automatically.
+**Important**: The `ios/` directory is regenerated on every `expo prebuild --clean`. Don't manually edit files in `ios/` - they will be lost! The plugin handles modifications via the Podfile.
 
 ---
 
@@ -267,7 +279,7 @@ Or add this to your `Podfile` to fix it automatically after each `pod install`:
 ```ruby
 post_install do |installer|
   # ... existing post_install code ...
-  
+
   # Fix for iOS 26.4 simulator (arm64 only, no x86_64)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
@@ -532,7 +544,13 @@ Done! Patched in-place, all symbols preserved.
 
 ### Quick Fix
 
-> **For Expo projects**: The `withIosSimulatorBuildFix` config plugin (Section 2) runs this patch automatically during `expo prebuild`. For local development, you can also run it manually:
+> **For Expo projects**: The patches run automatically during `pod install` (which is triggered by `npm run prebuild:ios` or manually). If you need to re-run patches:
+
+```bash
+cd ios && pod install
+```
+
+For non-Expo projects, manually run:
 
 **Try running this script to fix OpenCV:**
 
@@ -541,6 +559,7 @@ python3 fix_opencv_simulator.py
 ```
 
 Expected output:
+
 ```
 Architectures in the fat file: ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2 are: armv7 armv7s i386 x86_64 arm64
 Found 739 Mach-O members, patched 738 LC_VERSION_MIN_IPHONEOS commands.
@@ -605,7 +624,7 @@ Then re-run the patch script if needed.
 ### `ios/Pods/MLKit*/Frameworks/*.framework/*`
 
 - MLKitCommon: 397/398 objects patched
-- MLKitVision: 11/12 objects patched  
+- MLKitVision: 11/12 objects patched
 - MLKitTextRecognition: 2/3 objects patched
 - MLKitTextRecognitionChinese: 1/2 objects patched
 - MLKitTextRecognitionDevanagari: 1/2 objects patched
@@ -618,7 +637,11 @@ All patches change `LC_BUILD_VERSION` platform from 2 (iOS) to 7 (iOS Simulator)
 
 ## 9. Additional Framework Patches Required for iOS 26.4
 
-> **For Expo projects**: The `withIosSimulatorBuildFix` config plugin (Section 2) runs these patches automatically during `expo prebuild`.
+> **For Expo projects**: The patches run automatically during `pod install`. If frameworks still have issues, run:
+>
+> ```bash
+> cd ios && pod install
+> ```
 
 In addition to OpenCV, the following frameworks may also need patching for iOS 26.4 simulator builds:
 
@@ -653,17 +676,20 @@ This patches all MLKit frameworks (MLKitCommon, MLKitVision, MLKitBarcodeScannin
 If using the `withIosSimulatorBuildFix` config plugin (Section 2), simply run:
 
 ```bash
-# Clean prebuild + auto-apply all fixes
+# Clean prebuild + pod install (patches run automatically during pod install)
 npm run prebuild:ios
 
 # Or step by step:
 expo prebuild -p ios --clean
-npm run patch-ios-frameworks
+cd ios && pod install
 ```
 
-The config plugin handles:
-- Podfile modification (EXCLUDED_ARCHS fix)
-- Binary patches for OpenCV, MLImage, MLKit
+The config plugin:
+
+1. Modifies Podfile with EXCLUDED_ARCHS fix
+2. Adds post_install hook to run binary patches AFTER pods are installed
+
+**Note**: The `ios/` directory is regenerated fresh each time - this is expected!
 
 ### Manual Process (Non-Expo or Debugging)
 
@@ -703,13 +729,13 @@ npx expo run:ios
 
 ## 11. Quick Troubleshooting Guide
 
-| Error | Fix |
-|-------|-----|
-| `ld: library 'Pods-MusclogLiftLogRepeat' not found` | Check that `project.pbxproj` has the `PBXTargetDependency` entries (Section 3) |
-| `found architecture 'x86_64', required architecture 'arm64'` | Run the sed command or add the `post_install` hook (Section 4) |
-| `building for 'iOS-simulator', but linking in object file ... opencv2[arm64]... built for 'iOS'` | Run `python3 fix_opencv_simulator.py` |
-| `building for 'iOS-simulator', but linking in object file ... MLImage[arm64]... built for 'iOS'` | Run `python3 fix_mlimage_simulator.py` |
-| `building for 'iOS-simulator', but linking in object file ... MLKitCommon[arm64]... built for 'iOS'` | Run `python3 fix_mlkit_simulator.py` |
+| Error                                                                                                | Fix                                                                            |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `ld: library 'Pods-MusclogLiftLogRepeat' not found`                                                  | Check that `project.pbxproj` has the `PBXTargetDependency` entries (Section 3) |
+| `found architecture 'x86_64', required architecture 'arm64'`                                         | Run `npm run prebuild:ios` or `cd ios && pod install`                          |
+| `building for 'iOS-simulator', but linking in object file ... opencv2[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                |
+| `building for 'iOS-simulator', but linking in object file ... MLImage[arm64]... built for 'iOS'`     | Run `cd ios && pod install` to re-apply patches                                |
+| `building for 'iOS-simulator', but linking in object file ... MLKitCommon[arm64]... built for 'iOS'` | Run `cd ios && pod install` to re-apply patches                                |
 
 ---
 
