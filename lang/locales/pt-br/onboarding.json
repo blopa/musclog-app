@@ -61,7 +61,9 @@
         "title": "Duração do Ciclo",
         "description": "Qual é a duração típica do seu ciclo e período?",
         "cycleLength": "Duração Média do Ciclo",
-        "periodDuration": "Duração Média do Período"
+        "periodDuration": "Duração Média do Período",
+        "cycleLengthLabel": "Duração do Ciclo",
+        "periodDurationLabel": "Duração do Período"
       },
       "goal": {
         "title": "Meta de Sincronização",
@@ -82,7 +84,7 @@
         "nutrition": "Nutrição",
         "weight": "Peso",
         "sleep": "Sono",
-        "vitals": "Vitais"
+        "bodyComposition": "Composição Corporal"
       },
       "allowHealthAccess": "Permitir Acesso à Saúde",
       "connectedCount": "Conectado {{granted}}/{{total}}",

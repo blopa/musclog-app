@@ -69,6 +69,7 @@ export function AINotConfiguredModal({
                 borderRadius: 55,
                 alignItems: 'center',
                 justifyContent: 'center',
+                overflow: 'hidden',
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.border.light,
               }}

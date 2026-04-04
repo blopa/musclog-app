@@ -197,7 +197,13 @@ export function BrowseTemplatesModal({
                 colors={theme.colors.gradients.cta}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="flex-1 items-center justify-center"
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 48,
+                  overflow: 'hidden',
+                }}
               >
                 <MaterialIcons name={template.icon} size={24} color="white" />
               </LinearGradient>

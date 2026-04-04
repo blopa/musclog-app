@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
+import { Dumbbell, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -133,10 +133,10 @@ export default function HealthConnectScreen() {
                 iconColor={theme.colors.status.emerald}
               />
 
-              {/* Vitals */}
+              {/* Body Composition */}
               <HealthCategoryCard
-                icon={Heart}
-                label={t('onboarding.healthConnect.categories.vitals')}
+                icon={Dumbbell}
+                label={t('onboarding.healthConnect.categories.bodyComposition')}
                 backgroundColor={theme.colors.status.purple10}
                 iconColor={theme.colors.status.purple}
               />

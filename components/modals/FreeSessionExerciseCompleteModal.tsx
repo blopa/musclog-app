@@ -157,6 +157,8 @@ export function FreeSessionExerciseCompleteModal({
                   height: '100%',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderRadius: 96,
+                  overflow: 'hidden',
                 }}
               >
                 <CheckCircle size={48} color={theme.colors.text.white} strokeWidth={2.5} />

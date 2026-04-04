@@ -56,7 +56,12 @@ export function FoodNotFoundModal({
               colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="flex-row items-center gap-4 p-4"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 16,
+                padding: 16,
+              }}
             >
               <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
                 <Text className="text-2xl">✨</Text>

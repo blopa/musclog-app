@@ -38,7 +38,8 @@ export default function PreRegistrationIntro() {
           end={{ x: 1, y: 1 }}
           style={{
             flex: 1,
-            borderRadius: theme.borderRadius.full,
+            borderRadius: 9999,
+            overflow: 'hidden',
           }}
         />
       </View>

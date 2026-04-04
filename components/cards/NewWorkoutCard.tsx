@@ -77,9 +77,10 @@ export function NewWorkoutCard({
                 style={{
                   width: '100%',
                   height: '100%',
-                  borderRadius: theme.borderRadius.full,
+                  borderRadius: 100,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  overflow: 'hidden',
                   ...theme.shadows.accent,
                 }}
               >

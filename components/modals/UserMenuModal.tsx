@@ -14,7 +14,7 @@ import {
 import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Platform, Pressable, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavigationItems } from '../../hooks/useNavigationItems';
 import { useTheme } from '../../hooks/useTheme';
@@ -81,6 +81,7 @@ export function UserMenuModal({
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
 
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
+  const insets = useSafeAreaInsets();
 
   return (
     <Modal
@@ -96,14 +97,14 @@ export function UserMenuModal({
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}
       >
-        <SafeAreaView
+        <View
           className="flex-1 justify-start"
-          edges={['top']}
-          style={
+          style={[
             Platform.OS === 'web'
               ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }
-              : undefined
-          }
+              : undefined,
+            { paddingTop: insets.top },
+          ]}
         >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
@@ -290,7 +291,7 @@ export function UserMenuModal({
             {/* Top safe area spacing */}
             <View className="h-8" />
           </View>
-        </SafeAreaView>
+        </View>
       </Pressable>
     </Modal>
   );

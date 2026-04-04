@@ -51,7 +51,6 @@ const APP_SCREENS = [
     category: 'Onboarding',
   },
   { name: 'Health Connect', route: '/onboarding/health-connect', category: 'Onboarding' },
-  { name: 'Fitness Info', route: '/onboarding/fitness-info', category: 'Onboarding' },
   { name: 'Test: Buttons', route: '/test/buttons', category: 'Test' },
   { name: 'Test: Cards', route: '/test/cards', category: 'Test' },
   { name: 'Test: Empty States', route: '/test/empty-states', category: 'Test' },

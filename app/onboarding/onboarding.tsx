@@ -58,7 +58,8 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -123,7 +124,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -258,7 +260,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -393,7 +396,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>

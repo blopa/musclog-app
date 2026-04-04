@@ -423,8 +423,14 @@ export default function ViewExerciseModal({
               <LinearGradient
                 colors={theme.colors.gradients.overlayDark}
                 locations={[0, 0.7, 1]}
-                className="absolute bottom-0 left-0 right-0"
-                style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: theme.spacing.padding.xl,
+                  zIndex: theme.zIndex.overlayLow,
+                }}
               >
                 <Button
                   label={t('exercises.viewExercise.watchTechnique')}
@@ -447,8 +453,15 @@ export default function ViewExerciseModal({
                     colors={theme.colors.gradients.blueEmerald}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                    style={{ borderRadius: theme.borderRadius.full }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                      borderRadius: 9999,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      overflow: 'hidden',
+                    }}
                   >
                     <Text
                       className="text-xs font-medium uppercase tracking-wide"
@@ -576,8 +589,14 @@ export default function ViewExerciseModal({
                     icon={
                       <LinearGradient
                         colors={workout.iconGradient}
-                        className="h-full w-full items-center justify-center"
-                        style={{ borderRadius: theme.borderRadius['2xl'] }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: theme.borderRadius['2xl'],
+                          overflow: 'hidden',
+                        }}
                       >
                         <workout.icon
                           size={theme.iconSize['3xl']}
