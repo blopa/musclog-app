@@ -5,7 +5,6 @@
     "version": "2.6.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
-    "jsEngine": "hermes",
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
@@ -64,7 +63,6 @@
       ],
       "expo-background-task",
       "expo-web-browser",
-      "@react-native-community/datetimepicker",
       [
         "expo-asset",
         {

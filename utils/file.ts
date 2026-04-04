@@ -8,7 +8,6 @@ import {
   readAsStringAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
-import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -19,6 +18,7 @@ import { DevSettings } from 'react-native';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
 import { detectBarcodes } from './barcodeScanner';
+type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
 
 export { detectBarcodes };
 

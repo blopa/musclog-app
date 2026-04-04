@@ -17,7 +17,12 @@ export async function getLastNotificationResponseAsync() {
  */
 export async function handleNotificationResponse(response: Notifications.NotificationResponse) {
   const data = response.notification.request.content.data;
-  const { type } = data;
+
+  if (!data) {
+    return;
+  }
+
+  const type = data['type'] as string | undefined;
 
   if (!type) {
     return;
@@ -25,8 +30,8 @@ export async function handleNotificationResponse(response: Notifications.Notific
 
   switch (type) {
     case 'workout-reminder':
-      if (data.templateId) {
-        router.navigate(`/workouts/start?templateId=${data.templateId}`);
+      if (data['templateId']) {
+        router.navigate(`/workouts/start?templateId=${data['templateId']}`);
       } else {
         router.navigate('/workouts');
       }
