@@ -99,6 +99,28 @@ if (!content.includes('SUPPORTED_PLATFORMS')) {
 
 fs.writeFileSync(projectPath, content);
 
+// 7. Fix xcscheme LastUpgradeVersion (1130 → 1600) so Xcode 26 enumerates simulator destinations
+const schemePath = path.join(
+  __dirname,
+  '..',
+  'ios',
+  'MusclogLiftLogRepeat.xcodeproj',
+  'xcshareddata',
+  'xcschemes',
+  'MusclogLiftLogRepeat.xcscheme'
+);
+if (fs.existsSync(schemePath)) {
+  let schemeContent = fs.readFileSync(schemePath, 'utf-8');
+  if (schemeContent.includes('LastUpgradeVersion = "1130"')) {
+    schemeContent = schemeContent.replace(
+      'LastUpgradeVersion = "1130"',
+      'LastUpgradeVersion = "1600"'
+    );
+    fs.writeFileSync(schemePath, schemeContent);
+    console.log('✅ xcscheme LastUpgradeVersion updated to 1600');
+  }
+}
+
 // Verify
 const verifyContent = fs.readFileSync(projectPath, 'utf-8');
 if (verifyContent.includes('AF0E8295EA1C4ED79216E101')) {

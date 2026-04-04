@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Cross-platform prebuild script.
+ * Cross-platform prebuild script that handles macOS/iOS and Linux correctly.
  *
- * CRITICAL ORDER:
- * 1. expo prebuild --clean (generates fresh iOS/Android projects)
- * 2. pod install (installs pods, runs post_install hooks)
- * 3. fix-ios-project.js (applies PBXTargetDependency fix AFTER pod install)
+ * expo prebuild --clean already runs pod install internally.
+ * After it completes, we just restore project.pbxproj from git to bring back
+ * the PBXTargetDependency fix (IOS_SIMULATOR_BUILD_FIX.md section 2).
  *
- * The PBXTargetDependency fix must be applied AFTER pod install, not before,
- * because it references Pods.xcodeproj which causes CocoaPods to fail during post_install.
+ * DO NOT run pod install again — it crashes due to Ruby 4.0 / atomos gem
+ * incompatibility in react_native_post_install, which destroys the xcworkspace.
  */
 
 const { execSync } = require('child_process');
@@ -17,30 +16,55 @@ const fs = require('fs');
 const os = require('os');
 
 const isMacOS = os.platform() === 'darwin';
+const projectPbxprojPath = 'ios/MusclogLiftLogRepeat.xcodeproj/project.pbxproj';
+const xcschemePath =
+  'ios/MusclogLiftLogRepeat.xcodeproj/xcshareddata/xcschemes/MusclogLiftLogRepeat.xcscheme';
 
 console.log(`[prebuild-cross-platform] Platform: ${os.platform()}`);
 
 try {
-  // Step 1: Clean prebuild
+  // Step 1: Clean prebuild (includes pod install via expo's built-in CocoaPods integration)
   console.log('[prebuild-cross-platform] Step 1: expo prebuild --clean');
   execSync('npx expo prebuild --clean', { stdio: 'inherit', cwd: process.cwd() });
 
   if (isMacOS) {
-    // Step 2: Run pod install (this applies EXCLUDED_ARCHS fix via post_install hook)
-    // IMPORTANT: Do NOT modify project.pbxproj before this step!
-    console.log('[prebuild-cross-platform] Step 2: pod install');
+    // Step 2: Restore project.pbxproj from git (brings back PBXTargetDependency fix)
+    // expo prebuild regenerated it; we need the committed version with the fix.
+    console.log('[prebuild-cross-platform] Step 2: Restoring project.pbxproj from git...');
     try {
-      execSync('cd ios && pod install', { stdio: 'inherit', cwd: process.cwd() });
+      execSync(`git checkout ${projectPbxprojPath} ${xcschemePath}`, {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      });
+      console.log('[prebuild-cross-platform] ✅ project.pbxproj and xcscheme restored from git');
     } catch (e) {
-      // Pod install may fail due to the post_install hook issue
-      // Continue anyway and try to fix it
-      console.log('[prebuild-cross-platform] ⚠️  pod install had issues, continuing with fix...');
+      // Not committed yet — apply fix-ios-project.js instead (patches both files)
+      console.log(
+        '[prebuild-cross-platform] ⚠️  Could not restore from git, applying fix-ios-project.js...'
+      );
+      execSync('node scripts/fix-ios-project.js', { stdio: 'inherit', cwd: process.cwd() });
     }
 
-    // Step 3: Apply project.pbxproj fixes AFTER pod install
-    // This adds PBXTargetDependency which can't be in the project during pod install
-    console.log('[prebuild-cross-platform] Step 3: Applying fix-ios-project.js');
-    execSync('node scripts/fix-ios-project.js', { stdio: 'inherit', cwd: process.cwd() });
+    // Step 3: Remove EXCLUDED_ARCHS from xcconfigs (IOS_SIMULATOR_BUILD_FIX.md section 2 & 10)
+    // The main app target uses these xcconfigs as baseConfigurationReference.
+    // EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 prevents ALL simulator destination enumeration.
+    console.log('[prebuild-cross-platform] Step 3: Removing EXCLUDED_ARCHS from xcconfigs...');
+    const xcconfigs = [
+      'ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig',
+      'ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig',
+      'ios/Pods/Target Support Files/OpenCV/OpenCV.debug.xcconfig',
+      'ios/Pods/Target Support Files/OpenCV/OpenCV.release.xcconfig',
+    ];
+    for (const xcconfig of xcconfigs) {
+      if (fs.existsSync(xcconfig)) {
+        const content = fs.readFileSync(xcconfig, 'utf-8');
+        const fixed = content.replace(/EXCLUDED_ARCHS\[sdk=iphonesimulator\*\] = arm64\n?/g, '');
+        if (fixed !== content) {
+          fs.writeFileSync(xcconfig, fixed);
+          console.log(`[prebuild-cross-platform] ✅ Removed EXCLUDED_ARCHS from ${xcconfig}`);
+        }
+      }
+    }
 
     console.log('[prebuild-cross-platform] ✅ iOS project ready');
   } else {
