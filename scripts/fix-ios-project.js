@@ -41,6 +41,17 @@ if (!content.includes('E8E11EA3CEC44DF7A02CE491')) {
   );
 }
 
+// 1b. Add the file reference to the main group (so it's part of the project structure)
+// Find the main group (the one with children that contains the Products group)
+if (!content.includes('E8E11EA3CEC44DF7A02CE491') || !content.match(/children = \([\s\S]*?E8E11EA3CEC44DF7A02CE491/)) {
+  // Find a good spot in the main group's children array
+  // Look for the "Products" entry in children and add before it
+  content = content.replace(
+    /(children = \([\s\S]*?)(\t\t\t\t83CBBA001A601CBA00E9B192 \/\* Products \*\/;)/,
+    '$1\t\t\t\tE8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */,\n$2'
+  );
+}
+
 // 2. Add PBXContainerItemProxy section
 if (!content.includes('51214D45C20A4F599D6C7371')) {
   const containerProxy = `/* Begin PBXContainerItemProxy section */\n\	\t51214D45C20A4F599D6C7371 /* PBXContainerItemProxy */ = {\n\	\t\tisa = PBXContainerItemProxy;\n\	\t\tcontainerPortal = E8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */;\n\	\t\tproxyType = 1;\n\	\t\tremoteGlobalIDString = 4B963AE7B5F67531C95022CA7ABE42D0;\n\	\t\tremoteInfo = "Pods-MusclogLiftLogRepeat";\n\	\t};\n/* End PBXContainerItemProxy section */\n\n`;
@@ -75,10 +86,11 @@ content = content.replace(/LastUpgradeCheck = \d+;/, 'LastUpgradeCheck = 1600;')
 
 // 6. Add SUPPORTED_PLATFORMS if not present
 if (!content.includes('SUPPORTED_PLATFORMS')) {
-  // Add to both Debug and Release configurations
+  // Add after LD_RUNPATH_SEARCH_PATHS in build settings
+  // Handle multiline format
   content = content.replace(
-    /(LD_RUNPATH_SEARCH_PATHS = \(\s*"\$\(inherited\)",\s*"@executable_path\/Frameworks",\s*\);)(\s*MARKETING_VERSION)/g,
-    '$1\n\t\t\t\tSUPPORTED_PLATFORMS = "iphonesimulator iphoneos";$2'
+    /(LD_RUNPATH_SEARCH_PATHS = \(\s*"[^"]+",\s*"@executable_path\/Frameworks",\s*\);)([\s\S]*?)(MARKETING_VERSION)/g,
+    '$1\n\t\t\t\tSUPPORTED_PLATFORMS = "iphonesimulator iphoneos";$2$3'
   );
 }
 

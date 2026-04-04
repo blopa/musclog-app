@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		91D9445E2F83D2E22E16DE70 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F784E55C465DBEB7EAE714 /* ExpoModulesProvider.swift */; };
-		9ACFC0A4B76F356FCE7575E5 /* libPods-MusclogLiftLogRepeat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 587CB4817B750944977AC49E /* libPods-MusclogLiftLogRepeat.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		CD2E93FD9009E1E6EAE809EE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EACB7595CDADD9F4CB70DD4F /* PrivacyInfo.xcprivacy */; };
+		C0CF66A207BD8F0518F1FBCE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D4330A7A1F96E920143BB6B9 /* PrivacyInfo.xcprivacy */; };
+		D9F3BB9E0B5216DF27BDED25 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE7B850732BEAEFFB11C4FA /* ExpoModulesProvider.swift */; };
+		E727AEFF8E1F6BD30662692C /* libPods-MusclogLiftLogRepeat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D132F8880E1AAAEEF496256E /* libPods-MusclogLiftLogRepeat.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,16 +20,16 @@
 		13B07F961A680F5B00A75B9A /* MusclogLiftLogRepeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusclogLiftLogRepeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MusclogLiftLogRepeat/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MusclogLiftLogRepeat/Info.plist; sourceTree = "<group>"; };
-		23F784E55C465DBEB7EAE714 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MusclogLiftLogRepeat/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		587CB4817B750944977AC49E /* libPods-MusclogLiftLogRepeat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusclogLiftLogRepeat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		48C078F18D1F29415648499B /* Pods-MusclogLiftLogRepeat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusclogLiftLogRepeat.release.xcconfig"; path = "Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = MusclogLiftLogRepeat/SplashScreen.storyboard; sourceTree = "<group>"; };
+		ACE7B850732BEAEFFB11C4FA /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MusclogLiftLogRepeat/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C2C074066FDECF836B826480 /* Pods-MusclogLiftLogRepeat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusclogLiftLogRepeat.release.xcconfig"; path = "Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig"; sourceTree = "<group>"; };
-		EACB7595CDADD9F4CB70DD4F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = MusclogLiftLogRepeat/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		ECCA9AA4ECB1079764053AD0 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusclogLiftLogRepeat.debug.xcconfig"; path = "Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig"; sourceTree = "<group>"; };
+		D132F8880E1AAAEEF496256E /* libPods-MusclogLiftLogRepeat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusclogLiftLogRepeat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4330A7A1F96E920143BB6B9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = MusclogLiftLogRepeat/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MusclogLiftLogRepeat/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* MusclogLiftLogRepeat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MusclogLiftLogRepeat-Bridging-Header.h"; path = "MusclogLiftLogRepeat/MusclogLiftLogRepeat-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7382D2DEB264655A201CB45 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusclogLiftLogRepeat.debug.xcconfig"; path = "Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig"; sourceTree = "<group>"; };
 		E8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,21 +48,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9ACFC0A4B76F356FCE7575E5 /* libPods-MusclogLiftLogRepeat.a in Frameworks */,
+				E727AEFF8E1F6BD30662692C /* libPods-MusclogLiftLogRepeat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		04F00091123CE750CF208234 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				872AD1D9EFA50C046C314482 /* MusclogLiftLogRepeat */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* MusclogLiftLogRepeat */ = {
 			isa = PBXGroup;
 			children = (
@@ -72,36 +64,18 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				EACB7595CDADD9F4CB70DD4F /* PrivacyInfo.xcprivacy */,
+				D4330A7A1F96E920143BB6B9 /* PrivacyInfo.xcprivacy */,
 			);
 			name = MusclogLiftLogRepeat;
-			sourceTree = "<group>";
-		};
-		19D57C4DADD749FD34B01F17 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				ECCA9AA4ECB1079764053AD0 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */,
-				C2C074066FDECF836B826480 /* Pods-MusclogLiftLogRepeat.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				587CB4817B750944977AC49E /* libPods-MusclogLiftLogRepeat.a */,
+				D132F8880E1AAAEEF496256E /* libPods-MusclogLiftLogRepeat.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		32AE2DF5BF4345B2AE9CD4E3 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -118,9 +92,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				32AE2DF5BF4345B2AE9CD4E3 /* Resources */,
-				19D57C4DADD749FD34B01F17 /* Pods */,
-				04F00091123CE750CF208234 /* ExpoModulesProviders */,
+				AF15E409F0E94258BA0C30A7 /* Resources */,
+				C260DAE2B99D54137ED09497 /* Pods */,
+				B8B31C03B525A76EC3BB6239 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -135,12 +109,28 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		872AD1D9EFA50C046C314482 /* MusclogLiftLogRepeat */ = {
+		8586A2EF710B59FB37CA0067 /* MusclogLiftLogRepeat */ = {
 			isa = PBXGroup;
 			children = (
-				23F784E55C465DBEB7EAE714 /* ExpoModulesProvider.swift */,
+				ACE7B850732BEAEFFB11C4FA /* ExpoModulesProvider.swift */,
 			);
 			name = MusclogLiftLogRepeat;
+			sourceTree = "<group>";
+		};
+		AF15E409F0E94258BA0C30A7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
+		B8B31C03B525A76EC3BB6239 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				8586A2EF710B59FB37CA0067 /* MusclogLiftLogRepeat */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -152,6 +142,16 @@
 			path = MusclogLiftLogRepeat/Supporting;
 			sourceTree = "<group>";
 		};
+		C260DAE2B99D54137ED09497 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F7382D2DEB264655A201CB45 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */,
+				48C078F18D1F29415648499B /* Pods-MusclogLiftLogRepeat.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -160,14 +160,14 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MusclogLiftLogRepeat" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				FE480B255A866966BB0616BC /* [Expo] Configure project */,
+				B3123AE5C94356E5269C2715 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				C965781682644FCC8162E06D /* Upload Debug Symbols to Sentry */,
-				9C3B4CD86435DEF0E5D8609F /* [CP] Embed Pods Frameworks */,
+				D58FE1B36AEE49F9B2E6A953 /* Upload Debug Symbols to Sentry */,
+				4852B2491214194C20B0D773 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -226,7 +226,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				CD2E93FD9009E1E6EAE809EE /* PrivacyInfo.xcprivacy in Resources */,
+				C0CF66A207BD8F0518F1FBCE /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,6 +270,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4852B2491214194C20B0D773 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -350,43 +372,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9C3B4CD86435DEF0E5D8609F /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C965781682644FCC8162E06D /* Upload Debug Symbols to Sentry */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload Debug Symbols to Sentry";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/bin/sh `${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\"`";
-		};
-		FE480B255A866966BB0616BC /* [Expo] Configure project */ = {
+		B3123AE5C94356E5269C2715 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -410,6 +396,20 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-MusclogLiftLogRepeat/expo-configure-project.sh\"\n";
 		};
+		D58FE1B36AEE49F9B2E6A953 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh `${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\"`";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -418,7 +418,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				91D9445E2F83D2E22E16DE70 /* ExpoModulesProvider.swift in Sources */,
+				D9F3BB9E0B5216DF27BDED25 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,7 +427,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ECCA9AA4ECB1079764053AD0 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */;
+			baseConfigurationReference = F7382D2DEB264655A201CB45 /* Pods-MusclogLiftLogRepeat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -464,7 +464,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C2C074066FDECF836B826480 /* Pods-MusclogLiftLogRepeat.release.xcconfig */;
+			baseConfigurationReference = 48C078F18D1F29415648499B /* Pods-MusclogLiftLogRepeat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
