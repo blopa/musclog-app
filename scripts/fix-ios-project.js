@@ -43,7 +43,10 @@ if (!content.includes('E8E11EA3CEC44DF7A02CE491')) {
 
 // 1b. Add the file reference to the main group (so it's part of the project structure)
 // Find the main group (the one with children that contains the Products group)
-if (!content.includes('E8E11EA3CEC44DF7A02CE491') || !content.match(/children = \([\s\S]*?E8E11EA3CEC44DF7A02CE491/)) {
+if (
+  !content.includes('E8E11EA3CEC44DF7A02CE491') ||
+  !content.match(/children = \([\s\S]*?E8E11EA3CEC44DF7A02CE491/)
+) {
   // Find a good spot in the main group's children array
   // Look for the "Products" entry in children and add before it
   content = content.replace(
