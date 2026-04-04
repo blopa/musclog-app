@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MoodMacrosPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { StackedBarLineChart } from '../charts/StackedBarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -15,7 +15,7 @@ interface MoodMacrosChartProps {
 }
 
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const moodLabels = [
@@ -69,7 +69,7 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatLocalCalendarDayDdMm
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   return (

@@ -112,17 +112,7 @@ export function ScannedFoodDetailsModal({
       <View>
         <FoodInfoCard food={foodInfo} />
         <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
-        <ServingSizeSelector
-          value={amount}
-          onChange={setAmount}
-          quickSizes={[
-            { label: '50g', value: 50 },
-            { label: '100g', value: 100 },
-            { label: '150g', value: 150 },
-            { label: '200g', value: 200 },
-            { label: '250g', value: 250 },
-          ]}
-        />
+        <ServingSizeSelector value={amount} onChange={setAmount} />
 
         {product.brands ? (
           <Text

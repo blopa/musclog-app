@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { AreaChart } from '../charts/AreaChart';
@@ -17,7 +17,7 @@ interface MacroMuscleChartProps {
 }
 
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
@@ -53,7 +53,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatLocalCalendarDayDdMm
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;

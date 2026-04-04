@@ -389,7 +389,7 @@ export default function SetGoals() {
 
     const age = user.getAge();
 
-    const historical = await getHistoricalNutritionParams({ units });
+    const historical = await getHistoricalNutritionParams({});
 
     const input: NutritionCalculatorInput = {
       gender: user.gender,

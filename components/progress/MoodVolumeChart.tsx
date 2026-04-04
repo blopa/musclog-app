@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MoodVolumePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -24,7 +24,7 @@ const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
 ];
 
 export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
@@ -66,7 +66,7 @@ export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatLocalCalendarDayDdMm
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   return (

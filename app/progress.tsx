@@ -388,7 +388,9 @@ function ProgressScreenContent({
                                 Math.min(...history.map((p: any) => p.value)) * 0.95,
                                 Math.max(...history.map((p: any) => p.value)) * 1.05,
                               ]}
-                              tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
+                              tooltipFormatter={(p) =>
+                                `${formatRoundedDecimal(p.y, 1)} ${units === 'imperial' ? 'in' : 'cm'}`
+                              }
                             />
                           </ProgressChartSection>
                         )

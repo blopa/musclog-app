@@ -17,13 +17,13 @@ import { useTheme } from '../../hooks/useTheme';
 import {
   defaultAdultDobLocalDayStartMs,
   formatDateOfBirthFromTimestamp,
-  parseMmDdYyyyDateOfBirthToLocalDayStartMs,
+  parseDobStringToLocalDayStartMs,
 } from '../../utils/fitnessProfilePersistence';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 export default function PersonalInfo() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +41,7 @@ export default function PersonalInfo() {
           setInitialData({
             fullName: user.fullName || '',
             email: user.email || '',
-            dob: formatDateOfBirthFromTimestamp(user.dateOfBirth),
+            dob: formatDateOfBirthFromTimestamp(user.dateOfBirth, i18n.language),
             gender: user.gender,
             avatarIcon: user.avatarIcon || undefined,
             avatarColor: user.avatarColor || undefined,
@@ -63,14 +63,14 @@ export default function PersonalInfo() {
     };
 
     loadUserData();
-  }, []);
+  }, [i18n.language]);
 
   const handleSave = async (data: PersonalInfoType) => {
     setIsSaving(true);
     try {
       // Date of birth is collected on the fitness step; optional here if the field is hidden.
       const dateOfBirthFromForm = data.dob?.trim()
-        ? parseMmDdYyyyDateOfBirthToLocalDayStartMs(data.dob)
+        ? parseDobStringToLocalDayStartMs(data.dob)
         : undefined;
 
       // Check if user already exists

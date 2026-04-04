@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
 import { EatingPhase } from '../../database/models';
 import type NutritionCheckin from '../../database/models/NutritionCheckin';
 import { NutritionGoalService, UserMetricService } from '../../database/services';
@@ -28,6 +27,7 @@ import {
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { GenericCard } from '../cards/GenericCard';
 import { BarChart, type BarChartDataPoint } from '../charts/BarChart';
 import { Button } from '../theme/Button';
@@ -44,7 +44,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const theme = useTheme();
   const { t } = useTranslation();
   const { goal: currentGoal } = useCurrentNutritionGoal();
-  const { weightUnit } = useSettings();
+  const { units } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -201,12 +201,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     hasEnoughData,
   } = metrics;
 
-  const units: Units = weightUnit === 'kg' ? 'metric' : 'imperial';
   const displayActualWeight = kgToDisplay(avgWeight, units);
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
   const displayTrend = kgToDisplay(Math.abs(trend), units);
   const trendColor = trend <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
-  const weightUnitKey = weightUnit === 'kg' ? 'common.weightFormatKg' : 'common.weightFormatLbs';
+  const weightUnitKey = getWeightUnitI18nKey(units);
 
   return (
     <>

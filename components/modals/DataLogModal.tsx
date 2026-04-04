@@ -599,7 +599,7 @@ export function DataLogModal({
     save: saveEdit,
   } = useEditRecord(variant, editRecordId, editModalVisible);
 
-  const editFields = getEditFields(variant);
+  const editFields = getEditFields(variant, units);
 
   const handleCloseEditModal = () => {
     setEditModalVisible(false);
@@ -1594,8 +1594,8 @@ export function DataLogModal({
           visible={createGenericModalVisible}
           onClose={() => setCreateGenericModalVisible(false)}
           title={getCreateModalTitle(variant, t)}
-          fields={getCreateFields(variant)}
-          initialValues={getCreateInitialValues(variant)}
+          fields={getCreateFields(variant, units)}
+          initialValues={getCreateInitialValues(variant, units)}
           onSave={async (values) => {
             await createRecord(variant, values, { units });
             await refresh();

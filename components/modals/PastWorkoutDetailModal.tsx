@@ -3,8 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, ScrollView, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
+import type { Units } from '../../constants/settings';
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
@@ -12,14 +13,17 @@ import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { healthConnectService } from '../../services/healthConnect';
 import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { XAxisLabel } from '../../utils/chartUtils';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { captureException } from '../../utils/sentry';
 import { showSnackbar } from '../../utils/snackbarService';
+import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
@@ -34,8 +38,10 @@ import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
 // Component: Workout Summary Card
 type WorkoutSummaryCardProps = {
   totalTime: number;
+  /** Total volume stored in kg (DB). */
   volume: number;
   calories: number;
+  units: Units;
   weightUnitKey: 'workoutSession.kg' | 'workoutSession.lb';
 };
 
@@ -43,11 +49,12 @@ function WorkoutSummaryCard({
   totalTime,
   volume,
   calories,
+  units,
   weightUnitKey,
 }: WorkoutSummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, locale } = useFormatAppNumber();
 
   return (
     <View className="overflow-hidden rounded-xl">
@@ -90,7 +97,7 @@ function WorkoutSummaryCard({
             </Text>
             <View className="flex-row items-baseline gap-1">
               <Text className="text-2xl font-extrabold tracking-tight text-white">
-                {formatInteger(volume)}
+                {formatDisplayWeightKg(locale, units, volume)}
               </Text>
               <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
                 {t(weightUnitKey)}
@@ -389,7 +396,7 @@ export default function PastWorkoutDetailModal({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, locale } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -400,6 +407,7 @@ export default function PastWorkoutDetailModal({
     });
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
+  const { shareText } = useNativeShareText();
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
@@ -418,12 +426,12 @@ export default function PastWorkoutDetailModal({
 
     try {
       const message = t('workoutDetail.shareMessage', {
-        volume: formatInteger(workout.volume),
+        volume: formatDisplayWeightKg(locale, units, workout.volume),
         unit: t(weightUnitKey),
         calories: formatInteger(workout.calories),
       });
 
-      await Share.share({ message });
+      await shareText(message);
     } catch (err) {
       console.error('Failed to share workout:', err);
     }
@@ -557,6 +565,7 @@ export default function PastWorkoutDetailModal({
             totalTime={workout.totalTime}
             volume={workout.volume}
             calories={workout.calories}
+            units={units}
             weightUnitKey={weightUnitKey}
           />
 
@@ -650,7 +659,7 @@ export default function PastWorkoutDetailModal({
                 setId: s.id,
                 exerciseId: isNew ? editingExerciseId : undefined,
                 reps: s.reps,
-                weight: s.weight,
+                weight: displayToKg(s.weight, units),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,
@@ -675,7 +684,7 @@ export default function PastWorkoutDetailModal({
             .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
             .map((s) => ({
               id: s.id,
-              weight: s.weight,
+              weight: kgToDisplay(s.weight ?? 0, units),
               reps: s.reps,
               partialReps: s.partials ?? 0,
               rest: s.restTimeAfter ?? 0,

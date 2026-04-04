@@ -166,6 +166,10 @@
         "mealOptions": "Параметры приёма пищи",
         "editMeal": "Редактировать приём пищи",
         "editMealDesc": "Изменить название и ингредиенты приёма пищи",
+        "shareMealAsRecipe": "Поделиться рецептом",
+        "shareMealAsRecipeDesc": "Поделиться ингредиентами и инструкциями текстом",
+        "shareRecipeIngredientLine": "{{grams}} г {{name}}",
+        "shareRecipeNoIngredients": "В этом приёме пищи нет ингредиентов для отправки",
         "duplicateMeal": "Дублировать приём пищи",
         "duplicateMealDesc": "Создать копию этого приёма пищи",
         "deleteMeal": "Удалить приём пищи",
@@ -331,6 +335,7 @@
       "estimated": "Оценочно",
       "mealName": "Название приёма пищи",
       "mealNamePlaceholder": "например, Смузи после тренировки",
+      "mealDescriptionPlaceholder": "Необязательно — заметки о приготовлении, когда обычно едите и т. п.",
       "ingredients": "Ингредиенты ({{count}})",
       "editList": "Редактировать список",
       "noIngredients": "Нет ингредиентов",
@@ -340,7 +345,7 @@
       "mealNameRequired": "Пожалуйста, введите название приёма пищи",
       "ingredientsRequired": "Пожалуйста, добавьте хотя бы один ингредиент",
       "saveFailed": "Не удалось сохранить приём пищи. Пожалуйста, попробуйте снова.",
-      "preparedWeight": "Готовый вес (г)",
+      "preparedWeight": "Готовый вес ({{unit}})",
       "preparedWeightHelper": "Необязательно — вес после приготовления"
     },
     "aiCamera": {
