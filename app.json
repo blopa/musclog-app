@@ -17,6 +17,7 @@
     "plugins": [
       "react-native-edge-to-edge",
       "./plugins/withAndroidBarcodeScannerFix",
+      "./plugins/withIosSimulatorBuildFix",
       "expo-localization",
       "expo-router",
       "expo-health-connect",

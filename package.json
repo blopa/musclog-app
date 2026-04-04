@@ -45,7 +45,9 @@
     "submit-ios": "eas submit --platform ios",
     "prebuild-ios": "expo prebuild -p ios --clean",
     "run-ios": "expo run:ios",
-    "run-ios-device": "expo run:ios --device"
+    "run-ios-device": "expo run:ios --device",
+    "patch-ios-frameworks": "python3 fix_opencv_simulator.py && python3 fix_mlimage_simulator.py && python3 fix_mlkit_simulator.py",
+    "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-frameworks"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "7.29.0",
