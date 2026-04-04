@@ -46,8 +46,8 @@
     "prebuild-ios": "expo prebuild -p ios --clean",
     "run-ios": "expo run:ios",
     "run-ios-device": "expo run:ios --device",
-    "patch-ios-frameworks": "cd ios && pod install",
-    "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-frameworks"
+    "patch-ios-project": "node scripts/fix-ios-project.js",
+    "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "7.29.0",
