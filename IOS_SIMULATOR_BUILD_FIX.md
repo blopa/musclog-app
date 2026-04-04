@@ -15,20 +15,23 @@
 5. [Approaches That Failed](#5-approaches-that-failed)
 6. [The Working Fix — In-Place Binary Patch of the AR Archive](#6-the-working-fix--in-place-binary-patch-of-the-ar-archive)
 7. [Summary of All File Changes](#7-summary-of-all-file-changes)
-8. [How to Reproduce the Fix From Scratch](#8-how-to-reproduce-the-fix-from-scratch)
-9. [Why These Issues Appeared (Root Causes)](#9-why-these-issues-appeared-root-causes)
+8. [Additional Framework Patches Required for iOS 26.4](#8-additional-framework-patches-required-for-ios-264)
+9. [How to Reproduce the Fix From Scratch](#9-how-to-reproduce-the-fix-from-scratch)
+10. [Quick Troubleshooting Guide](#10-quick-troubleshooting-guide)
+11. [Why These Issues Appeared (Root Causes)](#11-why-these-issues-appeared-root-causes)
 
 ---
 
 ## 1. Overview of Issues
 
-There were **three independent, compounding issues** that all had to be resolved before the simulator build succeeded:
+There were **multiple independent, compounding issues** that all had to be resolved before the simulator build succeeded:
 
-| #   | Error                                                                          | Root Cause                                                                  |
-| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| 1   | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                            | Xcode 26 regression: implicit cross-project dependencies stopped working    |
-| 2   | `found architecture 'x86_64', required architecture 'arm64'`                   | Pods xcconfigs excluded arm64 for the simulator                             |
-| 3   | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator |
+| #   | Error                                                                          | Root Cause                                                                  | Quick Fix |
+| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | --------- |
+| 1   | `ld: library 'Pods-MusclogLiftLogRepeat' not found`                            | Xcode 26 regression: implicit cross-project dependencies stopped working    | See Section 2 |
+| 2   | `found architecture 'x86_64', required architecture 'arm64'`                   | Pods xcconfigs excluded arm64 for the simulator                             | See Section 3 |
+| 3   | `ld: building for 'iOS-simulator', but linking in object file built for 'iOS'` | OpenCV 4.3.0's arm64 slice is tagged as an iOS device binary, not simulator | `python3 fix_opencv_simulator.py` |
+| 4   | MLImage/MLKit linking errors                                                   | MLKit frameworks also tagged for iOS device instead of simulator            | `python3 fix_mlimage_simulator.py` and `python3 fix_mlkit_simulator.py` |
 
 Each issue surfaced only after the previous one was fixed.
 
@@ -160,6 +163,39 @@ Also verified that `project.pbxproj` had the main target's setting as:
 (empty string, not inheriting the old exclusion).
 
 > **Warning**: If you re-run `pod install`, CocoaPods may regenerate these xcconfig files and put the line back. You would need to remove it again or add a `post_install` hook (see caveats in Section 5).
+
+#### Quick Fix
+
+**Try running the following command to fix this issue:**
+
+```bash
+# Remove EXCLUDED_ARCHS from all xcconfig files
+for f in \
+  "ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.debug.xcconfig" \
+  "ios/Pods/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat.release.xcconfig" \
+  "ios/Pods/Target Support Files/OpenCV/OpenCV.debug.xcconfig" \
+  "ios/Pods/Target Support Files/OpenCV/OpenCV.release.xcconfig"; do
+  sed -i '' '/EXCLUDED_ARCHS\[sdk=iphonesimulator\*\] = arm64/d' "$f"
+done
+```
+
+Or add this to your `Podfile` to fix it automatically after each `pod install`:
+
+```ruby
+post_install do |installer|
+  # ... existing post_install code ...
+  
+  # Fix for iOS 26.4 simulator (arm64 only, no x86_64)
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+    end
+  end
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+  end
+end
+```
 
 ---
 
@@ -411,6 +447,21 @@ Found 738 Mach-O members, patched 738 LC_VERSION_MIN_IPHONEOS commands.
 Done! Patched in-place, all symbols preserved.
 ```
 
+### Quick Fix
+
+**Try running this script to fix OpenCV:**
+
+```bash
+python3 fix_opencv_simulator.py
+```
+
+Expected output:
+```
+Architectures in the fat file: ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2 are: armv7 armv7s i386 x86_64 arm64
+Found 739 Mach-O members, patched 738 LC_VERSION_MIN_IPHONEOS commands.
+Done! Patched OpenCV in-place.
+```
+
 ### Restoring if needed
 
 The original unpatched binary lives in the CocoaPods cache:
@@ -423,7 +474,7 @@ To restore:
 
 ```bash
 cp ~/Library/Caches/CocoaPods/Pods/Release/OpenCV/4.3.0-681e0/opencv2.framework/opencv2 \
-   ~/Documents/Projects/musclog-app/ios/Pods/OpenCV/opencv2.framework/opencv2
+   ~/Documents/Projects/musclog-app/ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2
 ```
 
 Then re-run the patch script if needed.
@@ -462,9 +513,53 @@ Then re-run the patch script if needed.
 
 - Binary patched in-place: 738 `LC_VERSION_MIN_IPHONEOS` (0x25) load commands changed to 0x35 in the arm64 AR archive slice.
 
+### `ios/Pods/MLImage/Frameworks/MLImage.framework/MLImage`
+
+- Binary patched in-place: `LC_BUILD_VERSION` platform changed from 2 (iOS) to 7 (iOS Simulator) in the arm64 slice.
+
+### `ios/Pods/MLKit*/Frameworks/*.framework/*`
+
+- MLKitCommon: 397/398 objects patched
+- MLKitVision: 11/12 objects patched  
+- MLKitTextRecognition: 2/3 objects patched
+- MLKitTextRecognitionChinese: 1/2 objects patched
+- MLKitTextRecognitionDevanagari: 1/2 objects patched
+- MLKitTextRecognitionJapanese: 1/2 objects patched
+- MLKitTextRecognitionKorean: 1/2 objects patched
+
+All patches change `LC_BUILD_VERSION` platform from 2 (iOS) to 7 (iOS Simulator) in object files.
+
 ---
 
-## 8. How to Reproduce the Fix From Scratch
+## 8. Additional Framework Patches Required for iOS 26.4
+
+In addition to OpenCV, the following frameworks may also need patching for iOS 26.4 simulator builds:
+
+### MLImage.framework
+
+**Error:** `building for 'iOS-simulator', but linking in object file .../MLImage[arm64][2](GMLImage.o)) built for 'iOS'`
+
+**Fix:** Run the MLImage patch script:
+
+```bash
+python3 fix_mlimage_simulator.py
+```
+
+### MLKit Frameworks (MLKitCommon, MLKitVision, etc.)
+
+**Error:** `building for 'iOS-simulator', but linking in object file .../MLKitCommon[arm64][2](MLKAnalyticsLogger.o)) built for 'iOS'`
+
+**Fix:** Run the MLKit patch script:
+
+```bash
+python3 fix_mlkit_simulator.py
+```
+
+This patches all MLKit frameworks (MLKitCommon, MLKitVision, MLKitBarcodeScanning, MLKitTextRecognition, etc.) in one operation.
+
+---
+
+## 9. How to Reproduce the Fix From Scratch
 
 If `pod install` or a clean checkout reverts these changes, here is the complete sequence:
 
@@ -485,10 +580,12 @@ done
 
 # Step 3: Restore original OpenCV binary from cache (if already patched before)
 cp ~/Library/Caches/CocoaPods/Pods/Release/OpenCV/4.3.0-681e0/opencv2.framework/opencv2 \
-   ios/Pods/OpenCV/opencv2.framework/opencv2
+   ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2
 
-# Step 4: Run the patch script (save script content from Section 6 as fix_opencv_simulator.py)
+# Step 4: Run the patch scripts
 python3 fix_opencv_simulator.py
+python3 fix_mlimage_simulator.py
+python3 fix_mlkit_simulator.py
 
 # Step 5: Build
 npx expo run:ios
@@ -498,7 +595,19 @@ npx expo run:ios
 
 ---
 
-## 9. Why These Issues Appeared (Root Causes)
+## 10. Quick Troubleshooting Guide
+
+| Error | Fix |
+|-------|-----|
+| `ld: library 'Pods-MusclogLiftLogRepeat' not found` | Check that `project.pbxproj` has the `PBXTargetDependency` entries (Section 2) |
+| `found architecture 'x86_64', required architecture 'arm64'` | Run the sed command or add the `post_install` hook (Section 3) |
+| `building for 'iOS-simulator', but linking in object file ... opencv2[arm64]... built for 'iOS'` | Run `python3 fix_opencv_simulator.py` |
+| `building for 'iOS-simulator', but linking in object file ... MLImage[arm64]... built for 'iOS'` | Run `python3 fix_mlimage_simulator.py` |
+| `building for 'iOS-simulator', but linking in object file ... MLKitCommon[arm64]... built for 'iOS'` | Run `python3 fix_mlkit_simulator.py` |
+
+---
+
+## 11. Why These Issues Appeared (Root Causes)
 
 ### Xcode 26 implicit dependency regression
 
