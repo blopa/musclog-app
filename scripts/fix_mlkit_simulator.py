@@ -8,15 +8,15 @@ import struct, subprocess, os, sys, tempfile, glob
 
 # List of MLKit frameworks to patch
 FRAMEWORKS = [
-    "ios/Pods/MLKitCommon/Frameworks/MLKitCommon.framework/MLKitCommon",
-    "ios/Pods/MLKitBarcodeScanning/Frameworks/MLKitBarcodeScanning.framework/MLKitBarcodeScanning",
-    "ios/Pods/MLKitVision/Frameworks/MLKitVision.framework/MLKitVision",
-    "ios/Pods/MLKitTextRecognition/Frameworks/MLKitTextRecognition.framework/MLKitTextRecognition",
-    "ios/Pods/MLKitTextRecognitionCommon/Frameworks/MLKitTextRecognitionCommon.framework/MLKitTextRecognitionCommon",
-    "ios/Pods/MLKitTextRecognitionChinese/Frameworks/MLKitTextRecognitionChinese.framework/MLKitTextRecognitionChinese",
-    "ios/Pods/MLKitTextRecognitionDevanagari/Frameworks/MLKitTextRecognitionDevanagari.framework/MLKitTextRecognitionDevanagari",
-    "ios/Pods/MLKitTextRecognitionJapanese/Frameworks/MLKitTextRecognitionJapanese.framework/MLKitTextRecognitionJapanese",
-    "ios/Pods/MLKitTextRecognitionKorean/Frameworks/MLKitTextRecognitionKorean.framework/MLKitTextRecognitionKorean",
+    "../ios/Pods/MLKitCommon/Frameworks/MLKitCommon.framework/MLKitCommon",
+    "../ios/Pods/MLKitBarcodeScanning/Frameworks/MLKitBarcodeScanning.framework/MLKitBarcodeScanning",
+    "../ios/Pods/MLKitVision/Frameworks/MLKitVision.framework/MLKitVision",
+    "../ios/Pods/MLKitTextRecognition/Frameworks/MLKitTextRecognition.framework/MLKitTextRecognition",
+    "../ios/Pods/MLKitTextRecognitionCommon/Frameworks/MLKitTextRecognitionCommon.framework/MLKitTextRecognitionCommon",
+    "../ios/Pods/MLKitTextRecognitionChinese/Frameworks/MLKitTextRecognitionChinese.framework/MLKitTextRecognitionChinese",
+    "../ios/Pods/MLKitTextRecognitionDevanagari/Frameworks/MLKitTextRecognitionDevanagari.framework/MLKitTextRecognitionDevanagari",
+    "../ios/Pods/MLKitTextRecognitionJapanese/Frameworks/MLKitTextRecognitionJapanese.framework/MLKitTextRecognitionJapanese",
+    "../ios/Pods/MLKitTextRecognitionKorean/Frameworks/MLKitTextRecognitionKorean.framework/MLKitTextRecognitionKorean",
 ]
 
 LC_VERSION_MIN_IPHONEOS = 0x25
