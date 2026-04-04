@@ -23,6 +23,17 @@ const xcschemePath =
 console.log(`[prebuild-cross-platform] Platform: ${os.platform()}`);
 
 try {
+  if (!isMacOS) {
+    // On Linux, only prebuild for Android (skip iOS to avoid touching ios/ files)
+    console.log('[prebuild-cross-platform] Step 1: expo prebuild --clean --platform android');
+    execSync('npx expo prebuild --clean --platform android', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+    console.log('[prebuild-cross-platform] ✅ Prebuild complete');
+    process.exit(0);
+  }
+
   // Step 1: Clean prebuild (includes pod install via expo's built-in CocoaPods integration)
   console.log('[prebuild-cross-platform] Step 1: expo prebuild --clean');
   execSync('npx expo prebuild --clean', { stdio: 'inherit', cwd: process.cwd() });
