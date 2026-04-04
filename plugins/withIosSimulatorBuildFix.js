@@ -1,79 +1,89 @@
-/**
- * Expo Config Plugin to fix iOS Simulator build issues for Xcode 26 / iOS 26.4
- *
- * This plugin modifies the Podfile to:
- * 1. Add EXCLUDED_ARCHS fix for arm64 simulator builds
- * 2. Run binary patches for OpenCV, MLImage, and MLKit frameworks AFTER pod install
- *
- * Usage: Add to app.json plugins array:
- * ["./plugins/withIosSimulatorBuildFix"]
- */
-
 const { withDangerousMod } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * iOS Simulator Build Fix for Xcode 15/16
+ *
+ * CRITICAL: Binary patches should ONLY be applied for simulator builds.
+ * For device/App Store builds, the patches would incorrectly mark frameworks
+ * as simulator-only, causing build failures.
+ *
+ * Strategy:
+ * 1. EAS Builds: Use EAS_BUILD_PLATFORM env var (set in eas.json)
+ * 2. Local Builds: Use EXPO_IS_SIMULATOR_BUILD env var (set manually)
+ * 3. Default: Apply patches (safe for local dev, opt-out for device builds)
+ */
 const withIosSimulatorBuildFix = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const iosPath = path.join(config.modRequest.projectRoot, 'ios');
-      const podfilePath = path.join(iosPath, 'Podfile');
+      const projectRoot = config.modRequest.projectRoot;
+      const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
 
       if (!fs.existsSync(podfilePath)) {
-        console.log('Podfile not found, skipping iOS simulator fixes...');
+        console.log('[withIosSimulatorBuildFix] Podfile not found, skipping');
         return config;
       }
 
       let podfileContent = fs.readFileSync(podfilePath, 'utf-8');
 
       // Check if already patched
-      if (podfileContent.includes('PATCH_IOS_FRAMEWORKS')) {
-        console.log('Podfile already has iOS simulator build fix, skipping...');
+      if (podfileContent.includes('### EXPO SIMULATOR BUILD FIX ###')) {
+        console.log('[withIosSimulatorBuildFix] Podfile already patched');
         return config;
       }
 
-      console.log('Applying iOS Simulator build fixes to Podfile...');
+      // Find the post_install hook
+      const postInstallMatch = podfileContent.match(/post_install\s+do\s*\|installer\|/);
 
-      // Create the post_install hook with both EXCLUDED_ARCHS fix and binary patches
-      const postInstallFix = `
-    # Fix for iOS 26.4 simulator (arm64 only, no x86_64)
-    # Remove EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 from all targets
+      if (postInstallMatch) {
+        // Insert after post_install do |installer|
+        const insertIndex = postInstallMatch.index + postInstallMatch[0].length;
+
+        const fixCode = `
+    ### EXPO SIMULATOR BUILD FIX ###
+    # Fix for Xcode 15/16: Remove EXCLUDED_ARCHS for simulators
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+        config.build_settings.delete('EXCLUDED_ARCHS[sdk=iphonesimulator*]')
       end
     end
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+
+    # Determine if this is a simulator build
+    # Priority: EAS_BUILD_PLATFORM > EXPO_IS_SIMULATOR_BUILD > default to true (local dev)
+    eas_platform = ENV['EAS_BUILD_PLATFORM']
+    explicit_simulator = ENV['EXPO_IS_SIMULATOR_BUILD']
+    
+    is_simulator = if eas_platform
+      eas_platform == 'simulator'
+    elsif explicit_simulator
+      explicit_simulator == 'true'
+    else
+      true # Default: assume simulator for local development
     end
     
-    # PATCH_IOS_FRAMEWORKS - Run binary patches after pods are installed
-    puts "Running iOS framework binary patches..."
-    system("python3 fix_opencv_simulator.py") if File.exist?("../fix_opencv_simulator.py")
-    system("python3 fix_mlimage_simulator.py") if File.exist?("../fix_mlimage_simulator.py")
-    system("python3 fix_mlkit_simulator.py") if File.exist?("../fix_mlkit_simulator.py")
+    if is_simulator
+      puts "[ExpoSimulatorFix] Detected simulator build - applying binary patches..."
+      # Use absolute path from project root
+      scripts_dir = File.expand_path('../scripts', __dir__)
+      system("python3 #{scripts_dir}/fix_opencv_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlimage_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlkit_simulator.py")
+    else
+      puts "[ExpoSimulatorFix] Device build detected - skipping simulator binary patches"
+    end
+    ### END EXPO SIMULATOR BUILD FIX ###
 `;
 
-      // Check if there's already a post_install block
-      const postInstallRegex = /(post_install do \|installer\|.*$)/m;
+        podfileContent =
+          podfileContent.slice(0, insertIndex) + fixCode + podfileContent.slice(insertIndex);
 
-      if (postInstallRegex.test(podfileContent)) {
-        // Add after the post_install do |installer| line
-        podfileContent = podfileContent.replace(postInstallRegex, `$1${postInstallFix}`);
+        fs.writeFileSync(podfilePath, podfileContent);
+        console.log('[withIosSimulatorBuildFix] Podfile patched successfully');
       } else {
-        // Add a new post_install block at the end
-        const newPostInstall = `
-post_install do |installer|
-${postInstallFix}
-end
-`;
-        podfileContent += newPostInstall;
+        console.log('[withIosSimulatorFix] Warning: Could not find post_install hook');
       }
-
-      // Write the modified Podfile
-      fs.writeFileSync(podfilePath, podfileContent);
-      console.log('✅ Podfile updated with EXCLUDED_ARCHS fix and binary patch hooks');
 
       return config;
     },

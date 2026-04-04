@@ -57,22 +57,38 @@ target 'MusclogLiftLogRepeat' do
   )
 
   post_install do |installer|
-    # Fix for iOS 26.4 simulator (arm64 only, no x86_64)
-    # Remove EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 from all targets
+    ### EXPO SIMULATOR BUILD FIX ###
+    # Fix for Xcode 15/16: Remove EXCLUDED_ARCHS for simulators
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+        config.build_settings.delete('EXCLUDED_ARCHS[sdk=iphonesimulator*]')
       end
     end
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+
+    # Determine if this is a simulator build
+    # Priority: EAS_BUILD_PLATFORM > EXPO_IS_SIMULATOR_BUILD > default to true (local dev)
+    eas_platform = ENV['EAS_BUILD_PLATFORM']
+    explicit_simulator = ENV['EXPO_IS_SIMULATOR_BUILD']
+    
+    is_simulator = if eas_platform
+      eas_platform == 'simulator'
+    elsif explicit_simulator
+      explicit_simulator == 'true'
+    else
+      true # Default: assume simulator for local development
     end
     
-    # PATCH_IOS_FRAMEWORKS - Run binary patches after pods are installed
-    puts "Running iOS framework binary patches..."
-    system("python3 fix_opencv_simulator.py") if File.exist?("../fix_opencv_simulator.py")
-    system("python3 fix_mlimage_simulator.py") if File.exist?("../fix_mlimage_simulator.py")
-    system("python3 fix_mlkit_simulator.py") if File.exist?("../fix_mlkit_simulator.py")
+    if is_simulator
+      puts "[ExpoSimulatorFix] Detected simulator build - applying binary patches..."
+      # Use absolute path from project root
+      scripts_dir = File.expand_path('../scripts', __dir__)
+      system("python3 #{scripts_dir}/fix_opencv_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlimage_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlkit_simulator.py")
+    else
+      puts "[ExpoSimulatorFix] Device build detected - skipping simulator binary patches"
+    end
+    ### END EXPO SIMULATOR BUILD FIX ###
 
     react_native_post_install(
       installer,
