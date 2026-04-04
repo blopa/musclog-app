@@ -1,0 +1,24 @@
+Hi, I just ran the `npm run lint:all` in my linux machine, and this is what happened:
+
+```
+pablo@pablo-Laptop-13-AMD-Ryzen-AI-300-Series ~/.../musclog/musclog-new (feat/fix-ios-build-2) $ git status
+On branch feat/fix-ios-build-2
+Your branch is ahead of 'origin/feat/fix-ios-build-2' by 2 commits.
+  (use "git push" to publish your local commits)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   ios/MusclogLiftLogRepeat.xcodeproj/project.pbxproj
+        deleted:    ios/MusclogLiftLogRepeat.xcworkspace/contents.xcworkspacedata
+        deleted:    ios/MusclogLiftLogRepeat/PrivacyInfo.xcprivacy
+        deleted:    ios/Podfile.lock
+```
+
+As you can see some files were deleted, which I was not expecting to. Also, the diff from ios/MusclogLiftLogRepeat.xcodeproj/project.pbxproj looks like it's a lot and the ios issue was not patched. I guess we should always patch this file, even if the OS is not ios, because sometimes I do development on Linux, sometimes on my Macbook, and we need to maintain consistency in these build files.
+
+Here's the diff:
+
+```
+```
+
+Can you investigate and fix it? Ah, also, the python scripts already existed in the root dir, so I removed the new ones you created and put the old (original) ones in the scripts/ folder.
