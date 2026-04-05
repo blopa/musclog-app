@@ -327,67 +327,67 @@ export const NavigationMenu = memo(function NavigationMenu({
       }}
     >
       <View className="relative flex-row items-stretch px-6 py-4">
-          {/* Home - always fixed */}
-          <Pressable
-            className="flex-1 items-center justify-center gap-1"
-            onPress={() => {
-              if (!homeActive) {
-                router.navigate('/');
-              }
-            }}
+        {/* Home - always fixed */}
+        <Pressable
+          className="flex-1 items-center justify-center gap-1"
+          onPress={() => {
+            if (!homeActive) {
+              router.navigate('/');
+            }
+          }}
+        >
+          <View
+            className={`h-10 w-16 items-center justify-center rounded-lg ${homeActive ? 'bg-bg-navActive' : ''}`}
           >
-            <View
-              className={`h-10 w-16 items-center justify-center rounded-lg ${homeActive ? 'bg-bg-navActive' : ''}`}
-            >
-              <Home
-                size={theme.iconSize.md}
-                color={homeActive ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={homeActive ? theme.strokeWidth.medium : theme.borderWidth.medium}
-              />
-            </View>
-            <Text
-              className={`text-xs font-medium ${homeActive ? 'text-text-accent' : 'text-text-tertiary'}`}
-            >
-              {t('home.navigation.home')}
-            </Text>
-          </Pressable>
-
-          {/* Slot 1 - customizable */}
-          {renderNavSlot(navSlot1)}
-
-          {/* Camera - always fixed */}
-          <Pressable
-            className="z-10 items-center justify-center gap-1"
-            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
-            onPress={onCameraPress}
+            <Home
+              size={theme.iconSize.md}
+              color={homeActive ? theme.colors.accent.primary : theme.colors.text.tertiary}
+              strokeWidth={homeActive ? theme.strokeWidth.medium : theme.borderWidth.medium}
+            />
+          </View>
+          <Text
+            className={`text-xs font-medium ${homeActive ? 'text-text-accent' : 'text-text-tertiary'}`}
           >
-            <View
-              className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
-              style={[
-                isSmallScreen
-                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                  : { width: 80, height: 80 },
-                {
-                  backgroundColor: cameraFabActive
-                    ? theme.colors.accent.primary
-                    : addOpacityToHex(theme.colors.accent.primary, 0.8),
-                },
-              ]}
-            >
-              <Camera
-                size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
-                color={theme.colors.background.secondaryDark}
-                strokeWidth={theme.strokeWidth.medium}
-              />
-            </View>
-          </Pressable>
+            {t('home.navigation.home')}
+          </Text>
+        </Pressable>
 
-          {/* Slot 2 - customizable */}
-          {renderNavSlot(navSlot2)}
+        {/* Slot 1 - customizable */}
+        {renderNavSlot(navSlot1)}
 
-          {/* Slot 3 - customizable */}
-          {renderNavSlot(navSlot3)}
-        </View>
+        {/* Camera - always fixed */}
+        <Pressable
+          className="z-10 items-center justify-center gap-1"
+          style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+          onPress={onCameraPress}
+        >
+          <View
+            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+            style={[
+              isSmallScreen
+                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                : { width: 80, height: 80 },
+              {
+                backgroundColor: cameraFabActive
+                  ? theme.colors.accent.primary
+                  : addOpacityToHex(theme.colors.accent.primary, 0.8),
+              },
+            ]}
+          >
+            <Camera
+              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+              color={theme.colors.background.secondaryDark}
+              strokeWidth={theme.strokeWidth.medium}
+            />
+          </View>
+        </Pressable>
+
+        {/* Slot 2 - customizable */}
+        {renderNavSlot(navSlot2)}
+
+        {/* Slot 3 - customizable */}
+        {renderNavSlot(navSlot3)}
+      </View>
     </View>
   );
 });

@@ -14,17 +14,7 @@ import type { OcrResult } from './OcrService';
 let currentLanguage: string = 'eng';
 let isInitialized = false;
 
-const AVAILABLE_LANGUAGES = [
-  'eng',
-  'chi_sim',
-  'chi_tra',
-  'fra',
-  'deu',
-  'jpn',
-  'kor',
-  'rus',
-  'spa',
-];
+const AVAILABLE_LANGUAGES = ['eng', 'chi_sim', 'chi_tra', 'fra', 'deu', 'jpn', 'kor', 'rus', 'spa'];
 
 export async function initializeOcr(language: string = 'eng'): Promise<void> {
   if (isInitialized && currentLanguage === language) {

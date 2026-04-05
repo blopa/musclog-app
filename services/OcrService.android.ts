@@ -7,8 +7,8 @@
  */
 
 import {
-  recognizeText as mlkitRecognizeText,
   getAvailableLanguages as mlkitGetLanguages,
+  recognizeText as mlkitRecognizeText,
 } from 'rn-mlkit-ocr';
 
 import type { OcrResult } from './OcrService';
