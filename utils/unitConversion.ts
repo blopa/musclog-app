@@ -70,6 +70,31 @@ export function displayValueToMetric(value: number, type: string, units: Units):
 }
 
 /**
+ * Aliases for service layer to follow common nomenclature.
+ */
+export function prepareValueForStorage(
+  value: number,
+  units: Units,
+  type: 'weight' | 'length' | 'grams'
+): number {
+  if (type === 'weight') return displayToKg(value, units);
+  if (type === 'length') return displayToCm(value, units);
+  if (type === 'grams') return displayToGrams(value, units);
+  return value;
+}
+
+export function prepareValueForDisplay(
+  value: number,
+  units: Units,
+  type: 'weight' | 'length' | 'grams'
+): number {
+  if (type === 'weight') return kgToDisplay(value, units);
+  if (type === 'length') return cmToDisplay(value, units);
+  if (type === 'grams') return gramsToDisplay(value, units);
+  return value;
+}
+
+/**
  * Return the display unit label for a metric type given the user's unit system.
  * Weight types: 'kg' or 'lbs'. Length types: 'cm' or 'in'.
  * Other types: the stored unit as-is (e.g. '%', 'kcal', undefined).
@@ -96,7 +121,7 @@ export function metricDisplayUnit(
  */
 export function kgToDisplay(kg: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(kg, 'kg').to('lb') as number;
+    return kgToLbs(kg);
   }
   return kg;
 }
@@ -107,7 +132,7 @@ export function kgToDisplay(kg: number, units: Units): number {
  */
 export function displayToKg(value: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(value, 'lb').to('kg') as number;
+    return lbsToKg(value);
   }
   return value;
 }
@@ -118,7 +143,7 @@ export function displayToKg(value: number, units: Units): number {
  */
 export function cmToDisplay(cm: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(cm, 'cm').to('in') as number;
+    return cmToIn(cm);
   }
   return cm;
 }
@@ -129,7 +154,7 @@ export function cmToDisplay(cm: number, units: Units): number {
  */
 export function displayToCm(value: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(value, 'in').to('cm') as number;
+    return inToCm(value);
   }
   return value;
 }
@@ -140,7 +165,7 @@ export function displayToCm(value: number, units: Units): number {
  */
 export function gramsToDisplay(g: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(g, 'g').to('oz') as number;
+    return gramsToOz(g);
   }
   return g;
 }
@@ -151,11 +176,19 @@ export function gramsToDisplay(g: number, units: Units): number {
  */
 export function displayToGrams(value: number, units: Units): number {
   if (units === 'imperial') {
-    return convert(value, 'oz').to('g') as number;
+    return ozToGrams(value);
   }
 
   return value;
 }
+
+// Internal raw conversion functions for precision and testing
+export const kgToLbs = (kg: number) => convert(kg, 'kg').to('lb') as number;
+export const lbsToKg = (lbs: number) => convert(lbs, 'lb').to('kg') as number;
+export const cmToIn = (cm: number) => convert(cm, 'cm').to('in') as number;
+export const inToCm = (inches: number) => convert(inches, 'in').to('cm') as number;
+export const gramsToOz = (g: number) => convert(g, 'g').to('oz') as number;
+export const ozToGrams = (oz: number) => convert(oz, 'oz').to('g') as number;
 
 /**
  * Return the mass unit label key or literal for display (e.g. 'g' vs 'oz').
@@ -170,7 +203,7 @@ export function getMassUnitLabel(units: Units): 'g' | 'oz' {
  */
 export function storedWeightToKg(value: number, storedUnit?: string | null): number {
   if (storedUnit === 'lbs') {
-    return convert(value, 'lb').to('kg') as number;
+    return lbsToKg(value);
   }
   return value;
 }
@@ -180,7 +213,7 @@ export function storedWeightToKg(value: number, storedUnit?: string | null): num
  */
 export function storedHeightToCm(value: number, storedUnit?: string | null): number {
   if (storedUnit === 'in') {
-    return convert(value, 'in').to('cm') as number;
+    return inToCm(value);
   }
   return value;
 }

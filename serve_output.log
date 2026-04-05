@@ -1,0 +1,180 @@
+npm warn exec The following package was not found and will be installed: serve@14.2.6
+ INFO  Accepting connections at http://localhost:8081
+ HTTP  4/3/2026 6:31:33 PM ::1 HEAD /musclog-app/index.html
+ HTTP  4/3/2026 6:31:33 PM ::1 Returned 301 in 15 ms
+ HTTP  4/3/2026 6:32:19 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:32:19 PM ::1 Returned 200 in 17 ms
+ HTTP  4/3/2026 6:32:19 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:19 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:19 PM ::1 Returned 200 in 3 ms
+ HTTP  4/3/2026 6:32:19 PM ::1 Returned 200 in 7 ms
+ HTTP  4/3/2026 6:32:19 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:19 PM ::1 Returned 200 in 2 ms
+ HTTP  4/3/2026 6:32:20 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:32:20 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:32:20 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:20 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:20 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:32:20 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:32:20 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:20 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:32:50 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:32:50 PM ::1 Returned 200 in 1 ms
+ HTTP  4/3/2026 6:32:50 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:50 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:50 PM ::1 Returned 200 in 1 ms
+ HTTP  4/3/2026 6:32:50 PM ::1 Returned 200 in 2 ms
+ HTTP  4/3/2026 6:32:50 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:50 PM ::1 Returned 200 in 2 ms
+ HTTP  4/3/2026 6:32:51 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:32:51 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:32:51 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:51 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:51 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:32:51 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:32:51 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:51 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:32:53 PM ::1 GET /musclog-app/profile
+ HTTP  4/3/2026 6:32:53 PM ::1 Returned 200 in 4 ms
+ HTTP  4/3/2026 6:32:53 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:53 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:53 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:53 PM ::1 Returned 304 in 4 ms
+ HTTP  4/3/2026 6:32:53 PM ::1 Returned 304 in 10 ms
+ HTTP  4/3/2026 6:32:53 PM ::1 Returned 304 in 7 ms
+ HTTP  4/3/2026 6:32:55 PM ::1 GET /musclog-app/settings
+ HTTP  4/3/2026 6:32:55 PM ::1 Returned 200 in 2 ms
+ HTTP  4/3/2026 6:32:55 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:32:55 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:32:55 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:32:55 PM ::1 Returned 304 in 3 ms
+ HTTP  4/3/2026 6:32:55 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:32:55 PM ::1 Returned 304 in 0 ms
+ HTTP  4/3/2026 6:33:27 PM ::1 GET /musclog-app/profile
+ HTTP  4/3/2026 6:33:27 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:33:27 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:33:27 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:33:27 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:33:27 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:33:27 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:33:27 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:34:12 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:34:12 PM ::1 Returned 200 in 3 ms
+ HTTP  4/3/2026 6:34:12 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:34:12 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:34:12 PM ::1 Returned 200 in 3 ms
+ HTTP  4/3/2026 6:34:12 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:34:12 PM ::1 Returned 200 in 7 ms
+ HTTP  4/3/2026 6:34:12 PM ::1 Returned 200 in 5 ms
+ HTTP  4/3/2026 6:34:14 PM ::1 GET /musclog-app/
+ HTTP  4/3/2026 6:34:14 PM ::1 Returned 304 in 1 ms
+ HTTP  4/3/2026 6:34:14 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/3/2026 6:34:14 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/3/2026 6:34:14 PM ::1 Returned 304 in 2 ms
+ HTTP  4/3/2026 6:34:14 PM ::1 Returned 304 in 3 ms
+ HTTP  4/3/2026 6:34:14 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/3/2026 6:34:14 PM ::1 Returned 304 in 2 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 200 in 101 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 200 in 8 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 200 in 13 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 200 in 15 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 304 in 6 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 304 in 5 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 304 in 7 ms
+ HTTP  4/5/2026 10:09:15 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:09:15 PM ::1 Returned 304 in 3 ms
+ HTTP  4/5/2026 10:09:17 PM ::1 GET /test/cards
+ HTTP  4/5/2026 10:09:17 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:09:17 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:09:17 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:09:17 PM ::1 Returned 304 in 3 ms
+ HTTP  4/5/2026 10:09:18 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:09:17 PM ::1 Returned 304 in 7 ms
+ HTTP  4/5/2026 10:09:18 PM ::1 Returned 304 in 10 ms
+ HTTP  4/5/2026 10:09:20 PM ::1 GET /test/inputs
+ HTTP  4/5/2026 10:09:20 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:09:20 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:09:20 PM ::1 Returned 304 in 2 ms
+ HTTP  4/5/2026 10:09:20 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:09:20 PM ::1 Returned 304 in 2 ms
+ HTTP  4/5/2026 10:09:20 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:09:20 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /index.html
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /index
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 200 in 5 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 200 in 3 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 304 in 12 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 304 in 3 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 304 in 7 ms
+ HTTP  4/5/2026 10:11:23 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:11:23 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:11:25 PM ::1 GET /test/cards.html
+ HTTP  4/5/2026 10:11:25 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:11:25 PM ::1 GET /test/cards
+ HTTP  4/5/2026 10:11:25 PM ::1 Returned 200 in 0 ms
+ HTTP  4/5/2026 10:11:25 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:11:25 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:11:25 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:11:25 PM ::1 Returned 304 in 3 ms
+ HTTP  4/5/2026 10:11:25 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:11:25 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:11:27 PM ::1 GET /test/inputs.html
+ HTTP  4/5/2026 10:11:27 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:11:27 PM ::1 GET /test/inputs
+ HTTP  4/5/2026 10:11:27 PM ::1 Returned 200 in 1 ms
+ HTTP  4/5/2026 10:11:27 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:11:27 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:11:27 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:11:27 PM ::1 Returned 304 in 2 ms
+ HTTP  4/5/2026 10:11:27 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:11:27 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:13:16 PM ::1 GET /
+ HTTP  4/5/2026 10:13:16 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /index.html
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /index
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:13:56 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:13:56 PM ::1 Returned 200 in 2 ms
+ HTTP  4/5/2026 10:13:58 PM ::1 GET /
+ HTTP  4/5/2026 10:13:58 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:13:58 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:13:58 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:13:58 PM ::1 Returned 304 in 2 ms
+ HTTP  4/5/2026 10:13:58 PM ::1 Returned 304 in 3 ms
+ HTTP  4/5/2026 10:13:58 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:13:58 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:14:04 PM ::1 GET /test/inputs.html
+ HTTP  4/5/2026 10:14:04 PM ::1 Returned 301 in 1 ms
+ HTTP  4/5/2026 10:14:04 PM ::1 GET /test/inputs
+ HTTP  4/5/2026 10:14:04 PM ::1 Returned 200 in 1 ms
+ HTTP  4/5/2026 10:14:04 PM ::1 GET /musclog-app/_expo/static/css/web-72a5e281d505288d33c81a8bf184155b.css
+ HTTP  4/5/2026 10:14:04 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/5/2026 10:14:04 PM ::1 Returned 304 in 0 ms
+ HTTP  4/5/2026 10:14:04 PM ::1 Returned 304 in 1 ms
+ HTTP  4/5/2026 10:14:04 PM ::1 GET /musclog-app/_expo/static/js/web/index-071ad7d148ab6abf874d1f0981da85df.js
+ HTTP  4/5/2026 10:14:04 PM ::1 Returned 304 in 2 ms
