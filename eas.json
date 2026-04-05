@@ -38,7 +38,8 @@
       },
       "env": {
         "EAS_BUILD_PLATFORM": "device"
-      }
+      },
+      "autoIncrement": true
     }
   }
 }
