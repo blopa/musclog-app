@@ -166,6 +166,10 @@
         "mealOptions": "Opções de Refeição",
         "editMeal": "Editar Refeição",
         "editMealDesc": "Modificar nome e ingredientes da refeição",
+        "shareMealAsRecipe": "Compartilhar refeição como receita",
+        "shareMealAsRecipeDesc": "Compartilhar ingredientes e instruções como texto",
+        "shareRecipeIngredientLine": "{{grams}}g de {{name}}",
+        "shareRecipeNoIngredients": "Esta refeição não tem ingredientes para compartilhar",
         "duplicateMeal": "Duplicar Refeição",
         "duplicateMealDesc": "Criar uma cópia desta refeição",
         "deleteMeal": "Excluir Refeição",
@@ -331,6 +335,7 @@
       "estimated": "Estimado",
       "mealName": "Nome da Refeição",
       "mealNamePlaceholder": "ex: Smoothie Pós-Treino",
+      "mealDescriptionPlaceholder": "Opcional — notas de preparo, quando costuma comer, etc.",
       "ingredients": "Ingredientes ({{count}})",
       "editList": "Editar Lista",
       "noIngredients": "Sem Ingredientes",
@@ -340,7 +345,7 @@
       "mealNameRequired": "Por favor, digite um nome para a refeição",
       "ingredientsRequired": "Por favor, adicione pelo menos um ingrediente",
       "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente.",
-      "preparedWeight": "Peso preparado (g)",
+      "preparedWeight": "Peso preparado ({{unit}})",
       "preparedWeightHelper": "Opcional — peso após o cozimento"
     },
     "aiCamera": {

@@ -90,7 +90,7 @@ body {
 	 */
 	.expo-web-root {
 		flex: none;
-		--frame-h: min(100dvh, max(min(360px, 100dvh), 70dvh));
+		--frame-h: min(100dvh, max(min(360px, 100dvh), 95dvh));
 		aspect-ratio: 1438 / 2976;
 		width: min(100vw, calc(var(--frame-h) * 1438 / 2976));
 		height: auto;
@@ -122,5 +122,7 @@ body {
 		height: auto;
 		min-height: 0;
 		max-height: none;
+		/* Higher pixel density - fit more content in same space */
+		zoom: 0.85;
 	}
 }

@@ -5,7 +5,9 @@
  * progress-style day keys, diary pickers) are **start of that calendar day in the
  * device local timezone** — same idea as DateNavigator / DatePickerModal.
  *
- * Use {@link formatLocalCalendarDayIso} for yyyy-MM-dd strings (APIs, filenames).
+ * Use {@link formatLocalCalendarDayIso} for yyyy-MM-dd strings (APIs, filenames, canonical DOB in forms).
+ * Use {@link formatLocalCalendarMonthDayNumericIntl} / {@link formatLocalCalendarDayNumericIntl} with a
+ * BCP-47 tag (e.g. `i18n.language`) for locale-aware numeric date display.
  * Use {@link formatLocalCalendarMonthKey} / {@link formatLocalMonthYearLongFromMonthKey} for
  * month grouping labels (e.g. workout history). Use {@link getLocalCalendarYear} for year pickers.
  * Use {@link localCalendarDayPlusDays} for prev/next calendar day navigation.
@@ -104,7 +106,9 @@ export function formatLocalMonthYearLongFromMonthKey(monthKey: string, locale: L
 }
 
 /**
- * US-style MM/dd/yyyy (local calendar components). Used for DOB and legacy form strings.
+ * Fixed **US** `MM/dd/yyyy` (not locale-aware). Prefer {@link formatLocalCalendarDayNumericIntl}
+ * or {@link formatLocalCalendarDayIso} for user-facing strings; kept for unit tests and
+ * any legacy exports that must stay US-shaped.
  */
 export function formatLocalCalendarDayMmDdYyyy(date: Date | number): string {
   const d = typeof date === 'number' ? new Date(date) : date;
@@ -112,11 +116,35 @@ export function formatLocalCalendarDayMmDdYyyy(date: Date | number): string {
 }
 
 /**
- * Short `dd/MM` label for chart axes (local calendar day of an instant or stored day-key ms).
+ * Compact numeric month/day for chart axes — order and separators follow the user's locale
+ * (e.g. `7/3` vs `03.07.`). Prefer over fixed-pattern format strings.
+ */
+export function formatLocalCalendarMonthDayNumericIntl(
+  date: Date | number,
+  localeTag: string
+): string {
+  const d = typeof date === 'number' ? new Date(date) : date;
+  return new Intl.DateTimeFormat(localeTag, { day: 'numeric', month: 'numeric' }).format(d);
+}
+
+/**
+ * Locale-aware numeric date (day/month/year). Use for profile DOB display, exports, etc.
+ */
+export function formatLocalCalendarDayNumericIntl(date: Date | number, localeTag: string): string {
+  const d = typeof date === 'number' ? new Date(date) : date;
+  return new Intl.DateTimeFormat(localeTag, {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+  }).format(d);
+}
+
+/**
+ * @deprecated Prefer {@link formatLocalCalendarMonthDayNumericIntl} with `i18n.language`.
+ * Kept as `en-US`-style numeric labels for tests and legacy call sites.
  */
 export function formatLocalCalendarDayDdMm(date: Date | number): string {
-  const d = typeof date === 'number' ? new Date(date) : date;
-  return format(d, 'dd/MM');
+  return formatLocalCalendarMonthDayNumericIntl(date, 'en-US');
 }
 
 /**

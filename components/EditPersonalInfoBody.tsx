@@ -10,7 +10,7 @@ import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
 import {
-  formatLocalCalendarDayMmDdYyyy,
+  formatLocalCalendarDayIso,
   getLocalCalendarYear,
   localCalendarDayDate,
 } from '../utils/calendarDate';
@@ -83,8 +83,7 @@ export function EditPersonalInfoBody({
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    const newDob = formatLocalCalendarDayMmDdYyyy(localCalendarDayDate(date));
-    setDob(newDob);
+    setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
   };
 
   // Call onFormChange whenever form data changes

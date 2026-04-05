@@ -5,6 +5,7 @@ import {
   formatLocalCalendarDayDdMm,
   formatLocalCalendarDayIso,
   formatLocalCalendarDayMmDdYyyy,
+  formatLocalCalendarMonthDayNumericIntl,
   formatLocalCalendarMonthKey,
   formatLocalMonthYearLongFromMonthKey,
   getLocalCalendarYear,
@@ -130,10 +131,18 @@ describe('calendarDate', () => {
     expect(formatLocalCalendarDayMmDdYyyy(localDayStartMs(d))).toBe('07/03/2026');
   });
 
-  it('formatLocalCalendarDayDdMm: accepts Date or day-key ms', () => {
+  it('formatLocalCalendarMonthDayNumericIntl follows locale order', () => {
     const d = new Date(2026, 6, 3, 15, 0, 0);
-    expect(formatLocalCalendarDayDdMm(d)).toBe('03/07');
-    expect(formatLocalCalendarDayDdMm(localDayStartMs(d))).toBe('03/07');
+    expect(formatLocalCalendarMonthDayNumericIntl(d, 'en-US')).toMatch(/7\/3/);
+    expect(formatLocalCalendarMonthDayNumericIntl(d, 'de-DE')).toMatch(/3\.7/);
+  });
+
+  it('formatLocalCalendarDayDdMm: en-US-style month/day (legacy alias)', () => {
+    const d = new Date(2026, 6, 3, 15, 0, 0);
+    expect(formatLocalCalendarDayDdMm(d)).toBe(formatLocalCalendarMonthDayNumericIntl(d, 'en-US'));
+    expect(formatLocalCalendarDayDdMm(localDayStartMs(d))).toBe(
+      formatLocalCalendarMonthDayNumericIntl(d, 'en-US')
+    );
   });
 
   it('localCalendarWeekIndexSince: rolling 7-calendar-day buckets from range start', () => {

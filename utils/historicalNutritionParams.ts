@@ -4,7 +4,7 @@ import {
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from './calendarDate';
-import { lbsToKg } from './nutritionCalculator';
+import { storedWeightToKg } from './unitConversion';
 
 const LOOKBACK_DAYS = 30;
 const MIN_DAYS_WITH_NUTRITION = 7;
@@ -69,23 +69,24 @@ export interface HistoricalNutritionParams {
  */
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
-  units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
-  const { asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
+  const { asOfDate = new Date(), useWeeklyAverages = true } = options;
 
-  const endTs = localDayStartMs(asOfDate);
-  const endOfDay = new Date(endTs);
-  const startTs = localDayKeyPlusCalendarDays(endTs, -LOOKBACK_DAYS);
+  /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
+  const endDayStartTs = localDayStartMs(asOfDate);
+  /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
+  const inclusiveRangeEndDate = new Date(endDayStartTs);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -LOOKBACK_DAYS);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endTs };
+  const dateRange = { startDate: startTs, endDate: endDayStartTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
-    NutritionService.getRangeNutrients(startOfRange, endOfDay),
-    NutritionService.getNutritionLogsForDateRange(startOfRange, endOfDay),
+    NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
+    NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
   const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
@@ -96,8 +97,7 @@ export async function getHistoricalNutritionParams(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
-      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
+      const valueKg = storedWeightToKg(d.value, d.unit);
       return { date: m.date, valueKg };
     })
   );

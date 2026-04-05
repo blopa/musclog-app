@@ -1,4 +1,4 @@
-import { PlusSquare, Sparkles } from 'lucide-react-native';
+import { Plus, PlusSquare, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -12,6 +12,7 @@ import { getWeekdayLabels } from '../../utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
 import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
 import { Button } from '../theme/Button';
+import DashedButton from '../theme/DashedButton';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
@@ -470,13 +471,11 @@ export default function CreateWorkoutModal({
                   isEditable={true}
                 />
                 <View style={{ marginTop: theme.spacing.margin.md }}>
-                  <Button
+                  <DashedButton
                     label={t('workouts.addExercise.title')}
-                    variant="secondary"
-                    size="sm"
-                    width="full"
-                    icon={PlusSquare}
                     onPress={() => setAddExerciseVisible(true)}
+                    size="sm"
+                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   />
                 </View>
               </>

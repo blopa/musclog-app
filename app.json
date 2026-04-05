@@ -2,10 +2,9 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.6.0",
+    "version": "2.5.11",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
-    "jsEngine": "hermes",
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
@@ -17,6 +16,7 @@
     "plugins": [
       "react-native-edge-to-edge",
       "./plugins/withAndroidBarcodeScannerFix",
+      "./plugins/withIosSimulatorBuildFix",
       "expo-localization",
       "expo-router",
       "expo-health-connect",
@@ -51,7 +51,13 @@
         "expo-build-properties",
         {
           "android": {
-            "minSdkVersion": 26
+            "minSdkVersion": 26,
+            "buildArchs": [
+              "armeabi-v7a",
+              "arm64-v8a",
+              "x86",
+              "x86_64"
+            ]
           },
           "ios": {
             "deploymentTarget": "16.0"
@@ -63,24 +69,20 @@
       ],
       "expo-background-task",
       "expo-web-browser",
-      "@react-native-community/datetimepicker",
-      [
-        "rn-mlkit-ocr",
-        {
-          "ocrModels": ["latin"],
-          "ocrUseBundled": true
-        }
-      ],
       [
         "expo-asset",
         {
-          "assets": ["./assets/exercises"]
+          "assets": [
+            "./assets/exercises"
+          ]
         }
       ],
       [
         "react-native-android-widget",
         {
-          "fonts": ["./assets/fonts/material.ttf"],
+          "fonts": [
+            "./assets/fonts/material.ttf"
+          ],
           "widgets": [
             {
               "name": "SmartCamera",
@@ -109,7 +111,8 @@
           "NSHealthShareUsageDescription": "Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.",
           "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
         }
-      ]
+      ],
+      "rn-mlkit-ocr"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -118,20 +121,25 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a1f1a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "184",
+      "buildNumber": "205",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 184,
+      "versionCode": 206,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"

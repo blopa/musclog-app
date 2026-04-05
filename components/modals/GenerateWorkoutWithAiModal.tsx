@@ -87,9 +87,25 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          className="h-24 w-24 items-center justify-center overflow-hidden rounded-full"
+          style={{
+            width: 96,
+            height: 96,
+            borderRadius: 48,
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
         >
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-white/10">
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+            }}
+          >
             <Sparkles size={theme.iconSize['4xl']} color={theme.colors.text.primary} />
           </View>
         </LinearGradient>

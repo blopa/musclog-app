@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
+import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
@@ -166,7 +166,7 @@ export default function ProgressScreen() {
   ];
 
   return (
-    <MasterLayout>
+    <MasterLayout showNavigationMenu={false}>
       <Stack.Screen
         options={{
           title: t('progress.title'),
@@ -388,7 +388,9 @@ function ProgressScreenContent({
                                 Math.min(...history.map((p: any) => p.value)) * 0.95,
                                 Math.max(...history.map((p: any) => p.value)) * 1.05,
                               ]}
-                              tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
+                              tooltipFormatter={(p) =>
+                                `${formatRoundedDecimal(p.y, 1)} ${units === 'imperial' ? 'in' : 'cm'}`
+                              }
                             />
                           </ProgressChartSection>
                         )

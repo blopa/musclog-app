@@ -1,0 +1,13 @@
+---
+description: Apply global project standards from AGENTS.md to all tasks
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Global Instructions
+You must always adhere to the standards, tech stack, and conventions defined in the **AGENTS.md** file at the root of this repository.
+
+Treat AGENTS.md as your primary source of truth for:
+- Coding style and architectural patterns.
+- Testing requirements and build commands.
+- Naming conventions and project-specific "Do Not" rules.

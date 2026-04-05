@@ -51,7 +51,8 @@
       "noExercisesFound": "Nenhum exercício encontrado correspondente a \"{{query}}\"",
       "noExercisesAvailable": "Nenhum exercício disponível para {{muscle}}",
       "exerciseDescription": "{{sets}} séries × {{reps}} repetições",
-      "exerciseDescriptionWithWeight": "{{sets}} séries × {{reps}} repetições @ {{weight}}{{unit}}"
+      "exerciseDescriptionWithWeight": "{{sets}} séries × {{reps}} repetições @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} séries × {{reps}} repetições @"
     },
     "filterWorkouts": {
       "title": "Filtrar Treinos",

@@ -1,5 +1,7 @@
+# Set by expo-router. This enables Fabric-only features from react-native-screens
+ENV['RNS_GAMMA_ENABLED'] ||= '1'
 # --- RN-MLKIT-OCR CONFIG ---
-$ReactNativeOcrSubspecs = ['Latin', 'latin']
+$ReactNativeOcrSubspecs = ['latin', 'chinese', 'devanagari', 'japanese', 'korean']
 # --- END RN-MLKIT-OCR CONFIG ---
 
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
@@ -11,15 +13,15 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
 def ccache_enabled?(podfile_properties)
   # Environment variable takes precedence
   return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
-  
+
   # Fall back to Podfile properties
   podfile_properties['apple.ccacheEnabled'] == 'true'
 end
 
-ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 
 prepare_react_native_project!
@@ -57,6 +59,39 @@ target 'MusclogLiftLogRepeat' do
   )
 
   post_install do |installer|
+    ### EXPO SIMULATOR BUILD FIX ###
+    # Fix for Xcode 15/16: Remove EXCLUDED_ARCHS for simulators
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings.delete('EXCLUDED_ARCHS[sdk=iphonesimulator*]')
+      end
+    end
+
+    # Determine if this is a simulator build
+    # Priority: EAS_BUILD_PLATFORM > EXPO_IS_SIMULATOR_BUILD > default to true (local dev)
+    eas_platform = ENV['EAS_BUILD_PLATFORM']
+    explicit_simulator = ENV['EXPO_IS_SIMULATOR_BUILD']
+    
+    is_simulator = if eas_platform
+      eas_platform == 'simulator'
+    elsif explicit_simulator
+      explicit_simulator == 'true'
+    else
+      true # Default: assume simulator for local development
+    end
+    
+    if is_simulator
+      puts "[ExpoSimulatorFix] Detected simulator build - applying binary patches..."
+      # Use absolute path from project root
+      scripts_dir = File.expand_path('../scripts', __dir__)
+      system("python3 #{scripts_dir}/fix_opencv_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlimage_simulator.py")
+      system("python3 #{scripts_dir}/fix_mlkit_simulator.py")
+    else
+      puts "[ExpoSimulatorFix] Device build detected - skipping simulator binary patches"
+    end
+    ### END EXPO SIMULATOR BUILD FIX ###
+
     react_native_post_install(
       installer,
       config[:reactNativePath],

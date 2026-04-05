@@ -84,7 +84,8 @@ export function WorkoutSummaryTrophy() {
           style={{
             position: 'absolute',
             inset: 0,
-            borderRadius: theme.size['16'],
+            borderRadius: 128,
+            overflow: 'hidden',
           }}
         />
         <Trophy

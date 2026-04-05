@@ -10,6 +10,8 @@ export type SelectorOption<T extends string | number> = {
   id: T;
   label: string;
   description: string;
+  /** e.g. formatted weight — shown accent-styled at the end of the row when set */
+  trailingHighlight?: string;
   icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;

@@ -8,7 +8,6 @@ import {
   readAsStringAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
-import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -16,9 +15,12 @@ import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
-import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+import { detectBarcodes } from './barcodeScanner';
+type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
+
+export { detectBarcodes };
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -98,16 +100,8 @@ export async function createThumbnail(
   return { uri: result.uri, base64: result.base64 };
 }
 
-export async function detectBarcodes(imageUri: string) {
-  const barcodes = await RNDetectBarcodes(imageUri, [
-    BarcodeFormat.EAN_13,
-    BarcodeFormat.EAN_8,
-    BarcodeFormat.UPC_A,
-    BarcodeFormat.UPC_E,
-  ]);
-
-  return barcodes.length > 0 ? barcodes[0].rawValue : null;
-}
+// detectBarcodes is now imported from platform-specific implementation
+// See barcodeScanner.ios.ts and barcodeScanner.android.ts
 
 /**
  * Copies a temporary image URI (e.g. from expo-image-picker) into the app's

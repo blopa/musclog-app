@@ -29,7 +29,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -62,6 +61,7 @@ import {
   useChatMessages,
 } from '../../hooks/useChatMessages';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
+import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { type TrackMealIngredient } from '../../utils/coachAI';
@@ -645,6 +645,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
   const [isOnline, setIsOnline] = useState(false);
   const pendingIntention = hookPendingIntention;
   const setPendingIntention = setHookPendingIntention;
@@ -903,7 +904,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               description: t('coach.message.shareDesc'),
               onPress: () => {
                 setSelectedMessage(null);
-                Share.share({ message: selectedMessage.text ?? '' }).catch(() => {});
+                shareText(selectedMessage.text ?? '').catch(() => {});
               },
             },
             {
@@ -924,6 +925,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         : [],
     [
       selectedMessage,
+      shareText,
       showSnackbar,
       t,
       theme.colors.background.iconDarker,
@@ -992,13 +994,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         );
       }
 
-      await Share.share({ message: lines.join('\n') });
+      await shareText(lines.join('\n'));
     } catch (err) {
       console.error('[CoachModal] shareHistory failed:', err);
       captureException(err, { data: { context: 'CoachModal.handleShareHistory' } });
       showSnackbar('error', t('coach.share.failed'));
     }
-  }, [conversationContext, i18n.resolvedLanguage, i18n.language, showSnackbar, t]);
+  }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);

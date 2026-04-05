@@ -84,20 +84,30 @@ export function FullScreenModal({
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="flex-row items-center gap-4 px-4 py-4"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 16,
+                paddingHorizontal: 16,
+                paddingVertical: 16,
+              }}
             >
               {closable ? (
-                <Pressable className="-ml-2 rounded-full p-2" onPress={onClose} hitSlop={10}>
+                <Pressable
+                  style={{ marginLeft: -8, padding: 8, borderRadius: 9999 }}
+                  onPress={onClose}
+                  hitSlop={10}
+                >
                   <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
               ) : null}
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
                 {subtitle ? (
                   <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
                 ) : null}
               </View>
-              {headerRight ? <View className="-mr-2">{headerRight}</View> : null}
+              {headerRight ? <View style={{ marginRight: -8 }}>{headerRight}</View> : null}
             </LinearGradient>
           </View>
         ) : null}

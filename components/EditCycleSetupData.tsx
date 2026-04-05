@@ -163,7 +163,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
           </Text>
           <View className="flex-row gap-4">
             <NumericInput
-              label={t('onboarding.cycleSetup.length.cycleLength')}
+              label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
               value={cycleLength.toString()}
               onChangeText={(v) => setCycleLength(parseInt(v) || 0)}
               onIncrement={() => setCycleLength((v) => Math.min(45, v + 1))}
@@ -171,7 +171,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
               unit={t('common.days.label')}
             />
             <NumericInput
-              label={t('onboarding.cycleSetup.length.periodDuration')}
+              label={t('onboarding.cycleSetup.length.periodDurationLabel')}
               value={periodDuration.toString()}
               onChangeText={(v) => setPeriodDuration(parseInt(v) || 0)}
               onIncrement={() => setPeriodDuration((v) => Math.min(10, v + 1))}

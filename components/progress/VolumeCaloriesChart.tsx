@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { CorrelationPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { formatLocalCalendarDayDdMm } from '../../utils/calendarDate';
+import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -15,7 +15,7 @@ interface VolumeCaloriesChartProps {
 }
 
 export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
@@ -52,7 +52,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
   const maxCal = Math.max(...data.map((d) => d.dailyCalories), 1);
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatLocalCalendarDayDdMm
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   return (
