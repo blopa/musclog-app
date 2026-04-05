@@ -374,14 +374,55 @@ export function FoodSearchModal({
   }, [searchQuery]);
 
   // Get recent local foods for the "Recent History" section
-  const { foods: recentFoods } = useFoods({
-    mode: 'list',
+  const { recentFoods: recentFoodsRaw } = useNutritionLogs({
+    mode: 'recent',
+    mealType,
     visible,
-    enableReactivity: true,
-    sortBy: 'updated_at',
-    sortOrder: 'desc',
     initialLimit: 5,
-  });
+    enableReactivity: true,
+  }) as UseMealsResultBasic & { recentFoods: any[] };
+
+  const recentFoods = useMemo(() => {
+    return (recentFoodsRaw || []).map((food) => {
+      return {
+        ...food,
+        id: food.id,
+        name: food.name ?? '',
+        description: t('foodSearch.foodDescriptionPer100g', {
+          brand: food.brand || t('foodSearch.customFoodLabel'),
+          calories: formatInteger(
+            resolveRoundedPer100gCaloriesForDisplay({
+              calories: food.calories,
+              protein: food.protein,
+              carbs: food.carbs,
+              fat: food.fat,
+              fiber: food.fiber,
+            })
+          ),
+        }),
+        brand: food.brand,
+        serving_size: portion100gName,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+        imageUrl: food.imageUrl,
+        source: 'local',
+        iconName: 'utensils-crossed',
+        iconColor: theme.colors.accent.primary,
+        iconBgColor: theme.colors.accent.primary10,
+        _raw: food,
+      } as FoodItem;
+    });
+  }, [
+    recentFoodsRaw,
+    t,
+    formatInteger,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    portion100gName,
+  ]);
 
   // Calculate API limits based on food search source setting
   const { apiLimit: openFoodLimit, usdaLimit } = useMemo(() => {
@@ -1384,46 +1425,13 @@ export function FoodSearchModal({
                       />
                       <View className="gap-1.5">
                         {recentFoods.length > 0 ? (
-                          recentFoods.map((food) => {
-                            const foodItem: FoodItem = {
-                              ...food,
-                              id: food.id,
-                              name: food.name ?? '',
-                              description: t('foodSearch.foodDescriptionPer100g', {
-                                brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: formatInteger(
-                                  resolveRoundedPer100gCaloriesForDisplay({
-                                    calories: food.calories,
-                                    protein: food.protein,
-                                    carbs: food.carbs,
-                                    fat: food.fat,
-                                    fiber: food.fiber,
-                                  })
-                                ),
-                              }),
-                              brand: food.brand,
-                              serving_size: portion100gName,
-                              calories: food.calories,
-                              protein: food.protein,
-                              carbs: food.carbs,
-                              fat: food.fat,
-                              fiber: food.fiber,
-                              imageUrl: food.imageUrl,
-                              source: 'local',
-                              iconName: 'utensils-crossed',
-                              iconColor: theme.colors.accent.primary,
-                              iconBgColor: theme.colors.accent.primary10,
-                              _raw: food,
-                            };
-
-                            return (
-                              <FoodSearchItemCard
-                                key={food.id}
-                                food={foodItem}
-                                onAddPress={() => handleFoodClick(foodItem)}
-                              />
-                            );
-                          })
+                          recentFoods.map((food) => (
+                            <FoodSearchItemCard
+                              key={food.id}
+                              food={food}
+                              onAddPress={() => handleFoodClick(food)}
+                            />
+                          ))
                         ) : (
                           <View className="py-8 text-center">
                             <Text className="text-center text-text-tertiary">
@@ -1561,6 +1569,7 @@ export function FoodSearchModal({
           onClose={() => setIsRecentNutritionHistoryModalVisible(false)}
           onFoodClick={handleFoodClick}
           portion100gName={portion100gName}
+          mealType={mealType}
         />
 
         <ConfirmationModal
