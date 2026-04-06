@@ -1,10 +1,13 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from 'react-native';
 
-import { useFoods } from '../../hooks/useFoods';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
+import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
+import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -24,6 +27,7 @@ type RecentNutritionHistoryModalProps = {
   onClose: () => void;
   onFoodClick: (food: FoodItem) => void;
   portion100gName: string;
+  mealType?: MealType;
 };
 
 export function RecentNutritionHistoryModal({
@@ -31,19 +35,60 @@ export function RecentNutritionHistoryModal({
   onClose,
   onFoodClick,
   portion100gName,
+  mealType,
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
-  const { foods, isLoading, isLoadingMore, hasMore, loadMore } = useFoods({
-    mode: 'list',
+  const { recentFoods: recentFoodsRaw, isLoading } = useNutritionLogs({
+    mode: 'recent',
+    mealType,
     visible,
     enableReactivity: true,
-    sortBy: 'updated_at',
-    sortOrder: 'desc',
-    initialLimit: 20,
-    batchSize: 20,
-  });
+    initialLimit: 50,
+  }) as UseMealsResultBasic & { recentFoods: any[] };
+
+  const foods = useMemo(() => {
+    return (recentFoodsRaw || []).map((food) => {
+      return {
+        ...food,
+        id: food.id,
+        name: food.name ?? '',
+        description: t('foodSearch.foodDescriptionPer100g', {
+          brand: food.brand || t('foodSearch.customFoodLabel'),
+          calories: formatInteger(
+            resolveRoundedPer100gCaloriesForDisplay({
+              calories: food.calories,
+              protein: food.protein,
+              carbs: food.carbs,
+              fat: food.fat,
+              fiber: food.fiber,
+            })
+          ),
+        }),
+        brand: food.brand,
+        serving_size: portion100gName,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+        imageUrl: food.imageUrl,
+        source: 'local',
+        iconName: 'utensils-crossed',
+        iconColor: theme.colors.accent.primary,
+        iconBgColor: theme.colors.accent.primary10,
+        _raw: food,
+      } as FoodItem;
+    });
+  }, [
+    recentFoodsRaw,
+    t,
+    formatInteger,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    portion100gName,
+  ]);
 
   return (
     <FullScreenModal
@@ -69,53 +114,13 @@ export function RecentNutritionHistoryModal({
               </View>
             ) : foods.length > 0 ? (
               <>
-                {foods.map((food) => {
-                  const foodItem: FoodItem = {
-                    ...food,
-                    id: food.id,
-                    name: food.name ?? '',
-                    description: t('foodSearch.foodDescriptionPer100g', {
-                      brand: food.brand || t('foodSearch.customFoodLabel'),
-                      calories: formatInteger(Math.round(food.calories ?? 0)),
-                    }),
-                    brand: food.brand,
-                    serving_size: portion100gName,
-                    calories: food.calories,
-                    protein: food.protein,
-                    carbs: food.carbs,
-                    fat: food.fat,
-                    fiber: food.fiber,
-                    imageUrl: food.imageUrl,
-                    source: 'local',
-                    iconName: 'utensils-crossed',
-                    iconColor: theme.colors.accent.primary,
-                    iconBgColor: theme.colors.accent.primary10,
-                    _raw: food,
-                  };
-                  return (
-                    <FoodSearchItemCard
-                      key={food.id}
-                      food={foodItem}
-                      onAddPress={() => onFoodClick(foodItem)}
-                    />
-                  );
-                })}
-                {hasMore ? (
-                  <View className="py-3">
-                    <Button
-                      label={
-                        isLoadingMore ? t('foodSearch.loadingMore') : t('foodSearch.loadMoreLocal')
-                      }
-                      onPress={loadMore}
-                      size="sm"
-                      variant="outline"
-                      disabled={isLoadingMore}
-                      loading={isLoadingMore}
-                      width="full"
-                      iconPosition="left"
-                    />
-                  </View>
-                ) : null}
+                {foods.map((food) => (
+                  <FoodSearchItemCard
+                    key={food.id}
+                    food={food}
+                    onAddPress={() => onFoodClick(food)}
+                  />
+                ))}
               </>
             ) : (
               <View className="py-8 text-center">
