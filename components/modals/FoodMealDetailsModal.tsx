@@ -733,7 +733,6 @@ export function FoodMealDetailsModal({
       }
     });
 
-
     return () => {
       cancelled = true;
     };

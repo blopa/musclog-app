@@ -217,16 +217,18 @@ export function BarcodeCameraModal({
                 {/* Animated Scan Line */}
                 <Animated.View
                   className="absolute left-0 right-0"
-                  style={{
-                    height: theme.borderWidth.thin,
-                    backgroundColor: theme.colors.status.emerald,
-                    ...scanLineStyle,
-                    shadowColor: theme.colors.accent.primary,
-                    shadowOffset: theme.shadowOffset.zero,
-                    shadowOpacity: theme.shadowOpacity.mediumHeavy,
-                    shadowRadius: theme.shadowRadius.md,
-                    elevation: theme.elevation.lg,
-                  }}
+                  style={[
+                    {
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.status.emerald,
+                      shadowColor: theme.colors.accent.primary,
+                      shadowOffset: theme.shadowOffset.zero,
+                      shadowOpacity: theme.shadowOpacity.mediumHeavy,
+                      shadowRadius: theme.shadowRadius.md,
+                      elevation: theme.elevation.lg,
+                    },
+                    scanLineStyle,
+                  ]}
                 />
 
                 {/* Scan Lines Pattern */}
