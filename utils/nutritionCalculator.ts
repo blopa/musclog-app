@@ -112,6 +112,14 @@ export interface NutritionPlan {
 // ---------------------------------------------------------------------------
 
 /**
+ * TDEE drift coefficients: metabolic rate change (kcal/kg/day) per kg of tissue change.
+ * Includes both resting metabolic rate (RMR) and adaptive thermogenesis (60/40 split).
+ * Research: Elia (1992), Müller et al. (2022).
+ */
+export const TDEE_DRIFT_LEAN_KCAL_PER_KG = 27;
+export const TDEE_DRIFT_FAT_KCAL_PER_KG = 9;
+
+/**
  * Default minimum calorie floor when gender/BMR are not provided (backward compatibility).
  * Prefer getMinCalories(gender, bmr) when available.
  */
@@ -560,7 +568,17 @@ export const calculateTDEE = (params: TDEEParams): number => {
     // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
     // If tissue is lost, fatCalories/leanCalories are negative, effectively ADDING
     // the liberated energy back into the TDEE pool, which is physiologically accurate.
-    return Math.round((totalCalories - (fatCalories + leanCalories)) / totalDays);
+    const averageTdee = (totalCalories - (fatCalories + leanCalories)) / totalDays;
+
+    // 1.1 TDEE Drift Correction
+    // Since body weight/composition changes during the period, the averageTdee represents the
+    // midpoint of the period. We adjust it to the final (current) state using drift coefficients.
+    // TDEE_final = TDEE_avg + (ΔLean/2 * LeanCoeff) + (ΔFat/2 * FatCoeff)
+    const driftAdjustment =
+      (leanDifference / 2) * TDEE_DRIFT_LEAN_KCAL_PER_KG +
+      (fatDifference / 2) * TDEE_DRIFT_FAT_KCAL_PER_KG;
+
+    return Math.round(averageTdee + driftAdjustment);
   }
 
   // 2. STATISTICAL FALLBACK
