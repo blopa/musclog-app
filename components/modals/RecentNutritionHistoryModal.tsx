@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from 'react-native';
 
+import { MealType } from '@/database/models';
+
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useNutritionLogs } from '../../hooks/useNutritionLogs';

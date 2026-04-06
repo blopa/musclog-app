@@ -36,6 +36,8 @@ import {
   View,
 } from 'react-native';
 
+import useNutritionLogs from '@/hooks/useNutritionLogs';
+
 import { useSnackbar } from '../../context/SnackbarContext';
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';

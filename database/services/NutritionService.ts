@@ -649,7 +649,9 @@ export class NutritionService {
     }
 
     // We take a larger batch to find unique food IDs up to the requested limit.
-    const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
+    const recentLogs = await query
+      .extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5))
+      .fetch();
 
     const foodIds = [...new Set(recentLogs.map((log) => log.foodId))].slice(0, limit);
     const foods: Food[] = [];
