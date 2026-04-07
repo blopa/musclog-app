@@ -583,7 +583,8 @@ export const calculateTDEE = (params: TDEEParams): number => {
     // 2. Activity Multiplier Scaling (to account for reduced mechanical cost of movement)
     // 3. Adaptive Thermogenesis (mass-independent neuroendocrine/NEAT penalty)
 
-    const multiplier = activityLevel !== undefined ? ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55 : 1.55;
+    const multiplier =
+      activityLevel !== undefined ? (ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55) : 1.55;
 
     const restingDrop =
       (leanDifference / 2) * RMR_LEAN_KCAL_PER_KG + (fatDifference / 2) * RMR_FAT_KCAL_PER_KG;
