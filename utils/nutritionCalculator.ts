@@ -112,6 +112,20 @@ export interface NutritionPlan {
 // ---------------------------------------------------------------------------
 
 /**
+ * Resting Metabolic Rate (RMR) specific tissue coefficients (kcal/kg/day).
+ * Research: Elia (1992).
+ */
+export const RMR_LEAN_KCAL_PER_KG = 13.0;
+export const RMR_FAT_KCAL_PER_KG = 4.5;
+
+/**
+ * Adaptive Thermogenesis coefficient (kcal/kg/day) per kg of total body mass lost.
+ * Accounts for hormonal shifts (leptin, thyroid) and subconscious NEAT reduction.
+ * Research: Müller et al. (2022), Hall et al. (NIH dynamic energy balance).
+ */
+export const ADAPTIVE_THERMOGENESIS_KCAL_PER_KG = 15.0;
+
+/**
  * Default minimum calorie floor when gender/BMR are not provided (backward compatibility).
  * Prefer getMinCalories(gender, bmr) when available.
  */
@@ -560,7 +574,27 @@ export const calculateTDEE = (params: TDEEParams): number => {
     // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
     // If tissue is lost, fatCalories/leanCalories are negative, effectively ADDING
     // the liberated energy back into the TDEE pool, which is physiologically accurate.
-    return Math.round((totalCalories - (fatCalories + leanCalories)) / totalDays);
+    const averageTdee = (totalCalories - (fatCalories + leanCalories)) / totalDays;
+
+    // 1.1 TDEE Drift Correction
+    // Since body weight/composition changes during the period, the averageTdee represents the
+    // midpoint of the period. We adjust it to the final (current) state using a refined model:
+    // 1. Resting Tissue Drop (Elia)
+    // 2. Activity Multiplier Scaling (to account for reduced mechanical cost of movement)
+    // 3. Adaptive Thermogenesis (mass-independent neuroendocrine/NEAT penalty)
+
+    const multiplier = activityLevel !== undefined ? ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55 : 1.55;
+
+    const restingDrop =
+      (leanDifference / 2) * RMR_LEAN_KCAL_PER_KG + (fatDifference / 2) * RMR_FAT_KCAL_PER_KG;
+
+    const activityScaledDrop = restingDrop * multiplier;
+
+    const adaptivePenalty = (weightDifference / 2) * ADAPTIVE_THERMOGENESIS_KCAL_PER_KG;
+
+    const totalDriftAdjustment = activityScaledDrop + adaptivePenalty;
+
+    return Math.round(averageTdee + totalDriftAdjustment);
   }
 
   // 2. STATISTICAL FALLBACK
