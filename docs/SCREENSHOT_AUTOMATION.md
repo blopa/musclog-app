@@ -39,15 +39,21 @@ The screenshots will be saved to: `screenshots/automated/*.png`.
 
 The pipeline automatically navigates to and captures the following:
 
-1.  **Dashboard:** The main home screen showing recent activity and current goals.
-2.  **Workouts:** The list of exercise routines.
-3.  **Progress:** Volume evolution and user metric charts.
-4.  **User Metrics History:** Detailed historical data modal for a specific metric.
-5.  **Nutrition:** Daily calorie and macro tracking.
-6.  **Food Details:** Micronutrient and serving size modal for a specific food.
-7.  **Food Creation:** The custom food entry form.
-8.  **Profile:** User stats and personal information.
-9.  **Settings:** Application preferences and advanced configuration.
+1.  **Landing:** The initial onboarding entry point.
+2.  **Dashboard:** The main home screen showing recent activity and current goals.
+3.  **Workouts:** The list of exercise routines.
+4.  **Active Session:** The live workout tracker with exercise sets and checkboxes.
+5.  **Rest Timer:** The countdown interface between workout sets.
+6.  **Workout Summary:** The post-workout results and volume breakdown.
+7.  **Progress:** Volume evolution and user metric charts.
+8.  **User Metrics History:** Detailed historical data modal for a specific metric.
+9.  **Nutrition:** Daily calorie and macro tracking.
+10. **Food Details:** Micronutrient and serving size modal for a specific food.
+11. **Food Creation:** The custom food entry form.
+12. **Coach (Chat):** AI-powered fitness coaching interface.
+13. **Menstrual Cycle:** Dedicated tracking and phase analysis.
+14. **Profile:** User stats and personal information.
+15. **Settings:** Application preferences and advanced configuration.
 
 ## Customizing the Capture
 
