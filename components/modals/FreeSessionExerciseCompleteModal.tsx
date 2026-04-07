@@ -272,7 +272,6 @@ export function FreeSessionExerciseCompleteModal({
               width="full"
               variant="gradientCta"
               onPress={() => {
-                onClose();
                 onAddNextExercise();
               }}
               disabled={isFinishing}

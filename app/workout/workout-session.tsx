@@ -770,8 +770,53 @@ export default function WorkoutSessionScreen() {
     );
   } else if (!error && workoutLog && !workoutLog.templateId && progress.isComplete) {
     // Free session just completed: brief transition frame while completedExerciseForModal is being
-    // set after refresh(). Show a blank background to avoid flashing the error state.
-    content = <View className="flex-1 bg-bg-primary" />;
+    // set after refresh(). Show a themed background to avoid flashing the error state.
+    content = (
+      <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+        <LinearGradient
+          colors={[...theme.colors.gradients.landingBackground]}
+          locations={[0, 0.5, 1]}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+        />
+        {/* Decorative circles behind session feedback modal */}
+        <View
+          style={{
+            position: 'absolute',
+            top: '15%',
+            left: '-20%',
+            width: 280,
+            height: 280,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.6,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            top: '35%',
+            right: '-15%',
+            width: 200,
+            height: 200,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.35,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: '25%',
+            left: '10%',
+            width: 120,
+            height: 120,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.25,
+          }}
+        />
+      </View>
+    );
   } else if (error || !currentSetData || !workoutLog) {
     content = (
       <View className="flex-1 items-center justify-center px-6">
