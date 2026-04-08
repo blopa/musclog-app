@@ -20,6 +20,7 @@ import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWork
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { AnimatedContent } from '../../components/theme/AnimatedContent';
+import { Button } from '../../components/theme/Button';
 import DashedButton from '../../components/theme/DashedButton';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
@@ -384,25 +385,22 @@ export default function WorkoutsScreen() {
                       {t('workouts.interruptedSession.description')}
                     </Text>
                     <View className="mt-3 flex-row gap-2">
-                      <Pressable
-                        className="flex-1 items-center justify-center rounded-lg bg-accent-primary py-2"
+                      <Button
+                        label={t('workouts.interruptedSession.resume')}
+                        size="xs"
+                        width="flex-1"
+                        variant="gradientCta"
                         onPress={() => {
                           setSelectedWorkoutLogId(interruptedWorkoutLog.id);
                           setIsWorkoutOverviewVisible(true);
                         }}
-                      >
-                        <Text className="text-xs font-bold text-white">
-                          {t('workouts.interruptedSession.resume')}
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        className="items-center justify-center rounded-lg bg-bg-secondary px-4 py-2"
+                      />
+                      <Button
+                        label={t('workouts.interruptedSession.discard')}
+                        size="xs"
+                        variant="secondary"
                         onPress={() => setIsDiscardInterruptedConfirmVisible(true)}
-                      >
-                        <Text className="text-xs font-bold text-text-secondary">
-                          {t('workouts.interruptedSession.discard')}
-                        </Text>
-                      </Pressable>
+                      />
                     </View>
                   </View>
                 </View>

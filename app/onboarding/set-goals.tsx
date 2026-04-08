@@ -453,7 +453,7 @@ export default function SetGoals() {
     }
 
     return planWithTargets;
-  }, [params, units]);
+  }, [params]);
 
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);

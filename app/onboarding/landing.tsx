@@ -76,7 +76,7 @@ export default function LandingScreen() {
     };
 
     initializeApp();
-  }, [router]);
+  }, [router, showSnackbar, t]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
