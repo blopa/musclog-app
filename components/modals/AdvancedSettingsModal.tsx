@@ -21,16 +21,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { exportDatabase, importDatabase } from '../../utils/file';
-import { captureException } from '../../utils/sentry';
-import { LegalLinksCard } from '../cards/LegalLinksCard';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { exportDatabase, importDatabase } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
+
 import { CenteredModal } from './CenteredModal';
 import {
   ChatMessageDataModal,

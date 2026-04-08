@@ -5,19 +5,20 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '../constants/database';
+import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '@/constants/database';
 import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
   TEMP_NUTRITION_PLAN,
-} from '../constants/misc';
+} from '@/constants/misc';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
-} from '../constants/settings';
-import { decrypt, encrypt } from '../utils/encryption';
-import { parseWorkoutInsightsType } from '../utils/workoutInsightsType';
+} from '@/constants/settings';
+import { decrypt, encrypt } from '@/utils/encryption';
+import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';

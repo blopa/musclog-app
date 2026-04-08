@@ -5,6 +5,7 @@ const expoConfig = require('eslint-config-expo/flat');
 // Local plugin with custom rules
 const localRulesPlugin = require('./eslint-rules');
 const simpleImportSort = require('eslint-plugin-simple-import-sort');
+const noRelativeImportPaths = require('eslint-plugin-no-relative-import-paths');
 
 module.exports = defineConfig([
   expoConfig,
@@ -15,6 +16,7 @@ module.exports = defineConfig([
     plugins: {
       local: localRulesPlugin,
       'simple-import-sort': simpleImportSort,
+      'no-relative-import-paths': noRelativeImportPaths,
     },
     rules: {
       'react/display-name': 'off',
@@ -32,6 +34,11 @@ module.exports = defineConfig([
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
+      // Enforce @/ alias over relative imports (fixable)
+      'no-relative-import-paths/no-relative-import-paths': [
+        'warn',
+        { allowSameFolder: true, rootDir: '.', prefix: '@' },
+      ],
       // turn off other conflicting sort rules
       'sort-imports': 'off',
       'react-hooks/exhaustive-deps': [

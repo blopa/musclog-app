@@ -1,4 +1,4 @@
-import type { Units } from '../constants/settings';
+import type { Units } from '@/constants/settings';
 
 export interface SegmentItem {
   exerciseName: string;

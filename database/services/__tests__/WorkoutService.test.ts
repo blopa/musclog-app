@@ -1,6 +1,7 @@
-import { database } from '../../index';
-import { WorkoutAnalytics } from '../WorkoutAnalytics';
-import { WorkoutService } from '../WorkoutService';
+import { database } from '@/database/index';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
+
 import {
   createMockExercise,
   createMockSchedule,

@@ -24,7 +24,7 @@ import {
   localNextDayStartMsFromDate,
   MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
-} from '../calendarDate';
+} from '@/utils/calendarDate';
 
 describe('calendarDate', () => {
   it('parseLocalCalendarDate: yyyy-MM-dd matches local start of that calendar day', () => {

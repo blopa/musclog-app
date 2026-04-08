@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { ThemeOption } from '../constants/settings';
-import { SettingsService } from '../database/services/SettingsService';
+import type { ThemeOption } from '@/constants/settings';
+import { SettingsService } from '@/database/services/SettingsService';
+
 import { useSettings } from './useSettings';
 
 type SettingValue = string | boolean | number;

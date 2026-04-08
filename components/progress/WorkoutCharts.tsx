@@ -2,14 +2,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
-import { BarChart } from '../charts/BarChart';
-import { LineChart } from '../charts/LineChart';
+import { BarChart } from '@/components/charts/BarChart';
+import { LineChart } from '@/components/charts/LineChart';
+import { MuscleGroupSets, WorkoutVolumePoint } from '@/database/services/ProgressService';
+import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getXAxisLabels } from '@/utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface WorkoutChartsProps {

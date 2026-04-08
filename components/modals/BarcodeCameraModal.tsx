@@ -14,11 +14,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../hooks/useTheme';
-import { detectBarcodes } from '../../utils/file';
-import { showSnackbar } from '../../utils/snackbarService';
-import { CameraView, useCameraPermissions } from '../CameraView';
-import { Button } from '../theme/Button';
+import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+import { detectBarcodes } from '@/utils/file';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type BarcodeCameraModalProps = {

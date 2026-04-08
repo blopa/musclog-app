@@ -1,4 +1,5 @@
-import type { Units } from '../constants/settings';
+import type { Units } from '@/constants/settings';
+
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { roundToDecimalPlaces } from './roundDecimal';
 import { gramsToDisplay, kgToDisplay } from './unitConversion';

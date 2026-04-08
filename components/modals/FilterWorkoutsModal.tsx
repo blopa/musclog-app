@@ -3,12 +3,13 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { type MuscleGroup } from '../../database/models';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { Button } from '../theme/Button';
-import { Slider } from '../theme/Slider';
+import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
+import { Button } from '@/components/theme/Button';
+import { Slider } from '@/components/theme/Slider';
+import { type MuscleGroup } from '@/database/models';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';

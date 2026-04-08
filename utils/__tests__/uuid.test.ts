@@ -1,4 +1,4 @@
-import { generateUUID } from '../uuid';
+import { generateUUID } from '@/utils/uuid';
 
 describe('utils/uuid', () => {
   const originalCrypto = globalThis.crypto;

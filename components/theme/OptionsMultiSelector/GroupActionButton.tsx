@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type GroupActionButtonProps = {
   onPress: () => void;

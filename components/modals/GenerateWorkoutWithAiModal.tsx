@@ -4,13 +4,14 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import { type ChatHistoryEntry, generateWorkoutPlan } from '../../utils/coachAI';
-import { processWorkoutPlanResponse } from '../../utils/workoutAI';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import { type ChatHistoryEntry, generateWorkoutPlan } from '@/utils/coachAI';
+import { processWorkoutPlanResponse } from '@/utils/workoutAI';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type Props = {

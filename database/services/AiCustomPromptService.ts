@@ -1,10 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../index';
+import { database } from '@/database/index';
 import AiCustomPrompt, {
   type AiCustomPromptContext,
   type AiCustomPromptType,
-} from '../models/AiCustomPrompt';
+} from '@/database/models/AiCustomPrompt';
+
 import SettingsService from './SettingsService';
 
 export class AiCustomPromptService {

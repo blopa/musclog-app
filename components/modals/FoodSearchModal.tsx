@@ -36,26 +36,26 @@ import {
   View,
 } from 'react-native';
 
+import { FoodSearchItemCard } from '@/components/cards/FoodSearchItemCard';
+import { SameAsYesterdayCard } from '@/components/cards/SameAsYesterdayCard';
+import { Button } from '@/components/theme/Button';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { type MealType } from '@/database/models';
+import Meal from '@/database/models/Meal';
+import { FoodPortionService, NutritionService } from '@/database/services';
+import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
+import { useFoods } from '@/hooks/useFoods';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import useNutritionLogs from '@/hooks/useNutritionLogs';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnifiedFoodSearch';
+import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
+import { captureException } from '@/utils/sentry';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { type MealType } from '../../database/models';
-import Meal from '../../database/models/Meal';
-import { FoodPortionService, NutritionService } from '../../database/services';
-import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
-import { useFoods } from '../../hooks/useFoods';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
-import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
-import { captureException } from '../../utils/sentry';
-import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
-import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
-import { Button } from '../theme/Button';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';

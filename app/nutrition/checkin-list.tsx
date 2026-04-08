@@ -4,15 +4,15 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { MasterLayout } from '../../components/MasterLayout';
-import { CheckinDetailsModal } from '../../components/modals/CheckinDetailsModal';
-import { SelectModal } from '../../components/modals/SelectModal';
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { useNutritionCheckins } from '../../hooks/useNutritionCheckins';
-import { useTheme } from '../../hooks/useTheme';
-import { getLocalCalendarYear } from '../../utils/calendarDate';
+import { MasterLayout } from '@/components/MasterLayout';
+import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
+import { SelectModal } from '@/components/modals/SelectModal';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useNutritionCheckins } from '@/hooks/useNutritionCheckins';
+import { useTheme } from '@/hooks/useTheme';
+import { getLocalCalendarYear } from '@/utils/calendarDate';
 
 export default function CheckinListScreen() {
   const theme = useTheme();

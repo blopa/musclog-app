@@ -2,8 +2,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { GenericCard } from '../cards/GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { useTheme } from '@/hooks/useTheme';
+
 import { Button } from './Button';
 
 type EmptyStateCardProps = {

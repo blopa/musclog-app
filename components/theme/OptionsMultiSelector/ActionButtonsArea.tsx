@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { View } from 'react-native';
 
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { DeleteActionButton } from './DeleteActionButton';
 import { GroupActionButton } from './GroupActionButton';
 

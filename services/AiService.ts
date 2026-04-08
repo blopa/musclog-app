@@ -1,6 +1,6 @@
-import { GEMINI_MODELS } from '../constants/ai';
-import { SettingsService } from '../database/services';
-import type { CoachAIConfig } from '../utils/coachAI';
+import { GEMINI_MODELS } from '@/constants/ai';
+import { SettingsService } from '@/database/services';
+import type { CoachAIConfig } from '@/utils/coachAI';
 
 export class AiService {
   /**

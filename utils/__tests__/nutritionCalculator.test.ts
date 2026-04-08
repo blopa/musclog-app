@@ -19,7 +19,7 @@ import {
   normalizeFitnessGoal,
   normalizeWeightGoal,
   type NutritionCalculatorInput,
-} from '../nutritionCalculator';
+} from '@/utils/nutritionCalculator';
 
 // ---------------------------------------------------------------------------
 // BMR (Mifflin-St Jeor)

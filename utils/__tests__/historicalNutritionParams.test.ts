@@ -1,4 +1,4 @@
-import { getHistoricalNutritionParams } from '../historicalNutritionParams';
+import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
 
 const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();

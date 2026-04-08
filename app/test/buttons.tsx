@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '../../components/theme/Button';
+import { Button } from '@/components/theme/Button';
 
 type ButtonVariant =
   | 'accent'

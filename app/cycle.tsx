@@ -3,23 +3,23 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { PhysiologicalInsightsCard } from '../components/cards/PhysiologicalInsightsCard';
-import { DateNavigator } from '../components/DateNavigator';
-import { MasterLayout } from '../components/MasterLayout';
-import { CycleLogModal } from '../components/modals/CycleLogModal';
-import { CycleSettingsModal } from '../components/modals/CycleSettingsModal';
-import { PhaseWheel } from '../components/PhaseWheel';
-import { AnimatedContent } from '../components/theme/AnimatedContent';
-import { UserMetricService } from '../database/services';
-import { MenstrualService } from '../database/services/MenstrualService';
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
-import { useTheme } from '../hooks/useTheme';
+import { PhysiologicalInsightsCard } from '@/components/cards/PhysiologicalInsightsCard';
+import { DateNavigator } from '@/components/DateNavigator';
+import { MasterLayout } from '@/components/MasterLayout';
+import { CycleLogModal } from '@/components/modals/CycleLogModal';
+import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
+import { PhaseWheel } from '@/components/PhaseWheel';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { UserMetricService } from '@/database/services';
+import { MenstrualService } from '@/database/services/MenstrualService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useTheme } from '@/hooks/useTheme';
 import {
   localCalendarDayDate,
   localDayClosedRangeMaxMs,
   localDayStartMs,
-} from '../utils/calendarDate';
+} from '@/utils/calendarDate';
 
 export default function CycleScreen() {
   const theme = useTheme();

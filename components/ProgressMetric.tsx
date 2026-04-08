@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useTheme } from '../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
 
 type ProgressMetricProps = {
   value: number;

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import { type SettingsContextType, useSettingsContext } from '../context/SettingsContext';
-import { getHeightUnit, getWeightUnit } from '../utils/units';
+import { type SettingsContextType, useSettingsContext } from '@/context/SettingsContext';
+import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
 export function useSettings(): SettingsContextType {
   const context = useSettingsContext();

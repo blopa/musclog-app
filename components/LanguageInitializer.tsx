@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { useSettings } from '../hooks/useSettings';
-import i18n from '../lang/lang';
+import { useSettings } from '@/hooks/useSettings';
+import i18n from '@/lang/lang';
 
 export function LanguageInitializer() {
   const { language } = useSettings();

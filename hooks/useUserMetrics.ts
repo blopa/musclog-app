@@ -2,14 +2,15 @@ import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import type { Units } from '../constants/settings';
-import { database } from '../database';
-import type { DecryptedUserMetricFields } from '../database/models';
-import UserMetric from '../database/models/UserMetric';
-import { UserMetricService } from '../database/services';
-import { MetricType } from '../services/healthDataTransform';
-import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
+import { DEFAULT_BATCH_SIZE } from '@/constants/database';
+import type { Units } from '@/constants/settings';
+import { database } from '@/database';
+import type { DecryptedUserMetricFields } from '@/database/models';
+import UserMetric from '@/database/models/UserMetric';
+import { UserMetricService } from '@/database/services';
+import { MetricType } from '@/services/healthDataTransform';
+import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
+
 import { useSettings } from './useSettings';
 
 export interface UserMetrics {

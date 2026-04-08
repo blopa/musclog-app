@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { useTheme } from '../../../hooks/useTheme';
-import { Theme } from '../../../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { Theme } from '@/theme';
+
 import { ActionButtonsArea } from './ActionButtonsArea';
 import {
   getGroupColor,

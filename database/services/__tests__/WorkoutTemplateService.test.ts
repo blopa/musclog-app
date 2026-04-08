@@ -1,10 +1,11 @@
-import { database } from '../../index';
-import { WorkoutTemplateRepository } from '../../repositories/WorkoutTemplateRepository';
+import { database } from '@/database/index';
+import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import {
   ExerciseInWorkout,
   SaveTemplateData,
   WorkoutTemplateService,
-} from '../WorkoutTemplateService';
+} from '@/database/services/WorkoutTemplateService';
+
 import {
   createMockExercise,
   createMockSchedule,

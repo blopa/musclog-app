@@ -4,8 +4,8 @@ import * as Sharing from 'expo-sharing';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { formatLocalCalendarDayIso } from '../utils/calendarDate';
-import { showSnackbar } from '../utils/snackbarService';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
+import { showSnackbar } from '@/utils/snackbarService';
 
 function sanitizeFilename(title: string): string {
   return title

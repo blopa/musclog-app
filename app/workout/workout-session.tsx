@@ -26,59 +26,59 @@ import {
   View,
 } from 'react-native';
 
-import { InfoCard } from '../../components/cards/InfoCard';
-import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
-import { MasterLayout } from '../../components/MasterLayout';
-import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
-import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
-import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
-import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { InfoCard } from '@/components/cards/InfoCard';
+import { WorkoutStatCard } from '@/components/cards/WorkoutStatCard';
+import { MasterLayout } from '@/components/MasterLayout';
+import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
+import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
+import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
+import { LogSetPerformanceModal } from '@/components/modals/LogSetPerformanceModal';
 import {
   ReplaceExerciseData,
   ReplaceExerciseModal,
-} from '../../components/modals/ReplaceExerciseModal';
-import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
-import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import ShowMoreButton from '../../components/ShowMoreButton';
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
-import { Button } from '../../components/theme/Button';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutActionButton } from '../../components/WorkoutActionButton';
-import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { database } from '../../database';
-import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { useActiveWorkout } from '../../hooks/useActiveWorkout';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
-import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
-import i18n from '../../lang/lang';
-import { NotificationService } from '../../services/NotificationService';
+} from '@/components/modals/ReplaceExerciseModal';
+import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
+import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
+import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import ShowMoreButton from '@/components/ShowMoreButton';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { Button } from '@/components/theme/Button';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutActionButton } from '@/components/WorkoutActionButton';
+import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { database } from '@/database';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useActiveWorkout } from '@/hooks/useActiveWorkout';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutFeedback } from '@/hooks/useWorkoutFeedback';
+import { useWorkoutFueling } from '@/hooks/useWorkoutFueling';
+import i18n from '@/lang/lang';
+import { NotificationService } from '@/services/NotificationService';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,
   setInsightDismissed,
-} from '../../utils/activeWorkoutStorage';
+} from '@/utils/activeWorkoutStorage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { formatAppDecimal } from '../../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { formatDuration } from '../../utils/workout';
+} from '@/utils/exerciseTranslation';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { formatAppDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatDuration } from '@/utils/workout';
 
 // Helper function to get hormonal insight text based on current phase
 const getHormonalInsightText = (

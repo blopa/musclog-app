@@ -1,4 +1,8 @@
-import { formatAppDecimal, formatAppInteger, formatAppRoundedDecimal } from '../formatAppNumber';
+import {
+  formatAppDecimal,
+  formatAppInteger,
+  formatAppRoundedDecimal,
+} from '@/utils/formatAppNumber';
 
 describe('formatAppNumber', () => {
   it('formats integers without thousands separators', () => {

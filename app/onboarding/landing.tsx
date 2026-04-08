@@ -6,18 +6,18 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MasterLayout } from '../../components/MasterLayout';
-import { CenteredModal } from '../../components/modals/CenteredModal';
-import { Button } from '../../components/theme/Button';
-import { TextInput } from '../../components/theme/TextInput';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { seedDevData } from '../../database/seeders/dev';
-import { seedProductionData } from '../../database/seeders/prod';
-import { verifyDatabaseTables } from '../../database/verify';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { importDatabase, shouldSeedDevData } from '../../utils/file';
-import { captureException } from '../../utils/sentry';
+import { MasterLayout } from '@/components/MasterLayout';
+import { CenteredModal } from '@/components/modals/CenteredModal';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { seedDevData } from '@/database/seeders/dev';
+import { seedProductionData } from '@/database/seeders/prod';
+import { verifyDatabaseTables } from '@/database/verify';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { importDatabase, shouldSeedDevData } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

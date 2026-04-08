@@ -2,13 +2,13 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { EditFitnessDetailsBody } from '../../components/EditFitnessDetailsBody';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { Button } from '../../components/theme/Button';
-import { useOnboardingFitnessData } from '../../hooks/useOnboardingFitnessData';
-import { useTheme } from '../../hooks/useTheme';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { EditFitnessDetailsBody } from '@/components/EditFitnessDetailsBody';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { Button } from '@/components/theme/Button';
+import { useOnboardingFitnessData } from '@/hooks/useOnboardingFitnessData';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function FitnessInfo() {
   const theme = useTheme();

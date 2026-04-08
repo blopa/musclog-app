@@ -16,7 +16,8 @@ import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
 
-import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
+
 import { detectBarcodes } from './barcodeScanner';
 type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
 

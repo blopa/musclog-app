@@ -6,7 +6,7 @@ import {
   ONBOARDING_CURRENT_STEP,
   ONBOARDING_VERSION,
   TEMP_NUTRITION_PLAN,
-} from '../constants/misc';
+} from '@/constants/misc';
 
 export interface OnboardingStatus {
   completed: boolean;

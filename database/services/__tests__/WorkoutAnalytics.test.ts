@@ -1,6 +1,7 @@
-import { calculate1RM } from '../../../utils/workoutCalculator';
-import { database } from '../../index';
-import { WorkoutAnalytics } from '../WorkoutAnalytics';
+import { database } from '@/database/index';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { calculate1RM } from '@/utils/workoutCalculator';
+
 import { createMockExercise, createMockWorkoutLog, createMockWorkoutLogSet } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({

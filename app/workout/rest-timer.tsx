@@ -4,6 +4,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
+import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
+import { MasterLayout } from '@/components/MasterLayout';
+import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
+import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
+import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { RestTimer } from '@/components/RestTimer';
+import { RestTimerControls } from '@/components/RestTimerControls';
+import { UpNextLabel } from '@/components/UpNextLabel';
+import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { WorkoutService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
@@ -16,18 +27,6 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '@/utils/units';
-
-import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
-import { MasterLayout } from '../../components/MasterLayout';
-import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import { RestTimer } from '../../components/RestTimer';
-import { RestTimerControls } from '../../components/RestTimerControls';
-import { UpNextLabel } from '../../components/UpNextLabel';
-import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { WorkoutService } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 
 export default function RestTimerScreen() {
   const theme = useTheme();

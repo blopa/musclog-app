@@ -1,7 +1,7 @@
 import { Q, Query } from '@nozbe/watermelondb';
 
-import { database } from '../database-instance';
-import WorkoutTemplate from '../models/WorkoutTemplate';
+import { database } from '@/database/database-instance';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 
 /**
  * Repository for WorkoutTemplate queries

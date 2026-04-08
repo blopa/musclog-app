@@ -3,20 +3,21 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { WorkoutType } from '../../constants/workoutTypes';
-import { WORKOUT_TYPES } from '../../constants/workoutTypes';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutForm } from '../../hooks/useWorkoutForm';
-import { getWeekdayLabels } from '../../utils/workout';
-import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
-import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
-import { Button } from '../theme/Button';
-import DashedButton from '../theme/DashedButton';
-import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { TextInput } from '../theme/TextInput';
-import { WeekdayPicker } from '../theme/WeekdayPicker';
+import { Button } from '@/components/theme/Button';
+import DashedButton from '@/components/theme/DashedButton';
+import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextInput } from '@/components/theme/TextInput';
+import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
+import type { WorkoutType } from '@/constants/workoutTypes';
+import { WORKOUT_TYPES } from '@/constants/workoutTypes';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutForm } from '@/hooks/useWorkoutForm';
+import { getWeekdayLabels } from '@/utils/workout';
+import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
+import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+
 import { AddExerciseModal } from './AddExerciseModal';
 import { FullScreenModal } from './FullScreenModal';
 

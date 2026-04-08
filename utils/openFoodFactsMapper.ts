@@ -1,6 +1,7 @@
-import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
-import i18n from '../lang/lang';
-import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
+import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
+import i18n from '@/lang/lang';
+import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
+
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
 

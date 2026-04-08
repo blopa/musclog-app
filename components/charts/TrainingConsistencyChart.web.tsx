@@ -3,8 +3,8 @@ import { useEffect, useId, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useTheme } from '../../hooks/useTheme';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useTheme } from '@/hooks/useTheme';
 
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;

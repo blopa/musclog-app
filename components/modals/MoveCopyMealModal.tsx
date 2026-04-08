@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import type { MealType } from '../../database/models';
-import { useTheme } from '../../hooks/useTheme';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { BottomPopUp } from '../BottomPopUp';
-import { FilterTabs } from '../FilterTabs';
-import { Button } from '../theme/Button';
-import { Slider } from '../theme/Slider';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { FilterTabs } from '@/components/FilterTabs';
+import { Button } from '@/components/theme/Button';
+import { Slider } from '@/components/theme/Slider';
+import type { MealType } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 

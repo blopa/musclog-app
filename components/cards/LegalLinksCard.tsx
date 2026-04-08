@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
-import { SUPPORT_PROJECT_DONATION_URL } from '../../constants/misc';
-import { useTheme } from '../../hooks/useTheme';
-import packageJson from '../../package.json';
-import { isSupportProjectListLinkVisible } from '../../utils/supportProjectInstallSource';
+import { SUPPORT_PROJECT_DONATION_URL } from '@/constants/misc';
+import { useTheme } from '@/hooks/useTheme';
+import packageJson from '@/package.json';
+import { isSupportProjectListLinkVisible } from '@/utils/supportProjectInstallSource';
+
 import { GenericCard } from './GenericCard';
 
 const buildNumber =

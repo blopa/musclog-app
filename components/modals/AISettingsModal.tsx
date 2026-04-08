@@ -11,15 +11,16 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { LegalLinksCard } from '../cards/LegalLinksCard';
-import { Button } from '../theme/Button';
-import NewNumericalInput from '../theme/NewNumericalInput';
-import { SecretInput } from '../theme/SecretInput';
-import { ToggleInput } from '../theme/ToggleInput';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { Button } from '@/components/theme/Button';
+import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { SecretInput } from '@/components/theme/SecretInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useTheme } from '@/hooks/useTheme';
+
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { FullScreenModal } from './FullScreenModal';
 

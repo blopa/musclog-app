@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ReactNode, useMemo } from 'react';
 import { Animated, Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type TestInputProps = {
   label: ReactNode;

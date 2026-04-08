@@ -1,9 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 
-import i18n from '../../lang/lang';
-import { database } from '../index';
-import FoodFoodPortion from '../models/FoodFoodPortion';
-import FoodPortion from '../models/FoodPortion';
+import { database } from '@/database/index';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import FoodPortion from '@/database/models/FoodPortion';
+import i18n from '@/lang/lang';
 
 /** Matches {@link FoodPortionService.createCommonPortions} i18n keys that were persisted literally in `name`. */
 const PORTION_DISPLAY_NAME_I18N_KEYS = [

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';

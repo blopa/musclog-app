@@ -2,9 +2,10 @@ import { History, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import type { YesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import type { YesterdayMealData } from '@/hooks/useYesterdayMealData';
+
 import { GenericCard } from './GenericCard';
 
 type SameAsYesterdayCardProps = {

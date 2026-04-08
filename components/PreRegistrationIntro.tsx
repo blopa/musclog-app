@@ -9,7 +9,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function PreRegistrationIntro() {
   const theme = useTheme();

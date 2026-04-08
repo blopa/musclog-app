@@ -2,7 +2,7 @@ import {
   registerSnackbarService,
   showSnackbar,
   unregisterSnackbarService,
-} from '../snackbarService';
+} from '@/utils/snackbarService';
 
 describe('utils/snackbarService', () => {
   let mockSnackbarFunction: jest.Mock;

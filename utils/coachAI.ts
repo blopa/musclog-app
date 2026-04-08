@@ -1,8 +1,9 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
-import { SettingsService } from '../database/services';
-import i18n from '../lang/lang';
+import { SettingsService } from '@/database/services';
+import i18n from '@/lang/lang';
+
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,

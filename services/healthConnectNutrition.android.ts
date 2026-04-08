@@ -24,15 +24,16 @@ import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
-import { encryptNutritionLogSnapshot } from '../database/encryptionHelpers';
-import Food from '../database/models/Food';
-import FoodFoodPortion from '../database/models/FoodFoodPortion';
-import NutritionLog, { type MealType } from '../database/models/NutritionLog';
-import Setting from '../database/models/Setting';
-import { FoodPortionService } from '../database/services';
-import { localDayStartMs } from '../utils/calendarDate';
+} from '@/constants/settings';
+import { database } from '@/database';
+import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import Food from '@/database/models/Food';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import Setting from '@/database/models/Setting';
+import { FoodPortionService } from '@/database/services';
+import { localDayStartMs } from '@/utils/calendarDate';
+
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';

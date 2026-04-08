@@ -4,10 +4,10 @@ import { ReactNode, RefObject } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../hooks/useTheme';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { BottomButtonWrapper } from '../BottomButtonWrapper';
-import { Modal } from '../theme/Modal';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type FullScreenModalProps = {
   visible: boolean;

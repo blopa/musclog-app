@@ -18,24 +18,25 @@ import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { type MealType } from '../../database/models';
-import { NutritionService } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
+import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
+import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { type MealType } from '@/database/models';
+import { NutritionService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
-} from '../../utils/coachAI';
-import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
-import { performOcr } from '../../utils/ocr';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
-import { CameraView, useCameraPermissions } from '../CameraView';
+} from '@/utils/coachAI';
+import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
+import { performOcr } from '@/utils/ocr';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';

@@ -36,9 +36,9 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-} from '../../constants/settings';
-import { database } from '../../database';
-import Setting, { type SettingType } from '../models/Setting';
+} from '@/constants/settings';
+import { database } from '@/database';
+import Setting, { type SettingType } from '@/database/models/Setting';
 
 export class SettingsService {
   /**

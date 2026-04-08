@@ -1,4 +1,4 @@
-import type { MealType } from '../database/models/NutritionLog';
+import type { MealType } from '@/database/models/NutritionLog';
 
 export interface NutritionWriteParams {
   logId: string;

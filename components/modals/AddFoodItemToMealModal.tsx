@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import Food from '../../database/models/Food';
-import { useFoods } from '../../hooks/useFoods';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
-import { StepperInput } from '../theme/StepperInput';
-import { TextInput } from '../theme/TextInput';
+import { Button } from '@/components/theme/Button';
+import { StepperInput } from '@/components/theme/StepperInput';
+import { TextInput } from '@/components/theme/TextInput';
+import Food from '@/database/models/Food';
+import { useFoods } from '@/hooks/useFoods';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 import { ScannedFoodDetailsModal } from './ScannedFoodDetailsModal';

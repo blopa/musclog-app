@@ -3,11 +3,12 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useFoodPortions } from '../hooks/useFoodPortions';
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useSettings } from '../hooks/useSettings';
-import { useTheme } from '../hooks/useTheme';
-import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
+import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { GenericCard } from './cards/GenericCard';
 import { FilterTabs } from './FilterTabs';
 import { StepperInput } from './theme/StepperInput';

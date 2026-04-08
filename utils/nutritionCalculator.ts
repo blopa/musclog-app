@@ -1,14 +1,15 @@
 import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
 
-import { NutritionGoals } from '../components/NutritionGoalsBody';
+import { NutritionGoals } from '@/components/NutritionGoalsBody';
 import type {
   EatingPhase,
   FitnessGoal,
   Gender,
   LiftingExperience,
   WeightGoal,
-} from '../database/models';
+} from '@/database/models';
+
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from './calendarDate';
 
 // ---------------------------------------------------------------------------

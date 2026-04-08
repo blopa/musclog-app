@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { AiCustomPrompt } from '../../database/models';
-import { useAiCustomPrompts } from '../../hooks/useAiCustomPrompts';
-import { useTheme } from '../../hooks/useTheme';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
-import { ToggleInput } from '../theme/ToggleInput';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { AiCustomPrompt } from '@/database/models';
+import { useAiCustomPrompts } from '@/hooks/useAiCustomPrompts';
+import { useTheme } from '@/hooks/useTheme';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+
 import { AiCustomPromptEditModal } from './AiCustomPromptEditModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';

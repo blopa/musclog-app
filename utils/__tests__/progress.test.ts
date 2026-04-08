@@ -1,5 +1,5 @@
-import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '../calendarDate';
-import { calculateEmpiricalTDEEWindow, MetricPoint } from '../progress';
+import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { calculateEmpiricalTDEEWindow, MetricPoint } from '@/utils/progress';
 const START_DATE = new Date('2026-01-01').getTime();
 
 /** Local calendar day key for synthetic "day i" timestamps (matches calculateEmpiricalTDEEWindow bucketing). */

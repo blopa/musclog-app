@@ -1,13 +1,14 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { Dumbbell, User } from 'lucide-react-native';
 
-import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
-import type { Units } from '../constants/settings';
-import Exercise, { type EquipmentType } from '../database/models/Exercise';
-import Schedule, { type DayOfWeek } from '../database/models/Schedule';
-import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
-import i18n from '../lang/lang';
-import { Theme } from '../theme';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import type { Units } from '@/constants/settings';
+import Exercise, { type EquipmentType } from '@/database/models/Exercise';
+import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
+import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
+import i18n from '@/lang/lang';
+import { Theme } from '@/theme';
+
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';

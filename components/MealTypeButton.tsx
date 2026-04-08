@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
 import { Platform, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type MealTypeButtonProps = {
   icon: LucideIcon;

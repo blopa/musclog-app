@@ -4,9 +4,10 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import NutritionLog from '../database/models/NutritionLog';
-import { NutritionService } from '../database/services';
-import { localDayStartFromUtcMs } from '../utils/calendarDate';
+import NutritionLog from '@/database/models/NutritionLog';
+import { NutritionService } from '@/database/services';
+import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 

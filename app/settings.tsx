@@ -5,18 +5,18 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { LegalLinksCard } from '../components/cards/LegalLinksCard';
-import { SettingsCard } from '../components/cards/SettingsCard';
-import { MasterLayout } from '../components/MasterLayout';
-import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
-import { AISettingsModal } from '../components/modals/AISettingsModal';
-import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
-import { NotificationsSettingsModal } from '../components/modals/NotificationsSettingsModal';
-import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
-import { AnimatedContent } from '../components/theme/AnimatedContent';
-import { SettingsService } from '../database/services/SettingsService';
-import { useSettings } from '../hooks/useSettings';
-import { useTheme } from '../hooks/useTheme';
+import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { MasterLayout } from '@/components/MasterLayout';
+import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { AISettingsModal } from '@/components/modals/AISettingsModal';
+import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
+import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { SettingsService } from '@/database/services/SettingsService';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function SettingsScreen() {
   const theme = useTheme();

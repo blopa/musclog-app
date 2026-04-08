@@ -1,6 +1,6 @@
-import '../database';
-import '../lang/lang';
-import '../global.css';
+import '@/database';
+import '@/lang/lang';
+import '@/global.css';
 
 import * as Sentry from '@sentry/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -14,18 +14,18 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { CoachProvider } from '../components/CoachContext';
-import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
-import { LanguageInitializer } from '../components/LanguageInitializer';
-import { MenstrualCycleProvider } from '../components/MenstrualCycleContext';
-import { Migrations } from '../components/Migrations';
-import { SettingsProvider } from '../context/SettingsContext';
-import { SmartCameraProvider } from '../context/SmartCameraContext';
-import { SnackbarProvider } from '../context/SnackbarContext';
-import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
-import { UnreadChatProvider } from '../context/UnreadChatContext';
-import { WebModalShellProvider } from '../context/WebModalShellContext';
-import { captureException } from '../utils/sentry';
+import { CoachProvider } from '@/components/CoachContext';
+import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
+import { LanguageInitializer } from '@/components/LanguageInitializer';
+import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
+import { Migrations } from '@/components/Migrations';
+import { SettingsProvider } from '@/context/SettingsContext';
+import { SmartCameraProvider } from '@/context/SmartCameraContext';
+import { SnackbarProvider } from '@/context/SnackbarContext';
+import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
+import { UnreadChatProvider } from '@/context/UnreadChatContext';
+import { WebModalShellProvider } from '@/context/WebModalShellContext';
+import { captureException } from '@/utils/sentry';
 
 // Fix NativeWind className support on iOS for these components
 // These components don't properly support className on iOS without cssInterop

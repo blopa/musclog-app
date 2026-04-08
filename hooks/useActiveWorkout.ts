@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import Exercise from '../database/models/Exercise';
-import { WorkoutService } from '../database/services';
-import { captureException } from '../utils/sentry';
+import Exercise from '@/database/models/Exercise';
+import { WorkoutService } from '@/database/services';
+import { captureException } from '@/utils/sentry';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
-} from '../utils/workoutSupersetOrder';
+} from '@/utils/workoutSupersetOrder';
+
 import { type EnrichedWorkoutLogSet, useWorkoutSessionState } from './useWorkoutSessionState';
 
 export type CurrentSetData = {

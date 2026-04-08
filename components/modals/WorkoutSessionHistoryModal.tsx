@@ -3,25 +3,26 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import Exercise from '../../database/models/Exercise';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
-import type { EnrichedWorkoutLogSet } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
-import { displayWeightKgNumeric, formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { getWeightUnitI18nKey } from '../../utils/units';
+import { Button } from '@/components/theme/Button';
+import { ExerciseData, ExerciseItem } from '@/components/WorkoutHistoryExerciseItem';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import type { EnrichedWorkoutLogSet } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
 import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
   getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { Button } from '../theme/Button';
-import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
+} from '@/utils/workoutCalculator';
+
 import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';

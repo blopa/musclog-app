@@ -2,7 +2,7 @@ import type { Locale } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getDateFnsLocale } from '../utils/dateFnsLocale';
+import { getDateFnsLocale } from '@/utils/dateFnsLocale';
 
 /** date-fns locale object for the current i18n language (updates when language changes). */
 export function useDateFnsLocale(): Locale {

@@ -1,8 +1,8 @@
 import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode } from 'react';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Theme } from '../../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { Theme } from '@/theme';
 
 type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';

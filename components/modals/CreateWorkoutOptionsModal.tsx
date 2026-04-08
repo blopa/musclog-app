@@ -2,8 +2,9 @@ import { Dumbbell, Library, PlusCircle, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { NewWorkoutCard } from '../cards/NewWorkoutCard';
+import { NewWorkoutCard } from '@/components/cards/NewWorkoutCard';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type CreateWorkoutOptionsModalProps = {

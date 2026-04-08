@@ -1,11 +1,11 @@
-import type { SetLike } from '../workoutSupersetOrder';
+import type { SetLike } from '@/utils/workoutSupersetOrder';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
   getRoundIndexWithinGroup,
   isNextInSameSupersetRound,
-} from '../workoutSupersetOrder';
+} from '@/utils/workoutSupersetOrder';
 
 function set(
   setOrder: number,

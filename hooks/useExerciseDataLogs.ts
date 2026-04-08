@@ -8,8 +8,9 @@ import Exercise, {
   type EquipmentType,
   type ExerciseSource,
   type MuscleGroup,
-} from '../database/models/Exercise';
-import { ExerciseService } from '../database/services';
+} from '@/database/models/Exercise';
+import { ExerciseService } from '@/database/services';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 

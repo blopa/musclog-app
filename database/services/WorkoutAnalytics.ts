@@ -1,19 +1,20 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
-} from '../../utils/calendarDate';
+} from '@/utils/calendarDate';
 import {
   calculateEstimated1RMForSet,
   calculateSetVolume,
   getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
+} from '@/utils/workoutCalculator';
+
 import { SettingsService } from './SettingsService';
 
 type EnrichedSet = WorkoutLogSet & {

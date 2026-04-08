@@ -1,8 +1,8 @@
 import { List, Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { useTheme } from '@/hooks/useTheme';
 
 type PastWorkoutBottomMenuProps = {
   visible: boolean;

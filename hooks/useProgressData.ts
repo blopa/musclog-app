@@ -1,12 +1,12 @@
 import { subMonths, subYears } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 
-import { ProgressData, ProgressService } from '../database/services/ProgressService';
+import { ProgressData, ProgressService } from '@/database/services/ProgressService';
 import {
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
-} from '../utils/calendarDate';
+} from '@/utils/calendarDate';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';
 

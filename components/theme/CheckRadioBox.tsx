@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type TestToggleProps = {
   label: string;

@@ -1,4 +1,4 @@
-import i18n from '../lang/lang';
+import i18n from '@/lang/lang';
 
 export interface ProductNameResult {
   name: string;

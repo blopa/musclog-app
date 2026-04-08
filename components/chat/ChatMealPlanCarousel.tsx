@@ -2,9 +2,9 @@ import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { AI_COACH_AVATAR } from '../../hooks/useChatMessages';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
+import { AI_COACH_AVATAR } from '@/hooks/useChatMessages';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
 
 type ChatMealPlanCarouselProps = {
   meals: {

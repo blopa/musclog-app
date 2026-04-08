@@ -3,18 +3,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import FoodPortion from '../../database/models/FoodPortion';
-import { FoodPortionService } from '../../database/services';
-import { useFoodPortions } from '../../hooks/useFoodPortions';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { Button } from '../theme/Button';
-import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
-import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
-import { TextInput } from '../theme/TextInput';
+import { Button } from '@/components/theme/Button';
+import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import { TextInput } from '@/components/theme/TextInput';
+import FoodPortion from '@/database/models/FoodPortion';
+import { FoodPortionService } from '@/database/services';
+import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
 

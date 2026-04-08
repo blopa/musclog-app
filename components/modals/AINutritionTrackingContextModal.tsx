@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { useTheme } from '@/hooks/useTheme';
 
 type AINutritionTrackingContextModalProps = {
   visible: boolean;

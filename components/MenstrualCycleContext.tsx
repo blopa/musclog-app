@@ -8,13 +8,13 @@ import {
   useState,
 } from 'react';
 
-import type { BirthControlType, MenstrualCycleUpdate } from '../database/models';
-import { MenstrualCycleRepository } from '../database/repositories/MenstrualCycleRepository';
+import type { BirthControlType, MenstrualCycleUpdate } from '@/database/models';
+import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
 import {
   EnergyLevel,
   MenstrualPhase,
   MenstrualService,
-} from '../database/services/MenstrualService';
+} from '@/database/services/MenstrualService';
 
 export interface MenstrualCycleContextType {
   cycle: any | null;

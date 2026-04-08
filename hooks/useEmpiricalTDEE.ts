@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { NutritionService, UserMetricService } from '../database/services';
+import { NutritionService, UserMetricService } from '@/database/services';
 import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
-} from '../utils/calendarDate';
-import { calculateTDEE } from '../utils/nutritionCalculator';
-import { storedWeightToKg } from '../utils/unitConversion';
+} from '@/utils/calendarDate';
+import { calculateTDEE } from '@/utils/nutritionCalculator';
+import { storedWeightToKg } from '@/utils/unitConversion';
+
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
 

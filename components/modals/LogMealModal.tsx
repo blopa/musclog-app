@@ -3,14 +3,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { MealNutritionHighlightCard } from '../cards/MealNutritionHighlightCard';
-import { FilterTabs } from '../FilterTabs';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
+import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';

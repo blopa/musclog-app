@@ -4,13 +4,14 @@ import { ComponentType, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { database } from '../../database';
-import Exercise from '../../database/models/Exercise';
-import { useTheme } from '../../hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { Accordion } from '../theme/Accordion';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
+import { Accordion } from '@/components/theme/Accordion';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import { useTheme } from '@/hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
+
 import { FullScreenModal } from './FullScreenModal';
 import ViewExerciseModal from './ViewExerciseModal';
 

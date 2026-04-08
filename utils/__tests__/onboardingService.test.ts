@@ -3,14 +3,14 @@ import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-} from '../../constants/misc';
+} from '@/constants/misc';
 import {
   getOnboardingStatus,
   getOnboardingVersion,
   isOnboardingCompleted,
   resetOnboarding,
   setOnboardingCompleted,
-} from '../onboardingService';
+} from '@/utils/onboardingService';
 
 const mockAsyncStorageModule = require('@react-native-async-storage/async-storage');
 const mockAsyncStorage = mockAsyncStorageModule.default;

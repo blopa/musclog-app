@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { NotificationService } from '../services/NotificationService';
-import { captureMessage } from '../utils/sentry';
+import { NotificationService } from '@/services/NotificationService';
+import { captureMessage } from '@/utils/sentry';
 
 type ErrorFallbackScreenProps = {
   error: unknown;

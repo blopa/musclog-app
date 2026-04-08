@@ -10,7 +10,8 @@ import {
 } from '@google/generative-ai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { GEMINI_MODELS } from '../constants/ai';
+import { GEMINI_MODELS } from '@/constants/ai';
+
 import { captureMessage } from './sentry';
 
 const getModel = async () => {

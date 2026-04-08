@@ -5,9 +5,15 @@ import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import type { Units } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
 import {
   ChatService,
   ExerciseService,
@@ -20,29 +26,24 @@ import {
   UserMetricService,
   WorkoutService,
   WorkoutTemplateService,
-} from '../../database/services';
-import { useChatMessageDataLogs } from '../../hooks/useChatMessageDataLogs';
-import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
-import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
-import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
-import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
-import { useMealDataLogs } from '../../hooks/useMealDataLogs';
-import { useNutritionCheckinDataLogs } from '../../hooks/useNutritionCheckinDataLogs';
-import { useNutritionGoalDataLogs } from '../../hooks/useNutritionGoalDataLogs';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
-import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
-import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
-import { captureException } from '../../utils/sentry';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
+} from '@/database/services';
+import { useChatMessageDataLogs } from '@/hooks/useChatMessageDataLogs';
+import { useExerciseDataLogs } from '@/hooks/useExerciseDataLogs';
+import { useFoodDataLogs } from '@/hooks/useFoodDataLogs';
+import { useFoodPortionDataLogs } from '@/hooks/useFoodPortionDataLogs';
+import { useFoodsDataLogs } from '@/hooks/useFoodsDataLogs';
+import { useMealDataLogs } from '@/hooks/useMealDataLogs';
+import { useNutritionCheckinDataLogs } from '@/hooks/useNutritionCheckinDataLogs';
+import { useNutritionGoalDataLogs } from '@/hooks/useNutritionGoalDataLogs';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useUserMetricDataLogs } from '@/hooks/useUserMetricDataLogs';
+import { useWorkoutLogDataLogs } from '@/hooks/useWorkoutLogDataLogs';
+import { useWorkoutTemplateDataLogs } from '@/hooks/useWorkoutTemplateDataLogs';
+import { captureException } from '@/utils/sentry';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
 import CreateExerciseModal from './CreateExerciseModal';

@@ -3,20 +3,20 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { useTheme } from '../../hooks/useTheme';
-import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
+import { useTheme } from '@/hooks/useTheme';
+import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
+import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
   getProductName,
   mapOpenFoodFactsProduct,
-} from '../../utils/openFoodFactsMapper';
-import { BottomPopUp } from '../BottomPopUp';
-import { FoodInfoCard } from '../cards/FoodInfoCard';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
+} from '@/utils/openFoodFactsMapper';
 
 type ScannedFoodDetailsModalProps = {
   visible: boolean;

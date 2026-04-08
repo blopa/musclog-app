@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react-native';
 import { Platform, Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type FilterTab = {
   id: string;

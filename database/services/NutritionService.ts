@@ -2,17 +2,17 @@ import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
-import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
+import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import { database } from '@/database/index';
+import Food from '@/database/models/Food';
+import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
-} from '../../utils/calendarDate';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
-import { database } from '../index';
-import Food from '../models/Food';
-import NutritionLog, { MealType } from '../models/NutritionLog';
+} from '@/utils/calendarDate';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
 async function triggerWidgetUpdate(): Promise<void> {
   if (Platform.OS !== 'android') {

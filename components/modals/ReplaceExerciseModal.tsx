@@ -10,18 +10,18 @@ import {
   View,
 } from 'react-native';
 
-import Exercise from '../../database/models/Exercise';
-import { useExercises } from '../../hooks/useExercises';
-import { useTheme } from '../../hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { FilterTabs } from '@/components/FilterTabs';
+import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
+import { Button } from '@/components/theme/Button';
+import Exercise from '@/database/models/Exercise';
+import { useExercises } from '@/hooks/useExercises';
+import { useTheme } from '@/hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getMechanicTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { FilterTabs } from '../FilterTabs';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { Button } from '../theme/Button';
+} from '@/utils/exerciseTranslation';
 
 /**
  * Exercise data for replacement modal.

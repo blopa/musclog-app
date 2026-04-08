@@ -1,9 +1,9 @@
 import { Check } from 'lucide-react-native';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Modal } from '../theme/Modal';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 interface SelectOption {
   label: string;

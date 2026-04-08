@@ -4,7 +4,7 @@ import {
   sanitizeLocalizedDecimalInput,
   sanitizeLocalizedIntegerInput,
   sanitizeLocalizedSignedDecimalInput,
-} from '../localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
 
 describe('getDecimalSeparator', () => {
   it('returns dot or comma per Intl locale', () => {

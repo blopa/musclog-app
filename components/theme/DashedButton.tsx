@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Pressable, Text, View, ViewStyle } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type DashedButtonProps = {
   label: string;

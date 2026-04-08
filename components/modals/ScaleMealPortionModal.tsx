@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { BottomPopUp } from '../BottomPopUp';
-import { MealNutritionHighlightCard } from '../cards/MealNutritionHighlightCard';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 
 export type ScaleMealPortionMealNutrients = {
   calories: number;

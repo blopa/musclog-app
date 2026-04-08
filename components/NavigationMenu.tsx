@@ -17,11 +17,11 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { NavItemKey } from '../constants/settings';
-import { useNavigationItems } from '../hooks/useNavigationItems';
-import { useTheme } from '../hooks/useTheme';
-import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
-import { addOpacityToHex } from '../theme';
+import type { NavItemKey } from '@/constants/settings';
+import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { useTheme } from '@/hooks/useTheme';
+import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
+import { addOpacityToHex } from '@/theme';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;

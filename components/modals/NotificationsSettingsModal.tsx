@@ -3,10 +3,11 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { NotificationService } from '../../services/NotificationService';
-import { ToggleInput } from '../theme/ToggleInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { NotificationService } from '@/services/NotificationService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type NotificationsSettingsModalProps = {

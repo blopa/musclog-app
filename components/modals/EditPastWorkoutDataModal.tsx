@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { GenericCard } from '../cards/GenericCard';
-import DashedButton from '../theme/DashedButton';
-import NewNumericalInput from '../theme/NewNumericalInput';
+import { GenericCard } from '@/components/cards/GenericCard';
+import DashedButton from '@/components/theme/DashedButton';
+import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type SetItem = {

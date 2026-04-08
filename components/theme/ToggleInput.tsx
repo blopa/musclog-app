@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from 'react';
 import { Pressable, Switch, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type ToggleItem = {
   key: string;

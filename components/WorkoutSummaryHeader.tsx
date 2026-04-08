@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GradientText } from './GradientText';
 
 export function WorkoutSummaryHeader() {

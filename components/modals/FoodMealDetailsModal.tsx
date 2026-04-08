@@ -15,76 +15,77 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { useSnackbar } from '../../context/SnackbarContext';
-import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '../../database/models';
-import Food from '../../database/models/Food';
-import FoodPortion from '../../database/models/FoodPortion';
-import Meal from '../../database/models/Meal';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { MacroInput } from '@/components/MacroInput';
+import {
+  type MicronutrientFormStrings,
+  micronutrientFormStringsFromMicros,
+  MicronutrientsExpandableSection,
+  parseMicronutrientFormStringsToPartial,
+} from '@/components/MicronutrientsExpandableSection';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import type { Units } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
+import Food from '@/database/models/Food';
+import FoodPortion from '@/database/models/FoodPortion';
+import Meal from '@/database/models/Meal';
 import {
   FoodPortionService,
   FoodService,
   MealService,
   NutritionService,
-} from '../../database/services';
+} from '@/database/services';
 import {
   fetchMusclogProductByBarcode,
   fetchOFFProductByBarcode,
   fetchUSDAProductByBarcode,
   type ProductDetailsQueryData,
   useFoodProductDetails,
-} from '../../hooks/useFoodProductDetails';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
+} from '@/hooks/useFoodProductDetails';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import {
   isMappedNutriments,
   isSuccessFoodDetailProductState,
   isSuccessStatus,
-} from '../../types/guards/openFoodFacts';
+} from '@/types/guards/openFoodFacts';
 import {
   localCalendarDayDate,
   localCalendarDayDateFromDayKeyMs,
   localDayStartMs,
-} from '../../utils/calendarDate';
-import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
-import { formatDisplayGrams } from '../../utils/formatDisplayWeight';
+} from '@/utils/calendarDate';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
-} from '../../utils/inferCaloriesFromMacros';
+} from '@/utils/inferCaloriesFromMacros';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
-} from '../../utils/openFoodFactsMapper';
-import { getProductName } from '../../utils/productName';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { captureException } from '../../utils/sentry';
-import { getMassUnitLabel } from '../../utils/unitConversion';
-import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
-import { BottomPopUp } from '../BottomPopUp';
-import {
-  type FoodDetailsNutritionSectionMode,
-  FoodNutritionSectionCard,
-} from '../cards/FoodNutritionSectionCard';
-import { FilterTabs } from '../FilterTabs';
-import { MacroInput } from '../MacroInput';
-import {
-  type MicronutrientFormStrings,
-  micronutrientFormStringsFromMicros,
-  MicronutrientsExpandableSection,
-  parseMicronutrientFormStringsToPartial,
-} from '../MicronutrientsExpandableSection';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
+} from '@/utils/openFoodFactsMapper';
+import { getProductName } from '@/utils/productName';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
+import { getMassUnitLabel } from '@/utils/unitConversion';
+import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';

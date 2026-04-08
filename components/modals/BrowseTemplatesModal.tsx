@@ -6,12 +6,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import workoutTemplatesEnUS from '../../data/workoutTemplatesEnUS.json';
-import { useTheme } from '../../hooks/useTheme';
-import { addOpacityToHex } from '../../theme';
-import { GenericCard } from '../cards/GenericCard';
-import { FilterTabs } from '../FilterTabs';
-import { TextInput } from '../theme/TextInput';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { TextInput } from '@/components/theme/TextInput';
+import workoutTemplatesEnUS from '@/data/workoutTemplatesEnUS.json';
+import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutTemplate = {

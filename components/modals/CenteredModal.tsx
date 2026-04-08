@@ -3,9 +3,9 @@ import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Modal } from '../theme/Modal';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type CenteredModalProps = {
   visible: boolean;

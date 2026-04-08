@@ -2,9 +2,10 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { FitnessDetails } from '../../types/fitnessDetails';
-import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
-import { Button } from '../theme/Button';
+import { EditFitnessDetailsBody } from '@/components/EditFitnessDetailsBody';
+import { Button } from '@/components/theme/Button';
+import type { FitnessDetails } from '@/types/fitnessDetails';
+
 import { FullScreenModal } from './FullScreenModal';
 
 export type { FitnessDetails } from '../../types/fitnessDetails';

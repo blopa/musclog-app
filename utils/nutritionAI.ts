@@ -1,8 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../database';
-import Food from '../database/models/Food';
-import { FoodService, MealService, NutritionService } from '../database/services';
+import { database } from '@/database';
+import Food from '@/database/models/Food';
+import { FoodService, MealService, NutritionService } from '@/database/services';
+
 import { localCalendarDayDate } from './calendarDate';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
 import { roundToDecimalPlaces } from './roundDecimal';

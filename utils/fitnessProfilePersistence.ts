@@ -1,8 +1,9 @@
 import { subYears } from 'date-fns';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
-import { SettingsService, UserMetricService, UserService } from '../database/services';
-import type { FitnessDetails } from '../types/fitnessDetails';
+import { SettingsService, UserMetricService, UserService } from '@/database/services';
+import type { FitnessDetails } from '@/types/fitnessDetails';
+
 import {
   formatLocalCalendarDayNumericIntl,
   localCalendarDayDate,

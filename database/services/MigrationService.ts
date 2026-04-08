@@ -3,13 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import convert from 'convert';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
-import { ENCRYPTION_KEY } from '../../constants/database';
-import i18n from '../../lang/lang';
-import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
-import { decryptDatabaseValue } from '../../utils/encryption';
-import { parseWorkoutInsightsType } from '../../utils/workoutInsightsType';
-import { database } from '../database-instance';
-import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
+import { ENCRYPTION_KEY } from '@/constants/database';
+import { database } from '@/database/database-instance';
+import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import {
   type EquipmentType,
   Exercise,
@@ -26,7 +22,11 @@ import {
   WorkoutTemplate,
   WorkoutTemplateExercise,
   WorkoutTemplateSet,
-} from '../models';
+} from '@/database/models';
+import i18n from '@/lang/lang';
+import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
+import { decryptDatabaseValue } from '@/utils/encryption';
+import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 /** Step keys for progress reporting during migration (for landing screen copy). */
 export type MigrationStepKey =

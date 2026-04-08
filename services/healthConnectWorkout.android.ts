@@ -6,13 +6,14 @@
 import { Platform } from 'react-native';
 import { ExerciseSegmentType, ExerciseType, RecordingMethod } from 'react-native-health-connect';
 
-import type { Units } from '../constants/settings';
-import { SettingsService } from '../database/services/SettingsService';
-import i18n from '../lang/lang';
-import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../utils/formatDisplayWeight';
-import { kgToDisplay } from '../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../utils/units';
+import type { Units } from '@/constants/settings';
+import { SettingsService } from '@/database/services/SettingsService';
+import i18n from '@/lang/lang';
+import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { healthConnectService, HealthConnectStatus } from './healthConnect';
 
 export interface SegmentItem {

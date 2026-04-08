@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
-import { GEMINI_MODELS } from '../constants/ai';
+import { GEMINI_MODELS } from '@/constants/ai';
 import {
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
@@ -42,10 +42,10 @@ import {
   type UseSettingsResult,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
-import Setting from '../database/models/Setting';
-import { getHeightUnit, getWeightUnit } from '../utils/units';
+} from '@/constants/settings';
+import { database } from '@/database';
+import Setting from '@/database/models/Setting';
+import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
   units: Units;

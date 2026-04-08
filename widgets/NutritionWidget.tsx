@@ -1,8 +1,8 @@
 import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-widget';
 
-import i18n from '../lang/lang';
-import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
-import { formatAppInteger } from '../utils/formatAppNumber';
+import i18n from '@/lang/lang';
+import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
+import { formatAppInteger } from '@/utils/formatAppNumber';
 
 interface NutritionWidgetProps {
   calories: number;

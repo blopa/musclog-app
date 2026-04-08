@@ -12,11 +12,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import type { NavItemKey } from '../../constants/settings';
-import { useNavigationItems } from '../../hooks/useNavigationItems';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { PickerButton } from '../theme/PickerButton';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { PickerButton } from '@/components/theme/PickerButton';
+import type { NavItemKey } from '@/constants/settings';
+import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type VisualSettingsModalProps = {

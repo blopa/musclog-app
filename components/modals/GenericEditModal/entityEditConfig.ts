@@ -1,7 +1,8 @@
 import type { Model } from '@nozbe/watermelondb';
 
-import type { Units } from '../../../constants/settings';
-import type UserMetric from '../../../database/models/UserMetric';
+import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
+import type { Units } from '@/constants/settings';
+import type UserMetric from '@/database/models/UserMetric';
 import {
   ChatService,
   ExerciseService,
@@ -13,8 +14,8 @@ import {
   NutritionService,
   UserMetricService,
   WorkoutTemplateService,
-} from '../../../database/services';
-import { localDayStartFromUtcMs } from '../../../utils/calendarDate';
+} from '@/database/services';
+import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
   displayToCm,
   displayToGrams,
@@ -23,9 +24,9 @@ import {
   gramsToDisplay,
   isLengthMetricType,
   isWeightMetricType,
-} from '../../../utils/unitConversion';
-import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
-import type { DataLogModalVariant } from '../DataLogModal';
+} from '@/utils/unitConversion';
+import { WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
+
 import type { EditFieldConfig, EditFormValues } from './types';
 
 export type SaveRecordContext = { units: Units };

@@ -2,7 +2,8 @@ import { TrendingUp } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type StatCardProps = {

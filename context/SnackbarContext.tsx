@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Snackbar, type SnackbarType } from '../components/Snackbar';
-import { Modal } from '../components/theme/Modal';
-import { useTheme } from '../hooks/useTheme';
-import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
-import { useWebBottomDockLayerStyle } from '../utils/webPhoneFrame';
+import { Snackbar, type SnackbarType } from '@/components/Snackbar';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { registerSnackbarService, unregisterSnackbarService } from '@/utils/snackbarService';
+import { useWebBottomDockLayerStyle } from '@/utils/webPhoneFrame';
 
 type SnackbarContextType = {
   showSnackbar: (

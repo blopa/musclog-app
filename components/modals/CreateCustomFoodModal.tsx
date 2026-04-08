@@ -35,27 +35,28 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import Food from '../../database/models/Food';
-import FoodPortion from '../../database/models/FoodPortion';
-import { FoodService } from '../../database/services';
-import { useFoodPortions } from '../../hooks/useFoodPortions';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { getFoodPortionIconComponent } from '../../utils/foodPortionIcons';
+import { MacroInput } from '@/components/MacroInput';
+import { Button } from '@/components/theme/Button';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import Food from '@/database/models/Food';
+import FoodPortion from '@/database/models/FoodPortion';
+import { FoodService } from '@/database/services';
+import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
-import { MacroInput } from '../MacroInput';
-import { Button } from '../theme/Button';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+} from '@/utils/localizedDecimalInput';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';

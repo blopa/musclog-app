@@ -2,16 +2,16 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from 'react-native';
 
+import { FoodSearchItemCard } from '@/components/cards/FoodSearchItemCard';
+import { Button } from '@/components/theme/Button';
 import { MealType } from '@/database/models';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
+import { useNutritionLogs } from '@/hooks/useNutritionLogs';
+import { useTheme } from '@/hooks/useTheme';
+import { type UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
+import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
-import { useNutritionLogs } from '../../hooks/useNutritionLogs';
-import { useTheme } from '../../hooks/useTheme';
-import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
-import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
-import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
-import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodItem = UnifiedFoodResult & {

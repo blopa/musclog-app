@@ -10,8 +10,8 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
-} from '../constants/chat';
-import { type MealType } from '../database/models';
+} from '@/constants/chat';
+import { type MealType } from '@/database/models';
 import ChatMessage, {
   type ChatMessagePayload,
   type ImagePayload,
@@ -24,7 +24,7 @@ import ChatMessage, {
   type MealPlanPayload,
   type TrackMealPayload,
   type WorkoutPlanPayload,
-} from '../database/models/ChatMessage';
+} from '@/database/models/ChatMessage';
 import {
   AiCustomPromptService,
   ChatService,
@@ -32,13 +32,13 @@ import {
   NutritionService,
   UserMetricService,
   UserService,
-} from '../database/services';
-import AiService from '../services/AiService';
+} from '@/database/services';
+import AiService from '@/services/AiService';
 import {
   formatLocalCalendarDayIso,
   localCalendarDayDate,
   localCalendarDayPlusDays,
-} from '../utils/calendarDate';
+} from '@/utils/calendarDate';
 import {
   AiCreditsError,
   type ChatHistoryEntry,
@@ -51,11 +51,11 @@ import {
   sendCoachMessage,
   trackMeal,
   type TrackMealIngredient,
-} from '../utils/coachAI';
-import { processMealPlanResponse } from '../utils/nutritionAI';
-import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '../utils/nutritionCalculator';
-import { roundToDecimalPlaces } from '../utils/roundDecimal';
-import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
+} from '@/utils/coachAI';
+import { processMealPlanResponse } from '@/utils/nutritionAI';
+import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
 // Local avatar image for Loggy
 export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');

@@ -2,11 +2,12 @@ import { Archive, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { getWorkoutIcon } from '../../utils/workoutIconUtils';
-import { StartWorkoutButton } from '../StartWorkoutButton';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
+import { StartWorkoutButton } from '@/components/StartWorkoutButton';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useTheme } from '@/hooks/useTheme';
+import { getWorkoutIcon } from '@/utils/workoutIconUtils';
+
 import { GenericCard } from './GenericCard';
 
 type FeaturedWorkoutCardProps = {

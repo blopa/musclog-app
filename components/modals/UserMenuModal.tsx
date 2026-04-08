@@ -25,13 +25,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useNavigationItems } from '../../hooks/useNavigationItems';
-import { useTheme } from '../../hooks/useTheme';
-import { AvatarColor } from '../../types/AvatarColor';
-import { AvatarIcon } from '../../types/AvatarIcon';
-import { getAvatarDisplayProps } from '../../utils/avatarUtils';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Modal } from '../theme/Modal';
+import { Modal } from '@/components/theme/Modal';
+import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { useTheme } from '@/hooks/useTheme';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import { getAvatarDisplayProps } from '@/utils/avatarUtils';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type UserMenuModalProps = {
   visible: boolean;

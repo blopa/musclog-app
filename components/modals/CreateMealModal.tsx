@@ -21,26 +21,27 @@ import {
   View,
 } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import type { MealType } from '../../database/models';
-import Food from '../../database/models/Food';
-import Meal from '../../database/models/Meal';
-import { MealService, NutritionService } from '../../database/services';
-import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../theme';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { captureException } from '../../utils/sentry';
-import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
-import { StepperInput } from '../theme/StepperInput';
-import { TextInput } from '../theme/TextInput';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { StepperInput } from '@/components/theme/StepperInput';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { MealType } from '@/database/models';
+import Food from '@/database/models/Food';
+import Meal from '@/database/models/Meal';
+import { MealService, NutritionService } from '@/database/services';
+import { type Ingredient, useEditMealIngredients } from '@/hooks/useEditMealIngredients';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { captureException } from '@/utils/sentry';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerInput } from './DatePickerInput';

@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Apple, Dumbbell, Heart, Scale, Shield } from 'lucide-react-native';
 import { Dimensions, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width

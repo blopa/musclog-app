@@ -3,8 +3,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
-import { addOpacityToHex } from '../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
 
 type BottomButtonWrapperProps = {
   children: ReactNode;

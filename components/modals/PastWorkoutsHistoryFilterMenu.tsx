@@ -3,13 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { type MuscleGroup } from '../../database/models';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
-import { FilterTabs } from '../FilterTabs';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { Slider } from '../theme/Slider';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { FilterTabs } from '@/components/FilterTabs';
+import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { Slider } from '@/components/theme/Slider';
+import { type MuscleGroup } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
 
 type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
 type DateRange = '30' | '90' | 'custom';

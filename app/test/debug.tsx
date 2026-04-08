@@ -6,23 +6,23 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { MasterLayout } from '../../components/MasterLayout';
-import { MigrationSection } from '../../components/MigrationSection';
-import { Button } from '../../components/theme/Button';
-import { ENCRYPTION_KEY } from '../../constants/database';
-import { UNITS_SETTING_TYPE } from '../../constants/settings';
-import { useUnreadChat } from '../../context/UnreadChatContext';
-import { database, Exercise, Setting, User, UserMetric } from '../../database';
-import type { MuscleGroup } from '../../database/models';
-import { MigrationService, UserService } from '../../database/services';
-import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useTheme } from '../../hooks/useTheme';
-import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
-import { NotificationService } from '../../services/NotificationService';
-import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
-import { captureException } from '../../utils/sentry';
-import { formatDuration } from '../../utils/workout';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MigrationSection } from '@/components/MigrationSection';
+import { Button } from '@/components/theme/Button';
+import { ENCRYPTION_KEY } from '@/constants/database';
+import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { useUnreadChat } from '@/context/UnreadChatContext';
+import { database, Exercise, Setting, User, UserMetric } from '@/database';
+import type { MuscleGroup } from '@/database/models';
+import { MigrationService, UserService } from '@/database/services';
+import { useOldDatabaseMigration } from '@/hooks/useOldDatabaseMigration';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useTheme } from '@/hooks/useTheme';
+import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
+import { NotificationService } from '@/services/NotificationService';
+import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+import { captureException } from '@/utils/sentry';
+import { formatDuration } from '@/utils/workout';
 
 // All app screens for navigation
 const APP_SCREENS = [

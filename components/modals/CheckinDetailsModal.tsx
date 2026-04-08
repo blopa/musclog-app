@@ -3,34 +3,35 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { EatingPhase } from '../../database/models';
-import type NutritionCheckin from '../../database/models/NutritionCheckin';
-import { NutritionGoalService, UserMetricService } from '../../database/services';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { BarChart, type BarChartDataPoint } from '@/components/charts/BarChart';
+import { Button } from '@/components/theme/Button';
+import { EatingPhase } from '@/database/models';
+import type NutritionCheckin from '@/database/models/NutritionCheckin';
+import { NutritionGoalService, UserMetricService } from '@/database/services';
 import {
   CheckinMetrics,
   NutritionCheckinService,
-} from '../../database/services/NutritionCheckinService';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
+} from '@/database/services/NutritionCheckinService';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import {
   localCalendarDayPlusDays,
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
-} from '../../utils/calendarDate';
+} from '@/utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
-} from '../../utils/nutritionCalculator';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { GenericCard } from '../cards/GenericCard';
-import { BarChart, type BarChartDataPoint } from '../charts/BarChart';
-import { Button } from '../theme/Button';
+} from '@/utils/nutritionCalculator';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 
