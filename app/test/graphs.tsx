@@ -2,33 +2,29 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ActivityRingsChart } from '../../components/charts/ActivityRingsChart';
-import {
-  AreaChart,
-  AreaChartDatum,
-  AreaChartSeriesConfig,
-} from '../../components/charts/AreaChart';
-import { BarChart, BarChartDataPoint } from '../../components/charts/BarChart';
-import { BarLineChart, BarLineChartDatum } from '../../components/charts/BarLineChart';
-import { CycleTrackingChart } from '../../components/charts/CycleTrackingChart';
-import { LineChart, LineChartDataPoint } from '../../components/charts/LineChart';
+import { ActivityRingsChart } from '@/components/charts/ActivityRingsChart';
+import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '@/components/charts/AreaChart';
+import { BarChart, BarChartDataPoint } from '@/components/charts/BarChart';
+import { BarLineChart, BarLineChartDatum } from '@/components/charts/BarLineChart';
+import { CycleTrackingChart } from '@/components/charts/CycleTrackingChart';
+import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import {
   MultipleLinesChart,
   MultipleLinesChartDatum,
   MultipleLinesChartSeriesConfig,
-} from '../../components/charts/MultipleLinesChart';
-import { SpiderChart } from '../../components/charts/SpiderChart';
-import { StackedBarChart, StackedBarChartDatum } from '../../components/charts/StackedBarChart';
+} from '@/components/charts/MultipleLinesChart';
+import { SpiderChart } from '@/components/charts/SpiderChart';
+import { StackedBarChart, StackedBarChartDatum } from '@/components/charts/StackedBarChart';
 import {
   StackedBarLineChart,
   StackedBarLineChartDatum,
-} from '../../components/charts/StackedBarLineChart';
-import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
-import { Button } from '../../components/theme/Button';
-import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels } from '../../utils/chartUtils';
+} from '@/components/charts/StackedBarLineChart';
+import { TrainingConsistencyChart } from '@/components/charts/TrainingConsistencyChart';
+import { Button } from '@/components/theme/Button';
+import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getXAxisLabels } from '@/utils/chartUtils';
 
 export default function GraphsTestScreen() {
   const theme = useTheme();

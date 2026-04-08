@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MoodVolumePoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { BarLineChart } from '../charts/BarLineChart';
+import { BarLineChart } from '@/components/charts/BarLineChart';
+import { MoodVolumePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MoodVolumeChartProps {

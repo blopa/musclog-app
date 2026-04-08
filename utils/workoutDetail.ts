@@ -2,13 +2,14 @@ import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
-import type { LineChartDataPoint } from '../components/charts/LineChart';
-import type { Units } from '../constants/settings';
-import Exercise from '../database/models/Exercise';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
-import { type Theme } from '../theme';
+import type { LineChartDataPoint } from '@/components/charts/LineChart';
+import type { Units } from '@/constants/settings';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { type Theme } from '@/theme';
+
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { displayWeightKgNumeric } from './formatDisplayWeight';

@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, StyleSheet, Text } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type GradientTextProps = {
   colors: readonly [string, string, ...string[]];

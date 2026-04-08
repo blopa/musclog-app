@@ -3,7 +3,8 @@ import { ArrowRight, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './cards/GenericCard';
 import { Button } from './theme/Button';
 

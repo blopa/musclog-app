@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export type ActivityRingConfig = {
   /** Progress 0–1 (e.g. 0.8 for 80%) */

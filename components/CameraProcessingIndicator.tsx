@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export const CameraProcessingIndicator = ({
   cameraMode = null,

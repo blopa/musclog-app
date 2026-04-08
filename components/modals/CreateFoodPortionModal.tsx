@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { AvatarIcon } from '../../types/AvatarIcon';
-import { getAvatarIcon } from '../../utils/avatarUtils';
-import { AvatarSelector } from '../AvatarSelector';
-import { Button } from '../theme/Button';
-import { StepperInput } from '../theme/StepperInput';
-import { TextInput } from '../theme/TextInput';
+import { AvatarSelector } from '@/components/AvatarSelector';
+import { Button } from '@/components/theme/Button';
+import { StepperInput } from '@/components/theme/StepperInput';
+import { TextInput } from '@/components/theme/TextInput';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import { getAvatarIcon } from '@/utils/avatarUtils';
+
 import { FullScreenModal } from './FullScreenModal';
 
 const FOOD_ICONS = [

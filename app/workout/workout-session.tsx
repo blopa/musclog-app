@@ -26,59 +26,59 @@ import {
   View,
 } from 'react-native';
 
-import { InfoCard } from '../../components/cards/InfoCard';
-import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
-import { MasterLayout } from '../../components/MasterLayout';
-import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
-import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
-import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
-import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { InfoCard } from '@/components/cards/InfoCard';
+import { WorkoutStatCard } from '@/components/cards/WorkoutStatCard';
+import { MasterLayout } from '@/components/MasterLayout';
+import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
+import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
+import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
+import { LogSetPerformanceModal } from '@/components/modals/LogSetPerformanceModal';
 import {
   ReplaceExerciseData,
   ReplaceExerciseModal,
-} from '../../components/modals/ReplaceExerciseModal';
-import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
-import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import ShowMoreButton from '../../components/ShowMoreButton';
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
-import { Button } from '../../components/theme/Button';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutActionButton } from '../../components/WorkoutActionButton';
-import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { database } from '../../database';
-import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { useActiveWorkout } from '../../hooks/useActiveWorkout';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
-import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
-import i18n from '../../lang/lang';
-import { NotificationService } from '../../services/NotificationService';
+} from '@/components/modals/ReplaceExerciseModal';
+import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
+import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
+import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import ShowMoreButton from '@/components/ShowMoreButton';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { Button } from '@/components/theme/Button';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutActionButton } from '@/components/WorkoutActionButton';
+import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { database } from '@/database';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useActiveWorkout } from '@/hooks/useActiveWorkout';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutFeedback } from '@/hooks/useWorkoutFeedback';
+import { useWorkoutFueling } from '@/hooks/useWorkoutFueling';
+import i18n from '@/lang/lang';
+import { NotificationService } from '@/services/NotificationService';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,
   setInsightDismissed,
-} from '../../utils/activeWorkoutStorage';
+} from '@/utils/activeWorkoutStorage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { formatAppDecimal } from '../../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
-import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { formatDuration } from '../../utils/workout';
+} from '@/utils/exerciseTranslation';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { formatAppDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatDuration } from '@/utils/workout';
 
 // Helper function to get hormonal insight text based on current phase
 const getHormonalInsightText = (
@@ -770,8 +770,53 @@ export default function WorkoutSessionScreen() {
     );
   } else if (!error && workoutLog && !workoutLog.templateId && progress.isComplete) {
     // Free session just completed: brief transition frame while completedExerciseForModal is being
-    // set after refresh(). Show a blank background to avoid flashing the error state.
-    content = <View className="flex-1 bg-bg-primary" />;
+    // set after refresh(). Show a themed background to avoid flashing the error state.
+    content = (
+      <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+        <LinearGradient
+          colors={[...theme.colors.gradients.landingBackground]}
+          locations={[0, 0.5, 1]}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+        />
+        {/* Decorative circles behind session feedback modal */}
+        <View
+          style={{
+            position: 'absolute',
+            top: '15%',
+            left: '-20%',
+            width: 280,
+            height: 280,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.6,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            top: '35%',
+            right: '-15%',
+            width: 200,
+            height: 200,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.35,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: '25%',
+            left: '10%',
+            width: 120,
+            height: 120,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.25,
+          }}
+        />
+      </View>
+    );
   } else if (error || !currentSetData || !workoutLog) {
     content = (
       <View className="flex-1 items-center justify-center px-6">

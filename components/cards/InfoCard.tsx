@@ -2,7 +2,7 @@ import { LucideIcon, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 

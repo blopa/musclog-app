@@ -2,16 +2,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { type Gender } from '../database/models';
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useTheme } from '../hooks/useTheme';
+import { type Gender } from '@/database/models';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
 import {
   formatLocalCalendarDayIso,
   getLocalCalendarYear,
   localCalendarDayDate,
-} from '../utils/calendarDate';
-import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
-import { getHeightUnit, getWeightUnit } from '../utils/units';
+} from '@/utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
+import { getHeightUnit, getWeightUnit } from '@/utils/units';
+
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { SegmentedControl } from './theme/SegmentedControl';

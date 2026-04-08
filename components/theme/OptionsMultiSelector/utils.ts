@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
 import { ComponentType } from 'react';
 
-import { Theme } from '../../../theme';
+import { Theme } from '@/theme';
 
 // Helper to determine an item's position within its group
 export type GroupPosition = 'none' | 'first' | 'middle' | 'last' | 'only';

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { DateRangePreset } from '../../hooks/useProgressData';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { FilterTabs } from '../FilterTabs';
-import { DatePickerInput } from '../modals/DatePickerInput';
-import { DatePickerModal } from '../modals/DatePickerModal';
-import { Button } from '../theme/Button';
-import { ToggleInput } from '../theme/ToggleInput';
+import { FilterTabs } from '@/components/FilterTabs';
+import { DatePickerInput } from '@/components/modals/DatePickerInput';
+import { DatePickerModal } from '@/components/modals/DatePickerModal';
+import { Button } from '@/components/theme/Button';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { DateRangePreset } from '@/hooks/useProgressData';
+import { localCalendarDayDate } from '@/utils/calendarDate';
 
 interface ProgressDateFilterProps {
   activePreset: DateRangePreset;

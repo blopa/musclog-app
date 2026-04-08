@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 export function SettingsCard({

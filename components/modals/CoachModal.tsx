@@ -44,6 +44,13 @@ import {
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { ChatMealCard } from '@/components/cards/ChatMealCard';
+import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
+import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
+import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
@@ -51,31 +58,21 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
-} from '../../constants/chat';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { useUnreadChat } from '../../context/UnreadChatContext';
-import { ChatService } from '../../database/services';
-import {
-  AI_COACH_AVATAR,
-  type ExtendedIMessage,
-  useChatMessages,
-} from '../../hooks/useChatMessages';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useNativeShareText } from '../../hooks/useNativeShareText';
-import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../theme';
-import { type TrackMealIngredient } from '../../utils/coachAI';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { createThumbnail, pickDocument } from '../../utils/file';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { captureException } from '../../utils/sentry';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { ChatMealCard } from '../cards/ChatMealCard';
-import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
-import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
-import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
-import { MenuButton } from '../theme/MenuButton';
-import { SegmentedControl } from '../theme/SegmentedControl';
+} from '@/constants/chat';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { useUnreadChat } from '@/context/UnreadChatContext';
+import { ChatService } from '@/database/services';
+import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
+import { type TrackMealIngredient } from '@/utils/coachAI';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
+import { createThumbnail, pickDocument } from '@/utils/file';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { captureException } from '@/utils/sentry';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';

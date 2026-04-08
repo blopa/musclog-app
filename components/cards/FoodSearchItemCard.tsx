@@ -2,10 +2,10 @@ import { type LucideIcon, Plus, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
-import { addOpacityToHex } from '../../theme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { type UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
+import { addOpacityToHex } from '@/theme';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji

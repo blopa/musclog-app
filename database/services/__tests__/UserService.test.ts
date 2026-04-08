@@ -1,7 +1,8 @@
-import { generateUUID } from '../../../utils/uuid';
-import { database } from '../../index';
-import { UserProfileUpdate } from '../../models/User';
-import { UserService } from '../UserService';
+import { database } from '@/database/index';
+import { UserProfileUpdate } from '@/database/models/User';
+import { UserService } from '@/database/services/UserService';
+import { generateUUID } from '@/utils/uuid';
+
 import { createMockUser } from './helpers';
 
 jest.mock('@nozbe/watermelondb', () => ({

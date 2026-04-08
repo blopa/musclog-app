@@ -3,17 +3,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { WorkoutService } from '../database/services';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { WorkoutService } from '@/database/services';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
-} from '../utils/workoutSupersetOrder';
+} from '@/utils/workoutSupersetOrder';
 
 const WORKOUT_LOG_SET_COLUMNS = [
   'reps',

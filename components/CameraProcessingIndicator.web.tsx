@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Web version: same API and logic as default CameraProcessingIndicator.

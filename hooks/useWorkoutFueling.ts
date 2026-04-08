@@ -1,8 +1,8 @@
 import convert from 'convert';
 import { useEffect, useState } from 'react';
 
-import { NutritionService, UserMetricService } from '../database/services';
-import { localDayKeyPlusCalendarDays, localDayStartMs } from '../utils/calendarDate';
+import { NutritionService, UserMetricService } from '@/database/services';
+import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 
 export type FuelingStatus = 'low' | 'optimal' | 'loading';
 

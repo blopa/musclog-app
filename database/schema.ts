@@ -1,6 +1,6 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
-import { CURRENT_DATABASE_VERSION } from '../constants/database';
+import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts

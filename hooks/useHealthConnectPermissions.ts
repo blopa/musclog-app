@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import type { Permission } from 'react-native-health-connect';
 
-import { useSnackbar } from '../context/SnackbarContext';
-import { healthConnectService, HealthConnectStatus } from '../services/healthConnect';
-import { HealthConnectError } from '../services/healthConnectErrors';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { healthConnectService, HealthConnectStatus } from '@/services/healthConnect';
+import { HealthConnectError } from '@/services/healthConnectErrors';
 
 export interface PermissionStats {
   total: number;

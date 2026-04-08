@@ -1,9 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useState } from 'react';
 
-import { database } from '../database';
-import UserMetric from '../database/models/UserMetric';
-import { localDayHalfOpenRange } from '../utils/calendarDate';
+import { database } from '@/database';
+import UserMetric from '@/database/models/UserMetric';
+import { localDayHalfOpenRange } from '@/utils/calendarDate';
 
 /**
  * Hook to check if a mood entry exists for today.

@@ -2,11 +2,11 @@ import { ComponentType, createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
-import { AvatarColor } from '../types/AvatarColor';
-import { AvatarIcon } from '../types/AvatarIcon';
-import { getAvatarBackgroundColor, getAvatarColor } from '../utils/avatarColorUtils';
-import { getAvatarIcon } from '../utils/avatarUtils';
+import { useTheme } from '@/hooks/useTheme';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import { getAvatarBackgroundColor, getAvatarColor } from '@/utils/avatarColorUtils';
+import { getAvatarIcon } from '@/utils/avatarUtils';
 
 interface AvatarSelectorProps {
   selectedAvatar: AvatarIcon;

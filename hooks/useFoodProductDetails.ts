@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
-import { isSuccessStatus } from '../types/guards/openFoodFacts';
-import type { ProductState } from '../types/openFoodFacts';
+import { isSuccessStatus } from '@/types/guards/openFoodFacts';
+import type { ProductState } from '@/types/openFoodFacts';
+
 import { useSettings } from './useSettings';
 
 /**

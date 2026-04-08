@@ -1,7 +1,7 @@
 import { Dumbbell, UtensilsCrossed } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type ActionButtonVariant = 'workout' | 'food';
 

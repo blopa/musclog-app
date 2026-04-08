@@ -2,8 +2,9 @@ import { CheckCircle2, Clock, Dumbbell, Sparkles, ThumbsUp } from 'lucide-react-
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { NotificationCard } from '../cards/NotificationCard';
+import { NotificationCard } from '@/components/cards/NotificationCard';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type NotificationsModalProps = {

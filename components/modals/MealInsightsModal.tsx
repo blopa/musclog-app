@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 
-import type { MealType } from '../../database/models/NutritionLog';
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import type { MealType } from '@/database/models/NutritionLog';
+import { useTheme } from '@/hooks/useTheme';
+
 import { CenteredModal } from './CenteredModal';
 
 type MealInsightsModalProps = {

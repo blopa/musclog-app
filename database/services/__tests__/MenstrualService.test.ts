@@ -1,5 +1,5 @@
-import MenstrualCycle from '../../models/MenstrualCycle';
-import { MenstrualService } from '../MenstrualService';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import { MenstrualService } from '@/database/services/MenstrualService';
 
 describe('MenstrualService', () => {
   const mockCycle = {

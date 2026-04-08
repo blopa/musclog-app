@@ -13,8 +13,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../hooks/useTheme';
-import { useWebModalLayerStyle } from '../utils/webPhoneFrame';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
+
 import { Modal } from './theme/Modal';
 
 type BottomPopUpProps = {

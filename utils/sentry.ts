@@ -1,8 +1,8 @@
 import type { CaptureContext, EventHint, SeverityLevel } from '@sentry/core';
 import * as Sentry from '@sentry/react-native';
 
-import { SettingsService } from '../database/services/SettingsService';
-import { initializeSentry, isSentryInitialized } from '../sentry-init';
+import { SettingsService } from '@/database/services/SettingsService';
+import { initializeSentry, isSentryInitialized } from '@/sentry-init';
 
 async function checkConsentAndInitialize(): Promise<boolean> {
   try {

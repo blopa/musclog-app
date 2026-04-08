@@ -1,4 +1,4 @@
-import { roundToDecimalPlaces } from '../roundDecimal';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
 describe('roundToDecimalPlaces', () => {
   it('rounds to 2 decimal places by default', () => {

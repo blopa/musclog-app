@@ -3,14 +3,15 @@ import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { type MuscleGroup } from '../../database/models';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
-import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import { type MuscleGroup } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
+import { type WorkoutHistoryItem, WorkoutHistorySection } from '@/utils/workoutHistory';
+
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';

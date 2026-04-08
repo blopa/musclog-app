@@ -6,9 +6,10 @@ import {
   NutritionService,
   SettingsService,
   WorkoutService,
-} from '../database/services';
-import i18n from '../lang/lang';
-import AiService from '../services/AiService';
+} from '@/database/services';
+import i18n from '@/lang/lang';
+import AiService from '@/services/AiService';
+
 import {
   formatLocalCalendarDayIso,
   isSameLocalCalendarDay,

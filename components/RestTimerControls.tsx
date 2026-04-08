@@ -2,7 +2,8 @@ import { SkipForward } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { Button } from './theme/Button';
 
 type RestTimerControlsProps = {

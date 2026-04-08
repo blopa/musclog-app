@@ -4,21 +4,21 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { useUnreadChat } from '../../context/UnreadChatContext';
-import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
-import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
-import { useNativeShareText } from '../../hooks/useNativeShareText';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import { getRecentWorkoutInsights } from '../../utils/coachAI';
-import { formatAppInteger } from '../../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { showSnackbar } from '../../utils/snackbarService';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
+import { useUnreadChat } from '@/context/UnreadChatContext';
+import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
+import { ChatService, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import { getRecentWorkoutInsights } from '@/utils/coachAI';
+import { formatAppInteger } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { showSnackbar } from '@/utils/snackbarService';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '@/utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
   const theme = useTheme();

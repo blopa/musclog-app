@@ -1,4 +1,4 @@
-import type { Units } from '../constants/settings';
+import type { Units } from '@/constants/settings';
 
 export function getWeightUnit(units: Units): 'kg' | 'lbs' {
   return units === 'imperial' ? 'lbs' : 'kg';

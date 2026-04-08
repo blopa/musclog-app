@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSnackbar } from '../context/SnackbarContext';
-import type { FitnessDetails } from '../types/fitnessDetails';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { FitnessDetails } from '@/types/fitnessDetails';
 import {
   defaultAdultDobDisplayString,
   loadFitnessDetailsInitialData,
   persistFitnessDetails,
-} from '../utils/fitnessProfilePersistence';
+} from '@/utils/fitnessProfilePersistence';
+
 import { useSettings } from './useSettings';
 
 const DEFAULT_WEIGHT_KG = '70.0';

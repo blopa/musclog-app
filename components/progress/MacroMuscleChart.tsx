@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
-import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
-import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
-import { AreaChart } from '../charts/AreaChart';
+import { AreaChart } from '@/components/charts/AreaChart';
+import { MacroMusclePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MacroMuscleChartProps {

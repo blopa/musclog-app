@@ -6,27 +6,28 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
-import type ExerciseModel from '../../database/models/Exercise';
-import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
-import { ExerciseService, WorkoutAnalytics } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useNativeShareText } from '../../hooks/useNativeShareText';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import type ExerciseModel from '@/database/models/Exercise';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { GenericCard } from '../cards/GenericCard';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
+} from '@/utils/exerciseTranslation';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import type { DataLogModalVariant } from './DataLogModal';
 import { FullScreenModal } from './FullScreenModal';

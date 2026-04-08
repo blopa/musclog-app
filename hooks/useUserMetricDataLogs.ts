@@ -4,10 +4,11 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { Units } from '../constants/settings';
-import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
-import { UserMetricService } from '../database/services';
-import { metricDisplayUnit, metricValueToDisplay, storedWeightToKg } from '../utils/unitConversion';
+import type { Units } from '@/constants/settings';
+import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+import { UserMetricService } from '@/database/services';
+import { metricDisplayUnit, metricValueToDisplay, storedWeightToKg } from '@/utils/unitConversion';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';

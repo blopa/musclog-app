@@ -1,4 +1,5 @@
-import { NutritionService, UserMetricService } from '../database/services';
+import { NutritionService, UserMetricService } from '@/database/services';
+
 import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDays,

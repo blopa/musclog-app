@@ -3,7 +3,7 @@
  * Comprehensive error handling for all Health Connect scenarios
  */
 
-import i18n from '../lang/lang';
+import i18n from '@/lang/lang';
 
 export enum HealthConnectErrorCode {
   // Initialization & SDK Errors

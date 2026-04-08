@@ -2,8 +2,9 @@ import { ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NutritionGoals, NutritionGoalsBody } from '../NutritionGoalsBody';
-import { Button } from '../theme/Button';
+import { NutritionGoals, NutritionGoalsBody } from '@/components/NutritionGoalsBody';
+import { Button } from '@/components/theme/Button';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type NutritionGoalsModalProps = {

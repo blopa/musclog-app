@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MenstrualPhasePoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useTheme } from '../../hooks/useTheme';
-import { formatLocalCalendarMonthDayNumericIntl } from '../../utils/calendarDate';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { MultipleLinesChart } from '../charts/MultipleLinesChart';
+import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
+import { MenstrualPhasePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MenstrualPerformanceChartProps {

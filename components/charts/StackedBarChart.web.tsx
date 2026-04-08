@@ -4,9 +4,9 @@ import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useTheme } from '../../hooks/useTheme';
-import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useTheme } from '@/hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '@/utils/chartUtils';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {

@@ -3,8 +3,9 @@ import { ArrowRight, Dumbbell, Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type ChatWorkoutCardProps = {

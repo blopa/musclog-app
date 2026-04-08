@@ -3,26 +3,24 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Switch, Text, View } from 'react-native';
 
-import { type EquipmentType, type MechanicType, type MuscleGroup } from '../../database/models';
-import { useExercises } from '../../hooks/useExercises';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { type AddExerciseData } from '../../hooks/useWorkoutForm';
+import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
+import { Button } from '@/components/theme/Button';
+import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
+import { TextInput } from '@/components/theme/TextInput';
+import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
+import { useExercises } from '@/hooks/useExercises';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { type AddExerciseData } from '@/hooks/useWorkoutForm';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-} from '../../utils/localizedDecimalInput';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
-import { FilterTabs } from '../FilterTabs';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { Button } from '../theme/Button';
-import { StepperInlineInput } from '../theme/StepperInlineInput';
-import { TextInput } from '../theme/TextInput';
+} from '@/utils/exerciseTranslation';
+import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { FullScreenModal } from './FullScreenModal';
 
 // UI-specific muscle group filter type (subset of MuscleGroup + 'all')

@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Button } from '../theme/Button';
-import { Modal } from '../theme/Modal';
+import { Button } from '@/components/theme/Button';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type EndWorkoutModalProps = {
   visible: boolean;

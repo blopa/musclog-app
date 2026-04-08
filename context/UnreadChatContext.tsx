@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { UNREAD_CHAT_MESSAGES_COUNT } from '../constants/misc';
+import { UNREAD_CHAT_MESSAGES_COUNT } from '@/constants/misc';
 
 type SetUnreadCountArg = number | ((prev: number) => number);
 

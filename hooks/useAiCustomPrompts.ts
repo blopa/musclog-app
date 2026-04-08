@@ -1,9 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { database } from '../database';
-import AiCustomPrompt, { type AiCustomPromptContext } from '../database/models/AiCustomPrompt';
-import { AiCustomPromptService } from '../database/services';
+import { database } from '@/database';
+import AiCustomPrompt, { type AiCustomPromptContext } from '@/database/models/AiCustomPrompt';
+import { AiCustomPromptService } from '@/database/services';
 
 export interface UseAiCustomPromptsParams {
   activeOnly?: boolean;

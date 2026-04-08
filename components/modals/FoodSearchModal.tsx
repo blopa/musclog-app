@@ -36,24 +36,26 @@ import {
   View,
 } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { type MealType } from '../../database/models';
-import Meal from '../../database/models/Meal';
-import { FoodPortionService, NutritionService } from '../../database/services';
-import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
-import { useFoods } from '../../hooks/useFoods';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
-import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
-import { captureException } from '../../utils/sentry';
-import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
-import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
-import { Button } from '../theme/Button';
+import { FoodSearchItemCard } from '@/components/cards/FoodSearchItemCard';
+import { SameAsYesterdayCard } from '@/components/cards/SameAsYesterdayCard';
+import { Button } from '@/components/theme/Button';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { type MealType } from '@/database/models';
+import Meal from '@/database/models/Meal';
+import { FoodPortionService, NutritionService } from '@/database/services';
+import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
+import { useFoods } from '@/hooks/useFoods';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
+import useNutritionLogs from '@/hooks/useNutritionLogs';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnifiedFoodSearch';
+import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
+import { captureException } from '@/utils/sentry';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -374,14 +376,55 @@ export function FoodSearchModal({
   }, [searchQuery]);
 
   // Get recent local foods for the "Recent History" section
-  const { foods: recentFoods } = useFoods({
-    mode: 'list',
+  const { recentFoods: recentFoodsRaw } = useNutritionLogs({
+    mode: 'recent',
+    mealType,
     visible,
-    enableReactivity: true,
-    sortBy: 'updated_at',
-    sortOrder: 'desc',
     initialLimit: 5,
-  });
+    enableReactivity: true,
+  }) as UseMealsResultBasic & { recentFoods: any[] };
+
+  const recentFoods = useMemo(() => {
+    return (recentFoodsRaw || []).map((food) => {
+      return {
+        ...food,
+        id: food.id,
+        name: food.name ?? '',
+        description: t('foodSearch.foodDescriptionPer100g', {
+          brand: food.brand || t('foodSearch.customFoodLabel'),
+          calories: formatInteger(
+            resolveRoundedPer100gCaloriesForDisplay({
+              calories: food.calories,
+              protein: food.protein,
+              carbs: food.carbs,
+              fat: food.fat,
+              fiber: food.fiber,
+            })
+          ),
+        }),
+        brand: food.brand,
+        serving_size: portion100gName,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+        imageUrl: food.imageUrl,
+        source: 'local',
+        iconName: 'utensils-crossed',
+        iconColor: theme.colors.accent.primary,
+        iconBgColor: theme.colors.accent.primary10,
+        _raw: food,
+      } as FoodItem;
+    });
+  }, [
+    recentFoodsRaw,
+    t,
+    formatInteger,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    portion100gName,
+  ]);
 
   // Calculate API limits based on food search source setting
   const { apiLimit: openFoodLimit, usdaLimit } = useMemo(() => {
@@ -1384,46 +1427,13 @@ export function FoodSearchModal({
                       />
                       <View className="gap-1.5">
                         {recentFoods.length > 0 ? (
-                          recentFoods.map((food) => {
-                            const foodItem: FoodItem = {
-                              ...food,
-                              id: food.id,
-                              name: food.name ?? '',
-                              description: t('foodSearch.foodDescriptionPer100g', {
-                                brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: formatInteger(
-                                  resolveRoundedPer100gCaloriesForDisplay({
-                                    calories: food.calories,
-                                    protein: food.protein,
-                                    carbs: food.carbs,
-                                    fat: food.fat,
-                                    fiber: food.fiber,
-                                  })
-                                ),
-                              }),
-                              brand: food.brand,
-                              serving_size: portion100gName,
-                              calories: food.calories,
-                              protein: food.protein,
-                              carbs: food.carbs,
-                              fat: food.fat,
-                              fiber: food.fiber,
-                              imageUrl: food.imageUrl,
-                              source: 'local',
-                              iconName: 'utensils-crossed',
-                              iconColor: theme.colors.accent.primary,
-                              iconBgColor: theme.colors.accent.primary10,
-                              _raw: food,
-                            };
-
-                            return (
-                              <FoodSearchItemCard
-                                key={food.id}
-                                food={foodItem}
-                                onAddPress={() => handleFoodClick(foodItem)}
-                              />
-                            );
-                          })
+                          recentFoods.map((food) => (
+                            <FoodSearchItemCard
+                              key={food.id}
+                              food={food}
+                              onAddPress={() => handleFoodClick(food)}
+                            />
+                          ))
                         ) : (
                           <View className="py-8 text-center">
                             <Text className="text-center text-text-tertiary">
@@ -1561,6 +1571,7 @@ export function FoodSearchModal({
           onClose={() => setIsRecentNutritionHistoryModalVisible(false)}
           onFoodClick={handleFoodClick}
           portion100gName={portion100gName}
+          mealType={mealType}
         />
 
         <ConfirmationModal

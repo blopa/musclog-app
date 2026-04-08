@@ -1,10 +1,10 @@
 import { Dumbbell, User } from 'lucide-react-native';
 
-import type { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
-import Exercise from '../../database/models/Exercise';
-import Schedule, { type DayOfWeek } from '../../database/models/Schedule';
-import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
-import { darkTheme as theme } from '../../theme';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import Exercise from '@/database/models/Exercise';
+import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
+import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
+import { darkTheme as theme } from '@/theme';
 import {
   createExerciseOption,
   type CreateExerciseOptionParams,
@@ -22,7 +22,7 @@ import {
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
   WEEKDAY_NAMES,
-} from '../workout';
+} from '@/utils/workout';
 
 // Mock Exercise model
 const createMockExercise = (overrides: Partial<Exercise> = {}): Partial<Exercise> => ({

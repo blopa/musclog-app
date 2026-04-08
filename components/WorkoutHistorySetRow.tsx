@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { useTheme } from '../hooks/useTheme';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Set data for display in workout history.

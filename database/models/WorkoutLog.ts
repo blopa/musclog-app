@@ -5,7 +5,8 @@ import {
   calculateWorkoutVolume,
   type ExerciseWithSets,
   getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
+} from '@/utils/workoutCalculator';
+
 import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';

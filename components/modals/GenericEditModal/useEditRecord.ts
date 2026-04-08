@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { database } from '../../../database';
-import UserMetric from '../../../database/models/UserMetric';
-import { useSettings } from '../../../hooks/useSettings';
+import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
+import { database } from '@/database';
+import UserMetric from '@/database/models/UserMetric';
+import { useSettings } from '@/hooks/useSettings';
 import {
   gramsToDisplay,
   isLengthMetricType,
@@ -11,8 +12,8 @@ import {
   metricValueToDisplay,
   storedHeightToCm,
   storedWeightToKg,
-} from '../../../utils/unitConversion';
-import type { DataLogModalVariant } from '../DataLogModal';
+} from '@/utils/unitConversion';
+
 import { getInitialValues, saveRecord } from './entityEditConfig';
 import type { EditFormValues } from './types';
 

@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 
-import type { Theme } from '../../../theme';
+import type { Theme } from '@/theme';
 
 export type MacroValue = {
   value: number;

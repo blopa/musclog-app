@@ -12,12 +12,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import { formatLocalCalendarDayIso } from '../../utils/calendarDate';
-import { parseRetrospectiveNutrition } from '../../utils/coachAI';
-import { captureException } from '../../utils/sentry';
-import { showSnackbar } from '../../utils/snackbarService';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
+import { parseRetrospectiveNutrition } from '@/utils/coachAI';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type RetrospectiveNutritionModalProps = {

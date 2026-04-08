@@ -2,41 +2,41 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subDays } from 'date-fns';
 
-import { ENCRYPTION_KEY } from '../../constants/database';
+import { ENCRYPTION_KEY } from '@/constants/database';
 import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-} from '../../constants/misc';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { calculateWorkoutVolume } from '../../utils/workoutCalculator';
-import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
-import { database } from '../index';
-import ChatMessage from '../models/ChatMessage';
+} from '@/constants/misc';
+import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
+import { database } from '@/database/index';
+import ChatMessage from '@/database/models/ChatMessage';
 import Exercise, {
   type EquipmentType,
   type MechanicType,
   type MuscleGroup,
-} from '../models/Exercise';
-import Food from '../models/Food';
-import FoodFoodPortion from '../models/FoodFoodPortion';
-import Meal from '../models/Meal';
-import MenstrualCycle from '../models/MenstrualCycle';
-import Setting from '../models/Setting';
-import UserMetric from '../models/UserMetric';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
-import WorkoutTemplate from '../models/WorkoutTemplate';
-import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
-import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
+} from '@/database/models/Exercise';
+import Food from '@/database/models/Food';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import Meal from '@/database/models/Meal';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import Setting from '@/database/models/Setting';
+import UserMetric from '@/database/models/UserMetric';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import {
   ExerciseService,
   FoodPortionService,
   MealService,
   SettingsService,
   UserService,
-} from '../services';
+} from '@/database/services';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
 /** Assumed user body weight (kg) for seeded workout volume (bodyweight exercises). */
 const SEED_USER_BODY_WEIGHT_KG = 70;

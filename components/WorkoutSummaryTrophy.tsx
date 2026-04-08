@@ -3,7 +3,7 @@ import { Star, Trophy } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export function WorkoutSummaryTrophy() {
   const theme = useTheme();

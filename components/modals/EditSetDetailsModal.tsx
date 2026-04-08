@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useSettings } from '../../hooks/useSettings';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { Button } from '../theme/Button';
-import NewNumericalInput from '../theme/NewNumericalInput';
+import { Button } from '@/components/theme/Button';
+import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { useSettings } from '@/hooks/useSettings';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { CenteredModal } from './CenteredModal';
 
 type EditSetDetailsModalProps = {

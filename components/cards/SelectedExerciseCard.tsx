@@ -2,11 +2,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
+} from '@/utils/exerciseTranslation';
+
 import { GenericCard } from './GenericCard';
 
 type SelectedExerciseCardProps = {

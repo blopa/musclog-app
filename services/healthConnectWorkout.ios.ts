@@ -11,13 +11,13 @@ import {
 } from '@kingstinct/react-native-healthkit';
 import type { ObjectTypeIdentifier } from '@kingstinct/react-native-healthkit/types';
 
-import type { Units } from '../constants/settings';
-import { SettingsService } from '../database/services/SettingsService';
-import i18n from '../lang/lang';
-import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../utils/formatDisplayWeight';
-import { kgToDisplay } from '../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../utils/units';
+import type { Units } from '@/constants/settings';
+import { SettingsService } from '@/database/services/SettingsService';
+import i18n from '@/lang/lang';
+import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
 export interface SegmentItem {
   exerciseName: string;

@@ -5,13 +5,13 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import { database } from '../database';
-import WorkoutLog from '../database/models/WorkoutLog';
-import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import i18n from '../lang/lang';
-import { type Theme } from '../theme';
-import { formatAppInteger } from '../utils/formatAppNumber';
+import { DEFAULT_BATCH_SIZE } from '@/constants/database';
+import { database } from '@/database';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import { WorkoutAnalytics, WorkoutService } from '@/database/services';
+import i18n from '@/lang/lang';
+import { type Theme } from '@/theme';
+import { formatAppInteger } from '@/utils/formatAppNumber';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -20,7 +20,8 @@ import {
   processWorkouts,
   type WorkoutFilters,
   type WorkoutHistorySection,
-} from '../utils/workoutHistory';
+} from '@/utils/workoutHistory';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';

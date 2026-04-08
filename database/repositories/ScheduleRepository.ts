@@ -1,7 +1,7 @@
 import { Q, Query } from '@nozbe/watermelondb';
 
-import { database } from '../database-instance';
-import Schedule from '../models/Schedule';
+import { database } from '@/database/database-instance';
+import Schedule from '@/database/models/Schedule';
 
 /**
  * Repository for Schedule queries

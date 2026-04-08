@@ -2,14 +2,14 @@ import { Q } from '@nozbe/watermelondb';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { database } from '../database';
-import MenstrualCycle from '../database/models/MenstrualCycle';
-import NutritionCheckin from '../database/models/NutritionCheckin';
-import Schedule from '../database/models/Schedule';
-import { SettingsService } from '../database/services/SettingsService';
-import i18n from '../lang/lang';
-import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
-import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '../utils/calendarDate';
+import { database } from '@/database';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import NutritionCheckin from '@/database/models/NutritionCheckin';
+import Schedule from '@/database/models/Schedule';
+import { SettingsService } from '@/database/services/SettingsService';
+import i18n from '@/lang/lang';
+import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
 
 export class NotificationService {
   private static isConfigured = false;

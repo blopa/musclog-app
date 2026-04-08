@@ -1,16 +1,16 @@
 import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import { database } from '../database';
-import Food from '../database/models/Food';
-import NutritionLog, { type MealType } from '../database/models/NutritionLog';
-import { NutritionService } from '../database/services';
+import { DEFAULT_BATCH_SIZE } from '@/constants/database';
+import { database } from '@/database';
+import Food from '@/database/models/Food';
+import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import { NutritionService } from '@/database/services';
 import {
   localDayHalfOpenRange,
   localDayStartMs,
   localNextDayStartMsFromDate,
-} from '../utils/calendarDate';
+} from '@/utils/calendarDate';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
@@ -281,7 +281,7 @@ export function useNutritionLogs({
         setHasMore(false); // No pagination for meal-type mode
       } else if (mode === 'recent') {
         // Recent mode: return recently eaten foods for quick logging
-        const recent = await NutritionService.getRecentFoods(initialLimit, date);
+        const recent = await NutritionService.getRecentFoods(initialLimit, date, mealType);
         setRecentFoods(recent);
         logsList = [];
         setHasMore(false);

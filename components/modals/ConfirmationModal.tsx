@@ -3,10 +3,10 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Button } from '../theme/Button';
-import { Modal } from '../theme/Modal';
+import { Button } from '@/components/theme/Button';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
 

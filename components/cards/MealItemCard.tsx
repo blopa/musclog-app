@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { MenuButton } from '../theme/MenuButton';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type MacroProps = {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { SettingsService } from '../database/services/SettingsService';
+import { SettingsService } from '@/database/services/SettingsService';
 
 /**
  * Hook to check if AI features are enabled and configured.

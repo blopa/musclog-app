@@ -10,21 +10,21 @@ import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'react-native-svg';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { GradientText } from '../../components/GradientText';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
-import { type EatingPhase } from '../../database/models';
-import { UserMetricService, UserService } from '../../database/services';
-import { useSettings } from '../../hooks/useSettings';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { GradientText } from '@/components/GradientText';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { Button } from '@/components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { type EatingPhase } from '@/database/models';
+import { UserMetricService, UserService } from '@/database/services';
+import { useSettings } from '@/hooks/useSettings';
 import {
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
-} from '../../utils/calendarDate';
-import { getHistoricalNutritionParams } from '../../utils/historicalNutritionParams';
+} from '@/utils/calendarDate';
+import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -36,8 +36,8 @@ import {
   normalizeWeightGoal,
   type NutritionCalculatorInput,
   type NutritionPlan,
-} from '../../utils/nutritionCalculator';
-import { showSnackbar } from '../../utils/snackbarService';
+} from '@/utils/nutritionCalculator';
+import { showSnackbar } from '@/utils/snackbarService';
 
 const ILLUSTRATION_VIEWBOX = 400;
 
@@ -453,7 +453,7 @@ export default function SetGoals() {
     }
 
     return planWithTargets;
-  }, [params, units]);
+  }, [params]);
 
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);

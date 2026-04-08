@@ -1,32 +1,26 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import {
-  localDayStartFromUtcMs,
-  localDayStartMs,
-  MS_PER_SOLAR_DAY,
-} from '../../utils/calendarDate';
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import NutritionLog from '@/database/models/NutritionLog';
+import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { localDayStartFromUtcMs, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
   calculateTDEE,
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
-} from '../../utils/nutritionCalculator';
-import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
-import { cmToDisplay, kgToDisplay } from '../../utils/unitConversion';
-import {
-  calculateExerciseVolume,
-  getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import MenstrualCycle from '../models/MenstrualCycle';
-import NutritionLog from '../models/NutritionLog';
-import UserMetric, { UserMetricType } from '../models/UserMetric';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
+} from '@/utils/nutritionCalculator';
+import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
+import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
+import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';

@@ -1,7 +1,10 @@
 import { Q, Query } from '@nozbe/watermelondb';
 
-import { database } from '../database-instance';
-import MenstrualCycle, { type BirthControlType, type SyncGoal } from '../models/MenstrualCycle';
+import { database } from '@/database/database-instance';
+import MenstrualCycle, {
+  type BirthControlType,
+  type SyncGoal,
+} from '@/database/models/MenstrualCycle';
 
 /**
  * Repository for MenstrualCycle queries

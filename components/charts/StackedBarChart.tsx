@@ -2,10 +2,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { XAxisLabel } from '@/utils/chartUtils';
 
 /** One bar: x plus up to 4 segment values (e.g. [coffee, chocolate, soda, iceCream]) */
 export type StackedBarChartDatum = {

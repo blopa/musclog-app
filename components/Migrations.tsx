@@ -3,18 +3,18 @@ import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
-import { ExerciseService, FoodPortionService, WorkoutService } from '../database/services';
-import { useSettings } from '../hooks/useSettings';
-import i18n from '../lang/lang';
-import { healthDataSyncService } from '../services/healthDataSync';
-import { NotificationService } from '../services/NotificationService';
-import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
-import { configureDailyTasks } from '../utils/configureDailyTasks';
+import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
+import { useSettings } from '@/hooks/useSettings';
+import i18n from '@/lang/lang';
+import { healthDataSyncService } from '@/services/healthDataSync';
+import { NotificationService } from '@/services/NotificationService';
+import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
+import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
   getLastNotificationResponseAsync,
   handleNotificationResponse,
-} from '../utils/notifications';
+} from '@/utils/notifications';
 
 /**
  * One-time and boot-time data fixes, sync, and native services that are not

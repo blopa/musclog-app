@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSnackbar } from '../context/SnackbarContext';
-import { HealthConnectError } from '../services/healthConnectErrors';
-import { healthDataSyncService, SyncResult, SyncStatus } from '../services/healthDataSync';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { HealthConnectError } from '@/services/healthConnectErrors';
+import { healthDataSyncService, SyncResult, SyncStatus } from '@/services/healthDataSync';
 
 export interface UseSyncTrackingResult {
   // Sync status

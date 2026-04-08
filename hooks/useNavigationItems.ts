@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import type { NavItemKey } from '../constants/settings';
-import { SettingsService } from '../database/services/SettingsService';
+import type { NavItemKey } from '@/constants/settings';
+import { SettingsService } from '@/database/services/SettingsService';
+
 import { useMenstrualCycle } from './useMenstrualCycle';
 import { useSettings } from './useSettings';
 

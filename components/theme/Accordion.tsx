@@ -3,7 +3,7 @@ import { ComponentType, ReactNode, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type AccordionProps = {
   title: string;

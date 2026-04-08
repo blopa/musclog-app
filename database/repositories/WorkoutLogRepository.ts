@@ -1,7 +1,7 @@
 import { Q, Query } from '@nozbe/watermelondb';
 
-import { database } from '../database-instance';
-import WorkoutLog from '../models/WorkoutLog';
+import { database } from '@/database/database-instance';
+import WorkoutLog from '@/database/models/WorkoutLog';
 
 /**
  * Repository for WorkoutLog queries

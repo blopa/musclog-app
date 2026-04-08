@@ -2,9 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { CartesianChart, Line, Scatter, StackedBar } from 'victory-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useTheme } from '@/hooks/useTheme';
+import { XAxisLabel } from '@/utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
   /** X value (e.g. 0 = Mon, 1 = Tue, ...) */

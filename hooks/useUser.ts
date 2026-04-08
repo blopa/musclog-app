@@ -1,8 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
 
-import { database } from '../database';
-import User from '../database/models/User';
+import { database } from '@/database';
+import User from '@/database/models/User';
 
 export interface UseUserResult {
   user: User | null;

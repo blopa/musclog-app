@@ -2,7 +2,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type TestNumericInputProps = {
   label: string;

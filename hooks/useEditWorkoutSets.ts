@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { WorkoutService } from '../database/services';
+import { WorkoutService } from '@/database/services';
 
 export function useEditWorkoutSets() {
   const [isSaving, setIsSaving] = useState(false);

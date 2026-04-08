@@ -3,14 +3,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedIntegerInput,
   sanitizeLocalizedSignedDecimalInput,
-} from '../../utils/localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
 
 type StepperInlineInputProps = {
   label: string;

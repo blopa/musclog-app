@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
-import { GradientText } from '../../components/GradientText';
-import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { Button } from '../../components/theme/Button';
-import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
-import { useScrollFade } from '../../hooks/useScrollFade';
-import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { useTheme } from '../../hooks/useTheme';
+import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
+import { GradientText } from '@/components/GradientText';
+import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { Button } from '@/components/theme/Button';
+import { useHealthConnectPermissions } from '@/hooks/useHealthConnectPermissions';
+import { useScrollFade } from '@/hooks/useScrollFade';
+import { useSyncTracking } from '@/hooks/useSyncTracking';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Health Connect Onboarding Screen

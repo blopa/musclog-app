@@ -4,17 +4,18 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { type Gender } from '../database/models';
-import { useTheme } from '../hooks/useTheme';
-import { AvatarColor } from '../types/AvatarColor';
-import { AvatarIcon } from '../types/AvatarIcon';
-import { getAvatarIcon } from '../utils/avatarUtils';
+import { type Gender } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import { getAvatarIcon } from '@/utils/avatarUtils';
 import {
   formatLocalCalendarDayIso,
   getLocalCalendarYear,
   localCalendarDayDate,
-} from '../utils/calendarDate';
-import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
+} from '@/utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
+
 import { AvatarSelector } from './AvatarSelector';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';

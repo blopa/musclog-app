@@ -2,8 +2,9 @@ import { ReactNode, useCallback } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useSmartCamera } from '../context/SmartCameraContext';
-import { useTheme } from '../hooks/useTheme';
+import { useSmartCamera } from '@/context/SmartCameraContext';
+import { useTheme } from '@/hooks/useTheme';
+
 import { useCoach } from './CoachContext';
 import { NavigationMenu } from './NavigationMenu';
 

@@ -23,13 +23,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import type { MicrosData } from '../database/models/Food';
-import { useTheme } from '../hooks/useTheme';
-import { formatAppRoundedDecimal } from '../utils/formatAppNumber';
+import type { MicrosData } from '@/database/models/Food';
+import { useTheme } from '@/hooks/useTheme';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../utils/localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
+
 import { MacroInput } from './MacroInput';
 
 export const MICRONUTRIENT_FORM_KEYS = [

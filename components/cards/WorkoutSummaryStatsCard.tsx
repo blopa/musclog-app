@@ -2,8 +2,9 @@ import { Dumbbell, Flame, Timer, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { WorkoutSummaryStatRow } from '../WorkoutSummaryStatRow';
+import { WorkoutSummaryStatRow } from '@/components/WorkoutSummaryStatRow';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type WorkoutSummaryStatsCardProps = {

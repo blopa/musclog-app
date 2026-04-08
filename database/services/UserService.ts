@@ -1,21 +1,21 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { AvatarColor } from '../../types/AvatarColor';
-import { AvatarIcon } from '../../types/AvatarIcon';
-import {
-  clearCurrentUserSyncId,
-  getCurrentUserSyncId,
-  setCurrentUserSyncId,
-} from '../../utils/currentUserStorage';
-import { generateUUID } from '../../utils/uuid';
-import { database } from '../index';
+import { database } from '@/database/index';
 import User, {
   type FitnessGoal,
   type Gender,
   type LiftingExperience,
   UserProfileUpdate,
   type WeightGoal,
-} from '../models/User';
+} from '@/database/models/User';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import {
+  clearCurrentUserSyncId,
+  getCurrentUserSyncId,
+  setCurrentUserSyncId,
+} from '@/utils/currentUserStorage';
+import { generateUUID } from '@/utils/uuid';
 
 export class UserService {
   /**

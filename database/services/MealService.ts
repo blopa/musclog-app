@@ -1,8 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../index';
-import Meal from '../models/Meal';
-import MealFood from '../models/MealFood';
+import { database } from '@/database/index';
+import Meal from '@/database/models/Meal';
+import MealFood from '@/database/models/MealFood';
 
 export class MealService {
   /**

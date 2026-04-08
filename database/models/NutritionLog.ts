@@ -1,8 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
-import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '../../utils/calendarDate';
-import { decryptJson, decryptNumber, decryptOptionalString } from '../encryptionHelpers';
+import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
+import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
+
 import type { MicrosData } from './Food';
 import Food from './Food';
 import FoodPortion from './FoodPortion';

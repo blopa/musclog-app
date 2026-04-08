@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
-import type { WorkoutType } from '../constants/workoutTypes';
-import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
-import { useSnackbar } from '../context/SnackbarContext';
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import { WorkoutTemplateService } from '../database/services';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import type { WorkoutType } from '@/constants/workoutTypes';
+import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '@/constants/workoutTypes';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import { WorkoutTemplateService } from '@/database/services';
 import {
   createExerciseOption,
   type ExerciseMetadata,
@@ -18,11 +18,12 @@ import {
   transformScheduleDays,
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
-} from '../utils/workout';
+} from '@/utils/workout';
 import {
   DEFAULT_WORKOUT_INSIGHTS_TYPE,
   parseWorkoutInsightsType,
-} from '../utils/workoutInsightsType';
+} from '@/utils/workoutInsightsType';
+
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
 

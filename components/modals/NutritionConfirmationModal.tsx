@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import type { NutritionEntry } from '../../utils/coachAI';
-import { calculateNutritionTotals, mealTypeToString } from '../../utils/nutritionAI';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import type { NutritionEntry } from '@/utils/coachAI';
+import { calculateNutritionTotals, mealTypeToString } from '@/utils/nutritionAI';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type NutritionConfirmationModalProps = {

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Meal from '../database/models/Meal';
-import { MealService } from '../database/services';
+import Meal from '@/database/models/Meal';
+import { MealService } from '@/database/services';
 
 export type Ingredient = {
   mealFoodId?: string; // present when loaded from an existing meal (edit mode)

@@ -2,8 +2,9 @@ import { Smile } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Slider } from '../theme/Slider';
+import { Slider } from '@/components/theme/Slider';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type MoodSelectorCardProps = {

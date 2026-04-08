@@ -2,14 +2,15 @@ import { Q } from '@nozbe/watermelondb';
 import { format } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
-import type { Units } from '../constants/settings';
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
-import { WorkoutAnalytics } from '../database/services';
-import i18n from '../lang/lang';
-import { type Theme } from '../theme';
+import type { Units } from '@/constants/settings';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import { WorkoutAnalytics } from '@/database/services';
+import i18n from '@/lang/lang';
+import { type Theme } from '@/theme';
+
 import {
   formatLocalCalendarMonthKey,
   formatLocalMonthYearLongFromMonthKey,

@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { Dimensions, ImageBackground, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GradientText } from '../../components/GradientText';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
-import PreRegistrationIntro from '../../components/PreRegistrationIntro';
-import { Button } from '../../components/theme/Button';
-import { PageIndicators } from '../../components/theme/PageIndicators';
-import { useTheme } from '../../hooks/useTheme';
+import { GradientText } from '@/components/GradientText';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { PagerView, type PagerViewRef } from '@/components/PagerView/PagerView';
+import PreRegistrationIntro from '@/components/PreRegistrationIntro';
+import { Button } from '@/components/theme/Button';
+import { PageIndicators } from '@/components/theme/PageIndicators';
+import { useTheme } from '@/hooks/useTheme';
 
 type OnboardingBodyProps = {
   imageUrl?: string;

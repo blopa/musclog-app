@@ -1,12 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { ProductV3 } from '../../types/openFoodFacts';
-import { getProductName } from '../../utils/openFoodFactsMapper';
-import { database } from '../index';
-import Food, { type MicrosData } from '../models/Food';
-import FoodFoodPortion from '../models/FoodFoodPortion';
-import FoodPortion from '../models/FoodPortion';
+import { database } from '@/database/index';
+import Food, { type MicrosData } from '@/database/models/Food';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import FoodPortion from '@/database/models/FoodPortion';
+import { ProductV3 } from '@/types/openFoodFacts';
+import { getProductName } from '@/utils/openFoodFactsMapper';
+
 import { FoodPortionService } from './FoodPortionService';
 
 export class FoodService {

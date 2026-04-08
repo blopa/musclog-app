@@ -2,9 +2,10 @@ import { X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useSessionTotalTime } from '../hooks/useSessionTotalTime';
-import { useTheme } from '../hooks/useTheme';
-import { formatDuration } from '../utils/workout';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useTheme } from '@/hooks/useTheme';
+import { formatDuration } from '@/utils/workout';
+
 import { MenuButton } from './theme/MenuButton';
 
 type WorkoutTimeTrackerProps = {

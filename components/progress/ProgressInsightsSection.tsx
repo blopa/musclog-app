@@ -2,9 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { ProgressInsights } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { GenericCard } from '../cards/GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { ProgressInsights } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 
 interface ProgressInsightsSectionProps {
   insights: ProgressInsights;

@@ -1,6 +1,6 @@
 import { Pressable, Text } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface MaybeLaterButtonProps {
   onPress: () => void;

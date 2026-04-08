@@ -11,9 +11,9 @@ import {
   VictoryStack,
 } from 'victory';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useTheme } from '../../hooks/useTheme';
-import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useTheme } from '@/hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '@/utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
   x: number;

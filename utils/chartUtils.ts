@@ -2,7 +2,8 @@ import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
-import i18n from '../lang/lang';
+import i18n from '@/lang/lang';
+
 import { formatAppDecimal } from './formatAppNumber';
 import { roundToDecimalPlaces } from './roundDecimal';
 

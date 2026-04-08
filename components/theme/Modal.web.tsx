@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Modal as RNModal, Platform, View } from 'react-native';
 
-import { useWebModalShellHost } from '../../context/WebModalShellContext';
-import { useWebDesktopPhoneFrame } from '../../utils/webPhoneFrame';
+import { useWebModalShellHost } from '@/context/WebModalShellContext';
+import { useWebDesktopPhoneFrame } from '@/utils/webPhoneFrame';
 
 export type ShellAwareModalProps = {
   visible: boolean;

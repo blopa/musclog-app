@@ -15,76 +15,77 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { useSnackbar } from '../../context/SnackbarContext';
-import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '../../database/models';
-import Food from '../../database/models/Food';
-import FoodPortion from '../../database/models/FoodPortion';
-import Meal from '../../database/models/Meal';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { MacroInput } from '@/components/MacroInput';
+import {
+  type MicronutrientFormStrings,
+  micronutrientFormStringsFromMicros,
+  MicronutrientsExpandableSection,
+  parseMicronutrientFormStringsToPartial,
+} from '@/components/MicronutrientsExpandableSection';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import type { Units } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
+import Food from '@/database/models/Food';
+import FoodPortion from '@/database/models/FoodPortion';
+import Meal from '@/database/models/Meal';
 import {
   FoodPortionService,
   FoodService,
   MealService,
   NutritionService,
-} from '../../database/services';
+} from '@/database/services';
 import {
   fetchMusclogProductByBarcode,
   fetchOFFProductByBarcode,
   fetchUSDAProductByBarcode,
   type ProductDetailsQueryData,
   useFoodProductDetails,
-} from '../../hooks/useFoodProductDetails';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
+} from '@/hooks/useFoodProductDetails';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import {
   isMappedNutriments,
   isSuccessFoodDetailProductState,
   isSuccessStatus,
-} from '../../types/guards/openFoodFacts';
+} from '@/types/guards/openFoodFacts';
 import {
   localCalendarDayDate,
   localCalendarDayDateFromDayKeyMs,
   localDayStartMs,
-} from '../../utils/calendarDate';
-import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
-import { formatDisplayGrams } from '../../utils/formatDisplayWeight';
+} from '@/utils/calendarDate';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
-} from '../../utils/inferCaloriesFromMacros';
+} from '@/utils/inferCaloriesFromMacros';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
-} from '../../utils/openFoodFactsMapper';
-import { getProductName } from '../../utils/productName';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { captureException } from '../../utils/sentry';
-import { getMassUnitLabel } from '../../utils/unitConversion';
-import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
-import { BottomPopUp } from '../BottomPopUp';
-import {
-  type FoodDetailsNutritionSectionMode,
-  FoodNutritionSectionCard,
-} from '../cards/FoodNutritionSectionCard';
-import { FilterTabs } from '../FilterTabs';
-import { MacroInput } from '../MacroInput';
-import {
-  type MicronutrientFormStrings,
-  micronutrientFormStringsFromMicros,
-  MicronutrientsExpandableSection,
-  parseMicronutrientFormStringsToPartial,
-} from '../MicronutrientsExpandableSection';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
+} from '@/utils/openFoodFactsMapper';
+import { getProductName } from '@/utils/productName';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
+import { getMassUnitLabel } from '@/utils/unitConversion';
+import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -145,6 +146,44 @@ function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string 
 
   const product = productFromSearch as { code?: string; gtinUpc?: string };
   return product.code ?? product.gtinUpc ?? '';
+}
+
+/**
+ * Parses serving size string from USDA or Open Food Facts product data.
+ */
+function parseServingSizeFromProduct(product: any): number | undefined {
+  if (!product) {
+    return undefined;
+  }
+
+  // USDA data uses camelCase `servingSize`, while OpenFoodFacts uses snake_case `serving_size`
+  const usdaServingSizeStr =
+    product.servingSize != null ? `${product.servingSize}${product.servingSizeUnit || 'g'}` : null;
+
+  const servingStr = product.serving_size ?? usdaServingSizeStr;
+
+  if (!servingStr) {
+    return undefined;
+  }
+
+  // Parse serving size from string
+  const match = String(servingStr).match(/\((\d+)\s*g\)/);
+  if (match) {
+    const g = parseInt(match[1], 10);
+    if (g > 0) {
+      return g;
+    }
+  }
+
+  const num = String(servingStr).match(/(\d+)/);
+  if (num) {
+    const g = parseInt(num[1], 10);
+    if (g > 0) {
+      return g;
+    }
+  }
+
+  return undefined;
 }
 
 /** Per-100g core macros from a successful product-details payload (used to pick a non-empty alternate source). */
@@ -289,7 +328,20 @@ export function FoodMealDetailsModal({
     }
   };
 
-  const [servingSize, setServingSize] = useState(100);
+  const [servingSize, setServingSize] = useState(() => {
+    if (initialServingSize) {
+      return initialServingSize;
+    }
+
+    if (productFromSearch) {
+      return parseServingSizeFromProduct(productFromSearch) || 100;
+    }
+
+    return 100;
+  });
+
+  // Guard to ensure serving size is only initialized once per product/session
+  const hasInitializedServingSizeRef = useRef(false);
 
   /** Total weight of the meal in grams (sum of all ingredients). Used when tracking a saved meal. */
   const [totalMealGrams, setTotalMealGrams] = useState(0);
@@ -539,43 +591,11 @@ export function FoodMealDetailsModal({
   );
 
   const getDefaultServingSize = useCallback(async () => {
-    // USDA data uses camelCase `servingSize`, while OpenFoodFacts uses snake_case `serving_size`
-    const usdaServingSizeStr =
-      productFromSearch?.servingSize != null
-        ? `${productFromSearch.servingSize}${productFromSearch.servingSizeUnit || 'g'}`
-        : null;
+    const productData = isSuccessFoodDetailProductState(productDetails)
+      ? productDetails.product
+      : productFromSearch;
 
-    const productDetailsServingStr = isSuccessFoodDetailProductState(productDetails)
-      ? (productDetails.product.serving_size ??
-        ((productDetails as any).source === 'usda' &&
-        (productDetails.product as any).servingSize != null
-          ? `${(productDetails.product as any).servingSize}${(productDetails.product as any).servingSizeUnit || 'g'}`
-          : null))
-      : null;
-
-    const servingStr =
-      productFromSearch?.serving_size ?? usdaServingSizeStr ?? productDetailsServingStr;
-
-    let servingSizeGrams = 100; // Default
-
-    // Parse serving size from string
-    if (servingStr) {
-      const match = String(servingStr).match(/\((\d+)\s*g\)/);
-      if (match) {
-        const g = parseInt(match[1], 10);
-        if (g > 0) {
-          servingSizeGrams = g;
-        }
-      } else {
-        const num = String(servingStr).match(/(\d+)/);
-        if (num) {
-          const g = parseInt(num[1], 10);
-          if (g > 0) {
-            servingSizeGrams = g;
-          }
-        }
-      }
-    }
+    const servingSizeGrams = parseServingSizeFromProduct(productData) || 100;
 
     // Match serving size to existing portions and store the result
     if (!food && !localFood && (productFromSearch || productDetails)) {
@@ -597,14 +617,12 @@ export function FoodMealDetailsModal({
     if (food) {
       // Local food already available, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(initialServingSize || 100);
       return;
     }
 
     if (localFood) {
       // Local food found by barcode lookup, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(initialServingSize || 100);
       setIsFavorite(localFood.isFavorite);
       return;
     }
@@ -615,12 +633,6 @@ export function FoodMealDetailsModal({
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
     if (getProductName(productFromSearch).found && (nutriments || isUSDASearchResult)) {
       setIsFoodDetailsModalVisible(true);
-      const loadDefaultSize = async () => {
-        const defaultG = await getDefaultServingSize();
-        setServingSize(defaultG);
-      };
-
-      loadDefaultSize();
       onBarcodeLookupComplete?.();
       return;
     }
@@ -721,19 +733,6 @@ export function FoodMealDetailsModal({
         setFoodLogDecrypted(snap);
       }
     });
-
-    const doTask = async () => {
-      try {
-        const grams = await foodLog.getGramWeight();
-        if (!cancelled && typeof grams === 'number' && !Number.isNaN(grams)) {
-          setServingSize(Math.round(grams));
-        }
-      } catch (e) {
-        // ignore
-      }
-    };
-
-    doTask();
 
     return () => {
       cancelled = true;
@@ -1272,15 +1271,43 @@ export function FoodMealDetailsModal({
 
   // Update serving size when product details or search product load
   useEffect(() => {
-    if (productFromSearch || productDetails) {
+    if (hasInitializedServingSizeRef.current) {
+      return;
+    }
+
+    if (productFromSearch || productDetails || food || localFood || foodLog) {
       const loadDefaultSize = async () => {
-        const defaultSize = await getDefaultServingSize();
-        setServingSize(defaultSize);
+        if (foodLog) {
+          try {
+            const grams = await foodLog.getGramWeight();
+            if (typeof grams === 'number' && !Number.isNaN(grams)) {
+              setServingSize(Math.round(grams));
+              hasInitializedServingSizeRef.current = true;
+            }
+          } catch (e) {
+            // ignore
+          }
+        } else if (food || localFood) {
+          setServingSize(initialServingSize || 100);
+          hasInitializedServingSizeRef.current = true;
+        } else {
+          const defaultSize = await getDefaultServingSize();
+          setServingSize(defaultSize);
+          hasInitializedServingSizeRef.current = true;
+        }
       };
 
       loadDefaultSize();
     }
-  }, [productFromSearch, productDetails, getDefaultServingSize]);
+  }, [
+    productFromSearch,
+    productDetails,
+    getDefaultServingSize,
+    food,
+    localFood,
+    foodLog,
+    initialServingSize,
+  ]);
 
   const parsedProductServingSize = useMemo(() => {
     if (productFromSearch?.source === 'usda') {
@@ -1993,6 +2020,7 @@ export function FoodMealDetailsModal({
       setIsRefetchingSource(false);
       setAlternateSourceLookupFailed(false);
       setLocalCanEdit(canEdit);
+      hasInitializedServingSizeRef.current = false;
     }
   }, [visible, canEdit]);
 

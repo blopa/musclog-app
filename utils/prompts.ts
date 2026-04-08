@@ -2,8 +2,8 @@ import { FunctionDeclaration } from '@google/generative-ai';
 import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 
-import type { Units } from '../constants/settings';
-import { User } from '../database/models';
+import type { Units } from '@/constants/settings';
+import { User } from '@/database/models';
 import {
   AiCustomPromptService,
   ExerciseService,
@@ -15,8 +15,9 @@ import {
   UserService,
   WorkoutService,
   WorkoutTemplateService,
-} from '../database/services';
-import i18n from '../lang/lang';
+} from '@/database/services';
+import i18n from '@/lang/lang';
+
 import {
   formatLocalCalendarDayIso,
   localDayClosedRangeMaxMs,

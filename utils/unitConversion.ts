@@ -13,8 +13,8 @@
  */
 import convert from 'convert';
 
-import type { Units } from '../constants/settings';
-import type { UserMetricType } from '../database/models';
+import type { Units } from '@/constants/settings';
+import type { UserMetricType } from '@/database/models';
 
 /** Metric types stored in kg that need kg↔lbs conversion. */
 const WEIGHT_METRIC_TYPES: ReadonlySet<UserMetricType> = new Set([

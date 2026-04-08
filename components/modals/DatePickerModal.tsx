@@ -21,12 +21,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { useWebModalLayerStyle } from '../../utils/webPhoneFrame';
-import { Button } from '../theme/Button';
-import { Modal } from '../theme/Modal';
+import { Button } from '@/components/theme/Button';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import i18n, { LanguageKeys, LOCALE_MAP } from '@/lang/lang';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type QuickDateOption = {

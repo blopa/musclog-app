@@ -4,7 +4,7 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { useSettings } from '../useSettings';
+import { useSettings } from '@/hooks/useSettings';
 
 type FakeSetting = { id: string; value: string };
 let subscribeNext: (val: FakeSetting[]) => void;

@@ -2,8 +2,9 @@ import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 

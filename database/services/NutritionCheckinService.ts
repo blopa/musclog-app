@@ -1,13 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 
-import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '../../utils/calendarDate';
-import { database } from '../index';
-import type NutritionCheckin from '../models/NutritionCheckin';
-import type { CheckinStatus } from '../models/NutritionCheckin';
-import type NutritionLog from '../models/NutritionLog';
-import type UserMetric from '../models/UserMetric';
-import type WorkoutLog from '../models/WorkoutLog';
+import { database } from '@/database/index';
+import type NutritionCheckin from '@/database/models/NutritionCheckin';
+import type { CheckinStatus } from '@/database/models/NutritionCheckin';
+import type NutritionLog from '@/database/models/NutritionLog';
+import type UserMetric from '@/database/models/UserMetric';
+import type WorkoutLog from '@/database/models/WorkoutLog';
+import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 
 export interface NutritionCheckinInput {
   checkinDate: number;

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { type MealType } from '../database/models';
-import NutritionLog from '../database/models/NutritionLog';
-import { NutritionService } from '../database/services';
+import { type MealType } from '@/database/models';
+import NutritionLog from '@/database/models/NutritionLog';
+import { NutritionService } from '@/database/services';
 import {
   localCalendarDayDate,
   localCalendarDayDateFromDayKeyMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
-} from '../utils/calendarDate';
+} from '@/utils/calendarDate';
 
 export type YesterdayMealData = {
   logs: NutritionLog[];

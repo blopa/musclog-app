@@ -4,19 +4,17 @@ import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import type { EnrichedWorkoutLogSet } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { getExerciseIconConfig, isBodyweightExercise } from '../../utils/workout';
-import {
-  calculateExerciseVolume,
-  getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import type { Units } from '@/constants/settings';
+import type { EnrichedWorkoutLogSet } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { getExerciseIconConfig, isBodyweightExercise } from '@/utils/workout';
+import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+
 import { FullScreenModal } from './FullScreenModal';
 
 const SUCCESS_ICON_SIZE = 112; // size-28 in design (7rem)
@@ -272,7 +270,6 @@ export function FreeSessionExerciseCompleteModal({
               width="full"
               variant="gradientCta"
               onPress={() => {
-                onClose();
                 onAddNextExercise();
               }}
               disabled={isFinishing}

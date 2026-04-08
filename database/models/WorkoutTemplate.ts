@@ -1,7 +1,8 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
-import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
+import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
+
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogExercise from './WorkoutLogExercise';

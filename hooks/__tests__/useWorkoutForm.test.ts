@@ -5,12 +5,12 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { Alert } from 'react-native';
 
-import { database } from '../../database';
-import Exercise from '../../database/models/Exercise';
-import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
-import * as workoutUtils from '../../utils/workout';
-import { ExerciseMetadata } from '../../utils/workout';
-import { type AddExerciseData, useWorkoutForm } from '../useWorkoutForm';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { type AddExerciseData, useWorkoutForm } from '@/hooks/useWorkoutForm';
+import * as workoutUtils from '@/utils/workout';
+import { ExerciseMetadata } from '@/utils/workout';
 
 // Mock dependencies
 jest.mock('react-native', () => ({

@@ -17,11 +17,12 @@ import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
-import { encryptUserMetricFields } from '../database/encryptionHelpers';
-import Setting from '../database/models/Setting';
-import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
+} from '@/constants/settings';
+import { database } from '@/database';
+import { encryptUserMetricFields } from '@/database/encryptionHelpers';
+import Setting from '@/database/models/Setting';
+import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import {

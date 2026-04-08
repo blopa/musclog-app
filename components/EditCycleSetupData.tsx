@@ -12,10 +12,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { type BirthControlType } from '../database/models';
-import { SyncGoal } from '../database/models/MenstrualCycle';
-import { useTheme } from '../hooks/useTheme';
-import { getLocalCalendarYear, localCalendarDayDate } from '../utils/calendarDate';
+import { type BirthControlType } from '@/database/models';
+import { SyncGoal } from '@/database/models/MenstrualCycle';
+import { useTheme } from '@/hooks/useTheme';
+import { getLocalCalendarYear, localCalendarDayDate } from '@/utils/calendarDate';
+
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';

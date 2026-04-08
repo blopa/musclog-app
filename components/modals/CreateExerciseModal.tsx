@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { type MuscleGroup } from '../../database/models';
-import { ExerciseService } from '../../database/services';
-import { useTheme } from '../../hooks/useTheme';
-import { saveExerciseImage } from '../../utils/file';
-import { captureException } from '../../utils/sentry';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { type MuscleGroup } from '@/database/models';
+import { ExerciseService } from '@/database/services';
+import { useTheme } from '@/hooks/useTheme';
+import { saveExerciseImage } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
+
 import { FullScreenModal } from './FullScreenModal';
 
 // Muscle groups will be translated using useTranslation hook

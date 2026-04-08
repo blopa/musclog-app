@@ -1,8 +1,8 @@
 import { Folder, Plus, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useTheme } from '@/hooks/useTheme';
 
 export type AddMealModalProps = {
   visible: boolean;

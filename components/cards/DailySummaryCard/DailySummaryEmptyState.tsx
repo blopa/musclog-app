@@ -2,9 +2,9 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../../hooks/useTheme';
-import { Button } from '../../theme/Button';
-import { GenericCard } from '../GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
 
 interface DailySummaryEmptyStateProps {
   onSetGoals?: () => void;

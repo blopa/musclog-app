@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { AiCustomPrompt } from '../../database/models';
-import { type AiCustomPromptContext } from '../../database/models/AiCustomPrompt';
-import { useAiCustomPrompts } from '../../hooks/useAiCustomPrompts';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { AiCustomPrompt } from '@/database/models';
+import { type AiCustomPromptContext } from '@/database/models/AiCustomPrompt';
+import { useAiCustomPrompts } from '@/hooks/useAiCustomPrompts';
+import { useTheme } from '@/hooks/useTheme';
 
 type AiCustomPromptEditModalProps = {
   visible: boolean;

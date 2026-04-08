@@ -10,7 +10,7 @@ import {
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type WorkoutSummaryCelebrationProps = {
   onGoHome: () => void;

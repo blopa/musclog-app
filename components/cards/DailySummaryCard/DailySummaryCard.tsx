@@ -2,9 +2,10 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../../hooks/useFormatAppNumber';
-import { useTheme } from '../../../hooks/useTheme';
-import { GenericCard } from '../GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import {
   calculateDailySummaryMetrics,
   getProgressBarColor,

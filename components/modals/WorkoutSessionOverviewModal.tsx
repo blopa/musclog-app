@@ -11,15 +11,16 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
-import { isWorkoutType } from '../../constants/workoutTypes';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { useActiveWorkout } from '../../hooks/useActiveWorkout';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { isWorkoutType } from '@/constants/workoutTypes';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useActiveWorkout } from '@/hooks/useActiveWorkout';
+import { useTheme } from '@/hooks/useTheme';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 

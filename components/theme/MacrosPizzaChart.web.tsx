@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { VictoryPie } from 'victory';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Theme } from '../../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { Theme } from '@/theme';
 
 type MacroColor =
   | Theme['colors']['macros']['protein']['bg']

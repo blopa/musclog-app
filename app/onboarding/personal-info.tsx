@@ -3,23 +3,23 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
-} from '../../components/EditPersonalInfoBody';
-import { MasterLayout } from '../../components/MasterLayout';
-import { Button } from '../../components/theme/Button';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { type Gender } from '../../database/models';
-import { UserService } from '../../database/services';
-import { useTheme } from '../../hooks/useTheme';
+} from '@/components/EditPersonalInfoBody';
+import { MasterLayout } from '@/components/MasterLayout';
+import { Button } from '@/components/theme/Button';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { type Gender } from '@/database/models';
+import { UserService } from '@/database/services';
+import { useTheme } from '@/hooks/useTheme';
 import {
   defaultAdultDobLocalDayStartMs,
   formatDateOfBirthFromTimestamp,
   parseDobStringToLocalDayStartMs,
-} from '../../utils/fitnessProfilePersistence';
-import { setOnboardingCompleted } from '../../utils/onboardingService';
+} from '@/utils/fitnessProfilePersistence';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 export default function PersonalInfo() {
   const theme = useTheme();

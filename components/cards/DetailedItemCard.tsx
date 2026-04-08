@@ -3,7 +3,8 @@ import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type DetailedItemCardProps = {
