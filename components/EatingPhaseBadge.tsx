@@ -4,6 +4,35 @@ import { Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { type EatingPhaseUI } from '@/types/EatingPhaseUI';
 
+function getPhaseColors(phase: EatingPhaseUI, theme: ReturnType<typeof useTheme>) {
+  switch (phase) {
+    case 'cutting':
+      return {
+        backgroundColor: theme.colors.status.amber10,
+        borderColor: theme.colors.status.amber10,
+        textColor: theme.colors.status.amber,
+      };
+    case 'maintenance':
+      return {
+        backgroundColor: theme.colors.status.indigo10,
+        borderColor: theme.colors.status.indigo20,
+        textColor: theme.colors.status.indigoLight,
+      };
+    case 'bulking':
+      return {
+        backgroundColor: theme.colors.status.indigo10,
+        borderColor: theme.colors.status.indigo20,
+        textColor: theme.colors.status.indigoLight,
+      };
+    default:
+      return {
+        backgroundColor: theme.colors.accent.primary10,
+        borderColor: theme.colors.accent.primary20,
+        textColor: theme.colors.accent.primary,
+      };
+  }
+}
+
 interface EatingPhaseBadgeProps {
   phase: EatingPhaseUI;
   variant?: 'default' | 'compact';
@@ -23,35 +52,8 @@ export function EatingPhaseBadge({
 
   const label = t(`eatingPhaseBadge.${phase}`);
 
-  // TODO: move this to a helper function to avoid the nested ternary
-  const backgroundColor =
-    phase === 'cutting'
-      ? theme.colors.status.amber10
-      : phase === 'maintenance'
-        ? theme.colors.status.indigo10
-        : phase === 'bulking'
-          ? theme.colors.status.indigo10
-          : theme.colors.accent.primary10;
-
-  // TODO: move this to a helper function to avoid the nested ternary
-  const borderColor =
-    phase === 'cutting'
-      ? theme.colors.status.amber10
-      : phase === 'maintenance'
-        ? theme.colors.status.indigo20
-        : phase === 'bulking'
-          ? theme.colors.status.indigo20
-          : theme.colors.accent.primary20;
-
-  // TODO: move this to a helper function to avoid the nested ternary
-  const textColor =
-    phase === 'cutting'
-      ? theme.colors.status.amber
-      : phase === 'maintenance'
-        ? theme.colors.status.indigoLight
-        : phase === 'bulking'
-          ? theme.colors.status.indigoLight
-          : theme.colors.accent.primary;
+  const phaseColors = getPhaseColors(phase, theme);
+  const { backgroundColor, borderColor, textColor } = phaseColors;
 
   return (
     <View
