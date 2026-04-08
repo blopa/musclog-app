@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
-import { type EatingPhaseUI } from '../types/EatingPhaseUI';
+import { useTheme } from '@/hooks/useTheme';
+import { type EatingPhaseUI } from '@/types/EatingPhaseUI';
 
 interface EatingPhaseBadgeProps {
   phase: EatingPhaseUI;
@@ -23,6 +23,7 @@ export function EatingPhaseBadge({
 
   const label = t(`eatingPhaseBadge.${phase}`);
 
+  // TODO: move this to a helper function to avoid the nested ternary
   const backgroundColor =
     phase === 'cutting'
       ? theme.colors.status.amber10
@@ -32,6 +33,7 @@ export function EatingPhaseBadge({
           ? theme.colors.status.indigo10
           : theme.colors.accent.primary10;
 
+  // TODO: move this to a helper function to avoid the nested ternary
   const borderColor =
     phase === 'cutting'
       ? theme.colors.status.amber10
@@ -41,6 +43,7 @@ export function EatingPhaseBadge({
           ? theme.colors.status.indigo20
           : theme.colors.accent.primary20;
 
+  // TODO: move this to a helper function to avoid the nested ternary
   const textColor =
     phase === 'cutting'
       ? theme.colors.status.amber
