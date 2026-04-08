@@ -1,0 +1,990 @@
+
+> musclog@2.5.12 web
+> node scripts/sync-web-phone-frame.js && expo start --web
+
+[sync-web-phone-frame] public/musclog-app/images/phone-wrapper.png
+Starting project at /app
+Starting Metro Bundler
+
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 41.3% (1510/2409)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ▓░░░░░░░░░░░░░░░ 12.1% ( 498/1434)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 42.0% (2640/5351)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 38.7% (2270/5248)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.8% (6424/6703)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.7% (6061/6296)
+λ Bundled 12403ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (6772 modules)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6997/6997)
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 25088ms index.web.js (6997 modules)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 286ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 2670ms index.web.js (1 module)
+Web ./index.web.js ▓▓░░░░░░░░░░░░░░ 16.8% (309/754)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 87.2% (5354/5839)
+Web Bundled 6704ms index.web.js (6999 modules)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 230ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-asset/build/index.js ▓░░░░░░░░░░░░░░░  9.5% ( 4/14)
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 3107ms index.web.js (1 module)
+Web Bundled 2767ms node_modules/expo-asset/build/index.js (67 modules)
+Web Bundled 282ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 809ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 4893ms index.web.js (1 module)
+Web Bundled 741ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 271ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+Web Bundled 8ms node_modules/expo-asset/build/index.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+λ  LOG  i18next::translator: missingKey en-US translation save save
+i18next::translator: missingKey en-US translation Name Name
+i18next::translator: missingKey en-US translation Category Category
+i18next::translator: missingKey en-US translation Option A Option A
+i18next::translator: missingKey en-US translation Option B Option B
+i18next::translator: missingKey en-US translation Option C Option C
+i18next::translator: missingKey en-US translation Amount Amount
+i18next::translator: missingKey en-US translation Active Active
+[🍉] [Loki] Database loaded
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 3650ms index.web.js (1 module)
+Web Bundled 279ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web node_modules/expo-asset/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 10ms node_modules/expo-asset/build/index.js (1 module)
+λ Bundled 235ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+λ Bundled 167ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodPortionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] },
+    'ru-RU': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/FoodService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/MealService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/services/index.ts -> database/services/ExerciseService.ts -> utils/file.web.ts -> database/exportImport.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ChatService.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/AiCustomPromptService.ts -> database/services/SettingsService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionCheckinService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/NutritionGoalService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserMetricService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/ProgressService.ts -> database/services/UserService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutAnalytics.ts -> utils/workoutCalculator.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutService.ts -> utils/activeWorkoutStorage.ts -> services/NotificationService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/index.ts -> database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: database/database-instance.ts -> database/models/WorkoutLog.ts -> utils/workoutCalculator.ts -> database/services/index.ts -> database/services/WorkoutTemplateService.ts -> database/repositories/WorkoutTemplateRepository.ts -> database/database-instance.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 6794ms index.web.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 6564ms index.web.js (1 module)

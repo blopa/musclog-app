@@ -711,6 +711,39 @@ export class WorkoutService {
   }
 
   /**
+   * Update workout metadata (startedAt, completedAt)
+   */
+  static async updateWorkoutMetadata(
+    workoutLogId: string,
+    data: { startedAt?: number; completedAt?: number }
+  ): Promise<void> {
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      if (workoutLog.deletedAt) {
+        throw new Error('Workout log has been deleted');
+      }
+
+      await database.write(async () => {
+        await workoutLog.update((log) => {
+          if (data.startedAt !== undefined) {
+            log.startedAt = data.startedAt;
+          }
+          if (data.completedAt !== undefined) {
+            log.completedAt = data.completedAt;
+          }
+          log.updatedAt = Date.now();
+        });
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to update workout metadata: ${error.message}`);
+      }
+      throw new Error('Failed to update workout metadata: Unknown error');
+    }
+  }
+
+  /**
    * Get workout logs by template_id, ordered by date (newest first)
    */
   static async getWorkoutLogsByTemplate(templateId: string, limit?: number): Promise<WorkoutLog[]> {
