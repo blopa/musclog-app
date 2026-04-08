@@ -161,6 +161,16 @@
     "templateBrowser": {
       "comingSoon": "Navegador de modelos em breve!"
     },
-    "unnamed": "Sem nome"
+    "unnamed": "Sem nome",
+    "interruptedSession": {
+      "title": "Treino Não Finalizado",
+      "description": "Você tem um treino em andamento.",
+      "resume": "Retomar",
+      "discard": "Descartar",
+      "discardConfirmTitle": "Descartar Treino?",
+      "discardConfirmMessage": "Isso excluirá permanentemente seu treino em andamento e todas as séries registradas.",
+      "discardConfirm": "Descartar",
+      "discardCancel": "Manter"
+    }
   }
 }

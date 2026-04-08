@@ -1,0 +1,74 @@
+
+> musclog@2.5.12 build-android-web
+> node scripts/sync-web-phone-frame.js && expo export --platform web
+
+[sync-web-phone-frame] public/musclog-app/images/phone-wrapper.png
+
+Using (experimental) base path: /musclog-app
+Starting Metro Bundler
+
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/web/static-rendering/
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓░░░░░░░░░░░░░░ 15.2% ( 576/1478)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 88.9% (5792/6244)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ▓▓░░░░░░░░░░░░░░ 17.4% (217/948)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.4% (6734/6823)
+λ node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.3% (6067/6319)
+λ Bundled 12074ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (6744 modules)
+[🍉] [Loki] Initializing IndexedDB
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+[🍉] [Loki] Database loaded
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6934/6934)
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 18990ms index.web.js (6934 modules)
+
+› web bundles (4):
+_expo/static/css/web-6eb998fe1e2211d2b3a5585d3257ea4f.css (32KB)
+_expo/static/js/web/index-94d13aac31442019485557f142bac3fb.js (12MB)
+_expo/static/js/web/index-d85cda9fb1f79bec1fd5bd3633050a2e.js (45KB)
+_expo/static/js/web/widget-update-helpers-42f3f13b1e0304e2d331a194df153784.js (25KB)
+
+› Static routes (34):
+/cycle (40KB)
+/ (index) (25KB)
+/profile (38KB)
+/progress (30KB)
+/settings (39KB)
+/_sitemap (24KB)
+/+not-found (24KB)
+/test/cards (226KB)
+/test/debug (71KB)
+/test/graphs (208KB)
+/test/inputs (73KB)
+/test/modals (104KB)
+/test/buttons (60KB)
+/test/snackbar (30KB)
+/nutrition/food (38KB)
+/workout/workouts (39KB)
+/test/empty-states (42KB)
+/workout/rest-over (25KB)
+/onboarding/landing (30KB)
+/workout/rest-timer (25KB)
+/onboarding/set-goals (34KB)
+/onboarding/onboarding (40KB)
+/nutrition/checkin-list (33KB)
+/onboarding/cycle-setup (35KB)
+/onboarding/fitness-info (25KB)
+/workout/workout-session (25KB)
+/workout/workout-summary (25KB)
+/onboarding/fitness-basis (25KB)
+/onboarding/personal-info (25KB)
+/onboarding/health-connect (39KB)
+/onboarding/nutrition-goals (25KB)
+/test/components/TestSection (25KB)
+/workout/exercise-transition (25KB)
+/onboarding/nutrition-goals-results (25KB)
+
+Exported: dist

@@ -161,6 +161,16 @@
     "templateBrowser": {
       "comingSoon": "Template browser coming soon!"
     },
-    "unnamed": "Unnamed"
+    "unnamed": "Unnamed",
+    "interruptedSession": {
+      "title": "Unfinished Workout",
+      "description": "You have a workout in progress.",
+      "resume": "Resume",
+      "discard": "Discard",
+      "discardConfirmTitle": "Discard Workout?",
+      "discardConfirmMessage": "This will permanently delete your in-progress workout and all logged sets.",
+      "discardConfirm": "Discard",
+      "discardCancel": "Keep It"
+    }
   }
 }

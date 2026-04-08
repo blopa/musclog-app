@@ -1,0 +1,17 @@
+ INFO  Accepting connections at http://localhost:3000
+ HTTP  4/8/2026 1:38:49 PM ::1 GET /
+ HTTP  4/8/2026 1:38:49 PM ::1 Returned 200 in 25 ms
+ HTTP  4/8/2026 1:38:49 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/8/2026 1:38:49 PM ::1 GET /musclog-app/_expo/static/css/web-6eb998fe1e2211d2b3a5585d3257ea4f.css
+ HTTP  4/8/2026 1:38:49 PM ::1 Returned 200 in 3 ms
+ HTTP  4/8/2026 1:38:49 PM ::1 GET /musclog-app/_expo/static/js/web/index-94d13aac31442019485557f142bac3fb.js
+ HTTP  4/8/2026 1:38:49 PM ::1 Returned 200 in 3 ms
+ HTTP  4/8/2026 1:38:49 PM ::1 Returned 200 in 10 ms
+ HTTP  4/8/2026 1:38:51 PM ::1 GET /workout/workouts
+ HTTP  4/8/2026 1:38:51 PM ::1 Returned 200 in 2 ms
+ HTTP  4/8/2026 1:38:51 PM ::1 GET /musclog-app/images/phone-wrapper.png
+ HTTP  4/8/2026 1:38:51 PM ::1 GET /musclog-app/_expo/static/css/web-6eb998fe1e2211d2b3a5585d3257ea4f.css
+ HTTP  4/8/2026 1:38:51 PM ::1 Returned 304 in 2 ms
+ HTTP  4/8/2026 1:38:51 PM ::1 Returned 304 in 2 ms
+ HTTP  4/8/2026 1:38:51 PM ::1 GET /musclog-app/_expo/static/js/web/index-94d13aac31442019485557f142bac3fb.js
+ HTTP  4/8/2026 1:38:51 PM ::1 Returned 304 in 2 ms

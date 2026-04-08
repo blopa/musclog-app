@@ -161,6 +161,16 @@
     "templateBrowser": {
       "comingSoon": "Просмотр шаблонов скоро появится!"
     },
-    "unnamed": "Без названия"
+    "unnamed": "Без названия",
+    "interruptedSession": {
+      "title": "Незавершённая тренировка",
+      "description": "У вас есть незавершённая тренировка.",
+      "resume": "Продолжить",
+      "discard": "Сбросить",
+      "discardConfirmTitle": "Сбросить тренировку?",
+      "discardConfirmMessage": "Это навсегда удалит вашу текущую тренировку и все записанные подходы.",
+      "discardConfirm": "Сбросить",
+      "discardCancel": "Оставить"
+    }
   }
 }
