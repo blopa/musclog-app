@@ -161,6 +161,15 @@
     "templateBrowser": {
       "comingSoon": "Navegador de modelos em breve!"
     },
+    "interruptedSession": {
+      "description": "Você tem um treino em andamento.",
+      "resume": "Retomar",
+      "discard": "Descartar",
+      "discardConfirmTitle": "Descartar Treino?",
+      "discardConfirmMessage": "Isso vai apagar permanentemente seu treino em andamento e todas as séries registradas.",
+      "discardConfirm": "Descartar",
+      "discardCancel": "Manter"
+    },
     "unnamed": "Sem nome"
   }
 }

@@ -1,8 +1,9 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
+import { Dumbbell, Plus, Repeat, Search, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
@@ -26,7 +27,7 @@ import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { TextInput } from '../../components/theme/TextInput';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { useSnackbar } from '../../context/SnackbarContext';
-import { database, WorkoutTemplate } from '../../database';
+import { database, WorkoutLog, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useNativeShareText } from '../../hooks/useNativeShareText';
 import { useSettings } from '../../hooks/useSettings';
@@ -83,6 +84,21 @@ export default function WorkoutsScreen() {
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);
+  const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
+    useState(false);
+  const [isDiscardingInterrupted, setIsDiscardingInterrupted] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
+    }, [])
+  );
+
+  const handleOverviewModalClose = useCallback(() => {
+    setIsWorkoutOverviewVisible(false);
+    WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
+  }, []);
 
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
@@ -340,6 +356,59 @@ export default function WorkoutsScreen() {
 
           {/* Workouts List */}
           <View className="mx-4 mb-8 gap-4">
+            {/* Interrupted Session Banner */}
+            {interruptedWorkoutLog ? (
+              <View className="z-10 bg-bg-primary">
+                <View
+                  className="flex-row items-center gap-4 rounded-xl border bg-bg-card p-4 shadow-sm"
+                  style={{ borderColor: theme.colors.background.white5 }}
+                >
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary/10">
+                    <Repeat size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center justify-between">
+                      <Text
+                        className="flex-1 text-base font-bold text-text-primary"
+                        numberOfLines={1}
+                      >
+                        {interruptedWorkoutLog.workoutName ?? t('freeTraining.title')}
+                      </Text>
+                      <View className="ml-2 rounded-full bg-accent-primary/10 px-2 py-0.5">
+                        <Text className="text-[10px] font-bold uppercase tracking-wider text-text-accent">
+                          {t('workout.inProgress')}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text className="text-xs text-text-secondary" numberOfLines={1}>
+                      {t('workouts.interruptedSession.description')}
+                    </Text>
+                    <View className="mt-3 flex-row gap-2">
+                      <Pressable
+                        className="flex-1 items-center justify-center rounded-lg bg-accent-primary py-2"
+                        onPress={() => {
+                          setSelectedWorkoutLogId(interruptedWorkoutLog.id);
+                          setIsWorkoutOverviewVisible(true);
+                        }}
+                      >
+                        <Text className="text-xs font-bold text-white">
+                          {t('workouts.interruptedSession.resume')}
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        className="items-center justify-center rounded-lg bg-bg-secondary px-4 py-2"
+                        onPress={() => setIsDiscardInterruptedConfirmVisible(true)}
+                      >
+                        <Text className="text-xs font-bold text-text-secondary">
+                          {t('workouts.interruptedSession.discard')}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ) : null}
+
             {/* Error State */}
             {error ? (
               <ErrorStateCard
@@ -688,10 +757,42 @@ export default function WorkoutsScreen() {
         cancelLabel={t('workouts.createFromTemplate.cancel')}
         isLoading={isCreatingWorkoutsFromTemplate}
       />
+      {/* Discard Interrupted Session Confirmation */}
+      <ConfirmationModal
+        visible={isDiscardInterruptedConfirmVisible}
+        onClose={() => setIsDiscardInterruptedConfirmVisible(false)}
+        onConfirm={async () => {
+          if (!interruptedWorkoutLog) {
+            return;
+          }
+
+          setIsDiscardingInterrupted(true);
+          try {
+            await clearActiveWorkoutLogId();
+            const log = await database.get('workout_logs').find(interruptedWorkoutLog.id);
+            await log.markAsDeleted();
+            setInterruptedWorkoutLog(null);
+          } catch (err) {
+            console.error('Error discarding interrupted workout:', err);
+            captureException(err, { data: { context: 'workouts.discardInterrupted' } });
+            showSnackbar('error', t('errors.somethingWentWrong'));
+          } finally {
+            setIsDiscardingInterrupted(false);
+            setIsDiscardInterruptedConfirmVisible(false);
+          }
+        }}
+        title={t('workouts.interruptedSession.discardConfirmTitle')}
+        message={t('workouts.interruptedSession.discardConfirmMessage')}
+        confirmLabel={t('workouts.interruptedSession.discardConfirm')}
+        cancelLabel={t('workouts.interruptedSession.discardCancel')}
+        variant="destructive"
+        isLoading={isDiscardingInterrupted}
+      />
+
       {/* Workout Session Overview Modal */}
       <WorkoutSessionOverviewModal
         visible={isWorkoutOverviewVisible}
-        onClose={() => setIsWorkoutOverviewVisible(false)}
+        onClose={handleOverviewModalClose}
         workoutLogId={selectedWorkoutLogId}
         onStartWorkout={() => {
           setIsWorkoutOverviewVisible(false);
