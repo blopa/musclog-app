@@ -4,6 +4,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
+import { NotificationService } from '@/services/NotificationService';
+import {
+  clearActiveWorkoutLogId,
+  clearRestTimerEndAt,
+  getRestTimerEndAt,
+  setRestTimerEndAt,
+} from '@/utils/activeWorkoutStorage';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
@@ -15,13 +28,6 @@ import { UpNextLabel } from '../../components/UpNextLabel';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { WorkoutService } from '../../database/services';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
-import { NotificationService } from '../../services/NotificationService';
-import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestTimerScreen() {
   const theme = useTheme();
@@ -85,11 +91,15 @@ export default function RestTimerScreen() {
 
   const [restTime, setRestTime] = useState(90);
   const [initialRestTime, setInitialRestTime] = useState(90);
+  const [isTimerReady, setIsTimerReady] = useState(false);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const rotationAnim = useRef(new Animated.Value(0)).current;
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Wall-clock timestamp (ms) when the rest period should end.
+  // Stored in a ref so interval callbacks always read the latest value without re-creating the interval.
+  const endAtRef = useRef<number>(0);
 
   const hasRequiredParams = Boolean(workoutLogId && completedSetOrder !== null);
   const isLoading = hasRequiredParams ? sessionLoading : false;
@@ -113,20 +123,53 @@ export default function RestTimerScreen() {
 
   const error = getRestTimerError();
 
-  // Sync rest time from completed set when session data is ready
+  // Resolve rest timer from AsyncStorage (resumed session) or calculate fresh from the completed set.
+  // Uses wall-clock end timestamp so the countdown is immune to app backgrounding.
   useEffect(() => {
-    if (!completedSet) {
+    if (!completedSet || !workoutLogId) {
       return;
     }
 
-    const value =
-      completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
-        ? completedSet.set.restTimeAfter
-        : 60;
+    const init = async () => {
+      const storedEndAt = await getRestTimerEndAt(workoutLogId);
 
-    setRestTime(value);
-    setInitialRestTime(value);
-  }, [completedSet]);
+      if (storedEndAt !== null) {
+        // Resumed: recalculate from the persisted end timestamp.
+        const remaining = Math.ceil((storedEndAt - Date.now()) / 1000);
+        endAtRef.current = storedEndAt;
+
+        if (remaining <= 0) {
+          // Timer already elapsed while the app was closed — navigate immediately.
+          navigateToNextScreen();
+          return;
+        }
+
+        const duration =
+          completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
+            ? completedSet.set.restTimeAfter
+            : 60;
+        setInitialRestTime(duration);
+        setRestTime(remaining);
+        setIsTimerReady(true);
+      } else {
+        // Fresh timer: compute the end timestamp and persist it.
+        const duration =
+          completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
+            ? completedSet.set.restTimeAfter
+            : 60;
+        const endAt = Date.now() + duration * 1000;
+        endAtRef.current = endAt;
+        setRestTimerEndAt(workoutLogId, endAt);
+        setInitialRestTime(duration);
+        setRestTime(duration);
+        setIsTimerReady(true);
+      }
+    };
+
+    init();
+    // Only run once when completedSet first becomes available.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completedSet, workoutLogId]);
 
   // Schedule rest timer notification when rest begins, cancel on unmount (covers skip, auto-navigate, end workout)
   useEffect(() => {
@@ -142,7 +185,9 @@ export default function RestTimerScreen() {
   }, [isLoading, completedSet, initialRestTime]);
 
   // Navigate after rest: skip exercise-transition when next set is in same superset group
-  const navigateToNextScreen = useCallback(() => {
+  const navigateToNextScreen = useCallback(async () => {
+    await clearRestTimerEndAt();
+
     if (!workoutLogId) {
       router.back();
       return;
@@ -175,41 +220,35 @@ export default function RestTimerScreen() {
     );
   }, [completedSet, nextSet, router, workoutLogId]);
 
-  // Rest timer countdown: run one interval when loading finishes and restTime > 0.
-  // Do NOT depend on restTime so we don't clear/recreate the interval every second.
+  // Wall-clock countdown: recalculates remaining time from endAtRef on every tick.
+  // Survives app backgrounding because it uses Date.now() instead of state decrement.
   useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-    if (restTime <= 0) {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-        countdownIntervalRef.current = null;
-      }
+    if (isLoading || !isTimerReady) {
       return;
     }
     if (countdownIntervalRef.current) {
       return;
     } // Already running
+
     countdownIntervalRef.current = setInterval(() => {
-      setRestTime((prev) => {
-        if (prev <= 0) {
-          if (countdownIntervalRef.current) {
-            clearInterval(countdownIntervalRef.current);
-            countdownIntervalRef.current = null;
-          }
-          return 0;
+      const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
+      setRestTime(remaining);
+
+      if (remaining <= 0) {
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current);
+          countdownIntervalRef.current = null;
         }
-        return prev - 1;
-      });
+      }
     }, 1000);
+
     return () => {
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = null;
       }
     };
-  }, [isLoading, restTime]); // Only when loading finishes; omit restTime so interval is not recreated every second
+  }, [isLoading, isTimerReady]); // Start once when timer is ready; endAtRef is a ref so no need to list it
 
   // Navigate when countdown reaches 0
   useEffect(() => {
@@ -233,42 +272,50 @@ export default function RestTimerScreen() {
   }, [rotationAnim]);
 
   const handleMinus5s = () => {
-    setRestTime((prev) => {
-      const next = Math.max(0, prev - 5);
-      // Persist change to DB
-      const doTask = async () => {
-        try {
-          if (workoutLog && completedSet) {
-            await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
-          }
-        } catch (err) {
-          console.error('Error saving rest time:', err);
+    // Shift the end timestamp back by 5 s (floor at 1 s from now so we don't go negative)
+    endAtRef.current = Math.max(Date.now() + 1_000, endAtRef.current - 5_000);
+    const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
+    setRestTime(remaining);
+
+    if (workoutLogId) {
+      setRestTimerEndAt(workoutLogId, endAtRef.current);
+    }
+
+    // Persist change to DB
+    const doTask = async () => {
+      try {
+        if (workoutLog && completedSet) {
+          await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: remaining });
         }
-      };
+      } catch (err) {
+        console.error('Error saving rest time:', err);
+      }
+    };
 
-      doTask();
-
-      return next;
-    });
+    doTask();
   };
 
   const handlePlus5s = () => {
-    setRestTime((prev) => {
-      const next = prev + 5;
-      const doTask = async () => {
-        try {
-          if (workoutLog && completedSet) {
-            await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
-          }
-        } catch (err) {
-          console.error('Error saving rest time:', err);
+    // Shift the end timestamp forward by 5 s
+    endAtRef.current += 5_000;
+    const remaining = Math.ceil((endAtRef.current - Date.now()) / 1000);
+    setRestTime(remaining);
+
+    if (workoutLogId) {
+      setRestTimerEndAt(workoutLogId, endAtRef.current);
+    }
+
+    const doTask = async () => {
+      try {
+        if (workoutLog && completedSet) {
+          await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: remaining });
         }
-      };
+      } catch (err) {
+        console.error('Error saving rest time:', err);
+      }
+    };
 
-      doTask();
-
-      return next;
-    });
+    doTask();
   };
 
   const handleSkipRest = () => {
