@@ -80,6 +80,7 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   if (!raw || typeof raw !== 'object') {
     return {};
   }
+
   return { ...raw };
 }
 
@@ -178,6 +179,7 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   if (encryptionPhrase && encryptionPhrase.trim()) {
     jsonString = await encrypt(jsonString, encryptionPhrase.trim());
   }
+
   return jsonString;
 }
 
@@ -220,46 +222,54 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   };
 
+  // Phase 1: Prepare all operations outside of any write block.
+  // Reads and async encryption happen here so the write block stays synchronous-safe
+  // and everything can be committed in one atomic batch.
+  const allOperations: any[] = [];
+
   for (const tableName of RESTORE_ORDER) {
+    const collection = database.get(tableName as any);
+
+    // Mark all existing records for deletion.
+    const existing = await collection.query().fetch();
+    for (const record of existing) {
+      allOperations.push(record.prepareDestroyPermanently());
+    }
+
     const rows = dbData[tableName];
     if (!Array.isArray(rows)) {
       continue;
     }
 
-    const collection = database.get(tableName as any);
+    for (const row of rows) {
+      const raw = { ...(row as Record<string, unknown>) };
+      const oldId = raw.id as string | undefined;
+      if (!oldId) {
+        continue;
+      }
 
-    await database.write(async () => {
-      const existing = await collection.query().fetch();
-      await Promise.all(existing.map((r) => r.destroyPermanently()));
+      if (tableName === 'workout_templates') {
+        const newVal = raw.workout_insights_type;
+        const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
 
-      for (const row of rows) {
-        const raw = row as Record<string, unknown>;
-        const oldId = raw.id as string | undefined;
-        if (!oldId) {
-          continue;
+        if (newVal != null) {
+          raw.workout_insights_type = parseWorkoutInsightsType(String(newVal));
+        } else if (oldVal != null) {
+          raw.workout_insights_type = parseWorkoutInsightsType(String(oldVal));
         }
 
-        if (tableName === 'workout_templates') {
-          const newVal = raw.workout_insights_type;
-          const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
+        delete raw.volume_calculation_type;
+        delete raw.volumeCalculationType;
+      }
 
-          if (newVal != null) {
-            raw.workout_insights_type = parseWorkoutInsightsType(String(newVal));
-          } else if (oldVal != null) {
-            raw.workout_insights_type = parseWorkoutInsightsType(String(oldVal));
-          }
-
-          delete raw.volume_calculation_type;
-          delete raw.volumeCalculationType;
-        }
-
-        if (tableName === 'user_metrics') {
-          const value = Number(raw.value);
-          const unit = raw.unit != null ? String(raw.unit) : undefined;
-          const date = Number(raw.date);
-          const timezone = raw.timezone != null ? String(raw.timezone) : '';
-          const encrypted = await encryptUserMetricFields({ value, unit: unit ?? '', date });
-          await collection.create((rec: any) => {
+      if (tableName === 'user_metrics') {
+        const value = Number(raw.value);
+        const unit = raw.unit != null ? String(raw.unit) : '';
+        const date = Number(raw.date);
+        const timezone = raw.timezone != null ? String(raw.timezone) : '';
+        const encrypted = await encryptUserMetricFields({ value, unit, date });
+        allOperations.push(
+          collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.type = raw.type;
             rec.valueRaw = encrypted.value;
@@ -271,27 +281,29 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             if (raw.deleted_at != null) {
               rec.deletedAt = Number(raw.deleted_at);
             }
-          });
-          continue;
-        }
+          })
+        );
+        continue;
+      }
 
-        if (tableName === 'nutrition_logs') {
-          const foodId = raw.food_id as string;
-          const portionId = raw.portion_id != null ? (raw.portion_id as string) : undefined;
-          const snapshot = {
-            loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
-            loggedCalories: Number(raw.logged_calories ?? 0),
-            loggedProtein: Number(raw.logged_protein ?? 0),
-            loggedCarbs: Number(raw.logged_carbs ?? 0),
-            loggedFat: Number(raw.logged_fat ?? 0),
-            loggedFiber: Number(raw.logged_fiber ?? 0),
-            loggedMicros:
-              typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-                ? parseMicrosJson(raw.logged_micros_json)
-                : undefined,
-          };
-          const encrypted = await encryptNutritionLogSnapshot(snapshot);
-          await collection.create((rec: any) => {
+      if (tableName === 'nutrition_logs') {
+        const foodId = raw.food_id as string;
+        const portionId = raw.portion_id != null ? (raw.portion_id as string) : undefined;
+        const snapshot = {
+          loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
+          loggedCalories: Number(raw.logged_calories ?? 0),
+          loggedProtein: Number(raw.logged_protein ?? 0),
+          loggedCarbs: Number(raw.logged_carbs ?? 0),
+          loggedFat: Number(raw.logged_fat ?? 0),
+          loggedFiber: Number(raw.logged_fiber ?? 0),
+          loggedMicros:
+            typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
+              ? parseMicrosJson(raw.logged_micros_json)
+              : undefined,
+        };
+        const encrypted = await encryptNutritionLogSnapshot(snapshot);
+        allOperations.push(
+          collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.foodId = foodId;
             rec.type = raw.type;
@@ -310,11 +322,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             if (raw.deleted_at != null) {
               rec.deletedAt = Number(raw.deleted_at);
             }
-          });
-          continue;
-        }
+          })
+        );
+        continue;
+      }
 
-        await collection.create((rec: any) => {
+      allOperations.push(
+        collection.prepareCreate((rec: any) => {
           rec._raw.id = oldId;
 
           if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
@@ -332,10 +346,15 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
             (rec as any)[camel] = value;
           }
-        });
-      }
-    });
+        })
+      );
+    }
   }
+
+  // Phase 2: Commit all deletions and inserts in a single atomic transaction.
+  await database.write(async () => {
+    await database.batch(...allOperations);
+  });
 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
