@@ -98,14 +98,14 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
 function formatDurationForRecentWorkout(minutes: number): string {
   const loc = i18n.resolvedLanguage ?? i18n.language;
   if (minutes < 60) {
-    return `${formatAppInteger(loc, minutes)}m`;
+    return `${formatAppInteger(loc, minutes)}m`; // TODO: use i18n
   }
 
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return mins > 0
-    ? `${formatAppInteger(loc, hours)}h ${formatAppInteger(loc, mins)}m`
-    : `${formatAppInteger(loc, hours)}h`;
+    ? `${formatAppInteger(loc, hours)}h ${formatAppInteger(loc, mins)}m` // TODO: use i18n
+    : `${formatAppInteger(loc, hours)}h`; // TODO: use i18n
 }
 
 // Process workout for simple display (home screen)

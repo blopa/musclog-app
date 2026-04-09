@@ -77,8 +77,8 @@ export function formatDuration(minutes: number, t: TranslationFunction, locale: 
   const mins = minutes % 60;
 
   return mins > 0
-    ? `${formatAppInteger(locale, hours)}h ${formatAppInteger(locale, mins)}${t('common.min')}`
-    : `${formatAppInteger(locale, hours)}h`;
+    ? `${formatAppInteger(locale, hours)}h ${formatAppInteger(locale, mins)}${t('common.min')}` // TODO: use i18n
+    : `${formatAppInteger(locale, hours)}h`; // TODO: use i18n
 }
 
 /**
@@ -94,6 +94,7 @@ export function formatVolume(
   if (volume >= 1000) {
     return `${formatAppDecimal(locale, volume / 1000, 1)}k ${unit}`;
   }
+
   return `${formatAppInteger(locale, Math.round(volume))} ${unit}`;
 }
 
