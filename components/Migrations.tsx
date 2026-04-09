@@ -1,8 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusManager } from '@tanstack/react-query';
 import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
+import { ENCRYPTION_KEY } from '@/constants/database';
 import { isStaticExport } from '@/constants/platform';
 import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -12,6 +14,7 @@ import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
+import { getStoredEncryptionKey, storeEncryptionKey } from '@/utils/encryptionKeyStorage';
 import {
   addNotificationResponseReceivedListener,
   getLastNotificationResponseAsync,
@@ -127,6 +130,36 @@ export function Migrations() {
     SettingsService.migrateApiKeysToEncrypted().catch((err) =>
       console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
     );
+  }, []);
+
+  // One-time migration: move the encryption key from AsyncStorage (plaintext)
+  // to SecureStore (keychain/keystore-backed). Runs only on native.
+  // Safe to run on every boot — exits immediately once already migrated.
+  useEffect(() => {
+    if (isStaticExport || Platform.OS === 'web') {
+      return;
+    }
+
+    const doTask = async () => {
+      try {
+        const alreadyMigrated = await getStoredEncryptionKey(ENCRYPTION_KEY);
+        if (alreadyMigrated) {
+          return;
+        }
+
+        const legacyKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
+        if (!legacyKey) {
+          return;
+        }
+
+        await storeEncryptionKey(ENCRYPTION_KEY, legacyKey);
+        await AsyncStorage.removeItem(ENCRYPTION_KEY);
+      } catch (err) {
+        console.warn('[Migrations] encryptionKey migration to SecureStore failed:', err);
+      }
+    };
+
+    doTask();
   }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)

@@ -103,7 +103,8 @@
           "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
         }
       ],
-      "rn-mlkit-ocr"
+      "rn-mlkit-ocr",
+      "expo-secure-store"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
