@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GEMINI_MODELS } from '@/constants/ai';
+import { isStaticExport } from '@/constants/platform';
 import {
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
@@ -262,6 +263,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
 
   useEffect(() => {
+    if (isStaticExport) {
+      setState((prev) => ({ ...prev, isLoading: false }));
+      return;
+    }
+
     const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
     const subscription = query.observeWithColumns(['value']).subscribe({
       next: (settings) => {
