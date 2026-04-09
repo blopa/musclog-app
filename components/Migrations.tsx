@@ -25,13 +25,13 @@ export function Migrations() {
   const segments = useSegments();
   const { language } = useSettings();
 
-  if (isStaticExport) {
-    return null;
-  }
-
   // Prune orphaned workout insights dismissal state when leaving the workout domain.
   // This prevents accumulation of old keys if the app is killed or navigates away.
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     const isInsideWorkoutDomain = segments[0] === 'workout';
     if (!isInsideWorkoutDomain) {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
@@ -42,7 +42,7 @@ export function Migrations() {
   // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (Platform.OS !== 'web') {
+    if (isStaticExport || Platform.OS !== 'web') {
       return;
     }
 
@@ -55,7 +55,7 @@ export function Migrations() {
   // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (Platform.OS !== 'web') {
+    if (isStaticExport || Platform.OS !== 'web') {
       return;
     }
 
@@ -66,7 +66,7 @@ export function Migrations() {
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
-    if (!language) {
+    if (isStaticExport || !language) {
       return;
     }
 
@@ -95,6 +95,10 @@ export function Migrations() {
   // bundled JSON but missing from the DB with source='app'. This is a no-op
   // on most boots once the DB is up to date.
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     ExerciseService.syncAppExercises().catch((err) =>
       console.warn('[ExerciseService] syncAppExercises error:', err)
     );
@@ -103,6 +107,10 @@ export function Migrations() {
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
   // Runs once per boot but exits immediately when there is nothing to do.
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
@@ -110,7 +118,7 @@ export function Migrations() {
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (isStaticExport || Platform.OS === 'web') {
       return;
     }
 
@@ -141,7 +149,7 @@ export function Migrations() {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (isStaticExport || Platform.OS === 'web') {
       return;
     }
 
@@ -162,6 +170,10 @@ export function Migrations() {
   }, []);
 
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     // Setup Focus Management for Mobile
     // This ensures TanStack Query knows when the app is active/foregrounded
     function onAppStateChange(status: AppStateStatus) {
