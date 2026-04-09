@@ -1,8 +1,10 @@
+import { Check } from 'lucide-react-native';
 import { differenceInMinutes } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { View, Text } from 'react-native';
 
+import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -87,20 +89,17 @@ export default function EditWorkoutMetadataModal({
     }
   };
 
-  const headerRight = (
-    <Pressable
+  const footer = (
+    <Button
+      label={t('common.save')}
       onPress={handleSave}
-      className="flex-row items-center gap-2 px-3 py-1"
+      variant="gradientCta"
+      width="full"
+      size="md"
+      icon={Check}
+      loading={isSaving}
       disabled={isSaving}
-    >
-      {isSaving ? <ActivityIndicator size="small" color={theme.colors.accent.primary} /> : null}
-      <Text
-        style={{ color: isSaving ? theme.colors.text.tertiary : theme.colors.accent.primary }}
-        className="font-bold"
-      >
-        {isSaving ? t('common.saving') : t('common.save')}
-      </Text>
-    </Pressable>
+    />
   );
 
   return (
@@ -109,7 +108,7 @@ export default function EditWorkoutMetadataModal({
         visible={visible}
         onClose={onClose}
         title={t('workoutDetail.editTimeTitle')}
-        headerRight={headerRight}
+        footer={footer}
       >
         <View className="flex-1 gap-6 p-4">
           <View
