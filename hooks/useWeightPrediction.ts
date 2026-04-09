@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '@/database/services';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
+import { computeWeightChangeFromCalorieDelta } from '@/utils/nutritionCalculator';
 import { storedWeightToKg } from '@/utils/unitConversion';
 
 import { useEmpiricalTDEE } from './useEmpiricalTDEE';
+import { useUser } from './useUser';
+import { useUserMetrics } from './useUserMetrics';
 
 const PREDICTION_DAYS = 4;
-const KCAL_PER_KG = 7700;
 
 export interface UseWeightPredictionResult {
   /** Whether the prediction card should be shown */
@@ -27,6 +29,9 @@ export function useWeightPrediction(): UseWeightPredictionResult {
     lookbackDays: 30,
     minNutritionDays: 7,
   });
+
+  const { user, isLoading: userLoading } = useUser();
+  const { metrics, isLoading: metricsLoading } = useUserMetrics();
 
   useEffect(() => {
     const check = async () => {
@@ -80,18 +85,41 @@ export function useWeightPrediction(): UseWeightPredictionResult {
   }, []);
 
   const predictedWeightKg = useMemo(() => {
-    if (!conditionsMet || lastWeightKg === null || recentCalories === null || tdeeLoading) {
+    if (
+      !conditionsMet ||
+      lastWeightKg === null ||
+      recentCalories === null ||
+      tdeeLoading ||
+      userLoading ||
+      metricsLoading
+    ) {
       return null;
     }
 
-    const totalDeltaKg = recentCalories.reduce((sum, dayCalories) => {
-      return sum + (dayCalories - tdee) / KCAL_PER_KG;
-    }, 0);
+    const totalDeltaKcal = recentCalories.reduce(
+      (sum, dayCalories) => sum + (dayCalories - tdee),
+      0
+    );
 
-    return lastWeightKg + totalDeltaKg;
-  }, [conditionsMet, lastWeightKg, recentCalories, tdee, tdeeLoading]);
+    const weightChangeKg = computeWeightChangeFromCalorieDelta(totalDeltaKcal, lastWeightKg, {
+      bodyFatPercent: metrics?.bodyFat ?? undefined,
+      liftingExperience: user?.liftingExperience ?? undefined,
+    });
 
-  const isLoading = dataLoading || tdeeLoading;
+    return lastWeightKg + weightChangeKg;
+  }, [
+    conditionsMet,
+    lastWeightKg,
+    recentCalories,
+    tdee,
+    tdeeLoading,
+    userLoading,
+    metricsLoading,
+    metrics?.bodyFat,
+    user?.liftingExperience,
+  ]);
+
+  const isLoading = dataLoading || tdeeLoading || userLoading || metricsLoading;
 
   return {
     shouldShow: !isLoading && conditionsMet && predictedWeightKg !== null,

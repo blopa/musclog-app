@@ -733,6 +733,45 @@ export function calculateWeightProjection(
   };
 }
 
+/**
+ * Compute total weight change in kg for a given cumulative calorie surplus or deficit,
+ * using the same composition-aware model as {@link calculateWeightProjection}.
+ *
+ * - **Surplus** (totalDeltaKcal > 0): uses experience-dependent fat/muscle build cost
+ *   via {@link getEffectiveKcalPerKgGain}.
+ * - **Deficit** (totalDeltaKcal < 0): uses the Hall/Forbes body-composition model
+ *   (requires `bodyFatPercent` + `currentWeightKg`); falls back to the classic
+ *   7 700 kcal/kg rule when body fat is unavailable.
+ *
+ * @param totalDeltaKcal Cumulative calorie surplus (>0) or deficit (<0) over the period
+ * @param currentWeightKg Starting body weight in kg
+ * @param options Optional body-composition and training context
+ */
+export function computeWeightChangeFromCalorieDelta(
+  totalDeltaKcal: number,
+  currentWeightKg: number,
+  options?: WeightProjectionOptions
+): number {
+  if (totalDeltaKcal === 0) {
+    return 0;
+  }
+
+  let kcalPerKg: number;
+  if (totalDeltaKcal > 0) {
+    kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
+  } else {
+    if (isValidBodyFat(options?.bodyFatPercent)) {
+      const initialFatMassKg = currentWeightKg * (options!.bodyFatPercent! / 100);
+      const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg);
+    } else {
+      kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
+    }
+  }
+
+  return totalDeltaKcal / kcalPerKg;
+}
+
 // ---------------------------------------------------------------------------
 // Unit conversion helpers
 // ---------------------------------------------------------------------------
