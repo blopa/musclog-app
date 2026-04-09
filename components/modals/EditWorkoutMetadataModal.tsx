@@ -7,6 +7,8 @@ import { View, Text } from 'react-native';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 
+import { formatWorkoutDuration } from '@/utils/workout';
+
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -43,6 +45,7 @@ export default function EditWorkoutMetadataModal({
   }>({ type: 'date', target: 'started', visible: false });
 
   const totalMinutes = Math.max(0, differenceInMinutes(completedAt, startedAt));
+  const durationDisplay = formatWorkoutDuration(totalMinutes);
 
   const handleDateSelect = (date: Date) => {
     const isStarted = pickerConfig.target === 'started';
@@ -119,8 +122,10 @@ export default function EditWorkoutMetadataModal({
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1 mt-1">
-              <Text className="text-4xl font-extrabold text-text-primary">{totalMinutes}</Text>
-              <Text className="text-lg font-bold text-text-secondary">{t('common.min')}</Text>
+              <Text className="text-4xl font-extrabold text-text-primary">{durationDisplay.value}</Text>
+              {durationDisplay.suffix ? (
+                <Text className="text-lg font-bold text-text-secondary">{durationDisplay.suffix}</Text>
+              ) : null}
             </View>
           </View>
 

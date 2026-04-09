@@ -18,6 +18,7 @@ import { formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatWorkoutDuration } from '@/utils/workout';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '@/utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
@@ -77,18 +78,11 @@ export default function WorkoutSummaryScreen() {
         }
 
         // Calculate total time
-        let durationStr = '0m';
         if (completedWorkout.startedAt && completedWorkout.completedAt) {
           const durationMs = completedWorkout.completedAt - completedWorkout.startedAt;
           const durationMinutes = Math.round(durationMs / 60000);
-          if (durationMinutes < 60) {
-            durationStr = `${durationMinutes}m`;
-          } else {
-            const hours = Math.floor(durationMinutes / 60);
-            const mins = durationMinutes % 60;
-            durationStr = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-          }
-          setTotalTime(durationStr);
+          const { value, suffix } = formatWorkoutDuration(durationMinutes);
+          setTotalTime(suffix ? `${value} ${suffix}` : value);
         }
 
         // Format volume with user's preferred units

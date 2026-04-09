@@ -29,6 +29,7 @@ import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
@@ -59,6 +60,7 @@ function WorkoutSummaryCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale } = useFormatAppNumber();
+  const durationDisplay = formatWorkoutDuration(totalTime);
 
   return (
     <View className="overflow-hidden rounded-xl">
@@ -81,10 +83,12 @@ function WorkoutSummaryCard({
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">{totalTime}</Text>
-              <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                {t('common.min')}
-              </Text>
+              <Text className="text-2xl font-extrabold tracking-tight text-white">{durationDisplay.value}</Text>
+              {durationDisplay.suffix ? (
+                <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
+                  {durationDisplay.suffix}
+                </Text>
+              ) : null}
             </View>
           </Pressable>
 
