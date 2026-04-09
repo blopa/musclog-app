@@ -3,6 +3,7 @@ import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
+import { isStaticExport } from '@/constants/platform';
 import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
 import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
@@ -23,6 +24,10 @@ import {
 export function Migrations() {
   const segments = useSegments();
   const { language } = useSettings();
+
+  if (isStaticExport) {
+    return null;
+  }
 
   // Prune orphaned workout insights dismissal state when leaving the workout domain.
   // This prevents accumulation of old keys if the app is killed or navigates away.
