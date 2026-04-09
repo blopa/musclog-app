@@ -34,6 +34,7 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
   type Units,
@@ -81,6 +82,7 @@ type SettingsState = {
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
+  showWeightPrediction: boolean;
   isLoading: boolean;
 };
 
@@ -118,6 +120,7 @@ const DEFAULT_STATE: SettingsState = {
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
   alwaysAllowFoodEditing: false,
+  showWeightPrediction: true,
   isLoading: true,
 };
 
@@ -212,6 +215,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
+    showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     isLoading: false,
   };
 }
@@ -249,6 +253,7 @@ export type SettingsContextType = UseSettingsResult & {
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
+  showWeightPrediction: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

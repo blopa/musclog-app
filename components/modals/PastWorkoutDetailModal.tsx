@@ -83,7 +83,9 @@ function WorkoutSummaryCard({
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">{durationDisplay.value}</Text>
+              <Text className="text-2xl font-extrabold tracking-tight text-white">
+                {durationDisplay.value}
+              </Text>
               {durationDisplay.suffix ? (
                 <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
                   {durationDisplay.suffix}

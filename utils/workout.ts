@@ -23,12 +23,13 @@ import { getWeightUnit } from './units';
  * - >= 60 min → { value: '1:03', suffix: '' }  (HH:MM, hours can exceed 24)
  */
 export function formatWorkoutDuration(totalMinutes: number): { value: string; suffix: string } {
-    if (totalMinutes < 60) {
-        return { value: String(Math.max(0, totalMinutes)), suffix: 'min' };
-    }
-    const hours = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
-    return { value: `${hours}:${String(mins).padStart(2, '0')}`, suffix: '' };
+  if (totalMinutes < 60) {
+    return { value: String(Math.max(0, totalMinutes)), suffix: 'min' };
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  return { value: `${hours}:${String(mins).padStart(2, '0')}`, suffix: '' };
 }
 
 // ============================================================================

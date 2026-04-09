@@ -3,6 +3,7 @@ import {
   AlignHorizontalJustifyStart,
   AlignLeft,
   Apple,
+  BrainCircuit,
   Bug,
   CalendarCheck,
   ChevronRight,
@@ -79,6 +80,8 @@ export function AdvancedSettingsModal({
     handleShowDailyMoodPromptChange,
     alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
     handleAlwaysAllowFoodEditingChange,
+    showWeightPrediction: debouncedShowWeightPrediction,
+    handleShowWeightPredictionChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -214,6 +217,27 @@ export function AdvancedSettingsModal({
       ),
       value: debouncedAlwaysAllowFoodEditing,
       onValueChange: handleAlwaysAllowFoodEditingChange,
+    },
+    {
+      key: 'show-weight-prediction',
+      label: t('settings.advancedSettings.showWeightPrediction'),
+      subtitle: t('settings.advancedSettings.showWeightPredictionSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.info10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <BrainCircuit size={theme.iconSize.xl} color={theme.colors.status.info} />
+        </View>
+      ),
+      value: debouncedShowWeightPrediction,
+      onValueChange: handleShowWeightPredictionChange,
     },
   ];
 

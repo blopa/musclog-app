@@ -88,6 +88,8 @@
       "dailyMoodPromptSubtitle": "Show a mood selector on the home screen if not yet recorded for today",
       "alwaysAllowFoodEditing": "Always Allow Food Editing",
       "alwaysAllowFoodEditingSubtitle": "Force food details to be editable even when sourced from the API",
+      "showWeightPrediction": "Show Weight Prediction",
+      "showWeightPredictionSubtitle": "Show a predicted weight card on the profile screen when no weight has been logged for 4 days",
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",

@@ -71,6 +71,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'maxAiMemories',
       'showDailyMoodPrompt',
       'alwaysAllowFoodEditing',
+      'showWeightPrediction',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -242,6 +243,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'alwaysAllowFoodEditing',
     SettingsService.setAlwaysAllowFoodEditing
   );
+  const handleShowWeightPredictionChange = createSettingHandler<boolean>(
+    'showWeightPrediction',
+    SettingsService.setShowWeightPrediction
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -335,6 +340,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'alwaysAllowFoodEditing':
             await SettingsService.setAlwaysAllowFoodEditing(value as boolean);
             break;
+          case 'showWeightPrediction':
+            await SettingsService.setShowWeightPrediction(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -402,6 +410,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
     alwaysAllowFoodEditing:
       (localSettings.alwaysAllowFoodEditing as boolean) ?? actualSettings.alwaysAllowFoodEditing,
+    showWeightPrediction:
+      (localSettings.showWeightPrediction as boolean) ?? actualSettings.showWeightPrediction,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -436,6 +446,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleMaxAiMemoriesChange,
     handleShowDailyMoodPromptChange,
     handleAlwaysAllowFoodEditingChange,
+    handleShowWeightPredictionChange,
 
     // Utilities
     flushAllPendingChanges,

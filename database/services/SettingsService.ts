@@ -31,6 +31,7 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -449,6 +450,13 @@ export class SettingsService {
    */
   static async setAlwaysAllowFoodEditing(value: boolean) {
     await SettingsService.setBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the show weight prediction setting
+   */
+  static async setShowWeightPrediction(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_WEIGHT_PREDICTION_SETTING_TYPE, value);
   }
 
   /**

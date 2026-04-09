@@ -1,12 +1,11 @@
-import { Check } from 'lucide-react-native';
 import { differenceInMinutes } from 'date-fns';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
-
 import { formatWorkoutDuration } from '@/utils/workout';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -121,10 +120,14 @@ export default function EditWorkoutMetadataModal({
             <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
               {t('workoutDetail.totalTime')}
             </Text>
-            <View className="flex-row items-baseline gap-1 mt-1">
-              <Text className="text-4xl font-extrabold text-text-primary">{durationDisplay.value}</Text>
+            <View className="mt-1 flex-row items-baseline gap-1">
+              <Text className="text-4xl font-extrabold text-text-primary">
+                {durationDisplay.value}
+              </Text>
               {durationDisplay.suffix ? (
-                <Text className="text-lg font-bold text-text-secondary">{durationDisplay.suffix}</Text>
+                <Text className="text-lg font-bold text-text-secondary">
+                  {durationDisplay.suffix}
+                </Text>
               ) : null}
             </View>
           </View>
@@ -152,14 +155,18 @@ export default function EditWorkoutMetadataModal({
                 className="flex-1"
                 label={t('workoutDetail.endDate')}
                 selectedDate={completedAt}
-                onPress={() => setPickerConfig({ type: 'date', target: 'completed', visible: true })}
+                onPress={() =>
+                  setPickerConfig({ type: 'date', target: 'completed', visible: true })
+                }
                 variant="default"
               />
               <TimePickerInput
                 className="flex-1"
                 label={t('workoutDetail.endTime')}
                 selectedTime={completedAt}
-                onPress={() => setPickerConfig({ type: 'time', target: 'completed', visible: true })}
+                onPress={() =>
+                  setPickerConfig({ type: 'time', target: 'completed', visible: true })
+                }
                 variant="default"
               />
             </View>
@@ -168,19 +175,21 @@ export default function EditWorkoutMetadataModal({
       </FullScreenModal>
 
       <DatePickerModal
-        visible={pickerConfig.visible && pickerConfig.type === 'date'}
+        visible={pickerConfig.visible ? pickerConfig.type === 'date' : false}
         onClose={() => setPickerConfig((prev) => ({ ...prev, visible: false }))}
         selectedDate={pickerConfig.target === 'started' ? startedAt : completedAt}
         onDateSelect={handleDateSelect}
       />
 
       <TimePickerModal
-        visible={pickerConfig.visible && pickerConfig.type === 'time'}
+        visible={pickerConfig.visible ? pickerConfig.type === 'time' : false}
         onClose={() => setPickerConfig((prev) => ({ ...prev, visible: false }))}
         selectedTime={pickerConfig.target === 'started' ? startedAt : completedAt}
         onTimeSelect={handleTimeSelect}
         title={
-          pickerConfig.target === 'started' ? t('workoutDetail.startTime') : t('workoutDetail.endTime')
+          pickerConfig.target === 'started'
+            ? t('workoutDetail.startTime')
+            : t('workoutDetail.endTime')
         }
       />
     </>

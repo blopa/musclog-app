@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import {
   Activity,
+  BrainCircuit,
   CheckCircle,
   Dumbbell,
   Edit,
@@ -16,6 +17,7 @@ import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { GenericCard } from '@/components/cards/GenericCard';
 import { StatCard } from '@/components/cards/StatCard';
 import { type PersonalInfo } from '@/components/EditPersonalInfoBody';
 import { ManagementItem } from '@/components/ManagementItem';
@@ -38,6 +40,7 @@ import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useUserMetrics } from '@/hooks/useUserMetrics';
+import { useWeightPrediction } from '@/hooks/useWeightPrediction';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { calculateBMIWithStatus } from '@/utils/bmiHelper';
 import {
@@ -46,17 +49,19 @@ import {
 } from '@/utils/fitnessProfilePersistence';
 import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
+import { kgToDisplay } from '@/utils/unitConversion';
 
 export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { units, weightUnit, heightUnit } = useSettings();
+  const { units, weightUnit, heightUnit, showWeightPrediction } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
   const { isSyncing, syncNow } = useSyncTracking();
+  const weightPrediction = useWeightPrediction();
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
   const [isEditFitnessVisible, setIsEditFitnessVisible] = useState(false);
@@ -395,6 +400,38 @@ export default function ProfileScreen() {
             )}
           </View>
         </View>
+
+        {/* Weight Prediction Card */}
+        {showWeightPrediction &&
+        weightPrediction.shouldShow &&
+        weightPrediction.predictedWeightKg !== null ? (
+          <View className="mb-8 px-4">
+            <GenericCard backgroundVariant="tdee">
+              <View className="flex-row items-center gap-3 p-4">
+                <View
+                  className="h-10 w-10 items-center justify-center rounded-full"
+                  style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+                >
+                  <BrainCircuit size={theme.iconSize.md} color={theme.colors.status.info} />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm text-text-secondary">
+                    {t('profile.weightPrediction.title')}
+                  </Text>
+                  <View className="flex-row items-baseline gap-1">
+                    <Text className="text-2xl font-bold text-text-primary">
+                      {formatDecimal(kgToDisplay(weightPrediction.predictedWeightKg, units), 1)}
+                    </Text>
+                    <Text className="text-base text-text-secondary">{weightUnit}</Text>
+                  </View>
+                  <Text className="mt-0.5 text-xs text-text-secondary">
+                    {t('profile.weightPrediction.subtitle')}
+                  </Text>
+                </View>
+              </View>
+            </GenericCard>
+          </View>
+        ) : null}
 
         {/* Management Section */}
         <View className="mb-8 px-4">
