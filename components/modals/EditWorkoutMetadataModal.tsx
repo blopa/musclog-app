@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { useTheme } from '@/hooks/useTheme';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -32,10 +31,6 @@ export default function EditWorkoutMetadataModal({
 
   const [startedAt, setStartedAt] = useState(new Date(initialStartedAt));
   const [completedAt, setCompletedAt] = useState(new Date(initialCompletedAt));
-  const [totalMinutes, setTotalMinutes] = useState(
-    differenceInMinutes(new Date(initialCompletedAt), new Date(initialStartedAt))
-  );
-  const [isDetailedEditingVisible, setIsDetailedEditingVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Picker states
@@ -45,13 +40,7 @@ export default function EditWorkoutMetadataModal({
     visible: boolean;
   }>({ type: 'date', target: 'started', visible: false });
 
-  const handleTotalMinutesChange = (newMins: number) => {
-    setTotalMinutes(newMins);
-    setIsDetailedEditingVisible(true);
-    // Update completedAt based on startedAt and new totalMinutes
-    const newCompletedAt = new Date(startedAt.getTime() + newMins * 60000);
-    setCompletedAt(newCompletedAt);
-  };
+  const totalMinutes = Math.max(0, differenceInMinutes(completedAt, startedAt));
 
   const handleDateSelect = (date: Date) => {
     const isStarted = pickerConfig.target === 'started';
@@ -62,10 +51,8 @@ export default function EditWorkoutMetadataModal({
 
     if (isStarted) {
       setStartedAt(newDate);
-      setTotalMinutes(differenceInMinutes(completedAt, newDate));
     } else {
       setCompletedAt(newDate);
-      setTotalMinutes(differenceInMinutes(newDate, startedAt));
     }
     setPickerConfig((prev) => ({ ...prev, visible: false }));
   };
@@ -79,10 +66,8 @@ export default function EditWorkoutMetadataModal({
 
     if (isStarted) {
       setStartedAt(newTime);
-      setTotalMinutes(differenceInMinutes(completedAt, newTime));
     } else {
       setCompletedAt(newTime);
-      setTotalMinutes(differenceInMinutes(newTime, startedAt));
     }
     setPickerConfig((prev) => ({ ...prev, visible: false }));
   };
@@ -127,59 +112,54 @@ export default function EditWorkoutMetadataModal({
         headerRight={headerRight}
       >
         <View className="flex-1 gap-6 p-4">
-          <NewNumericalInput
-            label={t('workoutDetail.totalTimeMinutes')}
-            value={totalMinutes}
-            onChange={handleTotalMinutesChange}
-            min={1}
-            step={1}
-          />
-
-          {isDetailedEditingVisible && (
-            <View className="gap-6">
-              <View className="flex-row gap-4">
-                <DatePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.startDate')}
-                  selectedDate={startedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'date', target: 'started', visible: true })
-                  }
-                  variant="default"
-                />
-                <TimePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.startTime')}
-                  selectedTime={startedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'time', target: 'started', visible: true })
-                  }
-                  variant="default"
-                />
-              </View>
-
-              <View className="flex-row gap-4">
-                <DatePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.endDate')}
-                  selectedDate={completedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'date', target: 'completed', visible: true })
-                  }
-                  variant="default"
-                />
-                <TimePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.endTime')}
-                  selectedTime={completedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'time', target: 'completed', visible: true })
-                  }
-                  variant="default"
-                />
-              </View>
+          <View
+            className="items-center justify-center rounded-2xl p-6"
+            style={{ backgroundColor: theme.colors.background.white5 }}
+          >
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              {t('workoutDetail.totalTime')}
+            </Text>
+            <View className="flex-row items-baseline gap-1 mt-1">
+              <Text className="text-4xl font-extrabold text-text-primary">{totalMinutes}</Text>
+              <Text className="text-lg font-bold text-text-secondary">{t('common.min')}</Text>
             </View>
-          )}
+          </View>
+
+          <View className="gap-6">
+            <View className="flex-row gap-4">
+              <DatePickerInput
+                className="flex-1"
+                label={t('workoutDetail.startDate')}
+                selectedDate={startedAt}
+                onPress={() => setPickerConfig({ type: 'date', target: 'started', visible: true })}
+                variant="default"
+              />
+              <TimePickerInput
+                className="flex-1"
+                label={t('workoutDetail.startTime')}
+                selectedTime={startedAt}
+                onPress={() => setPickerConfig({ type: 'time', target: 'started', visible: true })}
+                variant="default"
+              />
+            </View>
+
+            <View className="flex-row gap-4">
+              <DatePickerInput
+                className="flex-1"
+                label={t('workoutDetail.endDate')}
+                selectedDate={completedAt}
+                onPress={() => setPickerConfig({ type: 'date', target: 'completed', visible: true })}
+                variant="default"
+              />
+              <TimePickerInput
+                className="flex-1"
+                label={t('workoutDetail.endTime')}
+                selectedTime={completedAt}
+                onPress={() => setPickerConfig({ type: 'time', target: 'completed', visible: true })}
+                variant="default"
+              />
+            </View>
+          </View>
         </View>
       </FullScreenModal>
 
