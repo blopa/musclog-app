@@ -12,6 +12,7 @@ import {
   Download,
   Dumbbell,
   Flag,
+  Lock,
   MessageSquare,
   Target,
   TrendingUp,
@@ -82,6 +83,8 @@ export function AdvancedSettingsModal({
     handleAlwaysAllowFoodEditingChange,
     showWeightPrediction: debouncedShowWeightPrediction,
     handleShowWeightPredictionChange,
+    requireExportEncryption: debouncedRequireExportEncryption,
+    handleRequireExportEncryptionChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -100,6 +103,10 @@ export function AdvancedSettingsModal({
   const [loading, setLoading] = useState(false);
 
   const handleExportConfirm = useCallback(async () => {
+    if (debouncedRequireExportEncryption && !encryptionPhrase.trim()) {
+      showSnackbar('error', t('settings.advancedSettings.encryptionPhraseRequired'));
+      return;
+    }
     setLoading(true);
     try {
       await exportDatabase(encryptionPhrase || undefined);
@@ -112,7 +119,7 @@ export function AdvancedSettingsModal({
     } finally {
       setLoading(false);
     }
-  }, [encryptionPhrase, t, showSnackbar]);
+  }, [encryptionPhrase, debouncedRequireExportEncryption, t, showSnackbar]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
@@ -313,6 +320,32 @@ export function AdvancedSettingsModal({
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
+            />
+            <View className="mt-4" />
+            <ToggleInput
+              items={[
+                {
+                  key: 'require-export-encryption',
+                  label: t('settings.advancedSettings.requireExportEncryption'),
+                  subtitle: t('settings.advancedSettings.requireExportEncryptionSubtitle'),
+                  icon: (
+                    <View
+                      style={{
+                        width: theme.size['10'],
+                        height: theme.size['10'],
+                        borderRadius: theme.borderRadius.sm,
+                        backgroundColor: theme.colors.status.error20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Lock size={theme.iconSize.xl} color={theme.colors.status.error} />
+                    </View>
+                  ),
+                  value: debouncedRequireExportEncryption,
+                  onValueChange: handleRequireExportEncryptionChange,
+                },
+              ]}
             />
           </View>
 
@@ -553,7 +586,11 @@ export function AdvancedSettingsModal({
           }
         }}
         title={t('settings.advancedSettings.confirmExport')}
-        subtitle={t('settings.advancedSettings.exportConfirmationSubtitle')}
+        subtitle={
+          debouncedRequireExportEncryption
+            ? t('settings.advancedSettings.exportConfirmationSubtitleRequired')
+            : t('settings.advancedSettings.exportConfirmationSubtitle')
+        }
         footer={
           <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
             <Button
@@ -581,10 +618,18 @@ export function AdvancedSettingsModal({
       >
         <View className="gap-4">
           <TextInput
-            label={t('settings.advancedSettings.enterEncryptionPhrase')}
+            label={
+              debouncedRequireExportEncryption
+                ? t('settings.advancedSettings.enterEncryptionPhraseRequired')
+                : t('settings.advancedSettings.enterEncryptionPhrase')
+            }
             value={encryptionPhrase}
             onChangeText={setEncryptionPhrase}
-            placeholder={t('settings.advancedSettings.encryptionPhrasePlaceholder')}
+            placeholder={
+              debouncedRequireExportEncryption
+                ? t('settings.advancedSettings.encryptionPhrasePlaceholderRequired')
+                : t('settings.advancedSettings.encryptionPhrasePlaceholder')
+            }
             secureTextEntry
           />
         </View>

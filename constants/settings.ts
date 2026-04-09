@@ -189,6 +189,12 @@ export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing
  */
 export const SHOW_WEIGHT_PREDICTION_SETTING_TYPE = 'show_weight_prediction';
 
+/**
+ * Setting type for requiring an encryption phrase when exporting database.
+ * value: 'true' | 'false'.
+ */
+export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -220,4 +226,5 @@ export type UseSettingsResult = {
   chartTooltipPosition: ChartTooltipPosition;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
 };

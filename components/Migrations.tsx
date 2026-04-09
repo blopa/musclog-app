@@ -132,6 +132,18 @@ export function Migrations() {
     );
   }, []);
 
+  // One-time migration: enable require-export-encryption by default.
+  // No-op if the user has already explicitly configured this setting.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    SettingsService.migrateRequireExportEncryptionDefault().catch((err) =>
+      console.warn('[SettingsService] migrateRequireExportEncryptionDefault error:', err)
+    );
+  }, []);
+
   // One-time migration: move the encryption key from AsyncStorage (plaintext)
   // to SecureStore (keychain/keystore-backed). Runs only on native.
   // Safe to run on every boot — exits immediately once already migrated.

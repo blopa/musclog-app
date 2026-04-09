@@ -72,6 +72,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'showDailyMoodPrompt',
       'alwaysAllowFoodEditing',
       'showWeightPrediction',
+      'requireExportEncryption',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -247,6 +248,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'showWeightPrediction',
     SettingsService.setShowWeightPrediction
   );
+  const handleRequireExportEncryptionChange = createSettingHandler<boolean>(
+    'requireExportEncryption',
+    SettingsService.setRequireExportEncryption
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -343,6 +348,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'showWeightPrediction':
             await SettingsService.setShowWeightPrediction(value as boolean);
             break;
+          case 'requireExportEncryption':
+            await SettingsService.setRequireExportEncryption(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -412,6 +420,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.alwaysAllowFoodEditing as boolean) ?? actualSettings.alwaysAllowFoodEditing,
     showWeightPrediction:
       (localSettings.showWeightPrediction as boolean) ?? actualSettings.showWeightPrediction,
+    requireExportEncryption:
+      (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -447,6 +457,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleShowDailyMoodPromptChange,
     handleAlwaysAllowFoodEditingChange,
     handleShowWeightPredictionChange,
+    handleRequireExportEncryptionChange,
 
     // Utilities
     flushAllPendingChanges,

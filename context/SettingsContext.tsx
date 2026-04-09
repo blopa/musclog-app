@@ -33,6 +33,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
+  REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
@@ -85,6 +86,7 @@ type SettingsState = {
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
   isLoading: boolean;
 };
 
@@ -123,6 +125,7 @@ const DEFAULT_STATE: SettingsState = {
   showDailyMoodPrompt: true,
   alwaysAllowFoodEditing: false,
   showWeightPrediction: true,
+  requireExportEncryption: true,
   isLoading: true,
 };
 
@@ -218,6 +221,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
+    requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     isLoading: false,
   };
 }
@@ -256,6 +260,7 @@ export type SettingsContextType = UseSettingsResult & {
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

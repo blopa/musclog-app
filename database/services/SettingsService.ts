@@ -29,6 +29,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
+  REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
@@ -459,6 +460,32 @@ export class SettingsService {
    */
   static async setShowWeightPrediction(value: boolean) {
     await SettingsService.setBooleanSetting(SHOW_WEIGHT_PREDICTION_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the require export encryption setting
+   */
+  static async setRequireExportEncryption(value: boolean) {
+    await SettingsService.setBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, value);
+  }
+
+  /**
+   * One-time migration: enable require-export-encryption by default for users
+   * who have never explicitly configured it. Safe to call on every boot — exits
+   * immediately if the setting already exists in the DB.
+   */
+  static async migrateRequireExportEncryptionDefault() {
+    const existing = await database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (existing.length === 0) {
+      await SettingsService.setBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true);
+    }
   }
 
   /**
