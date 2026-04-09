@@ -101,6 +101,13 @@
         "fri": "SEX",
         "sat": "SÁB"
       }
-    }
+    },
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "debugDetails": "Detalhes de Depuração",
+    "errorMessage": "Mensagem de Erro",
+    "errorStack": "Pilha de Erro",
+    "componentStack": "Pilha de Componentes",
+    "userAgent": "Agente do Usuário"
   }
 }

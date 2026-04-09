@@ -76,7 +76,7 @@ export default function RestOverScreen() {
   useEffect(() => {
     const loadData = async () => {
       if (!workoutLogId) {
-        setError('No workout ID provided');
+        setError(t('restOver.noWorkoutId'));
         setIsLoading(false);
         return;
       }
@@ -88,7 +88,7 @@ export default function RestOverScreen() {
         // Load workout log
         const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
         if (log.deletedAt) {
-          throw new Error('Workout has been deleted');
+          throw new Error(t('restOver.workoutDeleted'));
         }
         setWorkoutLog(log);
 
@@ -132,13 +132,13 @@ export default function RestOverScreen() {
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading rest over data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load workout data');
+        setError(err instanceof Error ? err.message : t('restOver.loadError'));
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, [workoutLogId, nextSetOrder]);
+  }, [workoutLogId, nextSetOrder, t]);
 
   const nextExerciseDisplayWeight = useMemo(() => {
     if (!nextExercise) {

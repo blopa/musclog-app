@@ -104,7 +104,10 @@ function formatDurationForRecentWorkout(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return mins > 0
-    ? i18n.t('common.duration.hoursMinutes', { hours: formatAppInteger(loc, hours), minutes: formatAppInteger(loc, mins) })
+    ? i18n.t('common.duration.hoursMinutes', {
+        hours: formatAppInteger(loc, hours),
+        minutes: formatAppInteger(loc, mins),
+      })
     : i18n.t('common.duration.hoursOnly', { hours: formatAppInteger(loc, hours) });
 }
 

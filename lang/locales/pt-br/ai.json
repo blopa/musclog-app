@@ -11,6 +11,9 @@
       "openSettings": "Abrir configurações de IA",
       "notNow": "Agora não"
     },
+    "providers": {
+      "openAIGemini": "OpenAI ou Google Gemini"
+    },
     "icons": {
       "Dumbbell": "Haltere",
       "Target": "Alvo",

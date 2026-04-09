@@ -101,6 +101,13 @@
         "fri": "FRI",
         "sat": "SAT"
       }
-    }
+    },
+    "hide": "Hide",
+    "show": "Show",
+    "debugDetails": "Debug Details",
+    "errorMessage": "Error Message",
+    "errorStack": "Error Stack",
+    "componentStack": "Component Stack",
+    "userAgent": "User Agent"
   }
 }

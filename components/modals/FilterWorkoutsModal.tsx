@@ -141,7 +141,10 @@ export function FilterWorkoutsModal({
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
       return mins > 0
-        ? t('common.duration.hoursMinutes', { hours: formatInteger(hours), minutes: formatInteger(mins) })
+        ? t('common.duration.hoursMinutes', {
+            hours: formatInteger(hours),
+            minutes: formatInteger(mins),
+          })
         : t('common.duration.hoursOnly', { hours: formatInteger(hours) });
     }
 

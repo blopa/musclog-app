@@ -458,9 +458,10 @@ export class WorkoutTemplateService {
           } else {
             const hours = Math.floor(durationMinutes / 60);
             const mins = durationMinutes % 60;
-            duration = mins > 0
-              ? i18n.t('common.duration.hoursMinutes', { hours, minutes: mins })
-              : i18n.t('common.duration.hoursOnly', { hours });
+            duration =
+              mins > 0
+                ? i18n.t('common.duration.hoursMinutes', { hours, minutes: mins })
+                : i18n.t('common.duration.hoursOnly', { hours });
           }
         }
       }
