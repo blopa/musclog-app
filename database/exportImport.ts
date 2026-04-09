@@ -17,13 +17,14 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
 import { decrypt, encrypt } from '@/utils/encryption';
+import { reloadApp } from '@/utils/file';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
-import { FoodPortionService } from './services';
+import { ExerciseService, FoodPortionService } from './services';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
@@ -359,7 +360,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
   if (dbData._exportVersion < 2) {
-    const { ExerciseService } = await import('./services/ExerciseService');
     await ExerciseService.backfillExerciseSources();
   }
 
@@ -407,6 +407,5 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   // Reload the app after importing is complete
-  const { reloadApp } = await import('../utils/file');
   await reloadApp();
 }
