@@ -680,6 +680,12 @@ export class WorkoutService {
                   s.repsInReserve = update.repsInReserve;
                 }
                 if (update.difficultyLevel !== undefined) {
+                  const isActuallySkipped = update.isSkipped ?? s.isSkipped;
+                  if (update.difficultyLevel === 0 && isActuallySkipped) {
+                    // Allow 0 only for skipped sets
+                  } else if (update.difficultyLevel < 1 || update.difficultyLevel > 10) {
+                    throw new Error('Difficulty level must be between 1 and 10');
+                  }
                   s.difficultyLevel = update.difficultyLevel;
                 }
                 if (update.isSkipped !== undefined) {

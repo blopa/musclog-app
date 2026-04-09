@@ -341,8 +341,15 @@ export default function WorkoutSessionScreen() {
       router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       return;
     }
-    // Free session: show "exercise complete" modal (e.g. when returning from rest-timer with no next set)
-    if (!isLoading && !hasShownFreeSessionCompleteModalRef.current && sets.length > 0) {
+
+    // Free session: show "exercise complete" modal (e.g. when returning from rest-timer with no next set, or resuming a finished one)
+    if (
+      !isLoading &&
+      !hasShownFreeSessionCompleteModalRef.current &&
+      sets.length > 0 &&
+      !isSessionFeedbackModalVisible &&
+      params.showFeedback !== '1'
+    ) {
       const completedSets = sets.filter(
         (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
       );
@@ -359,6 +366,10 @@ export default function WorkoutSessionScreen() {
           equipmentType: exercise?.equipmentType ?? null,
         });
         setIsFreeSessionCompleteModalVisible(true);
+        hasShownFreeSessionCompleteModalRef.current = true;
+      } else {
+        // Fallback for empty/weird states
+        setIsAddExerciseToSessionModalVisible(true);
         hasShownFreeSessionCompleteModalRef.current = true;
       }
     }
@@ -717,10 +728,7 @@ export default function WorkoutSessionScreen() {
       !error &&
       progress.totalSets > 0 &&
       progress.isComplete &&
-      !workoutLog.templateId &&
-      (completedExerciseForModal ||
-        isAddExerciseToSessionModalVisible ||
-        isSessionFeedbackModalVisible))
+      !workoutLog.templateId)
   ) {
     content = (
       <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
@@ -817,7 +825,7 @@ export default function WorkoutSessionScreen() {
         />
       </View>
     );
-  } else if (error || !currentSetData || !workoutLog) {
+  } else if (error || (!currentSetData && !progress.isComplete) || !workoutLog) {
     content = (
       <View className="flex-1 items-center justify-center px-6">
         <ErrorStateCard
@@ -829,7 +837,7 @@ export default function WorkoutSessionScreen() {
         />
       </View>
     );
-  } else {
+  } else if (currentSetData) {
     const exerciseImage = currentSetData.exercise.imageUrl?.trim()
       ? { uri: currentSetData.exercise.imageUrl }
       : require('../../assets/exercises/fallback.png');
