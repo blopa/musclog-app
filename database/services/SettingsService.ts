@@ -39,7 +39,9 @@ import {
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
+import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
+import { decryptDatabaseValue } from '@/utils/encryption';
 
 export class SettingsService {
   /**
@@ -176,10 +178,10 @@ export class SettingsService {
   }
 
   /**
-   * Upsert the Google Gemini API key setting
+   * Upsert the Google Gemini API key setting (stored encrypted)
    */
   static async setGoogleGeminiApiKey(value: string) {
-    await SettingsService.setStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, value);
+    await SettingsService.setEncryptedStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, value);
   }
 
   /**
@@ -190,10 +192,10 @@ export class SettingsService {
   }
 
   /**
-   * Upsert the OpenAI API key setting
+   * Upsert the OpenAI API key setting (stored encrypted)
    */
   static async setOpenAiApiKey(value: string) {
-    await SettingsService.setStringSetting(OPENAI_API_KEY_SETTING_TYPE, value);
+    await SettingsService.setEncryptedStringSetting(OPENAI_API_KEY_SETTING_TYPE, value);
   }
 
   /**
@@ -347,7 +349,7 @@ export class SettingsService {
   // --- AI Settings Getters ---
 
   static async getGoogleGeminiApiKey(): Promise<string> {
-    return SettingsService.getStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, '');
+    return SettingsService.getEncryptedStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE);
   }
 
   static async getGoogleGeminiModel(): Promise<string> {
@@ -355,7 +357,7 @@ export class SettingsService {
   }
 
   static async getOpenAiApiKey(): Promise<string> {
-    return SettingsService.getStringSetting(OPENAI_API_KEY_SETTING_TYPE, '');
+    return SettingsService.getEncryptedStringSetting(OPENAI_API_KEY_SETTING_TYPE);
   }
 
   static async getOpenAiModel(): Promise<string> {
@@ -663,6 +665,55 @@ export class SettingsService {
         });
       }
     });
+  }
+
+  /**
+   * One-time boot migration: if an API key is stored as plaintext (pre-encryption),
+   * re-save it encrypted. Already-encrypted values are left untouched.
+   */
+  static async migrateApiKeysToEncrypted(): Promise<void> {
+    await Promise.all([
+      SettingsService.migrateApiKey(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
+      SettingsService.migrateApiKey(OPENAI_API_KEY_SETTING_TYPE),
+    ]);
+  }
+
+  private static async migrateApiKey(type: string): Promise<void> {
+    const raw = await SettingsService.getStringSetting(type, '');
+    if (!raw) {
+      return;
+    }
+    const decrypted = await decryptDatabaseValue(raw);
+    if (decrypted) {
+      // Non-empty decryption result → already encrypted, nothing to do.
+      return;
+    }
+    // Decryption returned empty → value is legacy plaintext → encrypt and re-save.
+    await SettingsService.setEncryptedStringSetting(type, raw);
+  }
+
+  /**
+   * Read an encrypted string setting and decrypt it.
+   * Falls back to the raw value for legacy plaintext entries already in the DB.
+   */
+  private static async getEncryptedStringSetting(type: string): Promise<string> {
+    const raw = await SettingsService.getStringSetting(type, '');
+    if (!raw) {
+      return '';
+    }
+    const decrypted = await decryptDatabaseValue(raw);
+    // If AES decryption produced a non-empty result, it was an encrypted value.
+    // Otherwise fall back to the raw value (legacy plaintext stored before encryption was added).
+    return decrypted || raw;
+  }
+
+  /**
+   * Encrypt a string value and upsert it into the settings table.
+   * Stores an empty string when the value is empty.
+   */
+  private static async setEncryptedStringSetting(type: string, value: string) {
+    const encrypted = await encryptOptionalString(value);
+    await SettingsService.setStringSetting(type, encrypted);
   }
 
   /**

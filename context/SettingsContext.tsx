@@ -47,6 +47,7 @@ import {
 } from '@/constants/settings';
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
+import { SettingsService } from '@/database/services/SettingsService';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
@@ -261,6 +262,10 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  const [decryptedApiKeys, setDecryptedApiKeys] = useState({
+    googleGeminiApiKey: '',
+    openAiApiKey: '',
+  });
 
   useEffect(() => {
     if (isStaticExport) {
@@ -285,21 +290,48 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Decrypt API keys whenever the raw DB value changes (raw may be ciphertext or legacy plaintext).
+  useEffect(() => {
+    if (state.isLoading) {
+      return;
+    }
+
+    let cancelled = false;
+    Promise.all([SettingsService.getGoogleGeminiApiKey(), SettingsService.getOpenAiApiKey()])
+      .then(([gemini, openAi]) => {
+        if (!cancelled) {
+          setDecryptedApiKeys({ googleGeminiApiKey: gemini, openAiApiKey: openAi });
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.googleGeminiApiKey, state.openAiApiKey, state.isLoading]);
+
   const isAiConfigured = useMemo(() => {
     return (
-      (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && state.openAiApiKey.trim() !== '')
+      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
     );
-  }, [state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
+  }, [
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
 
   const value = useMemo(
     () => ({
       ...state,
+      googleGeminiApiKey: decryptedApiKeys.googleGeminiApiKey,
+      openAiApiKey: decryptedApiKeys.openAiApiKey,
       isAiConfigured,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiConfigured]
+    [state, decryptedApiKeys, isAiConfigured]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

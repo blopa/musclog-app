@@ -5,6 +5,7 @@ import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
 import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
@@ -113,6 +114,18 @@ export function Migrations() {
 
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
+    );
+  }, []);
+
+  // Encrypt any API keys that were stored as plaintext before this migration was introduced.
+  // Idempotent: already-encrypted keys are detected and left untouched.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    SettingsService.migrateApiKeysToEncrypted().catch((err) =>
+      console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
     );
   }, []);
 
