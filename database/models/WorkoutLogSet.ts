@@ -27,6 +27,9 @@ export default class WorkoutLogSet extends Model {
   @relation('workout_log_exercises', 'log_exercise_id') logExercise!: WorkoutLogExercise;
 
   get isValidDifficultyLevel(): boolean {
+    if (this.isSkipped && this.difficultyLevel === 0) {
+      return true;
+    }
     return this.difficultyLevel >= 1 && this.difficultyLevel <= 10;
   }
 
