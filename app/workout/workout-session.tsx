@@ -345,16 +345,13 @@ export default function WorkoutSessionScreen() {
     // Free session: show "exercise complete" modal (e.g. when returning from rest-timer with no next set, or resuming a finished one)
     if (
       !isLoading &&
+      !currentSetData &&
       !hasShownFreeSessionCompleteModalRef.current &&
       sets.length > 0 &&
       !isSessionFeedbackModalVisible &&
       params.showFeedback !== '1'
     ) {
-      const completedSets = sets.filter(
-        (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
-      );
-
-      const byOrder = [...completedSets].sort((a, b) => (b.setOrder ?? 0) - (a.setOrder ?? 0));
+      const byOrder = [...sets].sort((a, b) => (b.setOrder ?? 0) - (a.setOrder ?? 0));
       const lastSet = byOrder[0];
 
       if (lastSet) {
@@ -724,11 +721,7 @@ export default function WorkoutSessionScreen() {
     );
   } else if (
     (isSessionFeedbackModalVisible && workoutLog) ||
-    (workoutLog &&
-      !error &&
-      progress.totalSets > 0 &&
-      progress.isComplete &&
-      !workoutLog.templateId)
+    (workoutLog && !error && progress.totalSets > 0 && progress.isComplete)
   ) {
     content = (
       <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
@@ -776,56 +769,7 @@ export default function WorkoutSessionScreen() {
         />
       </View>
     );
-  } else if (!error && workoutLog && !workoutLog.templateId && progress.isComplete) {
-    // Free session just completed: brief transition frame while completedExerciseForModal is being
-    // set after refresh(). Show a themed background to avoid flashing the error state.
-    content = (
-      <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
-        <LinearGradient
-          colors={[...theme.colors.gradients.landingBackground]}
-          locations={[0, 0.5, 1]}
-          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-        />
-        {/* Decorative circles behind session feedback modal */}
-        <View
-          style={{
-            position: 'absolute',
-            top: '15%',
-            left: '-20%',
-            width: 280,
-            height: 280,
-            borderRadius: theme.borderRadius.full,
-            backgroundColor: theme.colors.accent.primary20,
-            opacity: 0.6,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: '35%',
-            right: '-15%',
-            width: 200,
-            height: 200,
-            borderRadius: theme.borderRadius.full,
-            backgroundColor: theme.colors.accent.primary20,
-            opacity: 0.35,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            bottom: '25%',
-            left: '10%',
-            width: 120,
-            height: 120,
-            borderRadius: theme.borderRadius.full,
-            backgroundColor: theme.colors.accent.primary20,
-            opacity: 0.25,
-          }}
-        />
-      </View>
-    );
-  } else if (error || (!currentSetData && !progress.isComplete) || !workoutLog) {
+  } else if (error || !workoutLog) {
     content = (
       <View className="flex-1 items-center justify-center px-6">
         <ErrorStateCard
@@ -835,6 +779,44 @@ export default function WorkoutSessionScreen() {
           buttonLabel={t('workoutSession.goBack')}
           onButtonPress={() => router.replace('/workout/workouts')}
         />
+      </View>
+    );
+  } else if (!currentSetData && !progress.isComplete) {
+    // This happens if exercises are missing or all sets are done but isComplete is somehow false
+    content = (
+      <View className="flex-1 bg-bg-primary">
+        <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
+          <Pressable
+            className="h-12 w-12 items-center justify-center"
+            onPress={() => setIsEndWorkoutModalVisible(true)}
+          >
+            <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
+          </Pressable>
+          <Text
+            className="text-lg font-semibold text-text-primary"
+            style={{ fontSize: theme.typography.fontSize.lg }}
+          >
+            {workoutLog.workoutName || t('freeTraining.title')}
+          </Text>
+          <Pressable
+            className="h-12 w-12 items-center justify-center"
+            onPress={() => setIsWorkoutOverviewModalVisible(true)}
+          >
+            <BarChart3 size={theme.iconSize.lg} color={theme.colors.text.primary} />
+          </Pressable>
+        </View>
+        <View className="flex-1 items-center justify-center px-6">
+          <ErrorStateCard
+            icon={Dumbbell}
+            title={t('workoutSession.missingDataTitle', 'Session Data Issue')}
+            description={t(
+              'workoutSession.missingDataDescription',
+              'Could not load the current exercise. Check the overview or finish the session.'
+            )}
+            buttonLabel={t('workoutSession.viewOverview', 'View Overview')}
+            onButtonPress={() => setIsWorkoutOverviewModalVisible(true)}
+          />
+        </View>
       </View>
     );
   } else if (currentSetData) {

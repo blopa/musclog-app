@@ -149,10 +149,11 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           }));
 
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
-          const completedSets = enrichedSets.filter((s) => (s.difficultyLevel ?? 0) > 0).length;
-          const skippedSets = enrichedSets.filter((s) => s.isSkipped).length;
           const totalSets = enrichedSets.length;
-          const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
+          const completedSets = enrichedSets.filter(
+            (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
+          ).length;
+          const isComplete = totalSets > 0 && completedSets === totalSets;
           const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
           const next = current
             ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0)
@@ -251,10 +252,11 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
         setLogExercises(le);
         setSets(s);
         setExercises(ex);
-        const completedSets = s.filter((x) => (x.difficultyLevel ?? 0) > 0).length;
-        const skippedSets = s.filter((x) => x.isSkipped).length;
         const totalSets = s.length;
-        const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
+        const completedSets = s.filter(
+          (x) => (x.difficultyLevel ?? 0) > 0 || (x.isSkipped ?? false)
+        ).length;
+        const isComplete = totalSets > 0 && completedSets === totalSets;
         const current = getFirstUnloggedInEffectiveOrder(s);
         const next = current ? getNextSetInEffectiveOrder(s, current.setOrder ?? 0) : null;
         let prev: PreviousSetInfo | null = null;
