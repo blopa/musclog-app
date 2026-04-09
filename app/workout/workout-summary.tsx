@@ -33,7 +33,7 @@ export default function WorkoutSummaryScreen() {
   const processedWorkoutRef = useRef<string | null>(null);
 
   const [totalTime, setTotalTime] = useState<string>('0m');
-  const [volume, setVolume] = useState<string>('0 kg'); // TODO: use units
+  const [volume, setVolume] = useState<string>('');
   const [caloriesBurned, setCaloriesBurned] = useState<number>(0);
   const [personalRecords, setPersonalRecords] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,8 +99,9 @@ export default function WorkoutSummaryScreen() {
             completedWorkout.totalVolume
           );
           volumeStr = `${formattedVolume} ${weightUnit}`;
-          setVolume(volumeStr);
         }
+
+        setVolume(volumeStr);
 
         // Set calories burned
         if (completedWorkout.caloriesBurned && completedWorkout.caloriesBurned > 0) {
