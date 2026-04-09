@@ -1488,6 +1488,16 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
             }}
           />
         </View>
+
+        {/* AI Disclaimer */}
+        <View className="px-4 py-2" style={{ backgroundColor: theme.colors.background.primary }}>
+          <Text
+            className="text-center text-xs"
+            style={{ color: theme.colors.text.tertiary, fontStyle: 'italic' }}
+          >
+            {t('coach.disclaimer')}
+          </Text>
+        </View>
       </View>
 
       <PastWorkoutDetailModal
