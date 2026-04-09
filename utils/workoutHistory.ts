@@ -61,7 +61,7 @@ export type WorkoutHistorySection = {
   workouts: WorkoutHistoryItem[];
 };
 
-export type TranslationFunction = (key: string) => string;
+export type TranslationFunction = (key: string, options?: Record<string, unknown>) => string;
 
 // Formatting Functions
 
@@ -77,8 +77,8 @@ export function formatDuration(minutes: number, t: TranslationFunction, locale: 
   const mins = minutes % 60;
 
   return mins > 0
-    ? `${formatAppInteger(locale, hours)}h ${formatAppInteger(locale, mins)}${t('common.min')}` // TODO: use i18n
-    : `${formatAppInteger(locale, hours)}h`; // TODO: use i18n
+    ? t('common.duration.hoursMinutes', { hours: formatAppInteger(locale, hours), minutes: formatAppInteger(locale, mins) })
+    : t('common.duration.hoursOnly', { hours: formatAppInteger(locale, hours) });
 }
 
 /**

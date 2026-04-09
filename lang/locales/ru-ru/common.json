@@ -75,6 +75,12 @@
     "descriptions": {
       "none": "Нет"
     },
+    "duration": {
+      "hoursOnly": "{{hours}}ч",
+      "hoursMinutes": "{{hours}}ч {{minutes}}м",
+      "minutesOnly": "{{minutes}}м",
+      "minutesShort": "{{minutes}} мин"
+    },
     "days": {
       "label": "Дни",
       "letter": {

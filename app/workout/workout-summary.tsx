@@ -78,7 +78,7 @@ export default function WorkoutSummaryScreen() {
         }
 
         // Calculate total time
-        let durationStr = '0 min'; // TODO: use i18n
+        let durationStr = `0 ${t('common.min')}`;
         if (completedWorkout.startedAt && completedWorkout.completedAt) {
           const durationMs = completedWorkout.completedAt - completedWorkout.startedAt;
           const durationMinutes = Math.round(durationMs / 60000);

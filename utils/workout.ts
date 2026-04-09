@@ -24,7 +24,7 @@ import { getWeightUnit } from './units';
  */
 export function formatWorkoutDuration(totalMinutes: number): { value: string; suffix: string } {
   if (totalMinutes < 60) {
-    return { value: String(Math.max(0, totalMinutes)), suffix: 'min' };
+    return { value: String(Math.max(0, totalMinutes)), suffix: i18n.t('common.min') };
   }
 
   const hours = Math.floor(totalMinutes / 60);
