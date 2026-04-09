@@ -1,24 +1,29 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
-import type { WorkoutType } from '../constants/workoutTypes';
-import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
-import { useSnackbar } from '../context/SnackbarContext';
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import { WorkoutTemplateService } from '../database/services';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import type { WorkoutType } from '@/constants/workoutTypes';
+import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '@/constants/workoutTypes';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import { WorkoutTemplateService } from '@/database/services';
 import {
   createExerciseOption,
   type ExerciseMetadata,
   exercisesToWorkoutFormat,
   extractExerciseMetadata,
-  formatExerciseDescription,
+  formatExerciseListRowMeta,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
-} from '../utils/workout';
+} from '@/utils/workout';
+import {
+  DEFAULT_WORKOUT_INSIGHTS_TYPE,
+  parseWorkoutInsightsType,
+} from '@/utils/workoutInsightsType';
+
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
 
@@ -47,7 +52,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
   const [workoutTitle, setWorkoutTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [volumeCalc, setVolumeCalc] = useState('none');
+  const [workoutInsights, setWorkoutInsights] = useState(DEFAULT_WORKOUT_INSIGHTS_TYPE);
   const [workoutType, setWorkoutType] = useState<WorkoutType>(DEFAULT_WORKOUT_TYPE);
   const [icon, setIcon] = useState<string | undefined>(undefined);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
@@ -73,7 +78,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
-      setVolumeCalc(template.volumeCalculationType || 'none');
+      setWorkoutInsights(parseWorkoutInsightsType(template.workoutInsightsType));
       setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
       setIcon(template.icon ?? undefined);
 
@@ -89,7 +94,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         sets
       );
 
-      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
+      const exerciseOptions = transformExercisesToOptions(exercisesInWorkout, units);
       setExercises(exerciseOptions);
 
       const metadataMap = new Map<string, ExerciseMetadata>();
@@ -103,7 +108,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     } finally {
       setIsLoading(false);
     }
-  }, [isEditMode, templateId, t, showSnackbar]);
+  }, [isEditMode, templateId, t, showSnackbar, units]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -175,7 +180,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         templateId: isEditMode ? templateId : undefined,
         name: workoutTitle.trim(),
         description: description.trim() || undefined,
-        volumeCalculationType: volumeCalc,
+        workoutInsightsType: workoutInsights,
         type: workoutType,
         icon: icon ?? undefined,
         weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
@@ -193,7 +198,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
   }, [
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     exercises,
@@ -238,26 +243,40 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         prev.map((ex) => {
           if (ex.id === exerciseId) {
             const meta = exerciseMetadata.get(exerciseId);
-            const baseDescription = meta
-              ? formatExerciseDescription(meta.sets, meta.reps)
-              : ex.description.replace(' • 📝', '');
+            if (meta) {
+              const row = formatExerciseListRowMeta(
+                meta.sets,
+                meta.reps,
+                meta.weight,
+                meta.isBodyweight,
+                units
+              );
+              const baseDescription = notes ? `${row.description} • 📝` : row.description;
+              return {
+                ...ex,
+                description: baseDescription,
+                trailingHighlight: row.trailingHighlight,
+              };
+            }
+            const baseDescription = ex.description.replace(' • 📝', '');
             return {
               ...ex,
               description: notes ? `${baseDescription} • 📝` : baseDescription,
+              trailingHighlight: undefined,
             };
           }
           return ex;
         })
       );
     },
-    [exerciseMetadata]
+    [exerciseMetadata, units]
   );
 
   return {
     // State
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     selectedDays,
@@ -272,7 +291,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     // Setters
     setWorkoutTitle,
     setDescription,
-    setVolumeCalc,
+    setWorkoutInsights,
     setWorkoutType,
     setIcon,
     setFocusedField,

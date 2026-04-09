@@ -1,8 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../database';
-import Food from '../database/models/Food';
-import { FoodService, MealService, NutritionService } from '../database/services';
+import { database } from '@/database';
+import Food from '@/database/models/Food';
+import { FoodService, MealService, NutritionService } from '@/database/services';
+
+import { localCalendarDayDate } from './calendarDate';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -69,7 +71,7 @@ export async function processParsedNutritionEntries(
     sugar?: number;
   }[]
 > {
-  // Map meal type numbers to database MealType strings
+  const day = localCalendarDayDate(date);
 
   const results = [];
 
@@ -104,7 +106,7 @@ export async function processParsedNutritionEntries(
       const mealType = mapMealTypeToDb(entry.mealType);
       await NutritionService.logFood(
         food.id,
-        date,
+        day,
         mealType,
         1, // Default amount of 1 serving
         undefined, // No specific portion
@@ -118,7 +120,7 @@ export async function processParsedNutritionEntries(
         fat: entry.fat,
         protein: entry.protein,
         mealType: entry.mealType,
-        date,
+        date: day,
         fiber: entry.fiber,
         sodium: entry.sodium,
         sugar: entry.sugar,

@@ -1,8 +1,8 @@
 import { useEffect, useId, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useTheme } from '../../hooks/useTheme';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Cell intensity: 0 = empty (border color), 1–5 = neon at 20%, 40%, 60%, 80%, 100%.

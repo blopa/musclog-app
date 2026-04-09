@@ -3,8 +3,7 @@ import { ReactNode, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GoogleSignInButton } from '../../components/GoogleSignInButton';
-import { Button } from '../../components/theme/Button';
+import { Button } from '@/components/theme/Button';
 
 type ButtonVariant =
   | 'accent'
@@ -205,29 +204,6 @@ export default function ButtonTestScreen() {
               <View className="flex-row gap-3">
                 <Button label="Skip" variant="outline" width="flex-1" size="sm" />
                 <Button label="Save" variant="accent" width="flex-1" size="sm" />
-              </View>
-            </View>
-          </Section>
-
-          {/* Authentication Buttons */}
-          <Section title="Authentication Buttons">
-            <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
-                Google Sign In (Enabled)
-              </Text>
-              <View className="w-full items-center">
-                <GoogleSignInButton onPress={() => console.log('Google Sign In pressed')} />
-              </View>
-            </View>
-            <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
-                Google Sign In (Disabled)
-              </Text>
-              <View className="w-full items-center">
-                <GoogleSignInButton
-                  disabled={true}
-                  onPress={() => console.log('Disabled button pressed')}
-                />
               </View>
             </View>
           </Section>

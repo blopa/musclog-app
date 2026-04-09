@@ -15,6 +15,7 @@ export default class Meal extends Model {
   @field('description') description?: string;
   @field('image_url') imageUrl?: string; // URL to meal image
   @field('is_favorite') isFavorite!: boolean;
+  @field('prepared_weight_grams') preparedWeightGrams?: number;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

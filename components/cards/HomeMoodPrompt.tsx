@@ -10,12 +10,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { UserMetricService } from '../../database/services';
-import { useSettings } from '../../hooks/useSettings';
-import { useTodayMood } from '../../hooks/useTodayMood';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { showSnackbar } from '../../utils/snackbarService';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import { UserMetricService } from '@/database/services';
+import { useSettings } from '@/hooks/useSettings';
+import { useTodayMood } from '@/hooks/useTodayMood';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { MoodSelectorCard } from './MoodSelectorCard';
 
 export function HomeMoodPrompt() {

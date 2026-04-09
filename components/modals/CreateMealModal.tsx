@@ -21,22 +21,27 @@ import {
   View,
 } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import type { MealType } from '../../database/models';
-import Food from '../../database/models/Food';
-import Meal from '../../database/models/Meal';
-import { MealService, NutritionService } from '../../database/services';
-import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../theme';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
-import { TextInput } from '../theme/TextInput';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { StepperInput } from '@/components/theme/StepperInput';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { MealType } from '@/database/models';
+import Food from '@/database/models/Food';
+import Meal from '@/database/models/Meal';
+import { MealService, NutritionService } from '@/database/services';
+import { type Ingredient, useEditMealIngredients } from '@/hooks/useEditMealIngredients';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
+import { localCalendarDayDate } from '@/utils/calendarDate';
+import { captureException } from '@/utils/sentry';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerInput } from './DatePickerInput';
@@ -317,8 +322,13 @@ export function CreateMealModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { units } = useSettings();
+  const massUnit = getMassUnitLabel(units);
+  const stepDisplay = units === 'imperial' ? 0.5 : 10;
+  const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
+  const [mealDescription, setMealDescription] = useState('');
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
@@ -326,11 +336,14 @@ export function CreateMealModal({
   const [deleteMealConfirmVisible, setDeleteMealConfirmVisible] = useState(false);
   const [isDeletingMeal, setIsDeletingMeal] = useState(false);
   const [ingredientToRemoveId, setIngredientToRemoveId] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(logDate ?? new Date())
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
+  const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);
 
   const isQuickTrack = mode === 'quickTrack';
 
@@ -340,6 +353,8 @@ export function CreateMealModal({
 
   useEffect(() => {
     setMealName(meal?.name ?? '');
+    setMealDescription(meal?.description ?? '');
+    setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
   }, [meal]);
 
   useEffect(() => {
@@ -372,7 +387,7 @@ export function CreateMealModal({
 
   useEffect(() => {
     if (visible && isQuickTrack && logDate) {
-      setSelectedDate(logDate);
+      setSelectedDate(localCalendarDayDate(logDate));
     }
   }, [visible, isQuickTrack, logDate]);
 
@@ -389,17 +404,20 @@ export function CreateMealModal({
     );
   }, [ingredients]);
 
-  // Total meal weight in grams (quickTrack: for serving selector and scaling)
+  // Total meal weight in grams (sum of raw ingredients)
   const totalMealGrams = useMemo(
     () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
     [ingredients]
   );
 
+  // Reference grams for scaling: prepared weight if set, otherwise raw ingredient sum
+  const referenceMealGrams = preparedWeightGrams ?? totalMealGrams;
+
   useEffect(() => {
     if (isQuickTrack) {
-      setMealAmountGrams(totalMealGrams);
+      setMealAmountGrams(referenceMealGrams);
     }
-  }, [isQuickTrack, totalMealGrams]);
+  }, [isQuickTrack, referenceMealGrams]);
 
   const handleRemoveIngredient = (foodId: string) => {
     setIngredientToRemoveId(foodId);
@@ -431,6 +449,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleDeleteMeal' } });
       showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeletingMeal(false);
@@ -453,10 +472,10 @@ export function CreateMealModal({
         await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({ foodId: ing.foodId, amount: ing.amount })),
-          ''
+          mealDescription.trim()
         );
       }
-      const scale = totalMealGrams > 0 ? mealAmountGrams / totalMealGrams : 1;
+      const scale = referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
@@ -471,6 +490,7 @@ export function CreateMealModal({
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleTrack' } });
       showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
@@ -494,7 +514,11 @@ export function CreateMealModal({
     try {
       if (meal) {
         // Edit mode: update name, remove deleted foods, add new foods
-        await MealService.updateMeal(meal.id, { name: mealName.trim() });
+        await MealService.updateMeal(meal.id, {
+          name: mealName.trim(),
+          description: mealDescription.trim(),
+          preparedWeightGrams: preparedWeightGrams || null,
+        });
         for (const mealFoodId of removedMealFoodIdsRef.current) {
           await MealService.removeFoodFromMeal(mealFoodId);
         }
@@ -510,7 +534,9 @@ export function CreateMealModal({
             foodId: ing.foodId,
             amount: ing.amount,
           })),
-          '' // No description for now
+          mealDescription.trim(),
+          false,
+          preparedWeightGrams || undefined
         );
       }
 
@@ -521,6 +547,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
+      captureException(error, { data: { context: 'CreateMealModal.handleSave' } });
       showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);
@@ -624,22 +651,33 @@ export function CreateMealModal({
               onChangeText={setMealName}
               placeholder={t('food.createMeal.mealNamePlaceholder')}
             />
+            <View style={{ marginTop: theme.spacing.margin.lg }}>
+              <TextInput
+                label={t('common.description')}
+                value={mealDescription}
+                onChangeText={setMealDescription}
+                placeholder={t('food.createMeal.mealDescriptionPlaceholder')}
+                multiline
+                numberOfLines={4}
+                selectTextOnFocus={false}
+              />
+            </View>
           </View>
         ) : null}
 
         {/* Total Nutrition Card */}
         <MealMacrosSummary
           calories={
-            isQuickTrack && totalMealGrams > 0
-              ? totalMacros.calories * (mealAmountGrams / totalMealGrams)
+            isQuickTrack && referenceMealGrams > 0
+              ? totalMacros.calories * (mealAmountGrams / referenceMealGrams)
               : totalMacros.calories
           }
           macros={
-            isQuickTrack && totalMealGrams > 0
+            isQuickTrack && referenceMealGrams > 0
               ? {
-                  protein: totalMacros.protein * (mealAmountGrams / totalMealGrams),
-                  carbs: totalMacros.carbs * (mealAmountGrams / totalMealGrams),
-                  fat: totalMacros.fat * (mealAmountGrams / totalMealGrams),
+                  protein: totalMacros.protein * (mealAmountGrams / referenceMealGrams),
+                  carbs: totalMacros.carbs * (mealAmountGrams / referenceMealGrams),
+                  fat: totalMacros.fat * (mealAmountGrams / referenceMealGrams),
                 }
               : totalMacros
           }
@@ -777,6 +815,42 @@ export function CreateMealModal({
           </View>
         </View>
 
+        {/* Prepared weight input (create/edit mode only) */}
+        {!isQuickTrack ? (
+          <View className="mb-6">
+            <StepperInput
+              label={t('food.createMeal.preparedWeight', { unit: massUnit })}
+              value={gramsToDisplay(preparedWeightGrams ?? totalMealGrams, units)}
+              onIncrement={() => {
+                const current = preparedWeightGrams ?? totalMealGrams;
+                const next = Math.round(current + stepAmount);
+                setPreparedWeightGrams(next > 0 ? next : undefined);
+              }}
+              onDecrement={() => {
+                const current = preparedWeightGrams ?? totalMealGrams;
+                const next = Math.round(current - stepAmount);
+                setPreparedWeightGrams(next > 0 ? next : undefined);
+              }}
+              onChangeValue={(displayVal) => {
+                const grams = Math.round(displayToGrams(displayVal, units));
+                setPreparedWeightGrams(grams > 0 ? grams : undefined);
+              }}
+              unit={massUnit}
+              step={stepDisplay}
+              maxFractionDigits={units === 'imperial' ? 1 : 0}
+            />
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                color: theme.colors.text.secondary,
+                marginTop: theme.spacing.padding.sm,
+              }}
+            >
+              {t('food.createMeal.preparedWeightHelper')}
+            </Text>
+          </View>
+        ) : null}
+
         {/* Quick Track: Serving size (grams), date, meal type, save toggle, optional meal name */}
         {isQuickTrack ? (
           <>
@@ -785,12 +859,12 @@ export function CreateMealModal({
                 value={mealAmountGrams}
                 onChange={(v) => setMealAmountGrams(Math.round(v))}
                 quickSizes={
-                  totalMealGrams > 0
+                  referenceMealGrams > 0
                     ? [
-                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
-                        { label: '1×', value: totalMealGrams },
-                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
-                        { label: '2×', value: totalMealGrams * 2 },
+                        { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
+                        { label: '1×', value: referenceMealGrams },
+                        { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
+                        { label: '2×', value: referenceMealGrams * 2 },
                       ]
                     : []
                 }
@@ -868,6 +942,17 @@ export function CreateMealModal({
                   onChangeText={setMealName}
                   placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
                 />
+                <View style={{ marginTop: theme.spacing.margin.lg }}>
+                  <TextInput
+                    label={t('common.description')}
+                    value={mealDescription}
+                    onChangeText={setMealDescription}
+                    placeholder={t('food.createMeal.mealDescriptionPlaceholder')}
+                    multiline
+                    numberOfLines={4}
+                    selectTextOnFocus={false}
+                  />
+                </View>
               </View>
             ) : null}
           </>

@@ -51,7 +51,8 @@
       "noExercisesFound": "Nenhum exercício encontrado correspondente a \"{{query}}\"",
       "noExercisesAvailable": "Nenhum exercício disponível para {{muscle}}",
       "exerciseDescription": "{{sets}} séries × {{reps}} repetições",
-      "exerciseDescriptionWithWeight": "{{sets}} séries × {{reps}} repetições @ {{weight}}{{unit}}"
+      "exerciseDescriptionWithWeight": "{{sets}} séries × {{reps}} repetições @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} séries × {{reps}} repetições @"
     },
     "filterWorkouts": {
       "title": "Filtrar Treinos",
@@ -159,6 +160,15 @@
     },
     "templateBrowser": {
       "comingSoon": "Navegador de modelos em breve!"
+    },
+    "interruptedSession": {
+      "description": "Você tem um treino em andamento.",
+      "resume": "Retomar",
+      "discard": "Descartar",
+      "discardConfirmTitle": "Descartar Treino?",
+      "discardConfirmMessage": "Isso vai apagar permanentemente seu treino em andamento e todas as séries registradas.",
+      "discardConfirm": "Descartar",
+      "discardCancel": "Manter"
     },
     "unnamed": "Sem nome"
   }

@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle } from 'lucide-react-native';
 import { useRef } from 'react';
 import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export type SnackbarType = {
   id: number;

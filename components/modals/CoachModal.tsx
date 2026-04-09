@@ -29,7 +29,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -45,6 +44,13 @@ import {
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { ChatMealCard } from '@/components/cards/ChatMealCard';
+import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
+import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
+import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
@@ -52,29 +58,21 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
-} from '../../constants/chat';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { useUnreadChat } from '../../context/UnreadChatContext';
-import { ChatService } from '../../database/services';
-import {
-  AI_COACH_AVATAR,
-  type ExtendedIMessage,
-  useChatMessages,
-} from '../../hooks/useChatMessages';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../theme';
-import { type TrackMealIngredient } from '../../utils/coachAI';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { createThumbnail, pickDocument } from '../../utils/file';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { ChatMealCard } from '../cards/ChatMealCard';
-import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
-import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
-import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
-import { MenuButton } from '../theme/MenuButton';
-import { SegmentedControl } from '../theme/SegmentedControl';
+} from '@/constants/chat';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { useUnreadChat } from '@/context/UnreadChatContext';
+import { ChatService } from '@/database/services';
+import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
+import { type TrackMealIngredient } from '@/utils/coachAI';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
+import { createThumbnail, pickDocument } from '@/utils/file';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { captureException } from '@/utils/sentry';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';
@@ -644,6 +642,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
   const [isOnline, setIsOnline] = useState(false);
   const pendingIntention = hookPendingIntention;
   const setPendingIntention = setHookPendingIntention;
@@ -902,7 +901,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               description: t('coach.message.shareDesc'),
               onPress: () => {
                 setSelectedMessage(null);
-                Share.share({ message: selectedMessage.text ?? '' }).catch(() => {});
+                shareText(selectedMessage.text ?? '').catch(() => {});
               },
             },
             {
@@ -923,6 +922,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         : [],
     [
       selectedMessage,
+      shareText,
       showSnackbar,
       t,
       theme.colors.background.iconDarker,
@@ -991,12 +991,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         );
       }
 
-      await Share.share({ message: lines.join('\n') });
+      await shareText(lines.join('\n'));
     } catch (err) {
       console.error('[CoachModal] shareHistory failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleShareHistory' } });
       showSnackbar('error', t('coach.share.failed'));
     }
-  }, [conversationContext, i18n.resolvedLanguage, i18n.language, showSnackbar, t]);
+  }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);
@@ -1011,6 +1012,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
       console.error('[CoachModal] clearHistory failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleConfirmClearHistory' } });
       showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsClearingHistory(false);
@@ -1030,6 +1032,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       showSnackbar('success', t('coach.message.deleted'));
     } catch (err) {
       console.error('[CoachModal] deleteMessage failed:', err);
+      captureException(err, { data: { context: 'CoachModal.handleConfirmDeleteMessage' } });
       showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsDeletingMessage(false);

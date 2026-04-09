@@ -1,10 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import { ExerciseService } from '../database/services';
+import { DEFAULT_BATCH_SIZE } from '@/constants/database';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import { ExerciseService } from '@/database/services';
 
 // Hook parameters
 export interface UseExercisesParams {

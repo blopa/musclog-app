@@ -7,13 +7,14 @@ import {
   MappedNutriments,
   SearchResultProduct,
   SuccessFoodProductState,
-} from '../types/openFoodFacts';
-import { resolveRoundedPer100gCaloriesForDisplay } from '../utils/inferCaloriesFromMacros';
-import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
-import { getProductName } from '../utils/productName';
-import { gramsToDisplay } from '../utils/unitConversion';
-import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
-import { mapUSDAFoodToUnified } from '../utils/usdaMapper';
+} from '@/types/openFoodFacts';
+import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
+import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '@/utils/openFoodFactsMapper';
+import { getProductName } from '@/utils/productName';
+import { gramsToDisplay } from '@/utils/unitConversion';
+import { getMassUnit, getMassUnitI18nKey } from '@/utils/units';
+import { mapUSDAFoodToUnified } from '@/utils/usdaMapper';
+
 import { useFoods } from './useFoods';
 import { useSettings } from './useSettings';
 

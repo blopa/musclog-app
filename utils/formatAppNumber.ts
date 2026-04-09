@@ -52,15 +52,35 @@ import { roundToDecimalPlaces } from './roundDecimal';
  * - **`.toFixed(` in `*.tsx`:** only `DataLogModal` (rounding numeric payloads for dev tools / export, not
  *   end-user locale strings) — OK.
  * - **`MacroInput` + nutrition editing:** `CreateCustomFoodModal` + `FoodMealDetailsModal` use
- *   `useFormatAppNumber` / `formatAppRoundedDecimal` for seeded display strings; input uses
- *   `localizedDecimalInput.ts` for typing.
+ *   `formatAppRoundedDecimal` for seeded display strings; input uses `localizedDecimalInput.ts` for typing.
+ * - **Portion labels:** `FoodMealDetailsModal` `generatePortionName` (auto-created `FoodPortion.name` from
+ *   barcode/serving match) uses **`formatDisplayGrams(locale, units, grams)`** so amounts follow locale.
+ * - **Serving UI:** `ServingSizeSelector` + `StepperInput` use `useFormatAppNumber` for tab labels; numeric
+ *   `gramsToDisplay` is only the internal stepper **value** (Stepper formats for display).
  * - **Widgets:** `widgets/NutritionWidget.tsx` uses `formatAppInteger` + i18n locale.
  * - **Services (Health Connect, etc.):** `formatAppDecimal` / `formatAppInteger` build **string fields** for
  *   native health APIs — display-oriented; DB remains numeric.
- * - **Gaps fixed in audit:** `ViewExerciseModal` (personal best weight, avg frequency) and `app/cycle.tsx`
- *   (flow intensity digit) now use `formatDisplayWeightKg` / `formatRoundedDecimal` / `formatInteger`.
+ * - **Earlier gaps (fixed):** `ViewExerciseModal`, `app/cycle.tsx` flow intensity — now use locale helpers.
  * - **Still intentionally plain:** test screens, chart demo props with hardcoded `"23%"`, `ActivityRingsChart`
  *   `value: string` (callers pre-format), time `HH:MM:SS`, CSS `%` widths.
+ * - **Not display strings:** `roundToDecimalPlaces` in services / `MyMealsModal` AI→`createCustomFood`,
+ *   `utils/nutritionCalculator` `parseFloat(.toFixed())` — **numeric** pipeline for DB/API.
+ *
+ * ### Deep scan (2026-03) — `kgToDisplay` / `gramsToDisplay` vs locale
+ *
+ * Raw `kgToDisplay` / `gramsToDisplay` return **numbers** (still using `.` internally). **UI must not**
+ * stringify them for users except via `useFormatAppNumber` / `formatDisplayWeightKg` / `formatDisplayGrams`
+ * / chart helpers. Verified: `FoodItemCard` (`MacroItem` → `formatRoundedDecimal`), `nutrition-goals-results`
+ * (`formatDecimal` / `formatInteger`), `CheckinDetailsModal` weight rows, `BodyMetricsHistoryModal` deltas,
+ * `profile` stats, `FreeSessionExerciseCompleteModal` volume, `ServingSizeSelector` quick tabs, `StepperInput`
+ * / `StepperInlineInput` `formatValue`. **Typing** locale (comma vs dot) lives in `localizedDecimalInput.ts`;
+ * **display** locale lives here — keep both when adding numeric fields.
+ *
+ * ### Ongoing checklist (new UI)
+ *
+ * 1. User-visible number → `useFormatAppNumber()` or `formatDisplayWeight*` / `foodDisplay` helpers.
+ * 2. Avoid `toFixed` / `` `${n}` `` in `Text` for amounts (see regression grep above).
+ * 3. `t('key', { count: n })` / `t('key', { value: n })` → pass **pre-formatted** strings if separators matter.
  */
 
 const formatterCache = new Map<string, Intl.NumberFormat>();

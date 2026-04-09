@@ -5,9 +5,15 @@ import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import type { Units } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
 import {
   ChatService,
   ExerciseService,
@@ -20,28 +26,24 @@ import {
   UserMetricService,
   WorkoutService,
   WorkoutTemplateService,
-} from '../../database/services';
-import { useChatMessageDataLogs } from '../../hooks/useChatMessageDataLogs';
-import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
-import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
-import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
-import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
-import { useMealDataLogs } from '../../hooks/useMealDataLogs';
-import { useNutritionCheckinDataLogs } from '../../hooks/useNutritionCheckinDataLogs';
-import { useNutritionGoalDataLogs } from '../../hooks/useNutritionGoalDataLogs';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
-import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
-import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
+} from '@/database/services';
+import { useChatMessageDataLogs } from '@/hooks/useChatMessageDataLogs';
+import { useExerciseDataLogs } from '@/hooks/useExerciseDataLogs';
+import { useFoodDataLogs } from '@/hooks/useFoodDataLogs';
+import { useFoodPortionDataLogs } from '@/hooks/useFoodPortionDataLogs';
+import { useFoodsDataLogs } from '@/hooks/useFoodsDataLogs';
+import { useMealDataLogs } from '@/hooks/useMealDataLogs';
+import { useNutritionCheckinDataLogs } from '@/hooks/useNutritionCheckinDataLogs';
+import { useNutritionGoalDataLogs } from '@/hooks/useNutritionGoalDataLogs';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useUserMetricDataLogs } from '@/hooks/useUserMetricDataLogs';
+import { useWorkoutLogDataLogs } from '@/hooks/useWorkoutLogDataLogs';
+import { useWorkoutTemplateDataLogs } from '@/hooks/useWorkoutTemplateDataLogs';
+import { captureException } from '@/utils/sentry';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
 import CreateExerciseModal from './CreateExerciseModal';
@@ -598,7 +600,7 @@ export function DataLogModal({
     save: saveEdit,
   } = useEditRecord(variant, editRecordId, editModalVisible);
 
-  const editFields = getEditFields(variant);
+  const editFields = getEditFields(variant, units);
 
   const handleCloseEditModal = () => {
     setEditModalVisible(false);
@@ -856,6 +858,8 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Toggle favorite failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleToggleFavorite' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
@@ -890,6 +894,7 @@ export function DataLogModal({
         showSnackbar('success', t('common.success'));
       } catch (error) {
         console.error('Regenerate check-ins failed:', error);
+        captureException(error, { data: { context: 'DataLogModal.handleRegenerateCheckins' } });
         showSnackbar('error', t('common.error'));
       } finally {
         setIsRegenerating(false);
@@ -936,6 +941,7 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Duplicate failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleDuplicate' } });
       showSnackbar('error', t('common.duplicateFailed'));
     } finally {
       setIsDuplicating(false);
@@ -1024,6 +1030,7 @@ export function DataLogModal({
       setDeleteModalVisible(false);
     } catch (error) {
       console.error('Delete failed:', error);
+      captureException(error, { data: { context: 'DataLogModal.handleDelete' } });
       showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeleting(false);
@@ -1526,8 +1533,8 @@ export function DataLogModal({
       {createFoodModalVisible ? (
         <CreateCustomFoodModal
           visible={createFoodModalVisible}
-          onClose={() => setCreateFoodModalVisible(false)}
-          onSave={() => {
+          trackFoodAfterSave={true}
+          onClose={() => {
             refresh();
             setCreateFoodModalVisible(false);
           }}
@@ -1588,8 +1595,8 @@ export function DataLogModal({
           visible={createGenericModalVisible}
           onClose={() => setCreateGenericModalVisible(false)}
           title={getCreateModalTitle(variant, t)}
-          fields={getCreateFields(variant)}
-          initialValues={getCreateInitialValues(variant)}
+          fields={getCreateFields(variant, units)}
+          initialValues={getCreateInitialValues(variant, units)}
           onSave={async (values) => {
             await createRecord(variant, values, { units });
             await refresh();

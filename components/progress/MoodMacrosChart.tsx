@@ -2,24 +2,21 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MoodMacrosPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { StackedBarLineChart } from '../charts/StackedBarLineChart';
+import { StackedBarLineChart } from '@/components/charts/StackedBarLineChart';
+import { MoodMacrosPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MoodMacrosChartProps {
   allData: Record<TimeAggregation, MoodMacrosPoint[]>;
 }
 
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const moodLabels = [
@@ -73,7 +70,7 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   return (

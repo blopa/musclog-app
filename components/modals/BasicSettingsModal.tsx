@@ -18,17 +18,18 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { type FoodSearchSource } from '../../constants/settings';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { useTheme } from '../../hooks/useTheme';
-import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '../../lang/lang';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { PickerButton } from '../theme/PickerButton';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { ToggleInput } from '../theme/ToggleInput';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { Button } from '@/components/theme/Button';
+import { PickerButton } from '@/components/theme/PickerButton';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { type FoodSearchSource } from '@/constants/settings';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useSyncTracking } from '@/hooks/useSyncTracking';
+import { useTheme } from '@/hooks/useTheme';
+import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type ThemeOption = 'system' | 'light' | 'dark';

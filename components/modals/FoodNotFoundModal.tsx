@@ -3,8 +3,8 @@ import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useTheme } from '@/hooks/useTheme';
 
 type FoodNotFoundModalProps = {
   visible: boolean;
@@ -56,7 +56,12 @@ export function FoodNotFoundModal({
               colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="flex-row items-center gap-4 p-4"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 16,
+                padding: 16,
+              }}
             >
               <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
                 <Text className="text-2xl">✨</Text>

@@ -1,20 +1,21 @@
-import { subYears } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSnackbar } from '../context/SnackbarContext';
-import type { FitnessDetails } from '../types/fitnessDetails';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { FitnessDetails } from '@/types/fitnessDetails';
 import {
+  defaultAdultDobDisplayString,
   loadFitnessDetailsInitialData,
   persistFitnessDetails,
-} from '../utils/fitnessProfilePersistence';
+} from '@/utils/fitnessProfilePersistence';
+
 import { useSettings } from './useSettings';
 
 const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
 
 export function useOnboardingFitnessData() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units, isLoading: isSettingsLoading } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
@@ -24,20 +25,15 @@ export function useOnboardingFitnessData() {
     undefined
   );
 
-  const defaultDobFallback = useCallback(() => {
-    const fmt = (d: Date) => {
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${month}/${day}/${year}`;
-    };
-    return fmt(subYears(new Date(), 25));
-  }, []);
+  const defaultDobFallback = useCallback(
+    () => defaultAdultDobDisplayString(25, i18n.language),
+    [i18n.language]
+  );
 
   useEffect(() => {
     const loadFitnessData = async () => {
       try {
-        const loaded = await loadFitnessDetailsInitialData(units);
+        const loaded = await loadFitnessDetailsInitialData(units, i18n.language);
         if (!loaded.dob?.trim()) {
           loaded.dob = defaultDobFallback();
         }
@@ -63,7 +59,7 @@ export function useOnboardingFitnessData() {
     if (!isSettingsLoading) {
       loadFitnessData();
     }
-  }, [units, isSettingsLoading, defaultDobFallback]);
+  }, [units, isSettingsLoading, defaultDobFallback, i18n.language]);
 
   const saveFitnessData = useCallback(
     async (data: FitnessDetails): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {

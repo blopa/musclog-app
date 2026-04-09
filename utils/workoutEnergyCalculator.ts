@@ -9,7 +9,7 @@
 
 import convert from 'convert';
 
-import type { EquipmentType, Gender, MechanicType, MuscleGroup } from '../database/models';
+import type { EquipmentType, Gender, MechanicType, MuscleGroup } from '@/database/models';
 
 // ---------------------------------------------------------------------------
 // Constants

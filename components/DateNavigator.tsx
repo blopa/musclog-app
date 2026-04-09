@@ -2,8 +2,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
-import { localCalendarDayDate, localCalendarDayPlusDays } from '../utils/calendarDate';
+import { useTheme } from '@/hooks/useTheme';
+import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
+
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 

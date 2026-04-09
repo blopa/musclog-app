@@ -1,5 +1,5 @@
-import { type Theme } from '../theme';
-import { AvatarColor } from '../types/AvatarColor';
+import { type Theme } from '@/theme';
+import { AvatarColor } from '@/types/AvatarColor';
 
 export function getAvatarColor(theme: Theme, avatarColor?: AvatarColor | null) {
   if (!avatarColor) {

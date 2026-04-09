@@ -16,7 +16,9 @@ import {
   Leaf,
   Pencil,
   Pill,
+  Plus,
   PlusCircle,
+  Scale,
   ScanLine,
   Shield,
   Sparkles,
@@ -26,26 +28,35 @@ import {
   Thermometer,
   Waves,
   Wine,
+  X,
   Zap,
 } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import Food from '../../database/models/Food';
-import { FoodService } from '../../database/services';
-import { useFoodPortions } from '../../hooks/useFoodPortions';
-import { useTheme } from '../../hooks/useTheme';
+import { MacroInput } from '@/components/MacroInput';
+import { Button } from '@/components/theme/Button';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import Food from '@/database/models/Food';
+import FoodPortion from '@/database/models/FoodPortion';
+import { FoodService } from '@/database/services';
+import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
-import { MacroInput } from '../MacroInput';
-import { Button } from '../theme/Button';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+} from '@/utils/localizedDecimalInput';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -68,6 +79,7 @@ export default function CreateCustomFoodModal({
   isAiEnabled = true,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
+  const { units } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
@@ -135,9 +147,22 @@ export default function CreateCustomFoodModal({
   const { portions, isLoading: isLoadingPortions } = useFoodPortions({
     mode: 'all',
     visible: visible,
+    // Must match PortionSizesPickerModal so selected user/custom portions resolve for chips
+    includeAllPortionSources: true,
   });
+  const { formatInteger } = useFormatAppNumber();
+
+  const selectedPortionsOrdered = useMemo(() => {
+    return selectedPortionIds
+      .map((id) => portions.find((p) => p.id === id))
+      .filter((p): p is FoodPortion => p != null);
+  }, [selectedPortionIds, portions]);
 
   const isSaveDisabled = !foodName.trim();
+
+  const handleRemovePortion = (portionId: string) => {
+    setSelectedPortionIds((prev) => prev.filter((id) => id !== portionId));
+  };
 
   const handleSave = async () => {
     const foodData = {
@@ -169,6 +194,8 @@ export default function CreateCustomFoodModal({
 
         // Determine serving amount/unit based on selected portion
         let servingAmount = 100;
+
+        // TODO: shouldn't we check if user uses metric or imperial?
         let servingUnit = 'g';
 
         if (selectedPortionIds.length > 0) {
@@ -200,6 +227,8 @@ export default function CreateCustomFoodModal({
         setIsFoodDetailsVisible(true);
       } catch (err) {
         console.error('Error creating custom food:', err);
+        captureException(err, { data: { context: 'CreateCustomFoodModal.handleSave' } });
+        showSnackbar('error', t('food.newCustomFood.errorSaving'));
       } finally {
         setIsSaving(false);
       }
@@ -653,49 +682,123 @@ export default function CreateCustomFoodModal({
             <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
               {t('food.newCustomFood.portionSizes')}
             </Text>
-            <Pressable
-              className="min-h-12 overflow-hidden rounded-lg border"
-              style={{
-                backgroundColor: theme.colors.background.secondary,
-                borderColor: theme.colors.background.white20,
-                borderWidth: 1,
-              }}
-              onPress={() => setShowPortionPicker(true)}
-              disabled={isLoadingPortions}
-            >
-              <View className="min-h-12 flex-row items-center justify-between p-3">
-                <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
-                  {isLoadingPortions ? (
-                    <SkeletonLoader width="80%" height={20} borderRadius={10} />
-                  ) : selectedPortionIds.length > 0 ? (
-                    selectedPortionIds.map((id) => {
-                      const portion = portions.find((p) => p.id === id);
-                      return portion ? (
-                        <View
-                          key={id}
-                          className="rounded-full px-3 py-1.5"
-                          style={{ backgroundColor: theme.colors.status.emerald }}
+            {isLoadingPortions ? (
+              <SkeletonLoader width="100%" height={56} borderRadius={theme.borderRadius.lg} />
+            ) : (
+              <View
+                style={{
+                  gap: theme.spacing.gap.base,
+                }}
+              >
+                {selectedPortionsOrdered.length === 0 ? (
+                  <Text className="mb-1 ml-1 text-sm text-text-tertiary">
+                    {t('food.newCustomFood.selectPortionSizes')}
+                  </Text>
+                ) : null}
+                {selectedPortionsOrdered.map((portion) => {
+                  const IconComponent = getFoodPortionIconComponent(portion.icon) ?? Scale;
+                  const displayWeight = gramsToDisplay(portion.gramWeight, units);
+                  const gramsLabel = formatInteger(Math.round(displayWeight));
+                  const massUnit = getMassUnitLabel(units);
+                  return (
+                    <View
+                      key={portion.id}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        borderWidth: 1,
+                        borderColor: theme.colors.background.white20,
+                        backgroundColor: theme.colors.background.secondary,
+                        paddingHorizontal: theme.spacing.padding.md,
+                        paddingVertical: theme.spacing.padding.sm,
+                        gap: theme.spacing.gap.sm,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 44,
+                          height: 44,
+                          flexShrink: 0,
+                          borderRadius: theme.borderRadius.md,
+                          backgroundColor: theme.colors.accent.primary10,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <IconComponent
+                          size={theme.iconSize.md}
+                          color={theme.colors.accent.primary}
+                        />
+                      </View>
+                      <Text
+                        className="min-w-0 flex-1 text-base font-medium text-text-primary"
+                        numberOfLines={2}
+                      >
+                        {portion.name}
+                      </Text>
+                      <View
+                        style={{
+                          flexShrink: 0,
+                          borderRadius: theme.borderRadius.full,
+                          backgroundColor: theme.colors.status.emerald,
+                          paddingHorizontal: theme.spacing.padding.sm,
+                          paddingVertical: theme.spacing.padding.xs,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: theme.typography.fontSize.sm,
+                            fontWeight: theme.typography.fontWeight.semibold,
+                            color: theme.colors.text.white,
+                          }}
                         >
-                          <Text
-                            className="text-sm font-medium"
-                            style={{ color: theme.colors.text.white }}
-                          >
-                            {portion.name} ({portion.gramWeight}g)
-                          </Text>
-                        </View>
-                      ) : null;
-                    })
-                  ) : (
-                    <Text className="text-text-tertiary">
-                      {t('food.newCustomFood.selectPortionSizes')}
-                    </Text>
-                  )}
-                </View>
-                <View className="shrink-0 justify-center pl-2">
-                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                </View>
+                          {`(${gramsLabel}${massUnit})`}
+                        </Text>
+                      </View>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={t('food.newCustomFood.removePortion')}
+                        hitSlop={12}
+                        style={{ flexShrink: 0 }}
+                        onPress={() => handleRemovePortion(portion.id)}
+                      >
+                        <X size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+                      </Pressable>
+                    </View>
+                  );
+                })}
+                <Pressable
+                  disabled={isLoadingPortions}
+                  onPress={() => setShowPortionPicker(true)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: theme.borderRadius.lg,
+                    borderWidth: 1,
+                    borderColor: theme.colors.background.white20,
+                    backgroundColor: theme.colors.background.secondary,
+                    paddingVertical: theme.spacing.padding.md,
+                    gap: theme.spacing.gap.sm,
+                    opacity: isLoadingPortions ? 0.5 : 1,
+                  }}
+                >
+                  <Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      fontWeight: theme.typography.fontWeight.medium,
+                      color: theme.colors.text.primary,
+                    }}
+                  >
+                    {selectedPortionIds.length === 0
+                      ? t('food.newCustomFood.addPortionSizes')
+                      : t('food.newCustomFood.addAnotherPortion')}
+                  </Text>
+                </Pressable>
               </View>
-            </Pressable>
+            )}
           </View>
 
           {/* Macronutrients Header */}

@@ -1,9 +1,10 @@
 import convert from 'convert';
 
-import type { Units } from '../constants/settings';
-import i18n from '../lang/lang';
-import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
-import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
+import type { Units } from '@/constants/settings';
+import i18n from '@/lang/lang';
+import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
+import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
+
 import { HealthConnectError, HealthConnectErrorCode } from './healthConnectErrors';
 
 /**

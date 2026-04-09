@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { useTheme } from '@/hooks/useTheme';
 
 // Curated list of food-related MaterialIcons for portion sizes
 const FOOD_ICONS: ComponentProps<typeof MaterialIcons>['name'][] = [

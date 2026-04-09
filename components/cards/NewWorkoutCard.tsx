@@ -4,7 +4,8 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type NewWorkoutCardProps = {
@@ -77,9 +78,10 @@ export function NewWorkoutCard({
                 style={{
                   width: '100%',
                   height: '100%',
-                  borderRadius: theme.borderRadius.full,
+                  borderRadius: 100,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  overflow: 'hidden',
                   ...theme.shadows.accent,
                 }}
               >

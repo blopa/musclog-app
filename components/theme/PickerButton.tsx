@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type TestPickerButtonProps = {
   label: string;

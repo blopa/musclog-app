@@ -4,8 +4,8 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { WorkoutTemplateService } from '../../database/services/WorkoutTemplateService';
-import { useWorkoutTemplates } from '../useWorkoutTemplates';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 
 type FakeTemplate = { id: string; name: string };
 let subscribeNext: (val: FakeTemplate[]) => void;

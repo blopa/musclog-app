@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { GoogleAuthService } from '../database/services';
-import { SettingsService } from '../database/services/SettingsService';
-import { getAccessToken } from '../utils/googleAuth';
+import { SettingsService } from '@/database/services/SettingsService';
 
 /**
  * Hook to check if AI features are enabled and configured.
@@ -17,20 +15,6 @@ export function useAiEnabled(): { isEnabled: boolean; isLoading: boolean } {
 
     async function checkAiEnabled() {
       try {
-        // Priority 1: Check Google OAuth
-        const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-        if (oauthGeminiEnabled) {
-          const accessToken = await getAccessToken();
-          if (accessToken) {
-            if (!cancelled) {
-              setIsEnabled(true);
-              setIsLoading(false);
-            }
-            return;
-          }
-        }
-
-        // Priority 2: Check Gemini API key
         const enableGoogleGemini = await SettingsService.getEnableGoogleGemini();
         const googleGeminiApiKey = await SettingsService.getGoogleGeminiApiKey();
         if (enableGoogleGemini && googleGeminiApiKey?.trim()) {
@@ -41,7 +25,6 @@ export function useAiEnabled(): { isEnabled: boolean; isLoading: boolean } {
           return;
         }
 
-        // Priority 3: Check OpenAI API key
         const enableOpenAi = await SettingsService.getEnableOpenAi();
         const openAiApiKey = await SettingsService.getOpenAiApiKey();
         if (enableOpenAi && openAiApiKey?.trim()) {
@@ -52,7 +35,6 @@ export function useAiEnabled(): { isEnabled: boolean; isLoading: boolean } {
           return;
         }
 
-        // No AI provider configured
         if (!cancelled) {
           setIsEnabled(false);
           setIsLoading(false);

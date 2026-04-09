@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { XAxisLabel } from '@/utils/chartUtils';
 
 /** Map chart points to victory-native PointsArray (includes xValue, yValue) */
 function toPointsArray(

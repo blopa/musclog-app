@@ -3,7 +3,8 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import type { FitnessDetails } from '../types/fitnessDetails';
+import type { FitnessDetails } from '@/types/fitnessDetails';
+
 import { EditFitnessGoalsBody, type FitnessGoals } from './EditFitnessGoalsBody';
 import { EditPhysicalStatsBody, type PhysicalStats } from './EditPhysicalStatsBody';
 import { MaybeLaterButton } from './MaybeLaterButton';

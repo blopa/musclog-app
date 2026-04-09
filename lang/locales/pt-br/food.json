@@ -166,6 +166,10 @@
         "mealOptions": "Opções de Refeição",
         "editMeal": "Editar Refeição",
         "editMealDesc": "Modificar nome e ingredientes da refeição",
+        "shareMealAsRecipe": "Compartilhar refeição como receita",
+        "shareMealAsRecipeDesc": "Compartilhar ingredientes e instruções como texto",
+        "shareRecipeIngredientLine": "{{grams}}g de {{name}}",
+        "shareRecipeNoIngredients": "Esta refeição não tem ingredientes para compartilhar",
         "duplicateMeal": "Duplicar Refeição",
         "duplicateMealDesc": "Criar uma cópia desta refeição",
         "deleteMeal": "Excluir Refeição",
@@ -243,7 +247,15 @@
       "errorMessage": "Algo deu errado. Por favor, tente novamente."
     },
     "portions": {
-      "100g": "Padrão"
+      "100g": "Padrão",
+      "twoSlices": "Duas fatias",
+      "cup": "Xícara",
+      "tbsp": "Colher de sopa",
+      "tsp": "Colher de chá",
+      "oz": "Onça",
+      "50g": "Meia porção",
+      "200g": "Porção dupla",
+      "250g": "Porção grande"
     },
     "common": {
       "kcal": "kcal"
@@ -293,8 +305,8 @@
       "zeroMacrosNotFoundBody": "Não encontramos dados nutricionais em outras bases. Use o ícone de lápis para informar os valores manualmente.",
       "tryAnotherSource": "Tentar outra fonte >",
       "tryAnotherSourceNotFound": "Nenhum dado nutricional encontrado em outras fontes.",
-      "caloriesTooLowTitle": "Calorias podem estar muito baixas",
-      "caloriesTooLowBody": "As calorias reportadas parecem muito baixas comparadas aos macros. Valor inferido: {{inferred}} kcal / 100g.",
+      "caloriesTooLowTitle": "Calorias não correspondem aos macros",
+      "caloriesTooLowBody": "As calorias reportadas não correspondem ao que os macros sugerem. Valor inferido: {{inferred}} kcal / 100g.",
       "caloriesTooLowAction": "Atualizar para {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {
@@ -323,6 +335,7 @@
       "estimated": "Estimado",
       "mealName": "Nome da Refeição",
       "mealNamePlaceholder": "ex: Smoothie Pós-Treino",
+      "mealDescriptionPlaceholder": "Opcional — notas de preparo, quando costuma comer, etc.",
       "ingredients": "Ingredientes ({{count}})",
       "editList": "Editar Lista",
       "noIngredients": "Sem Ingredientes",
@@ -331,7 +344,9 @@
       "deleteIngredientWarning": "Tem certeza de que deseja remover este ingrediente?",
       "mealNameRequired": "Por favor, digite um nome para a refeição",
       "ingredientsRequired": "Por favor, adicione pelo menos um ingrediente",
-      "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente."
+      "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente.",
+      "preparedWeight": "Peso preparado ({{unit}})",
+      "preparedWeightHelper": "Opcional — peso após o cozimento"
     },
     "aiCamera": {
       "requestingPermission": "Solicitando permissão da câmera...",
@@ -397,7 +412,11 @@
       "imageUrl": "URL da Imagem",
       "imageUrlPlaceholder": "Cole a URL da imagem",
       "portionSizes": "Tamanhos de Porção",
-      "selectPortionSizes": "Selecionar tamanhos de porção..."
+      "addPortionSizes": "Adicionar tamanhos de porção",
+      "addAnotherPortion": "Adicionar outra porção",
+      "removePortion": "Remover porção",
+      "selectPortionSizes": "Selecionar tamanhos de porção...",
+      "errorSaving": "Falha ao salvar alimento personalizado. Por favor, tente novamente."
     },
     "errors": {
       "refreshFailed": "Falha ao Atualizar"

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export type SpiderChartProps = {
   /** Chart title */

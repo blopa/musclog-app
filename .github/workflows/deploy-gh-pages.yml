@@ -20,11 +20,14 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Cache node_modules
+      - name: Cache node_modules and Expo cache
         id: cache-npm
         uses: actions/cache@v4
         with:
-          path: node_modules
+          path: |
+            node_modules
+            .expo
+            /tmp/metro-*
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
@@ -33,6 +36,8 @@ jobs:
         run: npm ci
 
       - name: Build web application
+        env:
+          NODE_ENV: production
         run: |
           npm run build-android-web
           touch dist/.nojekyll

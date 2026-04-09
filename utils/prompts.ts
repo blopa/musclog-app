@@ -1,10 +1,9 @@
 import { FunctionDeclaration } from '@google/generative-ai';
-import convert, { Unit } from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 
-import type { Units } from '../constants/settings';
-import { User } from '../database/models';
+import type { Units } from '@/constants/settings';
+import { User } from '@/database/models';
 import {
   AiCustomPromptService,
   ExerciseService,
@@ -16,8 +15,9 @@ import {
   UserService,
   WorkoutService,
   WorkoutTemplateService,
-} from '../database/services';
-import i18n from '../lang/lang';
+} from '@/database/services';
+import i18n from '@/lang/lang';
+
 import {
   formatLocalCalendarDayIso,
   localDayClosedRangeMaxMs,
@@ -27,6 +27,7 @@ import {
 } from './calendarDate';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
+import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
@@ -182,15 +183,9 @@ export const getUserDetailsPrompt = async (
 
     if (latestWeight) {
       const { value, unit: storedUnit = 'kg' } = await latestWeight.getDecrypted();
-
-      // 1. Ensure our strings are treated as valid Units
-      const fromUnit = storedUnit as Unit;
-      const toUnit = weightUnit as Unit;
-
-      // 2. Perform the conversion logic
-      const finalValue = fromUnit === toUnit ? value : convert(value, fromUnit).to(toUnit);
-
-      const displayValue = Math.round(finalValue);
+      const weightKg = storedWeightToKg(value, storedUnit);
+      const displayWeight = kgToDisplay(weightKg, units);
+      const displayValue = Math.round(displayWeight);
       parts.push(`current weight is ${displayValue} ${weightUnit}`);
     }
 

@@ -9,9 +9,10 @@ import {
   View,
 } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { addOpacityToHex } from '../../theme';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 const ITEM_HEIGHT = 52;

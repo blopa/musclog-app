@@ -1,5 +1,5 @@
-import { database } from '../../index';
-import { AiCustomPromptService } from '../AiCustomPromptService';
+import { database } from '@/database/index';
+import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {

@@ -1,9 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useState } from 'react';
 
-import { database } from '../database';
-import type NutritionCheckin from '../database/models/NutritionCheckin';
-import { NutritionCheckinService } from '../database/services';
+import { database } from '@/database';
+import type NutritionCheckin from '@/database/models/NutritionCheckin';
+import { NutritionCheckinService } from '@/database/services';
 
 export interface UseNutritionCheckinsParams {
   /** Nutrition goal id to load check-ins for. When null/undefined, no fetch. */

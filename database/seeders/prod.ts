@@ -1,15 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 
-import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
-import usdaFoundationFoodsData from '../../data/usda_foundation_foods.json';
-import i18n, { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
-import { getEncryptionKey } from '../../utils/encryption';
-import { preloadExerciseImages } from '../../utils/exerciseImage';
-import { database } from '../database-instance';
-import Food from '../models/Food';
-import FoodFoodPortion from '../models/FoodFoodPortion';
-import Setting from '../models/Setting';
+import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
+import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
+import { database } from '@/database/database-instance';
+import Food from '@/database/models/Food';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import Setting from '@/database/models/Setting';
 import {
   ChatService,
   ExerciseService,
@@ -19,7 +16,10 @@ import {
   MigrationService,
   type MigrationStepKey,
   SettingsService,
-} from '../services';
+} from '@/database/services';
+import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
+import { getEncryptionKey } from '@/utils/encryption';
+import { preloadExerciseImages } from '@/utils/exerciseImage';
 
 export type InitProgressPhase = 'seeding' | 'migrating';
 
@@ -82,7 +82,7 @@ async function seedUSDAFoundationFoods(): Promise<void> {
         i18n.t('food.portions.100g'),
         100,
         'scale',
-        true
+        'app'
       );
     }
 

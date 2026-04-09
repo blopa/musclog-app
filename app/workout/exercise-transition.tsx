@@ -5,21 +5,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
-import { ExerciseTransitionScreen } from '../../components/ExerciseTransitionScreen';
-import { MasterLayout } from '../../components/MasterLayout';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { database } from '../../database';
-import Exercise from '../../database/models/Exercise';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { formatDuration } from '../../utils/workout';
+import { ExerciseTransitionScreen } from '@/components/ExerciseTransitionScreen';
+import { MasterLayout } from '@/components/MasterLayout';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatDuration } from '@/utils/workout';
 
 type NextExercisePayload = {
   name: string;

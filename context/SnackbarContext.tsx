@@ -1,11 +1,13 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Snackbar, type SnackbarType } from '../components/Snackbar';
-import { useTheme } from '../hooks/useTheme';
-import { registerSnackbarService, unregisterSnackbarService } from '../utils/snackbarService';
+import { Snackbar, type SnackbarType } from '@/components/Snackbar';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { registerSnackbarService, unregisterSnackbarService } from '@/utils/snackbarService';
+import { useWebBottomDockLayerStyle } from '@/utils/webPhoneFrame';
 
 type SnackbarContextType = {
   showSnackbar: (
@@ -77,6 +79,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   }, [showSnackbar]);
 
   const paddingBottom = Math.max(insets.bottom, theme.spacing.padding.base);
+  const webBottomDockStyle = useWebBottomDockLayerStyle();
 
   // On native, z-index is useless against React Native's Modal (which creates its own
   // native window layer). The only reliable fix is to render snackbars inside their own
@@ -90,18 +93,14 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       {children}
 
       {Platform.OS === 'web' ? (
-        /* Web: fixed positioning + high z-index is sufficient */
+        /* Web: viewport-fixed on narrow; shell-relative on desktop phone frame */
         <View
-          style={{
-            position: 'fixed' as any,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            width: '100vw' as any,
-            zIndex: 999999,
-            pointerEvents: 'box-none',
-            paddingBottom,
-          }}
+          style={[
+            webBottomDockStyle,
+            {
+              paddingBottom,
+            },
+          ]}
         >
           {snackbarList}
         </View>

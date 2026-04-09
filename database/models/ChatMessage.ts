@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field } from '@nozbe/watermelondb/decorators';
 
-import type { TrackedMeal, TrackMealIngredient } from '../../utils/coachAI';
+import type { TrackedMeal, TrackMealIngredient } from '@/utils/coachAI';
 
 export type ChatSender = 'user' | 'coach';
 export type ChatMessageType = 'text';

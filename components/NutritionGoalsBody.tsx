@@ -16,18 +16,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { type EatingPhase } from '../database/models';
-import { UserMetricService } from '../database/services';
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useSettings } from '../hooks/useSettings';
-import { useTheme } from '../hooks/useTheme';
-import i18n from '../lang/lang';
-import { localDayStartMs } from '../utils/calendarDate';
+import { type EatingPhase } from '@/database/models';
+import { UserMetricService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import i18n from '@/lang/lang';
+import { localDayStartMs } from '@/utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   ffmiFromWeightHeightAndBodyFat,
-} from '../utils/nutritionCalculator';
-import { displayToKg, kgToDisplay, storedHeightToCm } from '../utils/unitConversion';
+} from '@/utils/nutritionCalculator';
+import { displayToKg, kgToDisplay, storedHeightToCm } from '@/utils/unitConversion';
+
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';

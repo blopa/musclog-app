@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import type MenstrualCycle from '../../database/models/MenstrualCycle';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { type CycleSetupData, EditCycleSetupData } from '../EditCycleSetupData';
-import { Button } from '../theme/Button';
+import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
+import { Button } from '@/components/theme/Button';
+import type MenstrualCycle from '@/database/models/MenstrualCycle';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type CycleSettingsModalProps = {
@@ -49,6 +52,8 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
       handleClose();
     } catch (error) {
       console.error('Error updating cycle settings:', error);
+      captureException(error, { data: { context: 'CycleSettingsModal.handleSave' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSaving(false);
     }

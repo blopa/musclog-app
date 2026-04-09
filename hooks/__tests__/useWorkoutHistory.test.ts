@@ -4,9 +4,9 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { WorkoutAnalytics } from '../../database/services/WorkoutAnalytics';
-import { WorkoutService } from '../../database/services/WorkoutService';
-import { useWorkoutHistory } from '../useWorkoutHistory';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 
 type FakeWorkoutLog = {
   id: string;

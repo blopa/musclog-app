@@ -1,7 +1,8 @@
 import { Copy, Eye, Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { BottomPopUpMenu, BottomPopUpMenuItem } from './BottomPopUpMenu';
 
 type WorkoutDetailsMenuProps = {

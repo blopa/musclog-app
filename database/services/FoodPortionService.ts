@@ -1,9 +1,23 @@
 import { Q } from '@nozbe/watermelondb';
 
-import i18n from '../../lang/lang';
-import { database } from '../index';
-import FoodFoodPortion from '../models/FoodFoodPortion';
-import FoodPortion from '../models/FoodPortion';
+import { database } from '@/database/index';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import FoodPortion from '@/database/models/FoodPortion';
+import i18n from '@/lang/lang';
+
+/** Matches {@link FoodPortionService.createCommonPortions} i18n keys that were persisted literally in `name`. */
+const PORTION_DISPLAY_NAME_I18N_KEYS = [
+  'food.portions.slice',
+  'food.portions.twoSlices',
+  'food.portions.cup',
+  'food.portions.tbsp',
+  'food.portions.tsp',
+  'food.portions.oz',
+  'food.portions.100g',
+  'food.portions.50g',
+  'food.portions.200g',
+  'food.portions.250g',
+] as const;
 
 export class FoodPortionService {
   /**
@@ -25,7 +39,6 @@ export class FoodPortionService {
     name: string,
     gramWeight: number,
     icon?: string,
-    isDefault = false,
     source: 'app' | 'user' = 'user'
   ): Promise<FoodPortion> {
     const duplicate = await this.findExistingPortionByGramWeight(gramWeight);
@@ -39,7 +52,6 @@ export class FoodPortionService {
       return await database.get<FoodPortion>('food_portions').create((portion) => {
         portion.name = name;
         portion.gramWeight = gramWeight;
-        portion.isDefault = isDefault;
         if (icon) {
           portion.icon = icon;
         }
@@ -57,10 +69,9 @@ export class FoodPortionService {
     name: string,
     gramWeight: number,
     icon?: string,
-    isDefault = false,
     source: 'app' | 'user' = 'user'
   ): Promise<FoodPortion> {
-    return this.createFoodPortion(name, gramWeight, icon, isDefault, source);
+    return this.createFoodPortion(name, gramWeight, icon, source);
   }
 
   /**
@@ -74,12 +85,21 @@ export class FoodPortionService {
   }
 
   /**
-   * Get portions paginated (for data log modal), sorted by created_at desc
+   * Get portions paginated, sorted by created_at desc (newest first).
+   * Optional `source` limits to app catalog or user-created rows.
    */
-  static async getPortionsPaginated(limit: number, offset: number): Promise<FoodPortion[]> {
-    let query = database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+  static async getPortionsPaginated(
+    limit: number,
+    offset: number,
+    options?: { source?: 'app' | 'user' }
+  ): Promise<FoodPortion[]> {
+    const clauses = [
+      Q.where('deleted_at', Q.eq(null)),
+      ...(options?.source ? [Q.where('source', options.source)] : []),
+      Q.sortBy('created_at', Q.desc),
+    ];
+
+    let query = database.get<FoodPortion>('food_portions').query(...clauses);
 
     if (limit > 0) {
       if (offset > 0) {
@@ -107,47 +127,11 @@ export class FoodPortionService {
   }
 
   /**
-   * Get the default global portion (if any)
+   * @deprecated Prefer {@link get100gPortion} or filter with `source === 'app'`.
+   * The canonical “default” serving for macros is the 100g row from {@link createCommonPortions}.
    */
   static async getDefaultPortion(): Promise<FoodPortion | null> {
-    const portions = await database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('is_default', true), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    return portions.length > 0 ? portions[0] : null;
-  }
-
-  /**
-   * Set a portion as the default global portion (unsets any existing default)
-   */
-  static async setDefaultPortion(id: string): Promise<void> {
-    return await database.write(async () => {
-      const now = Date.now();
-
-      // Unset current default
-      const currentDefault = await database
-        .get<FoodPortion>('food_portions')
-        .query(Q.where('is_default', true), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      for (const portion of currentDefault) {
-        await portion.update((record) => {
-          record.isDefault = false;
-          record.updatedAt = now;
-        });
-      }
-
-      // Set new default
-      const newDefault = await database.get<FoodPortion>('food_portions').find(id);
-      if (newDefault.deletedAt) {
-        throw new Error('Cannot set deleted portion as default');
-      }
-
-      await newDefault.update((record) => {
-        record.isDefault = true;
-        record.updatedAt = now;
-      });
-    });
+    return this.get100gPortion();
   }
 
   /**
@@ -171,7 +155,6 @@ export class FoodPortionService {
       name?: string;
       gramWeight?: number;
       icon?: string;
-      isDefault?: boolean;
     }
   ): Promise<FoodPortion> {
     return await database.write(async () => {
@@ -190,9 +173,6 @@ export class FoodPortionService {
         }
         if (updates.icon !== undefined) {
           record.icon = updates.icon;
-        }
-        if (updates.isDefault !== undefined) {
-          record.isDefault = updates.isDefault;
         }
         record.updatedAt = Date.now();
       });
@@ -247,6 +227,39 @@ export class FoodPortionService {
   }
 
   /**
+   * Some installs stored `name` as the raw i18n key (e.g. `"food.portions.tbsp"`) when the locale
+   * bundle was not available at seed time. Rewrites those rows to `i18n.t(name)` for the active
+   * language. Skips rows where the key has no translation (still equals the key after `t()`).
+   */
+  static async fixPortionNamesStoredAsI18nKeys(): Promise<void> {
+    const rows = await database
+      .get<FoodPortion>('food_portions')
+      .query(
+        Q.where('name', Q.oneOf([...PORTION_DISPLAY_NAME_I18N_KEYS])),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (rows.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (const portion of rows) {
+        const translated = i18n.t(portion.name);
+        if (translated === portion.name) {
+          continue;
+        }
+
+        await portion.update((record) => {
+          record.name = translated;
+          record.updatedAt = Date.now();
+        });
+      }
+    });
+  }
+
+  /**
    * Create common portions for a food type
    * Returns array of global portion definitions
    */
@@ -272,7 +285,6 @@ export class FoodPortionService {
         portion.name,
         portion.gramWeight,
         portion.icon,
-        portion.name === i18n.t('food.portions.100g'),
         'app'
       );
       portions.push(created);

@@ -12,12 +12,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import { MealType } from '../../database/models';
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { MealTypeButton } from '../MealTypeButton';
-import { Button } from '../theme/Button';
-import { TrackingMethodButton } from '../TrackingMethodButton';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { MealTypeButton } from '@/components/MealTypeButton';
+import { Button } from '@/components/theme/Button';
+import { TrackingMethodButton } from '@/components/TrackingMethodButton';
+import { MealType } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
 
 type AddFoodModalProps = {
   visible: boolean;

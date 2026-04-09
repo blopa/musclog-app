@@ -1,23 +1,24 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import Schedule from '@/database/models/Schedule';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import {
   clearActiveWorkoutLogId,
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
-} from '../../utils/activeWorkoutStorage';
-import { calculateWorkoutKcal, type MWEMInput } from '../../utils/workoutEnergyCalculator';
+} from '@/utils/activeWorkoutStorage';
+import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
-} from '../../utils/workoutSupersetOrder';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import Schedule from '../models/Schedule';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
-import WorkoutTemplate from '../models/WorkoutTemplate';
+} from '@/utils/workoutSupersetOrder';
+
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';

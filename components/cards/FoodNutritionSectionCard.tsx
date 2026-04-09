@@ -2,8 +2,9 @@ import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 
@@ -24,11 +25,19 @@ type NutritionalData = {
   sodium: number;
 };
 
+/** How food details were opened: saved food, log, meal, or external catalog (barcode scan / search preload). */
+export type FoodDetailsNutritionSectionMode =
+  | 'meal'
+  | 'foodLog'
+  | 'food'
+  | 'externalProduct'
+  | null;
+
 type FoodNutritionSectionProps = {
   food: FoodData;
   canEdit: boolean;
   showIncompleteWarning?: boolean;
-  mode: 'meal' | 'foodLog' | 'food' | 'barcode' | null;
+  mode: FoodDetailsNutritionSectionMode;
   onEditPress: () => void;
   nutritionalData: NutritionalData;
   servingSize: number;
@@ -70,8 +79,7 @@ export function FoodNutritionSectionCard({
       (nutritionalData.saturatedFat ?? 0) > 0 ||
       (nutritionalData.sodium ?? 0) > 0);
 
-  const showLoadingOnly =
-    isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog';
+  const showLoadingOnly = isLoadingDetails && (mode === 'externalProduct' || mode === null);
 
   return (
     <View className="mt-6">

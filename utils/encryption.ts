@@ -3,7 +3,7 @@ import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 
-import { ENCRYPTION_KEY } from '../constants/database';
+import { ENCRYPTION_KEY } from '@/constants/database';
 
 let encryptionKey: null | string = null;
 

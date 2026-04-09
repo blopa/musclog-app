@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react-native';
 import { View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export function CircularArrow() {
   const theme = useTheme();

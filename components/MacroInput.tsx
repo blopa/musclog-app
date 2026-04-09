@@ -1,8 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
-import type { Theme } from '../theme';
+import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
 
 type MacroInputVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'accent';
 type MacroInputSize = 'full' | 'half';

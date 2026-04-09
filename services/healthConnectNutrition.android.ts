@@ -24,16 +24,16 @@ import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
-import { encryptNutritionLogSnapshot } from '../database/encryptionHelpers';
-import Food from '../database/models/Food';
-import FoodFoodPortion from '../database/models/FoodFoodPortion';
-import FoodPortion from '../database/models/FoodPortion';
-import NutritionLog, { type MealType } from '../database/models/NutritionLog';
-import Setting from '../database/models/Setting';
-import { FoodPortionService } from '../database/services';
-import { localDayStartMs } from '../utils/calendarDate';
+} from '@/constants/settings';
+import { database } from '@/database';
+import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import Food from '@/database/models/Food';
+import FoodFoodPortion from '@/database/models/FoodFoodPortion';
+import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import Setting from '@/database/models/Setting';
+import { FoodPortionService } from '@/database/services';
+import { localDayStartMs } from '@/utils/calendarDate';
+
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
@@ -196,16 +196,9 @@ async function getOrCreateSentinelFood(): Promise<Food> {
 
   const now = Date.now();
 
-  const existing100g = await FoodPortionService.findExistingPortionByGramWeight(100);
   const portion =
-    existing100g ??
-    (await database.get<FoodPortion>('food_portions').create((p) => {
-      p.name = '100g';
-      p.gramWeight = 100;
-      p.isDefault = true;
-      p.createdAt = now;
-      p.updatedAt = now;
-    }));
+    (await FoodPortionService.get100gPortion()) ??
+    (await FoodPortionService.getOrCreatePortion('100g', 100, 'scale', 'user'));
 
   const food = await database.get<Food>('foods').create((f) => {
     f.name = HC_SENTINEL_FOOD_NAME;

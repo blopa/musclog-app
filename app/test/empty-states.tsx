@@ -3,11 +3,12 @@ import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { ProgressIndicator } from '../../components/theme/ProgressIndicator';
-import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { useTheme } from '../../hooks/useTheme';
+import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { useTheme } from '@/hooks/useTheme';
+
 import { TestSection } from './components/TestSection';
 
 export default function EmptyStatesTestScreen() {

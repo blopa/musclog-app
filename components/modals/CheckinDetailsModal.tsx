@@ -1,32 +1,37 @@
-import { addDays } from 'date-fns';
 import { AlertCircle } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { EatingPhase } from '../../database/models';
-import type NutritionCheckin from '../../database/models/NutritionCheckin';
-import { NutritionGoalService, UserMetricService } from '../../database/services';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { BarChart, type BarChartDataPoint } from '@/components/charts/BarChart';
+import { Button } from '@/components/theme/Button';
+import { EatingPhase } from '@/database/models';
+import type NutritionCheckin from '@/database/models/NutritionCheckin';
+import { NutritionGoalService, UserMetricService } from '@/database/services';
 import {
   CheckinMetrics,
   NutritionCheckinService,
-} from '../../database/services/NutritionCheckinService';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '../../utils/calendarDate';
+} from '@/database/services/NutritionCheckinService';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import {
+  localCalendarDayPlusDays,
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+} from '@/utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
-} from '../../utils/nutritionCalculator';
-import { showSnackbar } from '../../utils/snackbarService';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { GenericCard } from '../cards/GenericCard';
-import { BarChart, type BarChartDataPoint } from '../charts/BarChart';
-import { Button } from '../theme/Button';
+} from '@/utils/nutritionCalculator';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 
@@ -40,7 +45,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const theme = useTheme();
   const { t } = useTranslation();
   const { goal: currentGoal } = useCurrentNutritionGoal();
-  const { weightUnit } = useSettings();
+  const { units } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -151,6 +156,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
       onClose();
     } catch (e) {
+      captureException(e, { data: { context: 'CheckinDetailsModal.handleSave' } });
       showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);
     }
@@ -196,12 +202,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     hasEnoughData,
   } = metrics;
 
-  const units: Units = weightUnit === 'kg' ? 'metric' : 'imperial';
   const displayActualWeight = kgToDisplay(avgWeight, units);
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
   const displayTrend = kgToDisplay(Math.abs(trend), units);
   const trendColor = trend <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
-  const weightUnitKey = weightUnit === 'kg' ? 'common.weightFormatKg' : 'common.weightFormatLbs';
+  const weightUnitKey = getWeightUnitI18nKey(units);
 
   return (
     <>
@@ -345,7 +350,10 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               barColor={theme.colors.status.emerald}
               innerPadding={0.3}
               xAxisLabels={dailyWeights.map((_w: number, i: number) => {
-                const dayInstant = addDays(new Date(localDayStartMs(new Date())), -(6 - i));
+                const dayInstant = localCalendarDayPlusDays(
+                  new Date(localDayStartMs(new Date())),
+                  -(6 - i)
+                );
                 // TODO: do we need to use i18n here?
                 const dayKey = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[
                   dayInstant.getDay()

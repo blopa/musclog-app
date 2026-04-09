@@ -2,10 +2,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Bar, CartesianChart } from 'victory-native';
 
-import { useChartTooltip } from '../../context/ChartTooltipContext';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { XAxisLabel } from '@/utils/chartUtils';
 
 export type BarChartDataPoint = {
   /** X value (category index or numeric label) */

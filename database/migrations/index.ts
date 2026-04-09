@@ -59,5 +59,33 @@ export const migrations = schemaMigrations({
         ),
       ],
     },
+
+    // Version 4: Replace volume_calculation_type with workout_insights_type (per-template insights mode).
+    // Also drop deprecated `food_portions.is_default` (unused; catalog vs user rows use `source`).
+    {
+      toVersion: 4,
+      steps: [
+        unsafeExecuteSql('ALTER TABLE food_portions DROP COLUMN is_default;'),
+        unsafeExecuteSql('ALTER TABLE workout_templates DROP COLUMN volume_calculation_type;'),
+        addColumns({
+          table: 'workout_templates',
+          columns: [{ name: 'workout_insights_type', type: 'string', isOptional: true }],
+        }),
+      ],
+    },
+
+    // Version 5: Add prepared_weight_grams to meals.
+    // Lets users record the cooked/finished weight of a recipe (e.g. 500g after
+    // cooking 800g of raw ingredients). Used as the reference for portion scaling
+    // (½×, 1×, …) instead of the raw ingredient sum when set.
+    {
+      toVersion: 5,
+      steps: [
+        addColumns({
+          table: 'meals',
+          columns: [{ name: 'prepared_weight_grams', type: 'number', isOptional: true }],
+        }),
+      ],
+    },
   ],
 });

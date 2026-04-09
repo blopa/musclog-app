@@ -1,10 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
-import { writeUserMetricToHealthConnect } from '../../services/healthConnectFitness';
-import { encryptUserMetricFields } from '../encryptionHelpers';
-import { database } from '../index';
-import UserMetric, { type UserMetricType } from '../models/UserMetric';
+import { encryptUserMetricFields } from '@/database/encryptionHelpers';
+import { database } from '@/database/index';
+import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
 
 export class UserMetricService {
   /**

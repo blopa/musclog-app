@@ -26,8 +26,8 @@ apply plugin: "com.facebook.react.rootproject"
 buildscript {
     ext {
         // --- RN-MLKIT-OCR CONFIG START ---
-        ocrModels = ["latin"]
-        ocrUseBundled = true
+        ocrModels = ["all"]
+        ocrUseBundled = false
         // --- RN-MLKIT-OCR CONFIG END ---
   
     }

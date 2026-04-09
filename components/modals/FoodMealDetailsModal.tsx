@@ -15,62 +15,77 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Units } from '../../constants/settings';
-import { useSnackbar } from '../../context/SnackbarContext';
-import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
-import Food from '../../database/models/Food';
-import FoodPortion from '../../database/models/FoodPortion';
-import Meal from '../../database/models/Meal';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { MacroInput } from '@/components/MacroInput';
+import {
+  type MicronutrientFormStrings,
+  micronutrientFormStringsFromMicros,
+  MicronutrientsExpandableSection,
+  parseMicronutrientFormStringsToPartial,
+} from '@/components/MicronutrientsExpandableSection';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import type { Units } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
+import Food from '@/database/models/Food';
+import FoodPortion from '@/database/models/FoodPortion';
+import Meal from '@/database/models/Meal';
 import {
   FoodPortionService,
   FoodService,
   MealService,
   NutritionService,
-} from '../../database/services';
+} from '@/database/services';
 import {
   fetchMusclogProductByBarcode,
   fetchOFFProductByBarcode,
   fetchUSDAProductByBarcode,
   type ProductDetailsQueryData,
   useFoodProductDetails,
-} from '../../hooks/useFoodProductDetails';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
+} from '@/hooks/useFoodProductDetails';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import {
   isMappedNutriments,
   isSuccessFoodDetailProductState,
   isSuccessStatus,
-} from '../../types/guards/openFoodFacts';
-import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
-import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
+} from '@/types/guards/openFoodFacts';
+import {
+  localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
+  localDayStartMs,
+} from '@/utils/calendarDate';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
-} from '../../utils/inferCaloriesFromMacros';
+} from '@/utils/inferCaloriesFromMacros';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
+} from '@/utils/localizedDecimalInput';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
-} from '../../utils/openFoodFactsMapper';
-import { getProductName } from '../../utils/productName';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { captureException } from '../../utils/sentry';
-import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
-import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
-import { BottomPopUp } from '../BottomPopUp';
-import { FoodNutritionSectionCard } from '../cards/FoodNutritionSectionCard';
-import { FilterTabs } from '../FilterTabs';
-import { MacroInput } from '../MacroInput';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
+} from '@/utils/openFoodFactsMapper';
+import { getProductName } from '@/utils/productName';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
+import { getMassUnitLabel } from '@/utils/unitConversion';
+import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
+
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -131,6 +146,44 @@ function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string 
 
   const product = productFromSearch as { code?: string; gtinUpc?: string };
   return product.code ?? product.gtinUpc ?? '';
+}
+
+/**
+ * Parses serving size string from USDA or Open Food Facts product data.
+ */
+function parseServingSizeFromProduct(product: any): number | undefined {
+  if (!product) {
+    return undefined;
+  }
+
+  // USDA data uses camelCase `servingSize`, while OpenFoodFacts uses snake_case `serving_size`
+  const usdaServingSizeStr =
+    product.servingSize != null ? `${product.servingSize}${product.servingSizeUnit || 'g'}` : null;
+
+  const servingStr = product.serving_size ?? usdaServingSizeStr;
+
+  if (!servingStr) {
+    return undefined;
+  }
+
+  // Parse serving size from string
+  const match = String(servingStr).match(/\((\d+)\s*g\)/);
+  if (match) {
+    const g = parseInt(match[1], 10);
+    if (g > 0) {
+      return g;
+    }
+  }
+
+  const num = String(servingStr).match(/(\d+)/);
+  if (num) {
+    const g = parseInt(num[1], 10);
+    if (g > 0) {
+      return g;
+    }
+  }
+
+  return undefined;
 }
 
 /** Per-100g core macros from a successful product-details payload (used to pick a non-empty alternate source). */
@@ -275,7 +328,20 @@ export function FoodMealDetailsModal({
     }
   };
 
-  const [servingSize, setServingSize] = useState(100);
+  const [servingSize, setServingSize] = useState(() => {
+    if (initialServingSize) {
+      return initialServingSize;
+    }
+
+    if (productFromSearch) {
+      return parseServingSizeFromProduct(productFromSearch) || 100;
+    }
+
+    return 100;
+  });
+
+  // Guard to ensure serving size is only initialized once per product/session
+  const hasInitializedServingSizeRef = useRef(false);
 
   /** Total weight of the meal in grams (sum of all ingredients). Used when tracking a saved meal. */
   const [totalMealGrams, setTotalMealGrams] = useState(0);
@@ -285,7 +351,7 @@ export function FoodMealDetailsModal({
     initialMealType ?? inferMealTypeFromTime()
   );
   const [selectedDate, setSelectedDate] = useState(() =>
-    initialDate ? new Date(initialDate) : new Date()
+    localCalendarDayDate(initialDate ? new Date(initialDate) : new Date())
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
@@ -325,8 +391,10 @@ export function FoodMealDetailsModal({
     protein?: number;
     carbs?: number;
     fat?: number;
+    micros?: Partial<MicrosData>;
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
+  const [editMicroOpen, setEditMicroOpen] = useState(false);
   const [showBarcodeScannerInEdit, setShowBarcodeScannerInEdit] = useState(false);
   /** Holds product data fetched from an alternate source when the primary source had zero macros. */
   const [refetchedProductDetails, setRefetchedProductDetails] =
@@ -345,10 +413,11 @@ export function FoodMealDetailsModal({
     protein: string;
     carbs: string;
     fat: string;
+    micronutrients: MicronutrientFormStrings;
   } | null>(null);
 
-  // Helper function to determine the mode based on available data
-  const getMode = (): 'meal' | 'foodLog' | 'food' | 'barcode' | null => {
+  // How the modal was opened: meal / log / local Food row vs. external catalog (barcode or preloaded search product).
+  const getMode = (): FoodDetailsNutritionSectionMode => {
     if (meal) {
       return 'meal';
     }
@@ -362,7 +431,7 @@ export function FoodMealDetailsModal({
     }
 
     if (barcode || productFromSearch) {
-      return 'barcode';
+      return 'externalProduct';
     }
 
     return null;
@@ -382,7 +451,7 @@ export function FoodMealDetailsModal({
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
     if (visible && initialDate && !foodLog) {
-      setSelectedDate(new Date(initialDate));
+      setSelectedDate(localCalendarDayDate(new Date(initialDate)));
     }
   }, [visible, initialDate, foodLog]);
 
@@ -473,17 +542,15 @@ export function FoodMealDetailsModal({
     );
   }, [productFromSearch, productDetails]);
 
-  // Helper function to generate portion name based on serving size and units
-  const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
-    if (servingSizeGrams === 100) {
-      const unitLabel = getMassUnitLabel(units);
-      return units === 'imperial' ? `3.5${unitLabel}` : `100${unitLabel}`;
-    }
-
-    const displayWeight = gramsToDisplay(servingSizeGrams, units);
-    const unitLabel = getMassUnitLabel(units);
-    return `${displayWeight}${unitLabel}`;
-  }, []);
+  /** User-visible portion label (stored on `FoodPortion.name`); uses locale for decimal separator. */
+  const generatePortionName = useCallback(
+    (servingSizeGrams: number, unitsParam: Units): string => {
+      const amount = formatDisplayGrams(locale, unitsParam, servingSizeGrams);
+      const unitLabel = getMassUnitLabel(unitsParam);
+      return `${amount}${unitLabel}`;
+    },
+    [locale]
+  );
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
   const matchServingSizeToPortion = useCallback(
@@ -511,7 +578,7 @@ export function FoodMealDetailsModal({
           portionName,
           servingSizeGrams,
           undefined, // icon
-          false // isDefault
+          'user'
         );
 
         return newPortion;
@@ -524,43 +591,11 @@ export function FoodMealDetailsModal({
   );
 
   const getDefaultServingSize = useCallback(async () => {
-    // USDA data uses camelCase `servingSize`, while OpenFoodFacts uses snake_case `serving_size`
-    const usdaServingSizeStr =
-      productFromSearch?.servingSize != null
-        ? `${productFromSearch.servingSize}${productFromSearch.servingSizeUnit || 'g'}`
-        : null;
+    const productData = isSuccessFoodDetailProductState(productDetails)
+      ? productDetails.product
+      : productFromSearch;
 
-    const productDetailsServingStr = isSuccessFoodDetailProductState(productDetails)
-      ? (productDetails.product.serving_size ??
-        ((productDetails as any).source === 'usda' &&
-        (productDetails.product as any).servingSize != null
-          ? `${(productDetails.product as any).servingSize}${(productDetails.product as any).servingSizeUnit || 'g'}`
-          : null))
-      : null;
-
-    const servingStr =
-      productFromSearch?.serving_size ?? usdaServingSizeStr ?? productDetailsServingStr;
-
-    let servingSizeGrams = 100; // Default
-
-    // Parse serving size from string
-    if (servingStr) {
-      const match = String(servingStr).match(/\((\d+)\s*g\)/);
-      if (match) {
-        const g = parseInt(match[1], 10);
-        if (g > 0) {
-          servingSizeGrams = g;
-        }
-      } else {
-        const num = String(servingStr).match(/(\d+)/);
-        if (num) {
-          const g = parseInt(num[1], 10);
-          if (g > 0) {
-            servingSizeGrams = g;
-          }
-        }
-      }
-    }
+    const servingSizeGrams = parseServingSizeFromProduct(productData) || 100;
 
     // Match serving size to existing portions and store the result
     if (!food && !localFood && (productFromSearch || productDetails)) {
@@ -582,14 +617,12 @@ export function FoodMealDetailsModal({
     if (food) {
       // Local food already available, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(initialServingSize || 100);
       return;
     }
 
     if (localFood) {
       // Local food found by barcode lookup, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(initialServingSize || 100);
       setIsFavorite(localFood.isFavorite);
       return;
     }
@@ -600,12 +633,6 @@ export function FoodMealDetailsModal({
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
     if (getProductName(productFromSearch).found && (nutriments || isUSDASearchResult)) {
       setIsFoodDetailsModalVisible(true);
-      const loadDefaultSize = async () => {
-        const defaultG = await getDefaultServingSize();
-        setServingSize(defaultG);
-      };
-
-      loadDefaultSize();
       onBarcodeLookupComplete?.();
       return;
     }
@@ -653,13 +680,15 @@ export function FoodMealDetailsModal({
           fiber: roundToDecimalPlaces(nutrients.fiber),
         });
         if (mealWithFoods?.foods) {
-          let totalGrams = 0;
+          let rawGrams = 0;
           for (const mf of mealWithFoods.foods) {
-            totalGrams += await mf.getGramWeight();
+            rawGrams += await mf.getGramWeight();
           }
-          const rounded = Math.round(totalGrams);
-          setTotalMealGrams(rounded);
-          setMealAmountGrams(rounded > 0 ? rounded : 100);
+          // Use prepared weight as the portion reference when the user set it,
+          // otherwise fall back to the raw ingredient sum.
+          const referenceGrams = Math.round(meal.preparedWeightGrams ?? rawGrams);
+          setTotalMealGrams(referenceGrams);
+          setMealAmountGrams(referenceGrams > 0 ? referenceGrams : 100);
         } else {
           setTotalMealGrams(0);
           setMealAmountGrams(100);
@@ -693,9 +722,9 @@ export function FoodMealDetailsModal({
     }
 
     try {
-      setSelectedDate(new Date(foodLog.date));
+      setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
     } catch (e) {
-      setSelectedDate(new Date());
+      setSelectedDate(localCalendarDayDate(new Date()));
     }
 
     let cancelled = false;
@@ -704,19 +733,6 @@ export function FoodMealDetailsModal({
         setFoodLogDecrypted(snap);
       }
     });
-
-    const doTask = async () => {
-      try {
-        const grams = await foodLog.getGramWeight();
-        if (!cancelled && typeof grams === 'number' && !Number.isNaN(grams)) {
-          setServingSize(Math.round(grams));
-        }
-      } catch (e) {
-        // ignore
-      }
-    };
-
-    doTask();
 
     return () => {
       cancelled = true;
@@ -993,6 +1009,43 @@ export function FoodMealDetailsModal({
   const rawNutritionalData = getNutritionalData();
   const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(rawNutritionalData);
 
+  const baseMicrosPer100g = useMemo((): MicrosData => {
+    if (food || localFood) {
+      return { ...((food || localFood)!.micros ?? {}) };
+    }
+    if (
+      foodLog &&
+      foodLogDecrypted?.loggedMicros &&
+      Object.keys(foodLogDecrypted.loggedMicros).length > 0
+    ) {
+      return { ...foodLogDecrypted.loggedMicros };
+    }
+
+    const n = rawNutritionalData;
+    const out: MicrosData = {};
+    if (Number.isFinite(n.sugar)) {
+      out.sugar = n.sugar;
+    }
+
+    if (Number.isFinite(n.saturatedFat)) {
+      out.saturatedFat = n.saturatedFat;
+    }
+
+    if (Number.isFinite(n.sodium)) {
+      out.sodium = n.sodium;
+    }
+
+    return out;
+  }, [food, localFood, foodLog, foodLogDecrypted, rawNutritionalData]);
+
+  const effectiveMicrosPer100g = useMemo(
+    () => ({
+      ...baseMicrosPer100g,
+      ...(editedOverrides?.micros ?? {}),
+    }),
+    [baseMicrosPer100g, editedOverrides?.micros]
+  );
+
   // Compute inferred calories from macros for warning display
   const inferredCaloriesPer100g = useMemo(() => {
     return inferCaloriesFromMacrosPer100g(
@@ -1011,32 +1064,46 @@ export function FoodMealDetailsModal({
   const showCaloriesTooLowWarning = useMemo(() => {
     const rawCal = toFiniteMacro(rawNutritionalData.calories);
     return (
-      mode === 'barcode' &&
+      mode === 'externalProduct' &&
       rawCal > 0 &&
       inferredCaloriesPer100g > 0 &&
-      rawCal < inferredCaloriesPer100g * 0.7 &&
+      (rawCal < inferredCaloriesPer100g * 0.7 || rawCal > inferredCaloriesPer100g * 1.3) &&
       editedOverrides?.calories == null
     );
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
 
-  const nutritionalData =
-    editedOverrides &&
-    (editedOverrides.calories != null ||
-      editedOverrides.protein != null ||
-      editedOverrides.carbs != null ||
-      editedOverrides.fat != null)
-      ? {
-          ...baseNutritionalData,
-          calories: editedOverrides.calories ?? baseNutritionalData.calories,
-          protein: editedOverrides.protein ?? baseNutritionalData.protein,
-          carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
-          fat: editedOverrides.fat ?? baseNutritionalData.fat,
-        }
-      : baseNutritionalData;
+  const nutritionalData = useMemo(() => {
+    const macroBase =
+      editedOverrides &&
+      (editedOverrides.calories != null ||
+        editedOverrides.protein != null ||
+        editedOverrides.carbs != null ||
+        editedOverrides.fat != null)
+        ? {
+            ...baseNutritionalData,
+            calories: editedOverrides.calories ?? baseNutritionalData.calories,
+            protein: editedOverrides.protein ?? baseNutritionalData.protein,
+            carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
+            fat: editedOverrides.fat ?? baseNutritionalData.fat,
+          }
+        : baseNutritionalData;
 
-  // True when we're in barcode mode, nutrition is settled, no successful refetch yet, and all core macros are zero
+    const pickMicro = (key: 'sugar' | 'saturatedFat' | 'sodium') => {
+      const v = effectiveMicrosPer100g[key];
+      return typeof v === 'number' && Number.isFinite(v) ? v : macroBase[key];
+    };
+
+    return {
+      ...macroBase,
+      sugar: pickMicro('sugar'),
+      saturatedFat: pickMicro('saturatedFat'),
+      sodium: pickMicro('sodium'),
+    };
+  }, [baseNutritionalData, editedOverrides, effectiveMicrosPer100g]);
+
+  // External catalog product: nutrition settled, no successful refetch yet, and all core macros are zero
   const hasAllZeroMacros = useMemo(() => {
-    if (mode !== 'barcode' || refetchedProductDetails) {
+    if (mode !== 'externalProduct' || refetchedProductDetails) {
       return false;
     }
     // Wait until local DB lookup finishes so we don't use placeholder zeros before we know local vs remote data.
@@ -1146,12 +1213,15 @@ export function FoodMealDetailsModal({
       if (brand && categories) {
         return `${brand} • ${categories}`;
       }
+
       if (brand) {
         return brand;
       }
+
       if (categories) {
         return categories;
       }
+
       return '';
     }
 
@@ -1161,12 +1231,14 @@ export function FoodMealDetailsModal({
       if ((effectiveProductDetails as any).source === 'musclog') {
         return (product as any).brand || '';
       }
+
       if ((effectiveProductDetails as any).source === 'usda') {
         const usdaBrand = (product as any).brandOwner || (product as any).brandName;
         const usdaCategory = (product as any).foodCategory;
         if (usdaBrand && usdaCategory) {
           return `${usdaBrand} • ${usdaCategory}`;
         }
+
         return usdaBrand || usdaCategory || '';
       }
       const product2 = effectiveProductDetails.product;
@@ -1176,9 +1248,11 @@ export function FoodMealDetailsModal({
       if (brand && categories) {
         return `${brand} • ${categories}`;
       }
+
       if (brand) {
         return brand;
       }
+
       if (categories) {
         return categories;
       }
@@ -1197,15 +1271,43 @@ export function FoodMealDetailsModal({
 
   // Update serving size when product details or search product load
   useEffect(() => {
-    if (productFromSearch || productDetails) {
+    if (hasInitializedServingSizeRef.current) {
+      return;
+    }
+
+    if (productFromSearch || productDetails || food || localFood || foodLog) {
       const loadDefaultSize = async () => {
-        const defaultSize = await getDefaultServingSize();
-        setServingSize(defaultSize);
+        if (foodLog) {
+          try {
+            const grams = await foodLog.getGramWeight();
+            if (typeof grams === 'number' && !Number.isNaN(grams)) {
+              setServingSize(Math.round(grams));
+              hasInitializedServingSizeRef.current = true;
+            }
+          } catch (e) {
+            // ignore
+          }
+        } else if (food || localFood) {
+          setServingSize(initialServingSize || 100);
+          hasInitializedServingSizeRef.current = true;
+        } else {
+          const defaultSize = await getDefaultServingSize();
+          setServingSize(defaultSize);
+          hasInitializedServingSizeRef.current = true;
+        }
       };
 
       loadDefaultSize();
     }
-  }, [productFromSearch, productDetails, getDefaultServingSize]);
+  }, [
+    productFromSearch,
+    productDetails,
+    getDefaultServingSize,
+    food,
+    localFood,
+    foodLog,
+    initialServingSize,
+  ]);
 
   const parsedProductServingSize = useMemo(() => {
     if (productFromSearch?.source === 'usda') {
@@ -1585,6 +1687,17 @@ export function FoodMealDetailsModal({
 
       // USDA handle
       if (productToSave.fdcId) {
+        const pdForCreate = refetchedProductDetails ?? productDetails;
+        const usdaRawMicros =
+          pdForCreate && (pdForCreate as any)?.product?.foodNutrients
+            ? ((pdForCreate as any).product as any).foodNutrients.reduce((acc: any, n: any) => {
+                const num = n.nutrientNumber || n.number || n.nutrient?.number;
+                if (num) {
+                  acc[num] = n.value ?? n.amount;
+                }
+                return acc;
+              }, {})
+            : {};
         const newFood = await FoodService.createFromUSDAProduct(
           productToSave,
           {
@@ -1596,19 +1709,10 @@ export function FoodMealDetailsModal({
             sugar: nutritionalData.sugar,
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
-            micros:
-              productDetails && (productDetails as any)?.product?.foodNutrients
-                ? ((productDetails as any).product as any).foodNutrients.reduce(
-                    (acc: any, n: any) => {
-                      const num = n.nutrientNumber || n.number || n.nutrient?.number;
-                      if (num) {
-                        acc[num] = n.value ?? n.amount;
-                      }
-                      return acc;
-                    },
-                    {}
-                  )
-                : undefined,
+            micros: {
+              ...usdaRawMicros,
+              ...effectiveMicrosPer100g,
+            },
             isFavorite: isFavorite,
           },
           matchedPortion
@@ -1638,6 +1742,12 @@ export function FoodMealDetailsModal({
       }
 
       // Save product to local database (search result has same shape as V3 for our usage)
+      const pdForOffCreate = refetchedProductDetails ?? productDetails;
+      const offRawNutriments =
+        pdForOffCreate && (pdForOffCreate as any)?.product?.nutriments
+          ? ((pdForOffCreate as any).product as any).nutriments
+          : {};
+
       const newFood = await FoodService.createFromV3Product(
         productToSave,
         {
@@ -1649,10 +1759,10 @@ export function FoodMealDetailsModal({
           sugar: nutritionalData.sugar,
           saturatedFat: nutritionalData.saturatedFat,
           sodium: nutritionalData.sodium,
-          micros:
-            productDetails && (productDetails as any)?.product?.nutriments
-              ? ((productDetails as any).product as any).nutriments
-              : undefined,
+          micros: {
+            ...offRawNutriments,
+            ...effectiveMicrosPer100g,
+          },
           isFavorite: isFavorite,
         },
         matchedPortion
@@ -1723,6 +1833,7 @@ export function FoodMealDetailsModal({
     mealScaleFactor,
     refetchedProductDetails,
     barcode,
+    effectiveMicrosPer100g,
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
@@ -1751,7 +1862,9 @@ export function FoodMealDetailsModal({
       protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
       carbs: formatAppRoundedDecimal(locale, baseNutritionalData.carbs, 2),
       fat: formatAppRoundedDecimal(locale, baseNutritionalData.fat, 2),
+      micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
+    setEditMicroOpen(false);
     setIsEditPopUpVisible(true);
   }, [
     getFoodMealName,
@@ -1765,6 +1878,7 @@ export function FoodMealDetailsModal({
     localFood,
     editedOverrides,
     locale,
+    effectiveMicrosPer100g,
   ]);
 
   const handleSaveEditPopUp = useCallback(() => {
@@ -1783,6 +1897,7 @@ export function FoodMealDetailsModal({
       protein: Number.isFinite(pro) ? pro : undefined,
       carbs: Number.isFinite(carb) ? carb : undefined,
       fat: Number.isFinite(f) ? f : undefined,
+      micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
     });
     setEditForm(null);
     setIsEditPopUpVisible(false);
@@ -1899,11 +2014,13 @@ export function FoodMealDetailsModal({
       setMatchedPortion(null);
       setEditedOverrides(null);
       setIsEditPopUpVisible(false);
+      setEditMicroOpen(false);
       setShowBarcodeScannerInEdit(false);
       setRefetchedProductDetails(null);
       setIsRefetchingSource(false);
       setAlternateSourceLookupFailed(false);
       setLocalCanEdit(canEdit);
+      hasInitializedServingSizeRef.current = false;
     }
   }, [visible, canEdit]);
 
@@ -1990,7 +2107,7 @@ export function FoodMealDetailsModal({
               disabled={
                 isAddingFood ||
                 (mode === 'meal' && mealAmountGrams < 1) ||
-                (isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog') ||
+                (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
                 (isLoadingMealNutrients && mode === 'meal')
               }
               loading={isAddingFood}
@@ -2096,6 +2213,7 @@ export function FoodMealDetailsModal({
         onClose={() => {
           setIsEditPopUpVisible(false);
           setEditForm(null);
+          setEditMicroOpen(false);
         }}
         title={t('food.foodDetails.editFoodInfo')}
         subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
@@ -2241,6 +2359,22 @@ export function FoodMealDetailsModal({
                 size="half"
               />
             </View>
+            <MicronutrientsExpandableSection
+              microOpen={editMicroOpen}
+              onToggleMicro={() => setEditMicroOpen((o) => !o)}
+              values={editForm.micronutrients}
+              decimalSeparator={decimalSeparator}
+              onMicronutrientChange={(key, value) =>
+                setEditForm((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        micronutrients: { ...prev.micronutrients, [key]: value },
+                      }
+                    : null
+                )
+              }
+            />
           </KeyboardAvoidingView>
         ) : null}
       </BottomPopUp>

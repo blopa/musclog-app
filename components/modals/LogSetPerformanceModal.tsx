@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { Button } from '../theme/Button';
-import NewNumericalInput from '../theme/NewNumericalInput';
-import { Slider } from '../theme/Slider';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { Button } from '@/components/theme/Button';
+import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { Slider } from '@/components/theme/Slider';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
 type LogSetPerformanceModalProps = {
   visible: boolean;

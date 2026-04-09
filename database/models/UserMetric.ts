@@ -2,7 +2,8 @@ import { Model, Q } from '@nozbe/watermelondb';
 import { children, field, writer } from '@nozbe/watermelondb/decorators';
 import { Unit } from 'convert';
 
-import { decryptNumber, decryptOptionalString } from '../encryptionHelpers';
+import { decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
+
 import UserMetricsNote from './UserMetricsNote';
 
 export interface DecryptedUserMetricFields {

@@ -2,8 +2,9 @@ import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { formatLocalCalendarDayIso } from '../utils/calendarDate';
-import { showSnackbar } from '../utils/snackbarService';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { useTheme } from './useTheme';
 
 function sanitizeFilename(title: string): string {

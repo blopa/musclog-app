@@ -1,7 +1,7 @@
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 import { router } from 'expo-router';
 
-import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);

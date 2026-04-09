@@ -16,38 +16,40 @@ import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { StatCard } from '../components/cards/StatCard';
-import { type PersonalInfo } from '../components/EditPersonalInfoBody';
-import { ManagementItem } from '../components/ManagementItem';
-import { MasterLayout } from '../components/MasterLayout';
-import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
+import { StatCard } from '@/components/cards/StatCard';
+import { type PersonalInfo } from '@/components/EditPersonalInfoBody';
+import { ManagementItem } from '@/components/ManagementItem';
+import { MasterLayout } from '@/components/MasterLayout';
+import BodyMetricsHistoryModal from '@/components/modals/BodyMetricsHistoryModal';
 import {
   EditFitnessDetailsModal,
   type FitnessDetails,
-} from '../components/modals/EditFitnessDetailsModal';
-import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
-import ShowMoreButton from '../components/ShowMoreButton';
-import { AnimatedContent } from '../components/theme/AnimatedContent';
-import { ProgressIndicator } from '../components/theme/ProgressIndicator';
-import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { type Gender } from '../database/models';
-import { UserService } from '../database/services';
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useSettings } from '../hooks/useSettings';
-import { useSyncTracking } from '../hooks/useSyncTracking';
-import { useTheme } from '../hooks/useTheme';
-import { useUser } from '../hooks/useUser';
-import { useUserMetrics } from '../hooks/useUserMetrics';
-import { getAvatarDisplayProps } from '../utils/avatarUtils';
-import { calculateBMIWithStatus } from '../utils/bmiHelper';
+} from '@/components/modals/EditFitnessDetailsModal';
+import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
+import ShowMoreButton from '@/components/ShowMoreButton';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { type Gender } from '@/database/models';
+import { UserService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useSyncTracking } from '@/hooks/useSyncTracking';
+import { useTheme } from '@/hooks/useTheme';
+import { useUser } from '@/hooks/useUser';
+import { useUserMetrics } from '@/hooks/useUserMetrics';
+import { getAvatarDisplayProps } from '@/utils/avatarUtils';
+import { calculateBMIWithStatus } from '@/utils/bmiHelper';
 import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
-} from '../utils/fitnessProfilePersistence';
+} from '@/utils/fitnessProfilePersistence';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
 
 export default function ProfileScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -250,6 +252,8 @@ export default function ProfileScreen() {
       });
     } catch (err) {
       console.error('Failed to save personal info:', err);
+      captureException(err, { data: { context: 'profile.handleSavePersonalInfo' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
@@ -258,6 +262,8 @@ export default function ProfileScreen() {
       await persistFitnessDetails(data);
     } catch (err) {
       console.error('Failed to save fitness details:', err);
+      captureException(err, { data: { context: 'profile.handleSaveFitnessDetails' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
@@ -454,7 +460,7 @@ export default function ProfileScreen() {
         initialData={
           dbUser && metrics
             ? {
-                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth),
+                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth, i18n.language),
                 gender: dbUser.gender,
                 units,
                 weight: metrics.weight?.toString() || '',

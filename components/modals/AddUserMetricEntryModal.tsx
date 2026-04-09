@@ -3,21 +3,23 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
-import { encryptUserMetricFields } from '../../database/encryptionHelpers';
-import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
-import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
-import { GenericCard } from '../cards/GenericCard';
-import { MoodSelectorCard } from '../cards/MoodSelectorCard';
-import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { TextInput } from '../theme/TextInput';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { MoodSelectorCard } from '@/components/cards/MoodSelectorCard';
+import { PagerView, type PagerViewRef } from '@/components/PagerView/PagerView';
+import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import { encryptUserMetricFields } from '@/database/encryptionHelpers';
+import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { captureException } from '@/utils/sentry';
+import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
+
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -67,7 +69,7 @@ export default function AddUserMetricEntryModal({
   const [bodyFat, setBodyFat] = useState(15.0);
   const [height, setHeight] = useState(DEFAULT_HEIGHT_CM);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [note, setNote] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -250,6 +252,7 @@ export default function AddUserMetricEntryModal({
       onClose();
     } catch (error) {
       console.error('Error saving user metrics:', error);
+      captureException(error, { data: { context: 'AddUserMetricEntryModal.handleSave' } });
       showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
     } finally {
       setIsSaving(false);

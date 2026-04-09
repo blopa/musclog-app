@@ -1,32 +1,21 @@
-import {
-  Apple,
-  Coffee,
-  Croissant,
-  Droplet,
-  Egg,
-  Flame,
-  Lightbulb,
-  Popcorn,
-  Scale,
-  Search,
-  Soup,
-  UtensilsCrossed,
-  Wind,
-  X,
-} from 'lucide-react-native';
-import { ComponentType, useEffect, useMemo, useState } from 'react';
+import { Search, X } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import FoodPortion from '../../database/models/FoodPortion';
-import { FoodPortionService } from '../../database/services';
-import { useFoodPortions } from '../../hooks/useFoodPortions';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
-import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
-import type { SelectorOption } from '../theme/OptionsMultiSelector/utils';
-import { TextInput } from '../theme/TextInput';
+import { Button } from '@/components/theme/Button';
+import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import { TextInput } from '@/components/theme/TextInput';
+import FoodPortion from '@/database/models/FoodPortion';
+import { FoodPortionService } from '@/database/services';
+import { useFoodPortions } from '@/hooks/useFoodPortions';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -36,31 +25,6 @@ type PortionSizesPickerModalProps = {
   onConfirm: (selectedIds: string[]) => void;
   selectedIds?: string[];
 };
-
-// Map icon names to lucide components
-const ICON_MAP: Record<string, ComponentType<any>> = {
-  droplet: Droplet,
-  scale: Scale,
-  egg: Egg,
-  cup: Popcorn,
-  flame: Flame,
-  lightbulb: Lightbulb,
-  wind: Wind,
-  restaurant: UtensilsCrossed,
-  'ramen-dining': Soup,
-  'dinner-dining': UtensilsCrossed,
-  'bakery-dining': Croissant,
-  'local-cafe': Coffee,
-  nutrition: Apple,
-};
-
-function getIconComponent(iconName?: string | null): ComponentType<any> | null {
-  if (!iconName) {
-    return null;
-  }
-
-  return ICON_MAP[iconName] || null;
-}
 
 export function PortionSizesPickerModal({
   visible,
@@ -75,9 +39,19 @@ export function PortionSizesPickerModal({
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
-  // Load food portions from database
-  const { portions, isLoading, refresh } = useFoodPortions({
-    mode: 'all',
+  // Paginated global portions (newest first); app + user-created via includeAllPortionSources
+  const {
+    portions: loadedPortions,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+  } = useFoodPortions({
+    mode: 'paginated',
+    initialLimit: 20,
+    batchSize: 20,
+    includeAllPortionSources: true,
     visible,
   });
 
@@ -86,10 +60,10 @@ export function PortionSizesPickerModal({
     setLocalSelectedIds(selectedIds);
   }, [selectedIds]);
 
-  // Convert food portions to selector options
+  // Portions are already ordered newest-first (see FoodPortionService.getPortionsPaginated)
   const selectorOptions = useMemo((): SelectorOption<string>[] => {
-    return (portions as FoodPortion[]).map((portion: FoodPortion) => {
-      const IconComponent = getIconComponent(portion.icon);
+    return (loadedPortions as FoodPortion[]).map((portion: FoodPortion) => {
+      const IconComponent = getFoodPortionIconComponent(portion.icon);
       return {
         id: portion.id,
         label: portion.name,
@@ -99,7 +73,7 @@ export function PortionSizesPickerModal({
         iconColor: theme.colors.text.black,
       };
     });
-  }, [portions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
+  }, [loadedPortions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
@@ -151,6 +125,8 @@ export function PortionSizesPickerModal({
       }
     } catch (err) {
       console.error('Error creating food portion:', err);
+      captureException(err, { data: { context: 'PortionSizesPickerModal.handleCreatePortion' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setCreateModalVisible(false);
     }
@@ -228,7 +204,6 @@ export function PortionSizesPickerModal({
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
               </View>
             ) : (
-              /* OptionsMultiSelector */
               <View style={{ flex: 1 }}>
                 {filteredOptions.length > 0 ? (
                   <OptionsMultiSelector
@@ -249,6 +224,22 @@ export function PortionSizesPickerModal({
                     </Text>
                   </View>
                 )}
+                {hasMore ? (
+                  <View style={{ paddingVertical: theme.spacing.padding.base }}>
+                    <Button
+                      label={
+                        isLoadingMore ? t('portionSizes.loadingMore') : t('portionSizes.loadMore')
+                      }
+                      onPress={loadMore}
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoadingMore}
+                      loading={isLoadingMore}
+                      width="full"
+                      iconPosition="left"
+                    />
+                  </View>
+                ) : null}
               </View>
             )}
           </View>

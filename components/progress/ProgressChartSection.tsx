@@ -2,10 +2,10 @@ import { Download, Share2 } from 'lucide-react-native';
 import React, { ReactNode } from 'react';
 import { Platform, Text, View } from 'react-native';
 
-import { useChartCapture } from '../../hooks/useChartCapture';
-import { useTheme } from '../../hooks/useTheme';
-import { GenericCard } from '../cards/GenericCard';
-import { MenuButton } from '../theme/MenuButton';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useChartCapture } from '@/hooks/useChartCapture';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ProgressChartSectionProps {
   title: string;

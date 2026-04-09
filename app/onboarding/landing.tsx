@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Download, Dumbbell } from 'lucide-react-native';
@@ -7,17 +6,18 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MasterLayout } from '../../components/MasterLayout';
-import { CenteredModal } from '../../components/modals/CenteredModal';
-import { Button } from '../../components/theme/Button';
-import { TextInput } from '../../components/theme/TextInput';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { seedDevData } from '../../database/seeders/dev';
-import { seedProductionData } from '../../database/seeders/prod';
-import { verifyDatabaseTables } from '../../database/verify';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { importDatabase, shouldSeedDevData } from '../../utils/file';
+import { MasterLayout } from '@/components/MasterLayout';
+import { CenteredModal } from '@/components/modals/CenteredModal';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { seedDevData } from '@/database/seeders/dev';
+import { seedProductionData } from '@/database/seeders/prod';
+import { verifyDatabaseTables } from '@/database/verify';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { importDatabase, shouldSeedDevData } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -68,13 +68,15 @@ export default function LandingScreen() {
         }
       } catch (error) {
         console.error('Error initializing app:', error);
+        captureException(error, { data: { context: 'landing.initializeApp' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
       } finally {
         setIsInitializing(false);
       }
     };
 
     initializeApp();
-  }, [router]);
+  }, [router, showSnackbar, t]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
@@ -98,7 +100,7 @@ export default function LandingScreen() {
         colors={theme.colors.gradients.landingBackground}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="absolute inset-0"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
       {/* Ambient Background Effects */}
@@ -156,10 +158,13 @@ export default function LandingScreen() {
                 colors={theme.colors.gradients.cta}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                className="items-center justify-center rounded-xl"
                 style={{
                   width: theme.size['12'],
                   height: theme.size['12'],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  overflow: 'hidden',
                   ...theme.shadows.lg,
                 }}
               >
@@ -306,7 +311,7 @@ export default function LandingScreen() {
                       textDecorationLine: 'underline',
                     }}
                   >
-                    {t('onboarding.landing.connectGoogle')}
+                    {t('onboarding.landing.viewTerms')}
                   </Text>
                 </View>
               </>

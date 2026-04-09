@@ -1,52 +1,48 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { ActionButton } from '../components/ActionButton';
-import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
-import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
-import { DetailedItemCard } from '../components/cards/DetailedItemCard';
-import { FoodItemCard } from '../components/cards/FoodItemCard';
-import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
-import { useCoach } from '../components/CoachContext';
-import { MasterLayout } from '../components/MasterLayout';
-import { AddFoodModal } from '../components/modals/AddFoodModal';
-import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
-import { FoodSearchModal } from '../components/modals/FoodSearchModal';
-import GoalsManagementModal from '../components/modals/GoalsManagementModal';
-import MyMealsModal from '../components/modals/MyMealsModal';
-import { NotificationsModal } from '../components/modals/NotificationsModal';
-import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
-import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
-import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
-import { UserMenuModal } from '../components/modals/UserMenuModal';
-import ShowMoreButton from '../components/ShowMoreButton';
-import { AnimatedContent } from '../components/theme/AnimatedContent';
-import DashedButton from '../components/theme/DashedButton';
-import { MenuButton } from '../components/theme/MenuButton';
-import { SkeletonLoader } from '../components/theme/SkeletonLoader';
-import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
-import { useSmartCamera } from '../context/SmartCameraContext';
-import { type MealType } from '../database/models';
-import { FoodService, NutritionGoalService } from '../database/services';
-import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
-import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
-import { useNutritionLogs } from '../hooks/useNutritionLogs';
-import { useSettings } from '../hooks/useSettings';
-import { useTheme } from '../hooks/useTheme';
-import { useUser } from '../hooks/useUser';
-import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
-import packageJson from '../package.json';
-import { getAvatarDisplayProps } from '../utils/avatarUtils';
-import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
-import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
-import { captureException } from '../utils/sentry';
-import { showSnackbar } from '../utils/snackbarService';
+import { ActionButton } from '@/components/ActionButton';
+import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
+import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
+import { FoodItemCard } from '@/components/cards/FoodItemCard';
+import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
+import { useCoach } from '@/components/CoachContext';
+import { MasterLayout } from '@/components/MasterLayout';
+import { AddFoodModal } from '@/components/modals/AddFoodModal';
+import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
+import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import MyMealsModal from '@/components/modals/MyMealsModal';
+import { NotificationsModal } from '@/components/modals/NotificationsModal';
+import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
+import PastWorkoutDetailModal from '@/components/modals/PastWorkoutDetailModal';
+import PastWorkoutsHistoryModal from '@/components/modals/PastWorkoutsHistoryModal';
+import { UserMenuModal } from '@/components/modals/UserMenuModal';
+import ShowMoreButton from '@/components/ShowMoreButton';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import DashedButton from '@/components/theme/DashedButton';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
+import { useSmartCamera } from '@/context/SmartCameraContext';
+import { type MealType } from '@/database/models';
+import { NutritionGoalService } from '@/database/services';
+import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useNutritionLogs } from '@/hooks/useNutritionLogs';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useUser } from '@/hooks/useUser';
+import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
+import packageJson from '@/package.json';
+import { getAvatarDisplayProps } from '@/utils/avatarUtils';
+import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
+import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
+import { showSnackbar } from '@/utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
 declare global {
@@ -65,11 +61,34 @@ export default function HomeScreen() {
   const { isAiConfigured } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
-  const params = useLocalSearchParams<{ code?: string; action?: string }>();
+
+  // TODO: why is action not being used here?
+  const params = useLocalSearchParams<{ action?: string }>();
   const navigationState = useRootNavigationState();
 
-  // Memoize today's date to prevent infinite re-renders
-  const today = useMemo(() => new Date(), []);
+  const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
+
+  useEffect(() => {
+    const syncToday = () => {
+      setToday((prev) => {
+        const now = new Date();
+        return isSameLocalCalendarDay(prev, now) ? prev : localCalendarDayDate(now);
+      });
+    };
+
+    syncToday();
+    const appSub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') {
+        syncToday();
+      }
+    });
+
+    const intervalId = setInterval(syncToday, 60_000);
+    return () => {
+      appSub.remove();
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const {
     calories: dailyCalories,
@@ -163,42 +182,6 @@ export default function HomeScreen() {
     [t]
   );
 
-  const handleSaveCustomFood = useCallback(
-    async (data: any) => {
-      try {
-        await FoodService.createCustomFood(
-          data.name,
-          {
-            calories: data.calories,
-            protein: data.protein,
-            carbs: data.carbs,
-            fat: data.fat,
-            fiber: data.fiber,
-            sugar: data.sugar,
-            saturatedFat: data.saturatedFat,
-            sodium: data.sodium,
-          },
-          data.servingAmount,
-          data.servingUnit,
-          data.brand
-        );
-        setIsCreateCustomFoodVisible(false);
-        showSnackbar('success', t('nutrition.index.handleSaveCustomFood'));
-      } catch (error) {
-        console.error('Failed to create custom food:', error);
-
-        captureException(error, {
-          data: {
-            context: 'index.handleSaveCustomFood',
-          },
-        });
-
-        showSnackbar('error', t('food.foodDetails.errorMessage'));
-      }
-    },
-    [t]
-  );
-
   const handleFoodSearchCreatePress = useCallback(() => {
     setIsFoodSearchVisible(false);
     setIsCreateCustomFoodVisible(true);
@@ -252,24 +235,14 @@ export default function HomeScreen() {
 
     const checkOnboarding = async () => {
       try {
-        const codeParam = params.code;
         const completed = await isOnboardingCompleted();
 
         if (!completed) {
           try {
             const saved = await getCurrentOnboardingStep();
             if (saved) {
-              if (saved === '/onboarding/connect-with-google' && codeParam) {
-                try {
-                  await AsyncStorage.setItem(TEMP_GOOGLE_AUTH_CODE, codeParam);
-                } catch (e) {
-                  console.warn('Failed to save auth code to AsyncStorage', e);
-                }
-
-                router.replace({
-                  pathname: '/onboarding/connect-with-google',
-                  params: { loading: 'true' },
-                });
+              if (saved === '/onboarding/connect-with-google') {
+                router.replace('/onboarding/fitness-info');
               } else {
                 router.replace(saved);
               }
@@ -280,14 +253,6 @@ export default function HomeScreen() {
             console.error('Error restoring onboarding step, falling back to landing', e);
             router.replace('/onboarding/landing');
           }
-        } else if (codeParam) {
-          // Post-onboarding Google auth (e.g. from AI Settings modal)
-          try {
-            const tokenData = await exchangeCodeForToken(codeParam, getGoogleRedirectUri());
-            await handleGoogleSignIn(tokenData);
-          } catch (e) {
-            console.warn('Failed to exchange Google auth code after onboarding', e);
-          }
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
@@ -297,7 +262,7 @@ export default function HomeScreen() {
     };
 
     checkOnboarding();
-  }, [params.code, router, navigationState?.key]);
+  }, [router, navigationState?.key]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {
@@ -706,8 +671,8 @@ export default function HomeScreen() {
       {/* Create Custom Food Modal */}
       <CreateCustomFoodModal
         visible={isCreateCustomFoodVisible}
+        trackFoodAfterSave={true}
         onClose={handleCloseCreateCustomFood}
-        onSave={handleSaveCustomFood}
         isAiEnabled={isAiConfigured}
       />
     </MasterLayout>

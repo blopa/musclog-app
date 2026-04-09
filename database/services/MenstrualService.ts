@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns';
 
-import MenstrualCycle, { SyncGoal } from '../models/MenstrualCycle';
+import MenstrualCycle, { SyncGoal } from '@/database/models/MenstrualCycle';
 
 export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
 export type EnergyLevel = 'peak' | 'high' | 'moderate' | 'low';

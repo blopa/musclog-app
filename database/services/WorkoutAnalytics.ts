@@ -1,15 +1,20 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import {
+  localCalendarWeekIndexSince,
+  localDayKeyPlusCalendarDaysFromNow,
+} from '@/utils/calendarDate';
 import {
   calculateEstimated1RMForSet,
   calculateSetVolume,
   getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
+} from '@/utils/workoutCalculator';
+
 import { SettingsService } from './SettingsService';
 
 type EnrichedSet = WorkoutLogSet & {
@@ -546,26 +551,25 @@ export class WorkoutAnalytics {
     }
 
     const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
-    const cutoff = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000;
+    const rangeStartDayMs = localDayKeyPlusCalendarDaysFromNow(-weeks * 7);
 
     const completedLogs = await database
       .get<WorkoutLog>('workout_logs')
       .query(
         Q.where('id', Q.oneOf(workoutLogIds)),
         Q.where('completed_at', Q.notEq(null)),
-        Q.where('completed_at', Q.gte(cutoff))
+        Q.where('completed_at', Q.gte(rangeStartDayMs))
       )
       .fetch();
 
     const uniqueWorkoutsPerWeek = new Map<number, Set<string>>();
     for (const log of completedLogs) {
       const completedAt = log.completedAt ?? 0;
-      const weekStart =
-        Math.floor(completedAt / (7 * 24 * 60 * 60 * 1000)) * (7 * 24 * 60 * 60 * 1000);
-      if (!uniqueWorkoutsPerWeek.has(weekStart)) {
-        uniqueWorkoutsPerWeek.set(weekStart, new Set());
+      const weekIndex = localCalendarWeekIndexSince(completedAt, rangeStartDayMs);
+      if (!uniqueWorkoutsPerWeek.has(weekIndex)) {
+        uniqueWorkoutsPerWeek.set(weekIndex, new Set());
       }
-      uniqueWorkoutsPerWeek.get(weekStart)!.add(log.id);
+      uniqueWorkoutsPerWeek.get(weekIndex)!.add(log.id);
     }
 
     const totalWeeks = Math.max(1, weeks);

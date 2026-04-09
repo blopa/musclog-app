@@ -2,23 +2,20 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MenstrualPhasePoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { MultipleLinesChart } from '../charts/MultipleLinesChart';
+import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
+import { MenstrualPhasePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MenstrualPerformanceChartProps {
   allData: Record<TimeAggregation, MenstrualPhasePoint[]>;
 }
 
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
 export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
@@ -52,7 +49,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
   const series = [
     {

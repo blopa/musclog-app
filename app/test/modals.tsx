@@ -2,34 +2,33 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
-import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
-import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMealModal';
-import { AddFoodModal } from '../../components/modals/AddFoodModal';
-import { AddMealModal } from '../../components/modals/AddMealModal';
-import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
-import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsModal';
-import { AiCustomPromptEditModal } from '../../components/modals/AiCustomPromptEditModal';
-import { AiCustomPromptsModal } from '../../components/modals/AiCustomPromptsModal';
-import { AINotConfiguredModal } from '../../components/modals/AINotConfiguredModal';
-import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
-import { AISettingsModal } from '../../components/modals/AISettingsModal';
-import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
-import { BasicSettingsModal } from '../../components/modals/BasicSettingsModal';
-import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
-import { BrowseTemplatesModal } from '../../components/modals/BrowseTemplatesModal';
-import { CenteredModal } from '../../components/modals/CenteredModal';
-import { CoachModal } from '../../components/modals/CoachModal';
-import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
-import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
-import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
-import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortionModal';
-import { CreateMealModal } from '../../components/modals/CreateMealModal';
-import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
-import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
-import { CycleLogModal } from '../../components/modals/CycleLogModal';
-import { CycleSettingsModal } from '../../components/modals/CycleSettingsModal';
+import { AddExerciseModal } from '@/components/modals/AddExerciseModal';
+import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
+import { AddFoodItemToMealModal } from '@/components/modals/AddFoodItemToMealModal';
+import { AddFoodModal } from '@/components/modals/AddFoodModal';
+import { AddMealModal } from '@/components/modals/AddMealModal';
+import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
+import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
+import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
+import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
+import { AINutritionTrackingContextModal } from '@/components/modals/AINutritionTrackingContextModal';
+import { AISettingsModal } from '@/components/modals/AISettingsModal';
+import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
+import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import BodyMetricsHistoryModal from '@/components/modals/BodyMetricsHistoryModal';
+import { BrowseTemplatesModal } from '@/components/modals/BrowseTemplatesModal';
+import { CenteredModal } from '@/components/modals/CenteredModal';
+import { CoachModal } from '@/components/modals/CoachModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
+import CreateExerciseModal from '@/components/modals/CreateExerciseModal';
+import { CreateFoodPortionModal } from '@/components/modals/CreateFoodPortionModal';
+import { CreateMealModal } from '@/components/modals/CreateMealModal';
+import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
+import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
+import { CycleLogModal } from '@/components/modals/CycleLogModal';
+import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import {
   ExerciseDataModal,
   FoodDataModal,
@@ -40,57 +39,57 @@ import {
   UserMetricDataModal,
   WorkoutLogDataModal,
   WorkoutTemplateDataModal,
-} from '../../components/modals/DataLogModal';
-import { DatePickerInput } from '../../components/modals/DatePickerInput';
-import { DatePickerModal } from '../../components/modals/DatePickerModal';
-import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
-import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
-import { EditPersonalInfoModal } from '../../components/modals/EditPersonalInfoModal';
-import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
-import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
-import ExercisesModal from '../../components/modals/ExercisesModal';
-import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
-import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
-import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
-import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
-import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
-import { FullScreenModal } from '../../components/modals/FullScreenModal';
-import { GenericEditModal } from '../../components/modals/GenericEditModal';
-import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
-import { ImportNutritionModal } from '../../components/modals/ImportNutritionModal';
-import { ImportWorkoutsModal } from '../../components/modals/ImportWorkoutsModal';
-import { LogMealModal } from '../../components/modals/LogMealModal';
-import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
-import { MealEstimationModal } from '../../components/modals/MealEstimationModal';
-import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
-import MyMealsModal from '../../components/modals/MyMealsModal';
-import { NotificationsModal } from '../../components/modals/NotificationsModal';
-import { NotificationsSettingsModal } from '../../components/modals/NotificationsSettingsModal';
-import { NutritionConfirmationModal } from '../../components/modals/NutritionConfirmationModal';
-import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
-import { PastWorkoutBottomMenu } from '../../components/modals/PastWorkoutBottomMenu';
-import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
-import { PastWorkoutsHistoryFilterMenu } from '../../components/modals/PastWorkoutsHistoryFilterMenu';
-import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
-import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
-import { RecentNutritionHistoryModal } from '../../components/modals/RecentNutritionHistoryModal';
-import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
-import { RetrospectiveNutritionModal } from '../../components/modals/RetrospectiveNutritionModal';
-import { ScannedFoodDetailsModal } from '../../components/modals/ScannedFoodDetailsModal';
-import { SelectModal } from '../../components/modals/SelectModal';
-import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
-import SmartCameraModal from '../../components/modals/SmartCameraModal';
-import { TimePickerInput } from '../../components/modals/TimePickerInput';
-import { TimePickerModal } from '../../components/modals/TimePickerModal';
-import { UserMenuModal } from '../../components/modals/UserMenuModal';
-import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
-import { VisualSettingsModal } from '../../components/modals/VisualSettingsModal';
-import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
-import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import { Button } from '../../components/theme/Button';
-import { EnrichedWorkoutLogSet } from '../../database/services';
-import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
+} from '@/components/modals/DataLogModal';
+import { DatePickerInput } from '@/components/modals/DatePickerInput';
+import { DatePickerModal } from '@/components/modals/DatePickerModal';
+import { EditFitnessDetailsModal } from '@/components/modals/EditFitnessDetailsModal';
+import EditPastWorkoutDataModal from '@/components/modals/EditPastWorkoutDataModal';
+import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
+import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
+import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
+import ExercisesModal from '@/components/modals/ExercisesModal';
+import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
+import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
+import { FoodNotFoundModal } from '@/components/modals/FoodNotFoundModal';
+import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
+import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
+import { FullScreenModal } from '@/components/modals/FullScreenModal';
+import { GenericEditModal } from '@/components/modals/GenericEditModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { ImportNutritionModal } from '@/components/modals/ImportNutritionModal';
+import { ImportWorkoutsModal } from '@/components/modals/ImportWorkoutsModal';
+import { LogMealModal } from '@/components/modals/LogMealModal';
+import { LogSetPerformanceModal } from '@/components/modals/LogSetPerformanceModal';
+import { MealEstimationModal } from '@/components/modals/MealEstimationModal';
+import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
+import MyMealsModal from '@/components/modals/MyMealsModal';
+import { NotificationsModal } from '@/components/modals/NotificationsModal';
+import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
+import { NutritionConfirmationModal } from '@/components/modals/NutritionConfirmationModal';
+import { NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
+import { PastWorkoutBottomMenu } from '@/components/modals/PastWorkoutBottomMenu';
+import PastWorkoutDetailModal from '@/components/modals/PastWorkoutDetailModal';
+import { PastWorkoutsHistoryFilterMenu } from '@/components/modals/PastWorkoutsHistoryFilterMenu';
+import PastWorkoutsHistoryModal from '@/components/modals/PastWorkoutsHistoryModal';
+import { PortionSizesPickerModal } from '@/components/modals/PortionSizesPickerModal';
+import { RecentNutritionHistoryModal } from '@/components/modals/RecentNutritionHistoryModal';
+import { ReplaceExerciseModal } from '@/components/modals/ReplaceExerciseModal';
+import { RetrospectiveNutritionModal } from '@/components/modals/RetrospectiveNutritionModal';
+import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
+import { SelectModal } from '@/components/modals/SelectModal';
+import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
+import SmartCameraModal from '@/components/modals/SmartCameraModal';
+import { TimePickerInput } from '@/components/modals/TimePickerInput';
+import { TimePickerModal } from '@/components/modals/TimePickerModal';
+import { UserMenuModal } from '@/components/modals/UserMenuModal';
+import ViewExerciseModal from '@/components/modals/ViewExerciseModal';
+import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
+import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
+import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { Button } from '@/components/theme/Button';
+import { EnrichedWorkoutLogSet } from '@/database/services';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
@@ -185,9 +184,6 @@ export default function ModalsTestScreen() {
 
   // Add Exercise Modal
   const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
-
-  // Connect Google Account Modal
-  const [isConnectGoogleAccountVisible, setIsConnectGoogleAccountVisible] = useState(false);
 
   // Add Food Item to Meal Modal
   const [isAddFoodItemToMealVisible, setIsAddFoodItemToMealVisible] = useState(false);
@@ -729,22 +725,6 @@ export default function ModalsTestScreen() {
               onPress={() => setIsBarcodeCameraVisible(true)}
             />
           </View>
-          <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
-              Connect Google Account Modal
-            </Text>
-            <Text className="mb-4 text-sm text-text-secondary">
-              Modal for connecting Google account for AI features.
-            </Text>
-            {/* Connect Google Account Modal Button */}
-            <Button
-              label="Open Connect Google Account Modal"
-              variant="accent"
-              width="full"
-              onPress={() => setIsConnectGoogleAccountVisible(true)}
-            />
-          </View>
-
           {/* Notifications Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Notifications Modal</Text>
@@ -1920,7 +1900,6 @@ export default function ModalsTestScreen() {
       <AISettingsModal
         visible={isAiSettingsVisible}
         onClose={() => setIsAiSettingsVisible(false)}
-        onConnectGoogleAccount={() => console.log('Connect Google pressed')}
         onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
       />
@@ -1936,13 +1915,6 @@ export default function ModalsTestScreen() {
         onClose={() => setIsFilterWorkoutsVisible(false)}
         onApplyFilters={(filters) => console.log('Applied filters:', filters)}
         onClearFilters={() => console.log('Cleared filters')}
-      />
-
-      <ConnectGoogleAccountModal
-        visible={isConnectGoogleAccountVisible}
-        onClose={() => setIsConnectGoogleAccountVisible(false)}
-        onConnect={() => console.log('Google Account Connected')}
-        onMaybeLater={() => console.log('Maybe Later pressed')}
       />
 
       <AddFoodItemToMealModal

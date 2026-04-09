@@ -1,21 +1,21 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesEnUS from '../../data/exercisesEnUS.json';
-import exercisesPtBr from '../../data/exercisesPtBr.json';
-import i18n, { PT_BR } from '../../lang/lang';
-import {
-  getBundledExerciseImageSourceByIndex,
-  getExerciseImageFilenameByIndex,
-  preloadExerciseImages,
-} from '../../utils/exerciseImage';
-import { copyBundledExerciseImageToDocument } from '../../utils/file';
-import { database } from '../index';
+import exercisesEnUS from '@/data/exercisesEnUS.json';
+import exercisesPtBr from '@/data/exercisesPtBr.json';
+import { database } from '@/database/index';
 import Exercise, {
   type EquipmentType,
   type ExerciseSource,
   type MechanicType,
   type MuscleGroup,
-} from '../models/Exercise';
+} from '@/database/models/Exercise';
+import i18n, { PT_BR } from '@/lang/lang';
+import {
+  getBundledExerciseImageSourceByIndex,
+  getExerciseImageFilenameByIndex,
+  preloadExerciseImages,
+} from '@/utils/exerciseImage';
+import { copyBundledExerciseImageToDocument } from '@/utils/file';
 
 interface ExerciseJsonData {
   name: string;

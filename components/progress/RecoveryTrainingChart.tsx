@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Scatter } from 'victory-native';
 
-import { RecoveryTrainingPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getYAxisLabels } from '../../utils/chartUtils';
+import { RecoveryTrainingPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getYAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface RecoveryTrainingChartProps {

@@ -1,8 +1,9 @@
-import { useColorScheme } from 'react-native';
+import { ColorSchemeName, useColorScheme } from 'react-native';
 
-import type { ThemeOption } from '../constants/settings';
+import type { ThemeOption } from '@/constants/settings';
 // only place that it's ok to import from theme
-import { darkTheme, lightTheme, type Theme } from '../theme';
+import { darkTheme, lightTheme, type Theme } from '@/theme';
+
 import { useSettings } from './useSettings';
 
 /**
@@ -38,7 +39,7 @@ export function useThemeMode(): 'dark' | 'light' {
  */
 function getEffectiveTheme(
   preference: ThemeOption,
-  systemColorScheme: 'light' | 'dark' | null | undefined
+  systemColorScheme: ColorSchemeName
 ): 'dark' | 'light' {
   if (preference === 'system') {
     // Follow system preference

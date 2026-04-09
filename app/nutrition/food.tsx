@@ -16,48 +16,48 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InteractionManager, ScrollView, View } from 'react-native';
 
-import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
-import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
-import { FoodItemCard } from '../../components/cards/FoodItemCard';
-import { useCoach } from '../../components/CoachContext';
-import { DateNavigator } from '../../components/DateNavigator';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MealSection } from '../../components/MealSection';
-import { AddFoodModal } from '../../components/modals/AddFoodModal';
-import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
-import { CreateMealModal } from '../../components/modals/CreateMealModal';
-import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
-import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
-import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
-import { MealInsightsModal } from '../../components/modals/MealInsightsModal';
-import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
-import MyMealsModal from '../../components/modals/MyMealsModal';
-import { ScaleMealPortionModal } from '../../components/modals/ScaleMealPortionModal';
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
-import { Button } from '../../components/theme/Button';
-import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
-import { MenuButton } from '../../components/theme/MenuButton';
-import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { useSmartCamera } from '../../context/SmartCameraContext';
-import { useSnackbar } from '../../context/SnackbarContext';
-import Food from '../../database/models/Food';
-import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
+import { FoodItemCard } from '@/components/cards/FoodItemCard';
+import { useCoach } from '@/components/CoachContext';
+import { DateNavigator } from '@/components/DateNavigator';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MealSection } from '@/components/MealSection';
+import { AddFoodModal } from '@/components/modals/AddFoodModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
+import { CreateMealModal } from '@/components/modals/CreateMealModal';
+import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
+import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
+import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
+import MyMealsModal from '@/components/modals/MyMealsModal';
+import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { Button } from '@/components/theme/Button';
+import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { useSmartCamera } from '@/context/SmartCameraContext';
+import { useSnackbar } from '@/context/SnackbarContext';
+import Food from '@/database/models/Food';
+import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import {
   ChatService,
   NutritionService,
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
-} from '../../database/services';
-import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import { localCalendarDayDate } from '../../utils/calendarDate';
-import { getMealCritique } from '../../utils/coachAI';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { getSimpleServingDisplay } from '../../utils/foodDisplay';
+} from '@/database/services';
+import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';
+import { getMealCritique } from '@/utils/coachAI';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 
 /** Same grouping as merge: duplicates are multiple logs with the same foodId in one meal. */
 function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): boolean {
@@ -1381,7 +1381,11 @@ export default function FoodScreen() {
         onConfirm={handleConfirmFoodMove}
         mode="move"
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        sourceDate={
+          selectedFoodItem
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : selectedDate
+        }
         isLoading={isFoodMoveLoading}
       />
 
@@ -1396,7 +1400,11 @@ export default function FoodScreen() {
         mode="split"
         title={t('food.actions.splitFoodModalTitle')}
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        sourceDate={
+          selectedFoodItem
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : selectedDate
+        }
         isLoading={isFoodSplitLoading}
       />
 
@@ -1414,7 +1422,9 @@ export default function FoodScreen() {
           selectedFoodItem && isDuplicateMode ? selectedFoodItem.log.type : undefined
         }
         initialDate={
-          selectedFoodItem && isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined
+          selectedFoodItem && isDuplicateMode
+            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            : undefined
         }
         initialServingSize={
           selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined

@@ -1,39 +1,40 @@
+import { useFocusEffect } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
+import { Dumbbell, Plus, Repeat, Search, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Share, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { WorkoutCard } from '../../components/cards/WorkoutCard';
-import { FilterTabs } from '../../components/FilterTabs';
-import { GradientText } from '../../components/GradientText';
-import { MasterLayout } from '../../components/MasterLayout';
-import {
-  BrowseTemplatesModal,
-  getRawTemplateById,
-} from '../../components/modals/BrowseTemplatesModal';
-import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
-import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
-import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
-import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
-import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
-import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import { AnimatedContent } from '../../components/theme/AnimatedContent';
-import DashedButton from '../../components/theme/DashedButton';
-import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { TextInput } from '../../components/theme/TextInput';
-import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database, WorkoutTemplate } from '../../database';
-import { WorkoutService, WorkoutTemplateService } from '../../database/services';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
-import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
+import { WorkoutCard } from '@/components/cards/WorkoutCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { GradientText } from '@/components/GradientText';
+import { MasterLayout } from '@/components/MasterLayout';
+import { BrowseTemplatesModal, getRawTemplateById } from '@/components/modals/BrowseTemplatesModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
+import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
+import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
+import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
+import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { Button } from '@/components/theme/Button';
+import DashedButton from '@/components/theme/DashedButton';
+import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextInput } from '@/components/theme/TextInput';
+import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database, WorkoutLog, WorkoutTemplate } from '@/database';
+import { WorkoutService, WorkoutTemplateService } from '@/database/services';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutTemplateDetails } from '@/hooks/useWorkoutTemplateDetails';
+import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
+import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
+import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { captureException } from '@/utils/sentry';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -81,8 +82,24 @@ export default function WorkoutsScreen() {
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);
+  const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
+    useState(false);
+  const [isDiscardingInterrupted, setIsDiscardingInterrupted] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
+    }, [])
+  );
+
+  const handleOverviewModalClose = useCallback(() => {
+    setIsWorkoutOverviewVisible(false);
+    WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
+  }, []);
 
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
 
   const handleConfirmDeleteWorkout = useCallback(async () => {
     if (!selectedWorkoutId) {
@@ -219,16 +236,20 @@ export default function WorkoutsScreen() {
   }, [featuredWorkout, searchQuery, activeFilter]);
 
   // Helper function to start a workout and show overview modal
-  const handleStartWorkout = useCallback(async (templateId: string) => {
-    try {
-      const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
-      setSelectedWorkoutLogId(workoutLog.id);
-      setIsWorkoutOverviewVisible(true);
-    } catch (err) {
-      console.error('Error starting workout:', err);
-      // Show error to user (you might want to add an alert here)
-    }
-  }, []);
+  const handleStartWorkout = useCallback(
+    async (templateId: string) => {
+      try {
+        const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
+        setSelectedWorkoutLogId(workoutLog.id);
+        setIsWorkoutOverviewVisible(true);
+      } catch (err) {
+        console.error('Error starting workout:', err);
+        captureException(err, { data: { context: 'workouts.handleStartWorkout' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
+      }
+    },
+    [showSnackbar, t]
+  );
 
   // Helper function to open preview modal (now synchronous!)
   const handlePreviewWorkout = useCallback(
@@ -333,6 +354,56 @@ export default function WorkoutsScreen() {
 
           {/* Workouts List */}
           <View className="mx-4 mb-8 gap-4">
+            {/* Interrupted Session Banner */}
+            {interruptedWorkoutLog ? (
+              <View className="z-10 bg-bg-primary">
+                <View
+                  className="flex-row items-center gap-4 rounded-xl border bg-bg-card p-4 shadow-sm"
+                  style={{ borderColor: theme.colors.background.white5 }}
+                >
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary/10">
+                    <Repeat size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center justify-between">
+                      <Text
+                        className="flex-1 text-base font-bold text-text-primary"
+                        numberOfLines={1}
+                      >
+                        {interruptedWorkoutLog.workoutName ?? t('freeTraining.title')}
+                      </Text>
+                      <View className="ml-2 rounded-full bg-accent-primary/10 px-2 py-0.5">
+                        <Text className="text-[10px] font-bold uppercase tracking-wider text-text-accent">
+                          {t('workout.inProgress')}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text className="text-xs text-text-secondary" numberOfLines={1}>
+                      {t('workouts.interruptedSession.description')}
+                    </Text>
+                    <View className="mt-3 flex-row gap-2">
+                      <Button
+                        label={t('workouts.interruptedSession.resume')}
+                        size="xs"
+                        width="flex-1"
+                        variant="gradientCta"
+                        onPress={() => {
+                          setSelectedWorkoutLogId(interruptedWorkoutLog.id);
+                          setIsWorkoutOverviewVisible(true);
+                        }}
+                      />
+                      <Button
+                        label={t('workouts.interruptedSession.discard')}
+                        size="xs"
+                        variant="secondary"
+                        onPress={() => setIsDiscardInterruptedConfirmVisible(true)}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ) : null}
+
             {/* Error State */}
             {error ? (
               <ErrorStateCard
@@ -473,9 +544,9 @@ export default function WorkoutsScreen() {
 
             {/* Normal State - Regular Workouts */}
             {!isLoading && !error && filteredWorkouts.length > 0 ? (
-              <AnimatedContent>
+              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
                 <>
-                  {filteredWorkouts.map((workout, index) => (
+                  {filteredWorkouts.map((workout) => (
                     <WorkoutCard
                       key={workout.id}
                       name={workout.name}
@@ -562,7 +633,7 @@ export default function WorkoutsScreen() {
           setIsMenuVisible(false);
           try {
             const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
-            await Share.share({ message });
+            await shareText(message);
           } catch (err) {
             console.error('Error sharing workout:', err);
             showSnackbar('error', t('common.error'));
@@ -681,10 +752,42 @@ export default function WorkoutsScreen() {
         cancelLabel={t('workouts.createFromTemplate.cancel')}
         isLoading={isCreatingWorkoutsFromTemplate}
       />
+      {/* Discard Interrupted Session Confirmation */}
+      <ConfirmationModal
+        visible={isDiscardInterruptedConfirmVisible}
+        onClose={() => setIsDiscardInterruptedConfirmVisible(false)}
+        onConfirm={async () => {
+          if (!interruptedWorkoutLog) {
+            return;
+          }
+
+          setIsDiscardingInterrupted(true);
+          try {
+            await clearActiveWorkoutLogId();
+            const log = await database.get('workout_logs').find(interruptedWorkoutLog.id);
+            await log.markAsDeleted();
+            setInterruptedWorkoutLog(null);
+          } catch (err) {
+            console.error('Error discarding interrupted workout:', err);
+            captureException(err, { data: { context: 'workouts.discardInterrupted' } });
+            showSnackbar('error', t('errors.somethingWentWrong'));
+          } finally {
+            setIsDiscardingInterrupted(false);
+            setIsDiscardInterruptedConfirmVisible(false);
+          }
+        }}
+        title={t('workouts.interruptedSession.discardConfirmTitle')}
+        message={t('workouts.interruptedSession.discardConfirmMessage')}
+        confirmLabel={t('workouts.interruptedSession.discardConfirm')}
+        cancelLabel={t('workouts.interruptedSession.discardCancel')}
+        variant="destructive"
+        isLoading={isDiscardingInterrupted}
+      />
+
       {/* Workout Session Overview Modal */}
       <WorkoutSessionOverviewModal
         visible={isWorkoutOverviewVisible}
-        onClose={() => setIsWorkoutOverviewVisible(false)}
+        onClose={handleOverviewModalClose}
         workoutLogId={selectedWorkoutLogId}
         onStartWorkout={() => {
           setIsWorkoutOverviewVisible(false);
@@ -712,6 +815,8 @@ export default function WorkoutsScreen() {
               await log.markAsDeleted();
             } catch (err) {
               console.error('Error canceling workout:', err);
+              captureException(err, { data: { context: 'workouts.cancelWorkout' } });
+              showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }
         }}

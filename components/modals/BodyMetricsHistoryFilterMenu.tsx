@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { useTheme } from '@/hooks/useTheme';
 
 export type SortOrder = 'newestFirst' | 'oldestFirst';
 export type TrendFilter = 'all' | 'increased' | 'decreased' | 'noChange';

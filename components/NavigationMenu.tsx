@@ -15,13 +15,13 @@ import {
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { NavItemKey } from '../constants/settings';
-import { useNavigationItems } from '../hooks/useNavigationItems';
-import { useTheme } from '../hooks/useTheme';
-import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
-import { addOpacityToHex } from '../theme';
+import type { NavItemKey } from '@/constants/settings';
+import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { useTheme } from '@/hooks/useTheme';
+import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
+import { addOpacityToHex } from '@/theme';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
@@ -41,6 +41,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const unreadChatMessages = useUnreadChatMessages();
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
+  const insets = useSafeAreaInsets();
 
   const isPathActive = useCallback(
     (path: string) => {
@@ -320,72 +321,73 @@ export const NavigationMenu = memo(function NavigationMenu({
   return (
     <View
       className="absolute bottom-0 left-0 right-0 border-t border-border-dark"
-      style={{ backgroundColor: theme.colors.background.secondaryDark }}
+      style={{
+        backgroundColor: theme.colors.background.secondaryDark,
+        paddingBottom: insets.bottom,
+      }}
     >
-      <SafeAreaView edges={['bottom']}>
-        <View className="relative flex-row items-stretch px-6 py-4">
-          {/* Home - always fixed */}
-          <Pressable
-            className="flex-1 items-center justify-center gap-1"
-            onPress={() => {
-              if (!homeActive) {
-                router.navigate('/');
-              }
-            }}
+      <View className="relative flex-row items-stretch px-6 py-4">
+        {/* Home - always fixed */}
+        <Pressable
+          className="flex-1 items-center justify-center gap-1"
+          onPress={() => {
+            if (!homeActive) {
+              router.navigate('/');
+            }
+          }}
+        >
+          <View
+            className={`h-10 w-16 items-center justify-center rounded-lg ${homeActive ? 'bg-bg-navActive' : ''}`}
           >
-            <View
-              className={`h-10 w-16 items-center justify-center rounded-lg ${homeActive ? 'bg-bg-navActive' : ''}`}
-            >
-              <Home
-                size={theme.iconSize.md}
-                color={homeActive ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={homeActive ? theme.strokeWidth.medium : theme.borderWidth.medium}
-              />
-            </View>
-            <Text
-              className={`text-xs font-medium ${homeActive ? 'text-text-accent' : 'text-text-tertiary'}`}
-            >
-              {t('home.navigation.home')}
-            </Text>
-          </Pressable>
-
-          {/* Slot 1 - customizable */}
-          {renderNavSlot(navSlot1)}
-
-          {/* Camera - always fixed */}
-          <Pressable
-            className="z-10 items-center justify-center gap-1"
-            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
-            onPress={onCameraPress}
+            <Home
+              size={theme.iconSize.md}
+              color={homeActive ? theme.colors.accent.primary : theme.colors.text.tertiary}
+              strokeWidth={homeActive ? theme.strokeWidth.medium : theme.borderWidth.medium}
+            />
+          </View>
+          <Text
+            className={`text-xs font-medium ${homeActive ? 'text-text-accent' : 'text-text-tertiary'}`}
           >
-            <View
-              className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
-              style={[
-                isSmallScreen
-                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                  : { width: 80, height: 80 },
-                {
-                  backgroundColor: cameraFabActive
-                    ? theme.colors.accent.primary
-                    : addOpacityToHex(theme.colors.accent.primary, 0.8),
-                },
-              ]}
-            >
-              <Camera
-                size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
-                color={theme.colors.background.secondaryDark}
-                strokeWidth={theme.strokeWidth.medium}
-              />
-            </View>
-          </Pressable>
+            {t('home.navigation.home')}
+          </Text>
+        </Pressable>
 
-          {/* Slot 2 - customizable */}
-          {renderNavSlot(navSlot2)}
+        {/* Slot 1 - customizable */}
+        {renderNavSlot(navSlot1)}
 
-          {/* Slot 3 - customizable */}
-          {renderNavSlot(navSlot3)}
-        </View>
-      </SafeAreaView>
+        {/* Camera - always fixed */}
+        <Pressable
+          className="z-10 items-center justify-center gap-1"
+          style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+          onPress={onCameraPress}
+        >
+          <View
+            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+            style={[
+              isSmallScreen
+                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                : { width: 80, height: 80 },
+              {
+                backgroundColor: cameraFabActive
+                  ? theme.colors.accent.primary
+                  : addOpacityToHex(theme.colors.accent.primary, 0.8),
+              },
+            ]}
+          >
+            <Camera
+              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+              color={theme.colors.background.secondaryDark}
+              strokeWidth={theme.strokeWidth.medium}
+            />
+          </View>
+        </Pressable>
+
+        {/* Slot 2 - customizable */}
+        {renderNavSlot(navSlot2)}
+
+        {/* Slot 3 - customizable */}
+        {renderNavSlot(navSlot3)}
+      </View>
     </View>
   );
 });

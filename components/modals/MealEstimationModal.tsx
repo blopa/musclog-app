@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { IdentifiedItem, MealEstimationScreen } from '../MealEstimationScreen';
+import { IdentifiedItem, MealEstimationScreen } from '@/components/MealEstimationScreen';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type MealEstimationModalProps = {

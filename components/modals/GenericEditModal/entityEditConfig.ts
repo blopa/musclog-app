@@ -1,7 +1,8 @@
 import type { Model } from '@nozbe/watermelondb';
 
-import type { Units } from '../../../constants/settings';
-import type UserMetric from '../../../database/models/UserMetric';
+import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
+import type { Units } from '@/constants/settings';
+import type UserMetric from '@/database/models/UserMetric';
 import {
   ChatService,
   ExerciseService,
@@ -13,10 +14,19 @@ import {
   NutritionService,
   UserMetricService,
   WorkoutTemplateService,
-} from '../../../database/services';
-import { displayToCm, displayToKg } from '../../../utils/unitConversion';
-import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
-import type { DataLogModalVariant } from '../DataLogModal';
+} from '@/database/services';
+import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+import {
+  displayToCm,
+  displayToGrams,
+  displayToKg,
+  getMassUnitLabel,
+  gramsToDisplay,
+  isLengthMetricType,
+  isWeightMetricType,
+} from '@/utils/unitConversion';
+import { WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
+
 import type { EditFieldConfig, EditFormValues } from './types';
 
 export type SaveRecordContext = { units: Units };
@@ -94,9 +104,13 @@ const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
 const CHECKIN_STATUSES = ['pending', 'ahead', 'onTrack', 'behind'] as const;
 
 /**
- * Get edit field configuration for a given entity type
+ * Get edit field configuration for a given entity type.
+ * @param entityType The entity type to get fields for.
+ * @param units Optional user unit system, used to show correct unit labels (kg vs lbs, cm vs in).
  */
-export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[] {
+export function getEditFields(entityType: DataLogModalVariant, units?: Units): EditFieldConfig[] {
+  const weightUnitLabel = units === 'imperial' ? 'lbs' : 'kg';
+  const lengthUnitLabel = units === 'imperial' ? 'in' : 'cm';
   switch (entityType) {
     case 'meal':
       return [
@@ -184,10 +198,11 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         {
           type: 'number',
           key: 'gramWeight',
-          label: 'food.foodDetails.grams',
+          label: units === 'imperial' ? 'food.portionSizes.oz' : 'food.foodDetails.grams',
           min: 0,
-          step: 1,
-          unit: 'g',
+          step: units === 'imperial' ? 0.1 : 1,
+          maxFractionDigits: units === 'imperial' ? 2 : 0,
+          unit: getMassUnitLabel(units ?? 'metric'),
           required: true,
         },
         {
@@ -409,7 +424,7 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           label: 'currentGoalsCard.targetWeight',
           min: 0,
           step: 0.1,
-          unit: 'kg',
+          unit: weightUnitLabel,
           required: true,
         },
         {
@@ -472,7 +487,7 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           label: 'currentGoalsCard.targetWeight',
           min: 0,
           step: 0.1,
-          unit: 'kg',
+          unit: weightUnitLabel,
           required: true,
         },
         {
@@ -639,24 +654,32 @@ export async function saveRecord(
       });
       break;
 
-    case 'foodPortion':
+    case 'foodPortion': {
+      let gramWeight = values.gramWeight as number | undefined;
+      if (gramWeight != null && context?.units) {
+        gramWeight = Math.round(displayToGrams(gramWeight, context.units));
+      }
+
       await FoodPortionService.updateFoodPortion(recordId, {
         name: values.name as string | undefined,
-        gramWeight: values.gramWeight as number | undefined,
+        gramWeight,
         icon: values.icon as string | undefined,
       });
       break;
+    }
 
     case 'userMetric': {
       const type = values.type as string | undefined;
       let value = values.value as number | undefined;
       let unit: string | undefined;
-      if (context?.units && type === 'weight' && value != null) {
-        value = displayToKg(value, context.units);
-        unit = 'kg';
-      } else if (context?.units && type === 'height' && value != null) {
-        value = displayToCm(value, context.units);
-        unit = 'cm';
+      if (context?.units && type && value != null) {
+        if (isWeightMetricType(type)) {
+          value = displayToKg(value, context.units);
+          unit = 'kg';
+        } else if (isLengthMetricType(type)) {
+          value = displayToCm(value, context.units);
+          unit = 'cm';
+        }
       }
 
       await UserMetricService.updateMetric(recordId, {
@@ -757,10 +780,10 @@ export async function saveRecord(
  * Get create field configuration for a given entity type.
  * Similar to getEditFields but may include extra fields only relevant on creation (e.g. sender for chatMessage).
  */
-export function getCreateFields(entityType: DataLogModalVariant): EditFieldConfig[] {
+export function getCreateFields(entityType: DataLogModalVariant, units?: Units): EditFieldConfig[] {
   if (entityType === 'chatMessage') {
     return [
-      ...getEditFields('chatMessage'),
+      ...getEditFields('chatMessage', units),
       {
         type: 'select',
         key: 'sender',
@@ -785,13 +808,16 @@ export function getCreateFields(entityType: DataLogModalVariant): EditFieldConfi
     ];
   }
 
-  return getEditFields(entityType);
+  return getEditFields(entityType, units);
 }
 
 /**
  * Get default (empty) initial values for creating a new record.
  */
-export function getCreateInitialValues(entityType: DataLogModalVariant): EditFormValues {
+export function getCreateInitialValues(
+  entityType: DataLogModalVariant,
+  units?: Units
+): EditFormValues {
   switch (entityType) {
     case 'chatMessage':
       return { message: '', sender: 'user', context: 'general' };
@@ -849,7 +875,11 @@ export function getCreateInitialValues(entityType: DataLogModalVariant): EditFor
       };
 
     case 'foodPortion':
-      return { name: '', gramWeight: 100, icon: '' };
+      return {
+        name: '',
+        gramWeight: gramsToDisplay(100, units ?? 'metric'),
+        icon: '',
+      };
 
     case 'workoutTemplate':
       return { name: '', description: '', icon: '', isArchived: false };
@@ -881,19 +911,22 @@ export async function createRecord(
       const type = values.type as string;
       let value = values.value as number;
       let unit: string | undefined;
-      if (context?.units && type === 'weight' && value != null) {
-        value = displayToKg(value, context.units);
-        unit = 'kg';
-      } else if (context?.units && type === 'height' && value != null) {
-        value = displayToCm(value, context.units);
-        unit = 'cm';
+      if (context?.units && type && value != null) {
+        if (isWeightMetricType(type)) {
+          value = displayToKg(value, context.units);
+          unit = 'kg';
+        } else if (isLengthMetricType(type)) {
+          value = displayToCm(value, context.units);
+          unit = 'cm';
+        }
       }
 
+      const rawDate = (values.date as number) ?? Date.now();
       await UserMetricService.createMetric({
         type,
         value,
         unit,
-        date: (values.date as number) ?? Date.now(),
+        date: localDayStartFromUtcMs(rawDate),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       break;

@@ -1,19 +1,19 @@
 import { useRouter } from 'expo-router';
-import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
+import { Dumbbell, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
-import { GradientText } from '../../components/GradientText';
-import { HealthConnectIllustration } from '../../components/HealthConnectIllustration';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { Button } from '../../components/theme/Button';
-import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
-import { useScrollFade } from '../../hooks/useScrollFade';
-import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { useTheme } from '../../hooks/useTheme';
+import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
+import { GradientText } from '@/components/GradientText';
+import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { Button } from '@/components/theme/Button';
+import { useHealthConnectPermissions } from '@/hooks/useHealthConnectPermissions';
+import { useScrollFade } from '@/hooks/useScrollFade';
+import { useSyncTracking } from '@/hooks/useSyncTracking';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Health Connect Onboarding Screen
@@ -133,10 +133,10 @@ export default function HealthConnectScreen() {
                 iconColor={theme.colors.status.emerald}
               />
 
-              {/* Vitals */}
+              {/* Body Composition */}
               <HealthCategoryCard
-                icon={Heart}
-                label={t('onboarding.healthConnect.categories.vitals')}
+                icon={Dumbbell}
+                label={t('onboarding.healthConnect.categories.bodyComposition')}
                 backgroundColor={theme.colors.status.purple10}
                 iconColor={theme.colors.status.purple}
               />
@@ -211,7 +211,7 @@ export default function HealthConnectScreen() {
 
                   if (hasAnyPermission) {
                     // Already has at least one permission, navigate to next screen
-                    router.navigate('/onboarding/connect-with-google');
+                    router.navigate('/onboarding/fitness-info');
                     return;
                   }
 
@@ -225,7 +225,7 @@ export default function HealthConnectScreen() {
                   }
 
                   // Navigate to next screen regardless of granted permissions
-                  router.navigate('/onboarding/connect-with-google');
+                  router.navigate('/onboarding/fitness-info');
                 } catch (error) {
                   console.error('Error setting up Health Connect:', error);
                 } finally {
@@ -242,7 +242,7 @@ export default function HealthConnectScreen() {
             <MaybeLaterButton
               onPress={() => {
                 // Navigate away or skip
-                router.navigate('/onboarding/connect-with-google');
+                router.navigate('/onboarding/fitness-info');
               }}
               text={t('onboarding.healthConnect.maybeLater')}
             />

@@ -4,8 +4,9 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FoodPortion from '../database/models/FoodPortion';
-import { FoodPortionService } from '../database/services';
+import FoodPortion from '@/database/models/FoodPortion';
+import { FoodPortionService } from '@/database/services';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 

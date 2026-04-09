@@ -1,7 +1,8 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
-import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
+import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
+
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogExercise from './WorkoutLogExercise';
@@ -20,7 +21,7 @@ export default class WorkoutTemplate extends Model {
 
   @field('name') name!: string;
   @field('description') description?: string;
-  @field('volume_calculation_type') volumeCalculationType!: string;
+  @field('workout_insights_type') workoutInsightsType?: string;
   @field('icon') icon?: string;
   @field('type') type?: string;
   @json('week_days_json', (data: any) => {

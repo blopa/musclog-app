@@ -18,23 +18,25 @@ import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { type MealType } from '../../database/models';
-import { NutritionService } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
+import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
+import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { type MealType } from '@/database/models';
+import { NutritionService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
-} from '../../utils/coachAI';
-import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
-import { performOcr } from '../../utils/ocr';
-import { showSnackbar } from '../../utils/snackbarService';
-import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
-import { CameraView, useCameraPermissions } from '../CameraView';
+} from '@/utils/coachAI';
+import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
+import { performOcr } from '@/utils/ocr';
+import { captureException } from '@/utils/sentry';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
@@ -454,10 +456,6 @@ export default function SmartCameraModal({
     setIsNewCustomFoodModalVisible(false);
   }, []);
 
-  const handleNewCustomFoodSave = useCallback((data: any) => {
-    setIsNewCustomFoodModalVisible(false);
-  }, []);
-
   const handleTrackCustomMeal = useCallback(() => {
     setIsLogMealModalVisible(true);
   }, []);
@@ -501,6 +499,7 @@ export default function SmartCameraModal({
         setSelectedMealForLogging(null);
       } catch (error) {
         console.error('Error logging meal:', error);
+        captureException(error, { data: { context: 'SmartCameraModal.handleLogMeal' } });
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
@@ -807,8 +806,12 @@ export default function SmartCameraModal({
                         colors={theme.colors.gradients.cta}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        className="absolute inset-0"
                         style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
                           borderRadius: theme.borderRadius.md,
                           overflow: 'hidden',
                         }}
@@ -1065,8 +1068,8 @@ export default function SmartCameraModal({
         {isNewCustomFoodModalVisible ? (
           <CreateCustomFoodModal
             visible={isNewCustomFoodModalVisible}
+            trackFoodAfterSave={true}
             onClose={handleNewCustomFoodClose}
-            onSave={handleNewCustomFoodSave}
             isAiEnabled={isAiEnabled}
           />
         ) : null}

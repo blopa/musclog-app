@@ -1,7 +1,8 @@
 import type { WidgetInfo } from 'react-native-android-widget';
 import { requestWidgetUpdate } from 'react-native-android-widget';
 
-import { NutritionGoalService, NutritionService } from '../database/services';
+import { NutritionGoalService, NutritionService } from '@/database/services';
+
 import { NutritionWidget } from './NutritionWidget';
 
 /**

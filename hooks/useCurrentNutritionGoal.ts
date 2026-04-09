@@ -1,10 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import { database } from '../database';
-import NutritionGoal from '../database/models/NutritionGoal';
-import { NutritionGoalService } from '../database/services';
+import { DEFAULT_BATCH_SIZE } from '@/constants/database';
+import { database } from '@/database';
+import NutritionGoal from '@/database/models/NutritionGoal';
+import { NutritionGoalService } from '@/database/services';
+import { localCalendarDayDate } from '@/utils/calendarDate';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
@@ -58,7 +59,7 @@ export function useCurrentNutritionGoal({
   // State for current mode
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
   const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
-  const displayDateRef = useRef<Date>(date ?? new Date());
+  const displayDateRef = useRef<Date>(localCalendarDayDate(date ?? new Date()));
 
   // State for history mode
   const [goals, setGoals] = useState<NutritionGoal[]>([]);
@@ -160,7 +161,7 @@ export function useCurrentNutritionGoal({
       return;
     }
 
-    displayDateRef.current = date ?? new Date();
+    displayDateRef.current = localCalendarDayDate(date ?? new Date());
 
     const fetchGoalForDate = () => {
       NutritionGoalService.getGoalForDate(displayDateRef.current)

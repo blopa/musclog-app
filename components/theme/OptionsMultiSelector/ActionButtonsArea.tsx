@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { View } from 'react-native';
 
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+
 import { DeleteActionButton } from './DeleteActionButton';
 import { GroupActionButton } from './GroupActionButton';
 
@@ -33,7 +34,7 @@ export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
   return (
     <View
       style={{
-        alignItems: 'center',
+        alignItems: 'stretch',
         justifyContent: 'center',
         paddingVertical: theme.spacing.padding.md,
         zIndex: theme.zIndex.max,

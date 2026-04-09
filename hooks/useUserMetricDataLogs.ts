@@ -4,9 +4,13 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
-import { UserMetricService } from '../database/services';
+import type { Units } from '@/constants/settings';
+import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+import { UserMetricService } from '@/database/services';
+import { metricDisplayUnit, metricValueToDisplay, storedWeightToKg } from '@/utils/unitConversion';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
+import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
 
 export type UserMetricDataDisplayItem = {
@@ -76,10 +80,20 @@ function metricToDisplayItem(
   metric: UserMetric,
   decrypted: { value: number; unit?: string },
   t: TFunction,
-  iconColors: Record<string, { color: string; bg: string }>
+  iconColors: Record<string, { color: string; bg: string }>,
+  units: Units
 ): UserMetricDataDisplayItem {
   const icon = ICON_BY_TYPE[metric.type as UserMetricType] ?? 'monitor-weight';
   const colors = iconColors[icon] ?? iconColors['monitor-weight'];
+
+  // Normalize legacy stored units then convert to the user's display system
+  const type = metric.type;
+  let valueInMetric = decrypted.value;
+  if (type === 'weight') {
+    valueInMetric = storedWeightToKg(decrypted.value, decrypted.unit);
+  }
+  const displayValue = metricValueToDisplay(valueInMetric, type, units);
+  const displayUnit = metricDisplayUnit(type, units, decrypted.unit);
 
   return {
     id: metric.id,
@@ -87,8 +101,8 @@ function metricToDisplayItem(
     icon,
     iconColor: colors.color,
     iconBgColor: colors.bg,
-    metricValue: decrypted.value,
-    metricUnit: decrypted.unit,
+    metricValue: displayValue,
+    metricUnit: displayUnit,
   };
 }
 
@@ -190,6 +204,7 @@ export function useUserMetricDataLogs({
 }: UseUserMetricDataLogsParams = {}): UseUserMetricDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
   const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
@@ -228,7 +243,7 @@ export function useUserMetricDataLogs({
       const metrics = await UserMetricService.getMetricsHistory(undefined, undefined, batchSize, 0);
       const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
       const results = metrics.map((metric, i) => ({
-        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors),
+        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors, units),
         dateTimestamp: decryptedList[i].date,
       }));
       const groups = groupMetricsByDate(results, t, dateFnsLocale);
@@ -242,7 +257,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale, units]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -266,7 +281,7 @@ export function useUserMetricDataLogs({
 
       const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
       const results = metrics.map((metric, i) => ({
-        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors),
+        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors, units),
         dateTimestamp: decryptedList[i].date,
       }));
 
@@ -279,7 +294,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale, units]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

@@ -5,29 +5,29 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { MasterLayout } from '../../components/MasterLayout';
-import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
-import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
-import { EatingPhase } from '../../database/models';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { MasterLayout } from '@/components/MasterLayout';
+import { NutritionGoals, NutritionGoalsBody } from '@/components/NutritionGoalsBody';
+import { Button } from '@/components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { EatingPhase } from '@/database/models';
 import {
   NutritionCheckinService,
   NutritionGoalService,
   UserMetricService,
-} from '../../database/services';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { localDayKeyPlusCalendarDaysFromNow } from '../../utils/calendarDate';
+} from '@/database/services';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
   NutritionPlan,
   planToInitialGoals,
-} from '../../utils/nutritionCalculator';
-import { showSnackbar } from '../../utils/snackbarService';
+} from '@/utils/nutritionCalculator';
+import { showSnackbar } from '@/utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
   const theme = useTheme();

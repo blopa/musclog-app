@@ -1,6 +1,6 @@
 import type { Locale } from 'date-fns';
 
-import { LanguageKeys, LOCALE_MAP } from '../lang/lang';
+import { LanguageKeys, LOCALE_MAP } from '@/lang/lang';
 
 /** Resolves the date-fns locale for the active app language (same mapping as DatePickerModal). */
 export function getDateFnsLocale(language?: string | null): Locale {

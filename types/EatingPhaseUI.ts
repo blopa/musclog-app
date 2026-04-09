@@ -1,4 +1,4 @@
-import { type EatingPhase } from '../database/models';
+import { type EatingPhase } from '@/database/models';
 
 /**
  * UI-specific eating phase types for display purposes.

@@ -292,7 +292,6 @@ npx expo install react-native-nitro-modules
       ],
       "expo-background-task",
       "expo-web-browser",
-      "@react-native-community/datetimepicker",
       [
         "rn-mlkit-ocr",
         {

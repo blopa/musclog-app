@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { type CycleSetupData, EditCycleSetupData } from '../../components/EditCycleSetupData';
-import { MasterLayout } from '../../components/MasterLayout';
-import { Button } from '../../components/theme/Button';
-import { MenstrualCycleRepository } from '../../database/repositories/MenstrualCycleRepository';
-import { useTheme } from '../../hooks/useTheme';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { setOnboardingCompleted } from '../../utils/onboardingService';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
+import { MasterLayout } from '@/components/MasterLayout';
+import { Button } from '@/components/theme/Button';
+import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
+import { useTheme } from '@/hooks/useTheme';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 const DEFAULT_CYCLE_DATA: CycleSetupData = {
   lastPeriodStartDate: new Date(),

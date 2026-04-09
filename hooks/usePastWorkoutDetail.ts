@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { combineLatest, from, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { EnrichedWorkoutLogSet, WorkoutService } from '../database/services';
-import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
+import { transformWorkoutToDetailData, type WorkoutDetailData } from '@/utils/workoutDetail';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';

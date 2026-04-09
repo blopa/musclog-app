@@ -1,5 +1,6 @@
-import type { Units } from '../constants/settings';
-import Food from '../database/models/Food';
+import type { Units } from '@/constants/settings';
+import Food from '@/database/models/Food';
+
 import { formatDisplayGrams } from './formatDisplayWeight';
 import { getMassUnitLabel } from './unitConversion';
 

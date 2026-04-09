@@ -1,38 +1,29 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { subYears } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import {
   EditPersonalInfoBody,
   PersonalInfo as PersonalInfoType,
-} from '../../components/EditPersonalInfoBody';
-import { MasterLayout } from '../../components/MasterLayout';
-import { Button } from '../../components/theme/Button';
-import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
-import { useSnackbar } from '../../context/SnackbarContext';
-import { type Gender } from '../../database/models';
-import { UserService } from '../../database/services';
-import { useTheme } from '../../hooks/useTheme';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { parseMmDdYyyyDateOfBirthToLocalDayStartMs } from '../../utils/fitnessProfilePersistence';
-import { setOnboardingCompleted } from '../../utils/onboardingService';
-
-// Helper function to format date of birth timestamp to MM/DD/YYYY
-function formatDateOfBirth(timestamp: number): string {
-  const date = new Date(timestamp);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-}
+} from '@/components/EditPersonalInfoBody';
+import { MasterLayout } from '@/components/MasterLayout';
+import { Button } from '@/components/theme/Button';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { type Gender } from '@/database/models';
+import { UserService } from '@/database/services';
+import { useTheme } from '@/hooks/useTheme';
+import {
+  defaultAdultDobLocalDayStartMs,
+  formatDateOfBirthFromTimestamp,
+  parseDobStringToLocalDayStartMs,
+} from '@/utils/fitnessProfilePersistence';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 export default function PersonalInfo() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const [isSaving, setIsSaving] = useState(false);
@@ -50,15 +41,14 @@ export default function PersonalInfo() {
           setInitialData({
             fullName: user.fullName || '',
             email: user.email || '',
-            dob: formatDateOfBirth(user.dateOfBirth),
+            dob: formatDateOfBirthFromTimestamp(user.dateOfBirth, i18n.language),
             gender: user.gender,
             avatarIcon: user.avatarIcon || undefined,
             avatarColor: user.avatarColor || undefined,
           });
         } else {
-          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
           setInitialData({
-            fullName: tempName || '',
+            fullName: '',
             email: '',
             dob: '',
             gender: 'other',
@@ -73,14 +63,14 @@ export default function PersonalInfo() {
     };
 
     loadUserData();
-  }, []);
+  }, [i18n.language]);
 
   const handleSave = async (data: PersonalInfoType) => {
     setIsSaving(true);
     try {
       // Date of birth is collected on the fitness step; optional here if the field is hidden.
       const dateOfBirthFromForm = data.dob?.trim()
-        ? parseMmDdYyyyDateOfBirthToLocalDayStartMs(data.dob)
+        ? parseDobStringToLocalDayStartMs(data.dob)
         : undefined;
 
       // Check if user already exists
@@ -98,7 +88,7 @@ export default function PersonalInfo() {
       } else {
         await UserService.initializeUser({
           fullName: data.fullName,
-          dateOfBirth: dateOfBirthFromForm ?? localDayStartMs(subYears(new Date(), 25)),
+          dateOfBirth: dateOfBirthFromForm ?? defaultAdultDobLocalDayStartMs(),
           gender: data.gender as Gender,
           email: data.email,
           avatarIcon: data.avatarIcon,

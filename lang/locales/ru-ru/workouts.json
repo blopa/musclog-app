@@ -51,7 +51,8 @@
       "noExercisesFound": "Упражнений по запросу «{{query}}» не найдено",
       "noExercisesAvailable": "Нет доступных упражнений для {{muscle}}",
       "exerciseDescription": "{{sets}} подх. × {{reps}} повт.",
-      "exerciseDescriptionWithWeight": "{{sets}} подх. × {{reps}} повт. @ {{weight}}{{unit}}"
+      "exerciseDescriptionWithWeight": "{{sets}} подх. × {{reps}} повт. @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} подх. × {{reps}} повт. @"
     },
     "filterWorkouts": {
       "title": "Фильтр тренировок",
@@ -159,6 +160,15 @@
     },
     "templateBrowser": {
       "comingSoon": "Просмотр шаблонов скоро появится!"
+    },
+    "interruptedSession": {
+      "description": "У вас есть незавершённая тренировка.",
+      "resume": "Продолжить",
+      "discard": "Удалить",
+      "discardConfirmTitle": "Удалить тренировку?",
+      "discardConfirmMessage": "Это навсегда удалит вашу текущую тренировку и все записанные подходы.",
+      "discardConfirm": "Удалить",
+      "discardCancel": "Оставить"
     },
     "unnamed": "Без названия"
   }

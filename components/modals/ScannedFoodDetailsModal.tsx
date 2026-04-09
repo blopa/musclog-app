@@ -3,20 +3,20 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
-import { useTheme } from '../../hooks/useTheme';
-import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
+import { ServingSizeSelector } from '@/components/ServingSizeSelector';
+import { Button } from '@/components/theme/Button';
+import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
+import { useTheme } from '@/hooks/useTheme';
+import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
+import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
   getProductName,
   mapOpenFoodFactsProduct,
-} from '../../utils/openFoodFactsMapper';
-import { BottomPopUp } from '../BottomPopUp';
-import { FoodInfoCard } from '../cards/FoodInfoCard';
-import { ServingSizeSelector } from '../ServingSizeSelector';
-import { Button } from '../theme/Button';
+} from '@/utils/openFoodFactsMapper';
 
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
@@ -112,17 +112,7 @@ export function ScannedFoodDetailsModal({
       <View>
         <FoodInfoCard food={foodInfo} />
         <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
-        <ServingSizeSelector
-          value={amount}
-          onChange={setAmount}
-          quickSizes={[
-            { label: '50g', value: 50 },
-            { label: '100g', value: 100 },
-            { label: '150g', value: 150 },
-            { label: '200g', value: 200 },
-            { label: '250g', value: 250 },
-          ]}
-        />
+        <ServingSizeSelector value={amount} onChange={setAmount} />
 
         {product.brands ? (
           <Text

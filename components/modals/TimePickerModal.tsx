@@ -10,8 +10,9 @@ import {
   View,
 } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 const ITEM_HEIGHT = 64;

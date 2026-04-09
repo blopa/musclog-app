@@ -8,7 +8,7 @@ import {
   encrypt,
   encryptDatabaseValue,
   getEncryptionKey,
-} from '../utils/encryption';
+} from '@/utils/encryption';
 
 /** Encrypt a string (optional). Empty/undefined returns ''. */
 export async function encryptOptionalString(value: string | undefined | null): Promise<string> {

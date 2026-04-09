@@ -2,22 +2,23 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Share, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
-import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { useUnreadChat } from '../../context/UnreadChatContext';
-import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
-import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import AiService from '../../services/AiService';
-import { getRecentWorkoutInsights } from '../../utils/coachAI';
-import { formatAppInteger } from '../../utils/formatAppNumber';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { showSnackbar } from '../../utils/snackbarService';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
+import { useUnreadChat } from '@/context/UnreadChatContext';
+import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
+import { ChatService, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import AiService from '@/services/AiService';
+import { getRecentWorkoutInsights } from '@/utils/coachAI';
+import { formatAppInteger } from '@/utils/formatAppNumber';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { showSnackbar } from '@/utils/snackbarService';
+import { getWeightUnitI18nKey } from '@/utils/units';
+import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '@/utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
   const theme = useTheme();
@@ -27,6 +28,7 @@ export default function WorkoutSummaryScreen() {
   const workoutLogId = params.workoutLogId;
   const { setUnreadCount } = useUnreadChat();
   const { units } = useSettings();
+  const { shareText } = useNativeShareText();
   const processedWorkoutRef = useRef<string | null>(null);
 
   const [totalTime, setTotalTime] = useState<string>('0m');
@@ -175,7 +177,7 @@ export default function WorkoutSummaryScreen() {
     ];
 
     try {
-      await Share.share({ message: lines.join('\n') });
+      await shareText(lines.join('\n'));
     } catch (err) {
       console.error('Error sharing workout summary:', err);
     }
@@ -245,6 +247,7 @@ export default function WorkoutSummaryScreen() {
       totalTime={totalTime}
       volume={volume}
       personalRecords={personalRecords}
+      caloriesBurned={caloriesBurned}
     />
   );
 }

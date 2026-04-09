@@ -4,8 +4,9 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ChatService } from '../database/services';
-import { localDayStartFromUtcMs } from '../utils/calendarDate';
+import { ChatService } from '@/database/services';
+import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 

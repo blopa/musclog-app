@@ -17,8 +17,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { FitnessGoal, LiftingExperience, WeightGoal } from '../database/models';
-import { useTheme } from '../hooks/useTheme';
+import { FitnessGoal, LiftingExperience, WeightGoal } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
+
 import { BottomPopUpMenu } from './BottomPopUpMenu';
 import { OptionsSelector } from './OptionsSelector';
 import { PickerButton } from './theme/PickerButton';

@@ -1,4 +1,4 @@
-import { getXAxisLabels } from '../chartUtils';
+import { getXAxisLabels } from '@/utils/chartUtils';
 
 describe('getXAxisLabels', () => {
   it('returns empty array for empty data', () => {

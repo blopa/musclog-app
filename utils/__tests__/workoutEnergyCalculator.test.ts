@@ -2,7 +2,7 @@ import {
   calculateExerciseKcal,
   calculateWorkoutKcal,
   type MWEMInput,
-} from '../workoutEnergyCalculator';
+} from '@/utils/workoutEnergyCalculator';
 
 // Reference values computed from the master equation:
 // kcal = ((weight + bodyMass) × 9.80665 × distance × reps) / (4184 × 0.22) × anaerobic × loadMultiplier × genderFactor

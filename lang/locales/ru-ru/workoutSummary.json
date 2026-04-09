@@ -15,6 +15,7 @@
     "getFeedback": "Получить отзыв ИИ",
     "gettingFeedback": "Получение отзыва...",
     "completedMessage": "Вы завершили тренировку {{workoutName}}",
-    "completedSummary": "Тренировка завершена: {{workoutName}}"
+    "completedSummary": "Тренировка завершена: {{workoutName}}",
+    "caloriesBurned": "Сожжённые калории"
   }
 }

@@ -1,9 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type CenteredModalProps = {
   visible: boolean;
@@ -28,22 +30,7 @@ export function CenteredModal({
   isLoading = false,
 }: CenteredModalProps) {
   const theme = useTheme();
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
     <Modal

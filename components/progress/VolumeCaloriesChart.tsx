@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { CorrelationPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { BarLineChart } from '../charts/BarLineChart';
+import { BarLineChart } from '@/components/charts/BarLineChart';
+import { CorrelationPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface VolumeCaloriesChartProps {
@@ -13,13 +15,8 @@ interface VolumeCaloriesChartProps {
   units: string;
 }
 
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
 export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
@@ -56,7 +53,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
   const maxCal = Math.max(...data.map((d) => d.dailyCalories), 1);
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   return (

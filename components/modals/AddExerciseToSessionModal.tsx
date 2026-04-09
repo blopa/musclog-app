@@ -3,22 +3,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import { WorkoutTemplateService } from '../../database/services';
-import { useExercises } from '../../hooks/useExercises';
-import { useTheme } from '../../hooks/useTheme';
+import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
+import { Button } from '@/components/theme/Button';
+import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import { WorkoutTemplateService } from '@/database/services';
+import { useExercises } from '@/hooks/useExercises';
+import { useTheme } from '@/hooks/useTheme';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
-import { FilterTabs } from '../FilterTabs';
-import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { Button } from '../theme/Button';
-import { StepperInlineInput } from '../theme/StepperInlineInput';
-import { TextInput } from '../theme/TextInput';
+} from '@/utils/exerciseTranslation';
+import { captureException } from '@/utils/sentry';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
@@ -194,6 +196,7 @@ export function AddExerciseToSessionModal({
       onClose();
     } catch (err) {
       console.error('Error adding exercise to session:', err);
+      captureException(err, { data: { context: 'AddExerciseToSessionModal.handleSubmit' } });
       showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
     } finally {
       setIsSubmitting(false);

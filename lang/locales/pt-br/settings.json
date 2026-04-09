@@ -128,7 +128,7 @@
       "googleGeminiIntegration": "INTEGRAÇÃO GOOGLE GEMINI",
       "googleGeminiApiKey": "CHAVE DE API DO GOOGLE GEMINI",
       "apiKeyPlaceholder": "Cole sua chave de API aqui",
-      "apiKeyHelper": "Deixar em branco usará a cota da conta conectada.",
+      "apiKeyHelper": "É necessária uma chave de API do Gemini para usar o Google Gemini. Obtenha uma no Google AI Studio.",
       "openAiIntegration": "INTEGRAÇÃO OPENAI",
       "openAiApiKey": "CHAVE DE API DA OPENAI",
       "insightsAlerts": "INSIGHTS E ALERTAS",
@@ -151,10 +151,6 @@
       "useOcrBeforeAiSubtitle": "Processar imagens localmente com OCR e enviar texto em vez disso",
       "sendFoundationFoodsToLlm": "Enviar Foundation Foods para IA",
       "sendFoundationFoodsToLlmSubtitle": "Melhorar correspondência de ingredientes usando o banco de dados de foundation foods",
-      "disconnectGoogle": "Desconectar do Google",
-      "disconnectGoogleTitle": "Desconectar do Google",
-      "disconnectGoogleMessage": "Sua conta Google será desconectada. Os recursos de IA que dependem da sua conta Google pararão de funcionar até que você reconecte.",
-      "disconnectGoogleConfirm": "Desconectar",
       "getOpenAiKey": "Obter Chave OpenAI",
       "customPrompts": "Prompts de Sistema Personalizados",
       "customPromptsSubtitle": "Adicione suas próprias instruções a todos os recursos de IA",
@@ -215,6 +211,9 @@
       "restTimerSubtitle": "Receba notificações quando seu período de descanso acabar",
       "workoutDuration": "Aviso de Treino Longo",
       "workoutDurationSubtitle": "Alerta se sua sessão durar mais de 5 horas"
+    },
+    "supportProject": {
+      "title": "Apoie o projeto"
     },
     "notifications": "Notificações",
     "termsOfService": "Termos de Serviço",

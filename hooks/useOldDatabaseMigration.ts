@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { type MigrationResult, MigrationService } from '../database/services/MigrationService';
+import { type MigrationResult, MigrationService } from '@/database/services/MigrationService';
 
 export interface MigrationSummary {
   fitnessGoalsCount: number;

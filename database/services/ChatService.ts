@@ -1,11 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../database-instance';
+import { database } from '@/database/database-instance';
 import ChatMessage, {
   type ChatMessageContext,
   type ChatMessageType,
   type ChatSender,
-} from '../models/ChatMessage';
+} from '@/database/models/ChatMessage';
 
 export class ChatService {
   static async saveMessage(params: {

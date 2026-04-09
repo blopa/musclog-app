@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { Button } from '../theme/Button';
-import { Slider } from '../theme/Slider';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { Button } from '@/components/theme/Button';
+import { Slider } from '@/components/theme/Slider';
+import { useTheme } from '@/hooks/useTheme';
 
 type SessionFeedbackModalProps = {
   visible: boolean;

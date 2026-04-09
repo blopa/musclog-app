@@ -1,28 +1,29 @@
 import type { Locale } from 'date-fns';
-import { format, isThisWeek, isToday, isYesterday, subDays, subMonths, subYears } from 'date-fns';
+import { format, isThisWeek, isToday, isYesterday, subMonths, subYears } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { UserMetricService } from '../../database/services';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
-import { useUserMetrics } from '../../hooks/useUserMetrics';
-import { MetricType as AppMetricType } from '../../services/healthDataTransform';
-import { localDayStartMs } from '../../utils/calendarDate';
-import { getXAxisLabels } from '../../utils/chartUtils';
-import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
-import { GenericCard } from '../cards/GenericCard';
-import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
-import { LineChart } from '../charts/LineChart';
-import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { SkeletonLoader } from '../theme/SkeletonLoader';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { HistoryBodyMetricCard } from '@/components/cards/HistoryBodyMetricCard';
+import { LineChart } from '@/components/charts/LineChart';
+import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { UserMetricService } from '@/database/services';
+import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { UserMetricWithDecrypted } from '@/hooks/useUserMetrics';
+import { useUserMetrics } from '@/hooks/useUserMetrics';
+import { MetricType as AppMetricType } from '@/services/healthDataTransform';
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
+import { getXAxisLabels } from '@/utils/chartUtils';
+import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
+
 import AddUserMetricEntryModal from './AddUserMetricEntryModal';
 import type { BodyMetricsHistoryFilters } from './BodyMetricsHistoryFilterMenu';
 import { BodyMetricsHistoryFilterMenu, DEFAULT_FILTERS } from './BodyMetricsHistoryFilterMenu';
@@ -152,7 +153,7 @@ export default function BodyMetricsHistoryModal({
     const today = new Date();
     let startDate = endDate;
     if (selectedPeriod === '30D') {
-      startDate = localDayStartMs(subDays(today, 30));
+      startDate = localDayKeyPlusCalendarDaysFromNow(-30);
     } else if (selectedPeriod === '3M') {
       startDate = localDayStartMs(subMonths(today, 3));
     } else if (selectedPeriod === '6M') {

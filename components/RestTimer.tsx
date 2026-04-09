@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type RestTimerProps = {
   restTime: number; // in seconds

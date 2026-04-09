@@ -6,7 +6,7 @@ import {
   formatAppInteger,
   formatAppNumber,
   formatAppRoundedDecimal,
-} from '../utils/formatAppNumber';
+} from '@/utils/formatAppNumber';
 
 /**
  * Stable formatters keyed to i18n locale for user-visible numbers.

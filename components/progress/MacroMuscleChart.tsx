@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
-import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
-import { AreaChart } from '../charts/AreaChart';
+import { AreaChart } from '@/components/charts/AreaChart';
+import { MacroMusclePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MacroMuscleChartProps {
@@ -15,13 +17,8 @@ interface MacroMuscleChartProps {
   units: string;
 }
 
-const formatDate = (timestamp: number): string => {
-  const d = new Date(timestamp);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
@@ -57,7 +54,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    formatDate
+    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
   );
 
   const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;

@@ -5,9 +5,9 @@
 // Mock these BEFORE any imports
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { NutritionService } from '../../database/services/NutritionService';
-import { UserMetricService } from '../../database/services/UserMetricService';
-import { useWorkoutFueling } from '../useWorkoutFueling';
+import { NutritionService } from '@/database/services/NutritionService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { useWorkoutFueling } from '@/hooks/useWorkoutFueling';
 
 jest.mock('react-native-health-connect', () => ({
   RecordingMethod: {

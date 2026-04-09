@@ -1,15 +1,16 @@
-import { addDays } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 
-import { NutritionService, UserMetricService } from '../database/services';
-import { localDayStartMs } from '../utils/calendarDate';
-import { calculateTDEE, lbsToKg } from '../utils/nutritionCalculator';
-import { useSettings } from './useSettings';
+import { NutritionService, UserMetricService } from '@/database/services';
+import {
+  localCalendarWeekIndexSince,
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+} from '@/utils/calendarDate';
+import { calculateTDEE } from '@/utils/nutritionCalculator';
+import { storedWeightToKg } from '@/utils/unitConversion';
+
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const MS_PER_WEEK = 7 * MS_PER_DAY;
 
 function average(values: number[]): number {
   if (values.length === 0) {
@@ -18,17 +19,13 @@ function average(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function weekIndex(dateTs: number, startTs: number): number {
-  return Math.floor((dateTs - startTs) / MS_PER_WEEK);
-}
-
 function bucketByWeek(
   points: { date: number; valueKg: number }[],
   startTs: number
 ): Map<number, { date: number; valueKg: number }[]> {
   const map = new Map<number, { date: number; valueKg: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
@@ -43,7 +40,7 @@ function bucketByWeekBodyFat(
 ): Map<number, { date: number; value: number }[]> {
   const map = new Map<number, { date: number; value: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
@@ -65,29 +62,27 @@ async function getHistoricalNutritionParamsCustom(options: {
   lookbackDays: number;
   minNutritionDays: number;
   asOfDate?: Date;
-  units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
   const {
     lookbackDays,
     minNutritionDays,
     asOfDate = new Date(),
-    units = 'metric',
     useWeeklyAverages = true,
   } = options;
 
-  const endTs = localDayStartMs(asOfDate);
-  const endOfDay = new Date(endTs);
-  const startTs = localDayStartMs(addDays(endOfDay, -lookbackDays));
+  const endDayStartTs = localDayStartMs(asOfDate);
+  const inclusiveRangeEndDate = new Date(endDayStartTs);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -lookbackDays);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endTs };
+  const dateRange = { startDate: startTs, endDate: endDayStartTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
-    NutritionService.getRangeNutrients(startOfRange, endOfDay),
-    NutritionService.getNutritionLogsForDateRange(startOfRange, endOfDay),
+    NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
+    NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
   const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
@@ -98,8 +93,7 @@ async function getHistoricalNutritionParamsCustom(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
-      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
+      const valueKg = storedWeightToKg(d.value, d.unit);
       return { date: m.date, valueKg };
     })
   );
@@ -200,7 +194,6 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
 
   const { user, isLoading: userLoading } = useUser();
   const { metrics, isLoading: metricsLoading } = useUserMetrics();
-  const { units } = useSettings();
   const [historicalData, setHistoricalData] = useState<HistoricalNutritionParams | null>(null);
   const [historicalLoading, setHistoricalLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -215,7 +208,6 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         const data = await getHistoricalNutritionParamsCustom({
           lookbackDays,
           minNutritionDays,
-          units,
           useWeeklyAverages,
         });
 
@@ -230,7 +222,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
     };
 
     fetchHistoricalData();
-  }, [lookbackDays, minNutritionDays, units, useWeeklyAverages]);
+  }, [lookbackDays, minNutritionDays, useWeeklyAverages]);
 
   // Calculate TDEE when data is available
   const { tdee, usedEmpiricalData } = useMemo(() => {

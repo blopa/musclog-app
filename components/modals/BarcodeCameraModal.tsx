@@ -14,11 +14,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../hooks/useTheme';
-import { detectBarcodes } from '../../utils/file';
-import { showSnackbar } from '../../utils/snackbarService';
-import { CameraView, useCameraPermissions } from '../CameraView';
-import { Button } from '../theme/Button';
+import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+import { detectBarcodes } from '@/utils/file';
+import { showSnackbar } from '@/utils/snackbarService';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type BarcodeCameraModalProps = {
@@ -217,16 +218,18 @@ export function BarcodeCameraModal({
                 {/* Animated Scan Line */}
                 <Animated.View
                   className="absolute left-0 right-0"
-                  style={{
-                    height: theme.borderWidth.thin,
-                    backgroundColor: theme.colors.status.emerald,
-                    ...scanLineStyle,
-                    shadowColor: theme.colors.accent.primary,
-                    shadowOffset: theme.shadowOffset.zero,
-                    shadowOpacity: theme.shadowOpacity.mediumHeavy,
-                    shadowRadius: theme.shadowRadius.md,
-                    elevation: theme.elevation.lg,
-                  }}
+                  style={[
+                    {
+                      height: theme.borderWidth.thin,
+                      backgroundColor: theme.colors.status.emerald,
+                      shadowColor: theme.colors.accent.primary,
+                      shadowOffset: theme.shadowOffset.zero,
+                      shadowOpacity: theme.shadowOpacity.mediumHeavy,
+                      shadowRadius: theme.shadowRadius.md,
+                      elevation: theme.elevation.lg,
+                    },
+                    scanLineStyle,
+                  ]}
                 />
 
                 {/* Scan Lines Pattern */}

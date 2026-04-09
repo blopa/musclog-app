@@ -1,23 +1,21 @@
-import { addDays } from 'date-fns';
+import { NutritionService, UserMetricService } from '@/database/services';
 
-import { NutritionService, UserMetricService } from '../database/services';
-import { localDayStartMs } from './calendarDate';
-import { lbsToKg } from './nutritionCalculator';
+import {
+  localCalendarWeekIndexSince,
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+} from './calendarDate';
+import { storedWeightToKg } from './unitConversion';
 
 const LOOKBACK_DAYS = 30;
 const MIN_DAYS_WITH_NUTRITION = 7;
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const MS_PER_WEEK = 7 * MS_PER_DAY;
 
 function average(values: number[]): number {
   if (values.length === 0) {
     return 0;
   }
-  return values.reduce((a, b) => a + b, 0) / values.length;
-}
 
-function weekIndex(dateTs: number, startTs: number): number {
-  return Math.floor((dateTs - startTs) / MS_PER_WEEK);
+  return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
 function bucketByWeek(
@@ -26,12 +24,13 @@ function bucketByWeek(
 ): Map<number, { date: number; valueKg: number }[]> {
   const map = new Map<number, { date: number; valueKg: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
     map.get(w)!.push(p);
   }
+
   return map;
 }
 
@@ -41,12 +40,13 @@ function bucketByWeekBodyFat(
 ): Map<number, { date: number; value: number }[]> {
   const map = new Map<number, { date: number; value: number }[]>();
   for (const p of points) {
-    const w = weekIndex(p.date, startTs);
+    const w = localCalendarWeekIndexSince(p.date, startTs);
     if (!map.has(w)) {
       map.set(w, []);
     }
     map.get(w)!.push(p);
   }
+
   return map;
 }
 
@@ -70,23 +70,24 @@ export interface HistoricalNutritionParams {
  */
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
-  units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
-  const { asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
+  const { asOfDate = new Date(), useWeeklyAverages = true } = options;
 
-  const endTs = localDayStartMs(asOfDate);
-  const endOfDay = new Date(endTs);
-  const startTs = localDayStartMs(addDays(endOfDay, -LOOKBACK_DAYS));
+  /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
+  const endDayStartTs = localDayStartMs(asOfDate);
+  /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
+  const inclusiveRangeEndDate = new Date(endDayStartTs);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -LOOKBACK_DAYS);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endTs };
+  const dateRange = { startDate: startTs, endDate: endDayStartTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
-    NutritionService.getRangeNutrients(startOfRange, endOfDay),
-    NutritionService.getNutritionLogsForDateRange(startOfRange, endOfDay),
+    NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
+    NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
   const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
@@ -97,8 +98,7 @@ export async function getHistoricalNutritionParams(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
-      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
+      const valueKg = storedWeightToKg(d.value, d.unit);
       return { date: m.date, valueKg };
     })
   );
@@ -136,6 +136,7 @@ export async function getHistoricalNutritionParams(options: {
         return { date: m.date, value: d.value };
       })
     );
+
     bodyFatWithDecrypted.sort((a, b) => a.date - b.date);
     if (useWeeklyAverages) {
       const bodyFatByWeek = bucketByWeekBodyFat(bodyFatWithDecrypted, startTs);

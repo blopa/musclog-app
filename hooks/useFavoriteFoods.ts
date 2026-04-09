@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import Food from '../database/models/Food';
-import { NutritionService } from '../database/services';
+import Food from '@/database/models/Food';
+import { NutritionService } from '@/database/services';
 
 // Hook parameters
 export interface UseFavoriteFoodsParams {

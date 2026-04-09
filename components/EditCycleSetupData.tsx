@@ -12,10 +12,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { type BirthControlType } from '../database/models';
-import { SyncGoal } from '../database/models/MenstrualCycle';
-import { useTheme } from '../hooks/useTheme';
-import { localCalendarDayDate } from '../utils/calendarDate';
+import { type BirthControlType } from '@/database/models';
+import { SyncGoal } from '@/database/models/MenstrualCycle';
+import { useTheme } from '@/hooks/useTheme';
+import { getLocalCalendarYear, localCalendarDayDate } from '@/utils/calendarDate';
+
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -39,8 +40,8 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    initialData?.lastPeriodStartDate ?? new Date()
+  const [selectedDate, setSelectedDate] = useState<Date>(() =>
+    localCalendarDayDate(initialData?.lastPeriodStartDate ?? new Date())
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [cycleLength, setCycleLength] = useState(initialData?.cycleLength ?? 28);
@@ -163,7 +164,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
           </Text>
           <View className="flex-row gap-4">
             <NumericInput
-              label={t('onboarding.cycleSetup.length.cycleLength')}
+              label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
               value={cycleLength.toString()}
               onChangeText={(v) => setCycleLength(parseInt(v) || 0)}
               onIncrement={() => setCycleLength((v) => Math.min(45, v + 1))}
@@ -171,7 +172,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
               unit={t('common.days.label')}
             />
             <NumericInput
-              label={t('onboarding.cycleSetup.length.periodDuration')}
+              label={t('onboarding.cycleSetup.length.periodDurationLabel')}
               value={periodDuration.toString()}
               onChangeText={(v) => setPeriodDuration(parseInt(v) || 0)}
               onIncrement={() => setPeriodDuration((v) => Math.min(10, v + 1))}
@@ -216,7 +217,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
           setSelectedDate(localCalendarDayDate(date));
           setIsDatePickerVisible(false);
         }}
-        maxYear={new Date().getFullYear()}
+        maxYear={getLocalCalendarYear(new Date())}
       />
 
       <BottomPopUpMenu

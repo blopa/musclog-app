@@ -61,7 +61,9 @@
         "title": "Duração do Ciclo",
         "description": "Qual é a duração típica do seu ciclo e período?",
         "cycleLength": "Duração Média do Ciclo",
-        "periodDuration": "Duração Média do Período"
+        "periodDuration": "Duração Média do Período",
+        "cycleLengthLabel": "Duração do Ciclo",
+        "periodDurationLabel": "Duração do Período"
       },
       "goal": {
         "title": "Meta de Sincronização",
@@ -74,13 +76,6 @@
         "energyDescription": "Antecipar quedas e ajustar intensidade conforme necessário."
       }
     },
-    "connectGoogle": {
-      "title": "Conectar Sua Conta Google",
-      "welcome": "Bem-vindo, {{name}}",
-      "welcomeDescription": "Você está conectado — personalize sua experiência antes de continuar.",
-      "continue": "Continuar",
-      "error": "Erro"
-    },
     "healthConnect": {
       "connectYour": "Conecte Sua",
       "health": "Saúde",
@@ -89,7 +84,7 @@
         "nutrition": "Nutrição",
         "weight": "Peso",
         "sleep": "Sono",
-        "vitals": "Vitais"
+        "bodyComposition": "Composição Corporal"
       },
       "allowHealthAccess": "Permitir Acesso à Saúde",
       "connectedCount": "Conectado {{granted}}/{{total}}",
@@ -106,7 +101,7 @@
       "appName": "Musclog",
       "tagline": "Levante, Registre, Repita",
       "description": "Acompanhe seu progresso com insights baseados em dados e alcance seus objetivos de fitness.",
-      "connectGoogle": "Ver Termos",
+      "viewTerms": "Ver Termos",
       "preparingApp": "Preparando o app para você...",
       "migratingPreamble": "Atualizando do Musclog anterior — estamos trazendo seus dados.",
       "migratingData": "Migrando seus dados...",

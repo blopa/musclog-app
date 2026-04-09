@@ -17,9 +17,9 @@
       "other": "Other"
     },
     "intelligence": "Intelligence",
-    "volumeCalculation": {
-      "title": "Volume Calculation",
-      "description": "Choose how Musclog calculates optimal volume for your next session. AI adapts based on recovery data.",
+    "workoutInsight": {
+      "title": "Workout insights",
+      "description": "Choose how Musclog prepares insights for your next session. AI adapts based on recovery data when enabled.",
       "none": "None",
       "algorithm": "Algorithm",
       "ai": "AI"

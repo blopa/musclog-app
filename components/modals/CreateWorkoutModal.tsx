@@ -1,20 +1,23 @@
-import { PlusSquare, Sparkles } from 'lucide-react-native';
+import { Plus, PlusSquare, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { WorkoutType } from '../../constants/workoutTypes';
-import { WORKOUT_TYPES } from '../../constants/workoutTypes';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useWorkoutForm } from '../../hooks/useWorkoutForm';
-import { getWeekdayLabels } from '../../utils/workout';
-import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
-import { Button } from '../theme/Button';
-import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
-import { SegmentedControl } from '../theme/SegmentedControl';
-import { TextInput } from '../theme/TextInput';
-import { WeekdayPicker } from '../theme/WeekdayPicker';
+import { Button } from '@/components/theme/Button';
+import DashedButton from '@/components/theme/DashedButton';
+import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextInput } from '@/components/theme/TextInput';
+import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
+import type { WorkoutType } from '@/constants/workoutTypes';
+import { WORKOUT_TYPES } from '@/constants/workoutTypes';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutForm } from '@/hooks/useWorkoutForm';
+import { getWeekdayLabels } from '@/utils/workout';
+import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
+import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+
 import { AddExerciseModal } from './AddExerciseModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -38,7 +41,7 @@ export default function CreateWorkoutModal({
   const {
     workoutTitle,
     description,
-    volumeCalc,
+    workoutInsights,
     workoutType,
     icon,
     selectedDays,
@@ -50,7 +53,7 @@ export default function CreateWorkoutModal({
     isEditMode,
     setWorkoutTitle,
     setDescription,
-    setVolumeCalc,
+    setWorkoutInsights,
     setWorkoutType,
     setIcon,
     setFocusedField,
@@ -62,18 +65,20 @@ export default function CreateWorkoutModal({
     handleDeleteExercises,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
-  const volumeOptions = [
-    { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
-    { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
+  const workoutInsightOptions = [
+    { label: t('createWorkout.workoutInsight.none'), value: 'none' },
+    { label: t('createWorkout.workoutInsight.algorithm'), value: 'algorithm' },
     ...(isAiConfigured
       ? [
           {
-            label: t('createWorkout.volumeCalculation.ai'),
+            label: t('createWorkout.workoutInsight.ai'),
             value: 'ai',
             icon: (
               <Sparkles
                 size={theme.iconSize.xs}
-                color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
+                color={
+                  workoutInsights === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary
+                }
               />
             ),
           },
@@ -343,13 +348,13 @@ export default function CreateWorkoutModal({
                 marginBottom: theme.spacing.padding.base,
               }}
             >
-              {t('createWorkout.volumeCalculation.title')}
+              {t('createWorkout.workoutInsight.title')}
             </Text>
 
             <SegmentedControl
-              options={volumeOptions}
-              value={volumeCalc}
-              onValueChange={setVolumeCalc}
+              options={workoutInsightOptions}
+              value={workoutInsights}
+              onValueChange={(v) => setWorkoutInsights(parseWorkoutInsightsType(v))}
             />
 
             <Text
@@ -360,7 +365,7 @@ export default function CreateWorkoutModal({
                 lineHeight: theme.typography.fontSize.lg,
               }}
             >
-              {t('createWorkout.volumeCalculation.description')}
+              {t('createWorkout.workoutInsight.description')}
             </Text>
           </View>
         </View>
@@ -467,13 +472,11 @@ export default function CreateWorkoutModal({
                   isEditable={true}
                 />
                 <View style={{ marginTop: theme.spacing.margin.md }}>
-                  <Button
+                  <DashedButton
                     label={t('workouts.addExercise.title')}
-                    variant="secondary"
-                    size="sm"
-                    width="full"
-                    icon={PlusSquare}
                     onPress={() => setAddExerciseVisible(true)}
+                    size="sm"
+                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   />
                 </View>
               </>

@@ -8,12 +8,10 @@ import {
   Part,
   StartChatParams,
 } from '@google/generative-ai';
-// import fetch from 'isomorphic-fetch';
-import { fetch } from 'expo/fetch';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { GEMINI_MODELS } from '../constants/ai';
-import { getAccessToken } from './googleAuth';
+import { GEMINI_MODELS } from '@/constants/ai';
+
 import { captureMessage } from './sentry';
 
 const getModel = async () => {
@@ -21,9 +19,6 @@ const getModel = async () => {
 
   return defaultModel;
 };
-
-// https://cloud.google.com/vertex-ai/generative-ai/docs/reference/python/latest/vertexai.generative_models.FinishReason
-const ACCEPTABLE_STOP_REASONS = ['MAX_TOKENS', 'STOP'];
 
 const safetySettings = [
   {
@@ -44,41 +39,7 @@ const safetySettings = [
   },
 ];
 
-const getGenerativeAI = async ({
-  accessToken,
-  apiKey,
-}: {
-  accessToken?: string;
-  apiKey?: string;
-}): Promise<GoogleGenerativeAI> => {
-  if (accessToken) {
-    return {
-      getGenerativeModel: ({ model, ...modelParams }: ModelParams) => {
-        return {
-          generateContent: async (request: GenerateContentRequest) => {
-            return await rawFetchGeminiApi(model, accessToken, {
-              ...modelParams,
-              ...request,
-            });
-          },
-          startChat: ({ history }: StartChatParams) => {
-            return {
-              sendMessage: async (request: string) => {
-                return await rawFetchGeminiApi(model, accessToken, {
-                  ...modelParams,
-                  contents: [
-                    ...(history || []),
-                    { parts: [{ text: request } as Part], role: 'user' },
-                  ],
-                });
-              },
-            };
-          },
-        };
-      },
-    } as unknown as GoogleGenerativeAI;
-  }
-
+const getGenerativeAI = async ({ apiKey }: { apiKey?: string }): Promise<GoogleGenerativeAI> => {
   if (apiKey) {
     return new GoogleGenerativeAI(apiKey);
   }
@@ -87,7 +48,7 @@ const getGenerativeAI = async ({
     getGenerativeModel: (modelParams: ModelParams) => {
       return {
         generateContent: async (request: GenerateContentRequest) => {
-          captureMessage('No API key or access token provided for generative AI');
+          captureMessage('No API key provided for generative AI');
           return {
             response: null,
             status: 401,
@@ -96,7 +57,7 @@ const getGenerativeAI = async ({
         startChat: async (startChatParams: StartChatParams) => {
           return {
             sendMessage: async (request: string) => {
-              captureMessage('No API key or access token provided for generative AI');
+              captureMessage('No API key provided for generative AI');
               return {
                 response: {},
                 status: 401,
@@ -109,71 +70,19 @@ const getGenerativeAI = async ({
   } as unknown as GoogleGenerativeAI;
 };
 
-const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) => {
-  const makeRequest = async (accessToken: string) => {
-    const result = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-      {
-        body: JSON.stringify(body),
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      }
-    );
-
-    return result;
-  };
-
-  // First attempt
-  let result = await makeRequest(accessToken);
-
-  if (result.status === 401) {
-    try {
-      console.warn('Access token is invalid. Attempting to refresh...');
-      const newAccessToken = await getAccessToken();
-
-      if (newAccessToken) {
-        // Retry with the new access token
-        result = await makeRequest(newAccessToken);
-      }
-    } catch (error) {
-      console.error('Error refreshing access token:', error);
-      throw new Error('Failed to refresh access token and retry the request.');
-    }
-  }
-
-  if (result.ok) {
-    const data = await result.json();
-
-    return {
-      response: data,
-      status: result.status,
-    };
-  }
-
-  return {
-    response: null,
-    status: result.status,
-  };
-};
-
 export const configureBasicGenAI = async (
   {
-    accessToken,
     apiKey,
     model,
     generationConfig,
   }: {
-    accessToken?: string;
     apiKey?: string;
     model?: string;
     generationConfig?: Record<string, unknown>;
   },
   systemParts?: Part[]
 ) => {
-  const genAI = await getGenerativeAI({ accessToken, apiKey });
+  const genAI = await getGenerativeAI({ apiKey });
 
   return genAI.getGenerativeModel({
     model: model || (await getModel()),

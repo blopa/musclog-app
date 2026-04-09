@@ -91,7 +91,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ### 🧠 AI Coach
 
-- **Dual AI Support**: Google Gemini (2.0/2.5, via OAuth or API key) or OpenAI (GPT-4, GPT-4o, O1, O3)
+- **Dual AI Support**: Google Gemini (2.0/2.5, via API key) or OpenAI (GPT-4, GPT-4o, O1, O3)
 - **In-App Chat**: Conversational AI coach for workout and nutrition advice
 - **Photo Analysis**: AI-powered food photo and nutrition label analysis
 - **Workout Generation**: AI-generated workout plans tailored to your goals

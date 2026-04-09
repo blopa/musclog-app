@@ -166,6 +166,10 @@
         "mealOptions": "Meal Options",
         "editMeal": "Edit Meal",
         "editMealDesc": "Modify meal name and ingredients",
+        "shareMealAsRecipe": "Share meal as recipe",
+        "shareMealAsRecipeDesc": "Share ingredients and instructions as text",
+        "shareRecipeIngredientLine": "{{grams}}g of {{name}}",
+        "shareRecipeNoIngredients": "This meal has no ingredients to share",
         "duplicateMeal": "Duplicate Meal",
         "duplicateMealDesc": "Create a copy of this meal",
         "deleteMeal": "Delete Meal",
@@ -243,7 +247,15 @@
       "errorMessage": "Something went wrong. Please try again."
     },
     "portions": {
-      "100g": "Standard"
+      "100g": "Standard",
+      "twoSlices": "Two slices",
+      "cup": "Cup",
+      "tbsp": "Tablespoon",
+      "tsp": "Teaspoon",
+      "oz": "Ounce",
+      "50g": "Half portion",
+      "200g": "Double portion",
+      "250g": "Big portion"
     },
     "common": {
       "kcal": "kcal"
@@ -293,8 +305,8 @@
       "zeroMacrosNotFoundBody": "We couldn't find nutrition data from other databases. Use the pencil icon to enter values yourself.",
       "tryAnotherSource": "Try another source >",
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
-      "caloriesTooLowTitle": "Calories may be too low",
-      "caloriesTooLowBody": "The reported calories seem too low compared to the macros. Inferred value: {{inferred}} kcal / 100g.",
+      "caloriesTooLowTitle": "Calories don't match the macros",
+      "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} kcal / 100g.",
       "caloriesTooLowAction": "Update to {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {
@@ -323,6 +335,7 @@
       "estimated": "Estimated",
       "mealName": "Meal Name",
       "mealNamePlaceholder": "e.g. Post-Workout Smoothie",
+      "mealDescriptionPlaceholder": "Optional — prep notes, when you eat this, etc.",
       "ingredients": "Ingredients ({{count}})",
       "editList": "Edit List",
       "noIngredients": "No Ingredients",
@@ -331,7 +344,9 @@
       "deleteIngredientWarning": "Are you sure you want to remove this ingredient?",
       "mealNameRequired": "Please enter a meal name",
       "ingredientsRequired": "Please add at least one ingredient",
-      "saveFailed": "Failed to save meal. Please try again."
+      "saveFailed": "Failed to save meal. Please try again.",
+      "preparedWeight": "Prepared weight ({{unit}})",
+      "preparedWeightHelper": "Optional — weight after cooking"
     },
     "aiCamera": {
       "requestingPermission": "Requesting camera permission...",
@@ -397,7 +412,11 @@
       "imageUrl": "Image URL",
       "imageUrlPlaceholder": "Paste image URL",
       "portionSizes": "Portion Sizes",
-      "selectPortionSizes": "Select portion sizes..."
+      "addPortionSizes": "Add portion sizes",
+      "addAnotherPortion": "Add another portion",
+      "removePortion": "Remove portion",
+      "selectPortionSizes": "Select portion sizes...",
+      "errorSaving": "Failed to save custom food. Please try again."
     },
     "errors": {
       "refreshFailed": "Refresh Failed"

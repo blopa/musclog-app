@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { database } from '../database';
-import Exercise from '../database/models/Exercise';
-import WorkoutTemplate from '../database/models/WorkoutTemplate';
-import WorkoutTemplateExercise from '../database/models/WorkoutTemplateExercise';
-import WorkoutTemplateSet from '../database/models/WorkoutTemplateSet';
+import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 
 const WORKOUT_TEMPLATE_SET_COLUMNS = [
   'target_reps',

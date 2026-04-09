@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
+import { BottomPopUp } from '@/components/BottomPopUp';
+import { useTheme } from '@/hooks/useTheme';
 
 type AINutritionTrackingContextModalProps = {
   visible: boolean;
@@ -79,7 +79,15 @@ export function AINutritionTrackingContextModal({
             colors={theme.colors.gradients.cta}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="absolute inset-0 rounded-xl"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: 12,
+              overflow: 'hidden',
+            }}
           />
           <Sparkles size={theme.iconSize.xl} color={theme.colors.text.white} />
         </View>
@@ -175,7 +183,13 @@ export function AINutritionTrackingContextModal({
               colors={theme.colors.gradients.cta}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="absolute inset-0"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
             />
             <View className="flex-row items-center justify-center gap-2">
               <Text className="text-sm font-bold text-white">

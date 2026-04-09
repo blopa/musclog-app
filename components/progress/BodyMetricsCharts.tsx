@@ -2,12 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { MetricPoint } from '../../database/services/ProgressService';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
-import { LineChart } from '../charts/LineChart';
+import { LineChart } from '@/components/charts/LineChart';
+import { MetricPoint } from '@/database/services/ProgressService';
+import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface BodyMetricsChartsProps {

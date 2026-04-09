@@ -1,21 +1,24 @@
-import { Dumbbell, Timer, TrendingUp } from 'lucide-react-native';
+import { Dumbbell, Flame, Timer, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { WorkoutSummaryStatRow } from '../WorkoutSummaryStatRow';
+import { WorkoutSummaryStatRow } from '@/components/WorkoutSummaryStatRow';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './GenericCard';
 
 type WorkoutSummaryStatsCardProps = {
   totalTime: string;
   volume: string;
   personalRecords: number;
+  caloriesBurned?: number;
 };
 
 export function WorkoutSummaryStatsCard({
   totalTime,
   volume,
   personalRecords,
+  caloriesBurned,
 }: WorkoutSummaryStatsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -38,6 +41,16 @@ export function WorkoutSummaryStatsCard({
           iconBgColor={theme.colors.status.emerald10}
           iconColor={theme.colors.status.emeraldLight}
         />
+        {caloriesBurned && caloriesBurned > 0 ? (
+          <WorkoutSummaryStatRow
+            icon={Flame}
+            label={t('workoutSummary.caloriesBurned')}
+            value={caloriesBurned}
+            valueSuffix="kcal"
+            iconBgColor={theme.colors.status.error10}
+            iconColor={theme.colors.status.error}
+          />
+        ) : null}
         <WorkoutSummaryStatRow
           icon={TrendingUp}
           label={t('workoutSummary.personalRecords')}

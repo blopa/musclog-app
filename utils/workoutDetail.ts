@@ -2,16 +2,17 @@ import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
-import type { LineChartDataPoint } from '../components/charts/LineChart';
-import type { Units } from '../constants/settings';
-import Exercise from '../database/models/Exercise';
-import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
-import { type Theme } from '../theme';
+import type { LineChartDataPoint } from '@/components/charts/LineChart';
+import type { Units } from '@/constants/settings';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { type Theme } from '@/theme';
+
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
-import { kgToDisplay } from './unitConversion';
+import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
 import { calculateSetVolume, getUserBodyWeightKgForVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
@@ -64,8 +65,7 @@ function formatWeight(
   appNumberLocale: string
 ): string {
   const unitKey = getWeightUnitI18nKey(units);
-  const displayWeight = kgToDisplay(weight, units);
-  const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+  const rounded = displayWeightKgNumeric(weight, units);
   const weightStr =
     rounded % 1 === 0
       ? formatAppInteger(appNumberLocale, Math.round(rounded))

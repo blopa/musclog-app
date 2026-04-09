@@ -3,24 +3,26 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import Exercise from '../../database/models/Exercise';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
-import type { EnrichedWorkoutLogSet } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
-import { getWeightUnitI18nKey } from '../../utils/units';
+import { Button } from '@/components/theme/Button';
+import { ExerciseData, ExerciseItem } from '@/components/WorkoutHistoryExerciseItem';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import type { EnrichedWorkoutLogSet } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
 import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
   getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { Button } from '../theme/Button';
-import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
+} from '@/utils/workoutCalculator';
+
 import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
@@ -57,7 +59,7 @@ export function WorkoutSessionHistoryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
-  const { formatInteger } = useFormatAppNumber();
+  const { locale } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
@@ -120,7 +122,7 @@ export function WorkoutSessionHistoryModal({
         const transformedSets = exerciseSets.map((set, setIndex) => {
           return {
             setNumber: setIndex + 1,
-            weight: set.targetWeight ?? 0,
+            weight: displayWeightKgNumeric(set.targetWeight ?? 0, units),
             reps: set.targetReps ?? 0,
             partials: 0, // Templates don't have partials
             isCurrent: false, // No current set in preview
@@ -196,7 +198,7 @@ export function WorkoutSessionHistoryModal({
           const isCurrent = (set.setOrder ?? 0) === currentSetOrder;
           return {
             setNumber: setIndex + 1,
-            weight: set.weight ?? 0,
+            weight: displayWeightKgNumeric(set.weight ?? 0, units),
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,
@@ -226,7 +228,16 @@ export function WorkoutSessionHistoryModal({
 
       return result;
     }
-  }, [isPreview, workoutTemplate, workoutLog, templateSets, sets, exercises, currentSetOrder]);
+  }, [
+    isPreview,
+    workoutTemplate,
+    workoutLog,
+    templateSets,
+    sets,
+    exercises,
+    currentSetOrder,
+    units,
+  ]);
 
   const totalVolume = useMemo(() => {
     const exerciseById = new Map(exercises.map((e) => [e.id, e]));
@@ -237,6 +248,11 @@ export function WorkoutSessionHistoryModal({
       onlyCompletedSets: true,
     });
   }, [isPreview, templateSets, sets, exercises, bodyWeightKg]);
+
+  const totalVolumeDisplay = useMemo(
+    () => formatDisplayWeightKg(locale, units, totalVolume),
+    [locale, units, totalVolume]
+  );
 
   // Count completed sets (only for session mode)
   const completedSetsCount = useMemo(() => {
@@ -316,7 +332,7 @@ export function WorkoutSessionHistoryModal({
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
               <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
-                {formatInteger(totalVolume)} {t(weightUnitKey)} {t('workoutHistory.volume')}
+                {totalVolumeDisplay} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
             {!isPreview ? (

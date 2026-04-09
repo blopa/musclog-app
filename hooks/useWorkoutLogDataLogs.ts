@@ -4,8 +4,9 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import WorkoutLog from '../database/models/WorkoutLog';
-import { WorkoutService } from '../database/services';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import { WorkoutService } from '@/database/services';
+
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 

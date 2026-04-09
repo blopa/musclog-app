@@ -1,7 +1,7 @@
 import { Dna, Flame, Minus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 type PhysiologicalInsightsCardProps = {
   type: 'estrogen' | 'metabolism' | 'progesterone';

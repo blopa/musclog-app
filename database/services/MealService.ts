@@ -1,14 +1,18 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '../index';
-import Meal from '../models/Meal';
-import MealFood from '../models/MealFood';
+import { database } from '@/database/index';
+import Meal from '@/database/models/Meal';
+import MealFood from '@/database/models/MealFood';
 
 export class MealService {
   /**
    * Create a new meal
    */
-  static async createMeal(name: string, description?: string): Promise<Meal> {
+  static async createMeal(
+    name: string,
+    description?: string,
+    preparedWeightGrams?: number
+  ): Promise<Meal> {
     return await database.write(async () => {
       const now = Date.now();
 
@@ -17,6 +21,7 @@ export class MealService {
         meal.name = name;
         meal.description = description ?? '';
         meal.isFavorite = false;
+        meal.preparedWeightGrams = preparedWeightGrams;
         meal.createdAt = now;
         meal.updatedAt = now;
       });
@@ -124,6 +129,7 @@ export class MealService {
     updates: {
       name?: string;
       description?: string;
+      preparedWeightGrams?: number | null;
     }
   ): Promise<Meal> {
     return await database.write(async () => {
@@ -137,9 +143,15 @@ export class MealService {
         if (updates.name !== undefined) {
           record.name = updates.name;
         }
+
         if (updates.description !== undefined) {
           record.description = updates.description;
         }
+
+        if ('preparedWeightGrams' in updates) {
+          record.preparedWeightGrams = updates.preparedWeightGrams ?? undefined;
+        }
+
         record.updatedAt = Date.now();
       });
 
@@ -211,6 +223,7 @@ export class MealService {
       meal.name = newName || `${originalMeal.name} (Copy)`;
       meal.description = originalMeal.description;
       meal.isFavorite = false;
+      meal.preparedWeightGrams = originalMeal.preparedWeightGrams;
       meal.createdAt = now;
       meal.updatedAt = now;
     });
@@ -245,7 +258,8 @@ export class MealService {
       portionId?: string;
     }[],
     description?: string,
-    isAiGenerated = false
+    isAiGenerated = false,
+    preparedWeightGrams?: number
   ): Promise<Meal> {
     const now = Date.now();
     const mealCollection = database.get<Meal>('meals');
@@ -256,6 +270,7 @@ export class MealService {
       mealRecord.name = name;
       mealRecord.description = description ?? '';
       mealRecord.isFavorite = false;
+      mealRecord.preparedWeightGrams = preparedWeightGrams;
       mealRecord.createdAt = now;
       mealRecord.updatedAt = now;
     });

@@ -4,28 +4,30 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Linking, ScrollView, Share, Text, View } from 'react-native';
+import { Image, Linking, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { database } from '../../database';
-import type ExerciseModel from '../../database/models/Exercise';
-import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
-import { ExerciseService, WorkoutAnalytics } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import type ExerciseModel from '@/database/models/Exercise';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
-} from '../../utils/exerciseTranslation';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { GenericCard } from '../cards/GenericCard';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
+} from '@/utils/exerciseTranslation';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+
 import { ConfirmationModal } from './ConfirmationModal';
 import type { DataLogModalVariant } from './DataLogModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -61,6 +63,7 @@ export default function ViewExerciseModal({
   const { locale, formatRoundedDecimal } = useFormatAppNumber();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
+  const { shareText } = useNativeShareText();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [exercise, setExercise] = useState<ExerciseModel | null>(null);
   const [personalBest, setPersonalBest] = useState<{ value: number; unit: string } | null>(null);
@@ -270,10 +273,7 @@ export default function ViewExerciseModal({
     const muscleGroup = exercise?.muscleGroup ?? '';
     const equipment = exercise?.equipmentType ?? '';
     const message = [name, muscleGroup, equipment].filter(Boolean).join(' · ');
-    Share.share({
-      message,
-      title: name,
-    }).catch(() => {});
+    shareText(message, { title: name }).catch(() => {});
   };
 
   const handleDuplicate = async () => {
@@ -423,8 +423,14 @@ export default function ViewExerciseModal({
               <LinearGradient
                 colors={theme.colors.gradients.overlayDark}
                 locations={[0, 0.7, 1]}
-                className="absolute bottom-0 left-0 right-0"
-                style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: theme.spacing.padding.xl,
+                  zIndex: theme.zIndex.overlayLow,
+                }}
               >
                 <Button
                   label={t('exercises.viewExercise.watchTechnique')}
@@ -447,8 +453,15 @@ export default function ViewExerciseModal({
                     colors={theme.colors.gradients.blueEmerald}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                    style={{ borderRadius: theme.borderRadius.full }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                      borderRadius: 9999,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      overflow: 'hidden',
+                    }}
                   >
                     <Text
                       className="text-xs font-medium uppercase tracking-wide"
@@ -576,8 +589,14 @@ export default function ViewExerciseModal({
                     icon={
                       <LinearGradient
                         colors={workout.iconGradient}
-                        className="h-full w-full items-center justify-center"
-                        style={{ borderRadius: theme.borderRadius['2xl'] }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: theme.borderRadius['2xl'],
+                          overflow: 'hidden',
+                        }}
                       >
                         <workout.icon
                           size={theme.iconSize['3xl']}

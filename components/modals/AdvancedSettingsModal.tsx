@@ -21,15 +21,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { exportDatabase, importDatabase } from '../../utils/file';
-import { LegalLinksCard } from '../cards/LegalLinksCard';
-import { SettingsCard } from '../cards/SettingsCard';
-import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
-import { ToggleInput } from '../theme/ToggleInput';
+import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { SettingsCard } from '@/components/cards/SettingsCard';
+import { Button } from '@/components/theme/Button';
+import { TextInput } from '@/components/theme/TextInput';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { exportDatabase, importDatabase } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
+
 import { CenteredModal } from './CenteredModal';
 import {
   ChatMessageDataModal,
@@ -102,6 +104,7 @@ export function AdvancedSettingsModal({
       setEncryptionPhrase('');
     } catch (err) {
       console.error('Export failed:', err);
+      captureException(err, { data: { context: 'AdvancedSettingsModal.handleExportConfirm' } });
       showSnackbar('error', t('settings.advancedSettings.exportFailedMessage'));
     } finally {
       setLoading(false);
@@ -116,6 +119,7 @@ export function AdvancedSettingsModal({
       setDecryptionPhrase('');
     } catch (err) {
       console.error('Import failed:', err);
+      captureException(err, { data: { context: 'AdvancedSettingsModal.handleImportConfirm' } });
       showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
     } finally {
       setLoading(false);
@@ -127,6 +131,7 @@ export function AdvancedSettingsModal({
       await Linking.openSettings();
     } catch (err) {
       console.error('Failed to open settings:', err);
+      captureException(err, { data: { context: 'AdvancedSettingsModal.handleOpenAppSettings' } });
       showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
     }
   }, [t, showSnackbar]);

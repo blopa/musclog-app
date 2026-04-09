@@ -1,10 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Platform, Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import { Modal } from '@/components/theme/Modal';
+import { useTheme } from '@/hooks/useTheme';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
 
@@ -57,22 +59,7 @@ export function ConfirmationModal({
   // Use backdrop overlay color from theme
   const backdropColor = theme.colors.overlay.backdrop;
 
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
 
   return (
     <Modal

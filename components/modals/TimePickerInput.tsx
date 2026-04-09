@@ -3,8 +3,8 @@ import { Clock, Edit } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { useTheme } from '../../hooks/useTheme';
+import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useTheme } from '@/hooks/useTheme';
 
 export type TimePickerInputProps = {
   selectedTime: Date;

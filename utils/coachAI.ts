@@ -1,8 +1,9 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
-import { SettingsService } from '../database/services';
-import i18n from '../lang/lang';
+import { SettingsService } from '@/database/services';
+import i18n from '@/lang/lang';
+
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
@@ -73,7 +74,6 @@ export type CoachAIProvider = 'gemini' | 'openai';
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
-  accessToken?: string;
   model: string;
   language?: string; // Re-introduced from old code
 };
@@ -342,7 +342,6 @@ async function sendViaGemini(
 
   const genModel = await configureBasicGenAI(
     {
-      accessToken: config.accessToken,
       apiKey: config.apiKey,
       model: config.model,
       generationConfig: {
@@ -424,7 +423,6 @@ async function generateText(
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
-        accessToken: config.accessToken,
         apiKey: config.apiKey,
         model: config.model,
       },
@@ -463,7 +461,6 @@ async function generateTextWithHistory(
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
-        accessToken: config.accessToken,
         apiKey: config.apiKey,
         model: config.model,
       },
@@ -519,7 +516,6 @@ async function generateStructured<T>(
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
-        accessToken: config.accessToken,
         apiKey: config.apiKey,
         model: config.model,
         generationConfig: {
@@ -587,7 +583,6 @@ async function generateWithImageStructured<T>(
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
-        accessToken: config.accessToken,
         apiKey: config.apiKey,
         model: config.model,
         generationConfig: {

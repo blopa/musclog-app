@@ -3,8 +3,9 @@ import { Bot, KeyRound, Sparkles, Wand2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
+import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type AINotConfiguredModalProps = {
@@ -69,6 +70,7 @@ export function AINotConfiguredModal({
                 borderRadius: 55,
                 alignItems: 'center',
                 justifyContent: 'center',
+                overflow: 'hidden',
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.border.light,
               }}

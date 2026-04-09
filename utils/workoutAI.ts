@@ -3,11 +3,12 @@ import {
   ExerciseService,
   WorkoutAnalytics,
   WorkoutService,
-} from '../database/services';
+} from '@/database/services';
 import {
   type ExerciseInWorkout,
   WorkoutTemplateService,
-} from '../database/services/WorkoutTemplateService';
+} from '@/database/services/WorkoutTemplateService';
+
 import type {
   CalculateVolumeResponse,
   GenerateWorkoutPlanResponse,

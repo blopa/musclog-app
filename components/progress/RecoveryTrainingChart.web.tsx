@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryScatter } from 'victory';
 
-import { RecoveryTrainingPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useTheme } from '../../hooks/useTheme';
+import { RecoveryTrainingPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useTheme } from '@/hooks/useTheme';
+
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface RecoveryTrainingChartProps {

@@ -1,4 +1,4 @@
-import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models';
+import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models';
 
 /** Profile / onboarding form payload for fitness + body stats. */
 export type FitnessDetails = {

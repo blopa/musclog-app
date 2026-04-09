@@ -1,17 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { NotificationService } from '../services/NotificationService';
+import { NotificationService } from '@/services/NotificationService';
 
 const ACTIVE_WORKOUT_KEY = 'active_workout_log_id';
 const WORKOUT_INSIGHTS_PREFIX = 'workout_insights_';
+const REST_TIMER_END_AT_KEY = 'rest_timer_end_at';
+const REST_TIMER_WORKOUT_KEY = 'rest_timer_workout_log_id';
 
 /**
  * Get the active workout log ID from AsyncStorage
  */
 export async function getActiveWorkoutLogId(): Promise<string | null> {
   try {
-    const workoutLogId = await AsyncStorage.getItem(ACTIVE_WORKOUT_KEY);
-    return workoutLogId;
+    return await AsyncStorage.getItem(ACTIVE_WORKOUT_KEY);
   } catch (error) {
     console.error('Error getting active workout from storage:', error);
     return null;
@@ -87,6 +88,57 @@ export async function setInsightDismissed(
     );
   } catch (error) {
     console.error('Error setting dismissed insight in storage:', error);
+  }
+}
+
+/**
+ * Get the wall-clock end timestamp for the current rest timer.
+ * Returns null if no timer is stored or it belongs to a different workout.
+ */
+export async function getRestTimerEndAt(workoutLogId: string): Promise<number | null> {
+  try {
+    const [endAt, ownerLogId] = await Promise.all([
+      AsyncStorage.getItem(REST_TIMER_END_AT_KEY),
+      AsyncStorage.getItem(REST_TIMER_WORKOUT_KEY),
+    ]);
+
+    if (!endAt || ownerLogId !== workoutLogId) {
+      return null;
+    }
+
+    return parseInt(endAt, 10);
+  } catch (error) {
+    console.error('Error getting rest timer end timestamp from storage:', error);
+    return null;
+  }
+}
+
+/**
+ * Persist the wall-clock end timestamp for the current rest timer.
+ */
+export async function setRestTimerEndAt(workoutLogId: string, endAt: number): Promise<void> {
+  try {
+    await Promise.all([
+      AsyncStorage.setItem(REST_TIMER_END_AT_KEY, String(endAt)),
+      AsyncStorage.setItem(REST_TIMER_WORKOUT_KEY, workoutLogId),
+    ]);
+  } catch (error) {
+    console.error('Error saving rest timer end timestamp to storage:', error);
+  }
+}
+
+/**
+ * Clear the rest timer end timestamp from AsyncStorage.
+ * Call this when the rest is skipped, completed, or the workout ends.
+ */
+export async function clearRestTimerEndAt(): Promise<void> {
+  try {
+    await Promise.all([
+      AsyncStorage.removeItem(REST_TIMER_END_AT_KEY),
+      AsyncStorage.removeItem(REST_TIMER_WORKOUT_KEY),
+    ]);
+  } catch (error) {
+    console.error('Error clearing rest timer end timestamp from storage:', error);
   }
 }
 

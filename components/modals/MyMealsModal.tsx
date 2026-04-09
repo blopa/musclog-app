@@ -1,25 +1,28 @@
-import { Pencil, Search, Trash2, Utensils } from 'lucide-react-native';
+import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { useSnackbar } from '../../context/SnackbarContext';
-import Meal from '../../database/models/Meal';
-import { FoodService, MealService, NutritionService } from '../../database/services';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import i18n from '../../lang/lang';
-import AiService from '../../services/AiService';
-import { trackMeal } from '../../utils/coachAI';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { MealItemCard } from '../cards/MealItemCard';
-import { FilterTabs } from '../FilterTabs';
-import { Button } from '../theme/Button';
-import { MenuButton } from '../theme/MenuButton';
-import { TextInput } from '../theme/TextInput';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { MealItemCard } from '@/components/cards/MealItemCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSnackbar } from '@/context/SnackbarContext';
+import Meal from '@/database/models/Meal';
+import { FoodService, MealService, NutritionService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import i18n from '@/lang/lang';
+import AiService from '@/services/AiService';
+import { trackMeal } from '@/utils/coachAI';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
+
 import { AddMealModal } from './AddMealModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -94,6 +97,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { shareText } = useNativeShareText();
   const { isAiConfigured } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -316,6 +320,52 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setDeleteMealId(mealId);
   };
 
+  const handleShareMealAsRecipe = useCallback(
+    async (mealId: string) => {
+      setMenuMealId(null);
+      try {
+        const data = await MealService.getMealWithFoods(mealId);
+        if (!data) {
+          showSnackbar('error', t('errors.somethingWentWrong'));
+          return;
+        }
+
+        const { meal, foods } = data;
+        const ingredientLines: string[] = [];
+
+        for (const mealFood of foods) {
+          const grams = await mealFood.getGramWeight();
+          const food = await mealFood.food;
+          const name = food?.name?.trim() || t('food.unknownFood');
+          const gramsStr = formatRoundedDecimal(grams, 2);
+          ingredientLines.push(
+            t('food.meals.manageMealData.shareRecipeIngredientLine', {
+              grams: gramsStr,
+              name,
+            })
+          );
+        }
+
+        if (ingredientLines.length === 0) {
+          showSnackbar('error', t('food.meals.manageMealData.shareRecipeNoIngredients'));
+          return;
+        }
+
+        const description = meal.description?.trim() ?? '';
+        const message =
+          description.length > 0
+            ? `${ingredientLines.join('\n')}\n\n${description}`
+            : ingredientLines.join('\n');
+
+        await shareText(message, { title: meal.name ?? undefined });
+      } catch (error) {
+        captureException(error, { data: { context: 'MyMealsModal.handleShareMealAsRecipe' } });
+        showSnackbar('error', t('errors.somethingWentWrong'));
+      }
+    },
+    [formatRoundedDecimal, shareText, showSnackbar, t]
+  );
+
   const handleConfirmDelete = async () => {
     if (!deleteMealId) {
       return;
@@ -327,6 +377,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       await refresh();
     } catch (error) {
       console.error('Error deleting meal:', error);
+      captureException(error, { data: { context: 'MyMealsModal.handleConfirmDelete' } });
+      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsDeleting(false);
       setDeleteMealId(null);
@@ -535,6 +587,16 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                 title: t('food.meals.manageMealData.editMeal'),
                 description: t('food.meals.manageMealData.editMealDesc'),
                 onPress: () => handleEditMeal(menuMealId),
+              },
+              {
+                icon: Share2,
+                iconColor: theme.colors.text.primary,
+                iconBgColor: theme.colors.background.iconDarker,
+                title: t('food.meals.manageMealData.shareMealAsRecipe'),
+                description: t('food.meals.manageMealData.shareMealAsRecipeDesc'),
+                onPress: () => {
+                  void handleShareMealAsRecipe(menuMealId);
+                },
               },
               {
                 icon: Trash2,

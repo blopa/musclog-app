@@ -1,8 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
+import { differenceInYears } from 'date-fns';
 
-import { AvatarColor } from '../../types/AvatarColor';
-import { AvatarIcon } from '../../types/AvatarIcon';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
@@ -49,14 +50,7 @@ export default class User extends Model {
    * Calculate age from date of birth
    */
   getAge(): number {
-    const today = new Date();
-    const birthDate = new Date(this.dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
+    return differenceInYears(new Date(), new Date(this.dateOfBirth));
   }
 
   /**

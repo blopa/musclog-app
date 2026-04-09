@@ -2,8 +2,9 @@ import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
-import Exercise from '../database/models/Exercise';
-import { useTheme } from '../hooks/useTheme';
+import Exercise from '@/database/models/Exercise';
+import { useTheme } from '@/hooks/useTheme';
+
 import { SetData, SetRow } from './WorkoutHistorySetRow';
 
 /**

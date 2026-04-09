@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
-import { useSettings } from '../hooks/useSettings';
+import { useSettings } from '@/hooks/useSettings';
+
 import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
 import { CoachModal } from './modals/CoachModal';
 import MyMealsModal from './modals/MyMealsModal';

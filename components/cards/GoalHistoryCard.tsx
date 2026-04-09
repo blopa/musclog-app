@@ -3,15 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
-import { getWeightUnitI18nKey } from '../../utils/units';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { EatingPhaseBadge } from '../EatingPhaseBadge';
-import { MenuButton } from '../theme/MenuButton';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { EatingPhaseBadge } from '@/components/EatingPhaseBadge';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { type EatingPhaseUI } from '@/types/EatingPhaseUI';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
 import { GenericCard } from './GenericCard';
 
 interface GoalHistoryItem {

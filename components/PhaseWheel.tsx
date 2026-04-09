@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
-import { EnergyLevel, MenstrualPhase } from '../database/services/MenstrualService';
-import { useTheme } from '../hooks/useTheme';
-import { type Theme } from '../theme';
+import { EnergyLevel, MenstrualPhase } from '@/database/services/MenstrualService';
+import { useTheme } from '@/hooks/useTheme';
+import { type Theme } from '@/theme';
 
 type PhaseWheelProps = {
   currentPhase: MenstrualPhase | null;

@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { Dimensions, ImageBackground, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GradientText } from '../../components/GradientText';
-import { MasterLayout } from '../../components/MasterLayout';
-import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerView';
-import PreRegistrationIntro from '../../components/PreRegistrationIntro';
-import { Button } from '../../components/theme/Button';
-import { PageIndicators } from '../../components/theme/PageIndicators';
-import { useTheme } from '../../hooks/useTheme';
+import { GradientText } from '@/components/GradientText';
+import { MasterLayout } from '@/components/MasterLayout';
+import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { PagerView, type PagerViewRef } from '@/components/PagerView/PagerView';
+import PreRegistrationIntro from '@/components/PreRegistrationIntro';
+import { Button } from '@/components/theme/Button';
+import { PageIndicators } from '@/components/theme/PageIndicators';
+import { useTheme } from '@/hooks/useTheme';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -58,7 +58,8 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -123,7 +124,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -258,7 +260,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -393,7 +396,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             end={{ x: 1, y: 1 }}
             style={{
               flex: 1,
-              borderRadius: theme.borderRadius.full,
+              borderRadius: 9999,
+              overflow: 'hidden',
             }}
           />
         </View>
@@ -513,7 +517,7 @@ export default function OnboardingScreen() {
     } else {
       // Navigate to home when on last step
       if (!__DEV__ && Platform.OS === 'web') {
-        router.navigate('/onboarding/connect-with-google');
+        router.navigate('/onboarding/fitness-info');
       } else {
         router.navigate('/onboarding/health-connect');
       }
@@ -540,7 +544,7 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               if (!__DEV__ && Platform.OS === 'web') {
-                router.navigate('/onboarding/connect-with-google');
+                router.navigate('/onboarding/fitness-info');
               } else {
                 router.navigate('/onboarding/health-connect');
               }

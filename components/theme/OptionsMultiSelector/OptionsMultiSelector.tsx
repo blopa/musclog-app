@@ -1,12 +1,12 @@
-import { Check, GripVertical } from 'lucide-react-native';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
-import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
-import { useTheme } from '../../../hooks/useTheme';
-import { Theme } from '../../../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { Theme } from '@/theme';
+
 import { ActionButtonsArea } from './ActionButtonsArea';
 import {
   getGroupColor,
@@ -15,25 +15,6 @@ import {
   normalizeGroups,
   SelectorOption,
 } from './utils';
-
-const ScaleDecorator = ({ children, isActive }: { children: ReactNode; isActive?: boolean }) => {
-  const theme = useTheme();
-  const scale = useSharedValue(1);
-
-  useEffect(() => {
-    if (isActive !== undefined) {
-      scale.value = withSpring(isActive ? 0.95 : 1, { damping: 15, stiffness: 150 });
-    }
-  }, [isActive, scale]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
-
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
-};
 
 type OptionsMultiSelectorProps<T extends string | number> = {
   title: string;
@@ -77,7 +58,7 @@ export function OptionsMultiSelector<T extends string | number>({
   };
 
   const showCheckboxes = !isEditable || selectionEnabled;
-  const isDragMode = isEditable && selectionEnabled;
+  const showArrows = isEditable && selectionEnabled;
 
   // Check if we can group/ungroup selected items
   const selectedCount = selectedIds.length;
@@ -146,56 +127,48 @@ export function OptionsMultiSelector<T extends string | number>({
     // Selection is cleared by the onDelete handler
   };
 
-  const handleDragEnd = ({
-    data,
-    from,
-  }: {
-    data: SelectorOption<T>[];
-    from: number;
-    to: number;
-  }) => {
-    // Get the moved item from original array
-    const movedItem = orderedOptions[from];
-    if (!movedItem) {
-      setOrderedOptions(data);
-      onOrderChange?.(data);
+  // Returns the contiguous indices of the group the item at `index` belongs to,
+  // or just [index] if the item has no group.
+  const getGroupIndices = (index: number): number[] => {
+    const groupId = orderedOptions[index]?.groupId;
+    if (!groupId) {
+      return [index];
+    }
+    return orderedOptions.map((o, i) => (o.groupId === groupId ? i : -1)).filter((i) => i !== -1);
+  };
+
+  // Move item (and its whole group) up by one position
+  const handleMoveUp = (index: number) => {
+    const groupIndices = getGroupIndices(index);
+    const firstIndex = groupIndices[0];
+    if (firstIndex === 0) {
       return;
     }
 
-    // If no group, just use the drag result directly
-    if (!movedItem.groupId) {
-      setOrderedOptions(data);
-      onOrderChange?.(data);
+    const newOptions = [...orderedOptions];
+    // Take the item sitting just above the group and insert it after the group
+    const itemAbove = newOptions[firstIndex - 1];
+    newOptions.splice(firstIndex - 1, 1);
+    newOptions.splice(firstIndex + groupIndices.length - 1, 0, itemAbove);
+    setOrderedOptions(newOptions);
+    onOrderChange?.(newOptions);
+  };
+
+  // Move item (and its whole group) down by one position
+  const handleMoveDown = (index: number) => {
+    const groupIndices = getGroupIndices(index);
+    const lastIndex = groupIndices[groupIndices.length - 1];
+    if (lastIndex === orderedOptions.length - 1) {
       return;
     }
 
-    // Item has a group - we need to ensure all group members are contiguous
-    // and preserve the internal order from the drag result
-    const groupId = movedItem.groupId;
-
-    // Get all group items in the order they appear in the NEW data array
-    const groupItems = data.filter((o) => o.groupId === groupId);
-
-    // Get all non-group items in their new order
-    const nonGroupItems = data.filter((o) => o.groupId !== groupId);
-
-    // Find where the moved item ended up in the new data array to determine insertion point
-    const movedItemNewIndex = data.findIndex((o) => o.id === movedItem.id);
-
-    // Count how many non-group items come BEFORE the moved item's new position in data
-    let insertIndex = 0;
-    for (let i = 0; i < movedItemNewIndex; i++) {
-      if (data[i].groupId !== groupId) {
-        insertIndex++;
-      }
-    }
-
-    // Build the result: non-group items with group inserted at correct position
-    const result = [...nonGroupItems];
-    result.splice(insertIndex, 0, ...groupItems);
-
-    setOrderedOptions(result);
-    onOrderChange?.(result);
+    const newOptions = [...orderedOptions];
+    // Take the item sitting just below the group and insert it before the group
+    const itemBelow = newOptions[lastIndex + 1];
+    newOptions.splice(lastIndex + 1, 1);
+    newOptions.splice(groupIndices[0], 0, itemBelow);
+    setOrderedOptions(newOptions);
+    onOrderChange?.(newOptions);
   };
 
   const renderGroupIndicator = (
@@ -258,161 +231,6 @@ export function OptionsMultiSelector<T extends string | number>({
     );
   };
 
-  const renderDraggableItem = ({
-    item,
-    drag,
-    isActive,
-    getIndex,
-  }: RenderItemParams<SelectorOption<T>>) => {
-    const Icon = item.icon as any;
-    const selected = showCheckboxes && isSelected(item.id);
-    const index = getIndex() ?? 0;
-    const groupPosition = hasGroups ? getGroupPosition(orderedOptions, index) : 'none';
-    const isFirstInGroup = groupPosition === 'first' || groupPosition === 'only';
-    const groupColor =
-      hasGroups && item.groupId ? getGroupColor(item.groupId, theme, orderedOptions) : undefined;
-
-    return (
-      <ScaleDecorator isActive={isActive}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'stretch',
-          }}
-        >
-          {renderGroupIndicator(groupPosition, theme, item.groupId, isFirstInGroup)}
-          <View style={{ flex: 1 }}>
-            <Pressable
-              onLongPress={drag}
-              delayLongPress={150}
-              onPress={() => !isActive && showCheckboxes && toggle(item.id)}
-              disabled={isActive || !showCheckboxes}
-              style={{ flex: 1 }}
-            >
-              {({ pressed }) => (
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: theme.spacing.padding.base,
-                    borderRadius: theme.borderRadius.md,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: selected
-                      ? theme.colors.accent.primary
-                      : hasGroups && groupColor
-                        ? groupColor + '40'
-                        : theme.colors.border.light,
-                    backgroundColor: isActive
-                      ? theme.colors.background.cardElevated
-                      : hasGroups && groupColor
-                        ? groupColor + '08'
-                        : theme.colors.background.card,
-                    ...(selected ? theme.shadows.accentGlow : {}),
-                    opacity: isActive
-                      ? theme.colors.opacity.strong
-                      : pressed
-                        ? theme.colors.opacity.strong
-                        : theme.colors.opacity.full,
-                  }}
-                >
-                  {/* Drag Handle */}
-                  <View
-                    style={{
-                      marginRight: theme.spacing.gap.sm,
-                      opacity: theme.colors.opacity.medium,
-                    }}
-                  >
-                    <GripVertical
-                      size={theme.iconSize.md}
-                      color={theme.colors.text.secondary}
-                      strokeWidth={theme.strokeWidth.medium}
-                    />
-                  </View>
-
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: theme.spacing.gap.base,
-                        flex: 1,
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: theme.size['10'],
-                          height: theme.size['10'],
-                          borderRadius: theme.borderRadius.full,
-                          backgroundColor: item.iconBgColor,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Icon size={theme.iconSize.lg} color={item.iconColor} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text
-                          style={{
-                            fontSize: theme.typography.fontSize.base,
-                            fontWeight: theme.typography.fontWeight.bold,
-                            color: theme.colors.text.primary,
-                          }}
-                        >
-                          {item.label}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: theme.typography.fontSize.xs,
-                            color: theme.colors.text.secondary,
-                            marginTop: theme.spacing.padding.xsHalf,
-                          }}
-                        >
-                          {item.description}
-                        </Text>
-                      </View>
-                    </View>
-                    {showCheckboxes ? (
-                      <View
-                        style={{
-                          width: theme.size['6'],
-                          height: theme.size['6'],
-                          borderRadius: theme.borderRadius.sm,
-                          borderWidth: theme.borderWidth.medium,
-                          borderColor: selected
-                            ? theme.colors.accent.primary
-                            : theme.colors.border.default,
-                          backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {selected ? (
-                          <Check
-                            size={theme.iconSize.xs}
-                            color={theme.colors.text.black}
-                            strokeWidth={theme.strokeWidth.thick}
-                          />
-                        ) : null}
-                      </View>
-                    ) : null}
-                  </View>
-                </View>
-              )}
-            </Pressable>
-          </View>
-        </View>
-      </ScaleDecorator>
-    );
-  };
-
   const renderRegularItem = (option: SelectorOption<T>, index: number, theme: Theme) => {
     const Icon = option.icon as any;
     const selected = showCheckboxes && isSelected(option.id);
@@ -423,15 +241,59 @@ export function OptionsMultiSelector<T extends string | number>({
         ? getGroupColor(option.groupId, theme, orderedOptions)
         : undefined;
 
+    const groupIndices = getGroupIndices(index);
+    const isGroupFirst = groupIndices[0] === 0;
+    const isGroupLast = groupIndices[groupIndices.length - 1] === orderedOptions.length - 1;
+
     return (
-      <View
+      <Animated.View
         key={String(option.id)}
+        layout={LinearTransition.springify().damping(35).stiffness(360)}
         style={{
           flexDirection: 'row',
           alignItems: 'stretch',
         }}
       >
-        {renderGroupIndicator(groupPosition, theme, option.groupId, isFirstInGroup)}
+        {showArrows ? (
+          <View
+            style={{
+              width: theme.size['4'],
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: theme.spacing.gap.sm,
+              gap: theme.spacing.gap.xs,
+            }}
+          >
+            <Pressable
+              onPress={() => handleMoveUp(index)}
+              disabled={isGroupFirst}
+              hitSlop={8}
+              style={{ opacity: isGroupFirst ? theme.colors.opacity.medium : 1 }}
+            >
+              <ChevronUp
+                size={theme.iconSize.md}
+                color={theme.colors.accent.primary}
+                strokeWidth={theme.strokeWidth.medium}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => handleMoveDown(index)}
+              disabled={isGroupLast}
+              hitSlop={8}
+              style={{
+                opacity: isGroupLast ? theme.colors.opacity.medium : 1,
+              }}
+            >
+              <ChevronDown
+                size={theme.iconSize.md}
+                color={theme.colors.accent.primary}
+                strokeWidth={theme.strokeWidth.medium}
+              />
+            </Pressable>
+          </View>
+        ) : (
+          renderGroupIndicator(groupPosition, theme, option.groupId, isFirstInGroup)
+        )}
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => showCheckboxes && toggle(option.id)}
@@ -465,6 +327,7 @@ export function OptionsMultiSelector<T extends string | number>({
                     alignItems: 'center',
                     gap: theme.spacing.gap.base,
                     flex: 1,
+                    minWidth: 0,
                   }}
                 >
                   <View
@@ -479,7 +342,7 @@ export function OptionsMultiSelector<T extends string | number>({
                   >
                     <Icon size={theme.iconSize.lg} color={option.iconColor} />
                   </View>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, minWidth: 0 }}>
                     <Text
                       style={{
                         fontSize: theme.typography.fontSize.base,
@@ -500,37 +363,59 @@ export function OptionsMultiSelector<T extends string | number>({
                     </Text>
                   </View>
                 </View>
-                {showCheckboxes ? (
-                  <View
-                    style={{
-                      width: theme.size['6'],
-                      height: theme.size['6'],
-                      borderRadius: theme.borderRadius.sm,
-                      borderWidth: theme.borderWidth.medium,
-                      borderColor: selected
-                        ? theme.colors.accent.primary
-                        : theme.colors.border.default,
-                      backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {selected ? (
-                      <Check
-                        size={theme.iconSize.xs}
-                        color={theme.colors.text.black}
-                        strokeWidth={theme.strokeWidth.thick}
-                      />
-                    ) : null}
-                  </View>
-                ) : (
-                  <View />
-                )}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    gap: theme.spacing.gap.sm,
+                    marginLeft: theme.spacing.gap.sm,
+                  }}
+                >
+                  {option.trailingHighlight ? (
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        fontSize: theme.typography.fontSize.lg,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        color: theme.colors.accent.primary,
+                      }}
+                    >
+                      {option.trailingHighlight}
+                    </Text>
+                  ) : null}
+                  {showCheckboxes ? (
+                    <View
+                      style={{
+                        width: theme.size['6'],
+                        height: theme.size['6'],
+                        borderRadius: theme.borderRadius.sm,
+                        borderWidth: theme.borderWidth.medium,
+                        borderColor: selected
+                          ? theme.colors.accent.primary
+                          : theme.colors.border.default,
+                        backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {selected ? (
+                        <Check
+                          size={theme.iconSize.xs}
+                          color={theme.colors.text.black}
+                          strokeWidth={theme.strokeWidth.thick}
+                        />
+                      ) : null}
+                    </View>
+                  ) : option.trailingHighlight ? null : (
+                    <View />
+                  )}
+                </View>
               </View>
             )}
           </Pressable>
         </View>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -611,21 +496,9 @@ export function OptionsMultiSelector<T extends string | number>({
         />
       ) : null}
 
-      {isDragMode ? (
-        <DraggableFlatList
-          data={orderedOptions}
-          onDragEnd={handleDragEnd}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={renderDraggableItem}
-          ItemSeparatorComponent={() => <View style={{ height: theme.spacing.gap.md }} />}
-          scrollEnabled={false}
-          activationDistance={10}
-        />
-      ) : (
-        <View style={{ gap: theme.spacing.gap.md }}>
-          {orderedOptions.map((option, index) => renderRegularItem(option, index, theme))}
-        </View>
-      )}
+      <View style={{ gap: theme.spacing.gap.md }}>
+        {orderedOptions.map((option, index) => renderRegularItem(option, index, theme))}
+      </View>
     </View>
   );
 }

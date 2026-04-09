@@ -11,16 +11,27 @@ import {
   UtensilsCrossed,
   X,
 } from 'lucide-react-native';
-import { createElement, ReactNode } from 'react';
+import { createElement, ReactNode, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ActivityIndicator,
+  Image,
+  ImageSourcePropType,
+  InteractionManager,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useNavigationItems } from '../../hooks/useNavigationItems';
-import { useTheme } from '../../hooks/useTheme';
-import { AvatarColor } from '../../types/AvatarColor';
-import { AvatarIcon } from '../../types/AvatarIcon';
-import { getAvatarDisplayProps } from '../../utils/avatarUtils';
+import { Modal } from '@/components/theme/Modal';
+import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { useTheme } from '@/hooks/useTheme';
+import { AvatarColor } from '@/types/AvatarColor';
+import { AvatarIcon } from '@/types/AvatarIcon';
+import { getAvatarDisplayProps } from '@/utils/avatarUtils';
+import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 type UserMenuModalProps = {
   visible: boolean;
@@ -43,18 +54,21 @@ type MenuItemProps = {
   icon: ReactNode;
   label: string;
   onPress: () => void;
+  isLoading?: boolean;
 };
 
-function MenuItem({ icon, label, onPress }: MenuItemProps) {
+function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
       onPress={onPress}
+      disabled={isLoading}
     >
       <View className="bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full">
         {icon}
       </View>
       <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
+      {isLoading ? <ActivityIndicator size="small" color="#10B981" /> : null}
     </Pressable>
   );
 }
@@ -78,19 +92,25 @@ export function UserMenuModal({
   const isInNav = (item: string) =>
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
 
-  // Web-specific styles for proper viewport positioning
-  const webBackdropStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-        } as any)
-      : {};
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
+  const insets = useSafeAreaInsets();
+
+  // Track which menu item is currently loading
+  const [loadingItem, setLoadingItem] = useState<string | null>(null);
+
+  // Navigate and close modal after navigation transition completes
+  const navigateAndClose = useCallback(
+    (itemKey: string, navigateFn: () => void) => {
+      setLoadingItem(itemKey);
+      navigateFn();
+      // Use InteractionManager to wait for navigation transition to complete
+      InteractionManager.runAfterInteractions(() => {
+        onClose();
+        setLoadingItem(null);
+      });
+    },
+    [onClose]
+  );
 
   return (
     <Modal
@@ -106,14 +126,14 @@ export function UserMenuModal({
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}
       >
-        <SafeAreaView
+        <View
           className="flex-1 justify-start"
-          edges={['top']}
-          style={
+          style={[
             Platform.OS === 'web'
               ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }
-              : undefined
-          }
+              : undefined,
+            { paddingTop: insets.top },
+          ]}
         >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
@@ -184,9 +204,11 @@ export function UserMenuModal({
                 <MenuItem
                   icon={<User size={theme.iconSize.md} color={theme.colors.accent.primary} />}
                   label={t('userMenu.profile')}
+                  isLoading={loadingItem === 'profile'}
                   onPress={() => {
-                    onProfilePress ? onProfilePress() : router.navigate('/profile');
-                    onClose();
+                    navigateAndClose('profile', () => {
+                      onProfilePress ? onProfilePress() : router.navigate('/profile');
+                    });
                   }}
                 />
               ) : null}
@@ -197,9 +219,11 @@ export function UserMenuModal({
                     <BarChart3 size={theme.iconSize.md} color={theme.colors.accent.secondary} />
                   }
                   label={t('userMenu.progress')}
+                  isLoading={loadingItem === 'progress'}
                   onPress={() => {
-                    onProgressPress ? onProgressPress() : router.navigate('/progress');
-                    onClose();
+                    navigateAndClose('progress', () => {
+                      onProgressPress ? onProgressPress() : router.navigate('/progress');
+                    });
                   }}
                 />
               ) : null}
@@ -208,9 +232,11 @@ export function UserMenuModal({
                 <MenuItem
                   icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
                   label={t('userMenu.cycle')}
+                  isLoading={loadingItem === 'cycle'}
                   onPress={() => {
-                    onCyclePress ? onCyclePress() : router.navigate('/cycle');
-                    onClose();
+                    navigateAndClose('cycle', () => {
+                      onCyclePress ? onCyclePress() : router.navigate('/cycle');
+                    });
                   }}
                 />
               ) : null}
@@ -219,9 +245,9 @@ export function UserMenuModal({
                 <MenuItem
                   icon={<Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />}
                   label={t('userMenu.workouts')}
+                  isLoading={loadingItem === 'workouts'}
                   onPress={() => {
-                    router.navigate('/workout/workouts');
-                    onClose();
+                    navigateAndClose('workouts', () => router.navigate('/workout/workouts'));
                   }}
                 />
               ) : null}
@@ -235,9 +261,9 @@ export function UserMenuModal({
                     />
                   }
                   label={t('userMenu.food')}
+                  isLoading={loadingItem === 'food'}
                   onPress={() => {
-                    router.navigate('/nutrition/food');
-                    onClose();
+                    navigateAndClose('food', () => router.navigate('/nutrition/food'));
                   }}
                 />
               ) : null}
@@ -251,9 +277,9 @@ export function UserMenuModal({
                     />
                   }
                   label={t('userMenu.checkin')}
+                  isLoading={loadingItem === 'checkin'}
                   onPress={() => {
-                    router.navigate('/nutrition/checkin-list');
-                    onClose();
+                    navigateAndClose('checkin', () => router.navigate('/nutrition/checkin-list'));
                   }}
                 />
               ) : null}
@@ -264,9 +290,9 @@ export function UserMenuModal({
                     <MessageSquare size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   }
                   label={t('userMenu.coach')}
+                  isLoading={loadingItem === 'coach'}
                   onPress={() => {
-                    onCoachPress();
-                    onClose();
+                    navigateAndClose('coach', onCoachPress);
                   }}
                 />
               ) : null}
@@ -275,9 +301,11 @@ export function UserMenuModal({
                 <MenuItem
                   icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   label={t('userMenu.settings')}
+                  isLoading={loadingItem === 'settings'}
                   onPress={() => {
-                    onSettingsPress ? onSettingsPress() : router.navigate('/settings');
-                    onClose();
+                    navigateAndClose('settings', () => {
+                      onSettingsPress ? onSettingsPress() : router.navigate('/settings');
+                    });
                   }}
                 />
               ) : null}
@@ -285,14 +313,17 @@ export function UserMenuModal({
               {onDebugMenuPress ? (
                 <Pressable
                   className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
+                  disabled={loadingItem === 'debug'}
                   onPress={() => {
-                    onDebugMenuPress?.();
-                    onClose();
+                    navigateAndClose('debug', onDebugMenuPress);
                   }}
                 >
                   <Text className="flex-1 text-lg font-semibold text-text-primary">
                     {t('userMenu.debugPage')}
                   </Text>
+                  {loadingItem === 'debug' ? (
+                    <ActivityIndicator size="small" color="#10B981" />
+                  ) : null}
                 </Pressable>
               ) : null}
             </View>
@@ -300,7 +331,7 @@ export function UserMenuModal({
             {/* Top safe area spacing */}
             <View className="h-8" />
           </View>
-        </SafeAreaView>
+        </View>
       </Pressable>
     </Modal>
   );

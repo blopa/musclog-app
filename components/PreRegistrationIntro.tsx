@@ -9,7 +9,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function PreRegistrationIntro() {
   const theme = useTheme();
@@ -38,7 +38,8 @@ export default function PreRegistrationIntro() {
           end={{ x: 1, y: 1 }}
           style={{
             flex: 1,
-            borderRadius: theme.borderRadius.full,
+            borderRadius: 9999,
+            overflow: 'hidden',
           }}
         />
       </View>

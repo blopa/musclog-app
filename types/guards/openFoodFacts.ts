@@ -1,5 +1,5 @@
-import { getProductName } from '../../utils/productName';
-import { MappedNutriments, SuccessFoodProductState } from '../openFoodFacts';
+import { MappedNutriments, SuccessFoodProductState } from '@/types/openFoodFacts';
+import { getProductName } from '@/utils/productName';
 
 /** Type guard for nutriments shaped by mapOpenFoodFactsProduct (has macronutrients, minerals, other). */
 export function isMappedNutriments(n: unknown): n is MappedNutriments {

@@ -2,8 +2,9 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { EditPersonalInfoBody, type PersonalInfo } from '../EditPersonalInfoBody';
-import { Button } from '../theme/Button';
+import { EditPersonalInfoBody, type PersonalInfo } from '@/components/EditPersonalInfoBody';
+import { Button } from '@/components/theme/Button';
+
 import { FullScreenModal } from './FullScreenModal';
 
 type EditPersonalInfoModalProps = {

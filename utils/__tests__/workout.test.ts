@@ -1,10 +1,10 @@
 import { Dumbbell, User } from 'lucide-react-native';
 
-import type { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
-import Exercise from '../../database/models/Exercise';
-import Schedule, { type DayOfWeek } from '../../database/models/Schedule';
-import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
-import { darkTheme as theme } from '../../theme';
+import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
+import Exercise from '@/database/models/Exercise';
+import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
+import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
+import { darkTheme as theme } from '@/theme';
 import {
   createExerciseOption,
   type CreateExerciseOptionParams,
@@ -22,7 +22,7 @@ import {
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
   WEEKDAY_NAMES,
-} from '../workout';
+} from '@/utils/workout';
 
 // Mock Exercise model
 const createMockExercise = (overrides: Partial<Exercise> = {}): Partial<Exercise> => ({
@@ -313,13 +313,15 @@ describe('utils/workout', () => {
           reps: 10,
           weight: 60,
           isBodyweight: false,
+          units: 'metric',
         };
 
         const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(Dumbbell);
         expect(result.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(result.iconColor).toBe(theme.colors.accent.primary);
-        expect(result.description).toBe('3 sets × 10 reps @ 60kg');
+        expect(result.description).toBe('3 sets × 10 reps @');
+        expect(result.trailingHighlight).toBe('60kg');
       });
 
       it('should include groupId when provided', () => {
@@ -752,11 +754,13 @@ describe('utils/workout', () => {
             id: 'ex-1',
             label: 'Bench Press',
             description: '4 sets × 8 reps',
+            sets: 4,
+            reps: 8,
             groupId: 'group-1',
           }),
         ];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result).toHaveLength(1);
         expect(result[0]).toMatchObject({
           id: 'ex-1',
@@ -774,7 +778,7 @@ describe('utils/workout', () => {
           createMockExerciseInWorkout({ groupId: 'group-123' }),
         ];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result[0].groupId).toBe('group-123');
       });
 
@@ -783,12 +787,12 @@ describe('utils/workout', () => {
           createMockExerciseInWorkout({ groupId: undefined }),
         ];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result[0].groupId).toBeUndefined();
       });
 
       it('should return empty array for empty input', () => {
-        const result = transformExercisesToOptions([]);
+        const result = transformExercisesToOptions([], 'metric');
         expect(result).toEqual([]);
       });
 
@@ -799,7 +803,7 @@ describe('utils/workout', () => {
           createMockExerciseInWorkout({ id: 'ex-3', label: 'Exercise 3' }),
         ];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result).toHaveLength(3);
         expect(result[0].label).toBe('Exercise 1');
         expect(result[1].label).toBe('Exercise 2');
@@ -809,7 +813,7 @@ describe('utils/workout', () => {
       it('should exclude metadata fields', () => {
         const exercisesInWorkout: ExerciseInWorkout[] = [createMockExerciseInWorkout()];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result[0]).not.toHaveProperty('sets');
         expect(result[0]).not.toHaveProperty('reps');
         expect(result[0]).not.toHaveProperty('weight');
@@ -819,7 +823,7 @@ describe('utils/workout', () => {
       it('should include all UI fields', () => {
         const exercisesInWorkout: ExerciseInWorkout[] = [createMockExerciseInWorkout()];
 
-        const result = transformExercisesToOptions(exercisesInWorkout);
+        const result = transformExercisesToOptions(exercisesInWorkout, 'metric');
         expect(result[0]).toHaveProperty('id');
         expect(result[0]).toHaveProperty('label');
         expect(result[0]).toHaveProperty('description');

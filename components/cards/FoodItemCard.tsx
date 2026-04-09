@@ -14,11 +14,12 @@ import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
-import { MenuButton } from '../theme/MenuButton';
+import { MenuButton } from '@/components/theme/MenuButton';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
+
 import { GenericCard } from './GenericCard';
 
 type FoodItemCardProps = {

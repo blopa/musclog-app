@@ -1,6 +1,7 @@
-import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
-import i18n from '../lang/lang';
-import { components } from '../types/usda-types';
+import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
+import i18n from '@/lang/lang';
+import { components } from '@/types/usda-types';
+
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 
 type USDAFood = components['schemas']['SearchResultFood'];

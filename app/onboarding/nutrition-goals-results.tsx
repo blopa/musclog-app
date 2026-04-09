@@ -8,22 +8,22 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
-import { GenericCard } from '../../components/cards/GenericCard';
-import { LineChart } from '../../components/charts/LineChart';
-import { MasterLayout } from '../../components/MasterLayout';
-import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
-import { type EatingPhase } from '../../database/models';
+import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { GenericCard } from '@/components/cards/GenericCard';
+import { LineChart } from '@/components/charts/LineChart';
+import { MasterLayout } from '@/components/MasterLayout';
+import { Button } from '@/components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { type EatingPhase } from '@/database/models';
 import {
   NutritionCheckinService,
   NutritionGoalService,
   UserMetricService,
-} from '../../database/services';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
-import { useSettings } from '../../hooks/useSettings';
-import { localDayKeyPlusCalendarDays, localDayStartMs } from '../../utils/calendarDate';
+} from '@/database/services';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
+import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   estimateTargetBodyFatWhenCutting,
@@ -32,11 +32,11 @@ import {
   generateWeeklyCheckins,
   inchesToCm,
   NutritionPlan,
-} from '../../utils/nutritionCalculator';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { showSnackbar } from '../../utils/snackbarService';
-import { kgToDisplay } from '../../utils/unitConversion';
-import { getWeightUnitI18nKey } from '../../utils/units';
+} from '@/utils/nutritionCalculator';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { showSnackbar } from '@/utils/snackbarService';
+import { kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
 export default function NutritionGoalsResults() {
   const theme = useTheme();

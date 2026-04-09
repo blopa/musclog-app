@@ -18,7 +18,8 @@ export default class FoodFoodPortion extends Model {
 
   @field('food_id') foodId!: string;
   @field('food_portion_id') foodPortionId!: string;
-  @field('is_default') isDefault!: boolean; // Exactly one per food should be true
+  /** Which linked portion is the default for this food. */
+  @field('is_default') isDefault!: boolean;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

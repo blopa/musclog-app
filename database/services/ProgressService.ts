@@ -1,27 +1,26 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import NutritionLog from '@/database/models/NutritionLog';
+import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { localDayStartFromUtcMs, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
   calculateTDEE,
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
-} from '../../utils/nutritionCalculator';
-import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
-import {
-  calculateExerciseVolume,
-  getUserBodyWeightKgForVolume,
-} from '../../utils/workoutCalculator';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import MenstrualCycle from '../models/MenstrualCycle';
-import NutritionLog from '../models/NutritionLog';
-import UserMetric, { UserMetricType } from '../models/UserMetric';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutLogExercise from '../models/WorkoutLogExercise';
-import WorkoutLogSet from '../models/WorkoutLogSet';
+} from '@/utils/nutritionCalculator';
+import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
+import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
+import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
@@ -167,8 +166,6 @@ export interface ProgressData {
   moodMacrosHistory: MoodMacrosPoint[];
 }
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
 export class ProgressService {
   /**
    * Main entry point to fetch all data for the progress screen
@@ -197,8 +194,8 @@ export class ProgressService {
           : decHeight.value;
     }
 
-    const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial);
-    const fatPoints = await this.decryptMetricPoints(fatMetrics, false);
+    const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial, true);
+    const fatPoints = await this.decryptMetricPoints(fatMetrics, false, true); // Body fat % - no unit conversion needed
 
     // 2. Fetch Nutrition
     const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
@@ -237,7 +234,8 @@ export class ProgressService {
     for (const type of measurementTypes) {
       const metrics = await UserMetricService.getMetricsHistory(type, dateRange);
       if (metrics.length > 0) {
-        measurementsHistory[type] = await this.decryptMetricPoints(metrics, isImperial);
+        // Body measurements are stored in cm, convert to inches for imperial
+        measurementsHistory[type] = await this.decryptMetricPoints(metrics, isImperial, false);
       }
     }
 
@@ -345,14 +343,25 @@ export class ProgressService {
 
   private static async decryptMetricPoints(
     metrics: UserMetric[],
-    _isImperial: boolean
+    isImperial: boolean,
+    isWeight: boolean = true
   ): Promise<MetricPoint[]> {
     const points = await Promise.all(
       metrics.map(async (m) => {
         const d = await m.getDecrypted();
-        // The value returned by getDecrypted should already be converted or we should convert it here
-        // Based on UserMetricService, we store what user entered.
-        return { date: m.date, value: d.value };
+        // Database stores values in metric (kg for weight, cm for measurements)
+        // Convert to display units if user has imperial selected
+        let value = d.value;
+        if (isImperial) {
+          if (isWeight) {
+            // Weight: convert kg to lbs
+            value = kgToDisplay(d.value, 'imperial');
+          } else {
+            // Measurements: convert cm to inches
+            value = cmToDisplay(d.value, 'imperial');
+          }
+        }
+        return { date: m.date, value };
       })
     );
     return points.sort((a, b) => a.date - b.date);
@@ -406,11 +415,12 @@ export class ProgressService {
         Math.abs(curr.date - wp.date) < Math.abs(prev.date - wp.date) ? curr : prev
       );
 
-      if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_DAY) {
+      if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_SOLAR_DAY) {
         let weightKg = wp.value;
         if (isImperial) {
           weightKg = convert(wp.value, 'lb').to('kg') as number;
         }
+
         const ffmi = ffmiFromWeightHeightAndBodyFat(weightKg, heightM, closestFat.value);
         history.push({ date: wp.date, value: ffmi });
       }
@@ -493,7 +503,7 @@ export class ProgressService {
     const firstDate = points[0].date;
 
     for (const p of points) {
-      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || [];
       existing.push(p.value);
       weeksMap.set(weekIndex, existing);
@@ -501,7 +511,7 @@ export class ProgressService {
 
     return Array.from(weeksMap.entries())
       .map(([index, values]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
+        date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
         value: values.reduce((a, b) => a + b, 0) / values.length,
       }))
       .sort((a, b) => a.date - b.date);
@@ -515,7 +525,7 @@ export class ProgressService {
     const firstDate = daily[0].date;
 
     for (const d of daily) {
-      const weekIndex = Math.floor((d.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((d.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || [];
       existing.push(d);
       weeksMap.set(weekIndex, existing);
@@ -537,7 +547,7 @@ export class ProgressService {
 
         const count = days.length;
         return {
-          date: firstDate + index * 7 * MS_PER_DAY,
+          date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
           calories: sum.calories / count,
           protein: sum.protein / count,
           carbs: sum.carbs / count,
@@ -556,14 +566,14 @@ export class ProgressService {
     const firstDate = points[0].date;
 
     for (const p of points) {
-      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_DAY));
+      const weekIndex = Math.floor((p.date - firstDate) / (7 * MS_PER_SOLAR_DAY));
       const existing = weeksMap.get(weekIndex) || 0;
       weeksMap.set(weekIndex, existing + p.volume);
     }
 
     return Array.from(weeksMap.entries())
       .map(([index, volume]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
+        date: firstDate + index * 7 * MS_PER_SOLAR_DAY,
         volume,
       }))
       .sort((a, b) => a.date - b.date);
@@ -812,11 +822,13 @@ export class ProgressService {
       const prevStart = sortedStarts[i - 1];
       const data = groupedData.get(start)!;
 
-      const weight = weightPoints.find((wp) => Math.abs(wp.date - start) < MS_PER_DAY);
-      const prevWeight = weightPoints.find((wp) => Math.abs(wp.date - prevStart) < MS_PER_DAY);
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - start) < MS_PER_SOLAR_DAY);
+      const prevWeight = weightPoints.find(
+        (wp) => Math.abs(wp.date - prevStart) < MS_PER_SOLAR_DAY
+      );
 
-      const fat = fatPoints.find((fp) => Math.abs(fp.date - start) < MS_PER_DAY);
-      const prevFat = fatPoints.find((fp) => Math.abs(fp.date - prevStart) < MS_PER_DAY);
+      const fat = fatPoints.find((fp) => Math.abs(fp.date - start) < MS_PER_SOLAR_DAY);
+      const prevFat = fatPoints.find((fp) => Math.abs(fp.date - prevStart) < MS_PER_SOLAR_DAY);
 
       if (weight && prevWeight) {
         history.push({
@@ -856,16 +868,16 @@ export class ProgressService {
 
     const step =
       aggregation === 'daily'
-        ? MS_PER_DAY
+        ? MS_PER_SOLAR_DAY
         : aggregation === 'weekly'
-          ? MS_PER_DAY * 7
-          : MS_PER_DAY * 30;
+          ? MS_PER_SOLAR_DAY * 7
+          : MS_PER_SOLAR_DAY * 30;
 
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);
 
       // Determine phase
-      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_DAY);
+      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_SOLAR_DAY);
       const cycleDay = ((daysSinceStart % c.avgCycleLength) + c.avgCycleLength) % c.avgCycleLength;
 
       let phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
@@ -890,7 +902,7 @@ export class ProgressService {
             workoutsInPeriod.length
           : 0;
 
-      const weight = weightPoints.find((wp) => Math.abs(wp.date - dayTs) < MS_PER_DAY);
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - dayTs) < MS_PER_SOLAR_DAY);
       const energiesInPeriod = energyPoints.filter((ep) => {
         const start = this.getStartOfAggregation(ep.date, aggregation);
         return start === dayTs;

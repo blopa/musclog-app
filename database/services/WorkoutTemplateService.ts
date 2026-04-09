@@ -2,22 +2,24 @@ import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 import { Dumbbell, User } from 'lucide-react-native';
 
-import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplatesModal';
-import { UNITS_SETTING_TYPE } from '../../constants/settings';
-import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
-import i18n from '../../lang/lang';
-import { getTheme } from '../../theme';
-import { getWeightUnit } from '../../utils/units';
-import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
-import { database } from '../index';
-import Exercise from '../models/Exercise';
-import Schedule from '../models/Schedule';
-import Setting from '../models/Setting';
-import WorkoutLog from '../models/WorkoutLog';
-import WorkoutTemplate from '../models/WorkoutTemplate';
-import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
-import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateRepository';
+import type { RawWorkoutTemplate } from '@/components/modals/BrowseTemplatesModal';
+import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
+import { database } from '@/database/index';
+import Exercise from '@/database/models/Exercise';
+import Schedule from '@/database/models/Schedule';
+import Setting from '@/database/models/Setting';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
+import i18n from '@/lang/lang';
+import { getTheme } from '@/theme';
+import { getWeightUnit } from '@/utils/units';
+import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
+import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 
@@ -45,7 +47,7 @@ export interface SaveTemplateData {
   templateId?: string;
   name: string;
   description?: string;
-  volumeCalculationType?: string;
+  workoutInsightsType?: string;
   type?: string;
   icon?: string;
   weekDaysJson?: number[];
@@ -206,8 +208,10 @@ export class WorkoutTemplateService {
         await template.update((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
-          t.volumeCalculationType =
-            data.volumeCalculationType ?? t.volumeCalculationType ?? 'standard';
+          t.workoutInsightsType =
+            data.workoutInsightsType != null
+              ? parseWorkoutInsightsType(data.workoutInsightsType)
+              : parseWorkoutInsightsType(t.workoutInsightsType);
           t.type = data.type ?? t.type;
           t.icon = data.icon ?? t.icon;
           t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
@@ -260,7 +264,7 @@ export class WorkoutTemplateService {
         template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
-          t.volumeCalculationType = data.volumeCalculationType || 'standard';
+          t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
           t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
           t.icon = data.icon ?? undefined;
           t.weekDaysJson = data.weekDaysJson || undefined;
@@ -897,7 +901,7 @@ export class WorkoutTemplateService {
       const newTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
         t.name = `${template.name} (Copy)`;
         t.description = template.description;
-        t.volumeCalculationType = template.volumeCalculationType || 'standard';
+        t.workoutInsightsType = parseWorkoutInsightsType(template.workoutInsightsType);
         t.type = template.type ?? DEFAULT_WORKOUT_TYPE;
         t.icon = template.icon ?? undefined;
         t.weekDaysJson = template.weekDaysJson || undefined;

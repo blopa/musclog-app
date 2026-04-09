@@ -2,8 +2,9 @@ import { Edit2, Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
-import { useTheme } from '../hooks/useTheme';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+
 import { GenericCard } from './cards/GenericCard';
 import { MacroCard } from './cards/MacroCard';
 import { Button } from './theme/Button';

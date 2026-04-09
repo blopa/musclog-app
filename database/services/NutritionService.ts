@@ -2,17 +2,17 @@ import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
-import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
+import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import { database } from '@/database/index';
+import Food from '@/database/models/Food';
+import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
-} from '../../utils/calendarDate';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
-import { database } from '../index';
-import Food from '../models/Food';
-import NutritionLog, { MealType } from '../models/NutritionLog';
+} from '@/utils/calendarDate';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
 async function triggerWidgetUpdate(): Promise<void> {
   if (Platform.OS !== 'android') {
@@ -628,7 +628,11 @@ export class NutritionService {
   /**
    * Get recent foods (for quick logging)
    */
-  static async getRecentFoods(limit: number = 10, date?: Date): Promise<Food[]> {
+  static async getRecentFoods(
+    limit: number = 10,
+    date?: Date,
+    mealType?: MealType
+  ): Promise<Food[]> {
     // If a date is provided, limit recent logs to that date (today by default).
     let query = database
       .get<NutritionLog>('nutrition_logs')
@@ -640,14 +644,24 @@ export class NutritionService {
       query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
     }
 
-    const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
+    if (mealType) {
+      query = query.extend(Q.where('type', mealType));
+    }
 
-    const foodIds = [...new Set(recentLogs.map((log) => log.foodId))];
+    // We take a larger batch to find unique food IDs up to the requested limit.
+    const recentLogs = await query
+      .extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5))
+      .fetch();
+
+    const foodIds = [...new Set(recentLogs.map((log) => log.foodId))].slice(0, limit);
     const foods: Food[] = [];
 
     for (const foodId of foodIds) {
+      if (!foodId) {
+        continue;
+      }
       try {
-        const food = await database.get<Food>('foods').find(foodId ?? '');
+        const food = await database.get<Food>('foods').find(foodId);
         if (!food.deletedAt) {
           foods.push(food);
         }

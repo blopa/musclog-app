@@ -2,7 +2,7 @@ import { Check, LucideIcon } from 'lucide-react-native';
 import { ComponentType, memo, ReactElement, useCallback, useMemo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export type SelectorOption<T extends string | number> = {
   id: T;

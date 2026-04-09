@@ -14,7 +14,6 @@ export { ChatService } from './ChatService';
 export { AiCustomPromptService } from './AiCustomPromptService';
 
 // Export existing services
-export { GoogleAuthService } from './GoogleAuthService';
 export {
   type MigrateAllOptions,
   type MigrationProgressInfo,

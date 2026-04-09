@@ -3,10 +3,11 @@ import { Q } from '@nozbe/watermelondb';
 import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
-import Setting from '../database/models/Setting';
-import i18n from '../lang/lang';
+} from '@/constants/settings';
+import { database } from '@/database';
+import Setting from '@/database/models/Setting';
+import i18n from '@/lang/lang';
+
 import { healthConnectService } from './healthConnect';
 import {
   HealthConnectError,
