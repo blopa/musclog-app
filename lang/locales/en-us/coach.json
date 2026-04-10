@@ -42,7 +42,8 @@
       "nutritionInsightFailed": "Could not check nutrition. Try again later.",
       "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
       "filePickFailed": "Failed to pick file. Please try again.",
-      "creditsExhausted": "It looks like your AI credits have run out. Please check your API key or billing in Settings."
+      "creditsExhausted": "It looks like your AI credits have run out. Please check your API key or billing in Settings.",
+      "rateLimited": "Please wait a moment before sending another message."
     },
     "goToSettings": "Go to Settings",
     "success": {

@@ -30,7 +30,7 @@ type EditWorkoutMetadataModalProps = {
   onSave: (data: {
     startedAt: number;
     completedAt: number;
-    reorderedExercises?: { id: string; groupId: string }[];
+    reorderedExercises?: { id: string; groupId?: string }[];
   }) => Promise<void> | void;
   initialStartedAt: number;
   initialCompletedAt: number;
@@ -62,6 +62,8 @@ export default function EditWorkoutMetadataModal({
 
   // Initialize exercise options when modal opens
   useEffect(() => {
+    let isMounted = true;
+
     if (visible && hasExercises) {
       const exerciseMap = new Map<string, Exercise>();
       exercises!.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -80,8 +82,15 @@ export default function EditWorkoutMetadataModal({
           groupId: le.groupId,
         };
       });
-      setExerciseOptions(options);
+
+      if (isMounted) {
+        setExerciseOptions(options);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [visible, logExercises, exercises, theme, hasExercises]);
 
   // Picker states

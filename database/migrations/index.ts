@@ -74,6 +74,20 @@ export const migrations = schemaMigrations({
       ],
     },
 
+    // Version 5: Add prepared_weight_grams to meals.
+    // Lets users record the cooked/finished weight of a recipe (e.g. 500g after
+    // cooking 800g of raw ingredients). Used as the reference for portion scaling
+    // (½×, 1×, …) instead of the raw ingredient sum when set.
+    {
+      toVersion: 5,
+      steps: [
+        addColumns({
+          table: 'meals',
+          columns: [{ name: 'prepared_weight_grams', type: 'number', isOptional: true }],
+        }),
+      ],
+    },
+
     // Version 6: Add group_id and logged_meal_name to nutrition_logs.
     // Allows multiple nutrition log rows (e.g. AI meal ingredients or saved meal foods)
     // to be grouped and displayed as a single meal entry in the food diary.
@@ -86,20 +100,6 @@ export const migrations = schemaMigrations({
             { name: 'group_id', type: 'string', isOptional: true },
             { name: 'logged_meal_name', type: 'string', isOptional: true },
           ],
-        }),
-      ],
-    },
-
-    // Version 5: Add prepared_weight_grams to meals.
-    // Lets users record the cooked/finished weight of a recipe (e.g. 500g after
-    // cooking 800g of raw ingredients). Used as the reference for portion scaling
-    // (½×, 1×, …) instead of the raw ingredient sum when set.
-    {
-      toVersion: 5,
-      steps: [
-        addColumns({
-          table: 'meals',
-          columns: [{ name: 'prepared_weight_grams', type: 'number', isOptional: true }],
         }),
       ],
     },

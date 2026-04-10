@@ -423,6 +423,7 @@ export function useChatMessages(
         console.warn(
           `[useChatMessages] Rate limit: ${MIN_SEND_INTERVAL_MS - timeSinceLastSend}ms remaining`
         );
+        setEphemeralErrorMessage(t('coach.errors.rateLimited'));
         return;
       }
       lastSendTimeRef.current = now;
