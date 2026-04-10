@@ -1,4 +1,4 @@
-import { ArrowUpDown, List, Pencil, Share2, Trash2 } from 'lucide-react-native';
+import { List, Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
@@ -12,7 +12,6 @@ type PastWorkoutBottomMenuProps = {
   onShare?: () => void;
   onDelete?: () => void;
   onPreview?: () => void;
-  onReorder?: () => void;
 };
 
 export function PastWorkoutBottomMenu({
@@ -23,7 +22,6 @@ export function PastWorkoutBottomMenu({
   onShare,
   onDelete,
   onPreview,
-  onReorder,
 }: PastWorkoutBottomMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -49,17 +47,6 @@ export function PastWorkoutBottomMenu({
       onPress: () => {
         onClose();
         onEdit?.();
-      },
-    },
-    {
-      icon: ArrowUpDown,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('workoutDetails.reorder'),
-      description: t('workoutDetails.reorderDescription'),
-      onPress: () => {
-        onClose();
-        onReorder?.();
       },
     },
     {

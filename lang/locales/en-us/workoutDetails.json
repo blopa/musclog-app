@@ -9,8 +9,6 @@
     "duplicateDescription": "Create a copy of this workout",
     "share": "Share",
     "shareDescription": "Share workout with others",
-    "reorder": "Change Exercise Order",
-    "reorderDescription": "Change the order of the exercises in this workout",
     "delete": "Delete",
     "deleteDescription": "Permanently remove this workout"
   }
