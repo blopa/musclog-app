@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachProvider } from '@/components/CoachContext';
+import { isStaticExport } from '@/constants/platform';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
@@ -38,7 +39,11 @@ cssInterop(SectionList, { className: 'style' });
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry: isStaticExport ? 0 : 2,
+      staleTime: isStaticExport ? Infinity : 0,
+      refetchOnWindowFocus: !isStaticExport,
+      refetchOnReconnect: !isStaticExport,
+      refetchOnMount: !isStaticExport,
     },
   },
 });

@@ -36,37 +36,37 @@ export function Migrations() {
     if (!isInsideWorkoutDomain) {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
-  }, [segments]);
+  }, [segments, isStaticExport]);
 
   // Backfill the exercise `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (isStaticExport || Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isStaticExport) {
       return;
     }
 
     ExerciseService.backfillExerciseSources().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseSources error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Backfill the food_portion `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (isStaticExport || Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isStaticExport) {
       return;
     }
 
     FoodPortionService.backfillPortionSources().catch((err) =>
       console.warn('[FoodPortionService] backfillPortionSources error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
-    if (isStaticExport || !language) {
+    if (!language || isStaticExport) {
       return;
     }
 
@@ -102,7 +102,7 @@ export function Migrations() {
     ExerciseService.syncAppExercises().catch((err) =>
       console.warn('[ExerciseService] syncAppExercises error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
   // Runs once per boot but exits immediately when there is nothing to do.
@@ -114,11 +114,11 @@ export function Migrations() {
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
   useEffect(() => {
-    if (isStaticExport || Platform.OS === 'web') {
+    if (Platform.OS === 'web' || isStaticExport) {
       return;
     }
 
@@ -149,7 +149,7 @@ export function Migrations() {
   }, []);
 
   useEffect(() => {
-    if (isStaticExport || Platform.OS === 'web') {
+    if (Platform.OS === 'web') {
       return;
     }
 
@@ -185,7 +185,7 @@ export function Migrations() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, []);
+  }, [isStaticExport]);
 
   return null;
 }

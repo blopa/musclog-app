@@ -9,5 +9,5 @@ import { Platform } from 'react-native';
 export const isStaticExport =
   Platform.OS === 'web' &&
   (typeof window === 'undefined' ||
-    navigator.userAgent?.includes('Node.js') ||
-    navigator.userAgent?.includes('jsdom'));
+    (typeof navigator !== 'undefined' && navigator.userAgent?.includes('Node.js')) ||
+    (typeof navigator !== 'undefined' && navigator.userAgent?.includes('jsdom')));

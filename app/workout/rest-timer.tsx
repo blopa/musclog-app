@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
+import { isStaticExport } from '@/constants/platform';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
@@ -222,7 +223,7 @@ export default function RestTimerScreen() {
   // Wall-clock countdown: recalculates remaining time from endAtRef on every tick.
   // Survives app backgrounding because it uses Date.now() instead of state decrement.
   useEffect(() => {
-    if (isLoading || !isTimerReady) {
+    if (isStaticExport || isLoading || !isTimerReady) {
       return;
     }
     if (countdownIntervalRef.current) {
