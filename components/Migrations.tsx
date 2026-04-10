@@ -1,10 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusManager } from '@tanstack/react-query';
 import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
-import { ENCRYPTION_KEY } from '@/constants/database';
 import { isStaticExport } from '@/constants/platform';
 import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -14,7 +12,6 @@ import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
-import { getStoredEncryptionKey, storeEncryptionKey } from '@/utils/encryptionKeyStorage';
 import {
   addNotificationResponseReceivedListener,
   getLastNotificationResponseAsync,
@@ -40,37 +37,37 @@ export function Migrations() {
     if (!isInsideWorkoutDomain) {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
-  }, [segments]);
+  }, [segments, isStaticExport]);
 
   // Backfill the exercise `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (isStaticExport || Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isStaticExport) {
       return;
     }
 
     ExerciseService.backfillExerciseSources().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseSources error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Backfill the food_portion `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
   // ignores that step, so we run the JS equivalent here instead.
   useEffect(() => {
-    if (isStaticExport || Platform.OS !== 'web') {
+    if (Platform.OS !== 'web' || isStaticExport) {
       return;
     }
 
     FoodPortionService.backfillPortionSources().catch((err) =>
       console.warn('[FoodPortionService] backfillPortionSources error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
-    if (isStaticExport || !language) {
+    if (!language || isStaticExport) {
       return;
     }
 
@@ -106,7 +103,7 @@ export function Migrations() {
     ExerciseService.syncAppExercises().catch((err) =>
       console.warn('[ExerciseService] syncAppExercises error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
   // Runs once per boot but exits immediately when there is nothing to do.
@@ -118,7 +115,7 @@ export function Migrations() {
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
-  }, []);
+  }, [isStaticExport]);
 
   // Encrypt any API keys that were stored as plaintext before this migration was introduced.
   // Idempotent: already-encrypted keys are detected and left untouched.
@@ -144,39 +141,9 @@ export function Migrations() {
     );
   }, []);
 
-  // One-time migration: move the encryption key from AsyncStorage (plaintext)
-  // to SecureStore (keychain/keystore-backed). Runs only on native.
-  // Safe to run on every boot — exits immediately once already migrated.
-  useEffect(() => {
-    if (isStaticExport || Platform.OS === 'web') {
-      return;
-    }
-
-    const doTask = async () => {
-      try {
-        const alreadyMigrated = await getStoredEncryptionKey(ENCRYPTION_KEY);
-        if (alreadyMigrated) {
-          return;
-        }
-
-        const legacyKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
-        if (!legacyKey) {
-          return;
-        }
-
-        await storeEncryptionKey(ENCRYPTION_KEY, legacyKey);
-        await AsyncStorage.removeItem(ENCRYPTION_KEY);
-      } catch (err) {
-        console.warn('[Migrations] encryptionKey migration to SecureStore failed:', err);
-      }
-    };
-
-    doTask();
-  }, []);
-
   // Boot-time tasks (native: Android + iOS, all run in parallel)
   useEffect(() => {
-    if (isStaticExport || Platform.OS === 'web') {
+    if (Platform.OS === 'web' || isStaticExport) {
       return;
     }
 
@@ -207,7 +174,7 @@ export function Migrations() {
   }, []);
 
   useEffect(() => {
-    if (isStaticExport || Platform.OS === 'web') {
+    if (Platform.OS === 'web') {
       return;
     }
 
@@ -243,7 +210,7 @@ export function Migrations() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, []);
+  }, [isStaticExport]);
 
   return null;
 }

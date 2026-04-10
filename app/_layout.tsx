@@ -19,6 +19,7 @@ import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { Migrations } from '@/components/Migrations';
+import { isStaticExport } from '@/constants/platform';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
 import { SnackbarProvider } from '@/context/SnackbarContext';
@@ -38,7 +39,11 @@ cssInterop(SectionList, { className: 'style' });
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry: isStaticExport ? 0 : 2,
+      staleTime: isStaticExport ? Infinity : 0,
+      refetchOnWindowFocus: !isStaticExport,
+      refetchOnReconnect: !isStaticExport,
+      refetchOnMount: !isStaticExport,
     },
   },
 });

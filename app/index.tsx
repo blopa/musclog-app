@@ -29,6 +29,7 @@ import DashedButton from '@/components/theme/DashedButton';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
+import { isStaticExport } from '@/constants/platform';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
@@ -69,6 +70,10 @@ export default function HomeScreen() {
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
 
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     const syncToday = () => {
       setToday((prev) => {
         const now = new Date();

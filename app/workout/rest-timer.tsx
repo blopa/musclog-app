@@ -13,6 +13,7 @@ import { RestTimer } from '@/components/RestTimer';
 import { RestTimerControls } from '@/components/RestTimerControls';
 import { UpNextLabel } from '@/components/UpNextLabel';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { isStaticExport } from '@/constants/platform';
 import { WorkoutService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -222,7 +223,7 @@ export default function RestTimerScreen() {
   // Wall-clock countdown: recalculates remaining time from endAtRef on every tick.
   // Survives app backgrounding because it uses Date.now() instead of state decrement.
   useEffect(() => {
-    if (isLoading || !isTimerReady) {
+    if (isStaticExport || isLoading || !isTimerReady) {
       return;
     }
     if (countdownIntervalRef.current) {
