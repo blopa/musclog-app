@@ -20,7 +20,7 @@ const typeMapping: Record<string, () => z.ZodTypeAny> = {
  */
 const ENCRYPTED_NUMBER_FIELDS: Record<string, string[]> = {
   user_metrics: ['value'],
-  nutrition_logs: ['loggedCalories', 'loggedProtein', 'loggedCarbs', 'loggedFat', 'loggedFiber'],
+  nutrition_logs: ['logged_calories', 'logged_protein', 'logged_carbs', 'logged_fat', 'logged_fiber'],
 };
 
 /**
@@ -56,18 +56,10 @@ function columnToZodType(
 
   let zodType = typeFn();
 
-  // Handle optional fields
+  // Handle optional fields - make them nullable but DON'T set defaults
+  // Setting defaults causes data loss when snake_case keys don't match camelCase schema
   if (column.isOptional) {
     zodType = zodType.optional().nullable();
-  } else {
-    // Add default values for required fields to handle migration edge cases
-    if (column.type === 'string') {
-      zodType = (zodType as z.ZodString).default('');
-    } else if (column.type === 'number') {
-      zodType = (zodType as z.ZodNumber).default(0);
-    } else if (column.type === 'boolean') {
-      zodType = (zodType as z.ZodBoolean).default(false);
-    }
   }
 
   return zodType;
@@ -75,6 +67,7 @@ function columnToZodType(
 
 /**
  * Generates a Zod schema for a single table from its WatermelonDB definition.
+ * Uses snake_case column names to match the raw database export format.
  */
 function generateTableSchema(
   tableName: string,
@@ -91,11 +84,13 @@ function generateTableSchema(
       continue;
     }
 
-    const camelCaseName = column.name.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-    shape[camelCaseName] = columnToZodType(tableName, column);
+    // Use column name as-is (snake_case) to match the export format
+    // WatermelonDB schema uses snake_case column names which match the raw DB export
+    shape[column.name] = columnToZodType(tableName, column);
   }
 
-  return z.object(shape);
+  // Use passthrough() to allow unknown properties (snake_case keys in export)
+  return z.object(shape).passthrough();
 }
 
 /**
@@ -160,11 +155,12 @@ export function generateExportValidationSchema(): z.ZodObject<Record<string, z.Z
   }
 
   // Add metadata fields
+  // Use passthrough to allow unknown table data that might not match schema exactly
   return z.object({
     _exportVersion: z.number().int().min(1).max(100),
     ...tableSchemas,
     _async_storage_: z.record(z.string(), z.string().nullable().optional()).optional(),
-  });
+  }).passthrough();
 }
 
 // Pre-computed schema for use in the app
