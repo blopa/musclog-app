@@ -15,13 +15,39 @@ const typeMapping: Record<string, () => z.ZodTypeAny> = {
 };
 
 /**
- * Converts a WatermelonDB column type to a Zod type.
+ * Columns that are stored as encrypted strings but exported as numbers.
+ * These need to accept both string and number types during validation.
  */
-function columnToZodType(column: {
-  name: string;
-  type: string;
-  isOptional?: boolean;
-}): z.ZodTypeAny {
+const ENCRYPTED_NUMBER_FIELDS: Record<string, string[]> = {
+  user_metrics: ['value'],
+  nutrition_logs: ['loggedCalories', 'loggedProtein', 'loggedCarbs', 'loggedFat', 'loggedFiber'],
+};
+
+/**
+ * Converts a WatermelonDB column type to a Zod type.
+ * Handles special cases for encrypted fields that may be exported as different types.
+ */
+function columnToZodType(
+  tableName: string,
+  column: {
+    name: string;
+    type: string;
+    isOptional?: boolean;
+  }
+): z.ZodTypeAny {
+  // Check if this is an encrypted field that might be exported as a number
+  const encryptedFields = ENCRYPTED_NUMBER_FIELDS[tableName] || [];
+  if (encryptedFields.includes(column.name)) {
+    // Accept both string and number, coerce to appropriate type
+    let zodType: z.ZodTypeAny = z.union([z.string(), z.number()]);
+
+    if (column.isOptional) {
+      zodType = zodType.optional().nullable();
+    }
+
+    return zodType;
+  }
+
   const typeFn = typeMapping[column.type];
   if (!typeFn) {
     console.warn(`Unknown column type: ${column.type}, defaulting to string`);
@@ -66,7 +92,7 @@ function generateTableSchema(
     }
 
     const camelCaseName = column.name.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-    shape[camelCaseName] = columnToZodType(column);
+    shape[camelCaseName] = columnToZodType(tableName, column);
   }
 
   return z.object(shape);
