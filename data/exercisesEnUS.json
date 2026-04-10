@@ -1452,5 +1452,85 @@
     "description": "A deadlift from elevated blocks or pins, reducing range of motion to overload the lockout phase.",
     "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
     "loadMultiplier": 1.6
+  },
+  {
+    "name": "One Arm Kettlebell Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive single-arm lift swinging a kettlebell from between the legs to overhead in one fluid motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Kettlebell Clean and Press",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A compound movement swinging a kettlebell to the shoulder in a rack position, then pressing it overhead.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "triceps", "traps", "forearms"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive single-arm lift pulling a dumbbell from the floor to overhead in one motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Single Arm Dumbbell Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "An overhead press performed with one dumbbell, engaging the core for stability and anti-rotation.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Dumbbell Step-Up",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise stepping onto a raised platform while holding dumbbells at the sides.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Single Leg Romanian Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A unilateral hinge exercise balancing on one leg while lowering dumbbells toward the floor.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Renegade Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A plank position row with dumbbells, alternating arms while maintaining core stability.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Dumbbell Thruster",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A combination of a dumbbell front squat with an overhead press in one continuous movement.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Waiter's Carry",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A core stability exercise holding one dumbbell or kettlebell overhead while walking.",
+    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Suitcase Carry",
+    "muscleGroup": "core",
+    "type": "compound",
+    "description": "A core exercise holding a dumbbell or kettlebell at one side while walking, resisting lateral flexion.",
+    "targetMuscles": ["transverse_abdominis", "external_obliques", "internal_obliques", "quadratus_lumborum", "forearms"],
+    "loadMultiplier": 0.3
   }
 ]

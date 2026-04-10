@@ -1452,5 +1452,85 @@
     "description": "Levantamento terra a partir de blocos ou pinos elevados, reduzindo a amplitude de movimento para sobrecarregar a fase de travamento.",
     "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
     "loadMultiplier": 1.6
+  },
+  {
+    "name": "Snatch com Kettlebell de Um Braço",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento explosivo de um braço balançando um kettlebell entre as pernas até acima da cabeça em um movimento fluido.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Clean and Press com Kettlebell",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Movimento composto balançando um kettlebell até o ombro na posição de rack, depois pressionando acima da cabeça.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "triceps", "traps", "forearms"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Snatch com Haltere",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento explosivo de um braço puxando um haltere do chão até acima da cabeça em um movimento.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Desenvolvimento com Haltere de Um Braço",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "Desenvolvimento acima da cabeça realizado com um haltere, engajando o core para estabilidade e anti-rotação.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Step-Up com Halteres",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Exercício para o corpo inferior subindo em uma plataforma elevada enquanto segura halteres nas laterais.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Levantamento Terra Romeno de Uma Perna",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Exercício unilateral de dobradiça equilibrando em uma perna enquanto abaixa halteres em direção ao chão.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Remada Renegada",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "Remada na posição de prancha com halteres, alternando os braços enquanto mantém a estabilidade do core.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Thruster com Halteres",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Combinação de um agachamento frontal com halteres e um desenvolvimento em um movimento contínuo.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Caminhada do Garçom",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "Exercício de estabilidade do core segurando um haltere ou kettlebell acima da cabeça enquanto caminha.",
+    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Caminhada de Mala",
+    "muscleGroup": "core",
+    "type": "compound",
+    "description": "Exercício para o core segurando um haltere ou kettlebell de um lado enquanto caminha, resistindo à flexão lateral.",
+    "targetMuscles": ["transverse_abdominis", "external_obliques", "internal_obliques", "quadratus_lumborum", "forearms"],
+    "loadMultiplier": 0.3
   }
 ]
