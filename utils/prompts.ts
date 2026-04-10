@@ -1030,12 +1030,12 @@ export const getSendChatMessageFunctions = ():
           sumMsg: {
             type: 'string',
             description:
-              'A brief 1-2 sentence summary of the main advice given (for conversation compression).',
+              'A brief 1-2 sentence summary of YOUR OWN response (what you, the coach, just said or advised). Do NOT summarize what the user said here.',
           },
           sumUserMsg: {
             type: 'string',
             description:
-              "A brief 1-2 sentence summary of the user's message, capturing their intent (for history compression).",
+              'A brief summary of what the USER said or asked in their message. Do NOT summarize your own response here.',
           },
           remember_me: {
             type: 'string',

@@ -32,8 +32,8 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
-import { captureException } from './sentry';
 import { wrapUserContent } from './promptSanitizer';
+import { captureException } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -228,7 +228,8 @@ const baseSchemaProperties = {
   },
   sumMsg: {
     type: 'string',
-    description: 'A brief 1-2 sentence summary of the main advice given.',
+    description:
+      'A brief 1-2 sentence summary of YOUR OWN response (what you, the coach, just said or advised). Do NOT summarize what the user said here.',
   },
 };
 
@@ -236,7 +237,7 @@ const sumUserMsgProperty = {
   sumUserMsg: {
     type: 'string',
     description:
-      "A brief 1-2 sentence summary of the user's message, capturing their intent. Used to compress long messages in future conversation history.",
+      'A brief summary of what the USER said or asked in their message. Do NOT summarize your own response here.',
   },
 };
 
@@ -250,18 +251,33 @@ const rememberMeProperty = {
 function buildResponseSchema(includeUserSummary: boolean) {
   const properties = {
     ...baseSchemaProperties,
+    ...(includeUserSummary ? sumUserMsgProperty : {}),
     ...rememberMeProperty,
   };
-
-  if (includeUserSummary) {
-    Object.assign(properties, sumUserMsgProperty);
-  }
 
   return {
     type: 'object',
     properties,
     required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
   };
+}
+
+/**
+ * Normalizes a history array so that no two consecutive entries share the same role.
+ * Consecutive same-role messages are merged (content joined with newline).
+ * This is required by Gemini (strict alternation) and produces cleaner context for OpenAI too.
+ */
+function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
+  const result: ChatHistoryEntry[] = [];
+  for (const entry of history) {
+    const prev = result[result.length - 1];
+    if (prev && prev.role === entry.role) {
+      prev.content = prev.content + '\n' + entry.content;
+    } else {
+      result.push({ ...entry });
+    }
+  }
+  return result;
 }
 
 // --- Helper Functions ---
@@ -290,7 +306,8 @@ function parseCoachResponse(raw: string): CoachResponse {
 }
 
 function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
-  const historyContents: Content[] = history.map((entry) => ({
+  const normalized = normalizeHistory(history);
+  const historyContents: Content[] = normalized.map((entry) => ({
     parts: [{ text: entry.content } as Part],
     role: entry.role === 'coach' ? 'model' : 'user',
   }));
@@ -370,9 +387,10 @@ async function sendViaOpenAI(
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
+  const normalized = normalizeHistory(history);
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
-    ...history.map((entry) => ({
+    ...normalized.map((entry) => ({
       role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
       content: entry.content,
     })),
@@ -531,7 +549,7 @@ async function generateStructured<T>(
 ): Promise<T | null> {
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
-  
+
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
   if (config.provider === 'gemini') {
@@ -598,7 +616,9 @@ async function generateWithImageStructured<T>(
   userMessageSuffix?: string
 ): Promise<T | null> {
   // Wrap user message suffix with delimiters to prevent prompt injection
-  const sanitizedSuffix = userMessageSuffix?.trim() ? wrapUserContent(userMessageSuffix.trim()) : '';
+  const sanitizedSuffix = userMessageSuffix?.trim()
+    ? wrapUserContent(userMessageSuffix.trim())
+    : '';
   const userText =
     'Analyze this image and return the structured data.' +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
@@ -722,7 +742,7 @@ export async function sendCoachMessage(
 ): Promise<CoachResponse> {
   // Wrap user message with delimiters to prevent prompt injection attacks
   const sanitizedMessage = wrapUserContent(userMessage);
-  
+
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);
   }
