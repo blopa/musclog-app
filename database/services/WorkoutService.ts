@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 
 import { database } from '@/database/index';
 import Exercise from '@/database/models/Exercise';
@@ -277,17 +278,29 @@ export class WorkoutService {
           UserMetricService.getLatest('height'),
         ]);
 
-        if (user && weightMetric && heightMetric) {
-          const [{ value: weightKg }, { value: heightCm }] = await Promise.all([
-            weightMetric.getDecrypted(),
-            heightMetric.getDecrypted(),
-          ]);
+        if (user && weightMetric) {
+          const { value: rawWeight, unit: weightUnit } = await weightMetric.getDecrypted();
+          const weightKg =
+            weightUnit === 'lbs' ? (convert(rawWeight, 'lb').to('kg') as number) : rawWeight;
+
+          let heightCm = 175; // Default fallback for height if missing
+          if (heightMetric) {
+            const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
+            heightCm =
+              heightUnit === 'in' || heightUnit === 'ft'
+                ? (convert(rawHeight, heightUnit as any).to('cm') as number)
+                : rawHeight;
+          }
 
           if (weightKg > 0 && heightCm > 0) {
             const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
             const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
             const setsByExercise = new Map<string, WorkoutLogSet[]>();
             for (const set of sets) {
+              // Only include completed and non-skipped sets for calorie calculation
+              if ((set.difficultyLevel ?? 0) === 0 || set.isSkipped) {
+                continue;
+              }
               const eid = set.exerciseId ?? '';
               if (!setsByExercise.has(eid)) {
                 setsByExercise.set(eid, []);
@@ -304,7 +317,7 @@ export class WorkoutService {
 
                 return [
                   {
-                    user: { weightKg, heightCm, gender: user.gender },
+                    user: { weightKg, heightCm, gender: user?.gender || 'other' },
                     exercise: {
                       mechanicType: exercise.mechanicType,
                       muscleGroup: exercise.muscleGroup,

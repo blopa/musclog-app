@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { isStaticExport } from '@/constants/platform';
+
 type Time = {
   hours: number;
   minutes: number;
@@ -18,6 +20,10 @@ export function useSessionTotalTime({
   const [time, setTime] = useState(initialTime);
 
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     if (startTime) {
       const updateTime = () => {
         const now = Date.now();
