@@ -2,9 +2,10 @@ import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 import { Platform } from 'react-native';
 
-import { database } from '@/database/index';
+import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
 
 import { NutritionCheckinService } from './NutritionCheckinService';
 
@@ -13,7 +14,6 @@ async function triggerWidgetUpdate(): Promise<void> {
     return;
   }
 
-  const { requestNutritionWidgetUpdate } = await import('../../widgets/widget-update-helpers');
   await requestNutritionWidgetUpdate();
 }
 

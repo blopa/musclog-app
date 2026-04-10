@@ -18,6 +18,7 @@ import { formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatWorkoutDuration } from '@/utils/workout';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '@/utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
@@ -32,7 +33,7 @@ export default function WorkoutSummaryScreen() {
   const processedWorkoutRef = useRef<string | null>(null);
 
   const [totalTime, setTotalTime] = useState<string>('0m');
-  const [volume, setVolume] = useState<string>('0 kg');
+  const [volume, setVolume] = useState<string>('');
   const [caloriesBurned, setCaloriesBurned] = useState<number>(0);
   const [personalRecords, setPersonalRecords] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,17 +78,12 @@ export default function WorkoutSummaryScreen() {
         }
 
         // Calculate total time
-        let durationStr = '0m';
+        let durationStr = `0 ${t('common.min')}`;
         if (completedWorkout.startedAt && completedWorkout.completedAt) {
           const durationMs = completedWorkout.completedAt - completedWorkout.startedAt;
           const durationMinutes = Math.round(durationMs / 60000);
-          if (durationMinutes < 60) {
-            durationStr = `${durationMinutes}m`;
-          } else {
-            const hours = Math.floor(durationMinutes / 60);
-            const mins = durationMinutes % 60;
-            durationStr = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-          }
+          const { value, suffix } = formatWorkoutDuration(durationMinutes);
+          durationStr = suffix ? `${value} ${suffix}` : value;
           setTotalTime(durationStr);
         }
 
@@ -103,8 +99,9 @@ export default function WorkoutSummaryScreen() {
             completedWorkout.totalVolume
           );
           volumeStr = `${formattedVolume} ${weightUnit}`;
-          setVolume(volumeStr);
         }
+
+        setVolume(volumeStr);
 
         // Set calories burned
         if (completedWorkout.caloriesBurned && completedWorkout.caloriesBurned > 0) {

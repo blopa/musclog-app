@@ -38,18 +38,17 @@ export function PastWorkoutBottomMenu({
         onPreview?.();
       },
     },
-    // TODO: implement a modal that allow editing the past workout
-    // {
-    //   icon: Pencil,
-    //   iconColor: theme.colors.text.primary,
-    //   iconBgColor: theme.colors.text.primary20,
-    //   title: t('workoutDetails.edit'),
-    //   description: t('workoutDetails.editDescription'),
-    //   onPress: () => {
-    //     onClose();
-    //     onEdit?.();
-    //   },
-    // },
+    {
+      icon: Pencil,
+      iconColor: theme.colors.text.primary,
+      iconBgColor: theme.colors.text.primary20,
+      title: t('workoutDetails.edit'),
+      description: t('workoutDetails.editDescription'),
+      onPress: () => {
+        onClose();
+        onEdit?.();
+      },
+    },
     {
       icon: Share2,
       iconColor: theme.colors.text.primary,

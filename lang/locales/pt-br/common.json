@@ -75,6 +75,12 @@
     "descriptions": {
       "none": "Nenhum"
     },
+    "duration": {
+      "hoursOnly": "{{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m",
+      "minutesOnly": "{{minutes}}m",
+      "minutesShort": "{{minutes}} mins"
+    },
     "days": {
       "label": "Dias",
       "letter": {
@@ -95,6 +101,13 @@
         "fri": "SEX",
         "sat": "SÁB"
       }
-    }
+    },
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "debugDetails": "Detalhes de Depuração",
+    "errorMessage": "Mensagem de Erro",
+    "errorStack": "Pilha de Erro",
+    "componentStack": "Pilha de Componentes",
+    "userAgent": "Agente do Usuário"
   }
 }

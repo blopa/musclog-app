@@ -119,7 +119,7 @@ export function MealEstimationModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Meal Estimation"
+      title={t('nutrition.mealEstimation.title')}
       headerRight={
         <TouchableOpacity
           onPress={handleRetake}
@@ -129,7 +129,9 @@ export function MealEstimationModal({
           }}
         >
           <Camera size={16} color="white" />
-          <Text className="text-sm font-medium text-white">Retake</Text>
+          <Text className="text-sm font-medium text-white">
+            {t('nutrition.mealEstimation.retake')}
+          </Text>
         </TouchableOpacity>
       }
       scrollable={false}

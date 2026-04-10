@@ -46,6 +46,7 @@ import { EditFitnessDetailsModal } from '@/components/modals/EditFitnessDetailsM
 import EditPastWorkoutDataModal from '@/components/modals/EditPastWorkoutDataModal';
 import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
 import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
+import EditWorkoutMetadataModal from '@/components/modals/EditWorkoutMetadataModal';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import ExercisesModal from '@/components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
@@ -217,6 +218,8 @@ export default function ModalsTestScreen() {
   const [isAddUserMetricEntryVisible, setIsAddUserMetricEntryVisible] = useState(false);
   // Past Workout Detail Modal
   const [isPastWorkoutDetailVisible, setIsPastWorkoutDetailVisible] = useState(false);
+  // Edit Workout Metadata Modal
+  const [isEditWorkoutMetadataVisible, setIsEditWorkoutMetadataVisible] = useState(false);
   // Edit Past Workout Data Modal
   const [isEditPastWorkoutDataVisible, setIsEditPastWorkoutDataVisible] = useState(false);
   // Create Workout Modal
@@ -1046,6 +1049,22 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsPastWorkoutDetailVisible(true)}
+            />
+          </View>
+
+          {/* Edit Workout Metadata Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Edit Workout Metadata Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for editing workout start time, end time, and total duration.
+            </Text>
+            <Button
+              label="Open Edit Workout Metadata Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsEditWorkoutMetadataVisible(true)}
             />
           </View>
 
@@ -2022,6 +2041,17 @@ export default function ModalsTestScreen() {
       <PastWorkoutDetailModal
         visible={isPastWorkoutDetailVisible}
         onClose={() => setIsPastWorkoutDetailVisible(false)}
+      />
+
+      <EditWorkoutMetadataModal
+        visible={isEditWorkoutMetadataVisible}
+        onClose={() => setIsEditWorkoutMetadataVisible(false)}
+        initialStartedAt={Date.now() - 3600000}
+        initialCompletedAt={Date.now()}
+        onSave={(data) => {
+          console.log('Metadata saved:', data);
+          setIsEditWorkoutMetadataVisible(false);
+        }}
       />
 
       <CreateWorkoutModal

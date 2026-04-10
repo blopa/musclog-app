@@ -1,9 +1,10 @@
 import 'react-native-get-random-values';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
+
+import { getStoredEncryptionKey, storeEncryptionKey } from './encryptionKeyStorage';
 
 let encryptionKey: null | string = null;
 
@@ -15,7 +16,7 @@ export const getEncryptionKey = async (
     return encryptionKey;
   }
 
-  const existingEncryptionKey = await AsyncStorage.getItem(storageKey);
+  const existingEncryptionKey = await getStoredEncryptionKey(storageKey);
   if (existingEncryptionKey) {
     encryptionKey = existingEncryptionKey;
     return existingEncryptionKey;
@@ -23,7 +24,7 @@ export const getEncryptionKey = async (
 
   const randomWords = CryptoJS.lib.WordArray.random(length);
   const encryption = CryptoJS.enc.Hex.stringify(randomWords);
-  await AsyncStorage.setItem(storageKey, encryption);
+  await storeEncryptionKey(storageKey, encryption);
   encryptionKey = encryption;
 
   return encryption;

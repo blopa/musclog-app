@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GEMINI_MODELS } from '@/constants/ai';
+import { isStaticExport } from '@/constants/platform';
 import {
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
@@ -32,8 +33,10 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
+  REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
   type Units,
@@ -45,6 +48,7 @@ import {
 } from '@/constants/settings';
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
+import { SettingsService } from '@/database/services/SettingsService';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
@@ -81,6 +85,8 @@ type SettingsState = {
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
+  showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
   isLoading: boolean;
 };
 
@@ -118,6 +124,8 @@ const DEFAULT_STATE: SettingsState = {
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
   alwaysAllowFoodEditing: false,
+  showWeightPrediction: true,
+  requireExportEncryption: true,
   isLoading: true,
 };
 
@@ -212,6 +220,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
+    showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
+    requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     isLoading: false,
   };
 }
@@ -249,14 +259,25 @@ export type SettingsContextType = UseSettingsResult & {
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
+  showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  const [decryptedApiKeys, setDecryptedApiKeys] = useState({
+    googleGeminiApiKey: '',
+    openAiApiKey: '',
+  });
 
   useEffect(() => {
+    if (isStaticExport) {
+      setState((prev) => ({ ...prev, isLoading: false }));
+      return;
+    }
+
     const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
     const subscription = query.observeWithColumns(['value']).subscribe({
       next: (settings) => {
@@ -274,21 +295,48 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Decrypt API keys whenever the raw DB value changes (raw may be ciphertext or legacy plaintext).
+  useEffect(() => {
+    if (state.isLoading) {
+      return;
+    }
+
+    let cancelled = false;
+    Promise.all([SettingsService.getGoogleGeminiApiKey(), SettingsService.getOpenAiApiKey()])
+      .then(([gemini, openAi]) => {
+        if (!cancelled) {
+          setDecryptedApiKeys({ googleGeminiApiKey: gemini, openAiApiKey: openAi });
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.googleGeminiApiKey, state.openAiApiKey, state.isLoading]);
+
   const isAiConfigured = useMemo(() => {
     return (
-      (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && state.openAiApiKey.trim() !== '')
+      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
     );
-  }, [state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
+  }, [
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
 
   const value = useMemo(
     () => ({
       ...state,
+      googleGeminiApiKey: decryptedApiKeys.googleGeminiApiKey,
+      openAiApiKey: decryptedApiKeys.openAiApiKey,
       isAiConfigured,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiConfigured]
+    [state, decryptedApiKeys, isAiConfigured]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

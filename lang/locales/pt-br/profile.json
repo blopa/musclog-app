@@ -37,6 +37,10 @@
       "bmi": "IMC",
       "age": "Idade",
       "gender": "Gênero"
+    },
+    "weightPrediction": {
+      "title": "Peso Previsto",
+      "subtitle": "Estimado com base no TDEE e nos últimos 4 dias de rastreamento calórico"
     }
   }
 }

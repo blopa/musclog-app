@@ -37,6 +37,10 @@
       "bmi": "BMI",
       "age": "Age",
       "gender": "Gender"
+    },
+    "weightPrediction": {
+      "title": "Predicted Weight",
+      "subtitle": "Estimated from TDEE and your last 4 days of calorie tracking"
     }
   }
 }

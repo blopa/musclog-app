@@ -120,7 +120,9 @@ export function AINotConfiguredModal({
               <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipApiKey')}
               </Text>
-              <Text className="mt-0.5 text-sm text-text-tertiary">OpenAI or Google Gemini</Text>
+              <Text className="mt-0.5 text-sm text-text-tertiary">
+                {t('ai.providers.openAIGemini')}
+              </Text>
             </View>
           </View>
 

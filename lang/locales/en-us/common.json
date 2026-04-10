@@ -75,6 +75,12 @@
     "descriptions": {
       "none": "None"
     },
+    "duration": {
+      "hoursOnly": "{{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m",
+      "minutesOnly": "{{minutes}}m",
+      "minutesShort": "{{minutes}} mins"
+    },
     "days": {
       "label": "Days",
       "letter": {
@@ -95,6 +101,13 @@
         "fri": "FRI",
         "sat": "SAT"
       }
-    }
+    },
+    "hide": "Hide",
+    "show": "Show",
+    "debugDetails": "Debug Details",
+    "errorMessage": "Error Message",
+    "errorStack": "Error Stack",
+    "componentStack": "Component Stack",
+    "userAgent": "User Agent"
   }
 }

@@ -28,8 +28,8 @@ export function WorkoutSummaryStatsCard({
         <WorkoutSummaryStatRow
           icon={Timer}
           label={t('workoutSummary.totalTime')}
-          value={totalTime.replace(/\s*(m|min|minutes?)/i, '')}
-          valueSuffix={totalTime.match(/\s*(m|min|minutes?)/i)?.[1] || t('common.min')}
+          value={totalTime.replace(/\s*(m|min|minutes?)\s*$/i, '')}
+          valueSuffix={totalTime.match(/\s*(m|min|minutes?)\s*$/i)?.[1] || undefined}
           iconBgColor={theme.colors.status.info10}
           iconColor={theme.colors.status.info}
         />

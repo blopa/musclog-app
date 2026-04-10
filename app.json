@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.5.12",
+    "version": "2.5.13",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "web": {
@@ -112,7 +112,8 @@
           "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
         }
       ],
-      "rn-mlkit-ocr"
+      "rn-mlkit-ocr",
+      "expo-secure-store"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -127,7 +128,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "209",
+      "buildNumber": "211",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "UIBackgroundModes": [
@@ -139,7 +140,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 209,
+      "versionCode": 211,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
