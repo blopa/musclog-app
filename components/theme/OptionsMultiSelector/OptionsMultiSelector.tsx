@@ -25,6 +25,10 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   hasGroups?: boolean;
   onOrderChange?: (reorderedOptions: SelectorOption<T>[]) => void;
   onDelete?: (ids: T[]) => void;
+  /** When true, checkboxes are hidden even when not in edit mode. Useful for pure reordering use cases. */
+  hideCheckboxes?: boolean;
+  /** When true, disables the press animation on items. */
+  disablePressAnimation?: boolean;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -36,6 +40,8 @@ export function OptionsMultiSelector<T extends string | number>({
   hasGroups = true,
   onOrderChange,
   onDelete,
+  hideCheckboxes = false,
+  disablePressAnimation = false,
 }: OptionsMultiSelectorProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -57,7 +63,7 @@ export function OptionsMultiSelector<T extends string | number>({
     }
   };
 
-  const showCheckboxes = !isEditable || selectionEnabled;
+  const showCheckboxes = !hideCheckboxes && (!isEditable || selectionEnabled);
   const showArrows = isEditable && selectionEnabled;
 
   // Check if we can group/ungroup selected items
@@ -317,7 +323,7 @@ export function OptionsMultiSelector<T extends string | number>({
                       : theme.colors.border.light,
                   backgroundColor:
                     hasGroups && groupColor ? groupColor + '08' : theme.colors.background.card,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                  transform: [{ scale: pressed && !disablePressAnimation ? 0.98 : 1 }],
                   ...(selected ? theme.shadows.accentGlow : {}),
                 }}
               >

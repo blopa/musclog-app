@@ -27,6 +27,7 @@ import {
 } from './calendarDate';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
+import { wrapUserContent } from './promptSanitizer';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -822,11 +823,14 @@ export const getParsePastWorkoutsPrompt = async (
   exerciseNames: string[],
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     "Parse past workouts from the user's text description. Try to match exercise names to the provided list.",
     `If too long, only parse the first 20 workouts. Available exercises: ${exerciseNames.join(', ')}`,
-    `User's message:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 
@@ -837,11 +841,14 @@ export const getParsePastNutritionPrompt = async (
   userMessage: string,
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     "Parse past nutrition data from the user's text into structured entries. Parse up to 20 entries.",
     'Extract: date, calories, protein, carbs, fat, fiber, and other macronutrients if available.',
-    `User's message:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 
@@ -853,12 +860,15 @@ export const getRetrospectiveNutritionPrompt = async (
   userMessage: string,
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     `The user wants to log nutrition data for ${targetDate}. Break down their natural language description into individual food items.`,
     'Categorize each item by meal type: 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack.',
     'Estimate reasonable portions and nutritional values based on common serving sizes.',
-    `User's description:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 
@@ -935,9 +945,13 @@ export const getGenerateMealPlanPrompt = async (
     .join('\n');
 };
 
-export const getTrackMealPrompt = async (
-  language: string = 'en-US',
-  includeFoundationFoods: boolean = false
+/**
+ * System prompt for meal analysis (text or photo).
+ * Used for both chat-based meal tracking and direct photo analysis.
+ */
+export const getMealAnalysisPrompt = async (
+  includeFoundationFoods: boolean = false,
+  language?: string
 ): Promise<string> => {
   const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
   const sections = [
@@ -953,35 +967,15 @@ export const getTrackMealPrompt = async (
     sections.push(foundationPrompt);
   }
 
-  sections.push(
-    MACRO_CALORIE_NOTE,
-    `Your response must be in ${language}.`,
-    'Return the data as a structured list of meals, each with their mealType and ingredients.'
-  );
+  sections.push(MACRO_CALORIE_NOTE);
 
-  return sections.join('\n');
-};
-
-/**
- * System prompt for meal photo nutrition estimation
- */
-export const getEstimateNutritionFromPhotoPrompt = async (
-  includeFoundationFoods: boolean = false
-): Promise<string> => {
-  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
-  const sections = [
-    'You are an expert nutritionist with extensive knowledge of food composition.',
-    'Analyze the provided food photo and estimate the macronutrients.',
-    'You MUST break down dishes into their individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
-    'Be as accurate as possible based on portion size visible in the image.',
-    'If uncertain about portion size, provide estimates for a typical serving.',
-  ];
-
-  if (foundationPrompt) {
-    sections.push(foundationPrompt);
+  if (language) {
+    sections.push(`Your response must be in ${language}.`);
   }
 
-  sections.push(MACRO_CALORIE_NOTE, 'Return structured nutritional data.');
+  sections.push(
+    'Return the data as a structured list of meals, each with their mealType and ingredients.'
+  );
 
   return sections.join('\n');
 };
@@ -1036,12 +1030,12 @@ export const getSendChatMessageFunctions = ():
           sumMsg: {
             type: 'string',
             description:
-              'A brief 1-2 sentence summary of the main advice given (for conversation compression).',
+              'A shortened version of msg4User trimmed to 1-2 sentences. Keep the same first-person voice and key points — write it as you would say it, not as a description of what you said.',
           },
           sumUserMsg: {
             type: 'string',
             description:
-              "A brief 1-2 sentence summary of the user's message, capturing their intent (for history compression).",
+              "A shortened version of the user's message trimmed to 1 sentence. Keep their voice and key intent — write it as they would say it, not as a description of what they said.",
           },
           remember_me: {
             type: 'string',
@@ -1518,13 +1512,18 @@ export const getTrackMealFunctions = (
                   enum: ['breakfast', 'lunch', 'dinner', 'snack'],
                   description: 'Type of meal',
                 },
+                mealName: {
+                  type: 'string',
+                  description:
+                    'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
+                },
                 ingredients: {
                   type: 'array',
                   description: 'List of ingredients in this meal',
                   items: ingredientSchema,
                 },
               },
-              required: ['mealType', 'ingredients'],
+              required: ['mealType', 'mealName', 'ingredients'],
             },
           },
         },

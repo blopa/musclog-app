@@ -43,6 +43,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
   const [rawSets, setRawSets] = useState<EnrichedWorkoutLogSet[] | null>(null);
+  const [logExercises, setLogExercises] = useState<WorkoutLogExercise[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [externalId, setExternalId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -104,9 +106,15 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
 
     const subscription = combineLatest([logObs, logExercisesObs, setsObs, exercisesObs])
       .pipe(
-        switchMap(([log, logExs, rawSetsArr, exercises]) => {
+        switchMap(([log, logExs, rawSetsArr, exercisesArr]) => {
           if (!log || log.deletedAt) {
-            return of({ transformed: null, rawSets: null, externalId: null });
+            return of({
+              transformed: null,
+              rawSets: null,
+              logExercises: [],
+              exercises: [],
+              externalId: null,
+            });
           }
           const leMap = logExs.map((le) => ({
             id: le.id,
@@ -119,7 +127,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
             transformWorkoutToDetailData(
               log,
               enrichedSets,
-              exercises,
+              exercisesArr,
               t,
               units,
               dateFnsLocale,
@@ -130,19 +138,35 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
             map((transformed) => ({
               transformed,
               rawSets: enrichedSets,
+              logExercises: logExs,
+              exercises: exercisesArr,
               externalId: log.externalId ?? null,
             })),
             catchError((err) => {
               console.error('Error transforming workout detail:', err);
-              return of({ transformed: null, rawSets: null, externalId: null });
+              return of({
+                transformed: null,
+                rawSets: null,
+                logExercises: [],
+                exercises: [],
+                externalId: null,
+              });
             })
           );
         })
       )
       .subscribe({
-        next: ({ transformed, rawSets: sets, externalId: eid }) => {
+        next: ({
+          transformed,
+          rawSets: sets,
+          logExercises: logExs,
+          exercises: exercisesArr,
+          externalId: eid,
+        }) => {
           setWorkout(transformed);
           setRawSets(sets);
+          setLogExercises(logExs);
+          setExercises(exercisesArr);
           setExternalId(eid);
           setIsLoading(false);
         },
@@ -167,8 +191,10 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     setRawSets(null);
     setIsLoading(true);
     WorkoutService.getWorkoutWithDetails(workoutId)
-      .then(({ workoutLog: log, sets: s, exercises: ex }) => {
+      .then(({ workoutLog: log, sets: s, exercises: ex, logExercises: logExs }) => {
         setRawSets(s);
+        setLogExercises(logExs);
+        setExercises(ex);
         setExternalId(log.externalId ?? null);
         return transformWorkoutToDetailData(
           log,
@@ -195,6 +221,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     isMenuVisible,
     setIsMenuVisible,
     rawSets,
+    logExercises,
+    exercises,
     externalId,
     reload,
   };

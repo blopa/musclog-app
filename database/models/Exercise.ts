@@ -51,6 +51,7 @@ export default class Exercise extends Model {
   @field('mechanic_type') mechanicType!: MechanicType;
   @field('source') source?: ExerciseSource;
   @field('load_multiplier') loadMultiplier!: number;
+  @field('order_index') orderIndex?: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

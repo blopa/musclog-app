@@ -1268,5 +1268,307 @@
     "description": "An explosive Olympic lift pulling the bar from the floor to the shoulders in one motion, training hips, back, and catch strength.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.85
+  },
+  {
+    "name": "Clean and Press",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A compound lift combining a power clean to the shoulders followed by an overhead press, targeting the entire body.",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.65
+  },
+  {
+    "name": "Hang Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An Olympic lift starting with the bar at hip height, explosively pulling it to the shoulders in a front rack position.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Power Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive Olympic lift pulling the bar from the floor to overhead in one motion, catching in a partial squat.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.55
+  },
+  {
+    "name": "Hang Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An Olympic lift starting with the bar at hip height, explosively pulling it overhead in one motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Squat Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A full Olympic clean where the lifter drops into a deep squat to catch the bar at the shoulders.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.75
+  },
+  {
+    "name": "Squat Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A full snatch where the lifter drops into a deep squat to catch the bar overhead.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Push Jerk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive overhead lift starting from the shoulders, using a dip and drive with a quick drop under the bar.",
+    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Split Jerk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "The competitive Olympic lift jerk where the lifter drops into a split stance to catch the bar overhead.",
+    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.75
+  },
+  {
+    "name": "Thruster",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A compound movement combining a front squat with an overhead press in one continuous motion.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Overhead Squat",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A squat performed with the bar held overhead, demanding exceptional shoulder mobility, stability, and core strength.",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "traps",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Snatch Balance",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An Olympic lift starting with the bar behind the neck, dropping into a squat while pressing the bar overhead.",
+    "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Muscle Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A snatch variation where the bar is pulled overhead without dropping under into a squat position.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.45
+  },
+  {
+    "name": "Clean Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "The first and second pull of the clean taken to full extension without catching the bar, focusing on explosive power.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "loadMultiplier": 1.1
+  },
+  {
+    "name": "Snatch Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "The first and second pull of the snatch taken to full extension without catching the bar, focusing on explosive triple extension.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "High Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive pull from the floor or hang position, bringing the bar to chest height with elbows high.",
+    "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Pause Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A back squat with a deliberate pause at the bottom to eliminate stretch reflex and build strength from the hole.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Pin Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat starting from pins at various heights, eliminating the eccentric phase to build concentric strength.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "loadMultiplier": 1.0
+  },
+  {
+    "name": "Box Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat performed to a box or bench, allowing the lifter to sit back and develop posterior chain engagement.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
+    "loadMultiplier": 0.95
+  },
+  {
+    "name": "Safety Bar Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat performed with a safety squat bar to reduce shoulder stress and emphasize upper back and quad strength.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
+    "loadMultiplier": 1.0
+  },
+  {
+    "name": "Pause Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A bench press with a pause on the chest to eliminate momentum and build explosive pressing power from a dead stop.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Floor Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A bench press performed lying on the floor with legs extended, limiting range of motion and emphasizing lockout strength.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Deficit Deadlift",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A deadlift performed while standing on a raised platform to increase range of motion and leg drive off the floor.",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "lats",
+      "forearms"
+    ],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Block Pull",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A deadlift from elevated blocks or pins, reducing range of motion to overload the lockout phase.",
+    "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
+    "loadMultiplier": 1.6
+  },
+  {
+    "name": "One Arm Kettlebell Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive single-arm lift swinging a kettlebell from between the legs to overhead in one fluid motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Kettlebell Clean and Press",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A compound movement swinging a kettlebell to the shoulder in a rack position, then pressing it overhead.",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "triceps",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive single-arm lift pulling a dumbbell from the floor to overhead in one motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Single Arm Dumbbell Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "An overhead press performed with one dumbbell, engaging the core for stability and anti-rotation.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Dumbbell Step-Up",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise stepping onto a raised platform while holding dumbbells at the sides.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Single Leg Romanian Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A unilateral hinge exercise balancing on one leg while lowering dumbbells toward the floor.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Renegade Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A plank position row with dumbbells, alternating arms while maintaining core stability.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Dumbbell Thruster",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A combination of a dumbbell front squat with an overhead press in one continuous movement.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Waiter's Carry",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A core stability exercise holding one dumbbell or kettlebell overhead while walking.",
+    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Suitcase Carry",
+    "muscleGroup": "core",
+    "type": "compound",
+    "description": "A core exercise holding a dumbbell or kettlebell at one side while walking, resisting lateral flexion.",
+    "targetMuscles": [
+      "transverse_abdominis",
+      "external_obliques",
+      "internal_obliques",
+      "quadratus_lumborum",
+      "forearms"
+    ],
+    "loadMultiplier": 0.3
   }
 ]

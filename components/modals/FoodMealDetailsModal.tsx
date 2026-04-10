@@ -1476,13 +1476,18 @@ export function FoodMealDetailsModal({
           }
 
           // Log each food in the meal, scaled by (amount in g / total meal g)
+          const mealGroupId = meal.id;
+          const mealGroupName = meal.name ?? undefined;
           for (const mealFood of mealWithFoods.foods) {
             await NutritionService.logFood(
               mealFood.foodId,
               selectedDate,
               selectedMeal,
               mealFood.amount * mealScaleFactor,
-              mealFood.portionId
+              mealFood.portionId,
+              undefined,
+              mealGroupId,
+              mealGroupName
             );
           }
 

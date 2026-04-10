@@ -14,11 +14,12 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InteractionManager, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
+import { MealGroupCard } from '@/components/cards/MealGroupCard';
 import { useCoach } from '@/components/CoachContext';
 import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -71,6 +72,28 @@ function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): bool
     grouped.set(entry.log.foodId, existing);
   }
   return [...grouped.values()].some((g) => g.length > 1);
+}
+
+/**
+ * Check if there are duplicate foods among UNGROUPED items only.
+ * Foods with group_id are excluded from merging - they're already part of a meal group.
+ * Returns true only if there are duplicates among ungrouped foods.
+ */
+function mealHasUngroupedDuplicateFoods(mealFoods: { log: NutritionLog }[]): boolean {
+  // Filter out grouped foods (they have group_id)
+  const ungroupedFoods = mealFoods.filter((entry) => !entry.log.groupId);
+
+  const groupedByFood = new Map<string, typeof ungroupedFoods>();
+  for (const entry of ungroupedFoods) {
+    if (!entry.log.foodId) {
+      continue;
+    }
+    const existing = groupedByFood.get(entry.log.foodId) || [];
+    existing.push(entry);
+    groupedByFood.set(entry.log.foodId, existing);
+  }
+
+  return [...groupedByFood.values()].some((g) => g.length > 1);
 }
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
@@ -143,6 +166,34 @@ export default function FoodScreen() {
   const [isFoodSplitLoading, setIsFoodSplitLoading] = useState(false);
   const [isScaleMealPortionModalVisible, setIsScaleMealPortionModalVisible] = useState(false);
   const [isScaleMealPortionLoading, setIsScaleMealPortionLoading] = useState(false);
+  const [selectedMealGroup, setSelectedMealGroup] = useState<{
+    groupId: string;
+    mealName: string;
+    entries: {
+      log: NutritionLog;
+      food: Food | null;
+      nutrients: any;
+      gramWeight: number;
+      displayName: string;
+    }[];
+    totalNutrients: { calories: number; protein: number; carbs: number; fat: number };
+  } | null>(null);
+  const [isMealGroupMenuVisible, setIsMealGroupMenuVisible] = useState(false);
+  const [isDeleteMealGroupVisible, setIsDeleteMealGroupVisible] = useState(false);
+  const [isDeleteMealGroupLoading, setIsDeleteMealGroupLoading] = useState(false);
+
+  // Meal Group action states
+  const [isMealGroupScaleModalVisible, setIsMealGroupScaleModalVisible] = useState(false);
+  const [isMealGroupScaleLoading, setIsMealGroupScaleLoading] = useState(false);
+  const [isMealGroupActionModalVisible, setIsMealGroupActionModalVisible] = useState(false);
+  const [mealGroupActionMode, setMealGroupActionMode] = useState<'move' | 'copy' | 'split'>('move');
+  const [isMealGroupActionLoading, setIsMealGroupActionLoading] = useState(false);
+  const [isMealGroupCreateMealModalVisible, setIsMealGroupCreateMealModalVisible] = useState(false);
+  const [mealGroupCreateMealInitialFoods, setMealGroupCreateMealInitialFoods] = useState<
+    { food: Food; amount: number }[]
+  >([]);
+  const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
+  const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -221,7 +272,7 @@ export default function FoodScreen() {
     };
   }, [dailyNutrients, nutritionGoal]);
 
-  // Group logs by meal type
+  // ALL logs by meal type — used by action handlers (delete all, move, copy, split, scale, etc.)
   const mealsByType = useMemo(() => {
     const meals: Record<string, (typeof resolvedLogs)[number][]> = {
       breakfast: [],
@@ -240,6 +291,86 @@ export default function FoodScreen() {
     return meals;
   }, [resolvedLogs]);
 
+  // Ungrouped logs only — used for rendering individual FoodItemCards
+  const ungroupedByType = useMemo(() => {
+    const meals: Record<string, (typeof resolvedLogs)[number][]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+      other: [],
+    };
+
+    resolvedLogs.forEach((entry) => {
+      if (entry.log.type && meals[entry.log.type] && !entry.log.groupId) {
+        meals[entry.log.type].push(entry);
+      }
+    });
+
+    return meals;
+  }, [resolvedLogs]);
+
+  // Group logs that belong to a named meal (have a group_id) by meal type
+  type MealGroup = {
+    groupId: string;
+    mealName: string;
+    entries: (typeof resolvedLogs)[number][];
+    totalNutrients: { calories: number; protein: number; carbs: number; fat: number };
+  };
+
+  const mealGroupsByType = useMemo(() => {
+    const groups: Record<string, MealGroup[]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+      other: [],
+    };
+
+    // Collect entries per groupId per mealType
+    const groupMap: Record<string, Record<string, (typeof resolvedLogs)[number][]>> = {
+      breakfast: {},
+      lunch: {},
+      dinner: {},
+      snack: {},
+      other: {},
+    };
+
+    resolvedLogs.forEach((entry) => {
+      const type = entry.log.type;
+      const gid = entry.log.groupId;
+      if (type && gid && groupMap[type]) {
+        if (!groupMap[type][gid]) {
+          groupMap[type][gid] = [];
+        }
+        groupMap[type][gid].push(entry);
+      }
+    });
+
+    // Convert to array of MealGroup with aggregated totals
+    Object.entries(groupMap).forEach(([type, typeGroups]) => {
+      Object.entries(typeGroups).forEach(([groupId, entries]) => {
+        const totalNutrients = entries.reduce(
+          (acc, e) => ({
+            calories: acc.calories + e.nutrients.calories,
+            protein: acc.protein + e.nutrients.protein,
+            carbs: acc.carbs + e.nutrients.carbs,
+            fat: acc.fat + e.nutrients.fat,
+          }),
+          { calories: 0, protein: 0, carbs: 0, fat: 0 }
+        );
+        groups[type].push({
+          groupId,
+          mealName: entries[0]?.log.loggedMealName || entries[0]?.displayName || '',
+          entries,
+          totalNutrients,
+        });
+      });
+    });
+
+    return groups;
+  }, [resolvedLogs]);
+
   // Check if all meals are empty AND no food has ever been tracked
   const hasNoFood = !isScreenLoading && totalCount === 0;
 
@@ -252,6 +383,208 @@ export default function FoodScreen() {
   }) => {
     setSelectedFoodItem(entry);
     setIsFoodMenuVisible(true);
+  };
+
+  const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
+    setSelectedMealGroup(group);
+    setIsMealGroupMenuVisible(true);
+  };
+
+  // Meal Group menu action handlers
+  const handleMealGroupScalePortion = () => {
+    setIsMealGroupMenuVisible(false);
+    setIsMealGroupScaleModalVisible(true);
+  };
+
+  const handleConfirmMealGroupScalePortion = async (newTotalGrams: number) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+    if (newTotalGrams < 1) {
+      showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
+      return;
+    }
+
+    const currentTotal = selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
+    if (currentTotal <= 0) {
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      setIsMealGroupScaleModalVisible(false);
+      setSelectedMealGroup(null);
+      return;
+    }
+
+    setIsMealGroupScaleLoading(true);
+    await flushLoadingPaint();
+    try {
+      await scaleMealNutritionLogsToTotalGrams(
+        selectedMealGroup.entries.map((e) => ({ log: e.log, gramWeight: e.gramWeight })),
+        newTotalGrams
+      );
+      showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
+      await refresh();
+      setIsMealGroupScaleModalVisible(false);
+      setSelectedMealGroup(null);
+    } catch (error) {
+      console.error('Error scaling meal group portions:', error);
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+    } finally {
+      setIsMealGroupScaleLoading(false);
+    }
+  };
+
+  const handleMealGroupMove = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('move');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleMealGroupCopy = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('copy');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleMealGroupSplit = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('split');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleConfirmMealGroupAction = async (
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage?: number
+  ) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+    setIsMealGroupActionLoading(true);
+    await flushLoadingPaint();
+    try {
+      const logs = selectedMealGroup.entries.map((e) => e.log);
+      if (mealGroupActionMode === 'move') {
+        await NutritionService.moveNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.moveSuccess'));
+      } else if (mealGroupActionMode === 'copy') {
+        await NutritionService.copyNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.copySuccess'));
+      } else if (mealGroupActionMode === 'split' && splitPercentage) {
+        await NutritionService.splitNutritionLogsToDate(
+          logs,
+          targetDate,
+          targetMealType,
+          splitPercentage
+        );
+        showSnackbar('success', t('food.actions.splitSuccess'));
+      }
+      await refresh();
+    } catch (error) {
+      console.error('Error performing meal group action:', error);
+      const errorKey = getMealActionErrorKey(mealGroupActionMode);
+      showSnackbar('error', t(errorKey));
+    } finally {
+      setIsMealGroupActionLoading(false);
+      setIsMealGroupActionModalVisible(false);
+      setSelectedMealGroup(null);
+    }
+  };
+
+  const handleMealGroupCreateMeal = () => {
+    setIsMealGroupMenuVisible(false);
+    if (!selectedMealGroup) {
+      return;
+    }
+
+    const items = selectedMealGroup.entries
+      .map((entry) => {
+        if (!entry.food) {
+          return null;
+        }
+        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+      })
+      .filter(Boolean) as { food: Food; amount: number }[];
+
+    if (items.length === 0) {
+      showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
+      setSelectedMealGroup(null);
+      return;
+    }
+
+    setMealGroupCreateMealInitialFoods(items);
+    setIsMealGroupCreateMealModalVisible(true);
+  };
+
+  const handleMealGroupGetInsights = () => {
+    setIsMealGroupMenuVisible(false);
+    setIsMealGroupInsightsVisible(true);
+  };
+
+  const handleSubmitMealGroupInsights = async (userRemarks: string) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+
+    setIsMealGroupInsightsLoading(true);
+    await flushLoadingPaint();
+    try {
+      const aiConfig = await AiService.getAiConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('food.actions.getMealInsightsError'));
+        return;
+      }
+
+      const foods = selectedMealGroup.entries.map((e) => ({
+        name: e.displayName,
+        gramWeight: e.gramWeight,
+      }));
+      const totals = selectedMealGroup.entries.reduce(
+        (acc, e) => ({
+          calories: acc.calories + e.nutrients.calories,
+          protein: acc.protein + e.nutrients.protein,
+          carbs: acc.carbs + e.nutrients.carbs,
+          fat: acc.fat + e.nutrients.fat,
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      );
+
+      // Get the meal type from the first entry
+      const mealType = selectedMealGroup.entries[0]?.log.type || 'other';
+
+      const response = await getMealCritique(aiConfig, mealType, foods, totals, userRemarks);
+
+      if (!response) {
+        showSnackbar('error', t('food.actions.getMealInsightsError'));
+        return;
+      }
+
+      await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
+      await SettingsService.setCoachConversationContext('nutrition');
+      setIsMealGroupInsightsVisible(false);
+      setSelectedMealGroup(null);
+      openCoach();
+    } catch (error) {
+      console.error('Error getting meal group insights:', error);
+      showSnackbar('error', t('food.actions.getMealInsightsError'));
+    } finally {
+      setIsMealGroupInsightsLoading(false);
+    }
+  };
+
+  const handleConfirmDeleteMealGroup = async () => {
+    if (!selectedMealGroup) {
+      return;
+    }
+    setIsDeleteMealGroupLoading(true);
+    try {
+      await NutritionService.deleteNutritionLogsBatch(selectedMealGroup.entries.map((e) => e.log));
+      await refresh();
+    } catch {
+      showSnackbar('error', t('errors.somethingWentWrong'));
+    } finally {
+      setIsDeleteMealGroupLoading(false);
+      setIsDeleteMealGroupVisible(false);
+      setSelectedMealGroup(null);
+    }
   };
 
   const handleEditFood = () => {
@@ -534,7 +867,7 @@ export default function FoodScreen() {
     }
 
     const mealFoods = mealsByType[selectedMealForMenu] || [];
-    if (!mealHasDuplicateFoodsByFoodId(mealFoods)) {
+    if (!mealHasUngroupedDuplicateFoods(mealFoods)) {
       showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
       setSelectedMealForMenu(null);
       return;
@@ -544,16 +877,20 @@ export default function FoodScreen() {
   };
 
   const handleConfirmMergeDuplicates = async () => {
-    if (!selectedMealForMenu) {
+    // Determine if we're merging for a meal type or a meal group
+    const entries = selectedMealForMenu
+      ? mealsByType[selectedMealForMenu] || []
+      : selectedMealGroup?.entries || [];
+
+    if (entries.length === 0) {
       return;
     }
 
     setIsMergeDuplicatesLoading(true);
     await flushLoadingPaint();
     try {
-      const mealFoods = mealsByType[selectedMealForMenu] || [];
-      const grouped = new Map<string, typeof mealFoods>();
-      for (const entry of mealFoods) {
+      const grouped = new Map<string, typeof entries>();
+      for (const entry of entries) {
         if (!entry.log.foodId) {
           continue;
         }
@@ -563,8 +900,8 @@ export default function FoodScreen() {
         grouped.set(entry.log.foodId, existing);
       }
 
-      const toUpdate: { log: (typeof mealFoods)[number]['log']; newAmount: number }[] = [];
-      const toDelete: (typeof mealFoods)[number]['log'][] = [];
+      const toUpdate: { log: (typeof entries)[number]['log']; newAmount: number }[] = [];
+      const toDelete: (typeof entries)[number]['log'][] = [];
 
       for (const group of grouped.values()) {
         if (group.length <= 1) {
@@ -587,7 +924,13 @@ export default function FoodScreen() {
     } finally {
       setIsMergeDuplicatesLoading(false);
       setIsMergeDuplicatesVisible(false);
-      setSelectedMealForMenu(null);
+      if (selectedMealForMenu) {
+        setSelectedMealForMenu(null);
+      }
+
+      if (selectedMealGroup) {
+        setSelectedMealGroup(null);
+      }
     }
   };
 
@@ -691,7 +1034,32 @@ export default function FoodScreen() {
 
   const showMergeDuplicatesInMealMenu =
     selectedMealForMenu != null &&
-    mealHasDuplicateFoodsByFoodId(mealsByType[selectedMealForMenu] || []);
+    mealHasUngroupedDuplicateFoods(mealsByType[selectedMealForMenu] || []);
+
+  // Meal group menu computed values
+  const selectedMealGroupTotalGrams = useMemo(() => {
+    if (!selectedMealGroup) {
+      return 0;
+    }
+    return selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
+  }, [selectedMealGroup]);
+
+  const selectedMealGroupNutrients = useMemo(() => {
+    if (!selectedMealGroup) {
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+    }
+
+    return selectedMealGroup.entries.reduce(
+      (acc, e) => ({
+        calories: acc.calories + e.nutrients.calories,
+        protein: acc.protein + e.nutrients.protein,
+        carbs: acc.carbs + e.nutrients.carbs,
+        fat: acc.fat + e.nutrients.fat,
+        fiber: acc.fiber + e.nutrients.fiber,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+  }, [selectedMealGroup]);
 
   const selectedMealTotalGrams = useMemo(() => {
     if (!selectedMealForMenu) {
@@ -976,7 +1344,7 @@ export default function FoodScreen() {
                     totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('breakfast')}
                     menuButton={
-                      mealsByType.breakfast.length > 0 ? (
+                      mealsByType.breakfast.length > 0 || mealGroupsByType.breakfast.length > 0 ? (
                         <MenuButton
                           onPress={() => handleMealMenuPress('breakfast')}
                           size="sm"
@@ -985,7 +1353,19 @@ export default function FoodScreen() {
                       ) : undefined
                     }
                   >
-                    {mealsByType.breakfast.map((entry) => (
+                    {mealGroupsByType.breakfast.map((group) => (
+                      <MealGroupCard
+                        key={group.groupId}
+                        name={group.mealName}
+                        calories={group.totalNutrients.calories}
+                        protein={group.totalNutrients.protein}
+                        carbs={group.totalNutrients.carbs}
+                        fat={group.totalNutrients.fat}
+                        mealType="breakfast"
+                        onMorePress={() => handleMealGroupMenuPress(group)}
+                      />
+                    ))}
+                    {ungroupedByType.breakfast.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1011,7 +1391,7 @@ export default function FoodScreen() {
                     totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('lunch')}
                     menuButton={
-                      mealsByType.lunch.length > 0 ? (
+                      mealsByType.lunch.length > 0 || mealGroupsByType.lunch.length > 0 ? (
                         <MenuButton
                           onPress={() => handleMealMenuPress('lunch')}
                           size="sm"
@@ -1020,7 +1400,19 @@ export default function FoodScreen() {
                       ) : undefined
                     }
                   >
-                    {mealsByType.lunch.map((entry) => (
+                    {mealGroupsByType.lunch.map((group) => (
+                      <MealGroupCard
+                        key={group.groupId}
+                        name={group.mealName}
+                        calories={group.totalNutrients.calories}
+                        protein={group.totalNutrients.protein}
+                        carbs={group.totalNutrients.carbs}
+                        fat={group.totalNutrients.fat}
+                        mealType="lunch"
+                        onMorePress={() => handleMealGroupMenuPress(group)}
+                      />
+                    ))}
+                    {ungroupedByType.lunch.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1046,7 +1438,7 @@ export default function FoodScreen() {
                     totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('dinner')}
                     menuButton={
-                      mealsByType.dinner.length > 0 ? (
+                      mealsByType.dinner.length > 0 || mealGroupsByType.dinner.length > 0 ? (
                         <MenuButton
                           onPress={() => handleMealMenuPress('dinner')}
                           size="sm"
@@ -1055,7 +1447,19 @@ export default function FoodScreen() {
                       ) : undefined
                     }
                   >
-                    {mealsByType.dinner.map((entry) => (
+                    {mealGroupsByType.dinner.map((group) => (
+                      <MealGroupCard
+                        key={group.groupId}
+                        name={group.mealName}
+                        calories={group.totalNutrients.calories}
+                        protein={group.totalNutrients.protein}
+                        carbs={group.totalNutrients.carbs}
+                        fat={group.totalNutrients.fat}
+                        mealType="dinner"
+                        onMorePress={() => handleMealGroupMenuPress(group)}
+                      />
+                    ))}
+                    {ungroupedByType.dinner.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1081,7 +1485,7 @@ export default function FoodScreen() {
                     totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('snack')}
                     menuButton={
-                      mealsByType.snack.length > 0 ? (
+                      mealsByType.snack.length > 0 || mealGroupsByType.snack.length > 0 ? (
                         <MenuButton
                           onPress={() => handleMealMenuPress('snack')}
                           size="sm"
@@ -1090,7 +1494,19 @@ export default function FoodScreen() {
                       ) : undefined
                     }
                   >
-                    {mealsByType.snack.map((entry) => (
+                    {mealGroupsByType.snack.map((group) => (
+                      <MealGroupCard
+                        key={group.groupId}
+                        name={group.mealName}
+                        calories={group.totalNutrients.calories}
+                        protein={group.totalNutrients.protein}
+                        carbs={group.totalNutrients.carbs}
+                        fat={group.totalNutrients.fat}
+                        mealType="snack"
+                        onMorePress={() => handleMealGroupMenuPress(group)}
+                      />
+                    ))}
+                    {ungroupedByType.snack.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1116,7 +1532,7 @@ export default function FoodScreen() {
                     totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('other')}
                     menuButton={
-                      mealsByType.other.length > 0 ? (
+                      mealsByType.other.length > 0 || mealGroupsByType.other.length > 0 ? (
                         <MenuButton
                           onPress={() => handleMealMenuPress('other')}
                           size="sm"
@@ -1125,7 +1541,19 @@ export default function FoodScreen() {
                       ) : undefined
                     }
                   >
-                    {mealsByType.other.map((entry) => (
+                    {mealGroupsByType.other.map((group) => (
+                      <MealGroupCard
+                        key={group.groupId}
+                        name={group.mealName}
+                        calories={group.totalNutrients.calories}
+                        protein={group.totalNutrients.protein}
+                        carbs={group.totalNutrients.carbs}
+                        fat={group.totalNutrients.fat}
+                        mealType="other"
+                        onMorePress={() => handleMealGroupMenuPress(group)}
+                      />
+                    ))}
+                    {ungroupedByType.other.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1315,17 +1743,29 @@ export default function FoodScreen() {
 
       {/* Merge Duplicates Confirmation Modal */}
       <ConfirmationModal
-        visible={isMergeDuplicatesVisible ? !!selectedMealForMenu : false}
+        visible={
+          isMergeDuplicatesVisible
+            ? selectedMealForMenu !== null || selectedMealGroup !== null
+            : false
+        }
         onClose={() => {
           setIsMergeDuplicatesVisible(false);
-          setSelectedMealForMenu(null);
+          if (selectedMealForMenu !== null) {
+            setSelectedMealForMenu(null);
+          }
+
+          if (selectedMealGroup !== null) {
+            setSelectedMealGroup(null);
+          }
         }}
         onConfirm={handleConfirmMergeDuplicates}
         title={t('food.actions.mergeDuplicatesConfirmTitle')}
         message={t('food.actions.mergeDuplicatesConfirmMessage', {
-          mealName: selectedMealForMenu
-            ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
-            : '',
+          mealName: selectedMealGroup
+            ? selectedMealGroup.mealName
+            : selectedMealForMenu
+              ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
+              : '',
         })}
         confirmLabel={t('food.actions.mergeDuplicatesConfirm')}
         cancelLabel={t('common.cancel')}
@@ -1441,6 +1881,155 @@ export default function FoodScreen() {
           }
         }}
         isAiEnabled={isAiConfigured}
+      />
+
+      {/* Meal Group Options Menu */}
+      <BottomPopUpMenu
+        visible={isMealGroupMenuVisible}
+        onClose={() => {
+          setIsMealGroupMenuVisible(false);
+          // Note: We don't clear selectedMealGroup here because the action handlers
+          // need it to open their respective modals. It's cleared in the modals' onClose/onConfirm.
+        }}
+        title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
+        subtitle={t('food.actions.mealMenuSubtitle')}
+        items={[
+          ...(isAiConfigured
+            ? [
+                {
+                  icon: Sparkles,
+                  iconColor: theme.colors.accent.primary,
+                  iconBgColor: theme.colors.accent.primary10,
+                  title: t('food.actions.getMealInsights'),
+                  description: t('food.actions.getMealInsightsDesc'),
+                  onPress: handleMealGroupGetInsights,
+                },
+              ]
+            : []),
+          {
+            icon: UtensilsCrossed,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.createMeal'),
+            description: t('food.actions.createMealDesc'),
+            onPress: handleMealGroupCreateMeal,
+          },
+          {
+            icon: Scale,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.scaleMealPortion'),
+            description: t('food.actions.scaleMealPortionDesc'),
+            onPress: handleMealGroupScalePortion,
+          },
+          {
+            icon: Copy,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.copyToAnotherDay'),
+            description: t('food.actions.copyToAnotherDayDesc'),
+            onPress: handleMealGroupCopy,
+          },
+          {
+            icon: ArrowRight,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.moveToAnotherDay'),
+            description: t('food.actions.moveToAnotherDayDesc'),
+            onPress: handleMealGroupMove,
+          },
+          {
+            icon: Scissors,
+            iconColor: theme.colors.status.warning,
+            iconBgColor: theme.colors.status.warning10,
+            title: t('food.actions.splitMeal'),
+            description: t('food.actions.splitMealDesc'),
+            onPress: handleMealGroupSplit,
+          },
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('food.actions.deleteAll'),
+            description: t('food.actions.deleteAllDesc'),
+            titleColor: theme.colors.status.error,
+            onPress: () => {
+              setIsMealGroupMenuVisible(false);
+              setIsDeleteMealGroupVisible(true);
+            },
+          },
+        ]}
+      />
+
+      {/* Meal Group Scale Portion Modal */}
+      <ScaleMealPortionModal
+        visible={isMealGroupScaleModalVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupScaleModalVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        onConfirm={handleConfirmMealGroupScalePortion}
+        initialTotalGrams={selectedMealGroupTotalGrams}
+        mealNutrients={selectedMealGroupNutrients}
+        isLoading={isMealGroupScaleLoading}
+      />
+
+      {/* Meal Group Move/Copy/Split Modal */}
+      <MoveCopyMealModal
+        visible={isMealGroupActionModalVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupActionModalVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        onConfirm={handleConfirmMealGroupAction}
+        mode={mealGroupActionMode}
+        sourceMealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+        sourceDate={selectedDate}
+        isLoading={isMealGroupActionLoading}
+      />
+
+      {/* Meal Group Create Meal Modal */}
+      <CreateMealModal
+        visible={isMealGroupCreateMealModalVisible}
+        onClose={() => {
+          setIsMealGroupCreateMealModalVisible(false);
+          setMealGroupCreateMealInitialFoods([]);
+          setSelectedMealGroup(null);
+        }}
+        onSave={() => {
+          refresh();
+          setIsMealGroupCreateMealModalVisible(false);
+          setMealGroupCreateMealInitialFoods([]);
+          setSelectedMealGroup(null);
+        }}
+        initialFoods={mealGroupCreateMealInitialFoods}
+      />
+
+      {/* Meal Group Insights Modal */}
+      <MealInsightsModal
+        visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupInsightsVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+        isLoading={isMealGroupInsightsLoading}
+        onSubmit={handleSubmitMealGroupInsights}
+      />
+
+      {/* Delete Meal Group Confirmation */}
+      <ConfirmationModal
+        visible={isDeleteMealGroupVisible}
+        onClose={() => {
+          setIsDeleteMealGroupVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        onConfirm={handleConfirmDeleteMealGroup}
+        title={t('food.mealGroup.deleteGroup')}
+        message={t('food.mealGroup.deleteGroupWarning')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
+        isLoading={isDeleteMealGroupLoading}
       />
     </MasterLayout>
   );

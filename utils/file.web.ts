@@ -230,13 +230,6 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
   }
 }
 
-export async function copyBundledExerciseImageToDocument(
-  assetSource: number,
-  destFilename: string
-): Promise<string> {
-  return '#';
-}
-
 export function shouldSeedDevData() {
   // Check if the page has a query param demoModeEnabled=true
   if (typeof window !== 'undefined') {

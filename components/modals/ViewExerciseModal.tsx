@@ -17,11 +17,11 @@ import type ExerciseModel from '@/database/models/Exercise';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -175,9 +175,7 @@ export default function ViewExerciseModal({
     loadStatsAndWorkouts(exercise);
   }, [exercise, exercise?.id, loadStatsAndWorkouts]);
 
-  const backgroundImage = exercise?.imageUrl?.trim()
-    ? { uri: exercise.imageUrl }
-    : FALLBACK_EXERCISE_IMAGE;
+  const backgroundImage = useExerciseImageSource(exercise?.imageUrl);
 
   const handleWatchTechnique = () => {
     const name = encodeURIComponent(exercise?.name ?? '');

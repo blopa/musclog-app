@@ -53,6 +53,7 @@ import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
+import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
@@ -220,6 +221,8 @@ export default function WorkoutSessionScreen() {
 
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
+
+  const currentExerciseImage = useExerciseImageSource(currentSetData?.exercise.imageUrl);
 
   // Update notification with total time and current exercise
   useEffect(() => {
@@ -820,16 +823,13 @@ export default function WorkoutSessionScreen() {
       </View>
     );
   } else if (currentSetData) {
-    const exerciseImage = currentSetData.exercise.imageUrl?.trim()
-      ? { uri: currentSetData.exercise.imageUrl }
-      : require('../../assets/exercises/fallback.png');
     const exerciseCategory = getExerciseCategory();
     const previousSet = currentSetData.previousSet;
 
     content = (
       <View className="flex-1">
         <ImageBackground
-          source={exerciseImage}
+          source={currentExerciseImage}
           className="absolute inset-0"
           style={{ height: theme.size['3xl'] * 10 }}
           resizeMode="cover"

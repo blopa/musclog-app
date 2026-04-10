@@ -55,6 +55,7 @@ import {
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -96,6 +97,7 @@ export interface ExtendedIMessage extends IMessage {
     messageId: string;
     meals: {
       mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+      mealName?: string;
       calories: number;
       protein: number;
       carbs: number;
@@ -154,6 +156,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
             const ingredients: TrackMealIngredient[] = m.ingredients ?? [];
             return {
               mealType: m.mealType,
+              mealName: m.mealName,
               calories: Math.round(ingredients.reduce((s, i) => s + i.kcal, 0)),
               protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
               carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),
@@ -216,7 +219,8 @@ export type UseChatMessagesResult = {
     ingredients: TrackMealIngredient[],
     date: Date,
     logMealType: MealType,
-    portionGrams: number
+    portionGrams: number,
+    mealName?: string
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
@@ -242,6 +246,9 @@ export function useChatMessages(
   const rawMessagesRef = useRef<ChatMessage[]>([]);
   // Ref mirror for pendingCoachMessage to avoid stale closure in sendMessage
   const pendingCoachMessageRef = useRef<ExtendedIMessage | null>(null);
+  // Rate limiting: track last send timestamp to prevent spam
+  const lastSendTimeRef = useRef<number>(0);
+  const MIN_SEND_INTERVAL_MS = 1000; // Minimum 1 second between messages
 
   // Initial load and reload when context changes
   useEffect(() => {
@@ -408,6 +415,18 @@ export function useChatMessages(
       if ((!text.trim() && !base64Image) || isSending) {
         return;
       }
+
+      // Rate limiting: prevent rapid-fire requests
+      const now = Date.now();
+      const timeSinceLastSend = now - lastSendTimeRef.current;
+      if (timeSinceLastSend < MIN_SEND_INTERVAL_MS) {
+        console.warn(
+          `[useChatMessages] Rate limit: ${MIN_SEND_INTERVAL_MS - timeSinceLastSend}ms remaining`
+        );
+        setEphemeralErrorMessage(t('coach.errors.rateLimited'));
+        return;
+      }
+      lastSendTimeRef.current = now;
 
       setEphemeralErrorMessage(null); // Clear any previous error when user sends again
       setEphemeralCreditsError(false);
@@ -817,7 +836,8 @@ export function useChatMessages(
       ingredients: TrackMealIngredient[],
       date: Date,
       logMealType: MealType,
-      portionGrams: number
+      portionGrams: number,
+      mealName?: string
     ) => {
       const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
       const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
@@ -839,7 +859,11 @@ export function useChatMessages(
         };
       });
 
-      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType);
+      const groupId = generateUUID();
+      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
+        groupId,
+        loggedMealName: mealName,
+      });
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

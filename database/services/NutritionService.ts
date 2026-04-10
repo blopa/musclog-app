@@ -124,7 +124,9 @@ export class NutritionService {
     mealType: MealType,
     amount: number,
     portionId?: string,
-    externalId?: string
+    externalId?: string,
+    groupId?: string,
+    loggedMealName?: string
   ): Promise<NutritionLog> {
     const dateTimestamp = localDayStartMs(date);
 
@@ -155,6 +157,8 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.groupId = groupId;
+        record.loggedMealName = loggedMealName;
         record.createdAt = now;
         record.updatedAt = now;
       });
@@ -539,6 +543,8 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.groupId = log.groupId;
+            record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
             record.updatedAt = now;
           })
@@ -608,6 +614,8 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.groupId = log.groupId;
+            record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
             record.updatedAt = now;
           })
@@ -918,13 +926,23 @@ export class NutritionService {
     },
     date: Date,
     mealType: MealType,
-    amount: number = 100 // Default to 100g for custom meals
+    amount: number = 100, // Default to 100g for custom meals
+    options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog> {
     const dateTimestamp = localDayStartMs(date);
 
     // If foodId is provided, log directly using the existing food
     if (mealData.foodId) {
-      return await NutritionService.logFood(mealData.foodId, date, mealType, amount);
+      return await NutritionService.logFood(
+        mealData.foodId,
+        date,
+        mealType,
+        amount,
+        undefined,
+        undefined,
+        options?.groupId,
+        options?.loggedMealName
+      );
     }
 
     const log = await database.write(async () => {
@@ -980,6 +998,8 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.groupId = options?.groupId;
+        record.loggedMealName = options?.loggedMealName;
         record.createdAt = now;
         record.updatedAt = now;
       });
@@ -1066,7 +1086,8 @@ export class NutritionService {
       foodId?: string;
     }[],
     date: Date,
-    mealType: MealType
+    mealType: MealType,
+    options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
     const now = Date.now();
@@ -1101,6 +1122,8 @@ export class NutritionService {
               record.loggedFatRaw = encrypted.loggedFat;
               record.loggedFiberRaw = encrypted.loggedFiber;
               record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+              record.groupId = options?.groupId;
+              record.loggedMealName = options?.loggedMealName;
               record.createdAt = now;
               record.updatedAt = now;
             });
@@ -1156,6 +1179,8 @@ export class NutritionService {
           record.loggedFatRaw = encrypted.loggedFat;
           record.loggedFiberRaw = encrypted.loggedFiber;
           record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          record.groupId = options?.groupId;
+          record.loggedMealName = options?.loggedMealName;
           record.createdAt = now;
           record.updatedAt = now;
         });

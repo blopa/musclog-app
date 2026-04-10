@@ -139,6 +139,23 @@ export function useExercises({
       const isListWithFilters = mode === 'list' && !!(muscleGroup || searchTerm?.trim());
       if (!isListWithFilters) {
         exercisesList = exercisesList.sort((a, b) => {
+          // First sort by source (app exercises first)
+          const aSource = a.source ?? 'user';
+          const bSource = b.source ?? 'user';
+          const sourceCompare = aSource.localeCompare(bSource);
+          if (sourceCompare !== 0) {
+            return sourceCompare;
+          }
+
+          // For app exercises, sort by order_index (JSON order)
+          if (a.source === 'app' && b.source === 'app') {
+            const orderCompare = (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+            if (orderCompare !== 0) {
+              return orderCompare;
+            }
+          }
+
+          // Then sort by the specified field
           let aValue: any = a[sortBy as keyof Exercise];
           let bValue: any = b[sortBy as keyof Exercise];
 

@@ -410,11 +410,20 @@ export default function PastWorkoutDetailModal({
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, externalId, reload } =
-    usePastWorkoutDetail({
-      visible,
-      workoutId,
-    });
+  const {
+    workout,
+    isLoading,
+    isMenuVisible,
+    setIsMenuVisible,
+    rawSets,
+    logExercises,
+    exercises,
+    externalId,
+    reload,
+  } = usePastWorkoutDetail({
+    visible,
+    workoutId,
+  });
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
   const { shareText } = useNativeShareText();
@@ -654,6 +663,9 @@ export default function PastWorkoutDetailModal({
           onSave={async (data) => {
             try {
               await WorkoutService.updateWorkoutMetadata(workoutId, data);
+              if (data.reorderedExercises && data.reorderedExercises.length > 0) {
+                await WorkoutService.reorderWorkoutLogExercises(workoutId, data.reorderedExercises);
+              }
               await reload();
             } catch (err) {
               console.error('Failed to save workout metadata:', err);
@@ -662,6 +674,9 @@ export default function PastWorkoutDetailModal({
           }}
           initialStartedAt={workout.date.getTime()}
           initialCompletedAt={workout.date.getTime() + workout.totalTime * 60000}
+          workoutLogId={workoutId}
+          logExercises={logExercises}
+          exercises={exercises}
         />
       ) : null}
       {editingExerciseId ? (

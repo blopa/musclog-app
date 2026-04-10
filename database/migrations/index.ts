@@ -87,5 +87,43 @@ export const migrations = schemaMigrations({
         }),
       ],
     },
+
+    // Version 6: Add group_id and logged_meal_name to nutrition_logs.
+    // Allows multiple nutrition log rows (e.g. AI meal ingredients or saved meal foods)
+    // to be grouped and displayed as a single meal entry in the food diary.
+    {
+      toVersion: 6,
+      steps: [
+        addColumns({
+          table: 'nutrition_logs',
+          columns: [
+            { name: 'group_id', type: 'string', isOptional: true },
+            { name: 'logged_meal_name', type: 'string', isOptional: true },
+          ],
+        }),
+      ],
+    },
+
+    // Version 7: Replace locally-copied exercise image file:// URIs with GitHub
+    // Also add order_index column to preserve JSON file ordering for app exercises
+    {
+      toVersion: 7,
+      steps: [
+        // Add order_index column to exercises table
+        addColumns({
+          table: 'exercises',
+          columns: [{ name: 'order_index', type: 'number', isOptional: true }],
+        }),
+        // Old DB stores filenames as bare numbers: "1.png", "2.png", etc.
+        // New URL format: .../refs/tags/2.5.15/assets/exercises/exercise1.png
+        // SUBSTR(..., INSTR(..., '/exercises/') + 11) extracts "1.png"; prepend "exercise".
+        unsafeExecuteSql(
+          "UPDATE exercises SET image_url = 'https://raw.githubusercontent.com/blopa/musclog-app/refs/tags/2.5.15/assets/exercises/exercise' || SUBSTR(image_url, INSTR(image_url, '/exercises/') + 11) WHERE source = 'app' AND image_url LIKE 'file://%/exercises/%.png' AND image_url NOT LIKE '%/exercises/fallback.png';"
+        ),
+        unsafeExecuteSql(
+          "UPDATE exercises SET image_url = NULL WHERE source = 'app' AND image_url LIKE '%/exercises/fallback.png';"
+        ),
+      ],
+    },
   ],
 });

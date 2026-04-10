@@ -1,7 +1,7 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
-import { SettingsService } from '@/database/services';
+import { NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
@@ -12,12 +12,12 @@ import {
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,
-  getEstimateNutritionFromPhotoPrompt,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
+  getMealAnalysisPrompt,
   getMealCritiquePrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
@@ -29,10 +29,11 @@ import {
   getRecentWorkoutsInsightsPrompt,
   getRetrospectiveNutritionPrompt,
   getTrackMealFunctions,
-  getTrackMealPrompt,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
+import { wrapUserContent } from './promptSanitizer';
+import { captureException } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -176,6 +177,7 @@ export type TrackMealIngredient = {
 
 export type TrackedMeal = {
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealName?: string;
   ingredients: TrackMealIngredient[];
 };
 
@@ -206,7 +208,7 @@ export type NutritionEntry = {
   sugar?: number;
 };
 
-export const WORDS_SOFT_LIMIT = 100;
+const LENGTH_SOFT_LIMIT = 50;
 
 /**
  * Merged System Prompt:
@@ -226,7 +228,8 @@ const baseSchemaProperties = {
   },
   sumMsg: {
     type: 'string',
-    description: 'A brief 1-2 sentence summary of the main advice given.',
+    description:
+      'A shortened version of msg4User trimmed to 1-2 sentences. Keep the same first-person voice and key points — write it as you would say it, not as a description of what you said.',
   },
 };
 
@@ -234,7 +237,7 @@ const sumUserMsgProperty = {
   sumUserMsg: {
     type: 'string',
     description:
-      "A brief 1-2 sentence summary of the user's message, capturing their intent. Used to compress long messages in future conversation history.",
+      "A shortened version of the user's message trimmed to 1 sentence. Keep their voice and key intent — write it as they would say it, not as a description of what they said.",
   },
 };
 
@@ -248,18 +251,33 @@ const rememberMeProperty = {
 function buildResponseSchema(includeUserSummary: boolean) {
   const properties = {
     ...baseSchemaProperties,
+    ...(includeUserSummary ? sumUserMsgProperty : {}),
     ...rememberMeProperty,
   };
-
-  if (includeUserSummary) {
-    Object.assign(properties, sumUserMsgProperty);
-  }
 
   return {
     type: 'object',
     properties,
     required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
   };
+}
+
+/**
+ * Normalizes a history array so that no two consecutive entries share the same role.
+ * Consecutive same-role messages are merged (content joined with newline).
+ * This is required by Gemini (strict alternation) and produces cleaner context for OpenAI too.
+ */
+function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
+  const result: ChatHistoryEntry[] = [];
+  for (const entry of history) {
+    const prev = result[result.length - 1];
+    if (prev && prev.role === entry.role) {
+      prev.content = prev.content + '\n' + entry.content;
+    } else {
+      result.push({ ...entry });
+    }
+  }
+  return result;
 }
 
 // --- Helper Functions ---
@@ -288,7 +306,8 @@ function parseCoachResponse(raw: string): CoachResponse {
 }
 
 function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): Content[] {
-  const historyContents: Content[] = history.map((entry) => ({
+  const normalized = normalizeHistory(history);
+  const historyContents: Content[] = normalized.map((entry) => ({
     parts: [{ text: entry.content } as Part],
     role: entry.role === 'coach' ? 'model' : 'user',
   }));
@@ -338,7 +357,7 @@ async function sendViaGemini(
 ): Promise<CoachResponse> {
   const systemPrompt = await getSystemPrompt(config.language, context);
   const systemParts: Part[] = [{ text: systemPrompt }];
-  const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
+  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
 
   const genModel = await configureBasicGenAI(
     {
@@ -365,12 +384,13 @@ async function sendViaOpenAI(
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
   const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
-  const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
+  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
+  const normalized = normalizeHistory(history);
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
-    ...history.map((entry) => ({
+    ...normalized.map((entry) => ({
       role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
       content: entry.content,
     })),
@@ -397,14 +417,25 @@ async function sendViaOpenAI(
     return parseCoachResponse(raw);
   } catch (error: any) {
     console.error('[coachAI] sendViaOpenAI error:', error);
+
+    // Log detailed error for debugging but don't expose internals to user
+    captureException(error, {
+      data: { context: 'coachAI.sendViaOpenAI', provider: 'openai' },
+    });
+
     if (isAiCreditsError(error)) {
-      throw new AiCreditsError(error?.message ?? 'OpenAI quota exceeded');
+      throw new AiCreditsError(
+        // TODO: use i18n here
+        'AI service quota exceeded. Please check your API key or try again later.'
+      );
     }
-    // Return a friendly error message if the API call fails (e.g. invalid key, quota exceeded)
-    const errorMsg = error?.message || 'Error communicating with OpenAI';
+
+    // Return a user-friendly error message without exposing internal details
     return {
-      msg4User: `Error: ${errorMsg}`,
-      sumMsg: 'OpenAI error',
+      // TODO: use i18n here
+      msg4User: 'Sorry, I had trouble processing that request. Please try again in a moment.',
+      // TODO: use i18n here
+      sumMsg: 'Error processing request',
     };
   }
 }
@@ -418,6 +449,8 @@ async function generateText(
   systemPrompt: string,
   userMessage: string = INSIGHTS_USER_MESSAGE
 ): Promise<string> {
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
@@ -429,7 +462,7 @@ async function generateText(
       [{ text: promptWithLang } as Part]
     );
 
-    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     return raw?.trim() ?? '';
@@ -440,7 +473,7 @@ async function generateText(
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
-      { role: 'user', content: userMessage },
+      { role: 'user', content: sanitizedUserMessage },
     ],
   });
 
@@ -458,6 +491,8 @@ async function generateTextWithHistory(
   recentConversation: ChatHistoryEntry[],
   finalUserMessage: string
 ): Promise<string> {
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -466,7 +501,7 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const contents = buildGeminiContents(recentConversation, finalUserMessage);
+    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     return raw?.trim() ?? '';
@@ -482,7 +517,7 @@ async function generateTextWithHistory(
     messages: [
       { role: 'system', content: systemPrompt },
       ...historyMessages,
-      { role: 'user', content: finalUserMessage },
+      { role: 'user', content: sanitizedFinalUserMessage },
     ],
   });
 
@@ -497,6 +532,7 @@ function getSchemaFromFunctionDeclaration(fn: {
   if (!p || typeof p !== 'object') {
     return { type: 'object', properties: {}, required: [] };
   }
+
   return {
     type: p.type ?? 'object',
     properties: p.properties ?? {},
@@ -511,6 +547,9 @@ async function generateStructured<T>(
   schema: object,
   schemaName: string = 'response'
 ): Promise<T | null> {
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
   if (config.provider === 'gemini') {
@@ -525,7 +564,7 @@ async function generateStructured<T>(
       },
       [{ text: promptWithLang } as Part]
     );
-    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     if (!raw?.trim()) {
@@ -544,7 +583,7 @@ async function generateStructured<T>(
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
-      { role: 'user', content: userMessage },
+      { role: 'user', content: sanitizedUserMessage },
     ],
     response_format: {
       type: 'json_schema',
@@ -576,9 +615,13 @@ async function generateWithImageStructured<T>(
   schemaName: string = 'response',
   userMessageSuffix?: string
 ): Promise<T | null> {
+  // Wrap user message suffix with delimiters to prevent prompt injection
+  const sanitizedSuffix = userMessageSuffix?.trim()
+    ? wrapUserContent(userMessageSuffix.trim())
+    : '';
   const userText =
     'Analyze this image and return the structured data.' +
-    (userMessageSuffix?.trim() ? `\n\n${userMessageSuffix.trim()}` : '');
+    (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
@@ -660,7 +703,7 @@ export async function trackMeal(
   try {
     const lang = config.language ?? 'en-US';
     const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
-    const systemPrompt = await getTrackMealPrompt(lang, includeFoundationFoods);
+    const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
@@ -697,11 +740,14 @@ export async function sendCoachMessage(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
+  // Wrap user message with delimiters to prevent prompt injection attacks
+  const sanitizedMessage = wrapUserContent(userMessage);
+
   if (config.provider === 'gemini') {
-    return sendViaGemini(config, history, userMessage, context);
+    return sendViaGemini(config, history, sanitizedMessage, context);
   }
 
-  return sendViaOpenAI(config, history, userMessage, context);
+  return sendViaOpenAI(config, history, sanitizedMessage, context);
 }
 
 /**
@@ -975,23 +1021,26 @@ export type MealPhotoContext = {
 };
 
 /**
- * Estimate nutrition from a meal photo
+ * Estimate nutrition from a meal photo.
+ * Returns a TrackMealResponse with ingredients breakdown, similar to trackMeal.
  */
 export async function estimateNutritionFromPhoto(
   config: CoachAIConfig,
   base64Image: string,
   context?: MealPhotoContext | null
-): Promise<MacroEstimate | null> {
+): Promise<TrackMealResponse | null> {
   try {
     const customPrompts = await getActiveCustomPrompts();
     const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
-    const baseSystemPrompt = await getEstimateNutritionFromPhotoPrompt(includeFoundationFoods);
+    const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    const fns = getEstimateMacrosFunctions(false, includeFoundationFoods);
+
+    // Use getTrackMealFunctions to get an array of meals with ingredients breakdown
+    const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     let userMessageSuffix: string | undefined;
@@ -1000,24 +1049,36 @@ export async function estimateNutritionFromPhoto(
       if (context.description.trim()) {
         parts.push(`User description: ${context.description.trim()}`);
       }
+
       if (context.tags.length > 0) {
         parts.push(`Tags: ${context.tags.join(', ')}`);
       }
       userMessageSuffix = parts.join('\n');
     }
 
-    const parsed = await generateWithImageStructured<MacroEstimate>(
+    const parsed = await generateWithImageStructured<TrackMealResponse>(
       config,
       systemPrompt,
       base64,
       mimeType,
       schema,
-      'estimateMacros',
+      'trackMeal',
       userMessageSuffix
     );
+
+    // Normalize ingredients if foundation foods were matched (foodId present with zero macros)
+    if (parsed?.meals) {
+      for (const meal of parsed.meals) {
+        if (meal.ingredients) {
+          meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+        }
+      }
+    }
+
     return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] estimateNutritionFromPhoto error:', error);
+    // TODO: show a snackbar
     return null;
   }
 }
