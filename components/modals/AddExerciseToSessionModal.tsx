@@ -142,10 +142,7 @@ export function AddExerciseToSessionModal({
       grouped[group].push(option);
       grouped.all.push(option);
     });
-    Object.keys(grouped).forEach((key) => {
-      const k = key as MuscleGroupFilter;
-      grouped[k].sort((a, b) => a.label.localeCompare(b.label));
-    });
+
     return grouped;
   }, [allExercises, theme, t]);
 

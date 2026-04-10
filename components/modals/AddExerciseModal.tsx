@@ -186,12 +186,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       groupedExercises.all.push(exerciseOption);
     });
 
-    // Sort exercises within each group by name
-    Object.keys(groupedExercises).forEach((key) => {
-      const group = key as MuscleGroupFilter;
-      groupedExercises[group].sort((a, b) => a.label.localeCompare(b.label));
-    });
-
     return groupedExercises;
   }, [
     allExercises,
