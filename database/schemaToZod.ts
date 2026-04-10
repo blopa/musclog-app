@@ -20,7 +20,13 @@ const typeMapping: Record<string, () => z.ZodTypeAny> = {
  */
 const ENCRYPTED_NUMBER_FIELDS: Record<string, string[]> = {
   user_metrics: ['value'],
-  nutrition_logs: ['logged_calories', 'logged_protein', 'logged_carbs', 'logged_fat', 'logged_fiber'],
+  nutrition_logs: [
+    'logged_calories',
+    'logged_protein',
+    'logged_carbs',
+    'logged_fat',
+    'logged_fiber',
+  ],
 };
 
 /**
@@ -156,11 +162,13 @@ export function generateExportValidationSchema(): z.ZodObject<Record<string, z.Z
 
   // Add metadata fields
   // Use passthrough to allow unknown table data that might not match schema exactly
-  return z.object({
-    _exportVersion: z.number().int().min(1).max(100),
-    ...tableSchemas,
-    _async_storage_: z.record(z.string(), z.string().nullable().optional()).optional(),
-  }).passthrough();
+  return z
+    .object({
+      _exportVersion: z.number().int().min(1).max(100),
+      ...tableSchemas,
+      _async_storage_: z.record(z.string(), z.string().nullable().optional()).optional(),
+    })
+    .passthrough();
 }
 
 // Pre-computed schema for use in the app
