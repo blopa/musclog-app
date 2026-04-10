@@ -8,7 +8,7 @@ const path = require('path');
 
 const PORT = 8081;
 const DIST_PATH = path.join(__dirname, '..', 'dist');
-const BASE_PATH = '/musclog-app';
+const BASE_PATH = '/';
 
 const MIME_TYPES = {
   '.html': 'text/html',
@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
     relativePath = filePath.substring(BASE_PATH.length);
   }
 
-  let fullPath = path.join(DIST_PATH, 'musclog-app', relativePath);
+  let fullPath = path.join(DIST_PATH, relativePath);
 
   if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
     const ext = path.extname(fullPath).toLowerCase();
@@ -44,7 +44,7 @@ const server = http.createServer((req, res) => {
   } else {
     if (filePath.startsWith(BASE_PATH)) {
       // SPA Fallback
-      const indexPath = path.join(DIST_PATH, 'musclog-app', 'index.html');
+      const indexPath = path.join(DIST_PATH, 'index.html');
       res.writeHead(200, { 'Content-Type': 'text/html' });
       fs.createReadStream(indexPath).pipe(res);
     } else {
@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
 function isServerUp() {
   return new Promise((resolve) => {
     http
-      .get(`http://localhost:${PORT}${BASE_PATH}/`, (res) => {
+      .get(`http://localhost:${PORT}/`, (res) => {
         resolve(res.statusCode === 200);
       })
       .on('error', () => {
@@ -66,17 +66,38 @@ function isServerUp() {
   });
 }
 
+async function runPlaywright() {
+  const args = process.argv.slice(2).join(' ');
+  execSync(`npx playwright test ${args}`, { stdio: 'inherit' });
+  console.log('Tests completed successfully.');
+}
+
 async function run() {
-  console.log('Cleaning up existing servers...');
-  try {
-    execSync(`kill $(lsof -t -i :${PORT}) 2>/dev/null || true`);
-  } catch (e) {}
+  const alreadyUp = await isServerUp();
+
+  if (alreadyUp) {
+    console.log(`Server already running on port ${PORT}, reusing it.`);
+    try {
+      await runPlaywright();
+    } catch (e) {
+      console.error('Tests failed.');
+      process.exit(1);
+    }
+    return;
+  }
+
+  const distIndex = path.join(DIST_PATH, 'index.html');
+  if (!fs.existsSync(distIndex)) {
+    console.error(
+      `No built app found at ${distIndex}.\nRun "npm run build:web" first, or start the dev server with "npm run web" and re-run this script.`
+    );
+    process.exit(1);
+  }
 
   console.log('Starting built-in Node server...');
   server.listen(PORT, async () => {
     console.log(`Server listening on port ${PORT}`);
 
-    console.log('Waiting for server to be ready...');
     let retries = 0;
     while (retries < 20) {
       if (await isServerUp()) {
@@ -93,9 +114,7 @@ async function run() {
 
     console.log('Server is up. Running Playwright tests...');
     try {
-      const args = process.argv.slice(2).join(' ');
-      execSync(`npx playwright test ${args}`, { stdio: 'inherit' });
-      console.log('Tests completed successfully.');
+      await runPlaywright();
     } catch (e) {
       console.error('Tests failed.');
       process.exit(1);

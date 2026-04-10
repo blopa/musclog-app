@@ -21,7 +21,7 @@ test.describe('App Screenshot Automation', () => {
       console.log(`BROWSER ERROR: ${err.message}`);
     });
 
-    const APP_URL = 'http://localhost:8081/musclog-app/';
+    const APP_URL = 'http://localhost:8081/';
 
     console.log(`Starting capture...`);
 
