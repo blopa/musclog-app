@@ -10,6 +10,8 @@ import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import Setting from '@/database/models/Setting';
 import WorkoutLog from '@/database/models/WorkoutLog';
+import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
@@ -656,8 +658,10 @@ export class WorkoutTemplateService {
   }
 
   /**
-   * Get suggested weight (kg) and reps for an exercise when adding to a free session.
-   * Uses user weight, lifting experience, and age (same logic as template creation).
+   * Get suggested weight (kg) and reps for an exercise when adding to a session.
+   * Logic:
+   * 1. Check user history for this specific exercise (most recent logged set).
+   * 2. If no history, fall back to profile-based calculation.
    * Reps: compound → 10, isolation/machine/etc → 14.
    */
   static async getSuggestedWeightAndRepsForExercise(
@@ -673,6 +677,42 @@ export class WorkoutTemplateService {
       return { weightKg: 0, reps: defaultReps };
     }
 
+    // 1. Try to get from history
+    try {
+      const logExercises = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
+        .query(
+          Q.where('exercise_id', exerciseId),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('created_at', Q.desc),
+          Q.take(1)
+        )
+        .fetch();
+
+      if (logExercises.length > 0) {
+        const lastSets = await database
+          .get<WorkoutLogSet>('workout_log_sets')
+          .query(
+            Q.where('log_exercise_id', logExercises[0].id),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.where('difficulty_level', Q.gt(0)),
+            Q.sortBy('set_order', Q.desc),
+            Q.take(1)
+          )
+          .fetch();
+
+        if (lastSets.length > 0) {
+          return {
+            weightKg: lastSets[0].weight,
+            reps: lastSets[0].reps,
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to fetch suggested weight from history:', err);
+    }
+
+    // 2. Fallback to profile-based calculation
     const user = await UserService.getCurrentUser();
     const weightMetric = await UserMetricService.getLatest('weight');
 

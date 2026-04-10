@@ -233,8 +233,8 @@ export default class WorkoutLog extends Model {
       throw new Error('numberOfSets must be at least 1');
     }
 
-    const weight = options?.suggestedWeightKg ?? 30;
-    const reps = options?.suggestedReps ?? 10;
+    const weight = options?.suggestedWeightKg !== undefined ? options.suggestedWeightKg : 30;
+    const reps = options?.suggestedReps !== undefined ? options.suggestedReps : 10;
 
     const now = Date.now();
     const allSets = await this.getAllSets();
