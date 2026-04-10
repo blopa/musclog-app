@@ -62,6 +62,10 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Schedule workouts on a weekly basis with reminders
 - View lifting volume stats and progression over time
 - Comprehensive exercise library with muscle group categorization
+- **Superset support**: Group exercises with a shared group ID for superset tracking
+- **Exercise reordering**: Drag-and-drop reordering of exercises in both active and past workouts
+- **Rest timer**: Built-in rest timer with customizable duration and alerts
+- **Keep-screen-awake** during active workout sessions
 
 ### 📅 Schedule & Plan
 
@@ -72,10 +76,11 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 - **Daily Food Logging**: Track meals (breakfast, lunch, dinner, snack) with detailed macro and calorie info
 - **Barcode Scanning**: Add foods instantly by scanning product barcodes with your camera
-- **Food Search**: Search the Open Food Facts database for nutritional information
+- **Food Search**: Search Open Food Facts, USDA, or a local barcode database — configurable per user
 - **Custom Foods & Meals**: Create your own food entries and save meal templates for quick access
+- **Meal Display**: AI-generated and saved meals are shown as a single item (not individual ingredients) in the food log
 - **Micronutrient Tracking**: Track 40+ vitamins and minerals beyond basic macros
-- **AI Macro Estimation**: Use AI vision to estimate nutrition from food photos or nutrition label images
+- **AI Macro Estimation**: Use AI vision to estimate nutrition from food photos or nutrition label images; optionally run local OCR before sending to AI
 - **Retrospective Logging**: Log meals for past dates
 - **Empirical TDEE**: Calorie needs estimated from actual activity logs
 - **Weekly Progress Check-ins**: Automated weekly check-ins that analyze weight trends, caloric adherence, and activity levels. Get status updates (On Track, Ahead, Behind) and readjust goals based on real-world progress.
@@ -93,23 +98,26 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Visualize fitness progress with charts and graphs
 - Track body metrics: weight, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
+- **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and cycle phase over time
 
 ### 🧠 AI Coach
 
 - **Dual AI Support**: Google Gemini (2.0/2.5, via API key) or OpenAI (GPT-4, GPT-4o, O1, O3)
 - **In-App Chat**: Conversational AI coach for workout and nutrition advice
-- **Photo Analysis**: AI-powered food photo and nutrition label analysis
+- **Photo Analysis**: AI-powered food photo and nutrition label analysis; optional local OCR pre-processing
 - **Workout Generation**: AI-generated workout plans tailored to your goals
-- **Flexible Config**: Choose model, configure API keys, set insight frequency
+- **Custom System Prompts**: Create and toggle multiple context-specific prompts (general, nutrition, exercise)
+- **Flexible Config**: Choose model, configure API keys, set insight frequency, control conversation history length
 
 ### 🔗 Health Integration
 
 - Sync with Google Health Connect (Android) for weight, nutrition, and exercise data
+- Sync with Apple HealthKit (iOS) for health and fitness data
 - Historical health data import
 
 ### 🔄 Import & Export
 
-- Export your full database as an encrypted JSON file
+- Export your full database as an encrypted JSON file (encryption optional, configurable)
 - Import data across devices or as a backup
 - Support for JSON format
 
@@ -123,22 +131,27 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ## Tech Stack
 
-| Layer          | Technology                                        |
-| -------------- | ------------------------------------------------- |
-| Framework      | React Native 0.81 + Expo Router 6                 |
-| Language       | TypeScript 5.9                                    |
-| Database       | WatermelonDB 0.28 (SQLite-backed, reactive)       |
-| Styling        | NativeWind 4.2 (Tailwind CSS for React Native)    |
-| Icons          | Lucide React Native                               |
-| Charts         | Victory Native                                    |
-| AI             | Google Generative AI + OpenAI SDK                 |
-| Camera         | expo-camera, Quagga2, ZXing, ML Kit OCR           |
-| Health         | expo-health-connect / react-native-health-connect |
-| Localization   | i18next + react-i18next                           |
-| Animations     | React Native Reanimated 4                         |
-| Error Tracking | Sentry                                            |
-| Testing        | Jest + React Testing Library                      |
-| Build          | EAS (Expo Application Services)                   |
+| Layer          | Technology                                                  |
+| -------------- | ----------------------------------------------------------- |
+| Framework      | React Native 0.81 + Expo Router 6                           |
+| Language       | TypeScript 5.9                                              |
+| Database       | WatermelonDB 0.28 (SQLite-backed, reactive)                 |
+| Styling        | NativeWind 4.2 (Tailwind CSS for React Native)              |
+| Icons          | Lucide React Native                                         |
+| Charts         | Victory Native (Skia)                                       |
+| Graphics       | @shopify/react-native-skia                                  |
+| AI             | Google Generative AI + OpenAI SDK                           |
+| Camera / OCR   | expo-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js       |
+| Health         | expo-health-connect / react-native-health-connect (Android) |
+|                | @kingstinct/react-native-healthkit (iOS)                    |
+| Localization   | i18next + react-i18next                                     |
+| Animations     | React Native Reanimated 4                                   |
+| Widgets        | react-native-android-widget                                 |
+| Chat UI        | react-native-gifted-chat                                    |
+| Validation     | Zod                                                         |
+| Error Tracking | Sentry                                                      |
+| Testing        | Jest + React Testing Library + Playwright (web E2E)         |
+| Build          | EAS (Expo Application Services)                             |
 
 ---
 
@@ -174,7 +187,8 @@ musclog/
 ├── lang/locales/en-us/         # Localization strings
 ├── assets/                     # Images, icons, exercise photos
 ├── constants/                  # App-wide constants
-└── utils/                      # Utility functions
+├── utils/                      # Utility functions
+└── widgets/                    # Android/iOS home screen widgets (NutritionWidget, SmartCameraWidget)
 ```
 
 ---

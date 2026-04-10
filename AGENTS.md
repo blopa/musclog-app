@@ -90,6 +90,15 @@
 ### Feature Highlights
 
 - **Weekly Progress Check-ins**: Managed via `NutritionCheckinService`. Periodic targets are generated upon goal setting. Trends are analyzed based on 7-day rolling data (weight, calories, activity).
+- **Exercise Reordering**: Workout log exercises have an `order` field. Use `ExerciseService.reorderWorkoutLogExercises()` to persist new order. Works on both in-progress and past workouts.
+- **Superset / Exercise Grouping**: Workout log exercises and sets share a `group_id` (optional). Exercises with the same `group_id` are treated as a superset.
+- **Meal Grouping**: Nutrition log entries share a `group_id` to display AI-generated or saved meals as a single meal item instead of individual ingredients.
+- **Mood Tracking**: Daily mood prompt (configurable via `SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE`). Mood is correlated with calories, workout volume, and macros in the progress charts.
+- **Home Screen Widgets**: Android widgets live in `widgets/` (`NutritionWidget`, `SmartCameraWidget`). Widget data is refreshed via helpers in `widget-update-helpers.ts`.
+- **Food Search Source**: Configurable via `FOOD_SEARCH_SOURCE_SETTING_TYPE`. Options include Open Food Facts, USDA, Musclog barcode DB, and local-only.
+- **OCR Before AI**: When enabled (`USE_OCR_BEFORE_AI_SETTING_TYPE`), images are processed locally with OCR before being sent to the LLM, reducing data sent to external services.
+- **Custom AI Prompts**: Users can create multiple context-specific system prompts (general, nutrition, exercise) and toggle which are active. Stored in the `ai_custom_prompts` table; appended in `utils/prompts.ts`.
+- **iOS Health**: HealthKit integration via `@kingstinct/react-native-healthkit` (in addition to Health Connect on Android).
 
 ## QA (locale-aware numbers)
 
