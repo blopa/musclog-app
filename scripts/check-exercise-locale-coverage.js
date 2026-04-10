@@ -84,14 +84,18 @@ for (const filePath of EXERCISE_DATA_FILES) {
   for (const ex of exercises) {
     if (ex.muscleGroup) {
       muscleGroups.add(ex.muscleGroup);
-      if (!mgSources.has(ex.muscleGroup)) mgSources.set(ex.muscleGroup, new Set());
+      if (!mgSources.has(ex.muscleGroup)) {
+        mgSources.set(ex.muscleGroup, new Set());
+      }
       mgSources.get(ex.muscleGroup).add(filename);
     }
 
     if (Array.isArray(ex.targetMuscles)) {
       for (const tm of ex.targetMuscles) {
         targetMuscles.add(tm);
-        if (!tmSources.has(tm)) tmSources.set(tm, new Set());
+        if (!tmSources.has(tm)) {
+          tmSources.set(tm, new Set());
+        }
         tmSources.get(tm).add(filename);
       }
     }
