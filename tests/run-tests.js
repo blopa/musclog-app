@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+/* eslint-disable no-undef */
+
 const { execSync } = require('child_process');
 const http = require('http');
 const fs = require('fs');
@@ -53,11 +56,13 @@ const server = http.createServer((req, res) => {
 
 function isServerUp() {
   return new Promise((resolve) => {
-    http.get(`http://localhost:${PORT}${BASE_PATH}/`, (res) => {
-      resolve(res.statusCode === 200);
-    }).on('error', () => {
-      resolve(false);
-    });
+    http
+      .get(`http://localhost:${PORT}${BASE_PATH}/`, (res) => {
+        resolve(res.statusCode === 200);
+      })
+      .on('error', () => {
+        resolve(false);
+      });
   });
 }
 
@@ -77,7 +82,7 @@ async function run() {
       if (await isServerUp()) {
         break;
       }
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
       retries++;
     }
 

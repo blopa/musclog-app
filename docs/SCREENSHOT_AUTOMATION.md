@@ -21,14 +21,19 @@ This project includes a robust, automated pipeline for generating consistent, ma
 ## How to Run
 
 ### 1. Build the Web App
+
 Before running the pipeline, you must export the latest version of the application:
+
 ```bash
 npm run build-android-web
 ```
+
 This generates the `dist/` directory.
 
 ### 2. Run the Automation
+
 Execute the following command to start the server and capture screenshots:
+
 ```bash
 npm run playwright
 ```
@@ -58,6 +63,7 @@ The pipeline automatically navigates to and captures the following:
 ## Customizing the Capture
 
 The capture logic is defined in `tests/screenshot-automation.spec.ts`. You can modify the `takeScreenshot` helper or the navigation flow to:
+
 - Adjust the wait times (`page.waitForTimeout`).
 - Capture specific modal states or interactions.
 - Change the output directory or naming convention.
@@ -65,6 +71,7 @@ The capture logic is defined in `tests/screenshot-automation.spec.ts`. You can m
 ## Marketing Asset Generation (Conceptual Remotion Workflow)
 
 Once the screenshots are generated, they can be used as sources for **Remotion**. Remotion allows you to:
+
 1.  Import these screenshots into React components.
 2.  Layer them into high-resolution device frames (iPhone/Android shells).
 3.  Add marketing copy and brand backgrounds dynamically.

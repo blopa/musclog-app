@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,11 +13,11 @@ test.describe('App Screenshot Automation', () => {
   test.setTimeout(1200000);
 
   test('Capture all required screens and modals', async ({ page }) => {
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
     });
 
-    page.on('pageerror', err => {
+    page.on('pageerror', (err) => {
       console.log(`BROWSER ERROR: ${err.message}`);
     });
 
@@ -30,7 +30,10 @@ test.describe('App Screenshot Automation', () => {
       console.log(`Taking screenshot: ${name}`);
       // Wait for any potential layout shifts or animations
       await page.waitForTimeout(2000);
-      await page.screenshot({ path: path.join(SCREENSHOT_BASE_DIR, `${name}.png`), fullPage: false });
+      await page.screenshot({
+        path: path.join(SCREENSHOT_BASE_DIR, `${name}.png`),
+        fullPage: false,
+      });
     };
 
     // 0. Landing Screen (Before Seeding)
