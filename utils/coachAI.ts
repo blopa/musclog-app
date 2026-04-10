@@ -33,6 +33,7 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { captureException } from './sentry';
+import { sanitizeUserInput } from './promptSanitizer';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -406,7 +407,7 @@ async function sendViaOpenAI(
 
     if (isAiCreditsError(error)) {
       throw new AiCreditsError(
-          // TODO: use i18n here
+        // TODO: use i18n here
         'AI service quota exceeded. Please check your API key or try again later.'
       );
     }
@@ -430,6 +431,8 @@ async function generateText(
   systemPrompt: string,
   userMessage: string = INSIGHTS_USER_MESSAGE
 ): Promise<string> {
+  // Sanitize user message to prevent prompt injection
+  const sanitizedUserMessage = sanitizeUserInput(userMessage);
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
@@ -441,7 +444,7 @@ async function generateText(
       [{ text: promptWithLang } as Part]
     );
 
-    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     return raw?.trim() ?? '';
@@ -452,7 +455,7 @@ async function generateText(
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
-      { role: 'user', content: userMessage },
+      { role: 'user', content: sanitizedUserMessage },
     ],
   });
 
@@ -470,6 +473,8 @@ async function generateTextWithHistory(
   recentConversation: ChatHistoryEntry[],
   finalUserMessage: string
 ): Promise<string> {
+  // Sanitize user message to prevent prompt injection
+  const sanitizedFinalUserMessage = sanitizeUserInput(finalUserMessage);
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -478,7 +483,7 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const contents = buildGeminiContents(recentConversation, finalUserMessage);
+    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     return raw?.trim() ?? '';
@@ -494,7 +499,7 @@ async function generateTextWithHistory(
     messages: [
       { role: 'system', content: systemPrompt },
       ...historyMessages,
-      { role: 'user', content: finalUserMessage },
+      { role: 'user', content: sanitizedFinalUserMessage },
     ],
   });
 
@@ -524,6 +529,9 @@ async function generateStructured<T>(
   schema: object,
   schemaName: string = 'response'
 ): Promise<T | null> {
+  // Sanitize user message to prevent prompt injection
+  const sanitizedUserMessage = sanitizeUserInput(userMessage);
+  
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
   if (config.provider === 'gemini') {
@@ -538,7 +546,7 @@ async function generateStructured<T>(
       },
       [{ text: promptWithLang } as Part]
     );
-    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
     const raw = extractRawText(result.response);
     if (!raw?.trim()) {
@@ -557,7 +565,7 @@ async function generateStructured<T>(
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
-      { role: 'user', content: userMessage },
+      { role: 'user', content: sanitizedUserMessage },
     ],
     response_format: {
       type: 'json_schema',
@@ -589,9 +597,11 @@ async function generateWithImageStructured<T>(
   schemaName: string = 'response',
   userMessageSuffix?: string
 ): Promise<T | null> {
+  // Sanitize user message suffix to prevent prompt injection
+  const sanitizedSuffix = userMessageSuffix?.trim() ? sanitizeUserInput(userMessageSuffix.trim()) : '';
   const userText =
     'Analyze this image and return the structured data.' +
-    (userMessageSuffix?.trim() ? `\n\n${userMessageSuffix.trim()}` : '');
+    (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
@@ -710,11 +720,14 @@ export async function sendCoachMessage(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
+  // Sanitize user message to prevent prompt injection attacks
+  const sanitizedMessage = sanitizeUserInput(userMessage);
+  
   if (config.provider === 'gemini') {
-    return sendViaGemini(config, history, userMessage, context);
+    return sendViaGemini(config, history, sanitizedMessage, context);
   }
 
-  return sendViaOpenAI(config, history, userMessage, context);
+  return sendViaOpenAI(config, history, sanitizedMessage, context);
 }
 
 /**

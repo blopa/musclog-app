@@ -23,9 +23,9 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
-import { ExportDumpSchema, ValidatedExportDump } from './exportValidation';
 import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
+import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService } from './services';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
@@ -77,37 +77,6 @@ export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
 };
-
-/**
- * Validates the export dump against the schema.
- * Returns the validated data if successful, or throws a detailed error.
- */
-function validateExportDump(data: unknown): ValidatedExportDump {
-  const result = ExportDumpSchema.safeParse(data);
-
-  if (!result.success) {
-    // Collect all validation errors for detailed reporting
-    // Zod v3+ uses .issues, older versions use .errors
-    const issues = (result.error as any).issues || (result.error as any).errors || [];
-    const errors = issues.map((err: { path: (string | number)[]; message: string }) => {
-      const path = err.path.join('.');
-      return `${path}: ${err.message}`;
-    });
-
-    const errorMessage = `Export validation failed with ${errors.length} error(s):\n${errors.slice(0, 10).join('\n')}${errors.length > 10 ? '\n...and more' : ''}`;
-
-    captureException(new Error(errorMessage), {
-      data: {
-        validationErrors: errors.slice(0, 20),
-        totalErrors: errors.length,
-      },
-    });
-
-    throw new Error(errorMessage);
-  }
-
-  return result.data;
-}
 
 function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   const raw = (record as { _raw?: Record<string, unknown> })._raw;
@@ -231,8 +200,24 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
   const parsed = JSON.parse(jsonString);
 
-  // Validate the export data against schema
-  const dbData = validateExportDump(parsed);
+  // Validate the export data against schema (generated from WatermelonDB schema)
+  const validationResult: ValidationResult = validateExportDump(parsed);
+
+  if (!validationResult.success) {
+    const details = validationResult.details;
+    const errorMessage = `Export validation failed with ${details.length} error(s):\n${details.slice(0, 10).join('\n')}${details.length > 10 ? '\n...and more' : ''}`;
+
+    captureException(new Error(errorMessage), {
+      data: {
+        validationErrors: details.slice(0, 20),
+        totalErrors: details.length,
+      },
+    });
+
+    throw new Error(errorMessage);
+  }
+
+  const dbData: ExportDump = validationResult.data as ExportDump;
 
   // Only clear AsyncStorage if the imported data contains async storage data
   const asyncStorageData = dbData._async_storage_;

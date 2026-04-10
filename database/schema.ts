@@ -3,7 +3,7 @@ import { appSchema, tableSchema } from '@nozbe/watermelondb';
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
 export const schema = appSchema({
-  // when updating database schema, also update export version in exportImport.ts and also update the exportValidation.ts
+  // when updating database schema, also update export version in exportImport.ts
   version: CURRENT_DATABASE_VERSION,
   tables: [
     // 1. Master List of Exercises
