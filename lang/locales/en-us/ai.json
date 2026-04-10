@@ -11,6 +11,9 @@
       "openSettings": "Open AI settings",
       "notNow": "Not now"
     },
+    "providers": {
+      "openAIGemini": "OpenAI or Google Gemini"
+    },
     "icons": {
       "Dumbbell": "Dumbbell",
       "Target": "Target",

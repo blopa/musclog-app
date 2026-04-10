@@ -434,31 +434,34 @@ export class WorkoutTemplateService {
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
         if (diffDays === 0) {
-          lastCompleted = 'Today';
+          lastCompleted = i18n.t('common.today');
         } else if (diffDays === 1) {
-          lastCompleted = 'Yesterday';
+          lastCompleted = i18n.t('common.yesterday');
         } else if (diffDays < 7) {
-          lastCompleted = `${diffDays} days ago`;
+          lastCompleted = i18n.t('common.daysAgo', { count: diffDays });
         } else if (diffDays < 14) {
-          lastCompleted = '1 week ago';
+          lastCompleted = i18n.t('common.oneWeekAgo');
         } else if (diffDays < 30) {
           const weeks = Math.floor(diffDays / 7);
           // When diffDays >= 14, weeks >= 2, so always plural
-          lastCompleted = `${weeks} weeks ago`;
+          lastCompleted = i18n.t('common.weeksAgo', { count: weeks });
         } else {
           const months = Math.floor(diffDays / 30);
-          lastCompleted = `${months} month${months > 1 ? 's' : ''} ago`;
+          lastCompleted = i18n.t('common.monthsAgo', { count: months });
         }
 
         // Calculate duration if available
         if (lastLog.startedAt && lastLog.completedAt) {
           const durationMinutes = Math.round((lastLog.completedAt - lastLog.startedAt) / 60000);
           if (durationMinutes < 60) {
-            duration = `${durationMinutes} mins`;
+            duration = i18n.t('common.duration.minutesShort', { minutes: durationMinutes });
           } else {
             const hours = Math.floor(durationMinutes / 60);
             const mins = durationMinutes % 60;
-            duration = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+            duration =
+              mins > 0
+                ? i18n.t('common.duration.hoursMinutes', { hours, minutes: mins })
+                : i18n.t('common.duration.hoursOnly', { hours });
           }
         }
       }

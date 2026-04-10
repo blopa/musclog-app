@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 
+import { isStaticExport } from '@/constants/platform';
 import type { BirthControlType, MenstrualCycleUpdate } from '@/database/models';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
 import {
@@ -47,6 +48,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const [updateTick, setUpdateTick] = useState(0);
 
   useEffect(() => {
+    if (isStaticExport) {
+      setIsLoading(false);
+      return;
+    }
+
     const subscription = MenstrualCycleRepository.getActive()
       .observeWithColumns([
         'avg_cycle_length',

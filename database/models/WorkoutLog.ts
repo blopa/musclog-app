@@ -145,7 +145,10 @@ export default class WorkoutLog extends Model {
         updatedSet.isSkipped = data.isSkipped;
       }
       if (data.difficultyLevel !== undefined) {
-        if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
+        const isActuallySkipped = data.isSkipped ?? updatedSet.isSkipped;
+        if (data.difficultyLevel === 0 && isActuallySkipped) {
+          // Allow 0 only for skipped sets
+        } else if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
           throw new Error('Difficulty level must be between 1 and 10');
         }
         updatedSet.difficultyLevel = data.difficultyLevel;

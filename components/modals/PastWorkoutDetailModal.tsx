@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
@@ -29,9 +29,11 @@ import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
+import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
@@ -44,6 +46,7 @@ type WorkoutSummaryCardProps = {
   calories: number;
   units: Units;
   weightUnitKey: 'workoutSession.kg' | 'workoutSession.lb';
+  onEditTime?: () => void;
 };
 
 function WorkoutSummaryCard({
@@ -52,10 +55,12 @@ function WorkoutSummaryCard({
   calories,
   units,
   weightUnitKey,
+  onEditTime,
 }: WorkoutSummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale } = useFormatAppNumber();
+  const durationDisplay = formatWorkoutDuration(totalTime);
 
   return (
     <View className="overflow-hidden rounded-xl">
@@ -70,7 +75,7 @@ function WorkoutSummaryCard({
       >
         <View className="flex-row gap-4">
           {/* Total Time */}
-          <View className="flex-1 flex-col">
+          <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text
               className="text-[10px] font-bold uppercase tracking-wider text-white"
               style={{ opacity: 0.8 }}
@@ -78,12 +83,16 @@ function WorkoutSummaryCard({
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">{totalTime}</Text>
-              <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
-                {t('common.min')}
+              <Text className="text-2xl font-extrabold tracking-tight text-white">
+                {durationDisplay.value}
               </Text>
+              {durationDisplay.suffix ? (
+                <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
+                  {durationDisplay.suffix}
+                </Text>
+              ) : null}
             </View>
-          </View>
+          </Pressable>
 
           {/* Volume */}
           <View
@@ -413,6 +422,7 @@ export default function PastWorkoutDetailModal({
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
     workoutLog: WorkoutLog;
@@ -568,6 +578,7 @@ export default function PastWorkoutDetailModal({
             calories={workout.calories}
             units={units}
             weightUnitKey={weightUnitKey}
+            onEditTime={() => setIsEditMetadataVisible(true)}
           />
 
           {Platform.OS === 'android' && !externalId ? (
@@ -615,7 +626,10 @@ export default function PastWorkoutDetailModal({
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
         workoutName={workout.name}
-        onEdit={onEdit}
+        onEdit={() => {
+          setIsMenuVisible(false);
+          setIsEditMetadataVisible(true);
+        }}
         onShare={handleShare}
         onDelete={onDelete ? onDelete : undefined}
         onPreview={async () => {
@@ -633,6 +647,23 @@ export default function PastWorkoutDetailModal({
           }
         }}
       />
+      {workoutId && workout ? (
+        <EditWorkoutMetadataModal
+          visible={isEditMetadataVisible}
+          onClose={() => setIsEditMetadataVisible(false)}
+          onSave={async (data) => {
+            try {
+              await WorkoutService.updateWorkoutMetadata(workoutId, data);
+              await reload();
+            } catch (err) {
+              console.error('Failed to save workout metadata:', err);
+              showSnackbar('error', t('errors.somethingWentWrong'));
+            }
+          }}
+          initialStartedAt={workout.date.getTime()}
+          initialCompletedAt={workout.date.getTime() + workout.totalTime * 60000}
+        />
+      ) : null}
       {editingExerciseId ? (
         <EditPastWorkoutDataModal
           visible={isEditModalVisible}

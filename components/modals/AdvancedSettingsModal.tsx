@@ -1,8 +1,10 @@
 import {
   Activity,
+  AlertTriangle,
   AlignHorizontalJustifyStart,
   AlignLeft,
   Apple,
+  BrainCircuit,
   Bug,
   CalendarCheck,
   ChevronRight,
@@ -11,6 +13,7 @@ import {
   Download,
   Dumbbell,
   Flag,
+  Lock,
   MessageSquare,
   Target,
   TrendingUp,
@@ -79,6 +82,10 @@ export function AdvancedSettingsModal({
     handleShowDailyMoodPromptChange,
     alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
     handleAlwaysAllowFoodEditingChange,
+    showWeightPrediction: debouncedShowWeightPrediction,
+    handleShowWeightPredictionChange,
+    requireExportEncryption: debouncedRequireExportEncryption,
+    handleRequireExportEncryptionChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -96,7 +103,15 @@ export function AdvancedSettingsModal({
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Disable encryption confirmation modal state
+  const [disableEncryptionModalVisible, setDisableEncryptionModalVisible] = useState(false);
+  const [disableEncryptionConfirmText, setDisableEncryptionConfirmText] = useState('');
+
   const handleExportConfirm = useCallback(async () => {
+    if (debouncedRequireExportEncryption && !encryptionPhrase.trim()) {
+      showSnackbar('error', t('settings.advancedSettings.encryptionPhraseRequired'));
+      return;
+    }
     setLoading(true);
     try {
       await exportDatabase(encryptionPhrase || undefined);
@@ -109,7 +124,7 @@ export function AdvancedSettingsModal({
     } finally {
       setLoading(false);
     }
-  }, [encryptionPhrase, t, showSnackbar]);
+  }, [encryptionPhrase, debouncedRequireExportEncryption, t, showSnackbar]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
@@ -215,6 +230,27 @@ export function AdvancedSettingsModal({
       value: debouncedAlwaysAllowFoodEditing,
       onValueChange: handleAlwaysAllowFoodEditingChange,
     },
+    {
+      key: 'show-weight-prediction',
+      label: t('settings.advancedSettings.showWeightPrediction'),
+      subtitle: t('settings.advancedSettings.showWeightPredictionSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.info10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <BrainCircuit size={theme.iconSize.xl} color={theme.colors.status.info} />
+        </View>
+      ),
+      value: debouncedShowWeightPrediction,
+      onValueChange: handleShowWeightPredictionChange,
+    },
   ];
 
   const chartTooltipPositionItems = [
@@ -289,6 +325,40 @@ export function AdvancedSettingsModal({
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
+            />
+            <View className="mt-4" />
+            <ToggleInput
+              items={[
+                {
+                  key: 'require-export-encryption',
+                  label: t('settings.advancedSettings.requireExportEncryption'),
+                  subtitle: t('settings.advancedSettings.requireExportEncryptionSubtitle'),
+                  icon: (
+                    <View
+                      style={{
+                        width: theme.size['10'],
+                        height: theme.size['10'],
+                        borderRadius: theme.borderRadius.sm,
+                        backgroundColor: theme.colors.status.error20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Lock size={theme.iconSize.xl} color={theme.colors.status.error} />
+                    </View>
+                  ),
+                  value: debouncedRequireExportEncryption,
+                  onValueChange: (value: boolean) => {
+                    if (!value && debouncedRequireExportEncryption) {
+                      // User is trying to disable - show confirmation modal
+                      setDisableEncryptionModalVisible(true);
+                    } else {
+                      // Enabling or no change - proceed normally
+                      handleRequireExportEncryptionChange(value);
+                    }
+                  },
+                },
+              ]}
             />
           </View>
 
@@ -529,7 +599,11 @@ export function AdvancedSettingsModal({
           }
         }}
         title={t('settings.advancedSettings.confirmExport')}
-        subtitle={t('settings.advancedSettings.exportConfirmationSubtitle')}
+        subtitle={
+          debouncedRequireExportEncryption
+            ? t('settings.advancedSettings.exportConfirmationSubtitleRequired')
+            : t('settings.advancedSettings.exportConfirmationSubtitle')
+        }
         footer={
           <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
             <Button
@@ -549,7 +623,7 @@ export function AdvancedSettingsModal({
               size="sm"
               width="flex-1"
               onPress={handleExportConfirm}
-              disabled={loading}
+              disabled={loading || (debouncedRequireExportEncryption && !encryptionPhrase.trim())}
               loading={loading}
             />
           </View>
@@ -557,10 +631,18 @@ export function AdvancedSettingsModal({
       >
         <View className="gap-4">
           <TextInput
-            label={t('settings.advancedSettings.enterEncryptionPhrase')}
+            label={
+              debouncedRequireExportEncryption
+                ? t('settings.advancedSettings.enterEncryptionPhraseRequired')
+                : t('settings.advancedSettings.enterEncryptionPhrase')
+            }
             value={encryptionPhrase}
             onChangeText={setEncryptionPhrase}
-            placeholder={t('settings.advancedSettings.encryptionPhrasePlaceholder')}
+            placeholder={
+              debouncedRequireExportEncryption
+                ? t('settings.advancedSettings.encryptionPhrasePlaceholderRequired')
+                : t('settings.advancedSettings.encryptionPhrasePlaceholder')
+            }
             secureTextEntry
           />
         </View>
@@ -610,6 +692,85 @@ export function AdvancedSettingsModal({
             placeholder={t('settings.advancedSettings.decryptionPhrasePlaceholder')}
             secureTextEntry
           />
+        </View>
+      </CenteredModal>
+
+      {/* Disable Encryption Confirmation Modal */}
+      <CenteredModal
+        visible={disableEncryptionModalVisible}
+        onClose={() => {
+          setDisableEncryptionModalVisible(false);
+          setDisableEncryptionConfirmText('');
+        }}
+        title={t('settings.advancedSettings.disableEncryptionConfirmTitle')}
+        subtitle={t('settings.advancedSettings.disableEncryptionConfirmSubtitle')}
+        footer={
+          <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+            <Button
+              label={t('common.cancel')}
+              variant="outline"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                setDisableEncryptionModalVisible(false);
+                setDisableEncryptionConfirmText('');
+              }}
+            />
+            <Button
+              label={t('common.confirm')}
+              variant="discard"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                handleRequireExportEncryptionChange(false);
+                setDisableEncryptionModalVisible(false);
+                setDisableEncryptionConfirmText('');
+              }}
+              disabled={
+                disableEncryptionConfirmText.trim().toLowerCase() !==
+                t('settings.advancedSettings.disableEncryptionConfirmPhrase').toLowerCase()
+              }
+            />
+          </View>
+        }
+      >
+        <View className="gap-4">
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              gap: theme.spacing.gap.sm,
+              backgroundColor: theme.colors.status.error10,
+              padding: theme.spacing.padding.md,
+              borderRadius: theme.borderRadius.md,
+            }}
+          >
+            <AlertTriangle size={theme.iconSize.lg} color={theme.colors.status.error} />
+            <Text
+              style={{
+                flex: 1,
+                color: theme.colors.status.error,
+                fontSize: theme.typography.fontSize.sm,
+                lineHeight: theme.typography.fontSize.sm * 1.4,
+              }}
+            >
+              {t('settings.advancedSettings.disableEncryptionWarning')}
+            </Text>
+          </View>
+          <TextInput
+            label={t('settings.advancedSettings.disableEncryptionInputLabel')}
+            value={disableEncryptionConfirmText}
+            onChangeText={setDisableEncryptionConfirmText}
+            placeholder={t('settings.advancedSettings.disableEncryptionConfirmPhrase')}
+          />
+          <Text
+            style={{
+              color: theme.colors.text.tertiary,
+              fontSize: theme.typography.fontSize.xs,
+            }}
+          >
+            {t('settings.advancedSettings.disableEncryptionHint')}
+          </Text>
         </View>
       </CenteredModal>
 

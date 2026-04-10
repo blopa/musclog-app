@@ -11,6 +11,9 @@
       "openSettings": "Открыть настройки ИИ",
       "notNow": "Не сейчас"
     },
+    "providers": {
+      "openAIGemini": "OpenAI или Google Gemini"
+    },
     "icons": {
       "Dumbbell": "Гантель",
       "Target": "Цель",

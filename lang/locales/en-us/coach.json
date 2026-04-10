@@ -94,6 +94,7 @@
       "failed": "Failed to share chat history. Please try again.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
+    "disclaimer": "AI can make mistakes. Please verify important information.",
     "message": {
       "menuTitle": "Message actions",
       "copy": "Copy",

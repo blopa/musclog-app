@@ -183,6 +183,18 @@ export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
  */
 export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';
 
+/**
+ * Setting type for showing the predicted weight card on the profile screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_WEIGHT_PREDICTION_SETTING_TYPE = 'show_weight_prediction';
+
+/**
+ * Setting type for requiring an encryption phrase when exporting database.
+ * value: 'true' | 'false'.
+ */
+export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -213,4 +225,6 @@ export type UseSettingsResult = {
   foodSearchSource: FoodSearchSource;
   chartTooltipPosition: ChartTooltipPosition;
   alwaysAllowFoodEditing: boolean;
+  showWeightPrediction: boolean;
+  requireExportEncryption: boolean;
 };

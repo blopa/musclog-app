@@ -1,9 +1,11 @@
 import * as Sentry from '@sentry/react-native';
 
+import { isStaticExport } from '@/constants/platform';
+
 let isInitialized = false;
 
 export function initializeSentry() {
-  if (isInitialized) {
+  if (isInitialized || isStaticExport) {
     return;
   }
 

@@ -680,6 +680,12 @@ export class WorkoutService {
                   s.repsInReserve = update.repsInReserve;
                 }
                 if (update.difficultyLevel !== undefined) {
+                  const isActuallySkipped = update.isSkipped ?? s.isSkipped;
+                  if (update.difficultyLevel === 0 && isActuallySkipped) {
+                    // Allow 0 only for skipped sets
+                  } else if (update.difficultyLevel < 1 || update.difficultyLevel > 10) {
+                    throw new Error('Difficulty level must be between 1 and 10');
+                  }
                   s.difficultyLevel = update.difficultyLevel;
                 }
                 if (update.isSkipped !== undefined) {
@@ -707,6 +713,39 @@ export class WorkoutService {
         throw new Error(`Failed to update workout sets: ${error.message}`);
       }
       throw new Error('Failed to update workout sets: Unknown error');
+    }
+  }
+
+  /**
+   * Update workout metadata (startedAt, completedAt)
+   */
+  static async updateWorkoutMetadata(
+    workoutLogId: string,
+    data: { startedAt?: number; completedAt?: number }
+  ): Promise<void> {
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      if (workoutLog.deletedAt) {
+        throw new Error('Workout log has been deleted');
+      }
+
+      await database.write(async () => {
+        await workoutLog.update((log) => {
+          if (data.startedAt !== undefined) {
+            log.startedAt = data.startedAt;
+          }
+          if (data.completedAt !== undefined) {
+            log.completedAt = data.completedAt;
+          }
+          log.updatedAt = Date.now();
+        });
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to update workout metadata: ${error.message}`);
+      }
+      throw new Error('Failed to update workout metadata: Unknown error');
     }
   }
 

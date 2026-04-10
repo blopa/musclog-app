@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 import { UNREAD_CHAT_MESSAGES_COUNT } from '@/constants/misc';
+import { isStaticExport } from '@/constants/platform';
 
 type SetUnreadCountArg = number | ((prev: number) => number);
 
@@ -30,6 +31,10 @@ export function UnreadChatProvider({ children }: { children: ReactNode }) {
   }, [unreadCount]);
 
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     AsyncStorage.getItem(UNREAD_CHAT_MESSAGES_COUNT)
       .then((stored) => {
         if (stored) {

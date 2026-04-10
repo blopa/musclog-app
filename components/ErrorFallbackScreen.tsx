@@ -48,32 +48,31 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
             className="mb-2 rounded bg-bg-secondary p-2"
           >
             <Text className="text-center text-sm text-text-primary">
-              {showDetails ? 'Hide' : 'Show'} Debug Details
+              {showDetails ? t('common.hide') : t('common.show')} {t('common.debugDetails')}
             </Text>
           </Pressable>
 
           {showDetails ? (
             <ScrollView className="max-h-64 w-full rounded bg-bg-secondary p-3">
               <Text className="mb-2 font-mono text-xs text-text-primary">
-                Error Message: {errorMessage}
+                {t('common.errorMessage')}: {errorMessage}
               </Text>
 
               {errorStack ? (
                 <Text className="mb-2 font-mono text-xs text-text-primary">
-                  Error Stack:
-                  {errorStack}
+                  {t('common.errorStack')}:{errorStack}
                 </Text>
               ) : null}
 
               {componentStack ? (
                 <Text className="mb-2 font-mono text-xs text-text-primary">
-                  Component Stack:
-                  {componentStack}
+                  {t('common.componentStack')}:{componentStack}
                 </Text>
               ) : null}
 
               <Text className="font-mono text-xs text-text-primary">
-                User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A'}
+                {t('common.userAgent')}:{' '}
+                {typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A'}
               </Text>
             </ScrollView>
           ) : null}
