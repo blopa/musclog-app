@@ -19,7 +19,6 @@ import {
 } from '@/database/services';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { getEncryptionKey } from '@/utils/encryption';
-import { preloadExerciseImages } from '@/utils/exerciseImage';
 
 export type InitProgressPhase = 'seeding' | 'migrating';
 
@@ -277,9 +276,6 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       const createdPortions = await FoodPortionService.createCommonPortions();
       console.log(`Seeded ${createdPortions.length} common food portions`);
     }
-
-    // Preload exercise images before seeding to ensure they're available in production builds
-    await preloadExerciseImages();
 
     // 2. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
     const existingExercises = await ExerciseService.getAllExercises();

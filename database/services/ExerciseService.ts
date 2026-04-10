@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import exercisesEnUS from '@/data/exercisesEnUS.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
-import { database } from '@/database/index';
+import { database } from '@/database';
 import Exercise, {
   type EquipmentType,
   type ExerciseSource,
@@ -10,12 +10,7 @@ import Exercise, {
   type MuscleGroup,
 } from '@/database/models/Exercise';
 import i18n, { PT_BR } from '@/lang/lang';
-import {
-  getBundledExerciseImageSourceByIndex,
-  getExerciseImageFilenameByIndex,
-  preloadExerciseImages,
-} from '@/utils/exerciseImage';
-import { copyBundledExerciseImageToDocument } from '@/utils/file';
+import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 interface ExerciseJsonData {
   name: string;
@@ -401,7 +396,7 @@ export class ExerciseService {
 
   /**
    * Create common exercises from the exercises JSON data.
-   * Copies bundled images (by JSON array index) to document storage and sets exercise.imageUrl.
+   * Sets exercise.imageUrl to the GitHub raw-content cloud URL for the corresponding image.
    * Returns array of created exercises.
    */
   static async createCommonExercises(): Promise<Exercise[]> {
@@ -409,7 +404,7 @@ export class ExerciseService {
     const exercisesJson = getExercisesData();
     const now = Date.now();
 
-    const created = await database.write(async () => {
+    await database.write(async () => {
       // Get all existing exercises to check for duplicates
       const existingExercises = await database.get<Exercise>('exercises').query().fetch();
       const existingNames = new Set(
@@ -423,6 +418,7 @@ export class ExerciseService {
           return !existingNames.has(exerciseData.name.toLowerCase());
         })
         .map((exerciseData) => {
+          const jsonIndex = exercisesJson.indexOf(exerciseData);
           const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
             exerciseData.type
           );
@@ -435,8 +431,8 @@ export class ExerciseService {
             exercise.equipmentType = equipmentType as EquipmentType;
             exercise.mechanicType = mechanicType as MechanicType;
             exercise.source = 'app';
-            exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
-            exercise.imageUrl = undefined; // No image URLs in JSON
+            exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0;
+            exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
             exercise.createdAt = now;
             exercise.updatedAt = now;
             exercise.deletedAt = undefined;
@@ -461,42 +457,9 @@ export class ExerciseService {
 
         exercises.push(...newExercises);
       }
-
-      return exercises;
     });
 
-    // Copy bundled images (by JSON index) to document dir and set imageUrl
-    const updates: { exercise: Exercise; fileUri: string }[] = [];
-    for (const exercise of created) {
-      const jsonIndex = exercisesJson.findIndex(
-        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
-      );
-
-      if (jsonIndex < 0) {
-        continue;
-      }
-
-      try {
-        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
-        const filename = getExerciseImageFilenameByIndex(jsonIndex);
-        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
-        updates.push({ exercise, fileUri });
-      } catch (err) {
-        console.warn('Failed to copy exercise image for', exercise.name, err);
-      }
-    }
-
-    if (updates.length > 0) {
-      await database.write(async () => {
-        for (const { exercise, fileUri } of updates) {
-          await exercise.update((e) => {
-            e.imageUrl = fileUri;
-          });
-        }
-      });
-    }
-
-    return created;
+    return exercises;
   }
 
   /**
@@ -532,51 +495,92 @@ export class ExerciseService {
   }
 
   /**
-   * Repairs exercises that were seeded without an imageUrl (e.g. due to a previous
-   * FileAlreadyExistsException during seeding). Finds all non-deleted exercises with
-   * a missing imageUrl, matches them against the JSON data by name, copies the bundled
-   * image, and updates the record. Safe to call on every app start — it's a no-op when
-   * all images are already present.
+   * Repairs app exercises that are missing an imageUrl by setting the cloud URL.
+   * Safe to call on every app start — it's a no-op when all images are already present.
    */
   static async repairMissingExerciseImages(): Promise<void> {
     const exercisesJson = getExercisesData();
     const allExercises = await database.get<Exercise>('exercises').query().fetch();
-    const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt);
+    const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt && ex.source === 'app');
 
     if (broken.length === 0) {
       return;
     }
 
-    const updates: { exercise: Exercise; fileUri: string }[] = [];
-    for (const exercise of broken) {
-      const jsonIndex = exercisesJson.findIndex(
-        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
-      );
+    await database.write(async () => {
+      for (const exercise of broken) {
+        const jsonIndex = exercisesJson.findIndex(
+          (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
+        );
 
-      if (jsonIndex < 0) {
-        continue;
-      }
+        if (jsonIndex < 0) {
+          continue;
+        }
 
-      try {
-        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
-        const filename = getExerciseImageFilenameByIndex(jsonIndex);
-        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
-        updates.push({ exercise, fileUri });
-      } catch (err) {
-        console.warn('Failed to repair exercise image for', exercise.name, err);
+        await exercise.update((e) => {
+          e.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
+        });
       }
+    });
+
+    console.log(`Repaired ${broken.length} exercise image(s)`);
+  }
+
+  /**
+   * JS equivalent of the v7 SQL migration for the LokiJS (web) adapter, which
+   * silently ignores unsafeExecuteSql. Replaces file:// exercise image URIs with
+   * cloud URLs for all app-seeded exercises. Safe to call repeatedly — exits
+   * immediately when there is nothing to migrate.
+   */
+  static async migrateExerciseImageUrlsToCloud(): Promise<void> {
+    const exercisesJson = getExercisesData();
+    const allExercises = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'))
+      .fetch();
+
+    const toMigrate = allExercises.filter(
+      (ex) => ex.imageUrl?.startsWith('file://') && ex.imageUrl.includes('/exercises/')
+    );
+
+    if (toMigrate.length === 0) {
+      return;
     }
 
-    if (updates.length > 0) {
-      await database.write(async () => {
-        for (const { exercise, fileUri } of updates) {
+    await database.write(async () => {
+      for (const exercise of toMigrate) {
+        const imageUrl = exercise.imageUrl ?? '';
+        const filename = imageUrl.split('/exercises/').pop() ?? '';
+
+        if (filename === 'fallback.png') {
           await exercise.update((e) => {
-            e.imageUrl = fileUri;
+            e.imageUrl = undefined;
+          });
+          continue;
+        }
+
+        // Derive exercise number from filename (e.g. "1.png" → 1)
+        const exerciseNumber = parseInt(filename.replace('.png', ''), 10);
+        if (!Number.isNaN(exerciseNumber)) {
+          await exercise.update((e) => {
+            e.imageUrl = buildExerciseCloudUrl(exerciseNumber);
+          });
+          continue;
+        }
+
+        // Filename doesn't match expected pattern — fall back to JSON lookup
+        const jsonIndex = exercisesJson.findIndex(
+          (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
+        );
+        if (jsonIndex >= 0) {
+          await exercise.update((e) => {
+            e.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
           });
         }
-      });
-      console.log(`Repaired ${updates.length} exercise image(s)`);
-    }
+      }
+    });
+
+    console.log(`[migrateExerciseImageUrlsToCloud] Migrated ${toMigrate.length} exercise(s)`);
   }
 
   /**
@@ -605,13 +609,11 @@ export class ExerciseService {
       return 0;
     }
 
-    // Preload bundled image assets before doing any file copies
-    await preloadExerciseImages();
-
     const now = Date.now();
 
     // Prepare records — prepareCreate assigns IDs and is usable after batch()
     const prepared = missing.map((data) => {
+      const jsonIndex = exercisesJson.indexOf(data);
       const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type);
       const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
 
@@ -623,7 +625,7 @@ export class ExerciseService {
         exercise.mechanicType = mechanicType as MechanicType;
         exercise.source = 'app';
         exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
-        exercise.imageUrl = undefined;
+        exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
         exercise.createdAt = now;
         exercise.updatedAt = now;
         exercise.deletedAt = undefined;
@@ -633,37 +635,6 @@ export class ExerciseService {
     await database.write(async () => {
       await database.batch(...prepared);
     });
-
-    // Copy the bundled image for each newly created exercise.
-    // File I/O cannot run inside a write transaction, so this is a second pass.
-    const imageUpdates: { exercise: Exercise; fileUri: string }[] = [];
-    for (const exercise of prepared) {
-      const jsonIndex = exercisesJson.findIndex(
-        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
-      );
-      if (jsonIndex < 0) {
-        continue;
-      }
-
-      try {
-        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
-        const filename = getExerciseImageFilenameByIndex(jsonIndex);
-        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
-        imageUpdates.push({ exercise, fileUri });
-      } catch (err) {
-        console.warn('[syncAppExercises] Failed to copy image for', exercise.name, err);
-      }
-    }
-
-    if (imageUpdates.length > 0) {
-      await database.write(async () => {
-        for (const { exercise, fileUri } of imageUpdates) {
-          await exercise.update((e) => {
-            e.imageUrl = fileUri;
-          });
-        }
-      });
-    }
 
     console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
     return prepared.length;

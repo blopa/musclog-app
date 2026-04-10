@@ -1,10 +1,8 @@
 import { reloadAppAsync } from 'expo';
-import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import {
   cacheDirectory,
-  copyAsync,
   readAsStringAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
@@ -171,60 +169,6 @@ export async function openCropperAsync(options: OpenCropperOptions) {
 
 export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {
   return readAsStringAsync(fileUri, options);
-}
-
-/**
- * Copies a bundled exercise image (from require()) to the app's document directory.
- * Uses expo-asset to properly resolve and download bundled assets in all environments.
- *
- * @param assetSource - The result of require() for the image (or getBundledExerciseImageSourceByIndex).
- * @param destFilename - Filename to use in document/exercises/ (e.g. exercise-{id}.png).
- * @returns The permanent file:// URI to store in the database, or throws on failure.
- */
-export async function copyBundledExerciseImageToDocument(
-  assetSource: number,
-  destFilename: string
-): Promise<string> {
-  const exercisesDir = new Directory(Paths.document, 'exercises');
-  if (!exercisesDir.exists) {
-    exercisesDir.create();
-  }
-
-  const destFile = new File(exercisesDir, destFilename);
-
-  // If the file was already copied (e.g. a previous interrupted seeding run, or
-  // multiple exercises sharing the same fallback image), reuse it.
-  if (destFile.exists) {
-    return destFile.uri;
-  }
-
-  try {
-    // Use expo-asset to resolve the bundled asset.
-    // In production EAS builds on Android, asset.localUri can be null even after
-    // downloadAsync() because assets embedded in the APK/AAB aren't always extracted
-    // to a local file path. asset.uri is always set and the legacy copyAsync handles
-    // file://, asset://, and https:// URIs correctly in all environments.
-    const asset = await Asset.fromModule(assetSource).downloadAsync();
-    const sourceUri = asset.localUri ?? asset.uri;
-    if (!sourceUri) {
-      throw new Error('Asset has no resolvable URI');
-    }
-
-    await copyAsync({ from: sourceUri, to: destFile.uri });
-    console.log(`Successfully copied exercise image: ${destFilename} -> ${destFile.uri}`);
-    return destFile.uri;
-  } catch (error) {
-    console.error('Failed to copy exercise image:', {
-      error,
-      assetSource,
-      destFilename,
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      errorStack: error instanceof Error ? error.stack : undefined,
-    });
-    throw new Error(
-      `Failed to copy exercise image: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
 }
 
 export function shouldSeedDevData() {

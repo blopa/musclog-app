@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  ImageSourcePropType,
   ScrollView,
   Text,
   TextInput,
@@ -17,7 +16,6 @@ import { Button } from '@/components/theme/Button';
 import Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
-import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getMechanicTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -28,7 +26,7 @@ import {
  * Uses Pick to extract only needed fields from Exercise model.
  */
 export type ReplaceExerciseData = Pick<Exercise, 'id' | 'name' | 'muscleGroup' | 'mechanicType'> & {
-  image?: ImageSourcePropType;
+  imageUrl?: string;
 };
 
 type ReplaceExerciseModalProps = {
@@ -45,7 +43,7 @@ function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
     name: exercise.name,
     muscleGroup: exercise.muscleGroup,
     mechanicType: exercise.mechanicType,
-    image: exercise.imageUrl?.trim() ? { uri: exercise.imageUrl } : FALLBACK_EXERCISE_IMAGE,
+    imageUrl: exercise.imageUrl?.trim() || undefined,
   };
 }
 
@@ -217,11 +215,6 @@ export function ReplaceExerciseModal({
               <OptionsSelector
                 title={t('replaceExercise.selectExercise')}
                 options={displayList.map((exercise) => {
-                  const imageUrl =
-                    exercise.image && typeof exercise.image === 'object' && 'uri' in exercise.image
-                      ? (exercise.image as { uri: string }).uri
-                      : undefined;
-
                   const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup);
                   const mechanicTypeI18nKey = getMechanicTypeTranslationKey(exercise.mechanicType);
 
@@ -232,7 +225,7 @@ export function ReplaceExerciseModal({
                     icon: Dumbbell,
                     iconBgColor: theme.colors.background.iconDark,
                     iconColor: theme.colors.text.primary,
-                    imageUrl,
+                    imageUrl: exercise.imageUrl,
                   };
 
                   return option;
