@@ -14,7 +14,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InteractionManager, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -72,6 +72,35 @@ function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): bool
     grouped.set(entry.log.foodId, existing);
   }
   return [...grouped.values()].some((g) => g.length > 1);
+}
+
+/**
+ * Check if duplicates exist across different groups (or ungrouped).
+ * Returns false if all duplicates are within the same single group (already "grouped" together).
+ * Used for meal type level menu to avoid showing merge when duplicates are isolated in one group.
+ */
+function mealHasCrossGroupDuplicates(mealFoods: { log: NutritionLog }[]): boolean {
+  const groupedByFood = new Map<string, typeof mealFoods>();
+  for (const entry of mealFoods) {
+    if (!entry.log.foodId) {
+      continue;
+    }
+    const existing = groupedByFood.get(entry.log.foodId) || [];
+    existing.push(entry);
+    groupedByFood.set(entry.log.foodId, existing);
+  }
+
+  for (const entries of groupedByFood.values()) {
+    if (entries.length <= 1) {
+      continue;
+    }
+    // Check if these duplicates span multiple groups or include ungrouped items
+    const uniqueGroupIds = new Set(entries.map((e) => e.log.groupId ?? 'ungrouped'));
+    if (uniqueGroupIds.size > 1) {
+      return true; // Duplicates exist across different groups
+    }
+  }
+  return false;
 }
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
@@ -159,6 +188,19 @@ export default function FoodScreen() {
   const [isMealGroupMenuVisible, setIsMealGroupMenuVisible] = useState(false);
   const [isDeleteMealGroupVisible, setIsDeleteMealGroupVisible] = useState(false);
   const [isDeleteMealGroupLoading, setIsDeleteMealGroupLoading] = useState(false);
+
+  // Meal Group action states
+  const [isMealGroupScaleModalVisible, setIsMealGroupScaleModalVisible] = useState(false);
+  const [isMealGroupScaleLoading, setIsMealGroupScaleLoading] = useState(false);
+  const [isMealGroupActionModalVisible, setIsMealGroupActionModalVisible] = useState(false);
+  const [mealGroupActionMode, setMealGroupActionMode] = useState<'move' | 'copy' | 'split'>('move');
+  const [isMealGroupActionLoading, setIsMealGroupActionLoading] = useState(false);
+  const [isMealGroupCreateMealModalVisible, setIsMealGroupCreateMealModalVisible] = useState(false);
+  const [mealGroupCreateMealInitialFoods, setMealGroupCreateMealInitialFoods] = useState<
+    { food: Food; amount: number }[]
+  >([]);
+  const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
+  const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -353,6 +395,186 @@ export default function FoodScreen() {
   const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
     setSelectedMealGroup(group);
     setIsMealGroupMenuVisible(true);
+  };
+
+  // Meal Group menu action handlers
+  const handleMealGroupScalePortion = () => {
+    setIsMealGroupMenuVisible(false);
+    setIsMealGroupScaleModalVisible(true);
+  };
+
+  const handleConfirmMealGroupScalePortion = async (newTotalGrams: number) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+    if (newTotalGrams < 1) {
+      showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
+      return;
+    }
+
+    const currentTotal = selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
+    if (currentTotal <= 0) {
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      setIsMealGroupScaleModalVisible(false);
+      setSelectedMealGroup(null);
+      return;
+    }
+
+    setIsMealGroupScaleLoading(true);
+    await flushLoadingPaint();
+    try {
+      await scaleMealNutritionLogsToTotalGrams(
+        selectedMealGroup.entries.map((e) => ({ log: e.log, gramWeight: e.gramWeight })),
+        newTotalGrams
+      );
+      showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
+      await refresh();
+      setIsMealGroupScaleModalVisible(false);
+      setSelectedMealGroup(null);
+    } catch (error) {
+      console.error('Error scaling meal group portions:', error);
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+    } finally {
+      setIsMealGroupScaleLoading(false);
+    }
+  };
+
+  const handleMealGroupMove = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('move');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleMealGroupCopy = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('copy');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleMealGroupSplit = () => {
+    setIsMealGroupMenuVisible(false);
+    setMealGroupActionMode('split');
+    setIsMealGroupActionModalVisible(true);
+  };
+
+  const handleConfirmMealGroupAction = async (
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage?: number
+  ) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+    setIsMealGroupActionLoading(true);
+    await flushLoadingPaint();
+    try {
+      const logs = selectedMealGroup.entries.map((e) => e.log);
+      if (mealGroupActionMode === 'move') {
+        await NutritionService.moveNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.moveSuccess'));
+      } else if (mealGroupActionMode === 'copy') {
+        await NutritionService.copyNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.copySuccess'));
+      } else if (mealGroupActionMode === 'split' && splitPercentage) {
+        await NutritionService.splitNutritionLogsToDate(
+          logs,
+          targetDate,
+          targetMealType,
+          splitPercentage
+        );
+        showSnackbar('success', t('food.actions.splitSuccess'));
+      }
+      await refresh();
+    } catch (error) {
+      console.error('Error performing meal group action:', error);
+      const errorKey = getMealActionErrorKey(mealGroupActionMode);
+      showSnackbar('error', t(errorKey));
+    } finally {
+      setIsMealGroupActionLoading(false);
+      setIsMealGroupActionModalVisible(false);
+      setSelectedMealGroup(null);
+    }
+  };
+
+  const handleMealGroupCreateMeal = () => {
+    setIsMealGroupMenuVisible(false);
+    if (!selectedMealGroup) {
+      return;
+    }
+
+    const items = selectedMealGroup.entries
+      .map((entry) => {
+        if (!entry.food) {
+          return null;
+        }
+        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+      })
+      .filter(Boolean) as { food: Food; amount: number }[];
+
+    if (items.length === 0) {
+      showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
+      setSelectedMealGroup(null);
+      return;
+    }
+
+    setMealGroupCreateMealInitialFoods(items);
+    setIsMealGroupCreateMealModalVisible(true);
+  };
+
+  const handleMealGroupGetInsights = () => {
+    setIsMealGroupMenuVisible(false);
+    setIsMealGroupInsightsVisible(true);
+  };
+
+  const handleSubmitMealGroupInsights = async (userRemarks: string) => {
+    if (!selectedMealGroup) {
+      return;
+    }
+
+    setIsMealGroupInsightsLoading(true);
+    await flushLoadingPaint();
+    try {
+      const aiConfig = await AiService.getAiConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('food.actions.getMealInsightsError'));
+        return;
+      }
+
+      const foods = selectedMealGroup.entries.map((e) => ({
+        name: e.displayName,
+        gramWeight: e.gramWeight,
+      }));
+      const totals = selectedMealGroup.entries.reduce(
+        (acc, e) => ({
+          calories: acc.calories + e.nutrients.calories,
+          protein: acc.protein + e.nutrients.protein,
+          carbs: acc.carbs + e.nutrients.carbs,
+          fat: acc.fat + e.nutrients.fat,
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      );
+
+      // Get the meal type from the first entry
+      const mealType = selectedMealGroup.entries[0]?.log.type || 'other';
+
+      const response = await getMealCritique(aiConfig, mealType, foods, totals, userRemarks);
+
+      if (!response) {
+        showSnackbar('error', t('food.actions.getMealInsightsError'));
+        return;
+      }
+
+      await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
+      await SettingsService.setCoachConversationContext('nutrition');
+      setIsMealGroupInsightsVisible(false);
+      setSelectedMealGroup(null);
+      openCoach();
+    } catch (error) {
+      console.error('Error getting meal group insights:', error);
+      showSnackbar('error', t('food.actions.getMealInsightsError'));
+    } finally {
+      setIsMealGroupInsightsLoading(false);
+    }
   };
 
   const handleConfirmDeleteMealGroup = async () => {
@@ -662,16 +884,20 @@ export default function FoodScreen() {
   };
 
   const handleConfirmMergeDuplicates = async () => {
-    if (!selectedMealForMenu) {
+    // Determine if we're merging for a meal type or a meal group
+    const entries = selectedMealForMenu
+      ? mealsByType[selectedMealForMenu] || []
+      : selectedMealGroup?.entries || [];
+
+    if (entries.length === 0) {
       return;
     }
 
     setIsMergeDuplicatesLoading(true);
     await flushLoadingPaint();
     try {
-      const mealFoods = mealsByType[selectedMealForMenu] || [];
-      const grouped = new Map<string, typeof mealFoods>();
-      for (const entry of mealFoods) {
+      const grouped = new Map<string, typeof entries>();
+      for (const entry of entries) {
         if (!entry.log.foodId) {
           continue;
         }
@@ -681,8 +907,8 @@ export default function FoodScreen() {
         grouped.set(entry.log.foodId, existing);
       }
 
-      const toUpdate: { log: (typeof mealFoods)[number]['log']; newAmount: number }[] = [];
-      const toDelete: (typeof mealFoods)[number]['log'][] = [];
+      const toUpdate: { log: (typeof entries)[number]['log']; newAmount: number }[] = [];
+      const toDelete: (typeof entries)[number]['log'][] = [];
 
       for (const group of grouped.values()) {
         if (group.length <= 1) {
@@ -705,7 +931,13 @@ export default function FoodScreen() {
     } finally {
       setIsMergeDuplicatesLoading(false);
       setIsMergeDuplicatesVisible(false);
-      setSelectedMealForMenu(null);
+      if (selectedMealForMenu) {
+        setSelectedMealForMenu(null);
+      }
+
+      if (selectedMealGroup) {
+        setSelectedMealGroup(null);
+      }
     }
   };
 
@@ -809,7 +1041,35 @@ export default function FoodScreen() {
 
   const showMergeDuplicatesInMealMenu =
     selectedMealForMenu != null &&
-    mealHasDuplicateFoodsByFoodId(mealsByType[selectedMealForMenu] || []);
+    mealHasCrossGroupDuplicates(mealsByType[selectedMealForMenu] || []);
+
+  // Meal group menu computed values
+  const selectedMealGroupTotalGrams = useMemo(() => {
+    if (!selectedMealGroup) {
+      return 0;
+    }
+    return selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
+  }, [selectedMealGroup]);
+
+  const selectedMealGroupNutrients = useMemo(() => {
+    if (!selectedMealGroup) {
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+    }
+
+    return selectedMealGroup.entries.reduce(
+      (acc, e) => ({
+        calories: acc.calories + e.nutrients.calories,
+        protein: acc.protein + e.nutrients.protein,
+        carbs: acc.carbs + e.nutrients.carbs,
+        fat: acc.fat + e.nutrients.fat,
+        fiber: acc.fiber + e.nutrients.fiber,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+  }, [selectedMealGroup]);
+
+  const showMergeDuplicatesInMealGroupMenu =
+    selectedMealGroup != null && mealHasDuplicateFoodsByFoodId(selectedMealGroup.entries);
 
   const selectedMealTotalGrams = useMemo(() => {
     if (!selectedMealForMenu) {
@@ -1493,17 +1753,29 @@ export default function FoodScreen() {
 
       {/* Merge Duplicates Confirmation Modal */}
       <ConfirmationModal
-        visible={isMergeDuplicatesVisible ? !!selectedMealForMenu : false}
+        visible={
+          isMergeDuplicatesVisible
+            ? selectedMealForMenu !== null || selectedMealGroup !== null
+            : false
+        }
         onClose={() => {
           setIsMergeDuplicatesVisible(false);
-          setSelectedMealForMenu(null);
+          if (selectedMealForMenu !== null) {
+            setSelectedMealForMenu(null);
+          }
+
+          if (selectedMealGroup !== null) {
+            setSelectedMealGroup(null);
+          }
         }}
         onConfirm={handleConfirmMergeDuplicates}
         title={t('food.actions.mergeDuplicatesConfirmTitle')}
         message={t('food.actions.mergeDuplicatesConfirmMessage', {
-          mealName: selectedMealForMenu
-            ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
-            : '',
+          mealName: selectedMealGroup
+            ? selectedMealGroup.mealName
+            : selectedMealForMenu
+              ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
+              : '',
         })}
         confirmLabel={t('food.actions.mergeDuplicatesConfirm')}
         cancelLabel={t('common.cancel')}
@@ -1626,15 +1898,86 @@ export default function FoodScreen() {
         visible={isMealGroupMenuVisible}
         onClose={() => {
           setIsMealGroupMenuVisible(false);
+          // Note: We don't clear selectedMealGroup here because the action handlers
+          // need it to open their respective modals. It's cleared in the modals' onClose/onConfirm.
         }}
         title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
+        subtitle={t('food.actions.mealMenuSubtitle')}
         items={[
+          ...(isAiConfigured
+            ? [
+                {
+                  icon: Sparkles,
+                  iconColor: theme.colors.accent.primary,
+                  iconBgColor: theme.colors.accent.primary10,
+                  title: t('food.actions.getMealInsights'),
+                  description: t('food.actions.getMealInsightsDesc'),
+                  onPress: handleMealGroupGetInsights,
+                },
+              ]
+            : []),
+          {
+            icon: UtensilsCrossed,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.createMeal'),
+            description: t('food.actions.createMealDesc'),
+            onPress: handleMealGroupCreateMeal,
+          },
+          {
+            icon: Scale,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.scaleMealPortion'),
+            description: t('food.actions.scaleMealPortionDesc'),
+            onPress: handleMealGroupScalePortion,
+          },
+          ...(showMergeDuplicatesInMealGroupMenu
+            ? [
+                {
+                  icon: GitMerge,
+                  iconColor: theme.colors.accent.primary,
+                  iconBgColor: theme.colors.accent.primary10,
+                  title: t('food.actions.mergeDuplicates'),
+                  description: t('food.actions.mergeDuplicatesDesc'),
+                  onPress: () => {
+                    setIsMealGroupMenuVisible(false);
+                    // Use the existing merge duplicates modal with group data
+                    setIsMergeDuplicatesVisible(true);
+                  },
+                },
+              ]
+            : []),
+          {
+            icon: Copy,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.copyToAnotherDay'),
+            description: t('food.actions.copyToAnotherDayDesc'),
+            onPress: handleMealGroupCopy,
+          },
+          {
+            icon: ArrowRight,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.moveToAnotherDay'),
+            description: t('food.actions.moveToAnotherDayDesc'),
+            onPress: handleMealGroupMove,
+          },
+          {
+            icon: Scissors,
+            iconColor: theme.colors.status.warning,
+            iconBgColor: theme.colors.status.warning10,
+            title: t('food.actions.splitMeal'),
+            description: t('food.actions.splitMealDesc'),
+            onPress: handleMealGroupSplit,
+          },
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
             iconBgColor: theme.colors.status.error20,
-            title: t('food.mealGroup.deleteGroup'),
-            description: t('food.mealGroup.deleteGroupDesc'),
+            title: t('food.actions.deleteAll'),
+            description: t('food.actions.deleteAllDesc'),
             titleColor: theme.colors.status.error,
             onPress: () => {
               setIsMealGroupMenuVisible(false);
@@ -1642,6 +1985,62 @@ export default function FoodScreen() {
             },
           },
         ]}
+      />
+
+      {/* Meal Group Scale Portion Modal */}
+      <ScaleMealPortionModal
+        visible={isMealGroupScaleModalVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupScaleModalVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        onConfirm={handleConfirmMealGroupScalePortion}
+        initialTotalGrams={selectedMealGroupTotalGrams}
+        mealNutrients={selectedMealGroupNutrients}
+        isLoading={isMealGroupScaleLoading}
+      />
+
+      {/* Meal Group Move/Copy/Split Modal */}
+      <MoveCopyMealModal
+        visible={isMealGroupActionModalVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupActionModalVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        onConfirm={handleConfirmMealGroupAction}
+        mode={mealGroupActionMode}
+        sourceMealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+        sourceDate={selectedDate}
+        isLoading={isMealGroupActionLoading}
+      />
+
+      {/* Meal Group Create Meal Modal */}
+      <CreateMealModal
+        visible={isMealGroupCreateMealModalVisible}
+        onClose={() => {
+          setIsMealGroupCreateMealModalVisible(false);
+          setMealGroupCreateMealInitialFoods([]);
+          setSelectedMealGroup(null);
+        }}
+        onSave={() => {
+          refresh();
+          setIsMealGroupCreateMealModalVisible(false);
+          setMealGroupCreateMealInitialFoods([]);
+          setSelectedMealGroup(null);
+        }}
+        initialFoods={mealGroupCreateMealInitialFoods}
+      />
+
+      {/* Meal Group Insights Modal */}
+      <MealInsightsModal
+        visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
+        onClose={() => {
+          setIsMealGroupInsightsVisible(false);
+          setSelectedMealGroup(null);
+        }}
+        mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+        isLoading={isMealGroupInsightsLoading}
+        onSubmit={handleSubmitMealGroupInsights}
       />
 
       {/* Delete Meal Group Confirmation */}
