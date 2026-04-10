@@ -5,7 +5,10 @@
  */
 export const FALLBACK_EXERCISE_IMAGE = require('../assets/exercises/fallback.png');
 
-/** Image number (1–105) → require() result. Only keys for existing .png files. */
+// TODO: instead of pre-loading the local images, load them from the cloud when needed - so like when rendering the exercise
+// get the images from https://raw.githubusercontent.com/blopa/musclog-app/refs/heads/[VERSION_FROM_PACKAGEJSON]/assets/exercises/[EXERCISE_NUMBER].png
+// then remove all of this logic about seeding the images and create a new migration on Migrations to replace the old images references in the database with the new ones from the cloud
+// make sure that once we load the image from the cloud (when rendering the exercise), we cache this image so we dont need to download it again
 const EXERCISE_IMAGE_ASSETS: Record<number, number> = {
   1: require('../assets/exercises/exercise1.png'),
   2: require('../assets/exercises/exercise2.png'),
