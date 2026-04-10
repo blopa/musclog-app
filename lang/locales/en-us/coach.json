@@ -106,6 +106,7 @@
       "deleteDesc": "Remove this message from the conversation",
       "copied": "Message copied to clipboard",
       "deleted": "Message deleted"
-    }
+    },
+    "sendViaOpenAI": "Send via OpenAI"
   }
 }

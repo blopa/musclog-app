@@ -106,6 +106,7 @@
       "deleteDesc": "Remover esta mensagem da conversa",
       "copied": "Mensagem copiada para a área de transferência",
       "deleted": "Mensagem excluída"
-    }
+    },
+    "sendViaOpenAI": "Enviar via OpenAI"
   }
 }
