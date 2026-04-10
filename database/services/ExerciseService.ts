@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import exercisesEnUS from '@/data/exercisesEnUS.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
+import exercisesRuRu from '@/data/exercisesRuRu.json';
 import { database } from '@/database';
 import Exercise, {
   type EquipmentType,
@@ -9,7 +10,7 @@ import Exercise, {
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
-import i18n, { PT_BR } from '@/lang/lang';
+import i18n, { PT_BR, RU_RU } from '@/lang/lang';
 import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 interface ExerciseJsonData {
@@ -22,7 +23,15 @@ interface ExerciseJsonData {
 }
 
 function getExercisesData(): ExerciseJsonData[] {
-  return (i18n.language === PT_BR ? exercisesPtBr : exercisesEnUS) as ExerciseJsonData[];
+  if (i18n.language === PT_BR) {
+    return exercisesPtBr as ExerciseJsonData[];
+  }
+
+  if (i18n.language === RU_RU) {
+    return exercisesRuRu as ExerciseJsonData[];
+  }
+
+  return exercisesEnUS as ExerciseJsonData[];
 }
 
 export class ExerciseService {
