@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
-import { isStaticExport } from '@/constants/platform';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
@@ -30,6 +29,7 @@ import DashedButton from '@/components/theme/DashedButton';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
+import { isStaticExport } from '@/constants/platform';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';

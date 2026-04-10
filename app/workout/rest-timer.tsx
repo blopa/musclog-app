@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
-import { isStaticExport } from '@/constants/platform';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
@@ -14,6 +13,7 @@ import { RestTimer } from '@/components/RestTimer';
 import { RestTimerControls } from '@/components/RestTimerControls';
 import { UpNextLabel } from '@/components/UpNextLabel';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { isStaticExport } from '@/constants/platform';
 import { WorkoutService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';

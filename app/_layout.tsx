@@ -15,11 +15,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachProvider } from '@/components/CoachContext';
-import { isStaticExport } from '@/constants/platform';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { Migrations } from '@/components/Migrations';
+import { isStaticExport } from '@/constants/platform';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
 import { SnackbarProvider } from '@/context/SnackbarContext';
