@@ -237,8 +237,27 @@ export default function FoodScreen() {
     };
   }, [dailyNutrients, nutritionGoal]);
 
-  // Group logs by meal type (individual items only — grouped meals handled separately)
+  // ALL logs by meal type — used by action handlers (delete all, move, copy, split, scale, etc.)
   const mealsByType = useMemo(() => {
+    const meals: Record<string, (typeof resolvedLogs)[number][]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+      other: [],
+    };
+
+    resolvedLogs.forEach((entry) => {
+      if (entry.log.type && meals[entry.log.type]) {
+        meals[entry.log.type].push(entry);
+      }
+    });
+
+    return meals;
+  }, [resolvedLogs]);
+
+  // Ungrouped logs only — used for rendering individual FoodItemCards
+  const ungroupedByType = useMemo(() => {
     const meals: Record<string, (typeof resolvedLogs)[number][]> = {
       breakfast: [],
       lunch: [],
@@ -1096,7 +1115,7 @@ export default function FoodScreen() {
                         onMorePress={() => handleMealGroupMenuPress(group)}
                       />
                     ))}
-                    {mealsByType.breakfast.map((entry) => (
+                    {ungroupedByType.breakfast.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1143,7 +1162,7 @@ export default function FoodScreen() {
                         onMorePress={() => handleMealGroupMenuPress(group)}
                       />
                     ))}
-                    {mealsByType.lunch.map((entry) => (
+                    {ungroupedByType.lunch.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1190,7 +1209,7 @@ export default function FoodScreen() {
                         onMorePress={() => handleMealGroupMenuPress(group)}
                       />
                     ))}
-                    {mealsByType.dinner.map((entry) => (
+                    {ungroupedByType.dinner.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1237,7 +1256,7 @@ export default function FoodScreen() {
                         onMorePress={() => handleMealGroupMenuPress(group)}
                       />
                     ))}
-                    {mealsByType.snack.map((entry) => (
+                    {ungroupedByType.snack.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1284,7 +1303,7 @@ export default function FoodScreen() {
                         onMorePress={() => handleMealGroupMenuPress(group)}
                       />
                     ))}
-                    {mealsByType.other.map((entry) => (
+                    {ungroupedByType.other.map((entry) => (
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1607,7 +1626,6 @@ export default function FoodScreen() {
         visible={isMealGroupMenuVisible}
         onClose={() => {
           setIsMealGroupMenuVisible(false);
-          setSelectedMealGroup(null);
         }}
         title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
         items={[

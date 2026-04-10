@@ -614,6 +614,8 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.groupId = log.groupId;
+            record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
             record.updatedAt = now;
           })
