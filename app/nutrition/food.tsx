@@ -75,13 +75,16 @@ function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): bool
 }
 
 /**
- * Check if duplicates exist across different groups (or ungrouped).
- * Returns false if all duplicates are within the same single group (already "grouped" together).
- * Used for meal type level menu to avoid showing merge when duplicates are isolated in one group.
+ * Check if there are duplicate foods among UNGROUPED items only.
+ * Foods with group_id are excluded from merging - they're already part of a meal group.
+ * Returns true only if there are duplicates among ungrouped foods.
  */
-function mealHasCrossGroupDuplicates(mealFoods: { log: NutritionLog }[]): boolean {
-  const groupedByFood = new Map<string, typeof mealFoods>();
-  for (const entry of mealFoods) {
+function mealHasUngroupedDuplicateFoods(mealFoods: { log: NutritionLog }[]): boolean {
+  // Filter out grouped foods (they have group_id)
+  const ungroupedFoods = mealFoods.filter((entry) => !entry.log.groupId);
+
+  const groupedByFood = new Map<string, typeof ungroupedFoods>();
+  for (const entry of ungroupedFoods) {
     if (!entry.log.foodId) {
       continue;
     }
@@ -90,17 +93,7 @@ function mealHasCrossGroupDuplicates(mealFoods: { log: NutritionLog }[]): boolea
     groupedByFood.set(entry.log.foodId, existing);
   }
 
-  for (const entries of groupedByFood.values()) {
-    if (entries.length <= 1) {
-      continue;
-    }
-    // Check if these duplicates span multiple groups or include ungrouped items
-    const uniqueGroupIds = new Set(entries.map((e) => e.log.groupId ?? 'ungrouped'));
-    if (uniqueGroupIds.size > 1) {
-      return true; // Duplicates exist across different groups
-    }
-  }
-  return false;
+  return [...groupedByFood.values()].some((g) => g.length > 1);
 }
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
@@ -874,7 +867,7 @@ export default function FoodScreen() {
     }
 
     const mealFoods = mealsByType[selectedMealForMenu] || [];
-    if (!mealHasDuplicateFoodsByFoodId(mealFoods)) {
+    if (!mealHasUngroupedDuplicateFoods(mealFoods)) {
       showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
       setSelectedMealForMenu(null);
       return;
@@ -1041,7 +1034,7 @@ export default function FoodScreen() {
 
   const showMergeDuplicatesInMealMenu =
     selectedMealForMenu != null &&
-    mealHasCrossGroupDuplicates(mealsByType[selectedMealForMenu] || []);
+    mealHasUngroupedDuplicateFoods(mealsByType[selectedMealForMenu] || []);
 
   // Meal group menu computed values
   const selectedMealGroupTotalGrams = useMemo(() => {
@@ -1067,9 +1060,6 @@ export default function FoodScreen() {
       { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
   }, [selectedMealGroup]);
-
-  const showMergeDuplicatesInMealGroupMenu =
-    selectedMealGroup != null && mealHasDuplicateFoodsByFoodId(selectedMealGroup.entries);
 
   const selectedMealTotalGrams = useMemo(() => {
     if (!selectedMealForMenu) {
@@ -1932,22 +1922,6 @@ export default function FoodScreen() {
             description: t('food.actions.scaleMealPortionDesc'),
             onPress: handleMealGroupScalePortion,
           },
-          ...(showMergeDuplicatesInMealGroupMenu
-            ? [
-                {
-                  icon: GitMerge,
-                  iconColor: theme.colors.accent.primary,
-                  iconBgColor: theme.colors.accent.primary10,
-                  title: t('food.actions.mergeDuplicates'),
-                  description: t('food.actions.mergeDuplicatesDesc'),
-                  onPress: () => {
-                    setIsMealGroupMenuVisible(false);
-                    // Use the existing merge duplicates modal with group data
-                    setIsMergeDuplicatesVisible(true);
-                  },
-                },
-              ]
-            : []),
           {
             icon: Copy,
             iconColor: theme.colors.status.purple,
