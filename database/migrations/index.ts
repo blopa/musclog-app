@@ -74,6 +74,22 @@ export const migrations = schemaMigrations({
       ],
     },
 
+    // Version 6: Add group_id and logged_meal_name to nutrition_logs.
+    // Allows multiple nutrition log rows (e.g. AI meal ingredients or saved meal foods)
+    // to be grouped and displayed as a single meal entry in the food diary.
+    {
+      toVersion: 6,
+      steps: [
+        addColumns({
+          table: 'nutrition_logs',
+          columns: [
+            { name: 'group_id', type: 'string', isOptional: true },
+            { name: 'logged_meal_name', type: 'string', isOptional: true },
+          ],
+        }),
+      ],
+    },
+
     // Version 5: Add prepared_weight_grams to meals.
     // Lets users record the cooked/finished weight of a recipe (e.g. 500g after
     // cooking 800g of raw ingredients). Used as the reference for portion scaling

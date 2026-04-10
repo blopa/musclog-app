@@ -45,6 +45,9 @@ export default class NutritionLog extends Model {
   @field('logged_fiber') loggedFiberRaw?: string;
   @field('logged_micros_json') loggedMicrosRaw?: string;
 
+  @field('group_id') groupId?: string;
+  @field('logged_meal_name') loggedMealName?: string;
+
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

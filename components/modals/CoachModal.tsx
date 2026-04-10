@@ -1559,7 +1559,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               selectedMealForTracking.ingredients,
               date,
               logMealType,
-              portionGrams
+              portionGrams,
+              t(`food.meals.${selectedMealForTracking.mealTypeIdentifier}`)
             );
             setSelectedMealForTracking(null);
           }}

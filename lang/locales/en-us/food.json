@@ -420,6 +420,13 @@
     },
     "errors": {
       "refreshFailed": "Refresh Failed"
+    },
+    "mealGroup": {
+      "badge": "Meal",
+      "mealOptions": "Meal Options",
+      "deleteGroup": "Delete meal",
+      "deleteGroupDesc": "Remove all items in this meal",
+      "deleteGroupWarning": "This will permanently delete all food items in this meal. This action cannot be undone."
     }
   }
 }

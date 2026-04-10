@@ -36,6 +36,7 @@ import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils
 import { performOcr } from '@/utils/ocr';
 import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
+import { generateUUID } from '@/utils/uuid';
 
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
@@ -491,7 +492,8 @@ export default function SmartCameraModal({
           },
           date,
           mealType,
-          portionGrams
+          portionGrams,
+          { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));

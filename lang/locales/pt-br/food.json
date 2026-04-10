@@ -420,6 +420,13 @@
     },
     "errors": {
       "refreshFailed": "Falha ao Atualizar"
+    },
+    "mealGroup": {
+      "badge": "Refeição",
+      "mealOptions": "Opções da Refeição",
+      "deleteGroup": "Excluir refeição",
+      "deleteGroupDesc": "Remover todos os itens desta refeição",
+      "deleteGroupWarning": "Isso excluirá permanentemente todos os alimentos desta refeição. Esta ação não pode ser desfeita."
     }
   }
 }

@@ -935,6 +935,7 @@ export const getGenerateMealPlanPrompt = async (
     .join('\n');
 };
 
+// TODO: maybe getTrackMealPrompt and getEstimateNutritionFromPhotoPrompt should be merged into one function
 export const getTrackMealPrompt = async (
   language: string = 'en-US',
   includeFoundationFoods: boolean = false
@@ -965,6 +966,7 @@ export const getTrackMealPrompt = async (
 /**
  * System prompt for meal photo nutrition estimation
  */
+// TODO: maybe getTrackMealPrompt and getEstimateNutritionFromPhotoPrompt should be merged into one function
 export const getEstimateNutritionFromPhotoPrompt = async (
   includeFoundationFoods: boolean = false
 ): Promise<string> => {

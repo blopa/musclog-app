@@ -497,6 +497,7 @@ function getSchemaFromFunctionDeclaration(fn: {
   if (!p || typeof p !== 'object') {
     return { type: 'object', properties: {}, required: [] };
   }
+
   return {
     type: p.type ?? 'object',
     properties: p.properties ?? {},
@@ -991,6 +992,10 @@ export async function estimateNutritionFromPhoto(
       : baseSystemPrompt;
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+
+    // TODO: use a different schema, since the getEstimateMacrosFunctions dont have a schema to return an array of food items - like we do in the CoachModal when asking to estimate meal
+    // maybe we should use getTrackMealFunctions, but if so, make sure to update the rest of the code to properly parse the new returned schema
+    // check how it's done in the CoachModal, and possibly use the same modal to displayed the meal details
     const fns = getEstimateMacrosFunctions(false, includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
@@ -1000,6 +1005,7 @@ export async function estimateNutritionFromPhoto(
       if (context.description.trim()) {
         parts.push(`User description: ${context.description.trim()}`);
       }
+
       if (context.tags.length > 0) {
         parts.push(`Tags: ${context.tags.join(', ')}`);
       }
@@ -1018,6 +1024,7 @@ export async function estimateNutritionFromPhoto(
     return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] estimateNutritionFromPhoto error:', error);
+    // TODO: show a snackbar
     return null;
   }
 }

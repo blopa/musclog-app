@@ -55,6 +55,7 @@ import {
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -216,7 +217,8 @@ export type UseChatMessagesResult = {
     ingredients: TrackMealIngredient[],
     date: Date,
     logMealType: MealType,
-    portionGrams: number
+    portionGrams: number,
+    mealName?: string
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
@@ -817,7 +819,8 @@ export function useChatMessages(
       ingredients: TrackMealIngredient[],
       date: Date,
       logMealType: MealType,
-      portionGrams: number
+      portionGrams: number,
+      mealName?: string
     ) => {
       const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
       const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
@@ -839,7 +842,11 @@ export function useChatMessages(
         };
       });
 
-      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType);
+      const groupId = generateUUID();
+      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
+        groupId,
+        loggedMealName: mealName,
+      });
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

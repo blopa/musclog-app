@@ -264,6 +264,9 @@ export const schema = appSchema({
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
 
+        { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal)
+        { name: 'logged_meal_name', type: 'string', isOptional: true }, // Display name for the meal group
+
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
