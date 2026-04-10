@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
+import { isStaticExport } from '@/constants/platform';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
@@ -69,6 +70,10 @@ export default function HomeScreen() {
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
 
   useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
     const syncToday = () => {
       setToday((prev) => {
         const now = new Date();
