@@ -1268,5 +1268,189 @@
     "description": "Levantamento olímpico explosivo puxando a barra do chão até os ombros em um único movimento, treinando quadril, costas e força de recepção.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.85
+  },
+  {
+    "name": "Clean and Press",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento composto combinando um power clean até os ombros seguido de um desenvolvimento, trabalhando o corpo inteiro.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "triceps", "forearms"],
+    "loadMultiplier": 0.65
+  },
+  {
+    "name": "Hang Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento olímpico iniciando com a barra na altura do quadril, puxando-a explosivamente para os ombros na posição de front rack.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Power Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento olímpico explosivo puxando a barra do chão até acima da cabeça em um movimento, recebendo em agachamento parcial.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.55
+  },
+  {
+    "name": "Hang Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento olímpico iniciando com a barra na altura do quadril, puxando-a explosivamente acima da cabeça em um movimento.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Squat Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Clean olímpico completo onde o atleta desce em agachamento profundo para receber a barra nos ombros.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.75
+  },
+  {
+    "name": "Squat Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Snatch completo onde o atleta desce em agachamento profundo para receber a barra acima da cabeça.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Push Jerk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento explosivo acima da cabeça iniciando dos ombros, usando flexão e impulso com queda rápida sob a barra.",
+    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Split Jerk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "O jerk competitivo do levantamento olímpico onde o atleta desce em posição de afundo para receber a barra acima da cabeça.",
+    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.75
+  },
+  {
+    "name": "Thruster",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Movimento composto combinando um agachamento frontal com um desenvolvimento em um movimento contínuo.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Overhead Squat",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Agachamento realizado com a barra segurada acima da cabeça, exigindo mobilidade excepcional dos ombros, estabilidade e força do core.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "traps", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Snatch Balance",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Levantamento olímpico iniciando com a barra atrás do pescoço, descendo em agachamento enquanto pressiona a barra acima da cabeça.",
+    "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Muscle Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Variação de snatch onde a barra é puxada acima da cabeça sem descer em agachamento.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.45
+  },
+  {
+    "name": "Clean Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Primeira e segunda fase do clean até a extensão completa sem receber a barra, focando na potência explosiva.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "loadMultiplier": 1.1
+  },
+  {
+    "name": "Snatch Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Primeira e segunda fase do snatch até a extensão completa sem receber a barra, focando na extensão tripla explosiva.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "High Pull",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "Puxada explosiva da posição de chão ou hang, trazendo a barra à altura do peito com cotovelos altos.",
+    "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Agachamento com Pausa",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Agachamento com pausa deliberada no fundo para eliminar o reflexo de esticamento e construir força a partir da posição mais baixa.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Agachamento nos Pinos",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Agachamento iniciando a partir de pinos em várias alturas, eliminando a fase excêntrica para construir força concêntrica.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "loadMultiplier": 1.0
+  },
+  {
+    "name": "Agachamento no Caixote",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Agachamento realizado até um caixote ou banco, permitindo que o atleta se sente e desenvolva o engajamento da cadeia posterior.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
+    "loadMultiplier": 0.95
+  },
+  {
+    "name": "Agachamento com Barra de Segurança",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "Agachamento realizado com uma barra de segurança para reduzir o estresse nos ombros e enfatizar a força das costas superiores e quadríceps.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
+    "loadMultiplier": 1.0
+  },
+  {
+    "name": "Supino com Pausa",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "Supino com pausa no peito para eliminar o momento e construir potência de pressão explosiva a partir de uma parada total.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Supino no Chão",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "Supino realizado deitado no chão com as pernas estendidas, limitando a amplitude de movimento e enfatizando a força de travamento.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Levantamento Terra Deficit",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "Levantamento terra realizado em pé sobre uma plataforma elevada para aumentar a amplitude de movimento e o impulso das pernas do chão.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "traps", "lats", "forearms"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Puxada nos Blocos",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "Levantamento terra a partir de blocos ou pinos elevados, reduzindo a amplitude de movimento para sobrecarregar a fase de travamento.",
+    "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
+    "loadMultiplier": 1.6
   }
 ]
