@@ -97,9 +97,22 @@ if (!content.includes('SUPPORTED_PLATFORMS')) {
   );
 }
 
+// 7. Fix stale hermes.framework inputPaths/outputPaths → hermesvm.framework
+// The embed pods frameworks script installs hermesvm.framework, but older committed
+// project.pbxproj files referenced hermes.framework, leaving stale build artifacts
+// that cause a duplicate CFBundleIdentifier conflict in xcrun simctl install.
+content = content.replace(
+  /"\$\{PODS_XCFRAMEWORKS_BUILD_DIR\}\/hermes-engine\/Pre-built\/hermes\.framework\/hermes"/g,
+  '"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermesvm.framework/hermesvm"'
+);
+content = content.replace(
+  /"\$\{TARGET_BUILD_DIR\}\/\$\{FRAMEWORKS_FOLDER_PATH\}\/hermes\.framework"/g,
+  '"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermesvm.framework"'
+);
+
 fs.writeFileSync(projectPath, content);
 
-// 7. Fix xcscheme LastUpgradeVersion (1130 → 1600) so Xcode 26 enumerates simulator destinations
+// 8. Fix xcscheme LastUpgradeVersion (1130 → 1600) so Xcode 26 enumerates simulator destinations
 const schemePath = path.join(
   __dirname,
   '..',
