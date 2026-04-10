@@ -1522,7 +1522,8 @@ export const getTrackMealFunctions = (
                 },
                 mealName: {
                   type: 'string',
-                  description: 'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
+                  description:
+                    'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
                 },
                 ingredients: {
                   type: 'array',
