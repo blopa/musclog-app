@@ -1,433 +1,433 @@
 [
   {
-    "name": "Bench Press",
+    "name": "Жим лёжа",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A chest exercise where you press a barbell upwards while lying on a bench.",
+    "description": "Упражнение для груди, при котором вы жмёте штангу вверх, лёжа на скамье.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
-    "name": "Inclined Bench Press",
+    "name": "Жим лёжа на наклонной скамье",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A variation of the bench press performed on an inclined bench to target the upper chest.",
+    "description": "Вариация жима лёжа, выполняемая на наклонной скамье для акцента на верхнюю часть груди.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Declined Bench Press",
+    "name": "Жим лёжа на скамье с отрицательным наклоном",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A variation of the bench press performed on a declined bench to target the lower chest.",
+    "description": "Вариация жима лёжа, выполняемая на скамье с отрицательным наклоном для акцента на нижнюю часть груди.",
     "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
-    "name": "Overhead Shoulder Press",
+    "name": "Жим штанги стоя",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press a weight overhead while standing or seated.",
+    "description": "Упражнение для плеч, при котором вы жмёте вес над головой стоя или сидя.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Deadlift",
+    "name": "Становая тяга",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A full-body exercise that involves lifting a barbell from the ground to a standing position.",
+    "description": "Упражнение для всего тела, при котором вы поднимаете штангу с земли в положение стоя.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Pec Fly Machine",
+    "name": "Сведение рук в тренажёре бабочка",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A machine exercise that isolates the chest muscles by mimicking the motion of a fly.",
+    "description": "Упражнение в тренажёре, изолирующее мышцы груди, имитируя движение сведения рук.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Leg Extension Machine",
+    "name": "Разгибание ног в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the quadriceps by extending the legs from a seated position.",
+    "description": "Упражнение в тренажёре, направленное на квадрицепсы путём разгибания ног из сидячего положения.",
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Squat",
+    "name": "Приседания",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you bend your knees and hips to lower your body, then stand back up.",
+    "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело, а затем встаёте.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.2
   },
   {
-    "name": "Barbell Back Squat",
+    "name": "Приседания со штангой на плечах",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you bend your knees and hips to lower your body, with a barbell placed across your upper back, then stand back up.",
+    "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело со штангой на верхней части спины, а затем встаёте.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.2
   },
   {
-    "name": "Leg Press Machine",
+    "name": "Жим ногами в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise where you push a weight away from you using your legs.",
+    "description": "Упражнение в тренажёре, при котором вы отталкиваете вес от себя ногами.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 3.5
   },
   {
-    "name": "Lat Pulldown",
+    "name": "Тяга верхнего блока",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A machine exercise that targets the upper back by pulling a bar down towards your chest.",
+    "description": "Упражнение в тренажёре, направленное на верхнюю часть спины путём тяги перекладины к груди.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Pull-Up",
+    "name": "Подтягивания",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "An upper body exercise where you lift your body up to a bar using your back and arm muscles.",
+    "description": "Упражнение для верхней части тела, при котором вы поднимаете тело к перекладине, используя мышцы спины и рук.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Seated Row",
+    "name": "Тяга к поясу сидя",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A machine exercise that targets the back muscles by pulling a handle towards your torso while seated.",
+    "description": "Упражнение в тренажёре, направленное на мышцы спины путём тяги ручки к корпусу в сидячем положении.",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Bicep Curl",
+    "name": "Сгибание рук с гантелями",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the biceps by lifting a weight towards your shoulder.",
+    "description": "Упражнение для рук, направленное на бицепсы путём подъёма веса к плечу.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Tricep Overhead Extension",
+    "name": "Разгибание рук за головой",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the triceps by extending the arm at the elbow.",
+    "description": "Упражнение для рук, направленное на трицепсы путём разгибания руки в локте.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Leg Curl Machine",
+    "name": "Сгибание ног лёжа в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks.",
+    "description": "Упражнение в тренажёре, направленное на бицепсы бедра путём сгибания ног к ягодицам.",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Lateral Raise",
+    "name": "Подъёмы гантелей в стороны",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift weights out to the side of your body.",
+    "description": "Упражнение для плеч, при котором вы поднимаете гантели в стороны от тела.",
     "targetMuscles": ["lateral_deltoid"],
     "loadMultiplier": 0.1
   },
   {
-    "name": "Front Raise",
+    "name": "Подъёмы гантелей перед собой",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift weights to the front of your body.",
+    "description": "Упражнение для плеч, при котором вы поднимаете гантели перед собой.",
     "targetMuscles": ["anterior_deltoid"],
     "loadMultiplier": 0.08
   },
   {
-    "name": "Calf Raise",
+    "name": "Подъёмы на носки",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A lower body exercise that targets the calf muscles by raising the heels off the ground.",
+    "description": "Упражнение для нижней части тела, направленное на икроножные мышцы путём подъёма пяток от пола.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Hammer Curl",
+    "name": "Сгибание рук молотком",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise similar to the bicep curl, but with a neutral grip.",
+    "description": "Упражнение для рук, похожее на сгибание рук, но с нейтральным хватом.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
-    "name": "Preacher Curl",
+    "name": "Сгибание рук на скамье Скотта",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A bicep curl variation performed on a preacher bench to isolate the biceps.",
+    "description": "Вариация сгибания рук, выполняемая на скамье Скотта для изоляции бицепсов.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Cable Tricep Pushdown",
+    "name": "Разгибание рук в тренажёре с нижнего блока",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the triceps by pushing a cable attachment downwards.",
+    "description": "Упражнение для рук, направленное на трицепсы путём нажима на канатную рукоять вниз.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Chest Press Machine",
+    "name": "Жим груди в тренажёре",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A machine exercise that mimics the bench press.",
+    "description": "Упражнение в тренажёре, имитирующее жим лёжа.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Smith Machine Squat",
+    "name": "Приседания в тренажёре Смита",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A squat variation performed on a Smith machine for added stability.",
+    "description": "Вариация приседаний в тренажёре Смита для дополнительной стабильности.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.3
   },
   {
-    "name": "T-Bar Row",
+    "name": "Тяга Т-грифа",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a T-bar towards your torso.",
+    "description": "Упражнение для спины, при котором вы тянете Т-гриф к корпусу.",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Bent Over Row",
+    "name": "Тяга в наклоне",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you bend at the waist and pull a weight towards your torso.",
+    "description": "Упражнение для спины, при котором вы наклоняетесь в поясе и тянете вес к корпусу.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Upright Row",
+    "name": "Тяга к подбородку",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you pull a weight upwards along the front of your body.",
+    "description": "Упражнение для плеч, при котором вы тянете вес вверх вдоль передней части тела.",
     "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Fly",
+    "name": "Разведение гантелей лёжа",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise where you lower and lift dumbbells out to the sides while lying on a bench.",
+    "description": "Упражнение для груди, при котором вы опускаете и поднимаете гантели в стороны, лёжа на скамье.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
-    "name": "Incline Dumbbell Press",
+    "name": "Жим гантелей на наклонной скамье",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A chest exercise similar to the incline bench press but using dumbbells.",
+    "description": "Упражнение для груди, похожее на жим на наклонной скамье, но с гантелями.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Machine Shoulder Press",
+    "name": "Жим плечами в тренажёре",
     "muscleGroup": "shoulders",
     "type": "machine",
-    "description": "A shoulder exercise performed on a machine that mimics the overhead press.",
+    "description": "Упражнение для плеч в тренажёре, имитирующее жим над головой.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Reverse Pec Deck Fly",
+    "name": "Обратное разведение в тренажёре бабочка",
     "muscleGroup": "shoulders",
     "type": "machine",
-    "description": "A machine exercise that targets the rear delts by mimicking the motion of a reverse fly.",
+    "description": "Упражнение в тренажёре, направленное на задние дельты, имитируя движение обратного разведения.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Cable Crossover",
+    "name": "Сведение рук в кроссовере",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise that targets the inner chest by pulling cables across the body.",
+    "description": "Упражнение для груди, направленное на внутреннюю часть груди путём сведения тросов через тело.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Seated Calf Raise",
+    "name": "Подъёмы на носки сидя",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise performed while seated, targeting the soleus muscle.",
+    "description": "Упражнение для икроножных мышц, выполняемое сидя, направленное на мышцу камбаловидную.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Standing Calf Raise",
+    "name": "Подъёмы на носки стоя",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise performed while standing, targeting the gastrocnemius muscle.",
+    "description": "Упражнение для икроножных мышц, выполняемое стоя, направленное на икроножную мышцу.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Romanian Deadlift",
+    "name": "Румынская становая тяга",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation that targets the hamstrings and glutes.",
+    "description": "Вариация становой тяги, направленная на бицепсы бедра и ягодицы.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 1
   },
   {
-    "name": "Glute Bridge",
+    "name": "Мостик для ягодиц",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground while lying on your back.",
+    "description": "Упражнение для нижней части тела, направленное на ягодицы путём подъёма бёдер от пола, лёжа на спине.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Hip Thrust",
+    "name": "Тяга ягодиц",
     "muscleGroup": "glutes",
     "type": "compound",
-    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground with the shoulders supported on a bench.",
+    "description": "Упражнение для нижней части тела, направленное на ягодицы путём подъёма бёдер от пола с опорой плечами на скамью.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 1.4
   },
   {
-    "name": "Cable Bicep Curl",
+    "name": "Сгибание рук в кроссовере",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the biceps by curling a cable attachment.",
+    "description": "Упражнение для рук, направленное на бицепсы путём сгибания рук с насадкой на тросе.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Dumbbell Shoulder Press",
+    "name": "Жим гантелей плечами",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press dumbbells overhead.",
+    "description": "Упражнение для плеч, при котором вы жмёте гантели над головой.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Smith Machine Bench Press",
+    "name": "Жим лёжа в тренажёре Смита",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A bench press variation performed on a Smith machine for added stability.",
+    "description": "Вариация жима лёжа в тренажёре Смита для дополнительной стабильности.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
   {
-    "name": "Hack Squat",
+    "name": "Приседания в тренажёре Хакка",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A squat variation performed on a hack squat machine to target the quadriceps.",
+    "description": "Вариация приседаний в тренажёре Хакка для акцента на квадрицепсы.",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Reverse Lunge",
+    "name": "Обратные выпады",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you step backward into a lunge.",
+    "description": "Упражнение для нижней части тела, при котором вы делаете шаг назад в выпад.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Step-Up",
+    "name": "Шаги на платформу",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you step onto a raised platform.",
+    "description": "Упражнение для нижней части тела, при котором вы заходите ногой на возвышенную платформу.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Kettlebell Swing",
+    "name": "Махи гирей",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full-body exercise that involves swinging a kettlebell between the legs and up to shoulder height.",
+    "description": "Упражнение для всего тела, при котором вы раскачиваете гирю между ног и до уровня плеч.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Goblet Squat",
+    "name": "Приседания с гирей у груди",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat variation performed while holding a weight in front of the chest.",
+    "description": "Вариация приседаний, выполняемая с удержанием веса перед грудью.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Sumo Deadlift",
+    "name": "Становая тяга сумо",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation with a wide stance that targets the inner thighs and glutes.",
+    "description": "Вариация становой тяги с широкой постановкой ног, направленная на внутреннюю поверхность бёдер и ягодицы.",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Hip Abduction Machine",
+    "name": "Отведение бёдер в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the outer thighs by spreading the legs apart.",
+    "description": "Упражнение в тренажёре, направленное на внешнюю поверхность бёдер путём разведения ног.",
     "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Hip Adduction Machine",
+    "name": "Приведение бёдер в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the inner thighs by bringing the legs together.",
+    "description": "Упражнение в тренажёре, направленное на внутреннюю поверхность бёдер путём сведения ног.",
     "targetMuscles": ["adductors", "pectineus"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Cable Face Pull",
+    "name": "Тяга к лицу в кроссовере",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise that targets the rear delts by pulling a cable attachment towards the face.",
+    "description": "Упражнение для плеч, направленное на задние дельты путём тяги насадки на тросе к лицу.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Incline Dumbbell Fly",
+    "name": "Разведение гантелей на наклонной скамье",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise performed on an incline bench that targets the upper chest.",
+    "description": "Упражнение для груди, выполняемое на наклонной скамье, направленное на верхнюю часть груди.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
-    "name": "Dips",
+    "name": "Отжимания на брусьях",
     "muscleGroup": "arms",
     "type": "bodyweight",
-    "description": "A chest and triceps exercise where you lower and lift your body using parallel bars.",
+    "description": "Упражнение для груди и трицепсов, при котором вы опускаете и поднимаете тело, используя параллельные брусья.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
-    "name": "Push-Up",
+    "name": "Отжимания",
     "muscleGroup": "chest",
     "type": "bodyweight",
-    "description": "A chest, shoulders, and triceps exercise where you push your body up from the ground.",
+    "description": "Упражнение для груди, плеч и трицепсов, при котором вы отжимаетесь от пола.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
-    "name": "Plank",
+    "name": "Планка",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise where you hold a push-up position for a set amount of time.",
+    "description": "Упражнение для кора, при котором вы удерживаете положение отжимания в течение заданного времени.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
     "loadMultiplier": 0
   },
   {
-    "name": "Russian Twist",
+    "name": "Русский поворот",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "An oblique exercise where you twist your torso side to side while holding a weight.",
+    "description": "Упражнение для косых мышц, при котором вы поворачиваете корпус из стороны в сторону, удерживая вес.",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -437,26 +437,26 @@
     "loadMultiplier": 0.1
   },
   {
-    "name": "Hanging Leg Raise",
+    "name": "Подъём ног в висе",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you raise your legs while hanging from a bar.",
+    "description": "Упражнение для пресса, при котором вы поднимаете ноги, вис на перекладине.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Mountain Climbers",
+    "name": "Горный альпинист",
     "muscleGroup": "full_body",
     "type": "bodyweight",
-    "description": "A full-body exercise where you perform a running motion while in a plank position.",
+    "description": "Упражнение для всего тела, при котором вы имитируете бег, находясь в положении планки.",
     "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Burpees",
+    "name": "Бёрпи",
     "muscleGroup": "full_body",
     "type": "bodyweight",
-    "description": "A full-body exercise that involves a squat, jump, and push-up.",
+    "description": "Упражнение для всего тела, включающее приседание, прыжок и отжимание.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -468,98 +468,98 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Box Jump",
+    "name": "Прыжки на ящик",
     "muscleGroup": "legs",
     "type": "plyometric",
-    "description": "A lower body plyometric exercise where you jump onto a raised platform.",
+    "description": "Плиометрическое упражнение для нижней части тела, при котором вы прыгаете на возвышенную платформу.",
     "targetMuscles": ["quadriceps", "glutes", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Turkish Get-Up",
+    "name": "Турецкое вставание",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full-body exercise that involves transitioning from lying down to standing up while holding a weight overhead.",
+    "description": "Упражнение для всего тела, при котором вы переходите из положения лёжа в положение стоя, удерживая вес над головой.",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Farmer's Walk",
+    "name": "Прогулка фермера",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An exercise where you walk while holding heavy weights in each hand.",
+    "description": "Упражнение, при котором вы идёте, держа тяжёлые грузы в каждой руке.",
     "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Snatch",
+    "name": "Рывок",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift where you lift a barbell from the ground to overhead in one motion.",
+    "description": "Олимпийское упражнение, при котором вы поднимаете штангу с земли над головой одним движением.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Clean and Jerk",
+    "name": "Толчок",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift where you lift a barbell from the ground to the shoulders and then overhead.",
+    "description": "Олимпийское упражнение, при котором вы поднимаете штангу с земли к плечам, а затем над головой.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Battle Ropes",
+    "name": "Канаты для боя",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An exercise where you create waves with heavy ropes to build strength and endurance.",
+    "description": "Упражнение, при котором вы создаёте волны с тяжёлыми канатами для развития силы и выносливости.",
     "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
     "loadMultiplier": 0
   },
   {
-    "name": "Crunch Machine",
+    "name": "Тренажёр для скручиваний",
     "muscleGroup": "abdomen",
     "type": "machine",
-    "description": "A machine exercise that targets the abdominal muscles by mimicking the motion of a crunch.",
+    "description": "Упражнение в тренажёре, направленное на мышцы пресса, имитируя движение скручивания.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Chest Supported Row Machine",
+    "name": "Тяга в тренажёре с упором в грудь",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A back exercise performed on a machine where you row with your chest supported on a pad, targeting the upper and middle back muscles.",
+    "description": "Упражнение для спины в тренажёре, при котором вы тянете с упором груди в подушку, направленное на верхнюю и среднюю части спины.",
     "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Barbell Row",
+    "name": "Тяга штанги в наклоне",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a barbell towards your torso while bent over.",
+    "description": "Упражнение для спины, при котором вы тянете штангу к корпусу, находясь в наклоне.",
     "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Skull Crusher",
+    "name": "Разгибание рук лёжа",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A tricep exercise where you lower a barbell towards your forehead and extend back up.",
+    "description": "Упражнение для трицепсов, при котором вы опускаете штангу к лбу и возвращаете обратно.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Bulgarian Split Squat",
+    "name": "Болгарские сплит-приседания",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you perform a split squat with your rear foot elevated on a bench.",
+    "description": "Упражнение для нижней части тела, при котором вы выполняете приседание на одной ноге с задней ногой на скамье.",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Pallof Press",
+    "name": "Жим Паллоффа",
     "muscleGroup": "core",
     "type": "isolation",
-    "description": "A core exercise that involves pressing a cable or resistance band away from the body to resist rotation.",
+    "description": "Упражнение для кора, при котором вы отжимаете трос или эспандер от тела, сопротивляясь вращению.",
     "targetMuscles": [
       "rectus_abdominis",
       "internal_obliques",
@@ -569,82 +569,82 @@
     "loadMultiplier": 0.2
   },
   {
-    "name": "Hanging Knee Raise",
+    "name": "Подъём колен в висе",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you raise your knees towards your chest while hanging from a bar.",
+    "description": "Упражнение для пресса, при котором вы поднимаете колени к груди, вис на перекладине.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Landmine Press",
+    "name": "Жим с земли",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press a barbell anchored at one end in a landmine attachment.",
+    "description": "Упражнение для плеч, при котором вы жмёте штангу, закреплённую одним концом в земле.",
     "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Landmine Row",
+    "name": "Тяга с земли",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a barbell anchored at one end in a landmine attachment towards your torso.",
+    "description": "Упражнение для спины, при котором вы тянете штангу, закреплённую одним концом в земле, к корпусу.",
     "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Donkey Calf Raise",
+    "name": "Подъёмы на носки в наклоне",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise where you raise your heels while bent over with weight on your lower back.",
+    "description": "Упражнение для икроножных мышц, при котором вы поднимаете пятки, находясь в наклоне с весом на пояснице.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Jump Rope",
+    "name": "Прыжки на скакалке",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves jumping over a rope as it passes under your feet and over your head.",
+    "description": "Кардиоупражнение, при котором вы перепрыгиваете через скакалку, проходящую под ногами и над головой.",
     "targetMuscles": ["calves", "glutes", "quadriceps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Running",
+    "name": "Бег",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves jogging or sprinting over a distance.",
+    "description": "Кардиоупражнение, при котором вы бегаете трусцой или спринтуете на дистанцию.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Cycling",
+    "name": "Велосипед",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves riding a bicycle, either stationary or moving.",
+    "description": "Кардиоупражнение, при котором вы катаетесь на велосипеде, стационарном или обычном.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Rowing Machine",
+    "name": "Гребной тренажёр",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that mimics the action of rowing a boat, using a machine.",
+    "description": "Кардиоупражнение, имитирующее действие гребли на лодке, с использованием тренажёра.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Elliptical Trainer",
+    "name": "Эллиптический тренажёр",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise performed on a machine that mimics walking or running without causing excessive pressure on the joints.",
+    "description": "Кардиоупражнение на тренажёре, имитирующее ходьбу или бег без чрезмерной нагрузки на суставы.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "High-Intensity Interval Training (HIIT)",
+    "name": "Высокоинтенсивный интервальный тренинг (ВИИТ)",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A form of cardiovascular exercise that alternates short periods of intense anaerobic exercise with less intense recovery periods.",
+    "description": "Форма кардиотренировки, чередующая короткие периоды интенсивной анаэробной нагрузки с менее интенсивными периодами восстановления.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -656,18 +656,18 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Stair Climber",
+    "name": "Степпер",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise performed on a machine that mimics the motion of climbing stairs.",
+    "description": "Кардиоупражнение на тренажёре, имитирующее движение подъёма по лестнице.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Aerobics",
+    "name": "Аэробика",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A form of cardiovascular exercise that includes rhythmic activities, often performed to music.",
+    "description": "Форма кардиотренировки, включающая ритмические упражнения, часто выполняемые под музыку.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -679,10 +679,10 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Dance Cardio",
+    "name": "Танцевальное кардио",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves various dance movements and routines to elevate heart rate.",
+    "description": "Кардиоупражнение, включающее различные танцевальные движения и комбинации для повышения частоты сердечных сокращений.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -694,10 +694,10 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Shadow Boxing",
+    "name": "Теневой бокс",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves throwing punches in the air to increase heart rate and improve cardiovascular fitness.",
+    "description": "Кардиоупражнение, при котором вы наносите удары по воздуху для повышения частоты сердечных сокращений и улучшения сердечно-сосудистой выносливости.",
     "targetMuscles": [
       "rectus_abdominis",
       "external_obliques",
@@ -709,306 +709,306 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Narrow Grip Lat Pulldown",
+    "name": "Тяга верхнего блока узким хватом",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A lat pulldown variation where you use a narrow grip to target the inner back muscles.",
+    "description": "Вариация тяги верхнего блока с узким хватом для акцента на внутренние мышцы спины.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Supinated Lat Pulldown",
+    "name": "Тяга верхнего блока супинированным хватом",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A lat pulldown variation where you use a supinated grip to target the biceps and upper back.",
+    "description": "Вариация тяги верхнего блока с супинированным хватом для акцента на бицепсы и верхнюю часть спины.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Cable Pullover",
+    "name": "Пуловер в кроссовере",
     "muscleGroup": "back",
     "type": "isolation",
-    "description": "A back exercise where you pull a cable bar from above your head down towards your hips, focusing on the lats.",
+    "description": "Упражнение для спины, при котором вы тянете перекладину сверху вниз к бёдрам, фокусируясь на широчайших мышцах.",
     "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dumbbell Pullover",
+    "name": "Пуловер с гантелью",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A versatile exercise that targets the chest and lats by lowering and raising a dumbbell over your head while lying on a bench.",
+    "description": "Универсальное упражнение для груди и широчайших мышц путём опускания и подъёма гантели за головой, лёжа на скамье.",
     "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Reverse Grip Bench Press",
+    "name": "Жим лёжа обратным хватом",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press variation where you use a reverse grip to emphasize the upper chest and triceps.",
+    "description": "Вариация жима лёжа с обратным хватом для акцента на верхнюю часть груди и трицепсы.",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Cable Chest Press",
+    "name": "Жим груди в кроссовере",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise where you press a cable attachment forward, similar to a bench press, but with constant tension.",
+    "description": "Упражнение для груди, при котором вы жмёте насадку на тросе вперёд, похоже на жим лёжа, но с постоянным напряжением.",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Cable Front Raise",
+    "name": "Подъём рук перед собой в кроссовере",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift a cable attachment to the front, targeting the anterior deltoids.",
+    "description": "Упражнение для плеч, при котором вы поднимаете насадку на тросе перед собой, направленное на передние дельты.",
     "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0.08
   },
   {
-    "name": "Cable Lateral Raise",
+    "name": "Подъём рук в стороны в кроссовере",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift a cable attachment to the side, targeting the lateral deltoids.",
+    "description": "Упражнение для плеч, при котором вы поднимаете насадку на тросе в сторону, направленное на средние дельты.",
     "targetMuscles": ["lateral_deltoid", "traps"],
     "loadMultiplier": 0.1
   },
   {
-    "name": "Single-Arm Dumbbell Row",
+    "name": "Тяга гантели к поясу одной рукой",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you row a dumbbell towards your torso while bent over, focusing on each side individually.",
+    "description": "Упражнение для спины, при котором вы тянете гантель к корпусу в наклоне, фокусируясь на каждой стороне отдельно.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Shrug",
+    "name": "Шраги с гантелями",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise that targets the trapezius by shrugging the shoulders while holding dumbbells.",
+    "description": "Упражнение для плеч, направленное на трапеции путём поднятия плеч, держа гантели.",
     "targetMuscles": ["traps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Lying Leg Curl",
+    "name": "Сгибание ног лёжа в тренажёре",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks while lying face down.",
+    "description": "Упражнение в тренажёре, направленное на бицепсы бедра путём сгибания ног к ягодицам, лёжа лицом вниз.",
     "targetMuscles": ["hamstrings", "calves"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Good Morning",
+    "name": "Доброе утро",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you hinge at the hips to lower your torso, targeting the hamstrings and glutes.",
+    "description": "Упражнение для нижней части тела, при котором вы наклоняете корпус вперёд в бёдрах, направленное на бицепсы бедра и ягодицы.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Zercher Squat",
+    "name": "Приседания Зерхера",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat variation where you hold the barbell in the crook of your elbows, emphasizing the quads and core.",
+    "description": "Вариация приседаний, при котором вы держите штангу в сгибе локтей, акцентируя квадрицепсы и кор.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
     "loadMultiplier": 1
   },
   {
-    "name": "Sissy Squat",
+    "name": "Сисси-приседания",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A quad-focused squat variation performed with a sissy squat bench or by leaning back on the balls of your feet.",
+    "description": "Вариация приседаний с фокусом на квадрицепсы, выполняемая на скамье для сисси-приседаний или с наклоном назад на носках.",
     "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Jefferson Deadlift",
+    "name": "Становая тяга Джефферсона",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation where you straddle the barbell, focusing on the quads, glutes, and core.",
+    "description": "Вариация становой тяги, при которой вы стоите над штангой, фокусируясь на квадрицепсы, ягодицы и кор.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
     "loadMultiplier": 1.4
   },
   {
-    "name": "Cossack Squat",
+    "name": "Приседания козака",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you perform a deep side lunge, targeting the inner thighs and glutes.",
+    "description": "Упражнение для нижней части тела, при котором вы выполняете глубокий боковой выпад, направленное на внутреннюю поверхность бёдер и ягодицы.",
     "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dragon Flag",
+    "name": "Флаг дракона",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "An advanced core exercise where you lower and raise your body in a straight line while lying on a bench.",
+    "description": "Продвинутое упражнение для кора, при котором вы опускаете и поднимаете тело прямой линией, лёжа на скамье.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Hollow Body Hold",
+    "name": "Удержание полого тела",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise where you hold a hollow position, with your lower back pressed to the floor and your arms and legs extended.",
+    "description": "Упражнение для кора, при котором вы удерживаете полое положение, прижимая поясницу к полу и вытягивая руки и ноги.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Reverse Crunch",
+    "name": "Обратное скручивание",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you curl your hips towards your chest, focusing on the lower abs.",
+    "description": "Упражнение для пресса, при котором вы подтягиваете бёдра к груди, фокусируясь на нижнем прессе.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Ab Wheel Rollout",
+    "name": "Выкаты на ролике для пресса",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise that involves rolling an ab wheel away from your body while maintaining a stable core.",
+    "description": "Упражнение для кора, при котором вы выкатываете ролик для пресса от тела, сохраняя стабильное положение кора.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pike Push-Up",
+    "name": "Отжимания в пике",
     "muscleGroup": "shoulders",
     "type": "bodyweight",
-    "description": "A shoulder exercise where you perform a push-up in a pike position, emphasizing the shoulders.",
+    "description": "Упражнение для плеч, при котором вы выполняете отжимание в положении пика, акцентируя плечи.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Cable Crunch",
+    "name": "Скручивания в кроссовере",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you perform a crunch motion with a cable attachment for added resistance.",
+    "description": "Упражнение для пресса, при котором вы выполняете движение скручивания с насадкой на тросе для дополнительного сопротивления.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Triceps Kickback",
+    "name": "Разгибание руки с гантелью назад",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An isolation triceps exercise where you hinge forward, keep the upper arm fixed, and extend the elbow to move the dumbbell back.",
+    "description": "Изолирующее упражнение для трицепсов, при котором вы наклоняетесь вперёд, удерживая плечо неподвижным, и разгибаете локоть, отводя гантель назад.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Two-Arm Dumbbell Triceps Kickback",
+    "name": "Разгибание рук с гантелями назад двумя руками",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback variation using a dumbbell in each arm with the same bent-over elbow-extension pattern.",
+    "description": "Вариация разгибания рук назад с гантелью в каждой руке с тем же шаблоном разгибания локтей в наклоне.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.22
   },
   {
-    "name": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "name": "Разгибание рук с гантелями назад сидя в наклоне",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback performed seated while leaning forward to support the torso and isolate elbow extension.",
+    "description": "Разгибание рук назад, выполняемое сидя с наклоном вперёд для поддержки корпуса и изоляции разгибания локтей.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Incline Bench Dumbbell Triceps Kickback",
+    "name": "Разгибание рук с гантелями назад на наклонной скамье",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback performed face-down on an incline bench to brace the chest and reduce momentum.",
+    "description": "Разгибание рук назад, выполняемое лицом вниз на наклонной скамье для фиксации груди и уменьшения импульса.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Cable Triceps Kickback",
+    "name": "Разгибание рук назад в кроссовере",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback using a low cable, keeping the upper arm parallel to the floor while extending against the line of pull.",
+    "description": "Разгибание рук назад с нижнего блока, удерживая плечо параллельно полу при разгибании против направления тяги.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
   {
-    "name": "Cable Triceps Kickback from High Pulley",
+    "name": "Разгибание рук назад в кроссовере с верхнего блока",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback pattern with the cable set higher so the pull angle emphasizes the long head differently.",
+    "description": "Разгибание рук назад с верхнего блока, угол тяги по-другому нагружает длинную головку трицепса.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.26
   },
   {
-    "name": "Cable Glute Kickback",
+    "name": "Отведение ноги назад в кроссовере",
     "muscleGroup": "glutes",
     "type": "isolation",
-    "description": "A hip-extension exercise where you sweep the working leg back against a low cable attached at the ankle or foot strap.",
+    "description": "Упражнение на разгибание бедра, при котором вы отводите рабочую ногу назад против низкого блока, закреплённого на лодыжке.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Glute Kickback Machine",
+    "name": "Отведение ноги назад в тренажёре",
     "muscleGroup": "glutes",
     "type": "machine",
-    "description": "A machine-guided hip kickback that loads glute extension through a padded lever or platform.",
+    "description": "Машинное отведение ноги назад, нагружающее разгибание ягодицы через мягкую накладку или платформу.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.45
   },
   {
-    "name": "Banded Glute Kickback",
+    "name": "Отведение ноги назад с резинкой",
     "muscleGroup": "glutes",
     "type": "isolation",
-    "description": "A glute kickback performed with a resistance band anchored low or looped around the feet for hip extension.",
+    "description": "Отведение ноги назад с резинкой, закреплённой низко или на петлях вокруг стоп для разгибания бедра.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.12
   },
   {
-    "name": "Bodyweight Quadruped Glute Kickback",
+    "name": "Отведение ноги назад с опорой на четвереньки",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A bodyweight kickback from hands and knees, extending one hip straight back with a controlled squeeze at the top.",
+    "description": "Отведение ноги назад с опорой на руки и колени, отводя бедро прямо назад с контролируемым сокращением в верхней точке.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Standing Bodyweight Glute Kickback",
+    "name": "Отведение ноги назад стоя",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A standing hip kickback extending the leg behind the body without equipment, often with a slight forward lean for balance.",
+    "description": "Стоячее отведение ноги назад, отводя ногу за тело без оборудования, часто с небольшим наклоном вперёд для баланса.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Concentration Biceps",
+    "name": "Концентрированное сгибание рук",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A biceps curl performed seated with the elbow braced against the inner thigh, curling a dumbbell toward the shoulder in a strict arc.",
+    "description": "Сгибание рук сидя с упором локтя внутренней частью бедра, поднимая гантель к плечу строгой дугой.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.22
   },
   {
-    "name": "Dumbbell Bench Press",
+    "name": "Жим гантелей лёжа",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A horizontal press lying on a bench with dumbbells, allowing independent arm paths and a deep stretch at the bottom.",
+    "description": "Горизонтальный жим лёжа с гантелями, позволяющий независимую траекторию рук и глубокое растяжение в нижней точке.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Decline Dumbbell Bench Press",
+    "name": "Жим гантелей лёжа на скамье с отрицательным наклоном",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A dumbbell chest press performed on a decline bench to emphasize the lower chest while pressing with a neutral-to-angled arm path.",
+    "description": "Жим гантелей лёжа на скамье с отрицательным наклоном для акцента на нижнюю часть груди с нейтральной или угловой траекторией рук.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
-    "name": "Close-Grip Bench Press",
+    "name": "Жим лёжа узким хватом",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press with a narrower grip to shift more load onto the triceps while still training the chest and anterior shoulders.",
+    "description": "Жим лёжа с более узким хватом для переноса большей нагрузки на трицепсы при сохранении работы груди и передних дельт.",
     "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Arnold Press",
+    "name": "Жим Арнольда",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A seated or standing dumbbell press that rotates from palms-in at the bottom to palms-forward overhead, hitting all delt heads.",
+    "description": "Жим гантелей сидя или стоя с вращением от ладоней к себе внизу до ладоней от себя над головой, задействующий все головки дельт.",
     "targetMuscles": [
       "anterior_deltoid",
       "lateral_deltoid",
@@ -1019,50 +1019,50 @@
     "loadMultiplier": 0.22
   },
   {
-    "name": "Push Press",
+    "name": "Толчковый жим",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "An overhead press that uses a shallow dip and leg drive to accelerate the bar, allowing heavier loads than a strict press.",
+    "description": "Жим над головой с небольшим приседанием и усилием ног для ускорения штанги, позволяющий работать с большими весами, чем строгий жим.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
     "loadMultiplier": 0.55
   },
   {
-    "name": "Chin-Up",
+    "name": "Подтягивания обратным хватом",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "A pull-up with an underhand grip that increases biceps and brachialis involvement while training the lats and upper back.",
+    "description": "Подтягивания с обратным хватом, увеличивающие вовлечение бицепсов и брахиалиса при работе широчайших и верхней части спины.",
     "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Straight-Arm Pulldown",
+    "name": "Пуловер с прямыми руками",
     "muscleGroup": "back",
     "type": "isolation",
-    "description": "A cable movement with elbows nearly locked, pulling the bar down toward the thighs to isolate lat engagement and shoulder extension.",
+    "description": "Движение на блоках с почти прямыми локтями, опуская перекладину к бёдрам для изоляции широчайших и разгибания плеча.",
     "targetMuscles": ["lats", "teres_major", "triceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dumbbell Romanian Deadlift",
+    "name": "Румынская становая тяга с гантелями",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A hip-hinge deadlift pattern holding dumbbells, emphasizing hamstrings and glutes with less low-back load than a barbell version.",
+    "description": "Становая тяга в наклоне с гантелями, акцентирующая бицепсы бедра и ягодицы с меньшей нагрузкой на поясницу, чем со штангой.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Trap Bar Deadlift",
+    "name": "Становая тяга в трэп-баре",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift using a trap (hex) bar with a neutral grip and higher handles, often allowing a more upright torso and quad contribution.",
+    "description": "Становая тяга с использованием трэп-бара с нейтральным хватом и более высокими ручками, часто позволяющая более вертикальное положение корпуса.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
     "loadMultiplier": 1.45
   },
   {
-    "name": "Rack Pull",
+    "name": "Тяга с упоров",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A partial deadlift from pins or blocks below the knee, overloading the upper back, traps, and grip with reduced leg range.",
+    "description": "Частичная становая тяга с упоров или блоков ниже колена, перегружающая верхнюю часть спины, трапеции и хват с уменьшенным диапазоном ног.",
     "targetMuscles": [
       "traps",
       "erector_spinae",
@@ -1075,154 +1075,154 @@
     "loadMultiplier": 1.3
   },
   {
-    "name": "Front Squat",
+    "name": "Приседания со штангой на груди",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat with the barbell racked across the front delts, demanding an upright torso and strong core and quad emphasis.",
+    "description": "Приседания со штангой на передних дельтах, требующие вертикального положения корпуса и сильного акцента на квадрицепсы и кор.",
     "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Walking Lunge",
+    "name": "Выпады шагом",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A dynamic lunge pattern stepping forward alternately, training single-leg strength, balance, and hip/knee stability under load.",
+    "description": "Динамический шаблон выпадов с чередующимися шагами вперёд, развивающий одноногую силу, баланс и стабильность бёдра и колена под нагрузкой.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Forward Lunge",
+    "name": "Выпады вперёд",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A split squat variation stepping forward into a deep lunge and returning, loading the front leg heavily through knee and hip extension.",
+    "description": "Вариация сплит-приседания с шагом вперёд в глубокий выпад и возвратом, сильно нагружающая переднюю ногу через разгибание колена и бедра.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Wall Sit",
+    "name": "Статическое приседание у стены",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "An isometric hold with back against a wall and thighs parallel to the floor, building quad endurance and mental toughness.",
+    "description": "Изометрическое удержание со спиной у стены и бёдрами параллельно полу, развивающее выносливость квадрицепсов и силу воли.",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pistol Squat",
+    "name": "Приседания на одной ноге",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A single-leg squat to full depth with the non-working leg extended, demanding mobility, balance, and unilateral leg strength.",
+    "description": "Одноногие приседания в полную глубину с вытянутой нерабочей ногой, требующие подвижности, баланса и односторонней силы ног.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Nordic Hamstring Curl",
+    "name": "Гаммерный подъём нордик",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A partner- or anchor-assisted hamstring exercise lowering the body from kneeling with hips extended, emphasizing eccentric strength.",
+    "description": "Упражнение для бицепсов бедра с партнёром или фиксацией, опускание тела с колен с разогнутыми бёдрами, акцентирующее эксцентрическую силу.",
     "targetMuscles": ["hamstrings", "glutes"],
     "loadMultiplier": 0
   },
   {
-    "name": "Glute-Ham Raise",
+    "name": "Подъём ягодиц-бедра",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A glute-ham developer movement combining hip extension and knee flexion to heavily load hamstrings, glutes, and lower back.",
+    "description": "Движение на тренажёре ягодиц-бедра, комбинирующее разгибание бедра и сгибание колена для сильной нагрузки бицепсов бедра, ягодиц и поясницы.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pendlay Row",
+    "name": "Тяга Пендлей",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A bent-over barbell row where each rep starts from a dead stop on the floor, prioritizing explosive upper-back pulling strength.",
+    "description": "Тяга штанги в наклоне, при которой каждое повторение начинается с мёртвой остановки на полу, приоритизируя взрывную силу верхней части спины.",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Inverted Row",
+    "name": "Горизонтальная тяга",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "A horizontal pull under a fixed bar or rings with the body straight, scaling difficulty by foot position and height.",
+    "description": "Горизонтальная тяга под фиксированной перекладиной или кольцами с прямым телом, сложность регулируется положением ног и высотой.",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
     "loadMultiplier": 0
   },
   {
-    "name": "Barbell Curl",
+    "name": "Сгибание рук со штангой",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A standing curl with a shoulder-width underhand grip on a barbell, allowing heavier loads than most dumbbell curl variations.",
+    "description": "Стоячее сгибание рук с хватом на ширине плеч подхватом, позволяющее использовать большие веса, чем большинство вариантов с гантелями.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.42
   },
   {
-    "name": "EZ Bar Curl",
+    "name": "Сгибание рук с EZ-штангой",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A barbell curl using an EZ-cam bar to reduce wrist strain while targeting the biceps and brachialis.",
+    "description": "Сгибание рук со штангой с использованием EZ-штанги для уменьшения нагрузки на запястья при работе бицепсов и брахиалиса.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Incline Dumbbell Curl",
+    "name": "Сгибание рук с гантелями на наклонной скамье",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A curl performed on an incline bench with arms hanging back, stretching the long head of the biceps through a long range of motion.",
+    "description": "Сгибание рук на наклонной скамье с отведёнными назад руками, растягивая длинную головку бицепса через большой диапазон движения.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
-    "name": "Zottman Curl",
+    "name": "Сгибание Зоттмана",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A dumbbell curl supinating on the way up and rotating to overhand for a slow lowering phase to hit brachioradialis and extensors.",
+    "description": "Сгибание рук с гантелями с супинацией на подъёме и поворотом в хват сверху для медленного опускания для работы брахиорадиалиса и разгибателей.",
     "targetMuscles": ["biceps", "brachialis", "forearms"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Cable Overhead Tricep Extension",
+    "name": "Разгибание рук в кроссовере над головой",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps extension with the cable routed overhead, elbows fixed, extending the forearms to align with the high line of pull.",
+    "description": "Разгибание трицепсов с тросом, проходящим над головой, неподвижные локти, разгибание предплечий для выравнивания с высоким направлением тяги.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
   {
-    "name": "Diamond Push-Up",
+    "name": "Отжимания ромбиком",
     "muscleGroup": "chest",
     "type": "bodyweight",
-    "description": "A push-up with hands close forming a diamond shape, increasing triceps demand while still training the chest and shoulders.",
+    "description": "Отжимания с близко поставленными руками, образующими ромб, увеличивающие нагрузку на трицепсы при сохранении работы груди и плеч.",
     "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
-    "name": "Bench Dip",
+    "name": "Отжимания на скамье",
     "muscleGroup": "arms",
     "type": "bodyweight",
-    "description": "A triceps dip performed with hands on a bench behind you and feet on the floor or elevated, lowering the hips by bending the elbows.",
+    "description": "Отжимания для трицепсов с руками на скамье сзади и ногами на полу или возвышении, опуская бёдра сгибанием локтей.",
     "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
     "loadMultiplier": 0
   },
   {
-    "name": "Lying Leg Raise",
+    "name": "Подъём ног лёжа",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise lying supine or on a bench, raising extended or bent legs toward the ceiling with controlled hip flexion.",
+    "description": "Упражнение для пресса лёжа на спине или на скамье, поднимая прямые или согнутые ноги к потолку с контролируемым сгибанием бедра.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Dead Bug",
+    "name": "Мёртвый жук",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A supine core drill alternating opposite arm and leg extensions while keeping the low back pressed to the floor for anti-extension control.",
+    "description": "Упражнение для кора лёжа на спине с чередованием вытягивания противоположной руки и ноги при прижатой пояснице к полу для контроля анти-разгибания.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Side Plank",
+    "name": "Боковая планка",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A lateral isometric hold supported on one forearm and the side of the foot, resisting lateral flexion and building oblique endurance.",
+    "description": "Боковое изометрическое удержание на одном предплечье и боковой части стопы, сопротивление боковому сгибу и развитие выносливости косых мышц.",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -1232,10 +1232,10 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Cable Woodchopper",
+    "name": "Дровосек в кроссовере",
     "muscleGroup": "core",
     "type": "compound",
-    "description": "A diagonal cable chop from high to low or low to high across the body, training rotational power and oblique strength.",
+    "description": "Диагональное движение с тросом сверху вниз или снизу вверх через тело, развивающее вращательную силу и силу косых мышц.",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -1246,34 +1246,34 @@
     "loadMultiplier": 0.35
   },
   {
-    "name": "Bent-Over Dumbbell Rear Delt Fly",
+    "name": "Разведение рук с гантелями в наклоне",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A hinge position fly with dumbbells, lifting the arms out to the sides with slight elbow bend to target the rear delts and rhomboids.",
+    "description": "Разведение рук в наклоне с гантелями, поднимая руки в стороны с небольшим сгибом локтей для акцента на задние дельты и ромбовидные мышцы.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.12
   },
   {
-    "name": "Barbell Shrug",
+    "name": "Шраги со штангой",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A heavy upper trap exercise elevating the shoulders straight up against a barbell held in front or behind the body.",
+    "description": "Тяжёлое упражнение для верхней части трапеций с поднятием плеч прямо вверх против штанги, удерживаемой спереди или сзади тела.",
     "targetMuscles": ["traps", "forearms"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Power Clean",
+    "name": "Рывковая тяга",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive Olympic lift pulling the bar from the floor to the shoulders in one motion, training hips, back, and catch strength.",
+    "description": "Взрывное олимпийское упражнение с подтягиванием штанги с земли к плечам одним движением, развивающее бёдра, спину и силу фиксации.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Clean and Press",
+    "name": "Тяга и жим",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A compound lift combining a power clean to the shoulders followed by an overhead press, targeting the entire body.",
+    "description": "Комплексное упражнение, комбинирующее рывковую тягу к плечам с последующим жимом над головой, задействующее всё тело.",
     "targetMuscles": [
       "glutes",
       "hamstrings",
@@ -1286,74 +1286,74 @@
     "loadMultiplier": 0.65
   },
   {
-    "name": "Hang Clean",
+    "name": "Рывок из виса",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift starting with the bar at hip height, explosively pulling it to the shoulders in a front rack position.",
+    "description": "Олимпийское упражнение с началом со штангой на уровне бёдер, взрывное подтягивание к плечам в положение фронтального стойки.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Power Snatch",
+    "name": "Мощный рывок",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive Olympic lift pulling the bar from the floor to overhead in one motion, catching in a partial squat.",
+    "description": "Взрывное олимпийское упражнение с подтягиванием штанги с земли над головой одним движением с фиксацией в частичном приседании.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.55
   },
   {
-    "name": "Hang Snatch",
+    "name": "Рывок из виса",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift starting with the bar at hip height, explosively pulling it overhead in one motion.",
+    "description": "Олимпийское упражнение с началом со штангой на уровне бёдер, взрывное подтягивание над головой одним движением.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Squat Clean",
+    "name": "Приседание с толчком",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full Olympic clean where the lifter drops into a deep squat to catch the bar at the shoulders.",
+    "description": "Полный олимпийский толчок, при котором спортсмен опускается в глубокое приседание для фиксации штанги на плечах.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.75
   },
   {
-    "name": "Squat Snatch",
+    "name": "Приседание с рывком",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full snatch where the lifter drops into a deep squat to catch the bar overhead.",
+    "description": "Полный рывок, при котором спортсмен опускается в глубокое приседание для фиксации штанги над головой.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Push Jerk",
+    "name": "Толчковый рывок",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive overhead lift starting from the shoulders, using a dip and drive with a quick drop under the bar.",
+    "description": "Взрывное надголовное поднятие с начала с плеч, используя приседание и толчок с быстрым опусканием под штангу.",
     "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Split Jerk",
+    "name": "Толчок с расстановкой ног",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "The competitive Olympic lift jerk where the lifter drops into a split stance to catch the bar overhead.",
+    "description": "Соревновательное олимпийское упражнение с опусканием в расстановку ног для фиксации штанги над головой.",
     "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.75
   },
   {
-    "name": "Thruster",
+    "name": "Трастер",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A compound movement combining a front squat with an overhead press in one continuous motion.",
+    "description": "Комплексное движение, комбинирующее фронтальное приседание с жимом над головой одним непрерывным движением.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Overhead Squat",
+    "name": "Приседание с штангой над головой",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A squat performed with the bar held overhead, demanding exceptional shoulder mobility, stability, and core strength.",
+    "description": "Приседания со штангой, удерживаемой над головой, требующие исключительной подвижности плеч, стабильности и силы кора.",
     "targetMuscles": [
       "quadriceps",
       "glutes",
@@ -1366,98 +1366,98 @@
     "loadMultiplier": 0.5
   },
   {
-    "name": "Snatch Balance",
+    "name": "Балансировка в рывке",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift starting with the bar behind the neck, dropping into a squat while pressing the bar overhead.",
+    "description": "Олимпийское упражнение с началом со штангой за шеей, опускание в приседание с одновременным жимом штанги над головой.",
     "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Muscle Snatch",
+    "name": "Мышечный рывок",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A snatch variation where the bar is pulled overhead without dropping under into a squat position.",
+    "description": "Вариация рывка с подтягиванием штанги над головой без опускания под неё в положение приседания.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.45
   },
   {
-    "name": "Clean Pull",
+    "name": "Тяга в толчке",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "The first and second pull of the clean taken to full extension without catching the bar, focusing on explosive power.",
+    "description": "Первое и второе движение толчка до полного разгибания без фиксации штанги, фокусируясь на взрывной силе.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
     "loadMultiplier": 1.1
   },
   {
-    "name": "Snatch Pull",
+    "name": "Тяга в рывке",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "The first and second pull of the snatch taken to full extension without catching the bar, focusing on explosive triple extension.",
+    "description": "Первое и второе движение рывка до полного разгибания без фиксации штанги, фокусируясь на взрывном тройном разгибании.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "High Pull",
+    "name": "Высокая тяга",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive pull from the floor or hang position, bringing the bar to chest height with elbows high.",
+    "description": "Взрывная тяга с пола или из виса, доведение штанги до уровня груди с высокими локтями.",
     "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Pause Squat",
+    "name": "Приседания с паузой",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A back squat with a deliberate pause at the bottom to eliminate stretch reflex and build strength from the hole.",
+    "description": "Приседания со штангой на плечах с паузой внизу для устранения рефлекса растяжения и развития силы из ямы.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Pin Squat",
+    "name": "Приседания с упоров",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat starting from pins at various heights, eliminating the eccentric phase to build concentric strength.",
+    "description": "Приседания с началом с упоров на различной высоте, устраняющие эксцентрическую фазу для развития концентрической силы.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.0
   },
   {
-    "name": "Box Squat",
+    "name": "Приседания на ящик",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat performed to a box or bench, allowing the lifter to sit back and develop posterior chain engagement.",
+    "description": "Приседания на ящик или скамью, позволяющие сесть назад и развивать вовлечение задней цепи.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
     "loadMultiplier": 0.95
   },
   {
-    "name": "Safety Bar Squat",
+    "name": "Приседания со штангой в тренажёре безопасности",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat performed with a safety squat bar to reduce shoulder stress and emphasize upper back and quad strength.",
+    "description": "Приседания со штангой в тренажёре безопасности для уменьшения нагрузки на плечи и акцента на верхнюю часть спины и квадрицепсы.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
     "loadMultiplier": 1.0
   },
   {
-    "name": "Pause Bench Press",
+    "name": "Жим лёжа с паузой",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press with a pause on the chest to eliminate momentum and build explosive pressing power from a dead stop.",
+    "description": "Жим лёжа с паузой на груди для устранения импульса и развития взрывной силы жима из мёртвой точки.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Floor Press",
+    "name": "Жим лёжа на полу",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press performed lying on the floor with legs extended, limiting range of motion and emphasizing lockout strength.",
+    "description": "Жим лёжа, выполняемый лёжа на полу с вытянутыми ногами, ограничивающий диапазон движения и акцентирующий силу замка.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Deficit Deadlift",
+    "name": "Становая тяга с дефицита",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A deadlift performed while standing on a raised platform to increase range of motion and leg drive off the floor.",
+    "description": "Становая тяга, выполняемая стоя на возвышенной платформе для увеличения диапазона движения и ножной тяги от пола.",
     "targetMuscles": [
       "quadriceps",
       "glutes",
@@ -1470,26 +1470,26 @@
     "loadMultiplier": 0.9
   },
   {
-    "name": "Block Pull",
+    "name": "Тяга с блоков",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A deadlift from elevated blocks or pins, reducing range of motion to overload the lockout phase.",
+    "description": "Становая тяга с возвышенных блоков или упоров, уменьшающая диапазон движения для перегрузки фазы замка.",
     "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
     "loadMultiplier": 1.6
   },
   {
-    "name": "One Arm Kettlebell Snatch",
+    "name": "Рывок гирей одной рукой",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive single-arm lift swinging a kettlebell from between the legs to overhead in one fluid motion.",
+    "description": "Взрывное одноручное поднятие гири размахом от между ног над голову одним плавным движением.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Kettlebell Clean and Press",
+    "name": "Толчок и жим гирей",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A compound movement swinging a kettlebell to the shoulder in a rack position, then pressing it overhead.",
+    "description": "Комплексное движение с размахом гири к плечу в положение стойки, а затем жим над головой.",
     "targetMuscles": [
       "glutes",
       "hamstrings",
@@ -1502,66 +1502,66 @@
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Snatch",
+    "name": "Рывок гантелей",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive single-arm lift pulling a dumbbell from the floor to overhead in one motion.",
+    "description": "Взрывное одноручное поднятие гантели с пола над головой одним движением.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Single Arm Dumbbell Press",
+    "name": "Жим гантелей одной рукой",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "An overhead press performed with one dumbbell, engaging the core for stability and anti-rotation.",
+    "description": "Жим над головой одной гантелью, вовлекающий кор для стабильности и сопротивления вращению.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Dumbbell Step-Up",
+    "name": "Шаги на платформу с гантелями",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise stepping onto a raised platform while holding dumbbells at the sides.",
+    "description": "Упражнение для нижней части тела с заходом на возвышенную платформу, держа гантели по бокам.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Single Leg Romanian Deadlift",
+    "name": "Одноногая румынская становая тяга",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A unilateral hinge exercise balancing on one leg while lowering dumbbells toward the floor.",
+    "description": "Одностороннее упражнение в наклоне с балансированием на одной ноге при опускании гантелей к полу.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Renegade Row",
+    "name": "Гребля Ренегат",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A plank position row with dumbbells, alternating arms while maintaining core stability.",
+    "description": "Тяга в положении планки с гантелями, чередуя руки при сохранении стабильности кора.",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Dumbbell Thruster",
+    "name": "Трастер с гантелями",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A combination of a dumbbell front squat with an overhead press in one continuous movement.",
+    "description": "Комбинация фронтального приседания с гантелями и жима над головой одним непрерывным движением.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Waiter's Carry",
+    "name": "Удержание официанта",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A core stability exercise holding one dumbbell or kettlebell overhead while walking.",
+    "description": "Упражнение для стабильности кора с удержанием одной гантели или гири над головой во время ходьбы.",
     "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Suitcase Carry",
+    "name": "Удержание чемодана",
     "muscleGroup": "core",
     "type": "compound",
-    "description": "A core exercise holding a dumbbell or kettlebell at one side while walking, resisting lateral flexion.",
+    "description": "Упражнение для кора с удержанием гантели или гири с одной стороны во время ходьбы, сопротивление боковому сгибу.",
     "targetMuscles": [
       "transverse_abdominis",
       "external_obliques",
