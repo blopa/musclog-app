@@ -9,7 +9,7 @@ const MAX_INPUT_LENGTH = 2000;
  * Sanitizes user input to prevent prompt injection attacks.
  * Escapes special characters that could be used to manipulate the prompt structure.
  */
-export const sanitizeUserInput = (input: string): string => {
+const sanitizeUserInput = (input: string): string => {
   if (!input || typeof input !== 'string') {
     return '';
   }
@@ -42,8 +42,12 @@ export const sanitizeUserInput = (input: string): string => {
  * Wraps user content in clear delimiters to help the AI distinguish
  * between system instructions and user data.
  */
-export const wrapUserContent = (content: string): string => {
+export const wrapUserContent = (content: string, wrap: boolean = false): string => {
   const sanitized = sanitizeUserInput(content);
+
+  if (!wrap) {
+    return sanitized;
+  }
 
   return [
     '<user_content>',

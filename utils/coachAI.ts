@@ -33,7 +33,7 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { captureException } from './sentry';
-import { sanitizeUserInput } from './promptSanitizer';
+import { wrapUserContent } from './promptSanitizer';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -431,8 +431,8 @@ async function generateText(
   systemPrompt: string,
   userMessage: string = INSIGHTS_USER_MESSAGE
 ): Promise<string> {
-  // Sanitize user message to prevent prompt injection
-  const sanitizedUserMessage = sanitizeUserInput(userMessage);
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
@@ -473,8 +473,8 @@ async function generateTextWithHistory(
   recentConversation: ChatHistoryEntry[],
   finalUserMessage: string
 ): Promise<string> {
-  // Sanitize user message to prevent prompt injection
-  const sanitizedFinalUserMessage = sanitizeUserInput(finalUserMessage);
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -529,8 +529,8 @@ async function generateStructured<T>(
   schema: object,
   schemaName: string = 'response'
 ): Promise<T | null> {
-  // Sanitize user message to prevent prompt injection
-  const sanitizedUserMessage = sanitizeUserInput(userMessage);
+  // Wrap user message with delimiters to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
   
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
@@ -597,8 +597,8 @@ async function generateWithImageStructured<T>(
   schemaName: string = 'response',
   userMessageSuffix?: string
 ): Promise<T | null> {
-  // Sanitize user message suffix to prevent prompt injection
-  const sanitizedSuffix = userMessageSuffix?.trim() ? sanitizeUserInput(userMessageSuffix.trim()) : '';
+  // Wrap user message suffix with delimiters to prevent prompt injection
+  const sanitizedSuffix = userMessageSuffix?.trim() ? wrapUserContent(userMessageSuffix.trim()) : '';
   const userText =
     'Analyze this image and return the structured data.' +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
@@ -720,8 +720,8 @@ export async function sendCoachMessage(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  // Sanitize user message to prevent prompt injection attacks
-  const sanitizedMessage = sanitizeUserInput(userMessage);
+  // Wrap user message with delimiters to prevent prompt injection attacks
+  const sanitizedMessage = wrapUserContent(userMessage);
   
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);
