@@ -935,10 +935,13 @@ export const getGenerateMealPlanPrompt = async (
     .join('\n');
 };
 
-// TODO: maybe getTrackMealPrompt and getEstimateNutritionFromPhotoPrompt should be merged into one function
-export const getTrackMealPrompt = async (
-  language: string = 'en-US',
-  includeFoundationFoods: boolean = false
+/**
+ * System prompt for meal analysis (text or photo).
+ * Used for both chat-based meal tracking and direct photo analysis.
+ */
+export const getMealAnalysisPrompt = async (
+  includeFoundationFoods: boolean = false,
+  language?: string
 ): Promise<string> => {
   const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
   const sections = [
@@ -954,41 +957,14 @@ export const getTrackMealPrompt = async (
     sections.push(foundationPrompt);
   }
 
-  sections.push(
-    MACRO_CALORIE_NOTE,
-    `Your response must be in ${language}.`,
-    'Return the data as a structured list of meals, each with their mealType and ingredients.'
-  );
+  sections.push(MACRO_CALORIE_NOTE);
 
-  return sections.join('\n');
-};
-
-/**
- * System prompt for meal photo nutrition estimation.
- * Uses the same schema as trackMeal to return an array of meals with ingredients.
- */
-// TODO: maybe getTrackMealPrompt and getEstimateNutritionFromPhotoPrompt should be merged into one function
-export const getEstimateNutritionFromPhotoPrompt = async (
-  includeFoundationFoods: boolean = false
-): Promise<string> => {
-  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
-  const sections = [
-    'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
-    'Analyze the provided food photo and estimate the macronutrients.',
-    'Break down the meal into individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
-    'Group ingredients into a single meal entry (use mealType: "lunch" as default unless clearly a different meal type).',
-    'For each ingredient, estimate the macronutrients (calories, protein, carbs, fat, fiber) and the weight in grams.',
-    'Be as accurate as possible based on portion size visible in the image.',
-    'If uncertain about portion size, provide estimates for a typical serving.',
-  ];
-
-  if (foundationPrompt) {
-    sections.push(foundationPrompt);
+  if (language) {
+    sections.push(`Your response must be in ${language}.`);
   }
 
   sections.push(
-    MACRO_CALORIE_NOTE,
-    'Return structured nutritional data with ingredients breakdown.'
+    'Return the data as a structured list of meals, each with their mealType and ingredients.'
   );
 
   return sections.join('\n');

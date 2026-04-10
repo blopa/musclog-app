@@ -12,12 +12,12 @@ import {
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,
-  getEstimateNutritionFromPhotoPrompt,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getGenerateMealPlanFunctions,
   getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
+  getMealAnalysisPrompt,
   getMealCritiquePrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
@@ -29,7 +29,6 @@ import {
   getRecentWorkoutsInsightsPrompt,
   getRetrospectiveNutritionPrompt,
   getTrackMealFunctions,
-  getTrackMealPrompt,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
@@ -662,7 +661,7 @@ export async function trackMeal(
   try {
     const lang = config.language ?? 'en-US';
     const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
-    const systemPrompt = await getTrackMealPrompt(lang, includeFoundationFoods);
+    const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
@@ -988,7 +987,7 @@ export async function estimateNutritionFromPhoto(
   try {
     const customPrompts = await getActiveCustomPrompts();
     const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
-    const baseSystemPrompt = await getEstimateNutritionFromPhotoPrompt(includeFoundationFoods);
+    const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
