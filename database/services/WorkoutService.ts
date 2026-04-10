@@ -750,6 +750,75 @@ export class WorkoutService {
   }
 
   /**
+   * Reorder workout log exercises and update set_order for all sets.
+   */
+  static async reorderWorkoutLogExercises(
+    workoutLogId: string,
+    orderedLogExercises: { id: string; groupId?: string }[]
+  ): Promise<void> {
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      if (workoutLog.deletedAt) {
+        throw new Error('Workout log has been deleted');
+      }
+
+      await database.write(async () => {
+        const logExercisesCollection = database.get<WorkoutLogExercise>('workout_log_exercises');
+        const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
+
+        const preparedUpdates: (WorkoutLogExercise | WorkoutLogSet)[] = [];
+
+        const now = Date.now();
+
+        // Update WorkoutLogExercise orders
+        for (let i = 0; i < orderedLogExercises.length; i++) {
+          const { id, groupId } = orderedLogExercises[i];
+          const logEx = await logExercisesCollection.find(id);
+          preparedUpdates.push(
+            logEx.prepareUpdate((record) => {
+              record.exerciseOrder = i + 1;
+              record.groupId = groupId;
+              record.updatedAt = now;
+            })
+          );
+        }
+
+        // Update all WorkoutLogSet orders to match the new exercise order
+        // assigning them sequentially
+        let currentSetOrder = 1;
+        for (const { id } of orderedLogExercises) {
+          const sets = await logSetsCollection
+            .query(
+              Q.where('log_exercise_id', id),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('set_order', Q.asc)
+            )
+            .fetch();
+
+          for (const set of sets) {
+            preparedUpdates.push(
+              set.prepareUpdate((record) => {
+                record.setOrder = currentSetOrder++;
+                record.updatedAt = now;
+              })
+            );
+          }
+        }
+
+        if (preparedUpdates.length > 0) {
+          await database.batch(...preparedUpdates);
+        }
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to reorder workout log exercises: ${error.message}`);
+      }
+      throw new Error('Failed to reorder workout log exercises: Unknown error');
+    }
+  }
+
+  /**
    * Get workout logs by template_id, ordered by date (newest first)
    */
   static async getWorkoutLogsByTemplate(templateId: string, limit?: number): Promise<WorkoutLog[]> {

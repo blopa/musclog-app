@@ -36,6 +36,7 @@ import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
+import { ReorderPastWorkoutExercisesModal } from './ReorderPastWorkoutExercisesModal';
 import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
 
 // Component: Workout Summary Card
@@ -410,11 +411,20 @@ export default function PastWorkoutDetailModal({
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, externalId, reload } =
-    usePastWorkoutDetail({
-      visible,
-      workoutId,
-    });
+  const {
+    workout,
+    isLoading,
+    isMenuVisible,
+    setIsMenuVisible,
+    rawSets,
+    logExercises,
+    exercises,
+    externalId,
+    reload,
+  } = usePastWorkoutDetail({
+    visible,
+    workoutId,
+  });
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
   const { shareText } = useNativeShareText();
@@ -422,6 +432,7 @@ export default function PastWorkoutDetailModal({
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isReorderModalVisible, setIsReorderModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
@@ -646,6 +657,7 @@ export default function PastWorkoutDetailModal({
             console.error('Error loading workout for preview:', error);
           }
         }}
+        onReorder={() => setIsReorderModalVisible(true)}
       />
       {workoutId && workout ? (
         <EditWorkoutMetadataModal
@@ -736,6 +748,16 @@ export default function PastWorkoutDetailModal({
           sets={previewWorkoutData.sets}
           exercises={previewWorkoutData.exercises}
           shouldShowTimer={false}
+        />
+      ) : null}
+      {workoutId ? (
+        <ReorderPastWorkoutExercisesModal
+          visible={isReorderModalVisible}
+          onClose={() => setIsReorderModalVisible(false)}
+          workoutLogId={workoutId}
+          logExercises={logExercises}
+          exercises={exercises}
+          onSave={reload}
         />
       ) : null}
     </>
