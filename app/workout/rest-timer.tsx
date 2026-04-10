@@ -418,7 +418,9 @@ export default function RestTimerScreen() {
             <DetailedItemCard
               item={{
                 name: nextSet.exercise.name ?? '',
-                media: require('../../assets/icon.png'), // Default image for now
+                media: nextSet.exercise.imageUrl
+                  ? { uri: nextSet.exercise.imageUrl }
+                  : { icon: Dumbbell, color: theme.colors.text.secondary },
                 itemOne: {
                   value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
                   icon: Dumbbell,

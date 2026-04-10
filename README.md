@@ -22,6 +22,11 @@
 
 ## Overview
 
+<div align="center">
+  <img src="screenshots/nutrition-tracking.jpg" alt="App Dashboard" width="400"/>
+  <img src="screenshots/workout-tracking.jpg" alt="Workout Logging" width="400"/>
+</div>
+
 Musclog is a cross-platform mobile fitness application built with React Native and Expo. It combines workout logging, nutrition tracking, menstrual cycle awareness, and AI-powered coaching into a single, cohesive experience — all stored locally with WatermelonDB.
 
 > **Note:** Currently only dark theme is available.
