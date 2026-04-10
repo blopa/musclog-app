@@ -192,6 +192,7 @@
       "lunch": "Almoço",
       "dinner": "Jantar",
       "snacks": "Lanches",
+      "snack": "Lanche",
       "other": "Outro",
       "addFood": "Adicionar Alimento",
       "addFoodTo": "Adicionar alimento ao {{meal}}",

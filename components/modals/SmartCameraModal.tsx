@@ -31,6 +31,8 @@ import {
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
+  type TrackMealIngredient,
+  type TrackMealResponse,
 } from '@/utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
 import { performOcr } from '@/utils/ocr';
@@ -106,6 +108,7 @@ export default function SmartCameraModal({
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
+  const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
   const isSearchingBarcodeRef = useRef(false);
@@ -127,18 +130,37 @@ export default function SmartCameraModal({
     !isFoodNotFoundModalVisible &&
     !isFoodDetailsModalVisible;
 
-  /** Map AI macro result to the shape LogMealModal expects (calories from kcal). */
-  const mapMacroEstimateToMeal = useCallback(
-    (result: MacroEstimate) => ({
-      name: result.name,
-      type: t('meals.customMeal'),
-      calories: result.kcal,
-      protein: result.protein,
-      carbs: result.carbs,
-      fat: result.fat,
-      foodId: result.foodId,
-      grams: result.grams,
-    }),
+  /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
+  const mapTrackMealResponseToMeal = useCallback(
+    (result: TrackMealResponse) => {
+      // Flatten all ingredients from all meals
+      const allIngredients = result.meals.flatMap((m) => m.ingredients);
+
+      if (allIngredients.length === 0) {
+        return null;
+      }
+
+      // Calculate aggregated macros
+      const totalGrams = allIngredients.reduce((sum, ing) => sum + (ing.grams || 0), 0);
+      const totalKcal = allIngredients.reduce((sum, ing) => sum + ing.kcal, 0);
+      const totalProtein = allIngredients.reduce((sum, ing) => sum + ing.protein, 0);
+      const totalCarbs = allIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
+      const totalFat = allIngredients.reduce((sum, ing) => sum + ing.fat, 0);
+
+      // Use first meal's name or a generic name
+      const mealName =
+        result.meals[0]?.mealName || result.meals[0]?.mealType || t('meals.customMeal');
+
+      return {
+        name: mealName,
+        type: t('meals.customMeal'),
+        calories: totalKcal,
+        protein: totalProtein,
+        carbs: totalCarbs,
+        fat: totalFat,
+        grams: totalGrams,
+      };
+    },
     [t]
   );
 
@@ -298,23 +320,47 @@ export default function SmartCameraModal({
           }
 
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
-          if (result) {
-            // Normalize: if the AI matched a DB food (foodId), replace LLM estimates
-            // with the actual DB macros scaled to grams so the preview matches what's logged.
-            const [normalized] = await NutritionService.normalizeAiMealIngredients([result]);
+          if (result && result.meals.length > 0) {
+            // Flatten all ingredients from all meals
+            const allIngredients = result.meals.flatMap((m) => m.ingredients);
+
+            if (allIngredients.length === 0) {
+              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+              return;
+            }
+
+            // TODO: totalGrams not needed?
+            const totalGrams = allIngredients.reduce((sum, ing) => sum + (ing.grams || 0), 0);
+            const totalKcal = allIngredients.reduce((sum, ing) => sum + ing.kcal, 0);
+            const totalProtein = allIngredients.reduce((sum, ing) => sum + ing.protein, 0);
+            const totalCarbs = allIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
+            const totalFat = allIngredients.reduce((sum, ing) => sum + ing.fat, 0);
+
+            // Use first meal's name or a generic name
+            const mealName =
+              result.meals[0]?.mealName || result.meals[0]?.mealType || t('meals.customMeal');
+
             showSnackbar(
               'success',
               t('food.aiCamera.analysisSuccess', {
-                name: normalized.name,
-                kcal: formatRoundedDecimal(normalized.kcal, 2),
-                protein: formatRoundedDecimal(normalized.protein, 2),
-                carbs: formatRoundedDecimal(normalized.carbs, 2),
-                fat: formatRoundedDecimal(normalized.fat, 2),
+                name: mealName,
+                kcal: formatRoundedDecimal(totalKcal, 2),
+                protein: formatRoundedDecimal(totalProtein, 2),
+                carbs: formatRoundedDecimal(totalCarbs, 2),
+                fat: formatRoundedDecimal(totalFat, 2),
               })
             );
 
-            setSelectedMealForLogging(mapMacroEstimateToMeal(normalized));
-            setIsLogMealModalVisible(true);
+            // Map to LogMealModal format
+            const mealForLogging = mapTrackMealResponseToMeal(result);
+            if (mealForLogging) {
+              setSelectedMealForLogging(mealForLogging);
+              // Pass ingredients for the breakdown view
+              setAiIngredients(allIngredients);
+              setIsLogMealModalVisible(true);
+            } else {
+              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+            }
           } else {
             showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
           }
@@ -332,7 +378,7 @@ export default function SmartCameraModal({
       formatRoundedDecimal,
       useOcrBeforeAi,
       aiContext,
-      mapMacroEstimateToMeal,
+      mapTrackMealResponseToMeal,
       macroEstimateToSearchResultProduct,
     ]
   );
@@ -499,13 +545,16 @@ export default function SmartCameraModal({
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
         setIsLogMealModalVisible(false);
         setSelectedMealForLogging(null);
+        setAiIngredients(undefined);
+        // Close the camera modal after successful logging
+        onClose();
       } catch (error) {
         console.error('Error logging meal:', error);
         captureException(error, { data: { context: 'SmartCameraModal.handleLogMeal' } });
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
-    [selectedMealForLogging, t]
+    [selectedMealForLogging, t, onClose]
   );
 
   const handleScanBarcodePress = useCallback(() => {
@@ -1095,8 +1144,10 @@ export default function SmartCameraModal({
             onClose={() => {
               setIsLogMealModalVisible(false);
               setSelectedMealForLogging(null);
+              setAiIngredients(undefined);
             }}
             meal={selectedMealForLogging}
+            ingredients={aiIngredients}
             onLogMeal={handleLogMeal}
             initialDate={logDate}
           />

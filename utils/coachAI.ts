@@ -1,7 +1,7 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
-import { SettingsService } from '@/database/services';
+import { NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
@@ -977,13 +977,14 @@ export type MealPhotoContext = {
 };
 
 /**
- * Estimate nutrition from a meal photo
+ * Estimate nutrition from a meal photo.
+ * Returns a TrackMealResponse with ingredients breakdown, similar to trackMeal.
  */
 export async function estimateNutritionFromPhoto(
   config: CoachAIConfig,
   base64Image: string,
   context?: MealPhotoContext | null
-): Promise<MacroEstimate | null> {
+): Promise<TrackMealResponse | null> {
   try {
     const customPrompts = await getActiveCustomPrompts();
     const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
@@ -994,10 +995,8 @@ export async function estimateNutritionFromPhoto(
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
 
-    // TODO: use a different schema, since the getEstimateMacrosFunctions dont have a schema to return an array of food items - like we do in the CoachModal when asking to estimate meal
-    // maybe we should use getTrackMealFunctions, but if so, make sure to update the rest of the code to properly parse the new returned schema
-    // check how it's done in the CoachModal, and possibly use the same modal to displayed the meal details
-    const fns = getEstimateMacrosFunctions(false, includeFoundationFoods);
+    // Use getTrackMealFunctions to get an array of meals with ingredients breakdown
+    const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     let userMessageSuffix: string | undefined;
@@ -1013,15 +1012,25 @@ export async function estimateNutritionFromPhoto(
       userMessageSuffix = parts.join('\n');
     }
 
-    const parsed = await generateWithImageStructured<MacroEstimate>(
+    const parsed = await generateWithImageStructured<TrackMealResponse>(
       config,
       systemPrompt,
       base64,
       mimeType,
       schema,
-      'estimateMacros',
+      'trackMeal',
       userMessageSuffix
     );
+
+    // Normalize ingredients if foundation foods were matched (foodId present with zero macros)
+    if (parsed?.meals) {
+      for (const meal of parsed.meals) {
+        if (meal.ingredients) {
+          meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+        }
+      }
+    }
+
     return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] estimateNutritionFromPhoto error:', error);

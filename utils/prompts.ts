@@ -964,7 +964,8 @@ export const getTrackMealPrompt = async (
 };
 
 /**
- * System prompt for meal photo nutrition estimation
+ * System prompt for meal photo nutrition estimation.
+ * Uses the same schema as trackMeal to return an array of meals with ingredients.
  */
 // TODO: maybe getTrackMealPrompt and getEstimateNutritionFromPhotoPrompt should be merged into one function
 export const getEstimateNutritionFromPhotoPrompt = async (
@@ -972,9 +973,11 @@ export const getEstimateNutritionFromPhotoPrompt = async (
 ): Promise<string> => {
   const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
   const sections = [
-    'You are an expert nutritionist with extensive knowledge of food composition.',
+    'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
     'Analyze the provided food photo and estimate the macronutrients.',
-    'You MUST break down dishes into their individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
+    'Break down the meal into individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
+    'Group ingredients into a single meal entry (use mealType: "lunch" as default unless clearly a different meal type).',
+    'For each ingredient, estimate the macronutrients (calories, protein, carbs, fat, fiber) and the weight in grams.',
     'Be as accurate as possible based on portion size visible in the image.',
     'If uncertain about portion size, provide estimates for a typical serving.',
   ];
@@ -983,7 +986,10 @@ export const getEstimateNutritionFromPhotoPrompt = async (
     sections.push(foundationPrompt);
   }
 
-  sections.push(MACRO_CALORIE_NOTE, 'Return structured nutritional data.');
+  sections.push(
+    MACRO_CALORIE_NOTE,
+    'Return structured nutritional data with ingredients breakdown.'
+  );
 
   return sections.join('\n');
 };
