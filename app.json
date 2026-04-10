@@ -65,12 +65,6 @@
       "expo-background-task",
       "expo-web-browser",
       [
-        "expo-asset",
-        {
-          "assets": ["./assets/exercises"]
-        }
-      ],
-      [
         "react-native-android-widget",
         {
           "fonts": ["./assets/fonts/material.ttf"],
