@@ -1274,7 +1274,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "A compound lift combining a power clean to the shoulders followed by an overhead press, targeting the entire body.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "triceps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps",
+      "forearms"
+    ],
     "loadMultiplier": 0.65
   },
   {
@@ -1346,7 +1354,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "A squat performed with the bar held overhead, demanding exceptional shoulder mobility, stability, and core strength.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "traps", "erector_spinae", "forearms"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "traps",
+      "erector_spinae",
+      "forearms"
+    ],
     "loadMultiplier": 0.5
   },
   {
@@ -1442,7 +1458,15 @@
     "muscleGroup": "back",
     "type": "compound",
     "description": "A deadlift performed while standing on a raised platform to increase range of motion and leg drive off the floor.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "traps", "lats", "forearms"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "lats",
+      "forearms"
+    ],
     "loadMultiplier": 0.9
   },
   {
@@ -1466,7 +1490,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "A compound movement swinging a kettlebell to the shoulder in a rack position, then pressing it overhead.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "triceps", "traps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "triceps",
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 0.4
   },
   {
@@ -1530,7 +1562,13 @@
     "muscleGroup": "core",
     "type": "compound",
     "description": "A core exercise holding a dumbbell or kettlebell at one side while walking, resisting lateral flexion.",
-    "targetMuscles": ["transverse_abdominis", "external_obliques", "internal_obliques", "quadratus_lumborum", "forearms"],
+    "targetMuscles": [
+      "transverse_abdominis",
+      "external_obliques",
+      "internal_obliques",
+      "quadratus_lumborum",
+      "forearms"
+    ],
     "loadMultiplier": 0.3
   }
 ]

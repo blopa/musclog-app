@@ -3,5 +3,5 @@
  * Returns the cloud URL directly so the browser's own HTTP cache handles it.
  */
 export async function getCachedExerciseImageUri(cloudUrl: string): Promise<string | null> {
-    return cloudUrl;
+  return cloudUrl;
 }

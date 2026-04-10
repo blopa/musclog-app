@@ -10,5 +10,5 @@ const GITHUB_BASE_URL = `https://raw.githubusercontent.com/blopa/musclog-app/ref
  * The URL always points to the version tag matching the current package.json version.
  */
 export function buildExerciseCloudUrl(exerciseNumber: number): string {
-    return `${GITHUB_BASE_URL}/exercise${exerciseNumber}.png`;
+  return `${GITHUB_BASE_URL}/exercise${exerciseNumber}.png`;
 }

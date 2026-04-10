@@ -105,6 +105,18 @@ export function Migrations() {
     );
   }, [isStaticExport]);
 
+  // Backfill order_index for existing app exercises on every boot.
+  // Ensures app exercises appear in the same order as the JSON file.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    ExerciseService.backfillExerciseOrderIndex().catch((err) =>
+      console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
+    );
+  }, [isStaticExport]);
+
   // Web fallback for the v7 migration: replace file:// exercise image URIs with
   // cloud URLs. LokiJS (web) silently ignores unsafeExecuteSql, so we run the
   // equivalent JS logic here. No-op when there is nothing to migrate.

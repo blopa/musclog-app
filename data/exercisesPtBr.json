@@ -1274,7 +1274,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "Levantamento composto combinando um power clean até os ombros seguido de um desenvolvimento, trabalhando o corpo inteiro.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "triceps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps",
+      "forearms"
+    ],
     "loadMultiplier": 0.65
   },
   {
@@ -1346,7 +1354,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "Agachamento realizado com a barra segurada acima da cabeça, exigindo mobilidade excepcional dos ombros, estabilidade e força do core.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "traps", "erector_spinae", "forearms"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "traps",
+      "erector_spinae",
+      "forearms"
+    ],
     "loadMultiplier": 0.5
   },
   {
@@ -1442,7 +1458,15 @@
     "muscleGroup": "back",
     "type": "compound",
     "description": "Levantamento terra realizado em pé sobre uma plataforma elevada para aumentar a amplitude de movimento e o impulso das pernas do chão.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "traps", "lats", "forearms"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "lats",
+      "forearms"
+    ],
     "loadMultiplier": 0.9
   },
   {
@@ -1466,7 +1490,15 @@
     "muscleGroup": "full_body",
     "type": "compound",
     "description": "Movimento composto balançando um kettlebell até o ombro na posição de rack, depois pressionando acima da cabeça.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "triceps", "traps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "triceps",
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 0.4
   },
   {
@@ -1530,7 +1562,13 @@
     "muscleGroup": "core",
     "type": "compound",
     "description": "Exercício para o core segurando um haltere ou kettlebell de um lado enquanto caminha, resistindo à flexão lateral.",
-    "targetMuscles": ["transverse_abdominis", "external_obliques", "internal_obliques", "quadratus_lumborum", "forearms"],
+    "targetMuscles": [
+      "transverse_abdominis",
+      "external_obliques",
+      "internal_obliques",
+      "quadratus_lumborum",
+      "forearms"
+    ],
     "loadMultiplier": 0.3
   }
 ]

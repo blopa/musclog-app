@@ -200,13 +200,33 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
       setIsLoading(true);
       const exercisesCollection = database.get<Exercise>('exercises');
       let fetchedExercises = await exercisesCollection
-        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('name', Q.asc))
+        .query(
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('source', Q.asc),
+          Q.sortBy('order_index', Q.asc),
+          Q.sortBy('name', Q.asc)
+        )
         .fetch();
       if (fetchedExercises.length === 0) {
         const allExercises = await exercisesCollection.query().fetch();
         fetchedExercises = allExercises
           .filter((e) => !e.deletedAt)
-          .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+          .sort((a, b) => {
+            // Sort by source (app first), then by order_index, then by name
+            const sourceCompare = (a.source ?? 'user').localeCompare(b.source ?? 'user');
+            if (sourceCompare !== 0) {
+              return sourceCompare;
+            }
+            // For app exercises, sort by order_index (JSON order)
+            if (a.source === 'app' && b.source === 'app') {
+              const orderCompare = (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+              if (orderCompare !== 0) {
+                return orderCompare;
+              }
+            }
+
+            return (a.name ?? '').localeCompare(b.name ?? '');
+          });
       }
       const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
         id: exercise.id,

@@ -105,9 +105,15 @@ export const migrations = schemaMigrations({
     },
 
     // Version 7: Replace locally-copied exercise image file:// URIs with GitHub
+    // Also add order_index column to preserve JSON file ordering for app exercises
     {
       toVersion: 7,
       steps: [
+        // Add order_index column to exercises table
+        addColumns({
+          table: 'exercises',
+          columns: [{ name: 'order_index', type: 'number', isOptional: true }],
+        }),
         // Old DB stores filenames as bare numbers: "1.png", "2.png", etc.
         // New URL format: .../refs/tags/2.5.15/assets/exercises/exercise1.png
         // SUBSTR(..., INSTR(..., '/exercises/') + 11) extracts "1.png"; prepend "exercise".

@@ -18,6 +18,7 @@ export const schema = appSchema({
         { name: 'mechanic_type', type: 'string' }, // 'compound' or 'isolation'
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
         { name: 'load_multiplier', type: 'number' }, // Load multiplier for volume calculations
+        { name: 'order_index', type: 'number', isOptional: true }, // JSON order for app exercises
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

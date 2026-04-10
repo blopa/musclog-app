@@ -145,7 +145,7 @@ async function generateImageWithGemini(prompt, outputPath) {
   }
 
   // Find the inline data (image) part
-  const imagePart = candidate.content.parts.find(part => part.inlineData);
+  const imagePart = candidate.content.parts.find((part) => part.inlineData);
   if (!imagePart || !imagePart.inlineData) {
     throw new Error('No image data in Gemini response');
   }
@@ -165,7 +165,7 @@ async function generateImageWithGemini(prompt, outputPath) {
  * @returns {Promise<void>}
  */
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -217,7 +217,7 @@ async function main() {
   }
 
   console.log(`\n📝 Found ${missingExercises.length} missing exercise images.`);
-  console.log(`Missing: ${missingExercises.map(m => m.imageNumber).join(', ')}\n`);
+  console.log(`Missing: ${missingExercises.map((m) => m.imageNumber).join(', ')}\n`);
 
   // Generate missing images one at a time
   let successCount = 0;
@@ -272,7 +272,7 @@ async function main() {
 }
 
 // Run the script
-main().catch(err => {
+main().catch((err) => {
   console.error('Unexpected error:', err);
   process.exit(1);
 });

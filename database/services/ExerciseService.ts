@@ -27,12 +27,17 @@ function getExercisesData(): ExerciseJsonData[] {
 
 export class ExerciseService {
   /**
-   * Get all exercises (non-deleted)
+   * Get all exercises (non-deleted), sorted with app exercises first by JSON order, then user exercises by name
    */
   static async getAllExercises(): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('name', Q.asc)
+      )
       .fetch();
   }
 
@@ -42,7 +47,13 @@ export class ExerciseService {
   static async getExercisesByMuscleGroup(muscleGroup: MuscleGroup | string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('muscle_group', muscleGroup))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('muscle_group', muscleGroup),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('name', Q.asc)
+      )
       .fetch();
   }
 
@@ -54,7 +65,13 @@ export class ExerciseService {
   ): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('equipment_type', equipmentType))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('equipment_type', equipmentType),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('name', Q.asc)
+      )
       .fetch();
   }
 
@@ -66,7 +83,13 @@ export class ExerciseService {
   ): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('mechanic_type', mechanicType))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('mechanic_type', mechanicType),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('name', Q.asc)
+      )
       .fetch();
   }
 
@@ -76,7 +99,13 @@ export class ExerciseService {
   static async searchExercises(searchTerm: string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', Q.like(`%${searchTerm}%`)))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('name', Q.like(`%${searchTerm}%`)),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('name', Q.asc)
+      )
       .fetch();
   }
 
@@ -251,7 +280,11 @@ export class ExerciseService {
       query = query.extend(Q.where('name', Q.like(`%${filters.searchTerm.trim()}%`)));
     }
 
-    query = query.extend(Q.sortBy('name', Q.asc));
+    query = query.extend(
+      Q.sortBy('source', Q.asc),
+      Q.sortBy('order_index', Q.asc),
+      Q.sortBy('name', Q.asc)
+    );
     if (limit > 0) {
       if (offset > 0) {
         query = query.extend(Q.skip(offset), Q.take(limit));
@@ -269,10 +302,16 @@ export class ExerciseService {
   static async getFrequentlyUsedExercises(limit: number = 10): Promise<Exercise[]> {
     // TODO: Implement exercise usage tracking and frequency calculation
     // This is a simplified version - in a real app you might want to add a usage counter
-    // For now, we'll return exercises ordered by creation date (most recent first)
+    // For now, we'll return exercises ordered by source (app first), then JSON order
     return await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit))
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('source', Q.asc),
+        Q.sortBy('order_index', Q.asc),
+        Q.sortBy('created_at', Q.desc),
+        Q.take(limit)
+      )
       .fetch();
   }
 
@@ -468,7 +507,7 @@ export class ExerciseService {
    * `appExerciseCount` are assumed to be app-seeded and get `'app'`, the rest get `'user'`.
    * Safe to call on every app start — it's a no-op when all exercises already have a source.
    */
-  static async backfillExerciseSources(appExerciseCount: number = 105): Promise<void> {
+  static async backfillExerciseSources(appExerciseCount: number = 183): Promise<void> {
     const unsourced = await database
       .get<Exercise>('exercises')
       .query(
@@ -495,13 +534,75 @@ export class ExerciseService {
   }
 
   /**
+   * Backfills order_index for app exercises based on their position in the JSON file.
+   * This ensures app exercises appear in the same order as the JSON file.
+   * Searches both enUS and ptBR JSON files since we don't know which language was used during seeding.
+   * order_index starts at 0 (but exercise images use index + 1).
+   * Safe to call repeatedly — already-correct exercises are left untouched.
+   */
+  static async backfillExerciseOrderIndex(): Promise<void> {
+    // Build name-to-index maps for both JSON files
+    const enUsNameToIndex = new Map(
+      exercisesEnUS.map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
+    );
+
+    const ptBrNameToIndex = new Map(
+      exercisesPtBr.map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
+    );
+
+    // Find app exercises without order_index (null/undefined)
+    const appExercises = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const toUpdate: { exercise: Exercise; jsonIndex: number }[] = [];
+
+    for (const exercise of appExercises) {
+      // Skip if already has order_index set (not null/undefined)
+      if (exercise.orderIndex !== null && exercise.orderIndex !== undefined) {
+        continue;
+      }
+
+      const exerciseName = (exercise.name ?? '').toLowerCase();
+      // Try enUS first, then ptBR
+      let jsonIndex = enUsNameToIndex.get(exerciseName);
+      if (jsonIndex === undefined) {
+        jsonIndex = ptBrNameToIndex.get(exerciseName);
+      }
+
+      if (jsonIndex !== undefined) {
+        toUpdate.push({ exercise, jsonIndex });
+      }
+    }
+
+    if (toUpdate.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (const { exercise, jsonIndex } of toUpdate) {
+        await exercise.update((e) => {
+          e.orderIndex = jsonIndex;
+        });
+      }
+    });
+
+    console.log(
+      `[backfillExerciseOrderIndex] Backfilled order_index for ${toUpdate.length} exercise(s)`
+    );
+  }
+
+  /**
    * Repairs app exercises that are missing an imageUrl by setting the cloud URL.
    * Safe to call on every app start — it's a no-op when all images are already present.
    */
   static async repairMissingExerciseImages(): Promise<void> {
     const exercisesJson = getExercisesData();
     const allExercises = await database.get<Exercise>('exercises').query().fetch();
-    const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt && ex.source === 'app');
+    const broken = allExercises.filter(
+      (ex) => !ex.imageUrl && !ex.deletedAt && ex.source === 'app'
+    );
 
     if (broken.length === 0) {
       return;
@@ -625,6 +726,7 @@ export class ExerciseService {
         exercise.mechanicType = mechanicType as MechanicType;
         exercise.source = 'app';
         exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
+        exercise.orderIndex = jsonIndex;
         exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
         exercise.createdAt = now;
         exercise.updatedAt = now;
