@@ -152,7 +152,8 @@
     "unique-names-generator": "^4.7.1",
     "victory": "37.3.6",
     "victory-native": "41.20.2",
-    "xlsx": "0.18.5"
+    "xlsx": "0.18.5",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",

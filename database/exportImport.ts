@@ -18,10 +18,12 @@ import {
 } from '@/constants/settings';
 import { decrypt, encrypt } from '@/utils/encryption';
 import { reloadApp } from '@/utils/file';
+import { captureException } from '@/utils/sentry';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
+import { ExportDumpSchema, ValidatedExportDump } from './exportValidation';
 import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
 import { ExerciseService, FoodPortionService } from './services';
@@ -75,6 +77,37 @@ export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
 };
+
+/**
+ * Validates the export dump against the schema.
+ * Returns the validated data if successful, or throws a detailed error.
+ */
+function validateExportDump(data: unknown): ValidatedExportDump {
+  const result = ExportDumpSchema.safeParse(data);
+
+  if (!result.success) {
+    // Collect all validation errors for detailed reporting
+    // Zod v3+ uses .issues, older versions use .errors
+    const issues = (result.error as any).issues || (result.error as any).errors || [];
+    const errors = issues.map((err: { path: (string | number)[]; message: string }) => {
+      const path = err.path.join('.');
+      return `${path}: ${err.message}`;
+    });
+
+    const errorMessage = `Export validation failed with ${errors.length} error(s):\n${errors.slice(0, 10).join('\n')}${errors.length > 10 ? '\n...and more' : ''}`;
+
+    captureException(new Error(errorMessage), {
+      data: {
+        validationErrors: errors.slice(0, 20),
+        totalErrors: errors.length,
+      },
+    });
+
+    throw new Error(errorMessage);
+  }
+
+  return result.data;
+}
 
 function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   const raw = (record as { _raw?: Record<string, unknown> })._raw;
@@ -196,10 +229,10 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const dbData = JSON.parse(jsonString) as ExportDump;
-  if (typeof dbData._exportVersion !== 'number') {
-    throw new Error('Invalid export file: missing _exportVersion');
-  }
+  const parsed = JSON.parse(jsonString);
+
+  // Validate the export data against schema
+  const dbData = validateExportDump(parsed);
 
   // Only clear AsyncStorage if the imported data contains async storage data
   const asyncStorageData = dbData._async_storage_;
@@ -237,7 +270,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       allOperations.push(record.prepareDestroyPermanently());
     }
 
-    const rows = dbData[tableName];
+    // Access table data using type assertion since tableName is dynamic
+    const rows = (dbData as Record<string, unknown>)[tableName];
     if (!Array.isArray(rows)) {
       continue;
     }
@@ -340,10 +374,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             if (key === 'id' || key === '_decrypted') {
               continue;
             }
+
             const value = raw[key];
             if (value === undefined) {
               continue;
             }
+
             const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
             (rec as any)[camel] = value;
           }

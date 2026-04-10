@@ -27,6 +27,7 @@ import {
 } from './calendarDate';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
+import { wrapUserContent } from './promptSanitizer';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -822,11 +823,14 @@ export const getParsePastWorkoutsPrompt = async (
   exerciseNames: string[],
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     "Parse past workouts from the user's text description. Try to match exercise names to the provided list.",
     `If too long, only parse the first 20 workouts. Available exercises: ${exerciseNames.join(', ')}`,
-    `User's message:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 
@@ -837,11 +841,14 @@ export const getParsePastNutritionPrompt = async (
   userMessage: string,
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     "Parse past nutrition data from the user's text into structured entries. Parse up to 20 entries.",
     'Extract: date, calories, protein, carbs, fat, fiber, and other macronutrients if available.',
-    `User's message:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 
@@ -853,12 +860,15 @@ export const getRetrospectiveNutritionPrompt = async (
   userMessage: string,
   language: string = 'en-US'
 ): Promise<string> => {
+  // Sanitize user input to prevent prompt injection
+  const sanitizedUserMessage = wrapUserContent(userMessage);
+
   return [
     await getBaseSystemPrompt(language),
     `The user wants to log nutrition data for ${targetDate}. Break down their natural language description into individual food items.`,
     'Categorize each item by meal type: 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack.',
     'Estimate reasonable portions and nutritional values based on common serving sizes.',
-    `User's description:\n${userMessage}`,
+    sanitizedUserMessage,
   ].join('\n');
 };
 

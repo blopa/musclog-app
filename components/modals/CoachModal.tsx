@@ -409,12 +409,14 @@ const renderSend = (
   props: SendProps<ExtendedIMessage>,
   theme: Theme,
   failedMessageText: string | null,
-  hasAttachedImage: boolean
+  hasAttachedImage: boolean,
+  isSending: boolean
 ) => {
   const styles = getStyles(theme);
   // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
   const effectiveText = (failedMessageText ?? props.text ?? '').trim();
-  const isDisabled = !effectiveText && !hasAttachedImage;
+  // Disable send button when: no text/image OR currently sending
+  const isDisabled = (!effectiveText && !hasAttachedImage) || isSending;
 
   // Always render the send button, regardless of GiftedChat's internal logic
   return (
@@ -432,10 +434,14 @@ const renderSend = (
           opacity: isDisabled ? 0.5 : 1,
         }}
       >
-        <SendIcon
-          size={theme.iconSize.lg}
-          color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.black}
-        />
+        {isSending ? (
+          <ActivityIndicator size="small" color={theme.colors.text.tertiary} />
+        ) : (
+          <SendIcon
+            size={theme.iconSize.lg}
+            color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.black}
+          />
+        )}
       </Pressable>
     </View>
   );
@@ -1297,9 +1303,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         props,
         theme,
         failedMessageText,
-        !!attachedImage && pendingIntention === TRACK_MEAL
+        !!attachedImage && pendingIntention === TRACK_MEAL,
+        isSending
       ),
-    [theme, failedMessageText, attachedImage, pendingIntention]
+    [theme, failedMessageText, attachedImage, pendingIntention, isSending]
   );
 
   const gcRenderDay = useCallback(

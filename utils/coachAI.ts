@@ -32,6 +32,7 @@ import {
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
+import { captureException } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -397,14 +398,25 @@ async function sendViaOpenAI(
     return parseCoachResponse(raw);
   } catch (error: any) {
     console.error('[coachAI] sendViaOpenAI error:', error);
+
+    // Log detailed error for debugging but don't expose internals to user
+    captureException(error, {
+      data: { context: 'coachAI.sendViaOpenAI', provider: 'openai' },
+    });
+
     if (isAiCreditsError(error)) {
-      throw new AiCreditsError(error?.message ?? 'OpenAI quota exceeded');
+      throw new AiCreditsError(
+          // TODO: use i18n here
+        'AI service quota exceeded. Please check your API key or try again later.'
+      );
     }
-    // Return a friendly error message if the API call fails (e.g. invalid key, quota exceeded)
-    const errorMsg = error?.message || 'Error communicating with OpenAI';
+
+    // Return a user-friendly error message without exposing internal details
     return {
-      msg4User: `Error: ${errorMsg}`,
-      sumMsg: 'OpenAI error',
+      // TODO: use i18n here
+      msg4User: 'Sorry, I had trouble processing that request. Please try again in a moment.',
+      // TODO: use i18n here
+      sumMsg: 'Error processing request',
     };
   }
 }

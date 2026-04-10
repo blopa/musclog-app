@@ -246,6 +246,9 @@ export function useChatMessages(
   const rawMessagesRef = useRef<ChatMessage[]>([]);
   // Ref mirror for pendingCoachMessage to avoid stale closure in sendMessage
   const pendingCoachMessageRef = useRef<ExtendedIMessage | null>(null);
+  // Rate limiting: track last send timestamp to prevent spam
+  const lastSendTimeRef = useRef<number>(0);
+  const MIN_SEND_INTERVAL_MS = 1000; // Minimum 1 second between messages
 
   // Initial load and reload when context changes
   useEffect(() => {
@@ -412,6 +415,17 @@ export function useChatMessages(
       if ((!text.trim() && !base64Image) || isSending) {
         return;
       }
+
+      // Rate limiting: prevent rapid-fire requests
+      const now = Date.now();
+      const timeSinceLastSend = now - lastSendTimeRef.current;
+      if (timeSinceLastSend < MIN_SEND_INTERVAL_MS) {
+        console.warn(
+          `[useChatMessages] Rate limit: ${MIN_SEND_INTERVAL_MS - timeSinceLastSend}ms remaining`
+        );
+        return;
+      }
+      lastSendTimeRef.current = now;
 
       setEphemeralErrorMessage(null); // Clear any previous error when user sends again
       setEphemeralCreditsError(false);

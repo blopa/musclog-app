@@ -9,12 +9,34 @@
 //   redirectSystemPath sets the *initial* route, which Expo Router handles natively
 //   with no imperative navigation involved — no race condition possible.
 
+/** Valid deep link actions that can be processed */
+const VALID_ACTIONS = ['open-camera', 'open-nutrition'] as const;
+type ValidAction = (typeof VALID_ACTIONS)[number];
+
+/**
+ * Validates that the action parameter is in the allowlist of known safe actions.
+ * This prevents potential security issues from unexpected deep link parameters.
+ */
+function isValidAction(action: string | null): action is ValidAction {
+  if (!action) {
+    return false;
+  }
+
+  return VALID_ACTIONS.includes(action as ValidAction);
+}
+
 export const redirectSystemPath = ({ path, initial }: { path: string; initial: boolean }) => {
   try {
     if (initial && path.includes('action=')) {
       const fullUrl = `http://localhost${path.startsWith('/') ? path : `/${path}`}`;
       const url = new URL(fullUrl);
       const action = url.searchParams.get('action');
+
+      // Validate action against allowlist to prevent injection attacks
+      if (!isValidAction(action)) {
+        console.warn(`[redirectSystemPath] Ignoring invalid deep link action: ${action}`);
+        return path;
+      }
 
       if (action === 'open-camera') {
         (global as any).__PENDING_WIDGET_ACTION = action;

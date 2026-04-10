@@ -33,15 +33,22 @@ export async function setActiveWorkoutLogId(workoutLogId: string): Promise<void>
 
 /**
  * Clear the active workout log ID from AsyncStorage and dismiss the active workout notification.
+ * Uses atomic multiRemove to prevent race conditions.
  */
 export async function clearActiveWorkoutLogId(): Promise<void> {
   try {
     const workoutLogId = await getActiveWorkoutLogId();
+    const keysToRemove: string[] = [ACTIVE_WORKOUT_KEY];
+
+    // Collect all keys to remove in a single atomic operation
     if (workoutLogId) {
-      await AsyncStorage.removeItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
+      keysToRemove.push(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
     }
 
-    await AsyncStorage.removeItem(ACTIVE_WORKOUT_KEY);
+    // Atomic removal of all keys at once to prevent race conditions
+    await AsyncStorage.multiRemove(keysToRemove);
+
+    // Dismiss notification after storage is cleared
     await NotificationService.dismissActiveWorkoutNotification();
   } catch (error) {
     console.error('Error clearing active workout from storage:', error);
