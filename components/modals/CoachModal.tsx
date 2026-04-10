@@ -650,6 +650,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
     messageId: string;
     mealTypeIdentifier: MealType;
+    mealName?: string;
     calories: number;
     protein: number;
     carbs: number;
@@ -852,6 +853,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       setSelectedMealForTracking({
         messageId: meal.messageId,
         mealTypeIdentifier: mealType,
+        mealName: entry.mealName,
         calories: entry.calories,
         protein: entry.protein,
         carbs: entry.carbs,
@@ -952,7 +954,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     );
 
     return {
-      name: ingredientsDesc,
+      name: selectedMealForTracking.mealName ?? ingredientsDesc,
       type: mealLabel,
       calories: selectedMealForTracking.calories,
       protein: selectedMealForTracking.protein,
@@ -1560,7 +1562,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               date,
               logMealType,
               portionGrams,
-              t(`food.meals.${selectedMealForTracking.mealTypeIdentifier}`)
+              selectedMealForTracking.mealName ??
+                t(`food.meals.${selectedMealForTracking.mealTypeIdentifier}`)
             );
             setSelectedMealForTracking(null);
           }}

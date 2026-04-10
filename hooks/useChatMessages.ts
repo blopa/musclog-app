@@ -97,6 +97,7 @@ export interface ExtendedIMessage extends IMessage {
     messageId: string;
     meals: {
       mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+      mealName?: string;
       calories: number;
       protein: number;
       carbs: number;
@@ -155,6 +156,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
             const ingredients: TrackMealIngredient[] = m.ingredients ?? [];
             return {
               mealType: m.mealType,
+              mealName: m.mealName,
               calories: Math.round(ingredients.reduce((s, i) => s + i.kcal, 0)),
               protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
               carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),

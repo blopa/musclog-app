@@ -176,6 +176,7 @@ export type TrackMealIngredient = {
 
 export type TrackedMeal = {
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealName?: string;
   ingredients: TrackMealIngredient[];
 };
 

@@ -1520,13 +1520,17 @@ export const getTrackMealFunctions = (
                   enum: ['breakfast', 'lunch', 'dinner', 'snack'],
                   description: 'Type of meal',
                 },
+                mealName: {
+                  type: 'string',
+                  description: 'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
+                },
                 ingredients: {
                   type: 'array',
                   description: 'List of ingredients in this meal',
                   items: ingredientSchema,
                 },
               },
-              required: ['mealType', 'ingredients'],
+              required: ['mealType', 'mealName', 'ingredients'],
             },
           },
         },
