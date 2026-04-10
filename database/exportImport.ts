@@ -241,19 +241,17 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   };
 
-  // Phase 1: Prepare all operations outside of any write block.
-  // Reads and async encryption happen here so the write block stays synchronous-safe
-  // and everything can be committed in one atomic batch.
-  const allOperations: any[] = [];
+  // Phase 1: Prepare create operations and collect existing records to delete.
+  // Reads and async encryption happen here so the write blocks stay synchronous-safe.
+  const createOperations: any[] = [];
+  const recordsToDelete: any[] = [];
 
   for (const tableName of RESTORE_ORDER) {
     const collection = database.get(tableName as any);
 
-    // Mark all existing records for deletion.
+    // Collect all existing records for deletion (will delete in separate transaction)
     const existing = await collection.query().fetch();
-    for (const record of existing) {
-      allOperations.push(record.prepareDestroyPermanently());
-    }
+    recordsToDelete.push(...existing);
 
     // Access table data using type assertion since tableName is dynamic
     const rows = (dbData as Record<string, unknown>)[tableName];
@@ -288,7 +286,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const date = Number(raw.date);
         const timezone = raw.timezone != null ? String(raw.timezone) : '';
         const encrypted = await encryptUserMetricFields({ value, unit, date });
-        allOperations.push(
+        createOperations.push(
           collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.type = raw.type;
@@ -322,7 +320,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               : undefined,
         };
         const encrypted = await encryptNutritionLogSnapshot(snapshot);
-        allOperations.push(
+        createOperations.push(
           collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.foodId = foodId;
@@ -347,7 +345,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
-      allOperations.push(
+      createOperations.push(
         collection.prepareCreate((rec: any) => {
           rec._raw.id = oldId;
 
@@ -373,10 +371,19 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  // Phase 2: Commit all deletions and inserts in a single atomic transaction.
-  await database.write(async () => {
-    await database.batch(...allOperations);
-  });
+  // Phase 2: First delete all existing records to free up IDs
+  if (recordsToDelete.length > 0) {
+    await database.write(async () => {
+      await database.batch(...recordsToDelete.map((r) => r.prepareDestroyPermanently()));
+    });
+  }
+
+  // Phase 3: Then create all new records with the freed-up IDs
+  if (createOperations.length > 0) {
+    await database.write(async () => {
+      await database.batch(...createOperations);
+    });
+  }
 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
