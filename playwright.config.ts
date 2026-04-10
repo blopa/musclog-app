@@ -4,13 +4,17 @@ export default defineConfig({
   testMatch: ['**/tests/screenshot-automation.spec.ts'],
   timeout: 1200000,
   use: {
-    ...devices['iPhone 14'],
+    ...devices['iPhone 14 Pro Max'],
+    viewport: { width: 430, height: 932 },
     headless: true,
   },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['iPhone 14'] },
+      use: {
+        ...devices['iPhone 14 Pro Max'],
+        viewport: { width: 430, height: 932 },
+      },
     },
   ],
 });
