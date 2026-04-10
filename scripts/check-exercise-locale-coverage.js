@@ -107,19 +107,11 @@ const localeRelative = path.relative(ROOT, EXERCISES_LOCALE_FILE);
 
 const allLocaleKeys = flattenKeys(localeData);
 
-// The locale file is namespaced under "exercises.muscleGroups" for muscle groups.
-// Collect every leaf key path inside that subtree so we can check against it.
+// Both muscleGroup and targetMuscles values are checked against exercises.muscleGroups.
 const muscleGroupLocaleKeys = new Set();
 const mgObj = localeData?.exercises?.muscleGroups ?? {};
 for (const key of flattenKeys(mgObj)) {
   muscleGroupLocaleKeys.add(key);
-}
-
-// For targetMuscles, check under "exercises.targetMuscles" (may not exist yet).
-const targetMusclesLocaleKeys = new Set();
-const tmObj = localeData?.exercises?.targetMuscles ?? {};
-for (const key of flattenKeys(tmObj)) {
-  targetMusclesLocaleKeys.add(key);
 }
 
 // ---------------------------------------------------------------------------
@@ -136,7 +128,7 @@ for (const mg of [...muscleGroups].sort()) {
 }
 
 for (const tm of [...targetMuscles].sort()) {
-  if (!targetMusclesLocaleKeys.has(tm)) {
+  if (!muscleGroupLocaleKeys.has(tm)) {
     missingTm.push(tm);
   }
 }
@@ -175,25 +167,20 @@ if (missingMg.length > 0) {
 }
 
 console.log('\n' + '─'.repeat(60));
-console.log('TARGET MUSCLES  (exercises.targetMuscles.<key>)');
+console.log('TARGET MUSCLES  (exercises.muscleGroups.<key>)');
 console.log('─'.repeat(60));
 console.log(`  Found in data    : ${targetMuscles.size}`);
 console.log(`  Covered in locale: ${targetMuscles.size - missingTm.length}`);
 console.log(`  Missing          : ${missingTm.length}`);
 
 if (missingTm.length > 0) {
-  if (targetMusclesLocaleKeys.size === 0) {
-    console.log(
-      '\n  ⚠  No "exercises.targetMuscles" section found in the locale file at all.'
-    );
-  }
   console.log('\n  ❌ Missing targetMuscles keys:');
   for (const tm of missingTm) {
     const sources = [...(tmSources.get(tm) ?? [])].join(', ');
     console.log(`     • "${tm}"  (from: ${sources})`);
   }
-  console.log('\n  💡 Add a new "targetMuscles" section under "exercises" in exercises.json:');
-  console.log('  "targetMuscles": {');
+  console.log('\n  💡 Add these under exercises.muscleGroups in exercises.json:');
+  console.log('  {');
   for (const tm of missingTm) {
     console.log(`    "${tm}": "TODO",`);
   }
