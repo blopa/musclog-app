@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
-import { ReactNode, RefObject } from 'react';
+import { ReactNode, RefObject, useRef } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -44,6 +44,16 @@ export function FullScreenModal({
   const insets = useSafeAreaInsets();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
+  // Force remount of Modal when visibility changes to prevent "ghost" native window
+  // that captures touches. See: https://github.com/facebook/react-native/issues/29455
+  const modalKeyRef = useRef<string>('modal-hidden');
+  if (visible && modalKeyRef.current === 'modal-hidden') {
+    // Only regenerate key when transitioning from hidden to visible
+    modalKeyRef.current = `modal-${Date.now()}`;
+  } else if (!visible) {
+    modalKeyRef.current = 'modal-hidden';
+  }
+
   // Web-specific ScrollView styles to prevent browser gestures
   const webScrollViewStyle =
     Platform.OS === 'web'
@@ -55,6 +65,7 @@ export function FullScreenModal({
 
   return (
     <Modal
+      key={Platform.OS !== 'web' ? modalKeyRef.current : undefined}
       visible={visible}
       transparent={false}
       animationType="slide"
@@ -72,7 +83,6 @@ export function FullScreenModal({
             paddingBottom: insets.bottom,
           },
         ]}
-        onTouchStart={() => console.log('[FullScreenModal] Container touched')}
       >
         {/* Header */}
         {showHeader ? (
@@ -114,7 +124,7 @@ export function FullScreenModal({
         ) : null}
 
         {/* Content area */}
-        <View className="flex-1" onTouchStart={() => console.log('[FullScreenModal] Content area touched')}>
+        <View className="flex-1">
           {scrollable ? (
             <ScrollView
               ref={scrollViewRef}
