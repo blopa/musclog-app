@@ -358,6 +358,21 @@ export function FoodSearchModal({
     console.log('[FoodSearchModal] Visibility:', visible);
   }, [visible]);
 
+  // When this modal is hidden (for any reason), tear down every child modal that
+  // was opened inside it. Without this, a sub-modal that was visible when the parent
+  // closed (e.g. RecentNutritionHistoryModal opened → food tracked → FoodSearchModal
+  // closed) keeps its native window alive and intercepts touches on the next open.
+  useEffect(() => {
+    if (!visible) {
+      setIsRecentNutritionHistoryModalVisible(false);
+      setConfirmSameAsYesterdayVisible(false);
+      setIsFoodDetailsVisible(false);
+      setSelectedFood(null);
+      setIsMealDetailsVisible(false);
+      setSelectedMeal(null);
+    }
+  }, [visible]);
+
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
     if (!visible) {
@@ -858,6 +873,9 @@ export function FoodSearchModal({
       iconBgColor: food.source === 'local' ? theme.colors.accent.primary10 : undefined,
     };
 
+    // Always close the history modal before opening food details — if it was open,
+    // leaving it visible would stack two native modal windows and block touches.
+    setIsRecentNutritionHistoryModalVisible(false);
     setSelectedFood(foodItem);
     setIsFoodDetailsVisible(true);
   };
