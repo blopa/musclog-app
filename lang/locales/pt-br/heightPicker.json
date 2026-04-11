@@ -1,0 +1,10 @@
+{
+  "heightPicker": {
+    "cancel": "Cancelar",
+    "confirmHeight": "Confirmar Altura",
+    "feet": "Pés",
+    "inches": "Polegadas",
+    "selectedHeight": "Altura Selecionada",
+    "selectHeight": "Selecionar Altura"
+  }
+}

@@ -13,10 +13,12 @@ import {
 } from '@/utils/calendarDate';
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
-import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { getWeightUnit } from '@/utils/units';
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { HeightPickerInput } from './modals/HeightPickerInput';
+import { HeightPickerModal } from './modals/HeightPickerModal';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInlineInput } from './theme/StepperInlineInput';
 import { TextInput } from './theme/TextInput';
@@ -56,6 +58,7 @@ export function EditPhysicalStatsBody({
     initialData?.fatPercentage ?? null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
   const prevUnitsRef = useRef<'imperial' | 'metric'>(units);
 
   useEffect(() => {
@@ -183,25 +186,31 @@ export function EditPhysicalStatsBody({
               />
             </View>
             <View className="flex-1">
-              <TextInput
-                label={t('editFitnessDetails.height')}
-                value={height}
-                onChangeText={(text) => {
-                  const dotIndex = text.indexOf('.');
-                  if (dotIndex !== -1 && text.length - dotIndex > 3) {
-                    return;
+              {units === 'imperial' ? (
+                <HeightPickerInput
+                  label={t('editFitnessDetails.height')}
+                  totalInches={parseFloat(height) || 67}
+                  onPress={() => setIsHeightPickerVisible(true)}
+                />
+              ) : (
+                <TextInput
+                  label={t('editFitnessDetails.height')}
+                  value={height}
+                  onChangeText={(text) => {
+                    const dotIndex = text.indexOf('.');
+                    if (dotIndex !== -1 && text.length - dotIndex > 3) {
+                      return;
+                    }
+                    setHeight(text);
+                  }}
+                  placeholder="0"
+                  keyboardType="numeric"
+                  selectTextOnFocus={true}
+                  icon={
+                    <Text className="text-center text-sm font-medium text-text-tertiary">cm</Text>
                   }
-                  setHeight(text);
-                }}
-                placeholder="0"
-                keyboardType="numeric"
-                selectTextOnFocus={true}
-                icon={
-                  <Text className="text-center text-sm font-medium text-text-tertiary">
-                    {getHeightUnit(units)}
-                  </Text>
-                }
-              />
+                />
+              )}
             </View>
           </View>
 
@@ -257,6 +266,14 @@ export function EditPhysicalStatsBody({
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={getLocalCalendarYear(new Date())}
+      />
+
+      <HeightPickerModal
+        visible={isHeightPickerVisible}
+        onClose={() => setIsHeightPickerVisible(false)}
+        totalInches={parseFloat(height) || 67}
+        onHeightSelect={(totalInches) => setHeight(String(totalInches))}
+        title={t('heightPicker.selectHeight')}
       />
     </>
   );
