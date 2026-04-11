@@ -135,7 +135,13 @@ export function DatePickerModal({
   const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => maxYearToUse - i);
 
   return (
-    <FullScreenModal debugKey="DatePickerModal" visible={visible} onClose={onClose} title="" scrollable={false}>
+    <FullScreenModal
+      debugKey="DatePickerModal"
+      visible={visible}
+      onClose={onClose}
+      title=""
+      scrollable={false}
+    >
       <View className="flex-1">
         <ScrollView
           showsVerticalScrollIndicator={false}

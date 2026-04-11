@@ -130,7 +130,12 @@ export function FullScreenModal({
         <View
           className="flex-1"
           pointerEvents="box-none"
-          onTouchStart={(e) => console.log(`[FullScreenModal:${debugKey}] Content wrapper touched, scrollable:`, scrollable)}
+          onTouchStart={(e) =>
+            console.log(
+              `[FullScreenModal:${debugKey}] Content wrapper touched, scrollable:`,
+              scrollable
+            )
+          }
         >
           {scrollable ? (
             <ScrollView
@@ -148,7 +153,9 @@ export function FullScreenModal({
             <View
               className="flex-1"
               pointerEvents="auto"
-              onTouchStart={() => console.log(`[FullScreenModal:${debugKey}] Non-scrollable container touched`)}
+              onTouchStart={() =>
+                console.log(`[FullScreenModal:${debugKey}] Non-scrollable container touched`)
+              }
             >
               {children}
             </View>

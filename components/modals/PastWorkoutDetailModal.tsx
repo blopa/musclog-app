@@ -544,7 +544,13 @@ export default function PastWorkoutDetailModal({
 
   if (!workout) {
     return (
-      <FullScreenModal debugKey="PastWorkoutDetailModal" visible={visible} onClose={onClose} title="" scrollable={false}>
+      <FullScreenModal
+        debugKey="PastWorkoutDetailModal"
+        visible={visible}
+        onClose={onClose}
+        title=""
+        scrollable={false}
+      >
         <View className="flex-1 items-center justify-center">
           {isLoading ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />

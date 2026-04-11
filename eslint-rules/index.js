@@ -3,6 +3,7 @@ const noJsxLogical = require('./no-jsx-logical-expression');
 const preferReactLazy = require('./prefer-react-lazy');
 const noReactLazy = require('./no-react-lazy');
 const noThemeImport = require('./no-theme-import');
+const requireSubModalCleanup = require('./require-sub-modal-cleanup');
 
 module.exports = {
   meta: {},
@@ -11,5 +12,6 @@ module.exports = {
     'prefer-react-lazy': preferReactLazy,
     'no-react-lazy': noReactLazy,
     'no-theme-import': noThemeImport,
+    'require-sub-modal-cleanup': requireSubModalCleanup,
   },
 };
