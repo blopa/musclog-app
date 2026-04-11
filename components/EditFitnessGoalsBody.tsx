@@ -6,8 +6,6 @@ import {
   Heart,
   Medal,
   Move,
-  Ruler,
-  Scale,
   Target,
   Timer,
   Trophy,
@@ -26,7 +24,6 @@ import { PickerButton } from './theme/PickerButton';
 import { SegmentedControl } from './theme/SegmentedControl';
 
 export type FitnessGoals = {
-  units: 'imperial' | 'metric';
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
@@ -41,7 +38,6 @@ type EditFitnessGoalsBodyProps = {
 export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessGoalsBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weightGoal, setWeightGoal] = useState<WeightGoal>(initialData?.weightGoal ?? 'maintain');
   const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>(
     initialData?.fitnessGoal ?? 'general'
@@ -55,13 +51,12 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
 
   useEffect(() => {
     onFormChange?.({
-      units,
       weightGoal,
       fitnessGoal,
       activityLevel,
       experience,
     });
-  }, [units, weightGoal, fitnessGoal, activityLevel, experience, onFormChange]);
+  }, [weightGoal, fitnessGoal, activityLevel, experience, onFormChange]);
 
   const activityLevelOptions = [
     {
@@ -197,45 +192,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
   return (
     <>
       <View className="gap-8 px-4 pb-6 pt-2">
-        {/* Units */}
-        <View className="gap-2">
-          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
-            {t('editFitnessDetails.units')}
-          </Text>
-          <SegmentedControl
-            options={[
-              {
-                label: t('editFitnessDetails.imperial'),
-                value: 'imperial',
-                icon: (
-                  <Scale
-                    size={theme.iconSize.md}
-                    color={
-                      units === 'imperial'
-                        ? theme.colors.accent.primary
-                        : theme.colors.text.tertiary
-                    }
-                  />
-                ),
-              },
-              {
-                label: t('editFitnessDetails.metric'),
-                value: 'metric',
-                icon: (
-                  <Ruler
-                    size={theme.iconSize.md}
-                    color={
-                      units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary
-                    }
-                  />
-                ),
-              },
-            ]}
-            value={units}
-            onValueChange={(val) => setUnits(val as 'imperial' | 'metric')}
-          />
-        </View>
-
         {/* Goals & Strategy */}
         <View className="gap-4">
           <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">

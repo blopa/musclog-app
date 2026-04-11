@@ -49,7 +49,7 @@ import {
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
-import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
   units: Units;
@@ -92,7 +92,7 @@ type SettingsState = {
 
 const DEFAULT_STATE: SettingsState = {
   language: 'en-US',
-  units: 'metric',
+  units: getDefaultUnits(),
   theme: 'system',
   connectHealthData: false,
   readHealthData: false,
@@ -170,7 +170,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
 
   const rawUnits = getString(map, UNITS_SETTING_TYPE);
-  const units: Units = rawUnits === '1' ? 'imperial' : 'metric';
+  const units: Units =
+    rawUnits === '1' ? 'imperial' : rawUnits === '0' ? 'metric' : getDefaultUnits();
 
   const rawNavSlot1 = getString(map, NAV_SLOT_1_SETTING_TYPE);
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);

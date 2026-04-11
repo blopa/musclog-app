@@ -10,6 +10,8 @@ import {
   getLocalCalendarYear,
   localCalendarDayDate,
 } from '@/utils/calendarDate';
+import { Ruler, Scale } from 'lucide-react-native';
+
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -25,18 +27,21 @@ export type PhysicalStats = {
   weight: string;
   height: string;
   fatPercentage?: number;
+  units: 'imperial' | 'metric';
 };
 
 type EditPhysicalStatsBodyProps = {
   initialData?: Partial<PhysicalStats>;
-  units?: 'imperial' | 'metric';
+  units: 'imperial' | 'metric';
   onFormChange?: (data: PhysicalStats) => void;
+  onUnitsChange?: (units: 'imperial' | 'metric') => void;
 };
 
 export function EditPhysicalStatsBody({
   initialData,
-  units = 'metric',
+  units,
   onFormChange,
+  onUnitsChange,
 }: EditPhysicalStatsBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -63,12 +68,52 @@ export function EditPhysicalStatsBody({
       weight,
       height,
       fatPercentage: fatPercentage ?? undefined,
+      units,
     });
-  }, [dob, gender, weight, height, fatPercentage, onFormChange]);
+  }, [dob, gender, weight, height, fatPercentage, units, onFormChange]);
 
   return (
     <>
       <View className="gap-8 px-4 pb-6 pt-2">
+        {/* Units */}
+        <View className="gap-2">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
+            {t('editFitnessDetails.units')}
+          </Text>
+          <SegmentedControl
+            options={[
+              {
+                label: t('editFitnessDetails.imperial'),
+                value: 'imperial',
+                icon: (
+                  <Scale
+                    size={theme.iconSize.md}
+                    color={
+                      units === 'imperial'
+                        ? theme.colors.accent.primary
+                        : theme.colors.text.tertiary
+                    }
+                  />
+                ),
+              },
+              {
+                label: t('editFitnessDetails.metric'),
+                value: 'metric',
+                icon: (
+                  <Ruler
+                    size={theme.iconSize.md}
+                    color={
+                      units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    }
+                  />
+                ),
+              },
+            ]}
+            value={units}
+            onValueChange={(val) => onUnitsChange?.(val as 'imperial' | 'metric')}
+          />
+        </View>
+
         {/* Date of Birth */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-semibold text-text-tertiary">
