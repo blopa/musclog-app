@@ -353,6 +353,18 @@ export function FoodSearchModal({
       logDate,
     });
 
+  // Debug logging for modal lifecycle
+  useEffect(() => {
+    console.log('[FoodSearchModal] Component mounted, visible:', visible);
+    return () => {
+      console.log('[FoodSearchModal] Component unmounted');
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log('[FoodSearchModal] Visibility changed:', visible);
+  }, [visible]);
+
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
     if (!visible) {
@@ -947,6 +959,8 @@ export function FoodSearchModal({
               <Pressable
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
+                onPressIn={() => console.log('[FoodSearchModal] Barcode button pressed')}
+                hitSlop={8}
               >
                 <View className="rounded-lg p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -969,6 +983,7 @@ export function FoodSearchModal({
             className="flex-1 bg-bg-primary"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
+            onTouchStart={() => console.log('[FoodSearchModal] ScrollView touched')}
           >
             <View className="gap-4 p-4 pb-20">
               {/* Search Results Section */}
@@ -988,7 +1003,10 @@ export function FoodSearchModal({
                             <MealSearchCard
                               key={mealData.meal.id}
                               mealData={mealData}
-                              onAddPress={() => handleMealSelect(mealData.meal)}
+                              onAddPress={() => {
+                                console.log('[FoodSearchModal] Meal card add pressed');
+                                handleMealSelect(mealData.meal);
+                              }}
                             />
                           ))
                         ) : (
@@ -1065,9 +1083,10 @@ export function FoodSearchModal({
                                         iconColor: theme.colors.accent.primary,
                                         iconBgColor: theme.colors.accent.primary10,
                                       }}
-                                      onAddPress={() =>
-                                        handleFoodClick({ ...food, name: food.name ?? '' })
-                                      }
+                                      onAddPress={() => {
+                                        console.log('[FoodSearchModal] Local food card pressed:', food.name);
+                                        handleFoodClick({ ...food, name: food.name ?? '' });
+                                      }}
                                     />
                                   ))}
                                 </View>
@@ -1168,7 +1187,10 @@ export function FoodSearchModal({
                                                 ? undefined
                                                 : searchSessionIcon,
                                             }}
-                                            onAddPress={() => handleFoodClick(food)}
+                                            onAddPress={() => {
+                                              console.log('[FoodSearchModal] API food card pressed:', food.name);
+                                              handleFoodClick(food);
+                                            }}
                                           />
                                         ))}
                                       </View>
@@ -1259,7 +1281,10 @@ export function FoodSearchModal({
                                         <FoodSearchItemCard
                                           key={`usda-${food.id}`}
                                           food={{ ...food, iconComponent: searchSessionIcon }}
-                                          onAddPress={() => handleFoodClick(food)}
+                                          onAddPress={() => {
+                                            console.log('[FoodSearchModal] USDA food card pressed:', food.name);
+                                            handleFoodClick(food);
+                                          }}
                                         />
                                       ))}
                                     </View>
@@ -1354,7 +1379,10 @@ export function FoodSearchModal({
                               <FoodSearchItemCard
                                 key={food.id}
                                 food={food}
-                                onAddPress={() => handleFoodClick(food)}
+                                onAddPress={() => {
+                                  console.log('[FoodSearchModal] Favorite food card pressed:', food.name);
+                                  handleFoodClick(food);
+                                }}
                               />
                             ))}
                             {hasMoreFavoriteFoods ? (
@@ -1402,7 +1430,10 @@ export function FoodSearchModal({
                               <MealSearchCard
                                 key={mealData.meal.id}
                                 mealData={mealData}
-                                onAddPress={() => handleMealSelect(mealData.meal)}
+                                onAddPress={() => {
+                                  console.log('[FoodSearchModal] Meal card add pressed (meals tab)');
+                                  handleMealSelect(mealData.meal);
+                                }}
                               />
                             ))}
                             {hasMoreMeals ? (
@@ -1439,7 +1470,10 @@ export function FoodSearchModal({
                         title={t('foodSearch.recentHistory')}
                         rightAction={{
                           label: t('foodSearch.viewAll'),
-                          onPress: () => setIsRecentNutritionHistoryModalVisible(true),
+                          onPress: () => {
+                            console.log('[FoodSearchModal] View All pressed');
+                            setIsRecentNutritionHistoryModalVisible(true);
+                          },
                         }}
                       />
                       <View className="gap-1.5">
@@ -1448,7 +1482,10 @@ export function FoodSearchModal({
                             <FoodSearchItemCard
                               key={food.id}
                               food={food}
-                              onAddPress={() => handleFoodClick(food)}
+                              onAddPress={() => {
+                                console.log('[FoodSearchModal] Recent food card pressed:', food.name);
+                                handleFoodClick(food);
+                              }}
                             />
                           ))
                         ) : (
@@ -1494,6 +1531,7 @@ export function FoodSearchModal({
                           key={food.id}
                           food={food}
                           onAddPress={() => {
+                            console.log('[FoodSearchModal] Suggested food card pressed:', food.name);
                             setSelectedFood(food);
                             setIsFoodDetailsVisible(true);
                           }}

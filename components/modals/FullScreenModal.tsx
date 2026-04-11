@@ -72,6 +72,7 @@ export function FullScreenModal({
             paddingBottom: insets.bottom,
           },
         ]}
+        onTouchStart={() => console.log('[FullScreenModal] Container touched')}
       >
         {/* Header */}
         {showHeader ? (
@@ -113,7 +114,7 @@ export function FullScreenModal({
         ) : null}
 
         {/* Content area */}
-        <View className="flex-1">
+        <View className="flex-1" onTouchStart={() => console.log('[FullScreenModal] Content area touched')}>
           {scrollable ? (
             <ScrollView
               ref={scrollViewRef}
