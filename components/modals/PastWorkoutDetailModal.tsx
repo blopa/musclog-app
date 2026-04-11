@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
-import { createElement, useRef, useState } from 'react';
+import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -438,6 +438,16 @@ export default function PastWorkoutDetailModal({
     sets: EnrichedWorkoutLogSet[];
     exercises: Exercise[];
   } | null>(null);
+
+  useEffect(() => {
+    if (!visible) {
+      setIsEditModalVisible(false);
+      setIsEditMetadataVisible(false);
+      setIsPreviewModalVisible(false);
+      setEditingExerciseId(null);
+      setIsMenuVisible(false);
+    }
+  }, [visible, setIsMenuVisible]);
 
   const handleShare = async () => {
     if (!workout) {

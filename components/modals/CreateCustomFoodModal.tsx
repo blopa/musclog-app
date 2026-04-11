@@ -31,7 +31,7 @@ import {
   X,
   Zap,
 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -138,6 +138,14 @@ export default function CreateCustomFoodModal({
   const [microOpen, setMicroOpen] = useState(false);
   const [showPortionPicker, setShowPortionPicker] = useState(false);
   const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!visible) {
+      setShowBarcodeScanner(false);
+      setIsFoodDetailsVisible(false);
+    }
+  }, [visible]);
+
   const { t, i18n } = useTranslation();
   const decimalSeparator = useMemo(
     () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),

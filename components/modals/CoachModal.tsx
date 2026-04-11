@@ -708,6 +708,17 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     };
   }, [isSending]);
 
+  useEffect(() => {
+    if (!visible) {
+      setSelectedWorkoutId(null);
+      setIsMenuVisible(false);
+      setSelectedMessage(null);
+      setIsClearHistoryModalVisible(false);
+      setIsDeleteMessageModalVisible(false);
+      setMessageToDelete(null);
+    }
+  }, [visible]);
+
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
   const [keyboardHeight, setKeyboardHeight] = useState(0);

@@ -52,6 +52,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const [metrics, setMetrics] = useState<CheckinMetrics | null>(null);
   const [isNutritionGoalsModalVisible, setIsNutritionGoalsModalVisible] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsNutritionGoalsModalVisible(false);
+    }
+  }, [visible]);
+
   const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
     if (!currentGoal) {
       return undefined;

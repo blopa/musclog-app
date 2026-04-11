@@ -120,6 +120,19 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      setAddMealModalVisible(false);
+      setCreateMealModalVisible(false);
+      setLogMealModalVisible(false);
+      setSelectedMealForLogging(null);
+      setMenuMealId(null);
+      setEditMealId(null);
+      setDeleteMealId(null);
+      setGenerateMealContextVisible(false);
+    }
+  }, [visible]);
+
   // Keep screen awake during AI meal generation
   useEffect(() => {
     if (isGeneratingMealAI) {

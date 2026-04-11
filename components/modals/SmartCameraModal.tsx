@@ -239,6 +239,18 @@ export default function SmartCameraModal({
     };
   }, [isProcessingAi, isSearchingBarcode]);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsContextModalVisible(false);
+      setIsFoodDetailsModalVisible(false);
+      setIsAddFoodModalVisible(false);
+      setIsNewCustomFoodModalVisible(false);
+      setIsFoodSearchModalVisible(false);
+      setIsLogMealModalVisible(false);
+      setIsFoodNotFoundModalVisible(false);
+    }
+  }, [visible]);
+
   // Request camera permission on mount
   useEffect(() => {
     if (!permission) {

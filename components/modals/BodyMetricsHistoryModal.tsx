@@ -90,6 +90,13 @@ export default function BodyMetricsHistoryModal({
   const [activeFilters, setActiveFilters] = useState<BodyMetricsHistoryFilters>(DEFAULT_FILTERS);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsAddMetricVisible(false);
+      setIsFilterMenuVisible(false);
+    }
+  }, [visible]);
+
   const isFilterActive =
     activeFilters.sortOrder !== DEFAULT_FILTERS.sortOrder ||
     activeFilters.trend !== DEFAULT_FILTERS.trend;

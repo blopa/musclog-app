@@ -61,6 +61,12 @@ export function MoveCopyMealModal({
     }
   }, [visible, sourceDate, sourceMealType]);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsDatePickerVisible(false);
+    }
+  }, [visible]);
+
   const title =
     customTitle ||
     (mode === 'move'

@@ -39,6 +39,12 @@ export function PortionSizesPickerModal({
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      setCreateModalVisible(false);
+    }
+  }, [visible]);
+
   // Paginated global portions (newest first); app + user-created via includeAllPortionSources
   const {
     portions: loadedPortions,

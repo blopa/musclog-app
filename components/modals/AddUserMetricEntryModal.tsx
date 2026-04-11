@@ -125,6 +125,13 @@ export default function AddUserMetricEntryModal({
     }
   }, [visible, units]);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsDatePickerVisible(false);
+      setIsTimePickerVisible(false);
+    }
+  }, [visible]);
+
   // Sync PagerView when selectedMetric changes
   useEffect(() => {
     const pageIndex = metricToPageIndex[selectedMetric];

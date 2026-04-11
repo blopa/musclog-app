@@ -1,5 +1,5 @@
 import { Check, PlusCircle, ScanLine } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -224,7 +224,15 @@ export function AddFoodItemToMealModal({
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
-  const { foods, isLoading, isLoadingMore, hasMore, loadMore, totalCount } = useFoods({
+  useEffect(() => {
+    if (!visible) {
+      setShowBarcodeScanner(false);
+      setShowScannedFoodDetails(false);
+      setScannedBarcode(null);
+    }
+  }, [visible]);
+
+  const { foods, isLoading, isLoadingMore, hasMore, loadMore } = useFoods({
     mode: searchQuery.trim() ? 'search' : 'list',
     searchTerm: searchQuery.trim(),
     initialLimit: 10,

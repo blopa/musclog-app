@@ -100,6 +100,12 @@ export default function EditWorkoutMetadataModal({
     visible: boolean;
   }>({ type: 'date', target: 'started', visible: false });
 
+  useEffect(() => {
+    if (!visible) {
+      setPickerConfig((prev) => ({ ...prev, visible: false }));
+    }
+  }, [visible]);
+
   const totalMinutes = Math.max(0, differenceInMinutes(completedAt, startedAt));
   const durationDisplay = formatWorkoutDuration(totalMinutes);
 

@@ -97,6 +97,13 @@ export function LogMealModal({
     }
   }, [visible, initialDate, initialMealType]);
 
+  useEffect(() => {
+    if (!visible) {
+      setShowDatePicker(false);
+      setShowIngredients(false);
+    }
+  }, [visible]);
+
   const portionScale = portionGrams / referenceGrams;
 
   const scaledMeal = useMemo(

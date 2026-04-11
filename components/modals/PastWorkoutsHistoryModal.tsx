@@ -1,5 +1,5 @@
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -361,6 +361,13 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!visible) {
+      setIsFilterMenuVisible(false);
+      setSelectedWorkoutId(null);
+    }
+  }, [visible]);
 
   const {
     sections: workoutHistoryData,
