@@ -40,7 +40,7 @@ export type UseNutritionLogsResultBasic = {
 };
 
 export type UseNutritionLogsResultRecent = {
-  recentFoods: Food[];
+  recentFoods: { food: Food; lastGramWeight: number }[];
   isLoading: boolean;
   refresh: () => Promise<void>;
 };
@@ -180,7 +180,7 @@ export function useNutritionLogs({
   const [totalCount, setTotalCount] = useState<number | undefined>();
 
   // State for recent mode
-  const [recentFoods, setRecentFoods] = useState<Food[]>([]);
+  const [recentFoods, setRecentFoods] = useState<{ food: Food; lastGramWeight: number }[]>([]);
 
   // State for recent-logs mode
   const [recentNutritionLogs, setRecentNutritionLogs] = useState<

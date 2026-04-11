@@ -93,6 +93,7 @@ type FoodItem = UnifiedFoodResult & {
   image?: ImageSourcePropType;
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
+  lastGramWeight?: number;
 };
 
 type FoodSearchModalProps = {
@@ -385,9 +386,10 @@ export function FoodSearchModal({
   }) as UseMealsResultBasic & { recentFoods: any[] };
 
   const recentFoods = useMemo(() => {
-    return (recentFoodsRaw || []).map((food) => {
+    return (recentFoodsRaw || []).map((item) => {
+      const food = item.food;
+
       return {
-        ...food,
         id: food.id,
         name: food.name ?? '',
         description: t('foodSearch.foodDescriptionPer100g', {
@@ -414,6 +416,7 @@ export function FoodSearchModal({
         iconName: 'utensils-crossed',
         iconColor: theme.colors.accent.primary,
         iconBgColor: theme.colors.accent.primary10,
+        lastGramWeight: item.lastGramWeight,
         _raw: food,
       } as FoodItem;
     });
@@ -1526,6 +1529,7 @@ export function FoodSearchModal({
             food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
             initialMealType={mealType}
             initialDate={logDate}
+            initialServingSize={selectedFood.lastGramWeight}
             onAddFood={(data) => {
               // Call the original onFoodSelect with the food and additional data
               onFoodSelect?.({

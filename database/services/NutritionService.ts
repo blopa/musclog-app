@@ -640,7 +640,7 @@ export class NutritionService {
     limit: number = 10,
     date?: Date,
     mealType?: MealType
-  ): Promise<Food[]> {
+  ): Promise<{ food: Food; lastGramWeight: number }[]> {
     // If a date is provided, limit recent logs to that date (today by default).
     let query = database
       .get<NutritionLog>('nutrition_logs')
@@ -661,24 +661,35 @@ export class NutritionService {
       .extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5))
       .fetch();
 
-    const foodIds = [...new Set(recentLogs.map((log) => log.foodId))].slice(0, limit);
-    const foods: Food[] = [];
-
-    for (const foodId of foodIds) {
-      if (!foodId) {
-        continue;
-      }
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
-          foods.push(food);
-        }
-      } catch (error) {
-        // Food might have been deleted, skip
+    // Keep the most recent log per food ID (already sorted desc, so first occurrence wins).
+    const mostRecentLogByFoodId = new Map<string, NutritionLog>();
+    for (const log of recentLogs) {
+      if (log.foodId && !mostRecentLogByFoodId.has(log.foodId)) {
+        mostRecentLogByFoodId.set(log.foodId, log);
       }
     }
 
-    return foods;
+    const foodIds = [...mostRecentLogByFoodId.keys()].slice(0, limit);
+
+    const settled = await Promise.all(
+      foodIds.map(async (foodId) => {
+        try {
+          const food = await database.get<Food>('foods').find(foodId);
+          if (food.deletedAt) {
+            return null;
+          }
+
+          const log = mostRecentLogByFoodId.get(foodId)!;
+          const lastGramWeight = await log.getGramWeight();
+          return { food, lastGramWeight };
+        } catch {
+          // Food might have been deleted, skip
+          return null;
+        }
+      })
+    );
+
+    return settled.filter((item): item is { food: Food; lastGramWeight: number } => item !== null);
   }
 
   /**
