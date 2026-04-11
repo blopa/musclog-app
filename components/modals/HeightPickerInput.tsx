@@ -45,7 +45,7 @@ export function HeightPickerInput({
   return (
     <View className={className}>
       {!hideLabel ? (
-        <Text className="ml-1 mb-2 text-sm font-medium text-text-secondary">
+        <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
           {label ?? t('editFitnessDetails.height')}
         </Text>
       ) : null}
@@ -55,7 +55,10 @@ export function HeightPickerInput({
         onPress={onPress}
         disabled={disabled}
       >
-        <View className="flex-row items-center justify-between px-3" style={{ paddingVertical: 11 }}>
+        <View
+          className="flex-row items-center justify-between px-3"
+          style={{ paddingVertical: 11 }}
+        >
           <View className="min-w-0 flex-1 flex-row items-center gap-2">
             <View
               className="h-8 w-8 items-center justify-center rounded-full"

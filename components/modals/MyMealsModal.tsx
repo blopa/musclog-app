@@ -1,3 +1,4 @@
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -118,6 +119,19 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
+
+  // Keep screen awake during AI meal generation
+  useEffect(() => {
+    if (isGeneratingMealAI) {
+      activateKeepAwakeAsync('my-meals-ai-generation').catch(() => {});
+    } else {
+      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
+    };
+  }, [isGeneratingMealAI]);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({

@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -40,6 +41,19 @@ export function ImportWorkoutsModal({
   const insets = useSafeAreaInsets();
   const [rawText, setRawText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Keep screen awake during AI workout import processing
+  useEffect(() => {
+    if (isProcessing) {
+      activateKeepAwakeAsync('import-workouts').catch(() => {});
+    } else {
+      deactivateKeepAwake('import-workouts').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('import-workouts').catch(() => {});
+    };
+  }, [isProcessing]);
 
   const handleProcessText = useCallback(async () => {
     if (!rawText.trim()) {
