@@ -1,6 +1,7 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   FileText,
@@ -220,6 +221,20 @@ export default function SmartCameraModal({
     pulse.start();
     return () => pulse.stop();
   }, [pulseAnim]);
+
+  // Keep screen awake during AI processing or barcode searching to prevent
+  // the phone from turning off the screen and killing network requests
+  useEffect(() => {
+    if (isProcessingAi || isSearchingBarcode) {
+      activateKeepAwakeAsync('smart-camera-processing').catch(() => {});
+    } else {
+      deactivateKeepAwake('smart-camera-processing').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('smart-camera-processing').catch(() => {});
+    };
+  }, [isProcessingAi, isSearchingBarcode]);
 
   // Request camera permission on mount
   useEffect(() => {
