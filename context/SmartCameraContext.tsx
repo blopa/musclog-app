@@ -29,6 +29,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [mealTypeForLog, setMealTypeForLog] = useState<MealType | undefined>(undefined);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
+    console.log('[SmartCamera] Opening camera with options:', options);
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
     setLogDate(options?.logDate);
@@ -37,6 +38,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleCameraModalClose = useCallback(() => {
+    console.log('[SmartCamera] Closing camera');
     setIsVisible(false);
     setMealTypeForLog(undefined);
   }, []);
@@ -48,16 +50,18 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   return (
     <SmartCameraContext.Provider value={{ openCamera, setCurrentDate }}>
       {children}
-      <SmartCameraModal
-        visible={isVisible}
-        onClose={handleCameraModalClose}
-        mode={cameraMode}
-        hideCameraModePicker={hideCameraModePicker}
-        isAiEnabled={isAiConfigured}
-        useOcrBeforeAi={useOcrBeforeAi}
-        logDate={logDate}
-        mealTypeForLog={mealTypeForLog}
-      />
+      {isVisible ? (
+        <SmartCameraModal
+          visible={isVisible}
+          onClose={handleCameraModalClose}
+          mode={cameraMode}
+          hideCameraModePicker={hideCameraModePicker}
+          isAiEnabled={isAiConfigured}
+          useOcrBeforeAi={useOcrBeforeAi}
+          logDate={logDate}
+          mealTypeForLog={mealTypeForLog}
+        />
+      ) : null}
     </SmartCameraContext.Provider>
   );
 }

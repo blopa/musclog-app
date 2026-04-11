@@ -951,6 +951,7 @@ export function FoodSearchModal({
           <ScrollView
             className="flex-1 bg-bg-primary"
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
           >
             <View className="gap-4 p-4 pb-20">

@@ -119,6 +119,7 @@ export function FullScreenModal({
               ref={scrollViewRef}
               className="flex-1"
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
               style={webScrollViewStyle}
               contentContainerStyle={{
                 paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,

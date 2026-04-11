@@ -381,11 +381,13 @@ export default function FoodScreen() {
     gramWeight: number;
     displayName: string;
   }) => {
+    console.log('[FoodScreen] Opening food menu for:', entry.displayName);
     setSelectedFoodItem(entry);
     setIsFoodMenuVisible(true);
   };
 
   const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
+    console.log('[FoodScreen] Opening meal group menu for:', group.mealName);
     setSelectedMealGroup(group);
     setIsMealGroupMenuVisible(true);
   };
@@ -1580,457 +1582,513 @@ export default function FoodScreen() {
       </View>
 
       {/* Add Food Modal */}
-      <AddFoodModal
-        isAiEnabled={isAiConfigured}
-        visible={isAddFoodModalVisible}
-        onClose={() => setIsAddFoodModalVisible(false)}
-        onMealTypeSelect={(mealType) => {
-          setSelectedMealType(mealType);
-          setIsAddFoodModalVisible(false);
-          setIsFoodSearchModalVisible(true);
-        }}
-        onAiCameraPress={() => {
-          setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false, logDate: selectedDate });
-        }}
-        onScanBarcodePress={() => {
-          setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false, logDate: selectedDate });
-        }}
-        onSearchFoodPress={() => {
-          setIsAddFoodModalVisible(false);
-          setIsFoodSearchModalVisible(true);
-        }}
-        onCreateCustomFoodPress={() => {
-          // Open CreateCustomFoodModal
-          setIsAddFoodModalVisible(false);
-          setIsCreateCustomFoodVisible(true);
-        }}
-        onTrackCustomMealPress={() => {
-          setIsMyMealsModalVisible(true);
-          setIsAddFoodModalVisible(false);
-        }}
-        onQuickTrackMealPress={() => {
-          setIsQuickTrackMealModalVisible(true);
-          setIsAddFoodModalVisible(false);
-        }}
-      />
+      {isAddFoodModalVisible ? (
+        <AddFoodModal
+          isAiEnabled={isAiConfigured}
+          visible={isAddFoodModalVisible}
+          onClose={() => setIsAddFoodModalVisible(false)}
+          onMealTypeSelect={(mealType) => {
+            setSelectedMealType(mealType);
+            setIsAddFoodModalVisible(false);
+            setIsFoodSearchModalVisible(true);
+          }}
+          onAiCameraPress={() => {
+            setIsAddFoodModalVisible(false);
+            openCamera({
+              mode: 'ai-meal-photo',
+              hideCameraModePicker: false,
+              logDate: selectedDate,
+            });
+          }}
+          onScanBarcodePress={() => {
+            setIsAddFoodModalVisible(false);
+            openCamera({
+              mode: 'barcode-scan',
+              hideCameraModePicker: false,
+              logDate: selectedDate,
+            });
+          }}
+          onSearchFoodPress={() => {
+            setIsAddFoodModalVisible(false);
+            setIsFoodSearchModalVisible(true);
+          }}
+          onCreateCustomFoodPress={() => {
+            // Open CreateCustomFoodModal
+            setIsAddFoodModalVisible(false);
+            setIsCreateCustomFoodVisible(true);
+          }}
+          onTrackCustomMealPress={() => {
+            setIsMyMealsModalVisible(true);
+            setIsAddFoodModalVisible(false);
+          }}
+          onQuickTrackMealPress={() => {
+            setIsQuickTrackMealModalVisible(true);
+            setIsAddFoodModalVisible(false);
+          }}
+        />
+      ) : null}
 
       {/* Quick Track Meal (CreateMealModal in quickTrack mode) */}
-      <CreateMealModal
-        visible={isQuickTrackMealModalVisible}
-        onClose={() => setIsQuickTrackMealModalVisible(false)}
-        mode="quickTrack"
-        logDate={selectedDate}
-        onTracked={() => {
-          refresh();
-          setIsQuickTrackMealModalVisible(false);
-        }}
-      />
+      {isQuickTrackMealModalVisible ? (
+        <CreateMealModal
+          visible={isQuickTrackMealModalVisible}
+          onClose={() => setIsQuickTrackMealModalVisible(false)}
+          mode="quickTrack"
+          logDate={selectedDate}
+          onTracked={() => {
+            refresh();
+            setIsQuickTrackMealModalVisible(false);
+          }}
+        />
+      ) : null}
       {/* Create Meal Modal (prefilled from current meal foods) */}
-      <CreateMealModal
-        visible={isCreateMealModalVisible}
-        onClose={() => {
-          setIsCreateMealModalVisible(false);
-          setCreateMealInitialFoods([]);
-          setSelectedMealForMenu(null);
-        }}
-        onSave={() => {
-          refresh();
-          setIsCreateMealModalVisible(false);
-          setCreateMealInitialFoods([]);
-          setSelectedMealForMenu(null);
-        }}
-        initialFoods={createMealInitialFoods}
-      />
+      {isCreateMealModalVisible ? (
+        <CreateMealModal
+          visible={isCreateMealModalVisible}
+          onClose={() => {
+            setIsCreateMealModalVisible(false);
+            setCreateMealInitialFoods([]);
+            setSelectedMealForMenu(null);
+          }}
+          onSave={() => {
+            refresh();
+            setIsCreateMealModalVisible(false);
+            setCreateMealInitialFoods([]);
+            setSelectedMealForMenu(null);
+          }}
+          initialFoods={createMealInitialFoods}
+        />
+      ) : null}
 
       {/* My Meals Modal */}
-      <MyMealsModal
-        visible={isMyMealsModalVisible}
-        onClose={() => setIsMyMealsModalVisible(false)}
-      />
+      {isMyMealsModalVisible ? (
+        <MyMealsModal
+          visible={isMyMealsModalVisible}
+          onClose={() => setIsMyMealsModalVisible(false)}
+        />
+      ) : null}
 
       {/* Create Custom Food Modal */}
-      <CreateCustomFoodModal
-        visible={isCreateCustomFoodVisible}
-        trackFoodAfterSave={true}
-        onClose={() => setIsCreateCustomFoodVisible(false)}
-        isAiEnabled={isAiConfigured}
-      />
+      {isCreateCustomFoodVisible ? (
+        <CreateCustomFoodModal
+          visible={isCreateCustomFoodVisible}
+          trackFoodAfterSave={true}
+          onClose={() => setIsCreateCustomFoodVisible(false)}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
 
       {/* Food Search Modal */}
-      <FoodSearchModal
-        visible={isFoodSearchModalVisible}
-        onClose={() => setIsFoodSearchModalVisible(false)}
-        mealType={selectedMealType}
-        logDate={selectedDate}
-        onFoodTracked={refresh}
-        onCreatePress={() => {
-          // Open CreateCustomFoodModal
-          setIsFoodSearchModalVisible(false);
-          setIsCreateCustomFoodVisible(true);
-        }}
-        onBarcodeScanPress={() => {
-          setIsFoodSearchModalVisible(false);
-          openCamera({
-            mode: 'barcode-scan',
-            hideCameraModePicker: true,
-            logDate: selectedDate,
-            mealType: selectedMealType,
-          });
-        }}
-        isAiEnabled={isAiConfigured}
-      />
+      {isFoodSearchModalVisible ? (
+        <FoodSearchModal
+          visible={isFoodSearchModalVisible}
+          onClose={() => setIsFoodSearchModalVisible(false)}
+          mealType={selectedMealType}
+          logDate={selectedDate}
+          onFoodTracked={refresh}
+          onCreatePress={() => {
+            // Open CreateCustomFoodModal
+            setIsFoodSearchModalVisible(false);
+            setIsCreateCustomFoodVisible(true);
+          }}
+          onBarcodeScanPress={() => {
+            setIsFoodSearchModalVisible(false);
+            openCamera({
+              mode: 'barcode-scan',
+              hideCameraModePicker: true,
+              logDate: selectedDate,
+              mealType: selectedMealType,
+            });
+          }}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
 
       {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        visible={isDeleteConfirmationVisible ? !!selectedFoodItem : false}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title={t('food.actions.deleteConfirmTitle')}
-        message={t('food.actions.deleteConfirmMessage', {
-          foodName: selectedFoodItem?.displayName || '',
-        })}
-        confirmLabel={t('common.delete')}
-        cancelLabel={t('common.cancel')}
-        variant="destructive"
-        isLoading={isDeleteFoodLoading}
-      />
+      {isDeleteConfirmationVisible ? (
+        <ConfirmationModal
+          visible={isDeleteConfirmationVisible ? !!selectedFoodItem : false}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title={t('food.actions.deleteConfirmTitle')}
+          message={t('food.actions.deleteConfirmMessage', {
+            foodName: selectedFoodItem?.displayName || '',
+          })}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
+          variant="destructive"
+          isLoading={isDeleteFoodLoading}
+        />
+      ) : null}
 
       {/* Goals Management Modal */}
-      <GoalsManagementModal
-        visible={isGoalsManagementModalVisible}
-        onClose={() => setIsGoalsManagementModalVisible(false)}
-      />
+      {isGoalsManagementModalVisible ? (
+        <GoalsManagementModal
+          visible={isGoalsManagementModalVisible}
+          onClose={() => setIsGoalsManagementModalVisible(false)}
+        />
+      ) : null}
 
       {/* Food Menu Modal */}
-      <BottomPopUpMenu
-        visible={isFoodMenuVisible}
-        onClose={() => setIsFoodMenuVisible(false)}
-        title={selectedFoodItem?.displayName ?? ''}
-        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false })} kcal`}
-        items={foodMenuItems}
-      />
+      {isFoodMenuVisible ? (
+        <BottomPopUpMenu
+          visible={isFoodMenuVisible}
+          onClose={() => setIsFoodMenuVisible(false)}
+          title={selectedFoodItem?.displayName ?? ''}
+          subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false })} kcal`}
+          items={foodMenuItems}
+        />
+      ) : null}
 
       {/* Meal Menu Modal */}
-      <BottomPopUpMenu
-        visible={isMealMenuVisible}
-        onClose={() => setIsMealMenuVisible(false)}
-        title={selectedMealForMenu ? t(`food.meals.${selectedMealForMenu}`) : ''}
-        subtitle={t('food.actions.mealMenuSubtitle')}
-        items={mealMenuItems}
-      />
+      {isMealMenuVisible ? (
+        <BottomPopUpMenu
+          visible={isMealMenuVisible}
+          onClose={() => setIsMealMenuVisible(false)}
+          title={selectedMealForMenu ? t(`food.meals.${selectedMealForMenu}`) : ''}
+          subtitle={t('food.actions.mealMenuSubtitle')}
+          items={mealMenuItems}
+        />
+      ) : null}
 
       {/* Delete All Meal Confirmation Modal */}
-      <ConfirmationModal
-        visible={isDeleteAllMealVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsDeleteAllMealVisible(false);
-          setSelectedMealForMenu(null);
-        }}
-        onConfirm={handleConfirmDeleteAllMeal}
-        title={t('food.actions.deleteAllConfirmTitle')}
-        message={t('food.actions.deleteAllConfirmMessage', {
-          mealName: selectedMealForMenu
-            ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
-            : '',
-        })}
-        confirmLabel={t('common.delete')}
-        cancelLabel={t('common.cancel')}
-        variant="destructive"
-        isLoading={isDeleteAllMealLoading}
-      />
-
-      {/* Merge Duplicates Confirmation Modal */}
-      <ConfirmationModal
-        visible={
-          isMergeDuplicatesVisible
-            ? selectedMealForMenu !== null || selectedMealGroup !== null
-            : false
-        }
-        onClose={() => {
-          setIsMergeDuplicatesVisible(false);
-          if (selectedMealForMenu !== null) {
+      {isDeleteAllMealVisible ? (
+        <ConfirmationModal
+          visible={isDeleteAllMealVisible ? !!selectedMealForMenu : false}
+          onClose={() => {
+            setIsDeleteAllMealVisible(false);
             setSelectedMealForMenu(null);
-          }
-
-          if (selectedMealGroup !== null) {
-            setSelectedMealGroup(null);
-          }
-        }}
-        onConfirm={handleConfirmMergeDuplicates}
-        title={t('food.actions.mergeDuplicatesConfirmTitle')}
-        message={t('food.actions.mergeDuplicatesConfirmMessage', {
-          mealName: selectedMealGroup
-            ? selectedMealGroup.mealName
-            : selectedMealForMenu
+          }}
+          onConfirm={handleConfirmDeleteAllMeal}
+          title={t('food.actions.deleteAllConfirmTitle')}
+          message={t('food.actions.deleteAllConfirmMessage', {
+            mealName: selectedMealForMenu
               ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
               : '',
-        })}
-        confirmLabel={t('food.actions.mergeDuplicatesConfirm')}
-        cancelLabel={t('common.cancel')}
-        isLoading={isMergeDuplicatesLoading}
-      />
+          })}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
+          variant="destructive"
+          isLoading={isDeleteAllMealLoading}
+        />
+      ) : null}
+
+      {/* Merge Duplicates Confirmation Modal */}
+      {isMergeDuplicatesVisible ? (
+        <ConfirmationModal
+          visible={
+            isMergeDuplicatesVisible
+              ? selectedMealForMenu !== null || selectedMealGroup !== null
+              : false
+          }
+          onClose={() => {
+            setIsMergeDuplicatesVisible(false);
+            if (selectedMealForMenu !== null) {
+              setSelectedMealForMenu(null);
+            }
+
+            if (selectedMealGroup !== null) {
+              setSelectedMealGroup(null);
+            }
+          }}
+          onConfirm={handleConfirmMergeDuplicates}
+          title={t('food.actions.mergeDuplicatesConfirmTitle')}
+          message={t('food.actions.mergeDuplicatesConfirmMessage', {
+            mealName: selectedMealGroup
+              ? selectedMealGroup.mealName
+              : selectedMealForMenu
+                ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
+                : '',
+          })}
+          confirmLabel={t('food.actions.mergeDuplicatesConfirm')}
+          cancelLabel={t('common.cancel')}
+          isLoading={isMergeDuplicatesLoading}
+        />
+      ) : null}
 
       {/* Meal Insights Modal */}
-      <MealInsightsModal
-        visible={isMealInsightsVisible}
-        onClose={() => {
-          setIsMealInsightsVisible(false);
-          setSelectedMealForMenu(null);
-        }}
-        mealType={selectedMealForMenu || 'breakfast'}
-        isLoading={isMealInsightsLoading}
-        onSubmit={handleSubmitMealInsights}
-      />
+      {isMealInsightsVisible ? (
+        <MealInsightsModal
+          visible={isMealInsightsVisible}
+          onClose={() => {
+            setIsMealInsightsVisible(false);
+            setSelectedMealForMenu(null);
+          }}
+          mealType={selectedMealForMenu || 'breakfast'}
+          isLoading={isMealInsightsLoading}
+          onSubmit={handleSubmitMealInsights}
+        />
+      ) : null}
 
       {/* Move / Copy Meal Modal */}
-      <MoveCopyMealModal
-        visible={isMealActionModalVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsMealActionModalVisible(false);
-          setSelectedMealForMenu(null);
-        }}
-        onConfirm={handleConfirmMealAction}
-        mode={mealActionMode}
-        sourceMealType={selectedMealForMenu || 'breakfast'}
-        sourceDate={selectedDate}
-        isLoading={isMealActionLoading}
-      />
+      {isMealActionModalVisible ? (
+        <MoveCopyMealModal
+          visible={isMealActionModalVisible ? !!selectedMealForMenu : false}
+          onClose={() => {
+            setIsMealActionModalVisible(false);
+            setSelectedMealForMenu(null);
+          }}
+          onConfirm={handleConfirmMealAction}
+          mode={mealActionMode}
+          sourceMealType={selectedMealForMenu || 'breakfast'}
+          sourceDate={selectedDate}
+          isLoading={isMealActionLoading}
+        />
+      ) : null}
 
       {/* Scale meal total portion (grams) */}
-      <ScaleMealPortionModal
-        visible={isScaleMealPortionModalVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsScaleMealPortionModalVisible(false);
-          setSelectedMealForMenu(null);
-        }}
-        onConfirm={handleConfirmScaleMealPortion}
-        initialTotalGrams={selectedMealTotalGrams}
-        mealNutrients={selectedMealNutrients}
-        isLoading={isScaleMealPortionLoading}
-      />
+      {isScaleMealPortionModalVisible ? (
+        <ScaleMealPortionModal
+          visible={isScaleMealPortionModalVisible ? !!selectedMealForMenu : false}
+          onClose={() => {
+            setIsScaleMealPortionModalVisible(false);
+            setSelectedMealForMenu(null);
+          }}
+          onConfirm={handleConfirmScaleMealPortion}
+          initialTotalGrams={selectedMealTotalGrams}
+          mealNutrients={selectedMealNutrients}
+          isLoading={isScaleMealPortionLoading}
+        />
+      ) : null}
 
       {/* Move Food Modal */}
-      <MoveCopyMealModal
-        visible={isFoodMoveModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodMoveModalVisible(false);
-          setSelectedFoodItem(null);
-        }}
-        onConfirm={handleConfirmFoodMove}
-        mode="move"
-        sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={
-          selectedFoodItem
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
-            : selectedDate
-        }
-        isLoading={isFoodMoveLoading}
-      />
+      {isFoodMoveModalVisible ? (
+        <MoveCopyMealModal
+          visible={isFoodMoveModalVisible ? !!selectedFoodItem : false}
+          onClose={() => {
+            setIsFoodMoveModalVisible(false);
+            setSelectedFoodItem(null);
+          }}
+          onConfirm={handleConfirmFoodMove}
+          mode="move"
+          sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
+          sourceDate={
+            selectedFoodItem
+              ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+              : selectedDate
+          }
+          isLoading={isFoodMoveLoading}
+        />
+      ) : null}
 
       {/* Split Food Modal */}
-      <MoveCopyMealModal
-        visible={isFoodSplitModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodSplitModalVisible(false);
-          setSelectedFoodItem(null);
-        }}
-        onConfirm={handleConfirmFoodSplit}
-        mode="split"
-        title={t('food.actions.splitFoodModalTitle')}
-        sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
-        sourceDate={
-          selectedFoodItem
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
-            : selectedDate
-        }
-        isLoading={isFoodSplitLoading}
-      />
+      {isFoodSplitModalVisible ? (
+        <MoveCopyMealModal
+          visible={isFoodSplitModalVisible ? !!selectedFoodItem : false}
+          onClose={() => {
+            setIsFoodSplitModalVisible(false);
+            setSelectedFoodItem(null);
+          }}
+          onConfirm={handleConfirmFoodSplit}
+          mode="split"
+          title={t('food.actions.splitFoodModalTitle')}
+          sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
+          sourceDate={
+            selectedFoodItem
+              ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+              : selectedDate
+          }
+          isLoading={isFoodSplitLoading}
+        />
+      ) : null}
 
       {/* Food Details Modal (edit/duplicate mode) */}
-      <FoodMealDetailsModal
-        visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodDetailsModalVisible(false);
-          setIsDuplicateMode(false);
-          setSelectedFoodItem(null);
-        }}
-        food={selectedFoodItem?.food || null}
-        foodLog={selectedFoodItem && !isDuplicateMode ? selectedFoodItem.log : undefined}
-        initialMealType={
-          selectedFoodItem && isDuplicateMode ? selectedFoodItem.log.type : undefined
-        }
-        initialDate={
-          selectedFoodItem && isDuplicateMode
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
-            : undefined
-        }
-        initialServingSize={
-          selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined
-        }
-        onAddFood={async (_data) => {
-          try {
-            await refresh();
-          } catch (_error) {
-            // Show error snackbar to user
-            showSnackbar('error', t('food.errors.refreshFailed'));
-
-            // Reload the current screen using expo-router
-            router.replace('/nutrition/food');
+      {isFoodDetailsModalVisible ? (
+        <FoodMealDetailsModal
+          visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
+          onClose={() => {
+            setIsFoodDetailsModalVisible(false);
+            setIsDuplicateMode(false);
+            setSelectedFoodItem(null);
+          }}
+          food={selectedFoodItem?.food || null}
+          foodLog={selectedFoodItem && !isDuplicateMode ? selectedFoodItem.log : undefined}
+          initialMealType={
+            selectedFoodItem && isDuplicateMode ? selectedFoodItem.log.type : undefined
           }
-        }}
-        isAiEnabled={isAiConfigured}
-      />
+          initialDate={
+            selectedFoodItem && isDuplicateMode
+              ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+              : undefined
+          }
+          initialServingSize={
+            selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined
+          }
+          onAddFood={async (_data) => {
+            try {
+              await refresh();
+            } catch (_error) {
+              // Show error snackbar to user
+              showSnackbar('error', t('food.errors.refreshFailed'));
+
+              // Reload the current screen using expo-router
+              router.replace('/nutrition/food');
+            }
+          }}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
 
       {/* Meal Group Options Menu */}
-      <BottomPopUpMenu
-        visible={isMealGroupMenuVisible}
-        onClose={() => {
-          setIsMealGroupMenuVisible(false);
-          // Note: We don't clear selectedMealGroup here because the action handlers
-          // need it to open their respective modals. It's cleared in the modals' onClose/onConfirm.
-        }}
-        title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
-        subtitle={t('food.actions.mealMenuSubtitle')}
-        items={[
-          ...(isAiConfigured
-            ? [
-                {
-                  icon: Sparkles,
-                  iconColor: theme.colors.accent.primary,
-                  iconBgColor: theme.colors.accent.primary10,
-                  title: t('food.actions.getMealInsights'),
-                  description: t('food.actions.getMealInsightsDesc'),
-                  onPress: handleMealGroupGetInsights,
-                },
-              ]
-            : []),
-          {
-            icon: UtensilsCrossed,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
-            title: t('food.actions.createMeal'),
-            description: t('food.actions.createMealDesc'),
-            onPress: handleMealGroupCreateMeal,
-          },
-          {
-            icon: Scale,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
-            title: t('food.actions.scaleMealPortion'),
-            description: t('food.actions.scaleMealPortionDesc'),
-            onPress: handleMealGroupScalePortion,
-          },
-          {
-            icon: Copy,
-            iconColor: theme.colors.status.purple,
-            iconBgColor: theme.colors.status.purple10,
-            title: t('food.actions.copyToAnotherDay'),
-            description: t('food.actions.copyToAnotherDayDesc'),
-            onPress: handleMealGroupCopy,
-          },
-          {
-            icon: ArrowRight,
-            iconColor: theme.colors.status.purple,
-            iconBgColor: theme.colors.status.purple10,
-            title: t('food.actions.moveToAnotherDay'),
-            description: t('food.actions.moveToAnotherDayDesc'),
-            onPress: handleMealGroupMove,
-          },
-          {
-            icon: Scissors,
-            iconColor: theme.colors.status.warning,
-            iconBgColor: theme.colors.status.warning10,
-            title: t('food.actions.splitMeal'),
-            description: t('food.actions.splitMealDesc'),
-            onPress: handleMealGroupSplit,
-          },
-          {
-            icon: Trash2,
-            iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
-            title: t('food.actions.deleteAll'),
-            description: t('food.actions.deleteAllDesc'),
-            titleColor: theme.colors.status.error,
-            onPress: () => {
-              setIsMealGroupMenuVisible(false);
-              setIsDeleteMealGroupVisible(true);
+      {isMealGroupMenuVisible ? (
+        <BottomPopUpMenu
+          visible={isMealGroupMenuVisible}
+          onClose={() => {
+            setIsMealGroupMenuVisible(false);
+            // Note: We don't clear selectedMealGroup here because the action handlers
+            // need it to open their respective modals. It's cleared in the modals' onClose/onConfirm.
+          }}
+          title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
+          subtitle={t('food.actions.mealMenuSubtitle')}
+          items={[
+            ...(isAiConfigured
+              ? [
+                  {
+                    icon: Sparkles,
+                    iconColor: theme.colors.accent.primary,
+                    iconBgColor: theme.colors.accent.primary10,
+                    title: t('food.actions.getMealInsights'),
+                    description: t('food.actions.getMealInsightsDesc'),
+                    onPress: handleMealGroupGetInsights,
+                  },
+                ]
+              : []),
+            {
+              icon: UtensilsCrossed,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+              title: t('food.actions.createMeal'),
+              description: t('food.actions.createMealDesc'),
+              onPress: handleMealGroupCreateMeal,
             },
-          },
-        ]}
-      />
+            {
+              icon: Scale,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+              title: t('food.actions.scaleMealPortion'),
+              description: t('food.actions.scaleMealPortionDesc'),
+              onPress: handleMealGroupScalePortion,
+            },
+            {
+              icon: Copy,
+              iconColor: theme.colors.status.purple,
+              iconBgColor: theme.colors.status.purple10,
+              title: t('food.actions.copyToAnotherDay'),
+              description: t('food.actions.copyToAnotherDayDesc'),
+              onPress: handleMealGroupCopy,
+            },
+            {
+              icon: ArrowRight,
+              iconColor: theme.colors.status.purple,
+              iconBgColor: theme.colors.status.purple10,
+              title: t('food.actions.moveToAnotherDay'),
+              description: t('food.actions.moveToAnotherDayDesc'),
+              onPress: handleMealGroupMove,
+            },
+            {
+              icon: Scissors,
+              iconColor: theme.colors.status.warning,
+              iconBgColor: theme.colors.status.warning10,
+              title: t('food.actions.splitMeal'),
+              description: t('food.actions.splitMealDesc'),
+              onPress: handleMealGroupSplit,
+            },
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error,
+              iconBgColor: theme.colors.status.error20,
+              title: t('food.actions.deleteAll'),
+              description: t('food.actions.deleteAllDesc'),
+              titleColor: theme.colors.status.error,
+              onPress: () => {
+                setIsMealGroupMenuVisible(false);
+                setIsDeleteMealGroupVisible(true);
+              },
+            },
+          ]}
+        />
+      ) : null}
 
       {/* Meal Group Scale Portion Modal */}
-      <ScaleMealPortionModal
-        visible={isMealGroupScaleModalVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupScaleModalVisible(false);
-          setSelectedMealGroup(null);
-        }}
-        onConfirm={handleConfirmMealGroupScalePortion}
-        initialTotalGrams={selectedMealGroupTotalGrams}
-        mealNutrients={selectedMealGroupNutrients}
-        isLoading={isMealGroupScaleLoading}
-      />
+      {isMealGroupScaleModalVisible ? (
+        <ScaleMealPortionModal
+          visible={isMealGroupScaleModalVisible ? selectedMealGroup !== null : false}
+          onClose={() => {
+            setIsMealGroupScaleModalVisible(false);
+            setSelectedMealGroup(null);
+          }}
+          onConfirm={handleConfirmMealGroupScalePortion}
+          initialTotalGrams={selectedMealGroupTotalGrams}
+          mealNutrients={selectedMealGroupNutrients}
+          isLoading={isMealGroupScaleLoading}
+        />
+      ) : null}
 
       {/* Meal Group Move/Copy/Split Modal */}
-      <MoveCopyMealModal
-        visible={isMealGroupActionModalVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupActionModalVisible(false);
-          setSelectedMealGroup(null);
-        }}
-        onConfirm={handleConfirmMealGroupAction}
-        mode={mealGroupActionMode}
-        sourceMealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
-        sourceDate={selectedDate}
-        isLoading={isMealGroupActionLoading}
-      />
+      {isMealGroupActionModalVisible ? (
+        <MoveCopyMealModal
+          visible={isMealGroupActionModalVisible ? selectedMealGroup !== null : false}
+          onClose={() => {
+            setIsMealGroupActionModalVisible(false);
+            setSelectedMealGroup(null);
+          }}
+          onConfirm={handleConfirmMealGroupAction}
+          mode={mealGroupActionMode}
+          sourceMealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+          sourceDate={selectedDate}
+          isLoading={isMealGroupActionLoading}
+        />
+      ) : null}
 
       {/* Meal Group Create Meal Modal */}
-      <CreateMealModal
-        visible={isMealGroupCreateMealModalVisible}
-        onClose={() => {
-          setIsMealGroupCreateMealModalVisible(false);
-          setMealGroupCreateMealInitialFoods([]);
-          setSelectedMealGroup(null);
-        }}
-        onSave={() => {
-          refresh();
-          setIsMealGroupCreateMealModalVisible(false);
-          setMealGroupCreateMealInitialFoods([]);
-          setSelectedMealGroup(null);
-        }}
-        initialFoods={mealGroupCreateMealInitialFoods}
-      />
+      {isMealGroupCreateMealModalVisible ? (
+        <CreateMealModal
+          visible={isMealGroupCreateMealModalVisible}
+          onClose={() => {
+            setIsMealGroupCreateMealModalVisible(false);
+            setMealGroupCreateMealInitialFoods([]);
+            setSelectedMealGroup(null);
+          }}
+          onSave={() => {
+            refresh();
+            setIsMealGroupCreateMealModalVisible(false);
+            setMealGroupCreateMealInitialFoods([]);
+            setSelectedMealGroup(null);
+          }}
+          initialFoods={mealGroupCreateMealInitialFoods}
+        />
+      ) : null}
 
       {/* Meal Group Insights Modal */}
-      <MealInsightsModal
-        visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupInsightsVisible(false);
-          setSelectedMealGroup(null);
-        }}
-        mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
-        isLoading={isMealGroupInsightsLoading}
-        onSubmit={handleSubmitMealGroupInsights}
-      />
+      {isMealGroupInsightsVisible ? (
+        <MealInsightsModal
+          visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
+          onClose={() => {
+            setIsMealGroupInsightsVisible(false);
+            setSelectedMealGroup(null);
+          }}
+          mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
+          isLoading={isMealGroupInsightsLoading}
+          onSubmit={handleSubmitMealGroupInsights}
+        />
+      ) : null}
 
       {/* Delete Meal Group Confirmation */}
-      <ConfirmationModal
-        visible={isDeleteMealGroupVisible}
-        onClose={() => {
-          setIsDeleteMealGroupVisible(false);
-          setSelectedMealGroup(null);
-        }}
-        onConfirm={handleConfirmDeleteMealGroup}
-        title={t('food.mealGroup.deleteGroup')}
-        message={t('food.mealGroup.deleteGroupWarning')}
-        confirmLabel={t('common.delete')}
-        variant="destructive"
-        isLoading={isDeleteMealGroupLoading}
-      />
+      {isDeleteMealGroupVisible ? (
+        <ConfirmationModal
+          visible={isDeleteMealGroupVisible}
+          onClose={() => {
+            setIsDeleteMealGroupVisible(false);
+            setSelectedMealGroup(null);
+          }}
+          onConfirm={handleConfirmDeleteMealGroup}
+          title={t('food.mealGroup.deleteGroup')}
+          message={t('food.mealGroup.deleteGroupWarning')}
+          confirmLabel={t('common.delete')}
+          variant="destructive"
+          isLoading={isDeleteMealGroupLoading}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

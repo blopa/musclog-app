@@ -1,6 +1,6 @@
 import { type LucideIcon, Plus, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Platform, Pressable, Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -33,10 +33,15 @@ export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps
     fat: formatRoundedDecimal(food.fat ?? 0, 2),
   });
 
+  const pressableProps =
+    Platform.OS === 'android'
+      ? { onPress: onAddPress, unstable_pressDelay: 130 as const }
+      : { onPress: onAddPress };
+
   return (
     <Pressable
       className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
-      onPress={onAddPress}
+      {...pressableProps}
     >
       {/* Icon/Image */}
       <View
@@ -123,7 +128,7 @@ export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps
       {/* Add Button */}
       <Pressable
         className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
-        onPress={onAddPress}
+        {...pressableProps}
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
         }}

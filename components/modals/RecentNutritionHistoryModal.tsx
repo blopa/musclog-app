@@ -103,6 +103,7 @@ export function RecentNutritionHistoryModal({
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             padding: theme.spacing.padding.base,
             paddingBottom: theme.size['20'],

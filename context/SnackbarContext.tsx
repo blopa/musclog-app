@@ -27,6 +27,7 @@ const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined
 
 export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [snackbars, setSnackbars] = useState<SnackbarType[]>([]);
+  const [idCounter, setIdCounter] = useState(0);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -42,7 +43,8 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         duration?: number;
       }
     ) => {
-      const id = Date.now();
+      const id = Date.now() + idCounter;
+      setIdCounter((prev) => (prev + 1) % 1000);
       const duration = options?.duration ?? 2000;
 
       const newSnackbar: SnackbarType = {
@@ -63,7 +65,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         }, duration);
       }
     },
-    [t]
+    [t, idCounter]
   );
 
   const dismissSnackbar = useCallback((id: number) => {
