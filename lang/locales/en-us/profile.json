@@ -40,7 +40,7 @@
     },
     "weightPrediction": {
       "title": "Predicted Weight",
-      "subtitle": "Estimated from TDEE and your last 4 days of calorie tracking"
+      "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
     }
   }
 }
