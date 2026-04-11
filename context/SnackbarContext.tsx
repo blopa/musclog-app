@@ -105,8 +105,20 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
           {snackbarList}
         </View>
       ) : (
-        /* Native: wrap in a transparent Modal so snackbars appear above ALL other modals */
-        <Modal visible={snackbars.length > 0} transparent animationType="none" statusBarTranslucent>
+        /* Native: Render snackbars inside their own transparent Modal so they always sit
+         * above every other modal on both iOS and Android (z-index is useless against RN's
+         * Modal which creates its own native window layer).
+         *
+         * We use presentationStyle="overFullScreen" to ensure the Modal properly handles
+         * touch events as an overlay. This prevents "invisible overlay" bugs where touches
+         * are captured by a ghost Modal window when modals rapidly open/close. */
+        <Modal
+          visible={snackbars.length > 0}
+          transparent
+          animationType="none"
+          statusBarTranslucent
+          presentationStyle="overFullScreen"
+        >
           <View style={{ flex: 1, pointerEvents: 'box-none' }}>
             <View
               style={{

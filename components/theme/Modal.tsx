@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Modal as RNModal } from 'react-native';
+import { Modal as RNModal, type ModalProps } from 'react-native';
 
 export type ShellAwareModalProps = {
   visible: boolean;
@@ -9,6 +9,7 @@ export type ShellAwareModalProps = {
   onRequestClose?: () => void;
   onShow?: () => void;
   statusBarTranslucent?: boolean;
+  presentationStyle?: ModalProps['presentationStyle'];
 };
 
 export function Modal({
@@ -19,6 +20,7 @@ export function Modal({
   onRequestClose,
   onShow,
   statusBarTranslucent,
+  presentationStyle,
 }: ShellAwareModalProps) {
   return (
     <RNModal
@@ -28,6 +30,7 @@ export function Modal({
       onRequestClose={onRequestClose}
       onShow={onShow}
       statusBarTranslucent={statusBarTranslucent}
+      presentationStyle={presentationStyle}
     >
       {children}
     </RNModal>
