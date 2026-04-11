@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import type { FitnessDetails } from '@/types/fitnessDetails';
+import { getDefaultUnits } from '@/utils/units';
 
 import { EditFitnessGoalsBody, type FitnessGoals } from './EditFitnessGoalsBody';
 import { EditPhysicalStatsBody, type PhysicalStats } from './EditPhysicalStatsBody';
@@ -39,8 +40,10 @@ export function EditFitnessDetailsBody({
   const showPhysical = mode === 'physical' || mode === 'both';
   const showGoals = mode === 'goals' || mode === 'both';
 
-  // Units state in the wrapper so changes in form 2 update the unit labels in form 1
-  const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
+  // Units state in the wrapper so changes in form 1 update the unit labels in form 1
+  const [units, setUnits] = useState<'imperial' | 'metric'>(
+    initialData?.units ?? getDefaultUnits()
+  );
 
   // Refs track latest sub-form values for save/onFormChange without causing re-renders
   const physicalRef = useRef<PhysicalStats>({
@@ -49,10 +52,10 @@ export function EditFitnessDetailsBody({
     weight: initialData?.weight ?? '0',
     height: initialData?.height ?? '0',
     fatPercentage: initialData?.fatPercentage,
+    units: initialData?.units ?? getDefaultUnits(),
   });
 
   const goalsRef = useRef<FitnessGoals>({
-    units: initialData?.units ?? 'metric',
     weightGoal: initialData?.weightGoal ?? 'maintain',
     fitnessGoal: initialData?.fitnessGoal ?? 'general',
     activityLevel: initialData?.activityLevel ?? 3,
@@ -70,10 +73,9 @@ export function EditFitnessDetailsBody({
   const handleFitnessGoalsChange = useCallback(
     (data: FitnessGoals) => {
       goalsRef.current = data;
-      setUnits(data.units);
-      onFormChange?.({ ...physicalRef.current, ...data });
+      onFormChange?.({ ...physicalRef.current, ...data, units });
     },
-    [onFormChange]
+    [onFormChange, units]
   );
 
   const handleSave = useCallback(() => {
@@ -83,7 +85,7 @@ export function EditFitnessDetailsBody({
       weight: physicalRef.current.weight,
       height: physicalRef.current.height,
       fatPercentage: physicalRef.current.fatPercentage,
-      units: goalsRef.current.units,
+      units: physicalRef.current.units,
       weightGoal: goalsRef.current.weightGoal,
       fitnessGoal: goalsRef.current.fitnessGoal,
       activityLevel: goalsRef.current.activityLevel,
@@ -98,10 +100,10 @@ export function EditFitnessDetailsBody({
     weight: initialData?.weight,
     height: initialData?.height,
     fatPercentage: initialData?.fatPercentage,
+    units: initialData?.units ?? getDefaultUnits(),
   };
 
   const goalsInitial: Partial<FitnessGoals> = {
-    units: initialData?.units,
     weightGoal: initialData?.weightGoal,
     fitnessGoal: initialData?.fitnessGoal,
     activityLevel: initialData?.activityLevel,
@@ -115,6 +117,11 @@ export function EditFitnessDetailsBody({
           initialData={physicalInitial}
           units={units}
           onFormChange={handlePhysicalStatsChange}
+          onUnitsChange={(val) => {
+            setUnits(val);
+            physicalRef.current.units = val;
+            onFormChange?.({ ...physicalRef.current, ...goalsRef.current, units: val });
+          }}
         />
       ) : null}
       {showGoals ? (

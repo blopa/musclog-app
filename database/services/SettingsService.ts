@@ -43,6 +43,7 @@ import { database } from '@/database';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
+import { getDefaultUnits } from '@/utils/units';
 
 export class SettingsService {
   /**
@@ -55,7 +56,7 @@ export class SettingsService {
       .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
       .fetch();
     if (settings.length === 0) {
-      return 'metric';
+      return getDefaultUnits();
     }
     return settings[0].value === '1' ? 'imperial' : 'metric';
   }
