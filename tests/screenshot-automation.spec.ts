@@ -39,11 +39,13 @@ test.describe('App Store Screenshots', () => {
       await page.waitForTimeout(5000);
     };
 
-    // Seed demo data — navigate to root with ?demoModeEnabled=true so the
-    // onboarding landing screen triggers seedDevData() and redirects to home.
-    console.log(`[${projectName}] Seeding demo data...`);
-    await page.goto(`${APP_URL}?demoModeEnabled=true`, { timeout: 600000 });
-    await page.waitForSelector('text=Recent Workouts', { timeout: 20000 });
+    // Navigate with ?demoModeEnabled=true — the onboarding landing screen
+    // detects that param and runs seedDevData() automatically, then calls
+    // router.navigate('/') when done. We wait for that URL change as the signal
+    // that seeding is complete. The seeder inserts a lot of records so allow 2 min.
+    console.log(`[${projectName}] Loading app with demo data...`);
+    await page.goto(`${APP_URL}?demoModeEnabled=true`, { timeout: 60000 });
+    await page.waitForURL(`${APP_URL}/`, { timeout: 120000 });
 
     // 01 — Home (index)
     await takeScreenshot('01-home');
