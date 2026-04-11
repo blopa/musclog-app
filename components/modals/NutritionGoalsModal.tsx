@@ -41,6 +41,7 @@ export function NutritionGoalsModal({
 
   return (
     <FullScreenModal
+      debugKey="NutritionGoalsModal"
       visible={visible}
       onClose={onClose}
       title={isEditing ? t('nutritionGoals.editTitle') : t('nutritionGoals.title')}

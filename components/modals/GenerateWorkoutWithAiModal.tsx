@@ -88,6 +88,7 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
 
   return (
     <FullScreenModal
+      debugKey="GenerateWorkoutWithAiModal"
       visible={visible}
       onClose={onClose}
       title={t('workouts.aiGeneration.title')}

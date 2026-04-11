@@ -170,6 +170,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
   return (
     <FullScreenModal
+      debugKey="CreateExerciseModal"
       visible={visible}
       onClose={onClose}
       title={t('exercises.createExercise.title')}

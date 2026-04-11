@@ -61,6 +61,7 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
 
   return (
     <FullScreenModal
+      debugKey="CycleSettingsModal"
       visible={visible}
       onClose={handleClose}
       title={t('cycle.settings.title')}

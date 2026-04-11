@@ -600,6 +600,7 @@ export function CreateMealModal({
 
   return (
     <FullScreenModal
+      debugKey="CreateMealModal"
       visible={visible}
       onClose={onClose}
       title={

@@ -280,6 +280,7 @@ export function WorkoutSessionHistoryModal({
 
   return (
     <FullScreenModal
+      debugKey="WorkoutSessionHistoryModal"
       visible={visible}
       onClose={onClose}
       title={isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title')}

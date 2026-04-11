@@ -153,6 +153,7 @@ export function FilterWorkoutsModal({
 
   return (
     <FullScreenModal
+      debugKey="FilterWorkoutsModal"
       visible={visible}
       onClose={onClose}
       title={t('workouts.filterWorkouts.title')}

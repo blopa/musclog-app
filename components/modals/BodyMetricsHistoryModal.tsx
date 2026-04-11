@@ -477,6 +477,7 @@ export default function BodyMetricsHistoryModal({
 
   return (
     <FullScreenModal
+      debugKey="BodyMetricsHistoryModal"
       visible={visible}
       onClose={onClose}
       title={t('bodyMetrics.header.title')}

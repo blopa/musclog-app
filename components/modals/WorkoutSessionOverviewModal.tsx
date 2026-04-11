@@ -406,6 +406,7 @@ export default function WorkoutSessionOverviewModal({
 
   return (
     <FullScreenModal
+      debugKey="WorkoutSessionOverviewModal"
       visible={visible}
       onClose={onClose}
       title={t('workout.sessionOverview')}

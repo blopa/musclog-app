@@ -124,6 +124,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
 
   return (
     <FullScreenModal
+      debugKey="NotificationsModal"
       visible={visible}
       onClose={onClose}
       title={t('notifications.header.title')}

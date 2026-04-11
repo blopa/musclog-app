@@ -122,6 +122,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   return (
     <>
       <FullScreenModal
+        debugKey="VisualSettingsModal"
         visible={visible}
         onClose={onClose}
         title={t('settings.visualSettings.title')}

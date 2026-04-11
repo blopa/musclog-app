@@ -302,6 +302,7 @@ export default function EditPastWorkoutDataModal({
 
   return (
     <FullScreenModal
+      debugKey="EditPastWorkoutDataModal"
       visible={visible}
       onClose={onClose}
       title={t('workoutDetail.editSetsTitle')}

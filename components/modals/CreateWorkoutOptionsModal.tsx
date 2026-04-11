@@ -31,6 +31,7 @@ export function CreateWorkoutOptionsModal({
 
   return (
     <FullScreenModal
+      debugKey="CreateWorkoutOptionsModal"
       visible={visible}
       onClose={onClose}
       title={t('workouts.createWorkoutOptionsModal.header')}

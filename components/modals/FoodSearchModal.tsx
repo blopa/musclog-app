@@ -353,6 +353,11 @@ export function FoodSearchModal({
       logDate,
     });
 
+  // Debug logging for visibility changes
+  useEffect(() => {
+    console.log('[FoodSearchModal] Visibility:', visible);
+  }, [visible]);
+
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
     if (!visible) {
@@ -913,9 +918,13 @@ export function FoodSearchModal({
         })}
         headerRight={headerRight}
         scrollable={false}
+        debugKey="FoodSearchModal"
       >
         <View className="h-4" />
-        <View className="flex-1 bg-bg-primary">
+        <View
+          className="flex-1 bg-bg-primary"
+          onTouchStart={() => console.log('[FoodSearchModal] Root view touched, visible:', visible)}
+        >
           {/* Search Bar */}
           <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
             <View className="relative">

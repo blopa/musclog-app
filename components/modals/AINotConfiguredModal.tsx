@@ -48,6 +48,7 @@ export function AINotConfiguredModal({
 
   return (
     <FullScreenModal
+      debugKey="AINotConfiguredModal"
       visible={visible}
       onClose={onClose}
       title={t('ai.notConfiguredModal.title')}

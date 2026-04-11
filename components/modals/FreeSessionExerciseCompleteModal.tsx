@@ -98,6 +98,7 @@ export function FreeSessionExerciseCompleteModal({
 
   return (
     <FullScreenModal
+      debugKey="FreeSessionExerciseCompleteModal"
       visible={visible}
       onClose={onClose}
       title={t('freeTraining.workoutName')}

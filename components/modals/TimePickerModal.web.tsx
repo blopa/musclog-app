@@ -172,6 +172,7 @@ export function TimePickerModal({
 
   return (
     <FullScreenModal
+      debugKey="TimePickerModal.web"
       visible={visible}
       onClose={onClose}
       title={title}

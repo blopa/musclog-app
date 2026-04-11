@@ -76,6 +76,8 @@ type CameraModalProps = {
   useOcrBeforeAi?: boolean;
   logDate?: Date;
   mealTypeForLog?: MealType;
+  /** Called when user wants to open food search. Parent should close camera and open food search to avoid nested modals. */
+  onOpenFoodSearch?: (mealType: MealType) => void;
 };
 
 export default function SmartCameraModal({
@@ -87,6 +89,7 @@ export default function SmartCameraModal({
   useOcrBeforeAi = false,
   logDate,
   mealTypeForLog,
+  onOpenFoodSearch,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -577,8 +580,14 @@ export default function SmartCameraModal({
   }, []);
 
   const handleSearchFoodPress = useCallback(() => {
-    setIsFoodSearchModalVisible(true);
-  }, []);
+    // If parent provided onOpenFoodSearch, use it to avoid nested modals
+    if (onOpenFoodSearch) {
+      onOpenFoodSearch(selectedMealType);
+    } else {
+      // Fallback to internal modal (for backward compatibility, though not recommended)
+      setIsFoodSearchModalVisible(true);
+    }
+  }, [onOpenFoodSearch, selectedMealType]);
 
   const handleGalleryPress = useCallback(async () => {
     try {
@@ -658,6 +667,7 @@ export default function SmartCameraModal({
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
+        debugKey="SmartCameraModal-permission"
       >
         <View
           className="flex-1 items-center justify-center"
@@ -679,6 +689,7 @@ export default function SmartCameraModal({
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
+        debugKey="SmartCameraModal-denied"
       >
         <View
           className="flex-1 items-center justify-center px-6"
@@ -704,6 +715,7 @@ export default function SmartCameraModal({
       title={t('camera.title')}
       scrollable={false}
       showHeader={false}
+      debugKey="SmartCameraModal-main"
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
         <SystemBars style="light" />

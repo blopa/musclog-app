@@ -1391,6 +1391,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   return (
     <FullScreenModal
+      debugKey="CoachModal"
       visible={visible}
       onClose={onClose}
       title={t('coach.title')}

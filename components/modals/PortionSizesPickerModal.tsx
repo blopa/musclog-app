@@ -135,6 +135,7 @@ export function PortionSizesPickerModal({
   return (
     <>
       <FullScreenModal
+        debugKey="PortionSizesPickerModal"
         visible={visible}
         onClose={onClose}
         title={t('portionSizes.selectTitle')}

@@ -303,6 +303,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
   return (
     <FullScreenModal
+      debugKey="AddExerciseModal"
       visible={visible}
       onClose={onClose}
       title={t('workouts.addExercise.title')}

@@ -61,20 +61,6 @@ import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 
-/** Same grouping as merge: duplicates are multiple logs with the same foodId in one meal. */
-function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): boolean {
-  const grouped = new Map<string, typeof mealFoods>();
-  for (const entry of mealFoods) {
-    if (!entry.log.foodId) {
-      continue;
-    }
-    const existing = grouped.get(entry.log.foodId) || [];
-    existing.push(entry);
-    grouped.set(entry.log.foodId, existing);
-  }
-  return [...grouped.values()].some((g) => g.length > 1);
-}
-
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
  * Foods with group_id are excluded from merging - they're already part of a meal group.

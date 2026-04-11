@@ -2064,6 +2064,7 @@ export function FoodMealDetailsModal({
   return (
     <>
       <FullScreenModal
+        debugKey="FoodMealDetailsModal"
         visible={isFoodDetailsModalVisible}
         onClose={onClose}
         title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}

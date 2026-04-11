@@ -179,6 +179,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
 
   return (
     <FullScreenModal
+      debugKey="NotificationsSettingsModal"
       visible={visible}
       onClose={onClose}
       title={t('settings.notificationsSettings.title')}

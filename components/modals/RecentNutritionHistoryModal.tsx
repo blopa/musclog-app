@@ -96,6 +96,7 @@ export function RecentNutritionHistoryModal({
 
   return (
     <FullScreenModal
+      debugKey="RecentNutritionHistoryModal"
       visible={visible}
       onClose={onClose}
       title={t('foodSearch.recentHistory')}

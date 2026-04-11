@@ -99,6 +99,7 @@ export function RetrospectiveNutritionModal({
 
   return (
     <FullScreenModal
+      debugKey="RetrospectiveNutritionModal"
       visible={visible}
       onClose={handleClose}
       title={t('nutrition.logPastDay')}

@@ -99,6 +99,7 @@ export function BarcodeCameraModal({
   if (!permission.granted) {
     return (
       <FullScreenModal
+        debugKey="BarcodeCameraModal"
         visible={visible}
         onClose={onClose}
         title={t('camera.title')}
@@ -144,6 +145,7 @@ export function BarcodeCameraModal({
 
   return (
     <FullScreenModal
+      debugKey="BarcodeCameraModal"
       visible={visible}
       onClose={onClose}
       title=""

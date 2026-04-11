@@ -1349,6 +1349,7 @@ export function DataLogModal({
   return (
     <>
       <FullScreenModal
+        debugKey="DataLogModal"
         visible={visible}
         onClose={onClose}
         title={translations.title}

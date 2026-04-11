@@ -383,6 +383,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
 
   return (
     <FullScreenModal
+      debugKey="PastWorkoutsHistoryModal"
       visible={visible}
       onClose={onClose}
       title={t('pastWorkoutHistory.title')}

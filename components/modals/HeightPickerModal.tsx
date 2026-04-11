@@ -182,6 +182,7 @@ export function HeightPickerModal({
 
   return (
     <FullScreenModal
+      debugKey="HeightPickerModal"
       footer={
         <View className="w-full items-center gap-4">
           <Button

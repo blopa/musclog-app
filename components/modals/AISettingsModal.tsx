@@ -369,7 +369,12 @@ export function AISettingsModal({
   }));
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
+    <FullScreenModal
+      debugKey="AISettingsModal"
+      visible={visible}
+      onClose={onClose}
+      title={t('settings.aiSettings.title')}
+    >
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Google Gemini Integration Section */}
         <AIIntegrationCard

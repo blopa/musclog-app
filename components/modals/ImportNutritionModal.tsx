@@ -93,6 +93,7 @@ export function ImportNutritionModal({
 
   return (
     <FullScreenModal
+      debugKey="ImportNutritionModal"
       visible={visible}
       onClose={handleClose}
       title={t('nutrition.importNutrition')}

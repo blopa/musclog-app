@@ -573,6 +573,7 @@ export default function CreateCustomFoodModal({
 
   return (
     <FullScreenModal
+      debugKey="CreateCustomFoodModal"
       visible={visible}
       onClose={onClose}
       title={t('food.newCustomFood.title')}
