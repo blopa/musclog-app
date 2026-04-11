@@ -28,7 +28,7 @@ type RecentNutritionHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
   onFoodClick: (food: FoodItem) => void;
-  portion100gName: string;
+  portion100gName?: string;
   mealType?: MealType;
 };
 
@@ -36,7 +36,7 @@ export function RecentNutritionHistoryModal({
   visible,
   onClose,
   onFoodClick,
-  portion100gName,
+  portion100gName = '100g',
   mealType,
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
