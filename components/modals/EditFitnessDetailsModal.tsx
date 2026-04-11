@@ -51,7 +51,6 @@ export function EditFitnessDetailsModal({
 
   return (
     <FullScreenModal
-      debugKey="EditFitnessDetailsModal"
       visible={visible}
       onClose={onClose}
       title={t('editFitnessDetails.title')}

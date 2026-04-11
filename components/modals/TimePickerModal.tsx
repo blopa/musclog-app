@@ -184,7 +184,6 @@ export function TimePickerModal({
 
   return (
     <FullScreenModal
-      debugKey="TimePickerModal"
       footer={
         <View className="w-full items-center gap-4">
           <Button

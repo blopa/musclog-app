@@ -679,7 +679,6 @@ export default function SmartCameraModal({
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
-        debugKey="SmartCameraModal-permission"
       >
         <View
           className="flex-1 items-center justify-center"
@@ -701,7 +700,6 @@ export default function SmartCameraModal({
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
-        debugKey="SmartCameraModal-denied"
       >
         <View
           className="flex-1 items-center justify-center px-6"
@@ -727,7 +725,6 @@ export default function SmartCameraModal({
       title={t('camera.title')}
       scrollable={false}
       showHeader={false}
-      debugKey="SmartCameraModal-main"
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
         <SystemBars style="light" />

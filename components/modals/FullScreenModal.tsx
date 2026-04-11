@@ -23,8 +23,6 @@ type FullScreenModalProps = {
   showHeader?: boolean;
   closable?: boolean;
   scrollViewRef?: RefObject<ScrollView | null>;
-  /** Debug key to identify this modal instance in logs */
-  debugKey?: string;
 };
 
 export function FullScreenModal({
@@ -41,7 +39,6 @@ export function FullScreenModal({
   showHeader = true,
   closable = true,
   scrollViewRef,
-  debugKey = 'modal',
 }: FullScreenModalProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -127,16 +124,7 @@ export function FullScreenModal({
         ) : null}
 
         {/* Content area */}
-        <View
-          className="flex-1"
-          pointerEvents="box-none"
-          onTouchStart={(e) =>
-            console.log(
-              `[FullScreenModal:${debugKey}] Content wrapper touched, scrollable:`,
-              scrollable
-            )
-          }
-        >
+        <View className="flex-1" pointerEvents="box-none">
           {scrollable ? (
             <ScrollView
               ref={scrollViewRef}
@@ -150,13 +138,7 @@ export function FullScreenModal({
               {children}
             </ScrollView>
           ) : (
-            <View
-              className="flex-1"
-              pointerEvents="auto"
-              onTouchStart={() =>
-                console.log(`[FullScreenModal:${debugKey}] Non-scrollable container touched`)
-              }
-            >
+            <View className="flex-1" pointerEvents="auto">
               {children}
             </View>
           )}

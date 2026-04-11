@@ -383,7 +383,6 @@ export default function ViewExerciseModal({
   return (
     <>
       <FullScreenModal
-        debugKey="ViewExerciseModal"
         visible={visible}
         onClose={onClose}
         title={displayName}

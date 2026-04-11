@@ -178,12 +178,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   if (isLoading || !checkin || !metrics) {
     return (
       <>
-        <FullScreenModal
-          debugKey="CheckinDetailsModal"
-          visible={visible}
-          onClose={onClose}
-          title={t('nutrition.checkin.title')}
-        >
+        <FullScreenModal visible={visible} onClose={onClose} title={t('nutrition.checkin.title')}>
           <View className="items-center justify-center" style={{ paddingVertical: 80 }}>
             <ActivityIndicator color={theme.colors.accent.primary} />
           </View>
@@ -222,7 +217,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   return (
     <>
       <FullScreenModal
-        debugKey="CheckinDetailsModal"
         visible={visible}
         onClose={onClose}
         title={t('nutrition.checkin.title')}

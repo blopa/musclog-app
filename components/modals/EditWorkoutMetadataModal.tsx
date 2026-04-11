@@ -179,7 +179,6 @@ export default function EditWorkoutMetadataModal({
   return (
     <>
       <FullScreenModal
-        debugKey="EditWorkoutMetadataModal"
         visible={visible}
         onClose={onClose}
         title={t('workoutDetail.editTimeTitle')}

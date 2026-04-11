@@ -94,7 +94,6 @@ export default function CreateWorkoutModal({
 
   return (
     <FullScreenModal
-      debugKey="CreateWorkoutModal"
       visible={visible}
       onClose={onClose}
       title={isEditMode ? t('createWorkout.editTitle') : t('createWorkout.title')}

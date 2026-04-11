@@ -353,11 +353,6 @@ export function FoodSearchModal({
       logDate,
     });
 
-  // Debug logging for visibility changes
-  useEffect(() => {
-    console.log('[FoodSearchModal] Visibility:', visible);
-  }, [visible]);
-
   // When this modal is hidden (for any reason), tear down every child modal that
   // was opened inside it. Without this, a sub-modal that was visible when the parent
   // closed (e.g. RecentNutritionHistoryModal opened → food tracked → FoodSearchModal
@@ -936,13 +931,9 @@ export function FoodSearchModal({
         })}
         headerRight={headerRight}
         scrollable={false}
-        debugKey="FoodSearchModal"
       >
         <View className="h-4" />
-        <View
-          className="flex-1 bg-bg-primary"
-          onTouchStart={() => console.log('[FoodSearchModal] Root view touched, visible:', visible)}
-        >
+        <View className="flex-1 bg-bg-primary">
           {/* Search Bar */}
           <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
             <View className="relative">

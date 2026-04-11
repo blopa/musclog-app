@@ -414,7 +414,6 @@ export default function AddUserMetricEntryModal({
 
   return (
     <FullScreenModal
-      debugKey="AddUserMetricEntryModal"
       visible={visible}
       onClose={onClose}
       title={t('bodyMetrics.addEntry.title')}

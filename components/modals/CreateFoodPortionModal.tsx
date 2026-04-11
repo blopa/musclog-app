@@ -91,7 +91,6 @@ export function CreateFoodPortionModal({
 
   return (
     <FullScreenModal
-      debugKey="CreateFoodPortionModal"
       visible={visible}
       onClose={onClose}
       title={t('createFoodPortion')}

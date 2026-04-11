@@ -1959,7 +1959,6 @@ export default function ModalsTestScreen() {
       />
 
       <FullScreenModal
-        debugKey="modals"
         visible={isFullScreenModalVisible}
         onClose={() => setIsFullScreenModalVisible(false)}
         title="Full Screen Modal"

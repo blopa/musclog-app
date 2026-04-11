@@ -255,7 +255,6 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
 
   return (
     <FullScreenModal
-      debugKey="ExercisesModal"
       visible={visible}
       onClose={onClose}
       title={t('exercises.title')}

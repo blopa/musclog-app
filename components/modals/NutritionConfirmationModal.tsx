@@ -87,7 +87,6 @@ export function NutritionConfirmationModal({
 
   return (
     <FullScreenModal
-      debugKey="NutritionConfirmationModal"
       visible={visible}
       onClose={onClose}
       title={t('nutrition.review')}

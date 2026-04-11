@@ -285,7 +285,6 @@ export function AddFoodItemToMealModal({
 
   return (
     <FullScreenModal
-      debugKey="AddFoodItemToMealModal"
       visible={visible}
       onClose={onClose}
       title={t('food.addFoodItemToMeal.title')}

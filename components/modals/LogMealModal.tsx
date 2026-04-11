@@ -148,7 +148,6 @@ export function LogMealModal({
   return (
     <>
       <FullScreenModal
-        debugKey="LogMealModal"
         visible={visible}
         onClose={onClose}
         title={t('meals.logMeal')}

@@ -117,7 +117,6 @@ export function MealEstimationModal({
 
   return (
     <FullScreenModal
-      debugKey="MealEstimationModal"
       visible={visible}
       onClose={onClose}
       title={t('nutrition.mealEstimation.title')}

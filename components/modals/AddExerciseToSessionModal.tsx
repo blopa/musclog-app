@@ -213,7 +213,6 @@ export function AddExerciseToSessionModal({
 
   return (
     <FullScreenModal
-      debugKey="AddExerciseToSessionModal"
       visible={visible}
       onClose={onClose}
       onShow={onShow}

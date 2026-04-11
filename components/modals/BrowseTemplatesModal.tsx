@@ -275,7 +275,6 @@ export function BrowseTemplatesModal({
 
   return (
     <FullScreenModal
-      debugKey="BrowseTemplatesModal"
       visible={visible}
       onClose={onClose}
       title={t('workouts.browseTemplatesModal.title')}

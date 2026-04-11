@@ -283,7 +283,6 @@ export function AdvancedSettingsModal({
   return (
     <>
       <FullScreenModal
-        debugKey="AdvancedSettingsModal"
         visible={visible}
         onClose={onClose}
         title={t('settings.advancedSettings.title')}

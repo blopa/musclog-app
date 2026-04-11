@@ -322,12 +322,7 @@ export function GenericEditModal({
 
   if (loadError) {
     return (
-      <FullScreenModal
-        debugKey="GenericEditModal"
-        visible={visible}
-        onClose={onClose}
-        title={title}
-      >
+      <FullScreenModal visible={visible} onClose={onClose} title={title}>
         <View className="flex-1 items-center justify-center p-6">
           <Text className="text-status-error50 text-center text-base">{loadError}</Text>
           <Button
@@ -344,7 +339,6 @@ export function GenericEditModal({
 
   return (
     <FullScreenModal
-      debugKey="GenericEditModal"
       visible={visible}
       onClose={onClose}
       title={title}

@@ -239,12 +239,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
   ];
 
   return (
-    <FullScreenModal
-      debugKey="BasicSettingsModal"
-      visible={visible}
-      onClose={onClose}
-      title={t('settings.basicSettings.title')}
-    >
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.basicSettings.title')}>
       <View className="gap-8 py-6">
         {/* Appearance Section */}
         {HAS_THEMES ? (

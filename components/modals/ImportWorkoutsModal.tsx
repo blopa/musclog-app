@@ -102,7 +102,6 @@ export function ImportWorkoutsModal({
 
   return (
     <FullScreenModal
-      debugKey="ImportWorkoutsModal"
       visible={visible}
       onClose={handleClose}
       title={t('workout.import.importWorkouts')}

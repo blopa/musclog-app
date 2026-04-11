@@ -444,7 +444,6 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
   return (
     <FullScreenModal
-      debugKey="MyMealsModal"
       visible={visible}
       onClose={onClose}
       title={t('meals.title')}

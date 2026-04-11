@@ -28,7 +28,7 @@
  * They are the file's own outer shell, not sub-modals that need cleanup.
  * All others (e.g. <DatePickerModal>, <ConfirmationModal>) are treated as sub-modals.
  */
-const CONTAINER_MODALS = new Set(['FullScreenModal', 'CenteredModal', 'BaseModal']);
+const CONTAINER_MODALS = new Set(['FullScreenModal', 'CenteredModal', 'BaseModal', 'RNModal']);
 
 /** @param {string} name */
 function isSubModalComponent(name) {

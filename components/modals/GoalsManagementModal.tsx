@@ -257,7 +257,6 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   return (
     <>
       <FullScreenModal
-        debugKey="GoalsManagementModal"
         visible={visible}
         onClose={onClose}
         title={t('goalsManagement.title')}

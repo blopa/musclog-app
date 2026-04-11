@@ -55,7 +55,6 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
 
   return (
     <FullScreenModal
-      debugKey="AiCustomPromptsModal"
       visible={visible}
       onClose={onClose}
       title={t('settings.aiSettings.manageCustomPrompts')}

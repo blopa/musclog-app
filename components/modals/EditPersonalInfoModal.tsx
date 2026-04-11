@@ -57,7 +57,6 @@ export function EditPersonalInfoModal({
 
   return (
     <FullScreenModal
-      debugKey="EditPersonalInfoModal"
       visible={visible}
       onClose={onClose}
       title={t('editPersonalInfo.title')}
