@@ -1,3 +1,4 @@
+import { Ruler, Scale } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -10,8 +11,6 @@ import {
   getLocalCalendarYear,
   localCalendarDayDate,
 } from '@/utils/calendarDate';
-import { Ruler, Scale } from 'lucide-react-native';
-
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
