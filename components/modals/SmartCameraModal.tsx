@@ -128,7 +128,12 @@ export default function SmartCameraModal({
     !isSearchingBarcode &&
     !isProcessingAi &&
     !isFoodNotFoundModalVisible &&
-    !isFoodDetailsModalVisible;
+    !isFoodDetailsModalVisible &&
+    !isContextModalVisible &&
+    !isAddFoodModalVisible &&
+    !isNewCustomFoodModalVisible &&
+    !isFoodSearchModalVisible &&
+    !isLogMealModalVisible;
 
   /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
   const mapTrackMealResponseToMeal = useCallback(
@@ -203,6 +208,9 @@ export default function SmartCameraModal({
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -219,14 +227,37 @@ export default function SmartCameraModal({
     );
     pulse.start();
     return () => pulse.stop();
-  }, [pulseAnim]);
+  }, [pulseAnim, visible]);
 
   // Request camera permission on mount
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     if (!permission) {
       requestPermission();
     }
-  }, [permission, requestPermission]);
+  }, [permission, requestPermission, visible]);
+
+  // Reset internal states when modal is hidden
+  useEffect(() => {
+    if (!visible) {
+      setIsSearchingBarcode(false);
+      isSearchingBarcodeRef.current = false;
+      setIsProcessingAi(false);
+      setIsFoodNotFoundModalVisible(false);
+      setIsFoodDetailsModalVisible(false);
+      setIsContextModalVisible(false);
+      setIsAddFoodModalVisible(false);
+      setIsNewCustomFoodModalVisible(false);
+      setIsFoodSearchModalVisible(false);
+      setIsLogMealModalVisible(false);
+      setDetectedBarcode(null);
+      setProductFromAiLabel(null);
+      setSelectedMealForLogging(null);
+      setAiIngredients(undefined);
+    }
+  }, [visible]);
 
   // Handle automatic barcode detection
   const handleBarcodeScanned = useCallback(
@@ -510,6 +541,7 @@ export default function SmartCameraModal({
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
     setSelectedMealType(mealType);
     setIsAddFoodModalVisible(false);
+    setIsFoodSearchModalVisible(true);
   }, []);
 
   const handleAiCameraPress = useCallback(() => {
@@ -630,11 +662,6 @@ export default function SmartCameraModal({
     }
   }, [cameraMode, processAiPhoto, t]);
 
-  if (!visible) {
-    isSearchingBarcodeRef.current = false;
-    return null;
-  }
-
   if (!permission) {
     return (
       <FullScreenModal
@@ -690,469 +717,474 @@ export default function SmartCameraModal({
       scrollable={false}
       showHeader={false}
     >
-      <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <SystemBars style="light" />
-        <SafeAreaView className="flex-1" edges={['top']}>
-          {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
-          <View className="absolute inset-0">
-            {isCameraActive ? (
-              <CameraView
-                key={`camera-${cameraResumeKey}`}
-                ref={cameraRef}
-                style={StyleSheet.absoluteFill}
-                facing="back"
-                enableTorch={flashEnabled}
-                active={true}
-                onBarcodeScanned={isBarcodeScanning ? handleBarcodeScanned : undefined}
-                barcodeScannerSettings={{
-                  barcodeTypes: [
-                    'qr',
-                    'ean13',
-                    'ean8',
-                    'upc_a',
-                    'upc_e',
-                    'code128',
-                    'code39',
-                    'code93',
-                  ],
-                }}
-              />
-            ) : (
-              <View
-                style={[
-                  StyleSheet.absoluteFill,
-                  { backgroundColor: theme.colors.background.darkGreenSolid },
-                ]}
-              />
-            )}
-            {/* Gradient Overlay */}
-            <LinearGradient
-              colors={theme.colors.gradients.cameraOverlay}
-              locations={[0, 0.5, 1]}
-              style={StyleSheet.absoluteFill}
-            />
-          </View>
-
-          {/* Header */}
-          <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
-            <Pressable
-              onPress={handleClose}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: theme.colors.background.darkGray,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white10,
-              }}
-            >
-              <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
-            </Pressable>
-
-            <Pressable
-              onPress={handleFlashToggle}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: theme.colors.background.darkGray,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white10,
-              }}
-            >
-              {flashEnabled ? (
-                <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              ) : (
-                <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              )}
-            </Pressable>
-          </View>
-
-          {/* Loading Overlay - barcode lookup */}
-          {isSearchingBarcode || isProcessingAi ? (
-            <View
-              className="absolute inset-0 z-30"
-              style={{ backgroundColor: theme.colors.overlay.black90 }}
-            >
-              <CameraProcessingIndicator cameraMode={cameraMode} />
-            </View>
-          ) : null}
-
-          {/* Main Content - Camera Frame */}
-          <View className="relative z-10 flex-1 items-center justify-center px-6">
-            {/* Camera Frame Container */}
-            <View
-              className="relative w-full rounded-2xl"
-              style={{
-                aspectRatio: theme.aspectRatio.portrait,
-                maxHeight: cameraMaxHeight,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white20,
-                overflow: 'visible',
-              }}
-            >
-              {/* Corner Markers */}
-              <View
-                className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
-                style={{ borderColor: theme.colors.accent.primary }}
-              />
-              <View
-                className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-lg border-r-2 border-t-2"
-                style={{ borderColor: theme.colors.accent.primary }}
-              />
-              <View
-                className="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-lg border-b-2 border-l-2"
-                style={{ borderColor: theme.colors.accent.primary }}
-              />
-              <View
-                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-lg border-b-2 border-r-2"
-                style={{ borderColor: theme.colors.accent.primary }}
-              />
-
-              {/* Center Line */}
-              <View
-                className="absolute left-0 right-0"
-                style={{
-                  top: '50%',
-                  height: theme.borderWidth.thin,
-                  backgroundColor: theme.colors.accent.primary40,
-                }}
-              />
-            </View>
-
-            {/* Instruction Text */}
-            <Text
-              className="text-center text-sm font-medium drop-shadow-md"
-              style={{ color: theme.colors.overlay.white90, marginTop: isSmallScreen ? 8 : 24 }}
-            >
-              {getCameraInstructionText(cameraMode, t)}
-            </Text>
-          </View>
-
-          {/* Bottom Controls */}
-          <View
-            className="relative z-20 px-4 pt-4"
-            style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
-          >
-            {/* Mode Selector — only show when more than one mode is available */}
-            {!hideCameraModePicker && isAiEnabled ? (
-              <View
-                className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}
-              >
-                <View
-                  className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
-                  style={{
-                    backgroundColor: theme.colors.background.darkGray90,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.white10,
+      {visible ? (
+        <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
+          <SystemBars style="light" />
+          <SafeAreaView className="flex-1" edges={['top']}>
+            {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
+            <View className="absolute inset-0">
+              {isCameraActive ? (
+                <CameraView
+                  key={`camera-${cameraResumeKey}`}
+                  ref={cameraRef}
+                  style={StyleSheet.absoluteFill}
+                  facing="back"
+                  enableTorch={flashEnabled}
+                  active={true}
+                  onBarcodeScanned={isBarcodeScanning ? handleBarcodeScanned : undefined}
+                  barcodeScannerSettings={{
+                    barcodeTypes: [
+                      'qr',
+                      'ean13',
+                      'ean8',
+                      'upc_a',
+                      'upc_e',
+                      'code128',
+                      'code39',
+                      'code93',
+                    ],
                   }}
-                >
-                  {/* Barcode Scan */}
-                  <Pressable
-                    onPress={() => handleModeChange('barcode-scan')}
-                    className="flex-1 rounded-xl px-2"
-                    style={[
-                      { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
-                      cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
-                    ]}
-                  >
-                    {cameraMode === 'barcode-scan' ? (
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          borderRadius: theme.borderRadius.md,
-                          overflow: 'hidden',
-                        }}
-                      />
-                    ) : null}
-                    <View className="flex-row items-center justify-center gap-1.5">
-                      <ScanBarcode
-                        size={theme.iconSize.md}
-                        color={
-                          cameraMode === 'barcode-scan'
-                            ? theme.colors.text.white
-                            : theme.colors.text.secondary
-                        }
-                      />
-                      {!isSmallScreen ? (
-                        <Text
-                          className="font-bold uppercase tracking-wide"
-                          style={{
-                            fontSize: theme.typography.fontSize.xs,
-                            color:
-                              cameraMode === 'barcode-scan'
-                                ? theme.colors.text.white
-                                : theme.colors.text.secondary,
-                          }}
-                        >
-                          {t('food.aiCamera.modes.barcodeScan')}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </Pressable>
+                />
+              ) : (
+                <View
+                  style={[
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: theme.colors.background.darkGreenSolid },
+                  ]}
+                />
+              )}
+              {/* Gradient Overlay */}
+              <LinearGradient
+                colors={theme.colors.gradients.cameraOverlay}
+                locations={[0, 0.5, 1]}
+                style={StyleSheet.absoluteFill}
+              />
+            </View>
 
-                  {/* AI Label Scan — hidden when AI is disabled */}
-                  {isAiEnabled ? (
-                    <Pressable
-                      onPress={() => handleModeChange('ai-label-scan')}
-                      className="flex-1 rounded-xl px-2"
-                      style={[
-                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
-                        cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
-                      ]}
-                    >
-                      {cameraMode === 'ai-label-scan' ? (
-                        <LinearGradient
-                          colors={theme.colors.gradients.cta}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          className="absolute inset-0"
-                          style={{
-                            borderRadius: theme.borderRadius.md,
-                            overflow: 'hidden',
-                          }}
-                        />
-                      ) : null}
-                      <View className="flex-row items-center justify-center gap-1.5">
-                        <FileText
-                          size={theme.iconSize.md}
-                          color={
-                            cameraMode === 'ai-label-scan'
-                              ? theme.colors.text.white
-                              : theme.colors.text.secondary
-                          }
-                        />
-                        {!isSmallScreen ? (
-                          <Text
-                            className="font-bold uppercase tracking-wide"
-                            style={{
-                              fontSize: theme.typography.fontSize.xs,
-                              color:
-                                cameraMode === 'ai-label-scan'
-                                  ? theme.colors.text.white
-                                  : theme.colors.text.secondary,
-                            }}
-                          >
-                            {t('food.aiCamera.modes.labelScan')}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
-                  ) : null}
+            {/* Header */}
+            <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
+              <Pressable
+                onPress={handleClose}
+                className="h-10 w-10 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: theme.colors.background.darkGray,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.background.white10,
+                }}
+              >
+                <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              </Pressable>
 
-                  {/* AI Meal Photo — hidden when AI is disabled */}
-                  {isAiEnabled ? (
-                    <Pressable
-                      onPress={() => handleModeChange('ai-meal-photo')}
-                      className="flex-1 rounded-xl px-2"
-                      style={[
-                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
-                        cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
-                      ]}
-                    >
-                      {cameraMode === 'ai-meal-photo' ? (
-                        <LinearGradient
-                          colors={theme.colors.gradients.cta}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          className="absolute inset-0"
-                          style={{
-                            borderRadius: theme.borderRadius.md,
-                            overflow: 'hidden',
-                          }}
-                        />
-                      ) : null}
-                      <View className="flex-row items-center justify-center gap-1.5">
-                        <Sparkles
-                          size={theme.iconSize.md}
-                          color={
-                            cameraMode === 'ai-meal-photo'
-                              ? theme.colors.text.white
-                              : theme.colors.text.secondary
-                          }
-                        />
-                        {!isSmallScreen ? (
-                          <Text
-                            className="font-bold uppercase tracking-wide"
-                            style={{
-                              fontSize: theme.typography.fontSize.xs,
-                              color:
-                                cameraMode === 'ai-meal-photo'
-                                  ? theme.colors.text.white
-                                  : theme.colors.text.secondary,
-                            }}
-                          >
-                            {t('food.aiCamera.modes.mealPhoto')}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
-                  ) : null}
-                </View>
+              <Pressable
+                onPress={handleFlashToggle}
+                className="h-10 w-10 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: theme.colors.background.darkGray,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.background.white10,
+                }}
+              >
+                {flashEnabled ? (
+                  <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                ) : (
+                  <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                )}
+              </Pressable>
+            </View>
+
+            {/* Loading Overlay - barcode lookup */}
+            {isSearchingBarcode || isProcessingAi ? (
+              <View
+                className="absolute inset-0 z-30"
+                style={{ backgroundColor: theme.colors.overlay.black90 }}
+              >
+                <CameraProcessingIndicator cameraMode={cameraMode} />
               </View>
             ) : null}
 
-            {/* Camera Controls */}
-            <View className="flex-row items-center justify-between px-2">
-              <Pressable
-                className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
+            {/* Main Content - Camera Frame */}
+            <View className="relative z-10 flex-1 items-center justify-center px-6">
+              {/* Camera Frame Container */}
+              <View
+                className="relative w-full rounded-2xl"
                 style={{
-                  backgroundColor: theme.colors.background.darkGray50,
+                  aspectRatio: theme.aspectRatio.portrait,
+                  maxHeight: cameraMaxHeight,
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.white20,
-                }}
-                onPress={handleGalleryPress}
-              >
-                <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              </Pressable>
-
-              {/* Shutter Button */}
-              <Pressable
-                onPress={handleTakePicture}
-                className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
-                style={{
-                  borderWidth: theme.borderWidth.thick,
-                  borderColor: theme.colors.text.white,
+                  overflow: 'visible',
                 }}
               >
+                {/* Corner Markers */}
                 <View
-                  className="absolute inset-0 rounded-full"
+                  className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
+                  style={{ borderColor: theme.colors.accent.primary }}
+                />
+                <View
+                  className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-lg border-r-2 border-t-2"
+                  style={{ borderColor: theme.colors.accent.primary }}
+                />
+                <View
+                  className="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-lg border-b-2 border-l-2"
+                  style={{ borderColor: theme.colors.accent.primary }}
+                />
+                <View
+                  className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-lg border-b-2 border-r-2"
+                  style={{ borderColor: theme.colors.accent.primary }}
+                />
+
+                {/* Center Line */}
+                <View
+                  className="absolute left-0 right-0"
                   style={{
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.black20,
+                    top: '50%',
+                    height: theme.borderWidth.thin,
+                    backgroundColor: theme.colors.accent.primary40,
                   }}
                 />
-                <View
-                  className="h-16 w-16 rounded-full bg-white"
-                  style={{ backgroundColor: theme.colors.text.white }}
-                />
-              </Pressable>
+              </View>
 
-              {/* Context Button — hidden when AI is disabled */}
-              {isAiEnabled ? (
+              {/* Instruction Text */}
+              <Text
+                className="text-center text-sm font-medium drop-shadow-md"
+                style={{ color: theme.colors.overlay.white90, marginTop: isSmallScreen ? 8 : 24 }}
+              >
+                {getCameraInstructionText(cameraMode, t)}
+              </Text>
+            </View>
+
+            {/* Bottom Controls */}
+            <View
+              className="relative z-20 px-4 pt-4"
+              style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
+            >
+              {/* Mode Selector — only show when more than one mode is available */}
+              {!hideCameraModePicker && isAiEnabled ? (
+                <View
+                  className={
+                    isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'
+                  }
+                >
+                  <View
+                    className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
+                    style={{
+                      backgroundColor: theme.colors.background.darkGray90,
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.background.white10,
+                    }}
+                  >
+                    {/* Barcode Scan */}
+                    <Pressable
+                      onPress={() => handleModeChange('barcode-scan')}
+                      className="flex-1 rounded-xl px-2"
+                      style={[
+                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                        cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
+                      ]}
+                    >
+                      {cameraMode === 'barcode-scan' ? (
+                        <LinearGradient
+                          colors={theme.colors.gradients.cta}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            borderRadius: theme.borderRadius.md,
+                            overflow: 'hidden',
+                          }}
+                        />
+                      ) : null}
+                      <View className="flex-row items-center justify-center gap-1.5">
+                        <ScanBarcode
+                          size={theme.iconSize.md}
+                          color={
+                            cameraMode === 'barcode-scan'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary
+                          }
+                        />
+                        {!isSmallScreen ? (
+                          <Text
+                            className="font-bold uppercase tracking-wide"
+                            style={{
+                              fontSize: theme.typography.fontSize.xs,
+                              color:
+                                cameraMode === 'barcode-scan'
+                                  ? theme.colors.text.white
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {t('food.aiCamera.modes.barcodeScan')}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </Pressable>
+
+                    {/* AI Label Scan — hidden when AI is disabled */}
+                    {isAiEnabled ? (
+                      <Pressable
+                        onPress={() => handleModeChange('ai-label-scan')}
+                        className="flex-1 rounded-xl px-2"
+                        style={[
+                          { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                          cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
+                        ]}
+                      >
+                        {cameraMode === 'ai-label-scan' ? (
+                          <LinearGradient
+                            colors={theme.colors.gradients.cta}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            className="absolute inset-0"
+                            style={{
+                              borderRadius: theme.borderRadius.md,
+                              overflow: 'hidden',
+                            }}
+                          />
+                        ) : null}
+                        <View className="flex-row items-center justify-center gap-1.5">
+                          <FileText
+                            size={theme.iconSize.md}
+                            color={
+                              cameraMode === 'ai-label-scan'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary
+                            }
+                          />
+                          {!isSmallScreen ? (
+                            <Text
+                              className="font-bold uppercase tracking-wide"
+                              style={{
+                                fontSize: theme.typography.fontSize.xs,
+                                color:
+                                  cameraMode === 'ai-label-scan'
+                                    ? theme.colors.text.white
+                                    : theme.colors.text.secondary,
+                              }}
+                            >
+                              {t('food.aiCamera.modes.labelScan')}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </Pressable>
+                    ) : null}
+
+                    {/* AI Meal Photo — hidden when AI is disabled */}
+                    {isAiEnabled ? (
+                      <Pressable
+                        onPress={() => handleModeChange('ai-meal-photo')}
+                        className="flex-1 rounded-xl px-2"
+                        style={[
+                          { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                          cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
+                        ]}
+                      >
+                        {cameraMode === 'ai-meal-photo' ? (
+                          <LinearGradient
+                            colors={theme.colors.gradients.cta}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            className="absolute inset-0"
+                            style={{
+                              borderRadius: theme.borderRadius.md,
+                              overflow: 'hidden',
+                            }}
+                          />
+                        ) : null}
+                        <View className="flex-row items-center justify-center gap-1.5">
+                          <Sparkles
+                            size={theme.iconSize.md}
+                            color={
+                              cameraMode === 'ai-meal-photo'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary
+                            }
+                          />
+                          {!isSmallScreen ? (
+                            <Text
+                              className="font-bold uppercase tracking-wide"
+                              style={{
+                                fontSize: theme.typography.fontSize.xs,
+                                color:
+                                  cameraMode === 'ai-meal-photo'
+                                    ? theme.colors.text.white
+                                    : theme.colors.text.secondary,
+                              }}
+                            >
+                              {t('food.aiCamera.modes.mealPhoto')}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                </View>
+              ) : null}
+
+              {/* Camera Controls */}
+              <View className="flex-row items-center justify-between px-2">
                 <Pressable
-                  onPress={() => setIsContextModalVisible(true)}
-                  className="h-12 w-12 items-center justify-center rounded-full"
+                  className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
                   style={{
                     backgroundColor: theme.colors.background.darkGray50,
                     borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.white10,
-                    opacity: hideCameraModePicker
-                      ? 0
-                      : cameraMode === 'barcode-scan'
-                        ? theme.colors.opacity.strong
-                        : 1,
+                    borderColor: theme.colors.background.white20,
                   }}
-                  disabled={cameraMode === 'barcode-scan'}
+                  onPress={handleGalleryPress}
                 >
-                  <MessageSquareText
-                    size={theme.iconSize.lg}
-                    color={
-                      cameraMode === 'barcode-scan'
-                        ? theme.colors.text.gray500
-                        : theme.colors.text.primary
-                    }
+                  <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                </Pressable>
+
+                {/* Shutter Button */}
+                <Pressable
+                  onPress={handleTakePicture}
+                  className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
+                  style={{
+                    borderWidth: theme.borderWidth.thick,
+                    borderColor: theme.colors.text.white,
+                  }}
+                >
+                  <View
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.background.black20,
+                    }}
+                  />
+                  <View
+                    className="h-16 w-16 rounded-full bg-white"
+                    style={{ backgroundColor: theme.colors.text.white }}
                   />
                 </Pressable>
-              ) : (
-                <View className="h-12 w-12" />
-              )}
+
+                {/* Context Button — hidden when AI is disabled */}
+                {isAiEnabled ? (
+                  <Pressable
+                    onPress={() => setIsContextModalVisible(true)}
+                    className="h-12 w-12 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: theme.colors.background.darkGray50,
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.background.white10,
+                      opacity: hideCameraModePicker
+                        ? 0
+                        : cameraMode === 'barcode-scan'
+                          ? theme.colors.opacity.strong
+                          : 1,
+                    }}
+                    disabled={cameraMode === 'barcode-scan'}
+                  >
+                    <MessageSquareText
+                      size={theme.iconSize.lg}
+                      color={
+                        cameraMode === 'barcode-scan'
+                          ? theme.colors.text.gray500
+                          : theme.colors.text.primary
+                      }
+                    />
+                  </Pressable>
+                ) : (
+                  <View className="h-12 w-12" />
+                )}
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
+          </SafeAreaView>
 
-        {/* Context Modal */}
-        {isContextModalVisible ? (
-          <AINutritionTrackingContextModal
-            visible={isContextModalVisible}
-            onClose={() => setIsContextModalVisible(false)}
-            onApply={handleApplyContext}
-          />
-        ) : null}
+          {/* Context Modal */}
+          {isContextModalVisible ? (
+            <AINutritionTrackingContextModal
+              visible={isContextModalVisible}
+              onClose={() => setIsContextModalVisible(false)}
+              onApply={handleApplyContext}
+            />
+          ) : null}
 
-        {/* Food Details Modal */}
-        {isFoodDetailsModalVisible ? (
-          <FoodMealDetailsModal
-            visible={isFoodDetailsModalVisible}
-            onClose={handleFoodDetailsClose}
-            barcode={productFromAiLabel ? null : detectedBarcode}
-            productFromSearch={productFromAiLabel ?? undefined}
-            onBarcodeLookupComplete={handleBarcodeLookupComplete}
-            onFoodTracked={handleClose}
-            isAiEnabled={isAiEnabled}
-            canEdit={!!productFromAiLabel}
-            initialDate={logDate}
-            initialMealType={mealTypeForLog}
-          />
-        ) : null}
+          {/* Food Details Modal */}
+          {isFoodDetailsModalVisible ? (
+            <FoodMealDetailsModal
+              visible={isFoodDetailsModalVisible}
+              onClose={handleFoodDetailsClose}
+              barcode={productFromAiLabel ? null : detectedBarcode}
+              productFromSearch={productFromAiLabel ?? undefined}
+              onBarcodeLookupComplete={handleBarcodeLookupComplete}
+              onFoodTracked={handleClose}
+              isAiEnabled={isAiEnabled}
+              canEdit={!!productFromAiLabel}
+              initialDate={logDate}
+              initialMealType={mealTypeForLog}
+            />
+          ) : null}
 
-        {/* Food Not Found Modal */}
-        {isFoodNotFoundModalVisible ? (
-          <FoodNotFoundModal
-            visible={isFoodNotFoundModalVisible}
-            onClose={handleFoodNotFoundClose}
-            onTryAiScan={handleTryAiScan}
-            onSearchAgain={handleSearchAgain}
-            onCreateCustom={handleCreateCustomFood}
-            isAiEnabled={isAiEnabled}
-          />
-        ) : null}
+          {/* Food Not Found Modal */}
+          {isFoodNotFoundModalVisible ? (
+            <FoodNotFoundModal
+              visible={isFoodNotFoundModalVisible}
+              onClose={handleFoodNotFoundClose}
+              onTryAiScan={handleTryAiScan}
+              onSearchAgain={handleSearchAgain}
+              onCreateCustom={handleCreateCustomFood}
+              isAiEnabled={isAiEnabled}
+            />
+          ) : null}
 
-        {/* Add Food Modal */}
-        {isAddFoodModalVisible ? (
-          <AddFoodModal
-            visible={isAddFoodModalVisible}
-            onClose={handleAddFoodClose}
-            onMealTypeSelect={handleMealTypeSelect}
-            onAiCameraPress={handleAiCameraPress}
-            onScanBarcodePress={handleScanBarcodePress}
-            onSearchFoodPress={handleSearchFoodPress}
-            onCreateCustomFoodPress={handleCreateCustomFood}
-            onTrackCustomMealPress={handleTrackCustomMeal}
-          />
-        ) : null}
+          {/* Add Food Modal */}
+          {isAddFoodModalVisible ? (
+            <AddFoodModal
+              visible={isAddFoodModalVisible}
+              onClose={handleAddFoodClose}
+              onMealTypeSelect={handleMealTypeSelect}
+              onAiCameraPress={handleAiCameraPress}
+              onScanBarcodePress={handleScanBarcodePress}
+              onSearchFoodPress={handleSearchFoodPress}
+              onCreateCustomFoodPress={handleCreateCustomFood}
+              onTrackCustomMealPress={handleTrackCustomMeal}
+              onQuickTrackMealPress={handleClose}
+            />
+          ) : null}
 
-        {/* New Custom Food Modal */}
-        {isNewCustomFoodModalVisible ? (
-          <CreateCustomFoodModal
-            visible={isNewCustomFoodModalVisible}
-            trackFoodAfterSave={true}
-            onClose={handleNewCustomFoodClose}
-            isAiEnabled={isAiEnabled}
-          />
-        ) : null}
+          {/* New Custom Food Modal */}
+          {isNewCustomFoodModalVisible ? (
+            <CreateCustomFoodModal
+              visible={isNewCustomFoodModalVisible}
+              trackFoodAfterSave={true}
+              onClose={handleNewCustomFoodClose}
+              isAiEnabled={isAiEnabled}
+            />
+          ) : null}
 
-        {/* Food Search Modal */}
-        {isFoodSearchModalVisible ? (
-          <FoodSearchModal
-            visible={isFoodSearchModalVisible}
-            onClose={() => setIsFoodSearchModalVisible(false)}
-            mealType={selectedMealType}
-            onBarcodeScanPress={handleScanBarcodePress}
-            onCreatePress={handleCreateCustomFood}
-            isAiEnabled={isAiEnabled}
-          />
-        ) : null}
+          {/* Food Search Modal */}
+          {isFoodSearchModalVisible ? (
+            <FoodSearchModal
+              visible={isFoodSearchModalVisible}
+              onClose={() => setIsFoodSearchModalVisible(false)}
+              mealType={selectedMealType}
+              onBarcodeScanPress={handleScanBarcodePress}
+              onCreatePress={handleCreateCustomFood}
+              isAiEnabled={isAiEnabled}
+            />
+          ) : null}
 
-        {/* Log Meal Modal */}
-        {isLogMealModalVisible && selectedMealForLogging ? (
-          <LogMealModal
-            visible={isLogMealModalVisible}
-            onClose={() => {
-              setIsLogMealModalVisible(false);
-              setSelectedMealForLogging(null);
-              setAiIngredients(undefined);
-            }}
-            meal={selectedMealForLogging}
-            ingredients={aiIngredients}
-            onLogMeal={handleLogMeal}
-            initialDate={logDate}
-          />
-        ) : null}
-      </View>
+          {/* Log Meal Modal */}
+          {isLogMealModalVisible && selectedMealForLogging ? (
+            <LogMealModal
+              visible={isLogMealModalVisible}
+              onClose={() => {
+                setIsLogMealModalVisible(false);
+                setSelectedMealForLogging(null);
+                setAiIngredients(undefined);
+              }}
+              meal={selectedMealForLogging}
+              ingredients={aiIngredients}
+              onLogMeal={handleLogMeal}
+              initialDate={logDate}
+            />
+          ) : null}
+        </View>
+      ) : null}
     </FullScreenModal>
   );
 }

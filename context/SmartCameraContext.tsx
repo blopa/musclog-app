@@ -48,18 +48,16 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   return (
     <SmartCameraContext.Provider value={{ openCamera, setCurrentDate }}>
       {children}
-      {isVisible ? (
-        <SmartCameraModal
-          visible={isVisible}
-          onClose={handleCameraModalClose}
-          mode={cameraMode}
-          hideCameraModePicker={hideCameraModePicker}
-          isAiEnabled={isAiConfigured}
-          useOcrBeforeAi={useOcrBeforeAi}
-          logDate={logDate}
-          mealTypeForLog={mealTypeForLog}
-        />
-      ) : null}
+      <SmartCameraModal
+        visible={isVisible}
+        onClose={handleCameraModalClose}
+        mode={cameraMode}
+        hideCameraModePicker={hideCameraModePicker}
+        isAiEnabled={isAiConfigured}
+        useOcrBeforeAi={useOcrBeforeAi}
+        logDate={logDate}
+        mealTypeForLog={mealTypeForLog}
+      />
     </SmartCameraContext.Provider>
   );
 }
