@@ -1,5 +1,5 @@
 import { Ruler, Scale } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -12,6 +12,7 @@ import {
   localCalendarDayDate,
 } from '@/utils/calendarDate';
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
+import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
 import { DatePickerInput } from './modals/DatePickerInput';
@@ -55,6 +56,23 @@ export function EditPhysicalStatsBody({
     initialData?.fatPercentage ?? null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const prevUnitsRef = useRef<'imperial' | 'metric'>(units);
+
+  useEffect(() => {
+    const prevUnits = prevUnitsRef.current;
+    if (prevUnits === units) {
+      return;
+    }
+    prevUnitsRef.current = units;
+
+    const weightNum = parseFloat(weight) || 0;
+    const newWeight = kgToDisplay(displayToKg(weightNum, prevUnits), units);
+    setWeight(formatDecimal(newWeight, 2));
+
+    const heightNum = parseFloat(height) || 0;
+    const newHeight = cmToDisplay(displayToCm(heightNum, prevUnits), units);
+    setHeight(String(Math.round(newHeight * 100) / 100));
+  }, [units]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = useCallback((date: Date) => {
     setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
@@ -168,7 +186,13 @@ export function EditPhysicalStatsBody({
               <TextInput
                 label={t('editFitnessDetails.height')}
                 value={height}
-                onChangeText={setHeight}
+                onChangeText={(text) => {
+                  const dotIndex = text.indexOf('.');
+                  if (dotIndex !== -1 && text.length - dotIndex > 3) {
+                    return;
+                  }
+                  setHeight(text);
+                }}
                 placeholder="0"
                 keyboardType="numeric"
                 selectTextOnFocus={true}
