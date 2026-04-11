@@ -55,7 +55,7 @@ export function HeightPickerInput({
         onPress={onPress}
         disabled={disabled}
       >
-        <View className="flex-row items-center justify-between p-3">
+        <View className="flex-row items-center justify-between px-3" style={{ paddingVertical: 11 }}>
           <View className="min-w-0 flex-1 flex-row items-center gap-2">
             <View
               className="h-8 w-8 items-center justify-center rounded-full"
