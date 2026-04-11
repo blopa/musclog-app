@@ -41,5 +41,13 @@
         "EAS_BUILD_PLATFORM": "device"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "support@jubinganga.com",
+        "ascAppId": "6761317034"
+      }
+    }
   }
 }
