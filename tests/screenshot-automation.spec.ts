@@ -43,7 +43,7 @@ test.describe('App Store Screenshots', () => {
     // onboarding landing screen triggers seedDevData() and redirects to home.
     console.log(`[${projectName}] Seeding demo data...`);
     await page.goto(`${APP_URL}?demoModeEnabled=true`, { timeout: 600000 });
-    await page.waitForSelector('text=Recent Workouts', { timeout: 480000 });
+    await page.waitForSelector('text=Recent Workouts', { timeout: 20000 });
 
     // 01 — Home (index)
     await takeScreenshot('01-home');
