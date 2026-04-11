@@ -109,12 +109,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
          * above every other modal on both iOS and Android (z-index is useless against RN's
          * Modal which creates its own native window layer).
          */
-        <Modal
-          visible={snackbars.length > 0}
-          transparent
-          animationType="none"
-          statusBarTranslucent
-        >
+        <Modal visible={snackbars.length > 0} transparent animationType="none" statusBarTranslucent>
           <View style={{ flex: 1, pointerEvents: 'box-none' }}>
             <View
               style={{
