@@ -131,8 +131,9 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                     intuitiveEatingMode ? blurFilter(4) : undefined,
                   ]}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveEatingMode ? '0' : formatRoundedDecimal(meal.protein, 2)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.protein, 2),
+                  })}
                 </Text>
               </View>
 
@@ -152,8 +153,9 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                     intuitiveEatingMode ? blurFilter(4) : undefined,
                   ]}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveEatingMode ? '0' : formatRoundedDecimal(meal.carbs, 2)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.carbs, 2),
+                  })}
                 </Text>
               </View>
 
@@ -173,8 +175,9 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                     intuitiveEatingMode ? blurFilter(4) : undefined,
                   ]}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveEatingMode ? '0' : formatRoundedDecimal(meal.fats, 2)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.fats, 2),
+                  })}
                 </Text>
               </View>
             </View>

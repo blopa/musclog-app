@@ -361,7 +361,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   new Date(localDayStartMs(new Date())),
                   -(6 - i)
                 );
-                // TODO: do we need to use i18n here?
                 const dayKey = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[
                   dayInstant.getDay()
                 ];
@@ -406,7 +405,9 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text className="text-base font-medium leading-relaxed text-gray-300">
-              {t('nutrition.checkin.summaryIntro', { target: currentGoal?.totalCalories ?? 0 })}
+              {t('nutrition.checkin.summaryIntro', {
+                target: formatInteger(currentGoal?.totalCalories ?? 0),
+              })}
               <Text
                 style={[
                   { color: theme.colors.status.warning },
@@ -414,8 +415,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 ]}
               >
                 {' '}
-                {/*TODO: use i18n*/}
-                {intuitiveEatingMode ? '0' : formatInteger(avgCalories)} {t('common.kcal')}/day
+                {intuitiveEatingMode
+                  ? t('common.labelColonValue', {
+                      label: t('common.time.daily'),
+                      value: `0 ${t('common.kcal')}`,
+                    })
+                  : `${formatInteger(avgCalories)} ${t('common.kcal')}/${t('common.time.daily').toLowerCase()}`}
               </Text>
               . {t('nutrition.checkin.summaryOutro')}
               <Text

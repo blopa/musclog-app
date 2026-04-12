@@ -130,8 +130,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   className="text-xl font-bold text-text-primary"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveMode ? '0' : formatRoundedDecimal(food.protein, 1)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.protein, 1),
+                  })}
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -143,8 +144,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   className="text-xl font-bold text-text-primary"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveMode ? '0' : formatRoundedDecimal(food.carbs, 1)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.carbs, 1),
+                  })}
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -156,8 +158,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   className="text-xl font-bold text-text-primary"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
-                  {/*TODO: use i18n*/}
-                  {intuitiveMode ? '0' : formatRoundedDecimal(food.fat, 1)}g
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.fat, 1),
+                  })}
                 </Text>
               </View>
             </View>
@@ -194,8 +197,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     className="text-xs font-bold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
-                    {/*TODO: use i18n*/}
-                    {intuitiveMode ? '0' : formatRoundedDecimal(food.protein, 1)}g
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.protein, 1),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
@@ -213,8 +217,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     className="text-xs font-bold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
-                    {/*TODO: use i18n*/}
-                    {intuitiveMode ? '0' : formatRoundedDecimal(food.fat, 1)}g
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.fat, 1),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
@@ -232,8 +237,9 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     className="text-xs font-bold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
-                    {/*TODO: use i18n*/}
-                    {intuitiveMode ? '0' : formatRoundedDecimal(food.carbs, 1)}g
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.carbs, 1),
+                    })}
                   </Text>
                 </View>
               </View>

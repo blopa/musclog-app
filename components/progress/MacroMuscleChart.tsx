@@ -58,8 +58,9 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   );
 
   const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;
-  // TODO: use i18n
-  const yAxisLabels = getYAxisLabels(0, maxY, 3, (v) => `${formatInteger(Math.round(v))}g`);
+  const yAxisLabels = getYAxisLabels(0, maxY, 3, (v) =>
+    t('common.weightFormatG', { value: formatInteger(Math.round(v)) })
+  );
   const macroSeries = [
     { key: 'protein', label: t('nutrition.protein'), color: theme.colors.macros.protein.bg },
     { key: 'carbs', label: t('nutrition.carbs'), color: theme.colors.macros.carbs.bg },

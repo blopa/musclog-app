@@ -424,18 +424,13 @@ async function sendViaOpenAI(
     });
 
     if (isAiCreditsError(error)) {
-      throw new AiCreditsError(
-        // TODO: use i18n here
-        'AI service quota exceeded. Please check your API key or try again later.'
-      );
+      throw new AiCreditsError(i18n.t('errors.aiCreditsError'));
     }
 
     // Return a user-friendly error message without exposing internal details
     return {
-      // TODO: use i18n here
-      msg4User: 'Sorry, I had trouble processing that request. Please try again in a moment.',
-      // TODO: use i18n here
-      sumMsg: 'Error processing request',
+      msg4User: i18n.t('errors.aiProcessingError'),
+      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
     };
   }
 }

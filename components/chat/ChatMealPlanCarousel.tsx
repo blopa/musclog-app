@@ -117,8 +117,9 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.accent.primary }}
                   >
-                    {/*TODO: use i18n*/}
-                    {formatRoundedDecimal(meal.protein, 2)}g
+                    {t('common.weightFormatG', {
+                      value: formatRoundedDecimal(meal.protein, 2),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -126,14 +127,15 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[9px] font-semibold"
                     style={{ color: theme.colors.text.tertiary }}
                   >
-                    C:
+                    {t('food.macros.carbsShort')}:
                   </Text>
                   <Text
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.indigo }}
                   >
-                    {/*TODO: use i18n*/}
-                    {formatRoundedDecimal(meal.carbs, 2)}g
+                    {t('common.weightFormatG', {
+                      value: formatRoundedDecimal(meal.carbs, 2),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -141,14 +143,15 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[9px] font-semibold"
                     style={{ color: theme.colors.text.tertiary }}
                   >
-                    F:
+                    {t('food.macros.fatShort')}:
                   </Text>
                   <Text
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.warning }}
                   >
-                    {/*TODO: use i18n*/}
-                    {formatRoundedDecimal(meal.fats, 2)}g
+                    {t('common.weightFormatG', {
+                      value: formatRoundedDecimal(meal.fats, 2),
+                    })}
                   </Text>
                 </View>
               </View>

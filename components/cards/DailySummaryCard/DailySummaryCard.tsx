@@ -205,10 +205,9 @@ export function DailySummaryCard({
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.protein.value, 1)}
                     </Text>
-                    <Text
-                      style={{ fontWeight: '400' }}
-                      // TODO: use i18n
-                    >{`/${formatInteger(Math.round(macros.protein.goal))}g`}</Text>
+                    <Text style={{ fontWeight: '400' }}>
+                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.protein.goal)) })}`}
+                    </Text>
                   </Text>
                 ) : null}
               </View>
@@ -269,10 +268,9 @@ export function DailySummaryCard({
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.carbs.value, 1)}
                     </Text>
-                    <Text
-                      style={{ fontWeight: '400' }}
-                      // TODO: use i18n
-                    >{`/${formatInteger(Math.round(macros.carbs.goal))}g`}</Text>
+                    <Text style={{ fontWeight: '400' }}>
+                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.carbs.goal)) })}`}
+                    </Text>
                   </Text>
                 ) : null}
               </View>
@@ -333,10 +331,9 @@ export function DailySummaryCard({
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.fats.value, 1)}
                     </Text>
-                    <Text
-                      style={{ fontWeight: '400' }}
-                      // TODO: use i18n
-                    >{`/${formatInteger(Math.round(macros.fats.goal))}g`}</Text>
+                    <Text style={{ fontWeight: '400' }}>
+                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.fats.goal)) })}`}
+                    </Text>
                   </Text>
                 ) : null}
               </View>

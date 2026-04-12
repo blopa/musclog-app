@@ -51,6 +51,7 @@
     "heightFormatImperial": "{{feet}}' {{inches}}\"",
     "weightFormatKg": "{{value}} kg",
     "weightFormatLbs": "{{value}} lbs",
+    "weightFormatG": "{{value}}g",
     "units": {
       "g": "g",
       "oz": "oz"
