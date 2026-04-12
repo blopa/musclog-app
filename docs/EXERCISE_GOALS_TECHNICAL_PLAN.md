@@ -310,35 +310,41 @@ export class ExerciseGoalService {
   static async saveGoal(data: ExerciseGoalInput): Promise<ExerciseGoal> {
     const now = Date.now();
 
+    // Read BEFORE entering the write block — never nest reads inside
+    // database.write() as the LokiJS adapter (web) may not reflect
+    // in-transaction writes back to reads, and it avoids deadlock risk.
+    let existingGoalToSupersede: ExerciseGoal | null = null;
+    let existingConsistencyGoals: ExerciseGoal[] = [];
+
+    if (data.goalType === '1rm' && data.exerciseId) {
+      existingGoalToSupersede = await this.getActiveGoalForExercise(data.exerciseId, '1rm');
+    }
+
+    if (data.goalType === 'consistency') {
+      existingConsistencyGoals = await database
+        .get<ExerciseGoal>('exercise_goals')
+        .query(
+          Q.where('goal_type', 'consistency'),
+          Q.where('effective_until', Q.eq(null)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch();
+    }
+
     return await database.write(async () => {
-      // For 1RM goals, check for existing active goal for this exercise
-      if (data.goalType === '1rm' && data.exerciseId) {
-        const existingGoal = await this.getActiveGoalForExercise(data.exerciseId, '1rm');
-        if (existingGoal) {
-          await existingGoal.update((record) => {
-            record.effectiveUntil = now;
-            record.updatedAt = now;
-          });
-        }
+      // Supersede old goals
+      if (existingGoalToSupersede) {
+        await existingGoalToSupersede.update((record) => {
+          record.effectiveUntil = now;
+          record.updatedAt = now;
+        });
       }
 
-      // For consistency goals, there should only be one active consistency goal
-      if (data.goalType === 'consistency') {
-        const existingConsistencyGoals = await database
-          .get<ExerciseGoal>('exercise_goals')
-          .query(
-            Q.where('goal_type', 'consistency'),
-            Q.where('effective_until', Q.eq(null)),
-            Q.where('deleted_at', Q.eq(null))
-          )
-          .fetch();
-
-        for (const goal of existingConsistencyGoals) {
-          await goal.update((record) => {
-            record.effectiveUntil = now;
-            record.updatedAt = now;
-          });
-        }
+      for (const goal of existingConsistencyGoals) {
+        await goal.update((record) => {
+          record.effectiveUntil = now;
+          record.updatedAt = now;
+        });
       }
 
       // Create new goal
@@ -771,8 +777,10 @@ export function useExerciseGoals({
 
 ```typescript
 // hooks/useExerciseGoalProgress.ts
-import { useEffect, useMemo, useState } from 'react';
+import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { database } from '@/database';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { WorkoutAnalytics } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
@@ -789,7 +797,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [dataPoints, setDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (goal.goalType !== '1rm' || !goal.exerciseId) {
       setIsLoading(false);
       return;
@@ -797,12 +805,13 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
     setIsLoading(true);
     try {
-      // Fetch progressive overload data from goal creation onward
-      const allData = await WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId);
-
-      // Filter to only include data points from goal creation date onward
+      // Use the built-in timeframe param to filter at the DB layer — don't
+      // pull all history and filter in JS.
       const goalCreatedAt = goal.createdAt.getTime();
-      const filteredData = allData.filter((dp) => dp.date >= goalCreatedAt);
+      const filteredData = await WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
+        startDate: goalCreatedAt,
+        endDate: Date.now(),
+      });
 
       setDataPoints(filteredData);
     } catch (err) {
@@ -811,12 +820,40 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [goal.id, goal.exerciseId, goal.goalType, goal.createdAt]);
 
+  // Initial load
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goal.id, goal.exerciseId, goal.goalType]);
+  }, [loadData]);
+
+  // Reactive subscription: re-run whenever workout_log_sets or workout_log_exercises
+  // change so the card updates after every completed set without manual refresh.
+  // Debounced 500 ms to avoid thrashing during a live workout session.
+  useEffect(() => {
+    if (goal.goalType !== '1rm' || !goal.exerciseId) return;
+
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const query = database
+      .get('workout_log_sets')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.take(1));
+
+    const subscription = query.observe().subscribe({
+      next: () => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          loadData();
+        }, 500);
+      },
+      error: (err) => console.error('useExerciseGoalProgress subscription error:', err),
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [goal.id, goal.exerciseId, goal.goalType, loadData]);
 
   const projection = useMemo<ProjectionResult | null>(() => {
     if (goal.goalType !== '1rm') return null;
@@ -956,31 +993,41 @@ export default function ExerciseGoalCreationModal({
 
   // For live projection preview
   const [current1RM, setCurrent1RM] = useState<number | null>(null);
+  // Store real data points so projectGoal has the history it needs for regression
+  const [exerciseDataPoints, setExerciseDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [projection, setProjection] = useState<ProjectionResult | null>(null);
 
-  // Load current 1RM when exercise is selected
+  // Load current 1RM AND data points when exercise is selected
   useEffect(() => {
-    if (selectedExercise && goalType === '1rm') {
-      WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id).then((data) => {
-        if (data.length > 0) {
-          setCurrent1RM(data[data.length - 1].estimated1RM);
-        }
-      });
-    }
+    if (!selectedExercise || goalType !== '1rm') return;
+
+    WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id).then((data) => {
+      setExerciseDataPoints(data);
+      if (data.length > 0) {
+        setCurrent1RM(data[data.length - 1].estimated1RM);
+      } else {
+        setCurrent1RM(null);
+      }
+    });
   }, [selectedExercise, goalType]);
 
-  // Update projection when target changes
+  // Update live projection whenever target or history changes.
+  // Note: baseline1rm is the same as current1RM at creation time — the user
+  // hasn't started the goal yet, so there is no separate baseline.
   useEffect(() => {
-    if (current1RM && targetWeight && goalType === '1rm') {
-      const targetKg = displayToKg(parseFloat(targetWeight), units);
-      const proj = projectGoal({
-        dataPoints: [], // Would fetch real data here
-        baseline1rm: current1RM,
-        targetWeight: targetKg,
-      });
-      setProjection(proj);
+    if (!current1RM || !targetWeight || goalType !== '1rm') {
+      setProjection(null);
+      return;
     }
-  }, [targetWeight, current1RM, goalType, units]);
+
+    const targetKg = displayToKg(parseFloat(targetWeight), units);
+    const proj = projectGoal({
+      dataPoints: exerciseDataPoints, // real history — required for regression slope
+      baseline1rm: current1RM,
+      targetWeight: targetKg,
+    });
+    setProjection(proj);
+  }, [targetWeight, current1RM, exerciseDataPoints, goalType, units]);
 
   // Step rendering logic...
 }
@@ -1166,6 +1213,34 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
 - Active goal: prefer live `exercise.name` lookup
 - History: use `exerciseNameSnapshot`
 - Show "(renamed)" chip if different
+
+### 11. Read Inside `database.write()` Block
+
+**Risk:** `saveGoal` originally queried for existing goals inside the write block. WatermelonDB's LokiJS adapter (web) may not reflect in-transaction state back to read queries within the same write, and it violates the AGENTS.md guideline against nesting DB access in write blocks.
+
+**Mitigation:**
+
+- Always read existing goals **before** entering `database.write()` (fetch pre-read variables)
+- The write block only contains `record.update()` and `record.create()` calls — no `.fetch()` calls inside
+
+### 12. `useExerciseGoalProgress` Not Reactive
+
+**Risk:** Hook only loads data once on mount. If the user logs a workout while the goal card is visible, the progress bar won't update without a manual refresh.
+
+**Mitigation:**
+
+- Add a `workout_log_sets` WatermelonDB observable subscription inside the hook
+- Debounce the refetch 500 ms to avoid hammering the DB during a live workout session (one set logged every few seconds)
+- Use `useCallback` on `loadData` so the subscription effect has a stable dependency
+
+### 13. Creation Modal Projection Using Empty Data Points
+
+**Risk:** The live projection preview in `ExerciseGoalCreationModal` was calling `projectGoal({ dataPoints: [], ... })`. With no data points, `linearRegressionSlope` returns 0 and the projection always shows `insufficient_data` — making the feature useless.
+
+**Mitigation:**
+
+- Fetch and store the exercise's full data point history when the exercise is selected
+- Pass `exerciseDataPoints` (not `[]`) to `projectGoal` in the live preview `useEffect`
 
 ---
 
@@ -1381,6 +1456,28 @@ describe('ExerciseGoalService', () => {
     "exerciseGoals": "EXERCISE GOALS",
     "exerciseGoalsTitle": "Strength & Consistency",
     "exerciseGoalsSubtitle": "Track 1RM targets and workout frequency"
+  }
+}
+```
+
+```json
+// Add to lang/locales/pt-br/goalsManagement.json
+{
+  "goalsManagement": {
+    "exerciseGoals": "METAS DE EXERCÍCIO",
+    "exerciseGoalsTitle": "Força & Consistência",
+    "exerciseGoalsSubtitle": "Acompanhe metas de 1RM e frequência de treinos"
+  }
+}
+```
+
+```json
+// Add to lang/locales/ru-ru/goalsManagement.json
+{
+  "goalsManagement": {
+    "exerciseGoals": "ЦЕЛИ ТРЕНИРОВОК",
+    "exerciseGoalsTitle": "Сила и постоянство",
+    "exerciseGoalsSubtitle": "Отслеживайте цели по 1ПМ и частоте тренировок"
   }
 }
 ```

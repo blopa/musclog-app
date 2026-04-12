@@ -87,12 +87,12 @@ tableSchema({
   name: 'exercise_goals',
   columns: [
     // Exercise reference
-    { name: 'exercise_id',              type: 'string',  isOptional: true },
+    { name: 'exercise_id',              type: 'string',  isOptional: true, isIndexed: true },
     // Denormalised name — survives exercise rename/soft-delete
     { name: 'exercise_name_snapshot',   type: 'string',  isOptional: true },
 
     // Goal classification
-    { name: 'goal_type', type: 'string' },
+    { name: 'goal_type', type: 'string', isIndexed: true },
     // '1rm' | 'consistency' | 'steps_per_day' | 'distance_per_session' | 'pace' | 'duration'
 
     // --- 1RM / Strength fields ---
@@ -524,14 +524,18 @@ Add the same structure to `pt-br` and `ru-ru`.
 
 ### Modified Files
 
-| File                                         | Change                                              |
-| -------------------------------------------- | --------------------------------------------------- |
-| `database/schema.ts`                         | Add `exercise_goals` table; bump `DATABASE_VERSION` |
-| `database/migrations/index.ts`               | Add migration for new table                         |
-| `database/database-instance.ts`              | Register `ExerciseGoal` model                       |
-| `database/services/index.ts`                 | Export `ExerciseGoalService`                        |
-| `components/modals/GoalsManagementModal.tsx` | Add "Exercise Goals →" entry point                  |
-| `lang/locales/en-us/goalsManagement.json`    | Add entry point label key                           |
+| File                                         | Change                                                        |
+| -------------------------------------------- | ------------------------------------------------------------- |
+| `constants/database.ts`                      | Bump `CURRENT_DATABASE_VERSION` (currently `7` → new version) |
+| `database/schema.ts`                         | Add `exercise_goals` table                                    |
+| `database/migrations/index.ts`               | Add migration for new table                                   |
+| `database/database-instance.ts`              | Register `ExerciseGoal` model                                 |
+| `database/models/index.ts`                   | Export `ExerciseGoal`                                         |
+| `database/services/index.ts`                 | Export `ExerciseGoalService`                                  |
+| `components/modals/GoalsManagementModal.tsx` | Add "Exercise Goals →" entry point                            |
+| `lang/locales/en-us/goalsManagement.json`    | Add entry point label keys                                    |
+| `lang/locales/pt-br/goalsManagement.json`    | Add entry point label keys (pt-br)                            |
+| `lang/locales/ru-ru/goalsManagement.json`    | Add entry point label keys (ru-ru)                            |
 
 ---
 
