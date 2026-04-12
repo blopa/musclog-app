@@ -3,7 +3,7 @@ import convert from 'convert';
 import { EXERCISE_TYPES } from '@/constants/exercises';
 import type { EquipmentType } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 
 import { roundToDecimalPlaces } from './roundDecimal';
 
