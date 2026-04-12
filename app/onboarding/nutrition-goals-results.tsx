@@ -671,8 +671,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {/*TODO: use i18n*/}
-                {formatInteger(displayData?.protein ?? 0)}g
+                {t('common.weightFormatG', { value: formatInteger(displayData?.protein ?? 0) })}
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -716,8 +715,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {/*TODO: use i18n*/}
-                {formatInteger(displayData?.carbs ?? 0)}g
+                {t('common.weightFormatG', { value: formatInteger(displayData?.carbs ?? 0) })}
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -761,8 +759,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                {/*TODO: use i18n*/}
-                {formatInteger(displayData?.fats ?? 0)}g
+                {t('common.weightFormatG', { value: formatInteger(displayData?.fats ?? 0) })}
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"

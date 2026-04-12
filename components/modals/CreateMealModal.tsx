@@ -121,6 +121,7 @@ const MacroCard = ({
   intuitiveMode?: boolean;
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <View
       style={{
@@ -155,7 +156,7 @@ const MacroCard = ({
           intuitiveMode ? blurFilter(4) : undefined,
         ]}
       >
-        {intuitiveMode ? '0g' : value}
+        {intuitiveMode ? t('common.weightFormatG', { value: 0 }) : value}
       </Text>
       <View
         style={{
@@ -298,24 +299,27 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            // TODO: use i18n
-            value={`${formatRoundedDecimal(macros.protein, 2)}g`}
+            value={t('common.weightFormatG', {
+              value: formatRoundedDecimal(macros.protein, 2),
+            })}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
             intuitiveMode={intuitiveMode}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            // TODO: use i18n
-            value={`${formatRoundedDecimal(macros.carbs, 2)}g`}
+            value={t('common.weightFormatG', {
+              value: formatRoundedDecimal(macros.carbs, 2),
+            })}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
             intuitiveMode={intuitiveMode}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            // TODO: use i18n
-            value={`${formatRoundedDecimal(macros.fat, 2)}g`}
+            value={t('common.weightFormatG', {
+              value: formatRoundedDecimal(macros.fat, 2),
+            })}
             progress={fatProgress}
             color={theme.colors.status.amber}
             intuitiveMode={intuitiveMode}

@@ -73,8 +73,9 @@ export function PortionSizesPickerModal({
       return {
         id: portion.id,
         label: portion.name,
-        // TODO: use i18n
-        description: `${formatInteger(Math.round(portion.gramWeight))}g`,
+        description: t('common.weightFormatG', {
+          value: formatInteger(Math.round(portion.gramWeight)),
+        }),
         icon: IconComponent || (() => null as any),
         iconBgColor: theme.colors.accent.primary,
         iconColor: theme.colors.text.black,
