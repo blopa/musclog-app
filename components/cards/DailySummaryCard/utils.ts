@@ -13,6 +13,7 @@ export type MacroDailyData = {
   protein: MacroValue;
   carbs: MacroValue;
   fats: MacroValue;
+  fiber: MacroValue;
 };
 
 /**
@@ -108,6 +109,11 @@ export function calculateDailySummaryMetrics(
     ? getMacroGoalStatus(macros.fats.value, macros.fats.goal)
     : 'not-reached';
 
+  const fiberProgress = macros ? calculateProgress(macros.fiber.value, macros.fiber.goal) : 0;
+  const fiberStatus = macros
+    ? getMacroGoalStatus(macros.fiber.value, macros.fiber.goal)
+    : 'not-reached';
+
   return {
     calorieProgress,
     calorieStatus,
@@ -117,5 +123,7 @@ export function calculateDailySummaryMetrics(
     carbsStatus,
     fatsProgress,
     fatsStatus,
+    fiberProgress,
+    fiberStatus,
   };
 }

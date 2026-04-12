@@ -1,6 +1,9 @@
 {
   "dailySummaryCard": {
+    "alcohol": "Álcool",
     "carbs": "Carbo",
+    "fiber": "Fibra",
+    "fiberShort": "FI",
     "carbsShort": "C",
     "dailySummary": "Resumo do Dia",
     "fats": "Gordura",

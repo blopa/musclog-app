@@ -2,7 +2,9 @@ import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
+import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
 
 import type { MicrosData } from './Food';
 import Food from './Food';
@@ -161,18 +163,35 @@ export default class NutritionLog extends Model {
     carbs: number;
     fat: number;
     fiber: number;
+    alcohol: number;
   }> {
     const totalGrams = await this.getGramWeight();
     const scale = totalGrams / 100;
     const hasSnap = await this.hasSnapshot();
     if (hasSnap) {
       const s = await this.getDecryptedSnapshot();
+      const loggedAlcohol = s.loggedMicros?.alcohol ?? 0;
+
+      // If no explicit calories but alcohol is present, derive calories including alcohol.
+      // When loggedCalories > 0, the source (USDA/OFF/user) already included alcohol energy.
+      let caloriesPer100g = s.loggedCalories ?? 0;
+      if (caloriesPer100g === 0 && loggedAlcohol > 0) {
+        caloriesPer100g = inferCaloriesFromMacrosPer100g(
+          s.loggedProtein,
+          s.loggedCarbs,
+          s.loggedFat,
+          s.loggedFiber,
+          loggedAlcohol
+        );
+      }
+
       return {
-        calories: (s.loggedCalories ?? 0) * scale,
+        calories: caloriesPer100g * scale,
         protein: (s.loggedProtein ?? 0) * scale,
         carbs: (s.loggedCarbs ?? 0) * scale,
         fat: (s.loggedFat ?? 0) * scale,
         fiber: (s.loggedFiber ?? 0) * scale,
+        alcohol: loggedAlcohol * scale,
       };
     }
 
@@ -182,7 +201,11 @@ export default class NutritionLog extends Model {
       if (!food) {
         throw new Error('Food not found for nutrition log');
       }
-      return food.getNutrientsForAmount(totalGrams);
+      const nutrients = food.getNutrientsForAmount(totalGrams);
+      return {
+        ...nutrients,
+        alcohol: (food.micros?.alcohol ?? 0) * scale,
+      };
     } catch (error) {
       console.error('Error getting nutrients for nutrition log:', error);
       return {
@@ -191,6 +214,7 @@ export default class NutritionLog extends Model {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        alcohol: 0,
       };
     }
   }
@@ -203,9 +227,9 @@ export default class NutritionLog extends Model {
     }
     try {
       const food = await this.food;
-      return food?.name ?? 'Unknown';
+      return food?.name ?? i18n.t('meals.unknownFood');
     } catch {
-      return 'Unknown';
+      return i18n.t('meals.unknownFood');
     }
   }
 
@@ -216,13 +240,6 @@ export default class NutritionLog extends Model {
 
   // Helper method to get readable meal type
   getMealTypeLabel(): string {
-    const labels = {
-      breakfast: 'Breakfast',
-      lunch: 'Lunch',
-      dinner: 'Dinner',
-      snack: 'Snack',
-      other: 'Other',
-    };
-    return labels[this.type] || this.type;
+    return i18n.t(`meals.tags.${this.type}`);
   }
 }

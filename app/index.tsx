@@ -98,6 +98,7 @@ export default function HomeScreen() {
   const {
     calories: dailyCalories,
     macros: dailyMacros,
+    secondaryNutrients: dailySecondaryNutrients,
     nutritionGoal,
     isLoading: isLoadingNutritionSummary,
   } = useDailyNutritionSummary({ date: today });
@@ -398,7 +399,12 @@ export default function HomeScreen() {
                     value: dailyMacros.fat.value,
                     goal: dailyMacros.fat.goal,
                   },
+                  fiber: {
+                    value: dailyMacros.fiber.value,
+                    goal: dailyMacros.fiber.goal,
+                  },
                 }}
+                secondaryNutrients={dailySecondaryNutrients}
                 intuitiveMode={intuitiveEatingMode}
                 menuButton={
                   <MenuButton

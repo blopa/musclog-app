@@ -53,6 +53,7 @@
     "generateAI": {
       "title": "Gerar Refeições com IA",
       "describeLabel": "DESCREVA SUAS PREFERÊNCIAS",
+      "preferencesLabel": "Preferências",
       "placeholder": "ex: Refeições ricas em proteína para ganho muscular, prefiro frango e arroz, sem laticínios...",
       "applyLabel": "Gerar Refeições",
       "successMessage": "Refeição criada com sucesso!",

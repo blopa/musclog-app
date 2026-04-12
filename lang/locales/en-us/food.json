@@ -79,6 +79,10 @@
       "proteinLegend": "Prot",
       "carbsLegend": "Carbs",
       "fatLegend": "Fats",
+      "alcohol": "Alcohol",
+      "potassium": "Potassium",
+      "magnesium": "Magnesium",
+      "zinc": "Zinc",
       "fiberLegend": "Fibers"
     },
     "actions": {
@@ -290,6 +294,9 @@
       "sugars": "Sugars",
       "saturatedFat": "Saturated Fat",
       "salt": "Salt",
+      "potassium": "Potassium",
+      "magnesium": "Magnesium",
+      "zinc": "Zinc",
       "loadingDetails": "Loading details...",
       "loadingMoreDetails": "Loading more details...",
       "successMessage": "Food tracked successfully!",

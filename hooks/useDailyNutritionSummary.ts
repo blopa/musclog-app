@@ -59,13 +59,25 @@ export function useDailyNutritionSummary({
         value: Math.round(dailyNutrients.fat),
         goal: nutritionGoal?.fats ?? 0,
       },
+      fiber: {
+        value: Math.round(dailyNutrients.fiber),
+        goal: nutritionGoal?.fiber ?? 0,
+      },
     }),
     [dailyNutrients, nutritionGoal]
+  );
+
+  const secondaryNutrients = useMemo(
+    () => ({
+      alcohol: Math.round(dailyNutrients.alcohol),
+    }),
+    [dailyNutrients]
   );
 
   return {
     calories,
     macros,
+    secondaryNutrients,
     nutritionGoal,
     dailyNutrients,
     logs,

@@ -6,6 +6,7 @@ import {
   Droplet,
   Dumbbell,
   Edit3,
+  Leaf,
   Pencil,
   PlusCircle,
   RefreshCcwDot,
@@ -97,13 +98,15 @@ function areCoreMacrosEffectivelyZero(data: {
   protein?: unknown;
   carbs?: unknown;
   fat?: unknown;
+  fiber?: unknown;
 }): boolean {
   const eps = 1e-6;
   return (
     Math.abs(toFiniteMacro(data.calories)) < eps &&
     Math.abs(toFiniteMacro(data.protein)) < eps &&
     Math.abs(toFiniteMacro(data.carbs)) < eps &&
-    Math.abs(toFiniteMacro(data.fat)) < eps
+    Math.abs(toFiniteMacro(data.fat)) < eps &&
+    Math.abs(toFiniteMacro(data.fiber)) < eps
   );
 }
 
@@ -192,6 +195,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
 } | null {
   if (!isSuccessFoodDetailProductState(state)) {
     return null;
@@ -206,6 +210,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
       protein: toFiniteMacro(parseFloat(p.protein ?? 0)),
       carbs: toFiniteMacro(parseFloat(p.carbs ?? 0)),
       fat: toFiniteMacro(parseFloat(p.fat ?? 0)),
+      fiber: toFiniteMacro(parseFloat(p.fiber ?? 0)),
     };
   }
 
@@ -214,6 +219,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
     const rawServingSize = (product as any).servingSize;
     const isBranded = (product as any).dataType === 'Branded';
     const normFactor = isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+
     return {
       calories: toFiniteMacro(
         (mapUSDANutritient(nutrients, '1008') ??
@@ -233,12 +239,16 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
         (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
           normFactor
       ),
+      fiber: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
+          normFactor
+      ),
     };
   }
 
   const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
   if (!nutrients) {
-    return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
   }
   const offKeys = {
     calories: 'energy-kcal',
@@ -248,11 +258,23 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   } as const;
   const getNum = (key: keyof typeof offKeys) =>
     toFiniteMacro((getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number);
+
+  const directFiber = getNutrimentValue(nutrients, 'fiber');
+  let fiber: number;
+  if (directFiber !== undefined && directFiber >= 0) {
+    fiber = directFiber;
+  } else {
+    const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+    const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+    fiber = carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+  }
+
   return {
     calories: getNum('calories'),
     protein: getNum('protein'),
     carbs: getNum('carbs'),
     fat: getNum('fat'),
+    fiber: toFiniteMacro(fiber),
   };
 }
 
@@ -391,6 +413,7 @@ export function FoodMealDetailsModal({
     protein?: number;
     carbs?: number;
     fat?: number;
+    fiber?: number;
     micros?: Partial<MicrosData>;
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
@@ -413,6 +436,7 @@ export function FoodMealDetailsModal({
     protein: string;
     carbs: string;
     fat: string;
+    fiber: string;
     micronutrients: MicronutrientFormStrings;
   } | null>(null);
 
@@ -770,6 +794,10 @@ export function FoodMealDetailsModal({
         sugar: foodLogDecrypted.loggedMicros?.sugar ?? 0,
         saturatedFat: foodLogDecrypted.loggedMicros?.saturatedFat ?? 0,
         sodium: foodLogDecrypted.loggedMicros?.sodium ?? 0,
+        alcohol: foodLogDecrypted.loggedMicros?.alcohol ?? 0,
+        potassium: foodLogDecrypted.loggedMicros?.potassium ?? 0,
+        magnesium: foodLogDecrypted.loggedMicros?.magnesium ?? 0,
+        zinc: foodLogDecrypted.loggedMicros?.zinc ?? 0,
       };
     }
 
@@ -785,6 +813,10 @@ export function FoodMealDetailsModal({
         sugar: foodData!.micros?.sugar || 0,
         saturatedFat: foodData!.micros?.saturatedFat || 0,
         sodium: foodData!.micros?.sodium || 0,
+        alcohol: foodData!.micros?.alcohol || 0,
+        potassium: foodData!.micros?.potassium || 0,
+        magnesium: foodData!.micros?.magnesium || 0,
+        zinc: foodData!.micros?.zinc || 0,
       };
     }
 
@@ -815,6 +847,7 @@ export function FoodMealDetailsModal({
         const isBranded = (product as any).dataType === 'Branded';
         const normFactor =
           isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+
         return {
           calories:
             (mapUSDANutritient(nutrients, '1008') ??
@@ -841,8 +874,25 @@ export function FoodMealDetailsModal({
           saturatedFat:
             (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
             normFactor,
+          // Sodium is reported in MG by USDA; convert to grams for storage
           sodium:
-            (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+            ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+              1000) *
+            normFactor,
+          alcohol:
+            (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
+            normFactor,
+          potassium:
+            ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
+              1000) *
+            normFactor,
+          magnesium:
+            ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
+              1000) *
+            normFactor,
+          zinc:
+            ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
+              1000) *
             normFactor,
         };
       }
@@ -894,6 +944,11 @@ export function FoodMealDetailsModal({
         sugar: getNum('sugar'),
         saturatedFat: getNum('saturatedFat'),
         sodium: Number.isFinite(sodium) ? sodium : 0,
+        // OFF stores minerals in grams per 100g — no unit conversion needed
+        alcohol: getNutrimentValue(nutrients, 'alcohol') ?? 0,
+        potassium: getNutrimentValue(nutrients, 'potassium') ?? 0,
+        magnesium: getNutrimentValue(nutrients, 'magnesium') ?? 0,
+        zinc: getNutrimentValue(nutrients, 'zinc') ?? 0,
       };
     }
 
@@ -921,8 +976,25 @@ export function FoodMealDetailsModal({
         saturatedFat:
           (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
           normFactor,
+        // Sodium is reported in MG by USDA; convert to grams for storage
         sodium:
-          (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+          ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+            1000) *
+          normFactor,
+        alcohol:
+          (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
+          normFactor,
+        potassium:
+          ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
+            1000) *
+          normFactor,
+        magnesium:
+          ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
+            1000) *
+          normFactor,
+        zinc:
+          ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
+            1000) *
           normFactor,
       };
     }
@@ -932,11 +1004,19 @@ export function FoodMealDetailsModal({
       const nut = mappedProduct.nutriments;
       let sugar = 0,
         saturatedFat = 0,
-        sodium = 0;
+        sodium = 0,
+        alcohol = 0,
+        potassium = 0,
+        magnesium = 0,
+        zinc = 0;
       if (isMappedNutriments(nut)) {
         sugar = nut.macronutrients?.sugars ?? 0;
         saturatedFat = nut.macronutrients?.saturatedFat ?? 0;
         sodium = nut.minerals?.sodium ?? nut.other?.salt ?? 0;
+        alcohol = nut.macronutrients?.alcohol ?? 0;
+        potassium = nut.minerals?.potassium ?? 0;
+        magnesium = nut.minerals?.magnesium ?? 0;
+        zinc = nut.minerals?.zinc ?? 0;
       }
 
       return {
@@ -948,6 +1028,10 @@ export function FoodMealDetailsModal({
         sugar,
         saturatedFat,
         sodium,
+        alcohol,
+        potassium,
+        magnesium,
+        zinc,
       };
     }
 
@@ -979,6 +1063,10 @@ export function FoodMealDetailsModal({
           sugar: getNum('sugars'),
           saturatedFat: getNum('saturated-fat'),
           sodium: Number.isFinite(sodium) ? sodium : 0,
+          alcohol: getNum('alcohol'),
+          potassium: getNum('potassium'),
+          magnesium: getNum('magnesium'),
+          zinc: getNum('zinc'),
         };
       }
     }
@@ -992,6 +1080,10 @@ export function FoodMealDetailsModal({
       sugar: 0,
       saturatedFat: 0,
       sodium: 0,
+      alcohol: 0,
+      potassium: 0,
+      magnesium: 0,
+      zinc: 0,
     };
   }, [
     productDetails,
@@ -1035,6 +1127,22 @@ export function FoodMealDetailsModal({
       out.sodium = n.sodium;
     }
 
+    if (Number.isFinite(n.alcohol) && (n.alcohol ?? 0) > 0) {
+      out.alcohol = n.alcohol;
+    }
+
+    if (Number.isFinite(n.potassium) && (n.potassium ?? 0) > 0) {
+      out.potassium = n.potassium;
+    }
+
+    if (Number.isFinite(n.magnesium) && (n.magnesium ?? 0) > 0) {
+      out.magnesium = n.magnesium;
+    }
+
+    if (Number.isFinite(n.zinc) && (n.zinc ?? 0) > 0) {
+      out.zinc = n.zinc;
+    }
+
     return out;
   }, [food, localFood, foodLog, foodLogDecrypted, rawNutritionalData]);
 
@@ -1052,13 +1160,15 @@ export function FoodMealDetailsModal({
       rawNutritionalData.protein,
       rawNutritionalData.carbs,
       rawNutritionalData.fat,
-      rawNutritionalData.fiber
+      rawNutritionalData.fiber,
+      rawNutritionalData.alcohol
     );
   }, [
     rawNutritionalData.protein,
     rawNutritionalData.carbs,
     rawNutritionalData.fat,
     rawNutritionalData.fiber,
+    rawNutritionalData.alcohol,
   ]);
 
   const showCaloriesTooLowWarning = useMemo(() => {
@@ -1078,13 +1188,15 @@ export function FoodMealDetailsModal({
       (editedOverrides.calories != null ||
         editedOverrides.protein != null ||
         editedOverrides.carbs != null ||
-        editedOverrides.fat != null)
+        editedOverrides.fat != null ||
+        editedOverrides.fiber != null)
         ? {
             ...baseNutritionalData,
             calories: editedOverrides.calories ?? baseNutritionalData.calories,
             protein: editedOverrides.protein ?? baseNutritionalData.protein,
             carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
             fat: editedOverrides.fat ?? baseNutritionalData.fat,
+            fiber: editedOverrides.fiber ?? baseNutritionalData.fiber,
           }
         : baseNutritionalData;
 
@@ -1093,11 +1205,20 @@ export function FoodMealDetailsModal({
       return typeof v === 'number' && Number.isFinite(v) ? v : macroBase[key];
     };
 
+    const pickMicro2 = (key: 'alcohol' | 'potassium' | 'magnesium' | 'zinc') => {
+      const v = effectiveMicrosPer100g[key];
+      return typeof v === 'number' && Number.isFinite(v) ? v : (macroBase[key] ?? 0);
+    };
+
     return {
       ...macroBase,
       sugar: pickMicro('sugar'),
       saturatedFat: pickMicro('saturatedFat'),
       sodium: pickMicro('sodium'),
+      alcohol: pickMicro2('alcohol'),
+      potassium: pickMicro2('potassium'),
+      magnesium: pickMicro2('magnesium'),
+      zinc: pickMicro2('zinc'),
     };
   }, [baseNutritionalData, editedOverrides, effectiveMicrosPer100g]);
 
@@ -1863,20 +1984,21 @@ export function FoodMealDetailsModal({
       name: getFoodMealName(),
       barcode: currentBarcode,
       description: currentDescription,
-      calories: formatAppRoundedDecimal(locale, baseNutritionalData.calories, 2),
-      protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
-      carbs: formatAppRoundedDecimal(locale, baseNutritionalData.carbs, 2),
-      fat: formatAppRoundedDecimal(locale, baseNutritionalData.fat, 2),
+      calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
+      protein: formatAppRoundedDecimal(locale, nutritionalData.protein, 2),
+      carbs: formatAppRoundedDecimal(locale, nutritionalData.carbs, 2),
+      fat: formatAppRoundedDecimal(locale, nutritionalData.fat, 2),
+      fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
       micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
     setEditMicroOpen(false);
     setIsEditPopUpVisible(true);
   }, [
     getFoodMealName,
-    baseNutritionalData.calories,
-    baseNutritionalData.protein,
-    baseNutritionalData.carbs,
-    baseNutritionalData.fat,
+    nutritionalData.calories,
+    nutritionalData.protein,
+    nutritionalData.carbs,
+    nutritionalData.fat,
     barcode,
     productFromSearch,
     food,
@@ -1894,6 +2016,7 @@ export function FoodMealDetailsModal({
     const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
     const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
     const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
+    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
     setEditedOverrides({
       name: editForm.name.trim() || undefined,
       barcode: editForm.barcode.trim() || undefined,
@@ -1902,6 +2025,7 @@ export function FoodMealDetailsModal({
       protein: Number.isFinite(pro) ? pro : undefined,
       carbs: Number.isFinite(carb) ? carb : undefined,
       fat: Number.isFinite(f) ? f : undefined,
+      fiber: Number.isFinite(fib) ? fib : undefined,
       micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
     });
     setEditForm(null);
@@ -1916,7 +2040,7 @@ export function FoodMealDetailsModal({
   }, [inferredCaloriesPer100g]);
 
   const handleEditFormNumericChange = useCallback(
-    (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
+    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
       const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
       setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
     },
@@ -2362,6 +2486,17 @@ export function FoodMealDetailsModal({
                   <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
                 }
                 variant="error"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.macros.fiber')}
+                value={editForm.fiber}
+                onChange={handleEditFormNumericChange('fiber')}
+                allowDecimals
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                }
+                variant="success"
                 size="half"
               />
             </View>
