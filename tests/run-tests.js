@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-/* eslint-disable no-undef */
-
-const { execSync } = require('child_process');
+const { spawn } = require('child_process');
 const http = require('http');
+/* global __dirname */
 const fs = require('fs');
 const path = require('path');
 
 const PORT = 8081;
 const DIST_PATH = path.join(__dirname, '..', 'dist');
-const BASE_PATH = '/';
+const BASE_PATH = '/musclog-app';
 
 const MIME_TYPES = {
   '.html': 'text/html',
@@ -20,19 +19,32 @@ const MIME_TYPES = {
   '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.webp': 'image/webp',
 };
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   let filePath = url.pathname;
 
-  if (filePath === BASE_PATH || filePath === BASE_PATH + '/') {
-    filePath = path.join(BASE_PATH, 'index.html');
+  // Handle base path redirect
+  if (filePath === '/' || filePath === '') {
+    res.writeHead(302, { Location: BASE_PATH + '/' });
+    res.end();
+    return;
   }
 
   let relativePath = filePath;
   if (filePath.startsWith(BASE_PATH)) {
     relativePath = filePath.substring(BASE_PATH.length);
+  } else {
+    // If it doesn't start with BASE_PATH and it's not a root redirect, 404
+    res.writeHead(404);
+    res.end('Not Found');
+    return;
+  }
+
+  if (relativePath === '/' || relativePath === '') {
+    relativePath = '/index.html';
   }
 
   let fullPath = path.join(DIST_PATH, relativePath);
@@ -42,9 +54,9 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
     fs.createReadStream(fullPath).pipe(res);
   } else {
-    if (filePath.startsWith(BASE_PATH)) {
-      // SPA Fallback
-      const indexPath = path.join(DIST_PATH, 'index.html');
+    // SPA Fallback: serve index.html for any sub-path of BASE_PATH
+    const indexPath = path.join(DIST_PATH, 'index.html');
+    if (fs.existsSync(indexPath)) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       fs.createReadStream(indexPath).pipe(res);
     } else {
@@ -57,7 +69,7 @@ const server = http.createServer((req, res) => {
 function isServerUp() {
   return new Promise((resolve) => {
     http
-      .get(`http://localhost:${PORT}/`, (res) => {
+      .get(`http://localhost:${PORT}${BASE_PATH}/`, (res) => {
         resolve(res.statusCode === 200);
       })
       .on('error', () => {
@@ -66,10 +78,24 @@ function isServerUp() {
   });
 }
 
-async function runPlaywright() {
-  const args = process.argv.slice(2).join(' ');
-  execSync(`npx playwright test ${args}`, { stdio: 'inherit' });
-  console.log('Tests completed successfully.');
+function runPlaywright() {
+  return new Promise((resolve, reject) => {
+    const args = process.argv.slice(2);
+    console.log(`Running: npx playwright test ${args.join(' ')}`);
+
+    const pw = spawn('npx', ['playwright', 'test', ...args], {
+      stdio: 'inherit',
+      shell: true,
+    });
+
+    pw.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Playwright exited with code ${code}`));
+      }
+    });
+  });
 }
 
 async function run() {
@@ -80,7 +106,7 @@ async function run() {
     try {
       await runPlaywright();
     } catch (e) {
-      console.error('Tests failed.');
+      console.error('Tests failed:', e.message);
       process.exit(1);
     }
     return;
@@ -89,14 +115,14 @@ async function run() {
   const distIndex = path.join(DIST_PATH, 'index.html');
   if (!fs.existsSync(distIndex)) {
     console.error(
-      `No built app found at ${distIndex}.\nRun "npm run build:web" first, or start the dev server with "npm run web" and re-run this script.`
+      `No built app found at ${distIndex}.\nMake sure you have run the build command.`
     );
     process.exit(1);
   }
 
   console.log('Starting built-in Node server...');
   server.listen(PORT, async () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Server listening on port ${PORT} at ${BASE_PATH}`);
 
     let retries = 0;
     while (retries < 20) {
@@ -116,7 +142,7 @@ async function run() {
     try {
       await runPlaywright();
     } catch (e) {
-      console.error('Tests failed.');
+      console.error('Tests failed:', e.message);
       process.exit(1);
     } finally {
       console.log('Shutting down server...');
