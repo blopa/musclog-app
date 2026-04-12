@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { YesterdayMealData } from '@/hooks/useYesterdayMealData';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
 
@@ -22,6 +24,7 @@ export function SameAsYesterdayCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+  const { intuitiveEatingMode } = useSettings();
 
   return (
     <View style={{ marginTop: theme.spacing.padding.lg }}>
@@ -85,33 +88,45 @@ export function SameAsYesterdayCard({
                 >
                   <Text
                     className="text-[11px] font-bold tracking-tight"
-                    style={{ color: theme.colors.macros.protein.text }}
+                    style={[
+                      { color: theme.colors.macros.protein.text },
+                      intuitiveEatingMode ? blurFilter(4) : undefined,
+                    ]}
                   >
                     {t('foodSearch.macroProtein', {
-                      value: yesterdayMealData.totalProtein,
+                      value: intuitiveEatingMode ? '0' : yesterdayMealData.totalProtein,
                     })}
                   </Text>
                   <Text
                     className="text-[11px] font-bold tracking-tight"
-                    style={{ color: theme.colors.macros.carbs.text }}
+                    style={[
+                      { color: theme.colors.macros.carbs.text },
+                      intuitiveEatingMode ? blurFilter(4) : undefined,
+                    ]}
                   >
                     {t('foodSearch.macroCarbs', {
-                      value: yesterdayMealData.totalCarbs,
+                      value: intuitiveEatingMode ? '0' : yesterdayMealData.totalCarbs,
                     })}
                   </Text>
                   <Text
                     className="text-[11px] font-bold tracking-tight"
-                    style={{ color: theme.colors.macros.fat.text }}
+                    style={[
+                      { color: theme.colors.macros.fat.text },
+                      intuitiveEatingMode ? blurFilter(4) : undefined,
+                    ]}
                   >
                     {t('foodSearch.macroFat', {
-                      value: yesterdayMealData.totalFat,
+                      value: intuitiveEatingMode ? '0' : yesterdayMealData.totalFat,
                     })}
                   </Text>
                 </View>
               </View>
-              <Text className="text-xs font-bold text-text-primary" style={{ flexShrink: 0 }}>
+              <Text
+                className="text-xs font-bold text-text-primary"
+                style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
+              >
                 {t('foodSearch.totalWithKcal', {
-                  calories: yesterdayMealData.totalCalories,
+                  calories: intuitiveEatingMode ? '0' : yesterdayMealData.totalCalories,
                   kcal: t('food.common.kcal'),
                 })}
               </Text>
@@ -153,8 +168,12 @@ export function SameAsYesterdayCard({
                       {item.name}
                     </Text>
                   </View>
-                  <Text className="text-xs text-text-secondary" style={{ flexShrink: 0 }}>
-                    {formatInteger(Math.round(item.calories))} {t('food.common.kcal')}
+                  <Text
+                    className="text-xs text-text-secondary"
+                    style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
+                  >
+                    {intuitiveEatingMode ? '0' : formatInteger(Math.round(item.calories))}{' '}
+                    {t('food.common.kcal')}
                   </Text>
                 </View>
               ))}

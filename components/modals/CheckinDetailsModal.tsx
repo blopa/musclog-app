@@ -17,6 +17,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 import {
   localCalendarDayPlusDays,
   localDayKeyPlusCalendarDaysFromNow,
@@ -45,7 +46,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const theme = useTheme();
   const { t } = useTranslation();
   const { goal: currentGoal } = useCurrentNutritionGoal();
-  const { units } = useSettings();
+  const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -406,9 +407,15 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           >
             <Text className="text-base font-medium leading-relaxed text-gray-300">
               {t('nutrition.checkin.summaryIntro', { target: currentGoal?.totalCalories ?? 0 })}
-              <Text style={{ color: theme.colors.status.warning }}>
+              <Text
+                style={[
+                  { color: theme.colors.status.warning },
+                  intuitiveEatingMode ? blurFilter(4) : undefined,
+                ]}
+              >
                 {' '}
-                {formatInteger(avgCalories)} {t('common.kcal')}/day
+                {/*TODO: use i18n*/}
+                {intuitiveEatingMode ? '0' : formatInteger(avgCalories)} {t('common.kcal')}/day
               </Text>
               . {t('nutrition.checkin.summaryOutro')}
               <Text
@@ -437,8 +444,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.avgIntake')}
                 </Text>
-                <Text className="mt-1 text-xl font-black text-white">
-                  {formatInteger(avgCalories)}{' '}
+                <Text
+                  className="mt-1 text-xl font-black text-white"
+                  style={intuitiveEatingMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveEatingMode ? '0' : formatInteger(avgCalories)}{' '}
                   <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text>
                 </Text>
               </View>

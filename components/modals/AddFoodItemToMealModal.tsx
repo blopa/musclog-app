@@ -9,7 +9,9 @@ import { TextInput } from '@/components/theme/TextInput';
 import Food from '@/database/models/Food';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -33,6 +35,7 @@ function FoodResultCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { intuitiveEatingMode } = useSettings();
   const calories = formatRoundedDecimal((food.calories * amount) / 100, 2);
 
   return (
@@ -110,15 +113,20 @@ function FoodResultCard({
               }}
             >
               <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
-                }}
+                style={[
+                  {
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: isSelected ? theme.colors.accent.primary : theme.colors.text.secondary,
+                  },
+                  intuitiveEatingMode ? blurFilter(4) : undefined,
+                ]}
               >
-                {isSelected
-                  ? `${calories} ${t('common.kcal')}`
-                  : `${formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`}
+                {intuitiveEatingMode
+                  ? `0 ${t('common.kcal')}`
+                  : isSelected
+                    ? `${calories} ${t('common.kcal')}`
+                    : `${formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -142,36 +150,51 @@ function FoodResultCard({
             }}
           >
             <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
+              style={[
+                {
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.typography.fontWeight.medium,
+                },
+                intuitiveEatingMode ? blurFilter(4) : undefined,
+              ]}
             >
               {t('foodSearch.macroProtein', {
-                value: formatRoundedDecimal((food.protein * amount) / 100, 2),
+                value: intuitiveEatingMode
+                  ? '0'
+                  : formatRoundedDecimal((food.protein * amount) / 100, 2),
               })}
             </Text>
             <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
+              style={[
+                {
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.typography.fontWeight.medium,
+                },
+                intuitiveEatingMode ? blurFilter(4) : undefined,
+              ]}
             >
               {t('foodSearch.macroCarbs', {
-                value: formatRoundedDecimal((food.carbs * amount) / 100, 2),
+                value: intuitiveEatingMode
+                  ? '0'
+                  : formatRoundedDecimal((food.carbs * amount) / 100, 2),
               })}
             </Text>
             <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
+              style={[
+                {
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.typography.fontWeight.medium,
+                },
+                intuitiveEatingMode ? blurFilter(4) : undefined,
+              ]}
             >
               {t('foodSearch.macroFat', {
-                value: formatRoundedDecimal((food.fat * amount) / 100, 2),
+                value: intuitiveEatingMode
+                  ? '0'
+                  : formatRoundedDecimal((food.fat * amount) / 100, 2),
               })}
             </Text>
           </View>
