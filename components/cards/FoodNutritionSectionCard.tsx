@@ -24,6 +24,10 @@ type NutritionalData = {
   sugar?: number;
   saturatedFat: number;
   sodium: number;
+  alcohol?: number;
+  potassium?: number;
+  magnesium?: number;
+  zinc?: number;
 };
 
 /** How food details were opened: saved food, log, meal, or external catalog (barcode scan / search preload). */
@@ -80,7 +84,11 @@ export function FoodNutritionSectionCard({
     ((nutritionalData.fiber ?? 0) > 0 ||
       (nutritionalData.sugar ?? 0) > 0 ||
       (nutritionalData.saturatedFat ?? 0) > 0 ||
-      (nutritionalData.sodium ?? 0) > 0);
+      (nutritionalData.sodium ?? 0) > 0 ||
+      (nutritionalData.alcohol ?? 0) > 0 ||
+      (nutritionalData.potassium ?? 0) > 0 ||
+      (nutritionalData.magnesium ?? 0) > 0 ||
+      (nutritionalData.zinc ?? 0) > 0);
 
   const showLoadingOnly = isLoadingDetails && (mode === 'externalProduct' || mode === null);
 
@@ -243,6 +251,72 @@ export function FoodNutritionSectionCard({
                     ? '0'
                     : formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}
                   g
+                </Text>
+              </View>
+            ) : null}
+            {(nutritionalData.alcohol ?? 0) > 0 ? (
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-text-secondary">{t('food.macros.alcohol')}</Text>
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal((nutritionalData.alcohol ?? 0) * scaleFactor, 1)}
+                  g
+                </Text>
+              </View>
+            ) : null}
+            {(nutritionalData.potassium ?? 0) > 0 ? (
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-text-secondary">
+                  {t('food.foodDetails.potassium')}
+                </Text>
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal(
+                        (nutritionalData.potassium ?? 0) * scaleFactor * 1000,
+                        1
+                      )}
+                  mg
+                </Text>
+              </View>
+            ) : null}
+            {(nutritionalData.magnesium ?? 0) > 0 ? (
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-text-secondary">
+                  {t('food.foodDetails.magnesium')}
+                </Text>
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal(
+                        (nutritionalData.magnesium ?? 0) * scaleFactor * 1000,
+                        1
+                      )}
+                  mg
+                </Text>
+              </View>
+            ) : null}
+            {(nutritionalData.zinc ?? 0) > 0 ? (
+              <View className="flex-row justify-between">
+                <Text className="text-sm text-text-secondary">{t('food.foodDetails.zinc')}</Text>
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal((nutritionalData.zinc ?? 0) * scaleFactor * 1000, 2)}
+                  mg
                 </Text>
               </View>
             ) : null}

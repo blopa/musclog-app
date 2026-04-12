@@ -794,6 +794,10 @@ export function FoodMealDetailsModal({
         sugar: foodLogDecrypted.loggedMicros?.sugar ?? 0,
         saturatedFat: foodLogDecrypted.loggedMicros?.saturatedFat ?? 0,
         sodium: foodLogDecrypted.loggedMicros?.sodium ?? 0,
+        alcohol: foodLogDecrypted.loggedMicros?.alcohol ?? 0,
+        potassium: foodLogDecrypted.loggedMicros?.potassium ?? 0,
+        magnesium: foodLogDecrypted.loggedMicros?.magnesium ?? 0,
+        zinc: foodLogDecrypted.loggedMicros?.zinc ?? 0,
       };
     }
 
@@ -809,6 +813,10 @@ export function FoodMealDetailsModal({
         sugar: foodData!.micros?.sugar || 0,
         saturatedFat: foodData!.micros?.saturatedFat || 0,
         sodium: foodData!.micros?.sodium || 0,
+        alcohol: foodData!.micros?.alcohol || 0,
+        potassium: foodData!.micros?.potassium || 0,
+        magnesium: foodData!.micros?.magnesium || 0,
+        zinc: foodData!.micros?.zinc || 0,
       };
     }
 
@@ -869,6 +877,21 @@ export function FoodMealDetailsModal({
           // Sodium is reported in MG by USDA; convert to grams for storage
           sodium:
             ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+              1000) *
+            normFactor,
+          alcohol:
+            (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
+            normFactor,
+          potassium:
+            ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
+              1000) *
+            normFactor,
+          magnesium:
+            ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
+              1000) *
+            normFactor,
+          zinc:
+            ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
               1000) *
             normFactor,
         };
@@ -951,6 +974,21 @@ export function FoodMealDetailsModal({
         // Sodium is reported in MG by USDA; convert to grams for storage
         sodium:
           ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+            1000) *
+          normFactor,
+        alcohol:
+          (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
+          normFactor,
+        potassium:
+          ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
+            1000) *
+          normFactor,
+        magnesium:
+          ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
+            1000) *
+          normFactor,
+        zinc:
+          ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
             1000) *
           normFactor,
       };
@@ -1064,6 +1102,22 @@ export function FoodMealDetailsModal({
       out.sodium = n.sodium;
     }
 
+    if (Number.isFinite(n.alcohol) && (n.alcohol ?? 0) > 0) {
+      out.alcohol = n.alcohol;
+    }
+
+    if (Number.isFinite(n.potassium) && (n.potassium ?? 0) > 0) {
+      out.potassium = n.potassium;
+    }
+
+    if (Number.isFinite(n.magnesium) && (n.magnesium ?? 0) > 0) {
+      out.magnesium = n.magnesium;
+    }
+
+    if (Number.isFinite(n.zinc) && (n.zinc ?? 0) > 0) {
+      out.zinc = n.zinc;
+    }
+
     return out;
   }, [food, localFood, foodLog, foodLogDecrypted, rawNutritionalData]);
 
@@ -1081,13 +1135,15 @@ export function FoodMealDetailsModal({
       rawNutritionalData.protein,
       rawNutritionalData.carbs,
       rawNutritionalData.fat,
-      rawNutritionalData.fiber
+      rawNutritionalData.fiber,
+      rawNutritionalData.alcohol
     );
   }, [
     rawNutritionalData.protein,
     rawNutritionalData.carbs,
     rawNutritionalData.fat,
     rawNutritionalData.fiber,
+    rawNutritionalData.alcohol,
   ]);
 
   const showCaloriesTooLowWarning = useMemo(() => {
@@ -1124,11 +1180,20 @@ export function FoodMealDetailsModal({
       return typeof v === 'number' && Number.isFinite(v) ? v : macroBase[key];
     };
 
+    const pickMicro2 = (key: 'alcohol' | 'potassium' | 'magnesium' | 'zinc') => {
+      const v = effectiveMicrosPer100g[key];
+      return typeof v === 'number' && Number.isFinite(v) ? v : (macroBase[key] ?? 0);
+    };
+
     return {
       ...macroBase,
       sugar: pickMicro('sugar'),
       saturatedFat: pickMicro('saturatedFat'),
       sodium: pickMicro('sodium'),
+      alcohol: pickMicro2('alcohol'),
+      potassium: pickMicro2('potassium'),
+      magnesium: pickMicro2('magnesium'),
+      zinc: pickMicro2('zinc'),
     };
   }, [baseNutritionalData, editedOverrides, effectiveMicrosPer100g]);
 

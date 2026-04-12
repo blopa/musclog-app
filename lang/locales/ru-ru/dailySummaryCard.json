@@ -1,6 +1,9 @@
 {
   "dailySummaryCard": {
+    "alcohol": "Алкоголь",
     "carbs": "Углеводы",
+    "fiber": "Клетчатка",
+    "fiberShort": "КЛ",
     "carbsShort": "У",
     "dailySummary": "Сводка дня",
     "fats": "Жиры",

@@ -24,6 +24,10 @@ type DailySummaryCardProps = {
     protein: MacroValue;
     carbs: MacroValue;
     fats: MacroValue;
+    fiber: MacroValue;
+  };
+  secondaryNutrients?: {
+    alcohol?: number;
   };
   highlightThresholdStyle?: 'default' | 'none' | 'simple';
   menuButton?: React.ReactNode;
@@ -33,6 +37,7 @@ type DailySummaryCardProps = {
 export function DailySummaryCard({
   calories,
   macros,
+  secondaryNutrients,
   highlightThresholdStyle = 'none',
   menuButton,
   intuitiveMode = false,
@@ -56,6 +61,8 @@ export function DailySummaryCard({
     carbsStatus,
     fatsProgress,
     fatsStatus,
+    fiberProgress,
+    fiberStatus,
   } = calculateDailySummaryMetrics(calories, macros);
 
   return (
@@ -168,75 +175,118 @@ export function DailySummaryCard({
         </View>
 
         {/* Macros grid */}
+        {/* Macros grid: protein | carbs | fats | fiber */}
         {macros ? (
-          <View className="flex-row gap-3 pt-1">
-            {/* Protein */}
-            <View className="flex-1 gap-1.5">
-              <View className="flex-row items-end justify-between">
-                <Text
-                  className="font-bold uppercase"
-                  style={{
-                    fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.onColorful70,
-                  }}
-                >
-                  {isNarrow ? t('dailySummaryCard.proteinShort') : t('dailySummaryCard.protein')}
-                </Text>
-                {highlightThresholds && proteinStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
-                ) : null}
-                {highlightThresholds && proteinStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
-                ) : null}
-                {!highlightThresholds || proteinStatus === 'not-reached' ? (
-                  <View className="flex-row items-baseline">
-                    <Text
-                      className="text-xs font-bold"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(proteinStatus, theme)
-                          : theme.colors.text.onColorful,
-                        ...(intuitiveMode ? blurFilter(4) : {}),
-                      }}
-                    >
-                      {intuitiveMode ? '0' : formatDecimal(macros.protein.value, 1)}
-                    </Text>
-                    <Text
-                      className="text-xs font-normal"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(proteinStatus, theme)
-                          : theme.colors.text.onColorful,
-                      }}
-                    >
-                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.protein.goal)) })}`}
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-              <View
-                className="h-1 overflow-hidden rounded-full"
-                style={{ backgroundColor: theme.colors.overlay.black60 }}
-              >
+          <View className="flex-row gap-2 pt-1">
+            {[
+              {
+                label: isNarrow
+                  ? t('dailySummaryCard.proteinShort')
+                  : t('dailySummaryCard.protein'),
+                value: macros.protein.value,
+                goal: macros.protein.goal,
+                progress: proteinProgress,
+                status: proteinStatus,
+              },
+              {
+                label: isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs'),
+                value: macros.carbs.value,
+                goal: macros.carbs.goal,
+                progress: carbsProgress,
+                status: carbsStatus,
+              },
+              {
+                label: isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats'),
+                value: macros.fats.value,
+                goal: macros.fats.goal,
+                progress: fatsProgress,
+                status: fatsStatus,
+              },
+              ...(macros.fiber.goal > 0
+                ? [
+                    {
+                      label: isNarrow
+                        ? t('dailySummaryCard.fiberShort')
+                        : t('dailySummaryCard.fiber'),
+                      value: macros.fiber.value,
+                      goal: macros.fiber.goal,
+                      progress: fiberProgress,
+                      status: fiberStatus,
+                    },
+                  ]
+                : []),
+            ].map((macro) => (
+              <View key={macro.label} className="flex-1 gap-1.5">
+                <View className="flex-row items-end justify-between">
+                  <Text
+                    className="font-bold uppercase"
+                    style={{
+                      fontSize: theme.typography.fontSize.xxs,
+                      color: theme.colors.overlay.onColorful70,
+                    }}
+                  >
+                    {macro.label}
+                  </Text>
+                  {highlightThresholds && macro.status === 'reached' ? (
+                    <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
+                  ) : null}
+                  {highlightThresholds && macro.status === 'exceeded' ? (
+                    <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
+                  ) : null}
+                  {!highlightThresholds || macro.status === 'not-reached' ? (
+                    <View className="flex-row items-baseline">
+                      <Text
+                        className="text-xs font-bold"
+                        style={{
+                          color: showColoredIndicators
+                            ? getProgressBarColor(macro.status, theme)
+                            : theme.colors.text.onColorful,
+                          ...(intuitiveMode ? blurFilter(4) : {}),
+                        }}
+                      >
+                        {intuitiveMode ? '0' : formatDecimal(macro.value, 1)}
+                      </Text>
+                      <Text
+                        className="text-xs font-normal"
+                        style={{
+                          color: showColoredIndicators
+                            ? getProgressBarColor(macro.status, theme)
+                            : theme.colors.text.onColorful,
+                        }}
+                      >
+                        {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macro.goal)) })}`}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
                 <View
-                  className="h-full rounded-full"
-                  style={{
-                    width: intuitiveMode ? '0%' : `${Math.min(proteinProgress, 100)}%`,
-                    backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(proteinStatus, theme)
-                      : theme.colors.overlay.onColorful90,
-                  }}
-                />
+                  className="h-1 overflow-hidden rounded-full"
+                  style={{ backgroundColor: theme.colors.overlay.black60 }}
+                >
+                  <View
+                    className="h-full rounded-full"
+                    style={{
+                      width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
+                      backgroundColor: showColoredIndicators
+                        ? getProgressBarColor(macro.status, theme)
+                        : theme.colors.overlay.onColorful90,
+                    }}
+                  />
+                </View>
+                <Text
+                  className="text-left text-xs"
+                  style={{ color: theme.colors.overlay.onColorful70 }}
+                >
+                  {intuitiveMode ? '' : `${formatInteger(Math.round(macro.progress))}%`}
+                </Text>
               </View>
-              <Text
-                className="text-left text-xs"
-                style={{ color: theme.colors.overlay.onColorful70 }}
-              >
-                {intuitiveMode ? '' : `${formatInteger(Math.round(proteinProgress))}%`}
-              </Text>
-            </View>
+            ))}
+          </View>
+        ) : null}
 
-            {/* Carbs */}
+        {/* Alcohol row — shown only when alcohol > 0, no goal */}
+        {secondaryNutrients && (secondaryNutrients.alcohol ?? 0) > 0 ? (
+          <View className="flex-row gap-2 pt-1">
             <View className="flex-1 gap-1.5">
               <View className="flex-row items-end justify-between">
                 <Text
@@ -246,127 +296,31 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs')}
+                  {t('dailySummaryCard.alcohol')}
                 </Text>
-                {highlightThresholds && carbsStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
-                ) : null}
-                {highlightThresholds && carbsStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
-                ) : null}
-                {!highlightThresholds || carbsStatus === 'not-reached' ? (
-                  <View className="flex-row items-baseline">
-                    <Text
-                      className="text-xs font-bold"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(carbsStatus, theme)
-                          : theme.colors.text.onColorful,
-                        ...(intuitiveMode ? blurFilter(4) : {}),
-                      }}
-                    >
-                      {intuitiveMode ? '0' : formatDecimal(macros.carbs.value, 1)}
-                    </Text>
-                    <Text
-                      className="text-xs font-normal"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(carbsStatus, theme)
-                          : theme.colors.text.onColorful,
-                      }}
-                    >
-                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.carbs.goal)) })}`}
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-              <View
-                className="h-1 overflow-hidden rounded-full"
-                style={{ backgroundColor: theme.colors.overlay.black60 }}
-              >
-                <View
-                  className="h-full rounded-full"
-                  style={{
-                    width: intuitiveMode ? '0%' : `${Math.min(carbsProgress, 100)}%`,
-                    backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(carbsStatus, theme)
-                      : theme.colors.overlay.onColorful90,
-                  }}
-                />
-              </View>
-              <Text
-                className="text-left text-xs"
-                style={{ color: theme.colors.overlay.onColorful70 }}
-              >
-                {intuitiveMode ? '' : `${formatInteger(Math.round(carbsProgress))}%`}
-              </Text>
-            </View>
-
-            {/* Fats */}
-            <View className="flex-1 gap-1.5">
-              <View className="flex-row items-end justify-between">
                 <Text
-                  className="font-bold uppercase"
+                  className="text-xs font-bold"
                   style={{
-                    fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.onColorful70,
+                    color: theme.colors.text.onColorful,
+                    ...(intuitiveMode ? blurFilter(4) : {}),
                   }}
                 >
-                  {isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats')}
+                  {intuitiveMode
+                    ? '0g'
+                    : t('common.weightFormatG', {
+                        value: formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
+                      })}
                 </Text>
-                {highlightThresholds && fatsStatus === 'reached' ? (
-                  <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
-                ) : null}
-                {highlightThresholds && fatsStatus === 'exceeded' ? (
-                  <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
-                ) : null}
-                {!highlightThresholds || fatsStatus === 'not-reached' ? (
-                  <View className="flex-row items-baseline">
-                    <Text
-                      className="text-xs font-bold"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(fatsStatus, theme)
-                          : theme.colors.text.onColorful,
-                        ...(intuitiveMode ? blurFilter(4) : {}),
-                      }}
-                    >
-                      {intuitiveMode ? '0' : formatDecimal(macros.fats.value, 1)}
-                    </Text>
-                    <Text
-                      className="text-xs font-normal"
-                      style={{
-                        color: showColoredIndicators
-                          ? getProgressBarColor(fatsStatus, theme)
-                          : theme.colors.text.onColorful,
-                      }}
-                    >
-                      {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.fats.goal)) })}`}
-                    </Text>
-                  </View>
-                ) : null}
               </View>
               <View
                 className="h-1 overflow-hidden rounded-full"
                 style={{ backgroundColor: theme.colors.overlay.black60 }}
-              >
-                <View
-                  className="h-full rounded-full"
-                  style={{
-                    width: intuitiveMode ? '0%' : `${Math.min(fatsProgress, 100)}%`,
-                    backgroundColor: showColoredIndicators
-                      ? getProgressBarColor(fatsStatus, theme)
-                      : theme.colors.overlay.onColorful90,
-                  }}
-                />
-              </View>
-              <Text
-                className="text-left text-xs"
-                style={{ color: theme.colors.overlay.onColorful70 }}
-              >
-                {intuitiveMode ? '' : `${formatInteger(Math.round(fatsProgress))}%`}
-              </Text>
+              />
             </View>
+            {/* Three empty columns to keep consistent grid width */}
+            <View className="flex-1" />
+            <View className="flex-1" />
+            <View className="flex-1" />
           </View>
         ) : null}
       </View>

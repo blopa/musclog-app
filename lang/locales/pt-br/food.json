@@ -79,7 +79,11 @@
       "proteinLegend": "Prot",
       "carbsLegend": "Carb",
       "fatLegend": "Gord",
-      "fiberLegend": "Fibra"
+      "fiberLegend": "Fibra",
+      "alcohol": "Álcool",
+      "potassium": "Potássio",
+      "magnesium": "Magnésio",
+      "zinc": "Zinco"
     },
     "actions": {
       "mealMenuSubtitle": "O que você gostaria de fazer com esta refeição?",
@@ -290,6 +294,9 @@
       "sugars": "Açúcares",
       "saturatedFat": "Gordura Saturada",
       "salt": "Sal",
+      "potassium": "Potássio",
+      "magnesium": "Magnésio",
+      "zinc": "Zinco",
       "loadingDetails": "Carregando detalhes...",
       "loadingMoreDetails": "Carregando mais detalhes...",
       "successMessage": "Alimento registrado com sucesso!",
