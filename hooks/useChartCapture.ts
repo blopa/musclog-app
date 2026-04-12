@@ -44,9 +44,11 @@ export function useChartCapture() {
       await writeAsStringAsync(fileUri, base64, { encoding: EncodingType.Base64 });
       await Sharing.shareAsync(fileUri, { mimeType: 'image/png' });
 
+      // TODO: use i18n here
       showSnackbar('success', 'Chart saved');
     } catch (error) {
       console.error('Chart capture failed:', error);
+      // TODO: use i18n here
       showSnackbar('error', 'Failed to export chart');
     } finally {
       setIsCapturing(false);

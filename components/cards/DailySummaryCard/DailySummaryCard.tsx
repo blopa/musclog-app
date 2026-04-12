@@ -127,7 +127,7 @@ export function DailySummaryCard({
                     className="text-xs font-bold"
                     style={{ color: theme.colors.overlay.onColorful90 }}
                   >
-                    {t('dailySummaryCard.remaining', 'remaining')}
+                    {t('dailySummaryCard.remaining')}
                   </Text>
                 </View>
               ) : (
@@ -136,8 +136,8 @@ export function DailySummaryCard({
                   style={{ color: theme.colors.overlay.onColorful90 }}
                 >
                   {calories.remaining >= 0
-                    ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining', 'remaining')}`
-                    : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over', 'over')}`}
+                    ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining')}`
+                    : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over')}`}
                 </Text>
               )}
               {highlightThresholds && calorieStatus !== 'not-reached' ? (
@@ -284,43 +284,40 @@ export function DailySummaryCard({
           </View>
         ) : null}
 
-        {/* Alcohol row — shown only when alcohol > 0, no goal */}
+        {/* Alcohol — subtle note, no goal/progress */}
         {secondaryNutrients && (secondaryNutrients.alcohol ?? 0) > 0 ? (
-          <View className="flex-row gap-2 pt-1">
-            <View className="flex-1 gap-1.5">
-              <View className="flex-row items-end justify-between">
-                <Text
-                  className="font-bold uppercase"
-                  style={{
-                    fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.onColorful70,
-                  }}
-                >
-                  {t('dailySummaryCard.alcohol')}
-                </Text>
-                <Text
-                  className="text-xs font-bold"
-                  style={{
-                    color: theme.colors.text.onColorful,
-                    ...(intuitiveMode ? blurFilter(4) : {}),
-                  }}
-                >
-                  {intuitiveMode
-                    ? '0g'
-                    : t('common.weightFormatG', {
-                        value: formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
-                      })}
-                </Text>
-              </View>
-              <View
-                className="h-1 overflow-hidden rounded-full"
-                style={{ backgroundColor: theme.colors.overlay.black60 }}
-              />
-            </View>
-            {/* Three empty columns to keep consistent grid width */}
-            <View className="flex-1" />
-            <View className="flex-1" />
-            <View className="flex-1" />
+          <View
+            className="flex-row items-center justify-end pt-1"
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.overlay.white30,
+              marginTop: theme.spacing.margin.xs,
+            }}
+          >
+            <Text
+              className="font-medium"
+              style={{
+                fontSize: theme.typography.fontSize.xxs,
+                color: theme.colors.overlay.white70,
+              }}
+            >
+              {t('dailySummaryCard.alcohol')}
+            </Text>
+            <Text
+              className="ml-1.5"
+              style={{
+                fontSize: theme.typography.fontSize.xxs,
+                color: theme.colors.overlay.white70,
+                ...(intuitiveMode ? blurFilter(4) : {}),
+              }}
+            >
+              {intuitiveMode
+                // TODO: use i18n
+                ? '0g'
+                : t('common.weightFormatG', {
+                    value: formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
+                  })}
+            </Text>
           </View>
         ) : null}
       </View>

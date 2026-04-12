@@ -272,6 +272,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       try {
         const userContent = [
           context.description.trim(),
+          // TODO: use i18n here
           context.tags.length > 0 ? `Preferences: ${context.tags.join(', ')}` : '',
         ]
           .filter(Boolean)
