@@ -90,6 +90,7 @@
       "disableEncryptionInputLabel": "Введите фразу ниже для подтверждения",
       "disableEncryptionConfirmPhrase": "сделать мои данные незащищенными",
       "disableEncryptionHint": "Вы должны ввести точную фразу выше, чтобы продолжить.",
+      "biometricAuthPrompt": "Авторизуйтесь, чтобы отключить обязательное шифрование",
       "exportFailedMessage": "При экспорте произошла ошибка. Пожалуйста, попробуйте снова.",
       "importFailedMessage": "При импорте произошла ошибка. Проверьте файл и попробуйте снова.",
       "importSuccessMessage": "Данные успешно импортированы",

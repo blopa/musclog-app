@@ -66,6 +66,12 @@
       "expo-background-task",
       "expo-web-browser",
       [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
+      [
         "react-native-android-widget",
         {
           "fonts": ["./assets/fonts/material.ttf"],
@@ -115,6 +121,7 @@
       "buildNumber": "217",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },

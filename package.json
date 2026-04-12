@@ -111,6 +111,7 @@
     "expo-keep-awake": "~55.0.6",
     "expo-linear-gradient": "~55.0.13",
     "expo-linking": "~55.0.12",
+    "expo-local-authentication": "^55.0.13",
     "expo-localization": "~55.0.13",
     "expo-notifications": "~55.0.18",
     "expo-router": "~55.0.12",
