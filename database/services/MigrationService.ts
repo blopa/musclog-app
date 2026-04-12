@@ -4,6 +4,12 @@ import convert from 'convert';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
+import {
+  CALORIES_FOR_CARBS,
+  CALORIES_FOR_FAT,
+  CALORIES_FOR_FIBER,
+  CALORIES_FOR_PROTEIN,
+} from '@/constants/nutrition';
 import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import {
@@ -620,9 +626,9 @@ export class MigrationService {
         .query(Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      const logCalFromProtein = protein * 4;
-      const logCalFromCarbs = Math.max(0, carbs - 0) * 4; // Fiber unknown here usually
-      const logCalFromFat = fat * 9;
+      const logCalFromProtein = protein * CALORIES_FOR_PROTEIN;
+      const logCalFromCarbs = Math.max(0, carbs - 0) * CALORIES_FOR_CARBS; // Fiber unknown here usually
+      const logCalFromFat = fat * CALORIES_FOR_FAT;
       const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
       const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
       const logPctFat = calories > 0 ? logCalFromFat / calories : 0;
@@ -634,9 +640,11 @@ export class MigrationService {
         if (food.calories <= 0) {
           continue;
         }
-        const foodCalFromProtein = food.protein * 4;
-        const foodCalFromCarbs = Math.max(0, food.carbs - food.fiber) * 4 + food.fiber * 2;
-        const foodCalFromFat = food.fat * 9;
+        const foodCalFromProtein = food.protein * CALORIES_FOR_PROTEIN;
+        const foodCalFromCarbs =
+          Math.max(0, food.carbs - food.fiber) * CALORIES_FOR_CARBS +
+          food.fiber * CALORIES_FOR_FIBER;
+        const foodCalFromFat = food.fat * CALORIES_FOR_FAT;
         const foodPctProtein = foodCalFromProtein / food.calories;
         const foodPctCarbs = foodCalFromCarbs / food.calories;
         const foodPctFat = foodCalFromFat / food.calories;

@@ -6,6 +6,12 @@ import { BarChart } from '@/components/charts/BarChart';
 import { BarLineChart } from '@/components/charts/BarLineChart';
 import { StackedBarChart } from '@/components/charts/StackedBarChart';
 import { StackedBarLineChart } from '@/components/charts/StackedBarLineChart';
+import {
+  CALORIES_FOR_CARBS,
+  CALORIES_FOR_FAT,
+  CALORIES_FOR_FIBER,
+  CALORIES_FOR_PROTEIN,
+} from '@/constants/nutrition';
 import { DailyNutrition, MetricPoint } from '@/database/services/ProgressService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -174,7 +180,12 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           <StackedBarChart
             data={nutritionHistory.map((d) => ({
               x: d.date,
-              segments: [d.protein * 4, Math.max(0, d.carbs - d.fiber) * 4, d.fat * 9, d.fiber * 2],
+              segments: [
+                d.protein * CALORIES_FOR_PROTEIN,
+                Math.max(0, d.carbs - d.fiber) * CALORIES_FOR_CARBS,
+                d.fat * CALORIES_FOR_FAT,
+                d.fiber * CALORIES_FOR_FIBER,
+              ],
             }))}
             height={200}
             stackColors={macroColors}
@@ -217,7 +228,12 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           <StackedBarLineChart
             data={combinedData.map((d, i) => ({
               x: i,
-              segments: [d.protein * 4, Math.max(0, d.carbs - d.fiber) * 4, d.fat * 9, d.fiber * 2],
+              segments: [
+                d.protein * CALORIES_FOR_PROTEIN,
+                Math.max(0, d.carbs - d.fiber) * CALORIES_FOR_CARBS,
+                d.fat * CALORIES_FOR_FAT,
+                d.fiber * CALORIES_FOR_FIBER,
+              ],
               lineValue: d.weight,
             }))}
             height={200}

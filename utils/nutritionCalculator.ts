@@ -2,6 +2,7 @@ import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
 
 import { NutritionGoals } from '@/components/NutritionGoalsBody';
+import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type {
   EatingPhase,
   FitnessGoal,
@@ -661,9 +662,9 @@ export function calculateMacros(targetCalories: number, fitnessGoal: FitnessGoal
   const { carbsPct, proteinPct, fatsPct } = MACRO_SPLITS[fitnessGoal] ?? MACRO_SPLITS.general;
 
   return {
-    protein: Math.round((targetCalories * proteinPct) / 100 / 4),
-    carbs: Math.round((targetCalories * carbsPct) / 100 / 4),
-    fats: Math.round((targetCalories * fatsPct) / 100 / 9),
+    protein: Math.round((targetCalories * proteinPct) / 100 / CALORIES_FOR_PROTEIN),
+    carbs: Math.round((targetCalories * carbsPct) / 100 / CALORIES_FOR_CARBS),
+    fats: Math.round((targetCalories * fatsPct) / 100 / CALORIES_FOR_FAT),
     proteinPct,
     carbsPct,
     fatsPct,

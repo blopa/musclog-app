@@ -16,6 +16,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import {
+  CALORIES_FOR_CARBS,
+  CALORIES_FOR_FAT,
+  CALORIES_FOR_FIBER,
+  CALORIES_FOR_PROTEIN,
+} from '@/constants/nutrition';
 import { type EatingPhase } from '@/database/models';
 import { UserMetricService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -158,12 +164,18 @@ function MacrosDistributionChart({
   const { formatInteger } = useFormatAppNumber();
 
   const digestibleCarbs = Math.max(0, carbs - fiber);
-  const totalCals = protein * 4 + digestibleCarbs * 4 + fats * 9 + fiber * 2;
+  const totalCals =
+    protein * CALORIES_FOR_PROTEIN +
+    digestibleCarbs * CALORIES_FOR_CARBS +
+    fats * CALORIES_FOR_FAT +
+    fiber * CALORIES_FOR_FIBER;
 
-  const proteinPercentage = totalCals > 0 ? ((protein * 4) / totalCals) * 100 : 0;
-  const carbsPercentage = totalCals > 0 ? ((digestibleCarbs * 4) / totalCals) * 100 : 0;
-  const fatsPercentage = totalCals > 0 ? ((fats * 9) / totalCals) * 100 : 0;
-  const fiberPercentage = totalCals > 0 ? ((fiber * 2) / totalCals) * 100 : 0;
+  const proteinPercentage =
+    totalCals > 0 ? ((protein * CALORIES_FOR_PROTEIN) / totalCals) * 100 : 0;
+  const carbsPercentage =
+    totalCals > 0 ? ((digestibleCarbs * CALORIES_FOR_CARBS) / totalCals) * 100 : 0;
+  const fatsPercentage = totalCals > 0 ? ((fats * CALORIES_FOR_FAT) / totalCals) * 100 : 0;
+  const fiberPercentage = totalCals > 0 ? ((fiber * CALORIES_FOR_FIBER) / totalCals) * 100 : 0;
 
   // Insights are typically based on non-fiber macro split
   const macroInsight = getMacroInsight(proteinPercentage, carbsPercentage, fatsPercentage);
@@ -175,10 +187,10 @@ function MacrosDistributionChart({
       </Text>
 
       <MacrosPizzaChart
-        protein={protein * 4}
-        carbs={digestibleCarbs * 4}
-        fats={fats * 9}
-        fiber={fiber * 2}
+        protein={protein * CALORIES_FOR_PROTEIN}
+        carbs={digestibleCarbs * CALORIES_FOR_CARBS}
+        fats={fats * CALORIES_FOR_FAT}
+        fiber={fiber * CALORIES_FOR_FIBER}
         insightMessage={macroInsight}
       />
 
@@ -432,7 +444,11 @@ export function NutritionGoalsBody({
     // Note: Fiber is typically included in the total carbs (4kcal/g) on labels,
     // but for accuracy we count net carbs at 4kcal/g and fiber at 2kcal/g.
     const digestibleCarbs = Math.max(0, carbs - fiber);
-    const calculatedCalories = protein * 4 + digestibleCarbs * 4 + fats * 9 + fiber * 2;
+    const calculatedCalories =
+      protein * CALORIES_FOR_PROTEIN +
+      digestibleCarbs * CALORIES_FOR_CARBS +
+      fats * CALORIES_FOR_FAT +
+      fiber * CALORIES_FOR_FIBER;
     setTotalCalories(Math.round(calculatedCalories));
   }, [protein, carbs, fats, fiber, initialGoals?.totalCalories]);
 
