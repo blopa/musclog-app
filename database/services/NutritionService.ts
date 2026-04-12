@@ -13,14 +13,10 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
+import { widgetEvents } from '@/utils/widgetEvents';
 
-async function triggerWidgetUpdate(): Promise<void> {
-  if (Platform.OS !== 'android') {
-    return;
-  }
-
-  await requestNutritionWidgetUpdate();
+function triggerWidgetUpdate(): void {
+  widgetEvents.emitNutritionWidgetUpdate();
 }
 
 /**
@@ -111,7 +107,7 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  await triggerWidgetUpdate();
+  triggerWidgetUpdate();
 }
 
 export class NutritionService {
@@ -165,7 +161,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     // Health Connect / Apple Health (user-entered only — health-sourced records
@@ -451,7 +447,7 @@ export class NutritionService {
       return log;
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
 
     return updatedLog;
   }
@@ -464,7 +460,7 @@ export class NutritionService {
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -505,7 +501,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -524,7 +520,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -564,7 +560,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -590,7 +586,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -642,7 +638,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -1036,7 +1032,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -1222,7 +1218,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
