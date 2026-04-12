@@ -5,6 +5,7 @@
     "version": "2.6.2",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
+    "platforms": ["ios", "android", "web"],
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
