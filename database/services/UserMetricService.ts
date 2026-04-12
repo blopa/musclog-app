@@ -1,12 +1,31 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 import { Platform } from 'react-native';
 
+import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
-import { database } from '@/database/index';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
 
 export class UserMetricService {
+  /**
+   * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
+   */
+  static async getUserBodyWeightKgForVolume(): Promise<number> {
+    const weightMetric = await UserMetricService.getLatest('weight');
+    if (!weightMetric) {
+      return 0;
+    }
+
+    const decrypted = await weightMetric.getDecrypted();
+    let kg = decrypted.value;
+    if (decrypted.unit === 'lbs') {
+      kg = convert(decrypted.value, 'lb').to('kg') as number;
+    }
+
+    return kg;
+  }
+
   /**
    * Get a metric by id. Returns null if not found or deleted.
    */

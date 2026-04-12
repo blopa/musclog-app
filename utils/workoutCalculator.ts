@@ -1,9 +1,6 @@
-import convert from 'convert';
-
 import { EXERCISE_TYPES } from '@/constants/exercises';
 import type { EquipmentType } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { UserMetricService } from '@/database/services/UserMetricService';
 
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -25,24 +22,6 @@ export type ExerciseVolumeData = {
 export interface ExerciseWithSets {
   exercise: ExerciseVolumeData;
   sets: WorkoutSetInput[];
-}
-
-/**
- * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
- */
-export async function getUserBodyWeightKgForVolume(): Promise<number> {
-  const weightMetric = await UserMetricService.getLatest('weight');
-  if (!weightMetric) {
-    return 0;
-  }
-
-  const decrypted = await weightMetric.getDecrypted();
-  let kg = decrypted.value;
-  if (decrypted.unit === 'lbs') {
-    kg = convert(decrypted.value, 'lb').to('kg') as number;
-  }
-
-  return kg;
 }
 
 /**

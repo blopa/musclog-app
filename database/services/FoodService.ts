@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Food, { type MicrosData } from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';

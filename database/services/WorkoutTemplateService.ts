@@ -5,7 +5,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 import type { RawWorkoutTemplate } from '@/components/modals/BrowseTemplatesModal';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import Setting from '@/database/models/Setting';

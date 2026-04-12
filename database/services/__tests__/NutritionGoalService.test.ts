@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { NutritionGoalInput, NutritionGoalService } from '@/database/services/NutritionGoalService';
 
 import { createMockNutritionGoal } from './helpers';

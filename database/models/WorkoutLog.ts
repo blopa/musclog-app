@@ -1,11 +1,7 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
-import {
-  calculateWorkoutVolume,
-  type ExerciseWithSets,
-  getUserBodyWeightKgForVolume,
-} from '@/utils/workoutCalculator';
+import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCalculator';
 
 import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
@@ -53,8 +49,7 @@ export default class WorkoutLog extends Model {
       .fetch();
   }
 
-  async calculateVolume(): Promise<number> {
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+  async calculateVolume(bodyWeightKg: number): Promise<number> {
     const logExercises = await this.logExercises.fetch();
     const active = logExercises.filter((le) => !le.deletedAt);
     if (active.length === 0) {
@@ -307,12 +302,12 @@ export default class WorkoutLog extends Model {
   }
 
   @writer
-  async completeWorkout(): Promise<void> {
+  async completeWorkout(bodyWeightKg: number): Promise<void> {
     if (this.completedAt) {
       throw new Error('Workout is already completed');
     }
 
-    const totalVolume = await this.calculateVolume();
+    const totalVolume = await this.calculateVolume(bodyWeightKg);
     const now = Date.now();
 
     await this.update((log) => {

@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';

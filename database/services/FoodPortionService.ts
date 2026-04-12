@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
 import i18n from '@/lang/lang';

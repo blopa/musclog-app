@@ -16,6 +16,7 @@ import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
+import { reloadApp } from '@/utils/app';
 import { decrypt, encrypt } from '@/utils/encryption';
 import { captureException } from '@/utils/sentry';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
@@ -26,7 +27,6 @@ import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService } from './services';
-import { reloadApp } from '@/utils/app';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);

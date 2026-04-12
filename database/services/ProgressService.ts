@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionLog from '@/database/models/NutritionLog';
@@ -19,7 +19,7 @@ import {
 } from '@/utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
-import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
@@ -986,7 +986,7 @@ export class ProgressService {
             .fetch()
         : [];
     const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
 
     // Fetch all sets for all log exercises at once
     const logExIds = allLogExercises.map((le) => le.id);
