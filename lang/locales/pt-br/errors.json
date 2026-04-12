@@ -8,6 +8,9 @@
     "failedToLoadData": "Falha ao carregar dados",
     "somethingWentWrong": "Algo deu errado",
     "genericDescription": "Ocorreu um erro inesperado.",
-    "reload": "Recarregar"
+    "reload": "Recarregar",
+    "aiCreditsError": "Limite de uso do serviço de IA excedido. Por favor, verifique sua chave de API ou tente novamente mais tarde.",
+    "aiProcessingError": "Desculpe, tive dificuldade para processar essa solicitação. Por favor, tente novamente em um momento.",
+    "aiProcessingErrorTitle": "Erro ao processar solicitação"
   }
 }
