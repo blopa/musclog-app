@@ -89,7 +89,7 @@ import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
-import { EnrichedWorkoutLogSet } from '@/database/services';
+import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 
 export default function ModalsTestScreen() {
@@ -218,6 +218,7 @@ export default function ModalsTestScreen() {
   const [isAddUserMetricEntryVisible, setIsAddUserMetricEntryVisible] = useState(false);
   // Past Workout Detail Modal
   const [isPastWorkoutDetailVisible, setIsPastWorkoutDetailVisible] = useState(false);
+  const [pastWorkoutDetailId, setPastWorkoutDetailId] = useState<string | undefined>(undefined);
   // Edit Workout Metadata Modal
   const [isEditWorkoutMetadataVisible, setIsEditWorkoutMetadataVisible] = useState(false);
   // Edit Past Workout Data Modal
@@ -1048,7 +1049,11 @@ export default function ModalsTestScreen() {
               label="Open Past Workout Detail Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsPastWorkoutDetailVisible(true)}
+              onPress={async () => {
+                const logs = await WorkoutService.getWorkoutHistory(undefined, 1);
+                setPastWorkoutDetailId(logs[0]?.id);
+                setIsPastWorkoutDetailVisible(true);
+              }}
             />
           </View>
 
@@ -2040,7 +2045,11 @@ export default function ModalsTestScreen() {
 
       <PastWorkoutDetailModal
         visible={isPastWorkoutDetailVisible}
-        onClose={() => setIsPastWorkoutDetailVisible(false)}
+        workoutId={pastWorkoutDetailId}
+        onClose={() => {
+          setIsPastWorkoutDetailVisible(false);
+          setPastWorkoutDetailId(undefined);
+        }}
       />
 
       <EditWorkoutMetadataModal

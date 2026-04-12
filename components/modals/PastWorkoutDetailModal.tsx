@@ -556,7 +556,7 @@ export default function PastWorkoutDetailModal({
     return (
       <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
         <View className="flex-1 items-center justify-center">
-          {isLoading ? (
+          {isLoading || !workoutId ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           ) : (
             <Text className="text-text-secondary">{t('common.error')}</Text>

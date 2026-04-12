@@ -114,9 +114,7 @@ async function run() {
 
   const distIndex = path.join(DIST_PATH, 'index.html');
   if (!fs.existsSync(distIndex)) {
-    console.error(
-      `No built app found at ${distIndex}.\nMake sure you have run the build command.`
-    );
+    console.error(`No built app found at ${distIndex}.\nMake sure you have run the build command.`);
     process.exit(1);
   }
 
