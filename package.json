@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "scripts": {
     "playwright-runner": "node tests/run-tests.js",
     "screenshots": "npm run build-android-web && npm run playwright-runner --",
