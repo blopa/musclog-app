@@ -1,13 +1,14 @@
 import type { WidgetInfo } from 'react-native-android-widget';
 import { requestWidgetUpdate } from 'react-native-android-widget';
 
-import { NutritionGoalService, NutritionService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
 
 import { NutritionWidget } from './NutritionWidget';
 
 /**
- * Request an update for the Nutrition widget
- * This helper function provides the renderWidget callback required by requestWidgetUpdate
+ * Request an update for the Nutrition widget.
+ * Call this from UI components after making changes to nutrition data.
  */
 export async function requestNutritionWidgetUpdate(): Promise<void> {
   await requestWidgetUpdate({
