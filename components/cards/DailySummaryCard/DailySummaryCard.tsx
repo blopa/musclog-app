@@ -5,6 +5,7 @@ import { Text, useWindowDimensions, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import {
   calculateDailySummaryMetrics,
@@ -26,6 +27,7 @@ type DailySummaryCardProps = {
   };
   highlightThresholdStyle?: 'default' | 'none' | 'simple';
   menuButton?: React.ReactNode;
+  intuitiveMode?: boolean;
 };
 
 export function DailySummaryCard({
@@ -33,6 +35,7 @@ export function DailySummaryCard({
   macros,
   highlightThresholdStyle = 'none',
   menuButton,
+  intuitiveMode = false,
 }: DailySummaryCardProps) {
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
@@ -62,8 +65,11 @@ export function DailySummaryCard({
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
-              <Text className="text-5xl font-extrabold tracking-tighter text-text-on-colorful">
-                {formatInteger(Math.round(calories.consumed))}
+              <Text
+                className="text-5xl font-extrabold tracking-tighter text-text-on-colorful"
+                style={intuitiveMode ? blurFilter(8) : undefined}
+              >
+                {intuitiveMode ? '00' : formatInteger(Math.round(calories.consumed))}
               </Text>
 
               <View className="flex-col">
@@ -102,14 +108,31 @@ export function DailySummaryCard({
           {/* Progress bar */}
           <View className="gap-1.5">
             <View className="flex-row items-center justify-between">
-              <Text
-                className="text-xs font-bold"
-                style={{ color: theme.colors.overlay.onColorful90 }}
-              >
-                {calories.remaining >= 0
-                  ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining', 'remaining')}`
-                  : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over', 'over')}`}
-              </Text>
+              {intuitiveMode ? (
+                <View className="flex-row items-center gap-1">
+                  <Text
+                    className="text-xs font-bold"
+                    style={{ color: theme.colors.overlay.onColorful90, ...blurFilter(5) }}
+                  >
+                    {'00'}
+                  </Text>
+                  <Text
+                    className="text-xs font-bold"
+                    style={{ color: theme.colors.overlay.onColorful90 }}
+                  >
+                    {t('dailySummaryCard.remaining', 'remaining')}
+                  </Text>
+                </View>
+              ) : (
+                <Text
+                  className="text-xs font-bold"
+                  style={{ color: theme.colors.overlay.onColorful90 }}
+                >
+                  {calories.remaining >= 0
+                    ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining', 'remaining')}`
+                    : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over', 'over')}`}
+                </Text>
+              )}
               {highlightThresholds && calorieStatus !== 'not-reached' ? (
                 <Text
                   className="text-xs font-bold"
@@ -128,7 +151,7 @@ export function DailySummaryCard({
               <View
                 className="h-full rounded-full"
                 style={{
-                  width: `${Math.min(calorieProgress, 100)}%`,
+                  width: intuitiveMode ? '0%' : `${Math.min(calorieProgress, 100)}%`,
                   backgroundColor: showColoredIndicators
                     ? getProgressBarColor(calorieStatus, theme)
                     : theme.colors.text.onColorful,
@@ -139,7 +162,7 @@ export function DailySummaryCard({
               className="text-left text-xs"
               style={{ color: theme.colors.overlay.onColorful70 }}
             >
-              {formatInteger(Math.round(calorieProgress))}%
+              {intuitiveMode ? '' : `${formatInteger(Math.round(calorieProgress))}%`}
             </Text>
           </View>
         </View>
@@ -174,11 +197,17 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>
-                      {formatDecimal(macros.protein.value, 1)}
+                    <Text
+                      style={{
+                        fontWeight: '700',
+                        ...(intuitiveMode ? blurFilter(4) : {}),
+                      }}
+                    >
+                      {intuitiveMode ? '0' : formatDecimal(macros.protein.value, 1)}
                     </Text>
                     <Text
                       style={{ fontWeight: '400' }}
+                      // TODO: use i18n
                     >{`/${formatInteger(Math.round(macros.protein.goal))}g`}</Text>
                   </Text>
                 ) : null}
@@ -190,7 +219,7 @@ export function DailySummaryCard({
                 <View
                   className="h-full rounded-full"
                   style={{
-                    width: `${Math.min(proteinProgress, 100)}%`,
+                    width: intuitiveMode ? '0%' : `${Math.min(proteinProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(proteinStatus, theme)
                       : theme.colors.overlay.onColorful90,
@@ -201,7 +230,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {formatInteger(Math.round(proteinProgress))}%
+                {intuitiveMode ? '' : `${formatInteger(Math.round(proteinProgress))}%`}
               </Text>
             </View>
 
@@ -232,11 +261,17 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>
-                      {formatDecimal(macros.carbs.value, 1)}
+                    <Text
+                      style={{
+                        fontWeight: '700',
+                        ...(intuitiveMode ? blurFilter(4) : {}),
+                      }}
+                    >
+                      {intuitiveMode ? '0' : formatDecimal(macros.carbs.value, 1)}
                     </Text>
                     <Text
                       style={{ fontWeight: '400' }}
+                      // TODO: use i18n
                     >{`/${formatInteger(Math.round(macros.carbs.goal))}g`}</Text>
                   </Text>
                 ) : null}
@@ -248,7 +283,7 @@ export function DailySummaryCard({
                 <View
                   className="h-full rounded-full"
                   style={{
-                    width: `${Math.min(carbsProgress, 100)}%`,
+                    width: intuitiveMode ? '0%' : `${Math.min(carbsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(carbsStatus, theme)
                       : theme.colors.overlay.onColorful90,
@@ -259,7 +294,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {formatInteger(Math.round(carbsProgress))}%
+                {intuitiveMode ? '' : `${formatInteger(Math.round(carbsProgress))}%`}
               </Text>
             </View>
 
@@ -290,9 +325,17 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{formatDecimal(macros.fats.value, 1)}</Text>
+                    <Text
+                      style={{
+                        fontWeight: '700',
+                        ...(intuitiveMode ? blurFilter(4) : {}),
+                      }}
+                    >
+                      {intuitiveMode ? '0' : formatDecimal(macros.fats.value, 1)}
+                    </Text>
                     <Text
                       style={{ fontWeight: '400' }}
+                      // TODO: use i18n
                     >{`/${formatInteger(Math.round(macros.fats.goal))}g`}</Text>
                   </Text>
                 ) : null}
@@ -304,7 +347,7 @@ export function DailySummaryCard({
                 <View
                   className="h-full rounded-full"
                   style={{
-                    width: `${Math.min(fatsProgress, 100)}%`,
+                    width: intuitiveMode ? '0%' : `${Math.min(fatsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(fatsStatus, theme)
                       : theme.colors.overlay.onColorful90,
@@ -315,7 +358,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {formatInteger(Math.round(fatsProgress))}%
+                {intuitiveMode ? '' : `${formatInteger(Math.round(fatsProgress))}%`}
               </Text>
             </View>
           </View>

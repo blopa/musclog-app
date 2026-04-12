@@ -117,6 +117,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.accent.primary }}
                   >
+                    {/*TODO: use i18n*/}
                     {formatRoundedDecimal(meal.protein, 2)}g
                   </Text>
                 </View>
@@ -131,6 +132,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.indigo }}
                   >
+                    {/*TODO: use i18n*/}
                     {formatRoundedDecimal(meal.carbs, 2)}g
                   </Text>
                 </View>
@@ -145,6 +147,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.warning }}
                   >
+                    {/*TODO: use i18n*/}
                     {formatRoundedDecimal(meal.fats, 2)}g
                   </Text>
                 </View>

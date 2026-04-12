@@ -671,6 +671,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
+                {/*TODO: use i18n*/}
                 {formatInteger(displayData?.protein ?? 0)}g
               </Text>
               <Text
@@ -715,6 +716,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
+                {/*TODO: use i18n*/}
                 {formatInteger(displayData?.carbs ?? 0)}g
               </Text>
               <Text
@@ -759,6 +761,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
+                {/*TODO: use i18n*/}
                 {formatInteger(displayData?.fats ?? 0)}g
               </Text>
               <Text

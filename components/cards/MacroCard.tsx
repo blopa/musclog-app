@@ -73,6 +73,7 @@ export function MacroCard({
         {forceVertical ? (
           <View className="mb-3">
             <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
+            {/*TODO: use i18n*/}
             <Text className="text-sm text-text-secondary">
               / {formatInteger(goal, { useGrouping: false })}g
             </Text>
@@ -80,6 +81,7 @@ export function MacroCard({
         ) : (
           <View className="mb-3 flex-row items-baseline gap-1">
             <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
+            {/*TODO: use i18n*/}
             <Text className="text-sm text-text-secondary">
               / {formatInteger(goal, { useGrouping: false })}g
             </Text>

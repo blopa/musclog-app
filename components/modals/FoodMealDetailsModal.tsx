@@ -310,7 +310,7 @@ export function FoodMealDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
-  const { units, alwaysAllowFoodEditing } = useSettings();
+  const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
@@ -2143,6 +2143,7 @@ export function FoodMealDetailsModal({
                   }
                 : undefined
             }
+            intuitiveMode={intuitiveEatingMode}
           />
 
           {/* Form Sections */}

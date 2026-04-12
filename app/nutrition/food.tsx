@@ -100,7 +100,7 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured } = useSettings();
+  const { units, isAiConfigured, intuitiveEatingMode } = useSettings();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -1256,6 +1256,7 @@ export default function FoodScreen() {
                         goal: nutritionGoal?.fats || 80,
                       },
                     }}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       <MenuButton
                         onPress={() => setIsGoalsManagementModalVisible(true)}
@@ -1330,6 +1331,7 @@ export default function FoodScreen() {
                     totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
                     totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('breakfast')}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       mealsByType.breakfast.length > 0 || mealGroupsByType.breakfast.length > 0 ? (
                         <MenuButton
@@ -1350,6 +1352,7 @@ export default function FoodScreen() {
                         fat={group.totalNutrients.fat}
                         mealType="breakfast"
                         onMorePress={() => handleMealGroupMenuPress(group)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.breakfast.map((entry) => (
@@ -1365,6 +1368,7 @@ export default function FoodScreen() {
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="breakfast"
                         onMorePress={() => handleFoodMenuPress(entry)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                   </MealSection>
@@ -1377,6 +1381,7 @@ export default function FoodScreen() {
                     totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
                     totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('lunch')}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       mealsByType.lunch.length > 0 || mealGroupsByType.lunch.length > 0 ? (
                         <MenuButton
@@ -1397,6 +1402,7 @@ export default function FoodScreen() {
                         fat={group.totalNutrients.fat}
                         mealType="lunch"
                         onMorePress={() => handleMealGroupMenuPress(group)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.lunch.map((entry) => (
@@ -1412,6 +1418,7 @@ export default function FoodScreen() {
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="lunch"
                         onMorePress={() => handleFoodMenuPress(entry)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                   </MealSection>
@@ -1424,6 +1431,7 @@ export default function FoodScreen() {
                     totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
                     totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('dinner')}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       mealsByType.dinner.length > 0 || mealGroupsByType.dinner.length > 0 ? (
                         <MenuButton
@@ -1444,6 +1452,7 @@ export default function FoodScreen() {
                         fat={group.totalNutrients.fat}
                         mealType="dinner"
                         onMorePress={() => handleMealGroupMenuPress(group)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.dinner.map((entry) => (
@@ -1459,6 +1468,7 @@ export default function FoodScreen() {
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="dinner"
                         onMorePress={() => handleFoodMenuPress(entry)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                   </MealSection>
@@ -1471,6 +1481,7 @@ export default function FoodScreen() {
                     totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
                     totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('snack')}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       mealsByType.snack.length > 0 || mealGroupsByType.snack.length > 0 ? (
                         <MenuButton
@@ -1491,6 +1502,7 @@ export default function FoodScreen() {
                         fat={group.totalNutrients.fat}
                         mealType="snack"
                         onMorePress={() => handleMealGroupMenuPress(group)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.snack.map((entry) => (
@@ -1506,6 +1518,7 @@ export default function FoodScreen() {
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="snack"
                         onMorePress={() => handleFoodMenuPress(entry)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                   </MealSection>
@@ -1518,6 +1531,7 @@ export default function FoodScreen() {
                     totalCarbs={dailyNutrients?.byMealType?.other?.carbs || 0}
                     totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
                     onAddFood={() => handleAddFoodToMeal('other')}
+                    intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       mealsByType.other.length > 0 || mealGroupsByType.other.length > 0 ? (
                         <MenuButton
@@ -1538,6 +1552,7 @@ export default function FoodScreen() {
                         fat={group.totalNutrients.fat}
                         mealType="other"
                         onMorePress={() => handleMealGroupMenuPress(group)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.other.map((entry) => (
@@ -1553,6 +1568,7 @@ export default function FoodScreen() {
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="other"
                         onMorePress={() => handleFoodMenuPress(entry)}
+                        intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                   </MealSection>

@@ -38,6 +38,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { captureException } from '@/utils/sentry';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
@@ -111,11 +112,13 @@ const MacroCard = ({
   value,
   progress,
   color,
+  intuitiveMode = false,
 }: {
   label: string;
   value: string;
   progress: number;
   color: string;
+  intuitiveMode?: boolean;
 }) => {
   const theme = useTheme();
   return (
@@ -143,13 +146,16 @@ const MacroCard = ({
         {label}
       </Text>
       <Text
-        style={{
-          fontSize: theme.typography.fontSize.sm,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.primary,
-        }}
+        style={[
+          {
+            fontSize: theme.typography.fontSize.sm,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.text.primary,
+          },
+          intuitiveMode ? blurFilter(4) : undefined,
+        ]}
       >
-        {value}
+        {intuitiveMode ? '0g' : value}
       </Text>
       <View
         style={{
@@ -164,7 +170,7 @@ const MacroCard = ({
         <View
           style={{
             height: '100%',
-            width: `${progress}%`,
+            width: intuitiveMode ? '0%' : `${progress}%`,
             backgroundColor: color,
             borderRadius: theme.borderRadius.xs / 2,
           }}
@@ -178,9 +184,11 @@ const MacroCard = ({
 const MealMacrosSummary = ({
   calories,
   macros,
+  intuitiveMode = false,
 }: {
   calories: number;
   macros: { protein: number; carbs: number; fat: number };
+  intuitiveMode?: boolean;
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -251,13 +259,16 @@ const MealMacrosSummary = ({
               {t('food.createMeal.totalNutrition')}
             </Text>
             <Text
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                fontWeight: theme.typography.fontWeight.medium,
-                color: theme.colors.text.secondary,
-              }}
+              style={[
+                {
+                  fontSize: theme.typography.fontSize.sm,
+                  fontWeight: theme.typography.fontWeight.medium,
+                  color: theme.colors.text.secondary,
+                },
+                intuitiveMode ? blurFilter(4) : undefined,
+              ]}
             >
-              {formatRoundedDecimal(calories, 2)} {t('common.kcal')}
+              {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -287,21 +298,27 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
+            // TODO: use i18n
             value={`${formatRoundedDecimal(macros.protein, 2)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
+            intuitiveMode={intuitiveMode}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
+            // TODO: use i18n
             value={`${formatRoundedDecimal(macros.carbs, 2)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
+            intuitiveMode={intuitiveMode}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
+            // TODO: use i18n
             value={`${formatRoundedDecimal(macros.fat, 2)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}
+            intuitiveMode={intuitiveMode}
           />
         </View>
       </View>
@@ -322,7 +339,7 @@ export function CreateMealModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
-  const { units } = useSettings();
+  const { units, intuitiveEatingMode } = useSettings();
   const massUnit = getMassUnitLabel(units);
   const stepDisplay = units === 'imperial' ? 0.5 : 10;
   const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
@@ -681,6 +698,7 @@ export function CreateMealModal({
                 }
               : totalMacros
           }
+          intuitiveMode={intuitiveEatingMode}
         />
 
         {/* Ingredients Section */}
@@ -782,12 +800,16 @@ export function CreateMealModal({
                         }}
                       />
                       <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color: theme.colors.text.secondary,
-                        }}
+                        style={[
+                          {
+                            fontSize: theme.typography.fontSize.xs,
+                            color: theme.colors.text.secondary,
+                          },
+                          intuitiveEatingMode ? blurFilter(4) : undefined,
+                        ]}
                       >
-                        {formatRoundedDecimal(item.calories, 2)} {t('common.kcal')}
+                        {intuitiveEatingMode ? '0' : formatRoundedDecimal(item.calories, 2)}{' '}
+                        {t('common.kcal')}
                       </Text>
                     </View>
                   </View>

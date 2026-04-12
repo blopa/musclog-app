@@ -4,6 +4,7 @@ import { Text, useWindowDimensions, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
 
@@ -18,6 +19,7 @@ export type MealNutritionHighlightCardProps = {
   fat: number;
   /** When greater than zero, shown as a line below the macro grid. */
   fiber?: number;
+  intuitiveMode?: boolean;
 };
 
 /**
@@ -31,6 +33,7 @@ export function MealNutritionHighlightCard({
   carbs,
   fat,
   fiber,
+  intuitiveMode = false,
 }: MealNutritionHighlightCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -75,8 +78,14 @@ export function MealNutritionHighlightCard({
               >
                 {t('food.calories')}
               </Text>
-              <Text className="text-lg font-bold" style={{ color: theme.colors.text.primary }}>
-                {formatRoundedDecimal(calories, 2)}
+              <Text
+                className="text-lg font-bold"
+                style={[
+                  { color: theme.colors.text.primary },
+                  intuitiveMode ? blurFilter(4) : undefined,
+                ]}
+              >
+                {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 {t('food.common.kcal')}
@@ -96,8 +105,14 @@ export function MealNutritionHighlightCard({
               >
                 {narrow ? t('food.macros.proteinShort') : t('food.macros.protein')}
               </Text>
-              <Text className="text-lg font-bold" style={{ color: theme.colors.accent.primary }}>
-                {formatRoundedDecimal(protein, 2)}
+              <Text
+                className="text-lg font-bold"
+                style={[
+                  { color: theme.colors.accent.primary },
+                  intuitiveMode ? blurFilter(4) : undefined,
+                ]}
+              >
+                {intuitiveMode ? '0' : formatRoundedDecimal(protein, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -117,8 +132,14 @@ export function MealNutritionHighlightCard({
               >
                 {narrow ? t('food.macros.carbsShort') : t('food.macros.carbs')}
               </Text>
-              <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                {formatRoundedDecimal(carbs, 2)}
+              <Text
+                className="text-lg font-bold"
+                style={[
+                  { color: theme.colors.status.info },
+                  intuitiveMode ? blurFilter(4) : undefined,
+                ]}
+              >
+                {intuitiveMode ? '0' : formatRoundedDecimal(carbs, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -138,8 +159,14 @@ export function MealNutritionHighlightCard({
               >
                 {narrow ? t('food.macros.fatShort') : t('food.macros.fat')}
               </Text>
-              <Text className="text-lg font-bold" style={{ color: theme.colors.status.amber }}>
-                {formatRoundedDecimal(fat, 2)}
+              <Text
+                className="text-lg font-bold"
+                style={[
+                  { color: theme.colors.status.amber },
+                  intuitiveMode ? blurFilter(4) : undefined,
+                ]}
+              >
+                {intuitiveMode ? '0' : formatRoundedDecimal(fat, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -150,10 +177,13 @@ export function MealNutritionHighlightCard({
           {fiber != null && fiber > 0.05 ? (
             <Text
               className="mt-3 text-center text-xs"
-              style={{ color: theme.colors.text.secondary }}
+              style={[
+                { color: theme.colors.text.secondary },
+                intuitiveMode ? blurFilter(4) : undefined,
+              ]}
             >
               {t('food.macroValueFormat', {
-                value: formatRoundedDecimal(fiber, 1),
+                value: intuitiveMode ? '0' : formatRoundedDecimal(fiber, 1),
                 unit: t('common.units.g'),
                 label: t('food.macros.fiber'),
               })}

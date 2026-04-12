@@ -100,6 +100,7 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
           t('progress.mood.great'),
         ]}
         xAxisLabels={xAxisLabels}
+        // TODO: use i18n
         totalFormatter={(total) => `${formatInteger(Math.round(total))}g`}
         lineFormatter={(v) => moodLabels[Math.round(v)] ?? formatDecimal(v, 1)}
       />

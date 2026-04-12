@@ -17,6 +17,7 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -87,6 +88,7 @@ type SettingsState = {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  intuitiveEatingMode: boolean;
   isLoading: boolean;
 };
 
@@ -126,6 +128,7 @@ const DEFAULT_STATE: SettingsState = {
   alwaysAllowFoodEditing: false,
   showWeightPrediction: true,
   requireExportEncryption: true,
+  intuitiveEatingMode: false,
   isLoading: true,
 };
 
@@ -223,6 +226,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
+    intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -262,6 +266,7 @@ export type SettingsContextType = UseSettingsResult & {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  intuitiveEatingMode: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

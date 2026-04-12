@@ -59,7 +59,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const { isAiConfigured } = useSettings();
+  const { isAiConfigured, intuitiveEatingMode } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
@@ -399,6 +399,7 @@ export default function HomeScreen() {
                     goal: dailyMacros.fat.goal,
                   },
                 }}
+                intuitiveMode={intuitiveEatingMode}
                 menuButton={
                   <MenuButton
                     onPress={() => setIsGoalsManagementModalVisible(true)}
@@ -498,6 +499,7 @@ export default function HomeScreen() {
                     portion={entry.gramWeight}
                     image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                     mealType={entry.log.type}
+                    intuitiveMode={intuitiveEatingMode}
                   />
                 ))}
 

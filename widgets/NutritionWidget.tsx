@@ -145,6 +145,7 @@ export function NutritionWidget({
                 color: theme.colors.text.secondary as ColorProp,
               }}
             />
+            {/*TODO: use i18n*/}
             <TextWidget
               text={`${formatAppInteger(locale, Math.round(protein))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}
@@ -182,6 +183,7 @@ export function NutritionWidget({
                 color: theme.colors.text.secondary as ColorProp,
               }}
             />
+            {/*TODO: use i18n*/}
             <TextWidget
               text={`${formatAppInteger(locale, Math.round(carbs))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}
@@ -219,6 +221,7 @@ export function NutritionWidget({
                 color: theme.colors.text.secondary as ColorProp,
               }}
             />
+            {/*TODO: use i18n*/}
             <TextWidget
               text={`${formatAppInteger(locale, Math.round(fat))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}

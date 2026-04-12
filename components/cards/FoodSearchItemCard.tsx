@@ -6,6 +6,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { type UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '@/theme';
+import { blurFilter } from '@/utils/blurFilter';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
@@ -21,16 +22,21 @@ type FoodItem = UnifiedFoodResult & {
 type FoodSearchItemCardProps = {
   food: FoodItem;
   onAddPress: () => void;
+  intuitiveMode?: boolean;
 };
 
-export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps) {
+export function FoodSearchItemCard({
+  food,
+  onAddPress,
+  intuitiveMode = false,
+}: FoodSearchItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: formatRoundedDecimal(food.protein ?? 0, 2),
-    carbs: formatRoundedDecimal(food.carbs ?? 0, 2),
-    fat: formatRoundedDecimal(food.fat ?? 0, 2),
+    protein: intuitiveMode ? '0' : formatRoundedDecimal(food.protein ?? 0, 2),
+    carbs: intuitiveMode ? '0' : formatRoundedDecimal(food.carbs ?? 0, 2),
+    fat: intuitiveMode ? '0' : formatRoundedDecimal(food.fat ?? 0, 2),
   });
 
   return (
@@ -114,10 +120,19 @@ export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps
             </View>
           ) : null}
         </View>
-        <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
+        <Text
+          className="truncate text-sm text-text-secondary"
+          numberOfLines={1}
+          style={intuitiveMode ? blurFilter(4) : undefined}
+        >
           {food.description}
         </Text>
-        <Text className="mt-0.5 text-xs text-text-secondary">{macroLine}</Text>
+        <Text
+          className="mt-0.5 text-xs text-text-secondary"
+          style={intuitiveMode ? blurFilter(4) : undefined}
+        >
+          {macroLine}
+        </Text>
       </View>
 
       {/* Add Button */}

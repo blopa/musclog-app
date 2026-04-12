@@ -3,7 +3,9 @@ import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
 
@@ -11,9 +13,10 @@ type MacroProps = {
   label: string;
   value: string;
   color: string;
+  intuitiveMode?: boolean;
 };
 
-const Macro = ({ label, value, color }: MacroProps) => {
+const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
   const theme = useTheme();
 
   return (
@@ -26,9 +29,12 @@ const Macro = ({ label, value, color }: MacroProps) => {
       </Text>
       <Text
         className="font-bold"
-        style={{ color: theme.colors.text.gray300, fontSize: theme.typography.fontSize.sm }}
+        style={[
+          { color: theme.colors.text.gray300, fontSize: theme.typography.fontSize.sm },
+          intuitiveMode ? blurFilter(4) : undefined,
+        ]}
       >
-        {value}
+        {intuitiveMode ? '0g' : value}
       </Text>
     </View>
   );
@@ -59,6 +65,7 @@ export function MealItemCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { intuitiveEatingMode } = useSettings();
   return (
     <GenericCard variant="default" containerStyle={{}}>
       <View className="flex-row gap-x-4 p-4">
@@ -85,12 +92,13 @@ export function MealItemCard({
           >
             <Text
               className="font-bold"
-              style={{
-                color: theme.colors.text.black,
-                fontSize: theme.typography.fontSize.xs,
-              }}
+              style={[
+                { color: theme.colors.text.black, fontSize: theme.typography.fontSize.xs },
+                intuitiveEatingMode ? blurFilter(4) : undefined,
+              ]}
             >
-              {formatRoundedDecimal(calories, 2)} {t('food.common.kcal')}
+              {intuitiveEatingMode ? '0' : formatRoundedDecimal(calories, 2)}{' '}
+              {t('food.common.kcal')}
             </Text>
           </View>
         </View>
@@ -123,6 +131,7 @@ export function MealItemCard({
               label={t('food.macros.proteinLegend')}
               value={macros.protein}
               color={theme.colors.status.red400}
+              intuitiveMode={intuitiveEatingMode}
             />
             <View
               className="w-[1px]"
@@ -135,6 +144,7 @@ export function MealItemCard({
               label={t('food.macros.carbsLegend')}
               value={macros.carbs}
               color={theme.colors.status.teal400}
+              intuitiveMode={intuitiveEatingMode}
             />
             <View
               className="w-[1px]"
@@ -147,6 +157,7 @@ export function MealItemCard({
               label={t('food.macros.fatLegend')}
               value={macros.fat}
               color={theme.colors.status.amber}
+              intuitiveMode={intuitiveEatingMode}
             />
           </View>
         </View>

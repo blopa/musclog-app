@@ -195,6 +195,13 @@ export const SHOW_WEIGHT_PREDICTION_SETTING_TYPE = 'show_weight_prediction';
  */
 export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption';
 
+/**
+ * Setting type for intuitive eating mode.
+ * When enabled, the daily summary card hides consumed amounts and shows '??' instead.
+ * value: 'true' | 'false'.
+ */
+export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -227,4 +234,5 @@ export type UseSettingsResult = {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  intuitiveEatingMode: boolean;
 };

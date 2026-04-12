@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import DashedButton from './theme/DashedButton';
 
@@ -17,6 +18,7 @@ type MealSectionProps = {
   children: ReactNode;
   onAddFood?: () => void;
   menuButton?: ReactNode;
+  intuitiveMode?: boolean;
 };
 
 type AddFoodButtonProps = {
@@ -48,6 +50,7 @@ export type MealSectionHeaderProps = {
   totalCarbs?: number;
   totalFat?: number;
   menuButton?: ReactNode;
+  intuitiveMode?: boolean;
 };
 
 export const MealSectionHeader = memo(function MealSectionHeader({
@@ -57,6 +60,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   totalCarbs = 0,
   totalFat = 0,
   menuButton,
+  intuitiveMode = false,
 }: MealSectionHeaderProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -72,22 +76,29 @@ export const MealSectionHeader = memo(function MealSectionHeader({
         }}
       >
         <View className="items-end">
-          <Text className="text-lg text-text-secondary">
-            {formatInteger(Math.round(totalCalories), { useGrouping: false })}{' '}
-            {t('food.common.kcal')}
+          <Text
+            className="text-lg text-text-secondary"
+            style={intuitiveMode ? blurFilter(5) : undefined}
+          >
+            {intuitiveMode
+              ? `0 ${t('food.common.kcal')}`
+              : `${formatInteger(Math.round(totalCalories), { useGrouping: false })} ${t('food.common.kcal')}`}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
-            <Text className="text-sm">
+            <Text className="text-sm" style={intuitiveMode ? blurFilter(4) : undefined}>
               <Text style={{ color: theme.colors.macros.protein.text }}>
-                P: {formatInteger(Math.round(totalProtein))}g
+                {/*TODO: use i18n*/}
+                {intuitiveMode ? 'P: 0g' : `P: ${formatInteger(Math.round(totalProtein))}g`}
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.carbs.text }}>
-                C: {formatInteger(Math.round(totalCarbs))}g
+                {/*TODO: use i18n*/}
+                {intuitiveMode ? 'C: 0g' : `C: ${formatInteger(Math.round(totalCarbs))}g`}
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.fat.text }}>
-                F: {formatInteger(Math.round(totalFat))}g
+                {/*TODO: use i18n*/}
+                {intuitiveMode ? 'F: 0g' : `F: ${formatInteger(Math.round(totalFat))}g`}
               </Text>
             </Text>
           ) : null}
@@ -123,6 +134,7 @@ export const MealSection = memo(function MealSection({
   children,
   onAddFood,
   menuButton,
+  intuitiveMode = false,
 }: MealSectionProps) {
   return (
     <View>
@@ -133,6 +145,7 @@ export const MealSection = memo(function MealSection({
         totalCarbs={totalCarbs}
         totalFat={totalFat}
         menuButton={menuButton}
+        intuitiveMode={intuitiveMode}
       />
 
       <View className="gap-3">

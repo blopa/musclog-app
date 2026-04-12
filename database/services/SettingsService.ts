@@ -13,6 +13,7 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -494,6 +495,20 @@ export class SettingsService {
    */
   static async getAlwaysAllowFoodEditing(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the intuitive eating mode setting
+   */
+  static async setIntuitiveEatingMode(value: boolean) {
+    await SettingsService.setBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the intuitive eating mode setting
+   */
+  static async getIntuitiveEatingMode(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
   }
 
   /**

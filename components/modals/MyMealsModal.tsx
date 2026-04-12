@@ -191,6 +191,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               tags,
               calories: nutrients.calories,
               macros: {
+                // TODO: use i18n
                 protein: `${formatRoundedDecimal(nutrients.protein, 2)}g`,
                 carbs: `${formatRoundedDecimal(nutrients.carbs, 2)}g`,
                 fat: `${formatRoundedDecimal(nutrients.fat, 2)}g`,

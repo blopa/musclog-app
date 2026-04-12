@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
@@ -50,6 +51,7 @@ type FoodNutritionSectionProps = {
     inferredCalories: number;
     onAccept: () => void;
   };
+  intuitiveMode?: boolean;
 };
 
 export function FoodNutritionSectionCard({
@@ -65,6 +67,7 @@ export function FoodNutritionSectionCard({
   isRefetchingSource = false,
   alternateSourceNotFound = false,
   caloriesTooLowWarning,
+  intuitiveMode = false,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -84,7 +87,7 @@ export function FoodNutritionSectionCard({
   return (
     <View className="mt-6">
       <View className="relative">
-        <FoodInfoCard food={food} />
+        <FoodInfoCard food={food} intuitiveMode={intuitiveMode} />
         {canEdit && mode !== 'meal' ? (
           <Pressable
             onPress={onEditPress}
@@ -188,16 +191,28 @@ export function FoodNutritionSectionCard({
             {nutritionalData.fiber > 0 ? (
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
-                <Text className="text-sm font-medium text-text-primary">
-                  {formatRoundedDecimal(nutritionalData.fiber * scaleFactor, 1)}g
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal(nutritionalData.fiber * scaleFactor, 1)}
+                  g
                 </Text>
               </View>
             ) : null}
             {(nutritionalData.sugar ?? 0) > 0 ? (
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.sugars')}</Text>
-                <Text className="text-sm font-medium text-text-primary">
-                  {formatRoundedDecimal((nutritionalData.sugar ?? 0) * scaleFactor, 1)}g
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal((nutritionalData.sugar ?? 0) * scaleFactor, 1)}
+                  g
                 </Text>
               </View>
             ) : null}
@@ -206,16 +221,28 @@ export function FoodNutritionSectionCard({
                 <Text className="text-sm text-text-secondary">
                   {t('food.foodDetails.saturatedFat')}
                 </Text>
-                <Text className="text-sm font-medium text-text-primary">
-                  {formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}g
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}
+                  g
                 </Text>
               </View>
             ) : null}
             {nutritionalData.sodium > 0 ? (
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
-                <Text className="text-sm font-medium text-text-primary">
-                  {formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}g
+                <Text
+                  className="text-sm font-medium text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveMode
+                    ? '0'
+                    : formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}
+                  g
                 </Text>
               </View>
             ) : null}

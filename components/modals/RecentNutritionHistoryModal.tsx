@@ -30,6 +30,7 @@ type RecentNutritionHistoryModalProps = {
   onFoodClick: (food: FoodItem) => void;
   portion100gName?: string;
   mealType?: MealType;
+  intuitiveMode?: boolean;
 };
 
 export function RecentNutritionHistoryModal({
@@ -38,6 +39,7 @@ export function RecentNutritionHistoryModal({
   onFoodClick,
   portion100gName = '100g',
   mealType,
+  intuitiveMode = false,
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -123,6 +125,7 @@ export function RecentNutritionHistoryModal({
                     key={food.id}
                     food={food}
                     onAddPress={() => onFoodClick(food)}
+                    intuitiveMode={intuitiveMode}
                   />
                 ))}
               </>

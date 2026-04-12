@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import { EventSubscription } from 'expo-notifications';
 import type { NotificationResponse } from 'expo-notifications/src/Notifications.types';
 
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {

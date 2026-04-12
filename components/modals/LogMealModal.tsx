@@ -8,7 +8,9 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 
@@ -70,6 +72,7 @@ export function LogMealModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { intuitiveEatingMode } = useSettings();
   const { height: windowHeight } = useWindowDimensions();
   const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
   const [selectedDate, setSelectedDate] = useState(() =>
@@ -208,6 +211,7 @@ export function LogMealModal({
             protein={scaledMeal.protein}
             carbs={scaledMeal.carbs}
             fat={scaledMeal.fat}
+            intuitiveMode={intuitiveEatingMode}
           />
 
           <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
@@ -292,26 +296,56 @@ export function LogMealModal({
                   <View className="items-end">
                     <Text
                       className="text-xs font-bold"
-                      style={{ color: theme.colors.accent.primary }}
+                      style={[
+                        { color: theme.colors.accent.primary },
+                        intuitiveEatingMode ? blurFilter(4) : undefined,
+                      ]}
                     >
-                      P {formatRoundedDecimal(ingredient.protein * portionScale, 2)}g
+                      P{' '}
+                      {intuitiveEatingMode
+                        ? '0'
+                        : formatRoundedDecimal(ingredient.protein * portionScale, 2)}
+                      g
                     </Text>
-                    <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
-                      C {formatRoundedDecimal(ingredient.carbs * portionScale, 2)}g
+                    <Text
+                      className="text-xs font-bold"
+                      style={[
+                        { color: theme.colors.status.info },
+                        intuitiveEatingMode ? blurFilter(4) : undefined,
+                      ]}
+                    >
+                      C{' '}
+                      {intuitiveEatingMode
+                        ? '0'
+                        : formatRoundedDecimal(ingredient.carbs * portionScale, 2)}
+                      g
                     </Text>
                   </View>
                   <View className="items-end">
                     <Text
                       className="text-xs font-bold"
-                      style={{ color: theme.colors.status.amber }}
+                      style={[
+                        { color: theme.colors.status.amber },
+                        intuitiveEatingMode ? blurFilter(4) : undefined,
+                      ]}
                     >
-                      F {formatRoundedDecimal(ingredient.fat * portionScale, 2)}g
+                      F{' '}
+                      {intuitiveEatingMode
+                        ? '0'
+                        : formatRoundedDecimal(ingredient.fat * portionScale, 2)}
+                      g
                     </Text>
                     <Text
                       className="text-xs font-medium"
-                      style={{ color: theme.colors.text.secondary }}
+                      style={[
+                        { color: theme.colors.text.secondary },
+                        intuitiveEatingMode ? blurFilter(4) : undefined,
+                      ]}
                     >
-                      {formatRoundedDecimal(ingredient.kcal * portionScale, 2)} kcal
+                      {intuitiveEatingMode
+                        ? '0'
+                        : formatRoundedDecimal(ingredient.kcal * portionScale, 2)}{' '}
+                      kcal
                     </Text>
                   </View>
                 </View>
