@@ -180,7 +180,7 @@ export class WeightConverter {
 
     return system === UnitSystem.IMPERIAL
       ? i18n.t('common.weightFormatLbs', { value: rounded })
-      : i18n.t('common.weightFormatKg', { value: rounded });
+      : i18n.t('common.weightFormatG', { value: rounded });
   }
 }
 

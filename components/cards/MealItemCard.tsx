@@ -18,6 +18,7 @@ type MacroProps = {
 
 const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="flex-col gap-y-0.5">
@@ -34,7 +35,7 @@ const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
           intuitiveMode ? blurFilter(4) : undefined,
         ]}
       >
-        {intuitiveMode ? '0g' : value}
+        {intuitiveMode ? t('common.weightFormatG', { value: 0 }) : value}
       </Text>
     </View>
   );

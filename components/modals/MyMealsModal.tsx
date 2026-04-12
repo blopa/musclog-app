@@ -191,10 +191,15 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               tags,
               calories: nutrients.calories,
               macros: {
-                // TODO: use i18n
-                protein: `${formatRoundedDecimal(nutrients.protein, 2)}g`,
-                carbs: `${formatRoundedDecimal(nutrients.carbs, 2)}g`,
-                fat: `${formatRoundedDecimal(nutrients.fat, 2)}g`,
+                protein: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.protein, 2),
+                }),
+                carbs: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.carbs, 2),
+                }),
+                fat: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.fat, 2),
+                }),
               },
               image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
             };

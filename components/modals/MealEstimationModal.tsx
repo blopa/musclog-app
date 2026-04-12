@@ -1,11 +1,12 @@
 import { Camera } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 import { IdentifiedItem, MealEstimationScreen } from '@/components/MealEstimationScreen';
 import { useTheme } from '@/hooks/useTheme';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type MealEstimationModalProps = {
@@ -94,18 +95,17 @@ export function MealEstimationModal({
     console.log('Edit Item', `Editing ${item.name}`);
   };
 
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+
   const handleDeleteItem = (itemId: string) => {
-    // TODO: use ConfirmationModal instead and i18n for translations
-    Alert.alert(t('meals.deleteItem.title'), t('meals.deleteItem.message'), [
-      { text: t('meals.deleteItem.cancel'), style: 'cancel' },
-      {
-        text: t('meals.deleteItem.delete'),
-        style: 'destructive',
-        onPress: () => {
-          setIdentifiedItems((prev) => prev.filter((item) => item.id !== itemId));
-        },
-      },
-    ]);
+    setItemToDeleteId(itemId);
+  };
+
+  const confirmDeleteItem = () => {
+    if (itemToDeleteId) {
+      setIdentifiedItems((prev) => prev.filter((item) => item.id !== itemToDeleteId));
+      setItemToDeleteId(null);
+    }
   };
 
   const handleConfirmAndLog = () => {
@@ -116,39 +116,51 @@ export function MealEstimationModal({
   };
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('nutrition.mealEstimation.title')}
-      headerRight={
-        <TouchableOpacity
-          onPress={handleRetake}
-          className="flex-row items-center gap-2 rounded-lg px-3 py-2"
-          style={{
-            backgroundColor: theme.colors.background.white10,
-          }}
-        >
-          <Camera size={16} color="white" />
-          <Text className="text-sm font-medium text-white">
-            {t('nutrition.mealEstimation.retake')}
-          </Text>
-        </TouchableOpacity>
-      }
-      scrollable={false}
-    >
-      <MealEstimationScreen
-        mealImage={mealImage}
-        totalCalories={estimationData.totalCalories}
-        protein={estimationData.protein}
-        carbs={estimationData.carbs}
-        fat={estimationData.fat}
-        identifiedItems={identifiedItems}
-        onRetake={handleRetake}
-        onAddItem={handleAddItem}
-        onEditItem={handleEditItem}
-        onDeleteItem={handleDeleteItem}
-        onConfirmAndLog={handleConfirmAndLog}
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('nutrition.mealEstimation.title')}
+        headerRight={
+          <TouchableOpacity
+            onPress={handleRetake}
+            className="flex-row items-center gap-2 rounded-lg px-3 py-2"
+            style={{
+              backgroundColor: theme.colors.background.white10,
+            }}
+          >
+            <Camera size={16} color="white" />
+            <Text className="text-sm font-medium text-white">
+              {t('nutrition.mealEstimation.retake')}
+            </Text>
+          </TouchableOpacity>
+        }
+        scrollable={false}
+      >
+        <MealEstimationScreen
+          mealImage={mealImage}
+          totalCalories={estimationData.totalCalories}
+          protein={estimationData.protein}
+          carbs={estimationData.carbs}
+          fat={estimationData.fat}
+          identifiedItems={identifiedItems}
+          onRetake={handleRetake}
+          onAddItem={handleAddItem}
+          onEditItem={handleEditItem}
+          onDeleteItem={handleDeleteItem}
+          onConfirmAndLog={handleConfirmAndLog}
+        />
+      </FullScreenModal>
+      <ConfirmationModal
+        visible={!!itemToDeleteId}
+        onClose={() => setItemToDeleteId(null)}
+        onConfirm={confirmDeleteItem}
+        title={t('meals.deleteItem.title')}
+        message={t('meals.deleteItem.message')}
+        confirmLabel={t('meals.deleteItem.delete')}
+        cancelLabel={t('meals.deleteItem.cancel')}
+        variant="destructive"
       />
-    </FullScreenModal>
+    </>
   );
 }

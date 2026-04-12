@@ -87,18 +87,30 @@ export const MealSectionHeader = memo(function MealSectionHeader({
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <Text className="text-sm" style={intuitiveMode ? blurFilter(4) : undefined}>
               <Text style={{ color: theme.colors.macros.protein.text }}>
-                {/*TODO: use i18n*/}
-                {intuitiveMode ? 'P: 0g' : `P: ${formatInteger(Math.round(totalProtein))}g`}
+                {t('common.labelColonValue', {
+                  label: t('food.macros.proteinShort'),
+                  value: t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatInteger(Math.round(totalProtein)),
+                  }),
+                })}
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.carbs.text }}>
-                {/*TODO: use i18n*/}
-                {intuitiveMode ? 'C: 0g' : `C: ${formatInteger(Math.round(totalCarbs))}g`}
+                {t('common.labelColonValue', {
+                  label: t('food.macros.carbsShort'),
+                  value: t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatInteger(Math.round(totalCarbs)),
+                  }),
+                })}
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.fat.text }}>
-                {/*TODO: use i18n*/}
-                {intuitiveMode ? 'F: 0g' : `F: ${formatInteger(Math.round(totalFat))}g`}
+                {t('common.labelColonValue', {
+                  label: t('food.macros.fatShort'),
+                  value: t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatInteger(Math.round(totalFat)),
+                  }),
+                })}
               </Text>
             </Text>
           ) : null}

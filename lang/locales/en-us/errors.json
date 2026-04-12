@@ -8,6 +8,9 @@
     "failedToLoadData": "Failed to load data",
     "somethingWentWrong": "Something went wrong",
     "genericDescription": "An unexpected error occurred.",
-    "reload": "Reload"
+    "reload": "Reload",
+    "aiCreditsError": "AI service quota exceeded. Please check your API key or try again later.",
+    "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
+    "aiProcessingErrorTitle": "Error processing request"
   }
 }
