@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react-native';
+import { ChevronRight, Dumbbell, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { CurrentGoalsCard } from '@/components/cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '@/components/cards/GoalHistoryCard';
@@ -20,6 +20,7 @@ import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
+import ExerciseGoalsManagementModal from './ExerciseGoalsManagementModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GoalCreationMethodModal } from './GoalCreationMethodModal';
 import { GoalWizardModal } from './GoalWizardModal';
@@ -87,6 +88,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [pendingWizardPrefill, setPendingWizardPrefill] = useState<Partial<NutritionGoals> | null>(
     null
   );
+  const [exerciseGoalsModalVisible, setExerciseGoalsModalVisible] = useState(false);
 
   useEffect(() => {
     if (!visible) {
@@ -396,6 +398,45 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   </Text>
                 </View>
               ) : null}
+
+              {/* Exercise Goals Section */}
+              <View className="mb-8 mt-4">
+                <View className="mb-3 flex-row items-center justify-between">
+                  <Text
+                    className="font-bold uppercase tracking-widest text-text-secondary"
+                    style={{ fontSize: theme.typography.fontSize.xs }}
+                  >
+                    {t('goalsManagement.exerciseGoals')}
+                  </Text>
+                  <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                </View>
+
+                <TouchableOpacity
+                  onPress={() => setExerciseGoalsModalVisible(true)}
+                  className="rounded-xl border border-border bg-surface p-4"
+                  activeOpacity={0.7}
+                >
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <View
+                        className="rounded-lg p-2"
+                        style={{ backgroundColor: theme.colors.accent.secondary10 }}
+                      >
+                        <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.secondary} />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="font-semibold text-text-primary">
+                          {t('goalsManagement.exerciseGoalsTitle')}
+                        </Text>
+                        <Text className="text-sm text-text-secondary">
+                          {t('goalsManagement.exerciseGoalsSubtitle')}
+                        </Text>
+                      </View>
+                    </View>
+                    <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Bottom spacing for navigation */}
@@ -423,6 +464,11 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         onSave={handleSaveNutritionGoals}
         initialGoals={editModalInitialGoals}
         isEditing={isEditing}
+      />
+
+      <ExerciseGoalsManagementModal
+        visible={exerciseGoalsModalVisible}
+        onClose={() => setExerciseGoalsModalVisible(false)}
       />
 
       <ConfirmationModal

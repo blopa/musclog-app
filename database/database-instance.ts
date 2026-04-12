@@ -12,6 +12,7 @@ import adapter from './adapter';
 import AiCustomPrompt from './models/AiCustomPrompt';
 import ChatMessage from './models/ChatMessage';
 import Exercise from './models/Exercise';
+import ExerciseGoal from './models/ExerciseGoal';
 import Food from './models/Food';
 import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
@@ -41,6 +42,7 @@ export const database = new Database({
   modelClasses: [
     AiCustomPrompt,
     Exercise,
+    ExerciseGoal,
     UserMetric,
     UserMetricsNote,
     User,

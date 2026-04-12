@@ -125,5 +125,39 @@ export const migrations = schemaMigrations({
         ),
       ],
     },
+
+    // Version 8: Add exercise_goals table for strength (1RM) and consistency tracking.
+    {
+      toVersion: 8,
+      steps: [
+        unsafeExecuteSql(`
+          CREATE TABLE exercise_goals (
+            id TEXT PRIMARY KEY,
+            exercise_id TEXT,
+            exercise_name_snapshot TEXT,
+            goal_type TEXT,
+            target_weight REAL,
+            baseline_1rm REAL,
+            target_sessions_per_week REAL,
+            target_steps_per_day REAL,
+            target_distance_m REAL,
+            target_duration_s REAL,
+            target_pace_ms_per_m REAL,
+            target_date TEXT,
+            notes TEXT,
+            effective_until REAL,
+            created_at REAL,
+            updated_at REAL,
+            deleted_at REAL
+          );
+        `),
+        unsafeExecuteSql(
+          'CREATE INDEX IF NOT EXISTS exercise_goals_exercise_id ON exercise_goals(exercise_id);'
+        ),
+        unsafeExecuteSql(
+          'CREATE INDEX IF NOT EXISTS exercise_goals_goal_type ON exercise_goals(goal_type);'
+        ),
+      ],
+    },
   ],
 });

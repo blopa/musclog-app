@@ -21,6 +21,7 @@ export {
   type MigrationStepKey,
 } from './MigrationService';
 export { NutritionCheckinService } from './NutritionCheckinService';
+export { ExerciseGoalService } from './ExerciseGoalService';
 export { NutritionGoalService } from './NutritionGoalService';
 export { ProgressService } from './ProgressService';
 export { SettingsService } from './SettingsService';

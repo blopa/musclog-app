@@ -2,6 +2,7 @@
 export { default as AiCustomPrompt } from './AiCustomPrompt';
 export { default as ChatMessage } from './ChatMessage';
 export { default as Exercise } from './Exercise';
+export { default as ExerciseGoal } from './ExerciseGoal';
 export { default as Food } from './Food';
 export { default as FoodFoodPortion } from './FoodFoodPortion';
 export { default as FoodPortion } from './FoodPortion';
@@ -24,6 +25,7 @@ export { default as WorkoutTemplateExercise } from './WorkoutTemplateExercise';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
+export type { ExerciseGoalType } from './ExerciseGoal';
 export type { ChatMessageType, ChatSender } from './ChatMessage';
 export type { EquipmentType, ExerciseSource, MechanicType, MuscleGroup } from './Exercise';
 export type { MicrosData } from './Food';

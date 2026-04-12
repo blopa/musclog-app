@@ -25,6 +25,46 @@ export const schema = appSchema({
       ],
     }),
 
+    // Exercise goals: snapshot per row; current = effective_until IS NULL
+    tableSchema({
+      name: 'exercise_goals',
+      columns: [
+        // Exercise reference (for 1rm goals)
+        { name: 'exercise_id', type: 'string', isOptional: true, isIndexed: true },
+        // Denormalised name — survives exercise rename/soft-delete
+        { name: 'exercise_name_snapshot', type: 'string', isOptional: true },
+
+        // Goal classification
+        { name: 'goal_type', type: 'string', isIndexed: true },
+        // '1rm' | 'consistency' | 'steps_per_day' | 'distance_per_session' | 'pace' | 'duration'
+
+        // --- 1RM / Strength fields ---
+        { name: 'target_weight', type: 'number', isOptional: true }, // kg (metric always)
+        // Baseline 1RM at goal creation — used for progress % and regression anchor
+        { name: 'baseline_1rm', type: 'number', isOptional: true }, // kg
+
+        // --- Consistency fields ---
+        { name: 'target_sessions_per_week', type: 'number', isOptional: true },
+
+        // --- Future cardio fields (TBA) ---
+        { name: 'target_steps_per_day', type: 'number', isOptional: true },
+        { name: 'target_distance_m', type: 'number', isOptional: true }, // metres
+        { name: 'target_duration_s', type: 'number', isOptional: true }, // seconds
+        { name: 'target_pace_ms_per_m', type: 'number', isOptional: true }, // ms per metre
+
+        // Shared
+        { name: 'target_date', type: 'string', isOptional: true }, // ISO date string, user-overridable
+        { name: 'notes', type: 'string', isOptional: true },
+
+        // Snapshot-based history (same pattern as nutrition_goals)
+        { name: 'effective_until', type: 'number', isOptional: true }, // null = currently active
+
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // THE BLUEPRINT: What the user "plans" to do
     tableSchema({
       name: 'workout_templates',
