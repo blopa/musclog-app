@@ -4,8 +4,12 @@
  * Cross-platform prebuild script that handles macOS/iOS and Linux correctly.
  *
  * expo prebuild --clean already runs pod install internally.
- * After it completes, we just restore project.pbxproj from git to bring back
- * the PBXTargetDependency fix (IOS_SIMULATOR_BUILD_FIX.md section 2).
+ * After it completes, fix-ios-project.js is run to apply all iOS project patches:
+ *   - PBXTargetDependency fix
+ *   - objectVersion / LastUpgradeCheck for Xcode 26
+ *   - SUPPORTED_PLATFORMS
+ *   - hermesvm.framework inputPaths/outputPaths (prevents duplicate CFBundleIdentifier)
+ *   - xcscheme LastUpgradeVersion
  *
  * DO NOT run pod install again — it crashes due to Ruby 4.0 / atomos gem
  * incompatibility in react_native_post_install, which destroys the xcworkspace.
@@ -16,9 +20,6 @@ const fs = require('fs');
 const os = require('os');
 
 const isMacOS = os.platform() === 'darwin';
-const projectPbxprojPath = 'ios/MusclogLiftLogRepeat.xcodeproj/project.pbxproj';
-const xcschemePath =
-  'ios/MusclogLiftLogRepeat.xcodeproj/xcshareddata/xcschemes/MusclogLiftLogRepeat.xcscheme';
 
 console.log(`[prebuild-cross-platform] Platform: ${os.platform()}`);
 
@@ -39,24 +40,11 @@ try {
   execSync('npx expo prebuild --clean', { stdio: 'inherit', cwd: process.cwd() });
 
   if (isMacOS) {
-    // Step 2: Restore project.pbxproj from git (brings back PBXTargetDependency fix)
-    // expo prebuild regenerated it; we need the committed version with the fix.
-    console.log('[prebuild-cross-platform] Step 2: Restoring project.pbxproj from git...');
-    try {
-      execSync(`git checkout ${projectPbxprojPath} ${xcschemePath}`, {
-        stdio: 'inherit',
-        cwd: process.cwd(),
-      });
-      console.log('[prebuild-cross-platform] ✅ project.pbxproj and xcscheme restored from git');
-    } catch (e) {
-      // Not committed yet — apply fix-ios-project.js instead (patches both files)
-      console.log(
-        '[prebuild-cross-platform] ⚠️  Could not restore from git, applying fix-ios-project.js...'
-      );
-      execSync('node scripts/fix-ios-project.js', { stdio: 'inherit', cwd: process.cwd() });
-    }
+    // Step 2: Apply iOS project patches (PBXTargetDependency, hermesvm paths, xcscheme, etc.)
+    console.log('[prebuild-cross-platform] Step 2: Applying iOS project patches...');
+    execSync('node scripts/fix-ios-project.js', { stdio: 'inherit', cwd: process.cwd() });
 
-    // Step 3: Remove EXCLUDED_ARCHS from xcconfigs (IOS_SIMULATOR_BUILD_FIX.md section 2 & 10)
+    // Step 3: Remove EXCLUDED_ARCHS from xcconfigs
     // The main app target uses these xcconfigs as baseConfigurationReference.
     // EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64 prevents ALL simulator destination enumeration.
     console.log('[prebuild-cross-platform] Step 3: Removing EXCLUDED_ARCHS from xcconfigs...');

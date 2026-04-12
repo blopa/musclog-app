@@ -1,5 +1,5 @@
 import { Plus, PlusSquare, Sparkles } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -37,6 +37,12 @@ export default function CreateWorkoutModal({
   const { isAiConfigured } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setAddExerciseVisible(false);
+    }
+  }, [visible]);
 
   const {
     workoutTitle,

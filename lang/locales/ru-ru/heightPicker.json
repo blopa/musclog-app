@@ -1,0 +1,10 @@
+{
+  "heightPicker": {
+    "cancel": "Отмена",
+    "confirmHeight": "Подтвердить рост",
+    "feet": "Футы",
+    "inches": "Дюймы",
+    "selectedHeight": "Выбранный рост",
+    "selectHeight": "Выбрать рост"
+  }
+}

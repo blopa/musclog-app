@@ -105,7 +105,10 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
           {snackbarList}
         </View>
       ) : (
-        /* Native: wrap in a transparent Modal so snackbars appear above ALL other modals */
+        /* Native: Render snackbars inside their own transparent Modal so they always sit
+         * above every other modal on both iOS and Android (z-index is useless against RN's
+         * Modal which creates its own native window layer).
+         */
         <Modal visible={snackbars.length > 0} transparent animationType="none" statusBarTranslucent>
           <View style={{ flex: 1, pointerEvents: 'box-none' }}>
             <View

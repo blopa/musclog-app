@@ -17,6 +17,7 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -49,7 +50,7 @@ import {
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
-import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
   units: Units;
@@ -87,12 +88,13 @@ type SettingsState = {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  intuitiveEatingMode: boolean;
   isLoading: boolean;
 };
 
 const DEFAULT_STATE: SettingsState = {
   language: 'en-US',
-  units: 'metric',
+  units: getDefaultUnits(),
   theme: 'system',
   connectHealthData: false,
   readHealthData: false,
@@ -126,6 +128,7 @@ const DEFAULT_STATE: SettingsState = {
   alwaysAllowFoodEditing: false,
   showWeightPrediction: true,
   requireExportEncryption: true,
+  intuitiveEatingMode: false,
   isLoading: true,
 };
 
@@ -170,7 +173,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
 
   const rawUnits = getString(map, UNITS_SETTING_TYPE);
-  const units: Units = rawUnits === '1' ? 'imperial' : 'metric';
+  const units: Units =
+    rawUnits === '1' ? 'imperial' : rawUnits === '0' ? 'metric' : getDefaultUnits();
 
   const rawNavSlot1 = getString(map, NAV_SLOT_1_SETTING_TYPE);
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
@@ -222,6 +226,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
+    intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -261,6 +266,7 @@ export type SettingsContextType = UseSettingsResult & {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  intuitiveEatingMode: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

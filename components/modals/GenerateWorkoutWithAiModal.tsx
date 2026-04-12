@@ -1,6 +1,7 @@
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, Sparkles } from 'lucide-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -25,6 +26,19 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
   const theme = useTheme();
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Keep screen awake during AI workout generation
+  useEffect(() => {
+    if (isGenerating) {
+      activateKeepAwakeAsync('generate-workout-ai').catch(() => {});
+    } else {
+      deactivateKeepAwake('generate-workout-ai').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('generate-workout-ai').catch(() => {});
+    };
+  }, [isGenerating]);
 
   const handleGenerate = useCallback(async () => {
     const aiConfig = await AiService.getAiConfig();

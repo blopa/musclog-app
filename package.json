@@ -1,8 +1,10 @@
 {
   "name": "musclog",
-  "version": "2.6.0",
+  "version": "2.6.2",
   "scripts": {
-    "playwright": "node tests/run-tests.js",
+    "playwright-runner": "node tests/run-tests.js",
+    "screenshots": "npm run build-android-web && npm run playwright-runner --",
+    "screenshots-portrait": "npm run build-android-web && npm run playwright-runner --project=portrait-6.7",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
@@ -39,20 +41,24 @@
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
     "build-android-preview-local": "eas build -p android --profile preview --local",
-    "build-ios": "eas build -p ios --profile production --clear-cache",
-    "build-ios-nowait": "eas build -p ios --profile production --clear-cache --no-wait",
-    "build-ios-dev": "eas build -p ios --profile development --clear-cache",
-    "build-ios-preview": "eas build -p ios --profile preview --clear-cache",
-    "build-ios-preview-nowait": "eas build -p ios --profile preview --clear-cache --no-wait",
+    "build-ios": "node scripts/prepare-for-eas.js && eas build -p ios --profile production --clear-cache",
+    "build-ios-nowait": "node scripts/prepare-for-eas.js && eas build -p ios --profile production --clear-cache --no-wait",
+    "build-ios-dev": "node scripts/prepare-for-eas.js && eas build -p ios --profile development --clear-cache",
+    "build-ios-preview": "node scripts/prepare-for-eas.js && eas build -p ios --profile preview --clear-cache",
+    "build-ios-preview-nowait": "node scripts/prepare-for-eas.js && eas build -p ios --profile preview --clear-cache --no-wait",
     "submit-ios": "eas submit --platform ios",
     "prebuild-ios": "expo prebuild -p ios --clean",
     "prebuild-ios-simulator": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install",
     "prebuild-ios-device": "EXPO_IS_SIMULATOR_BUILD=false expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install",
     "run-ios": "expo run:ios",
+    "build-and-submit-ios": "node scripts/prepare-for-eas.js && eas build --platform ios --profile production --auto-submit",
     "run-ios-device": "expo run:ios --device",
     "ios-simulator": "expo run:ios --device",
     "patch-ios-project": "node scripts/fix-ios-project.js",
     "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.34.5"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "7.29.0",
@@ -106,7 +112,6 @@
     "expo-linear-gradient": "~55.0.13",
     "expo-linking": "~55.0.12",
     "expo-localization": "~55.0.13",
-    "expo-modules-core": "55.0.21",
     "expo-notifications": "~55.0.18",
     "expo-router": "~55.0.12",
     "expo-screen-orientation": "~55.0.13",
@@ -157,6 +162,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
+    "@playwright/test": "^1.59.1",
     "@testing-library/react": "16.3.2",
     "@types/crypto-js": "4.2.2",
     "@types/isomorphic-fetch": "0.0.39",
@@ -176,7 +182,6 @@
     "patch-package": "^8.0.1",
     "prettier": "3.8.2",
     "prettier-plugin-tailwindcss": "0.7.2",
-    "sharp": "^0.34.5",
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3"
   },

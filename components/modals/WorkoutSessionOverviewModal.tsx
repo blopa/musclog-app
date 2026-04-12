@@ -7,7 +7,7 @@ import {
   Play,
   XCircle,
 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
@@ -292,6 +292,12 @@ export default function WorkoutSessionOverviewModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setIsMenuVisible(false);
+    }
+  }, [visible]);
 
   // Load real workout data
   const {

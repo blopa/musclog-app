@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -80,6 +80,14 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
   const [isDeletingGoal, setIsDeletingGoal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setNutritionGoalsModalVisible(false);
+      setConfirmDeleteVisible(false);
+      setSelectedGoal(null);
+    }
+  }, [visible]);
 
   const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
     mode: 'history',

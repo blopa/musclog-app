@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Ruler, Scale } from 'lucide-react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -11,10 +12,13 @@ import {
   localCalendarDayDate,
 } from '@/utils/calendarDate';
 import { parseDobDisplayStringToPickerDate } from '@/utils/fitnessProfilePersistence';
-import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
+import { getWeightUnit } from '@/utils/units';
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { HeightPickerInput } from './modals/HeightPickerInput';
+import { HeightPickerModal } from './modals/HeightPickerModal';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInlineInput } from './theme/StepperInlineInput';
 import { TextInput } from './theme/TextInput';
@@ -25,18 +29,21 @@ export type PhysicalStats = {
   weight: string;
   height: string;
   fatPercentage?: number;
+  units: 'imperial' | 'metric';
 };
 
 type EditPhysicalStatsBodyProps = {
   initialData?: Partial<PhysicalStats>;
-  units?: 'imperial' | 'metric';
+  units: 'imperial' | 'metric';
   onFormChange?: (data: PhysicalStats) => void;
+  onUnitsChange?: (units: 'imperial' | 'metric') => void;
 };
 
 export function EditPhysicalStatsBody({
   initialData,
-  units = 'metric',
+  units,
   onFormChange,
+  onUnitsChange,
 }: EditPhysicalStatsBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -51,6 +58,24 @@ export function EditPhysicalStatsBody({
     initialData?.fatPercentage ?? null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
+  const prevUnitsRef = useRef<'imperial' | 'metric'>(units);
+
+  useEffect(() => {
+    const prevUnits = prevUnitsRef.current;
+    if (prevUnits === units) {
+      return;
+    }
+    prevUnitsRef.current = units;
+
+    const weightNum = parseFloat(weight) || 0;
+    const newWeight = kgToDisplay(displayToKg(weightNum, prevUnits), units);
+    setWeight(formatDecimal(newWeight, 2));
+
+    const heightNum = parseFloat(height) || 0;
+    const newHeight = cmToDisplay(displayToCm(heightNum, prevUnits), units);
+    setHeight(String(Math.round(newHeight * 100) / 100));
+  }, [units]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = useCallback((date: Date) => {
     setDob(formatLocalCalendarDayIso(localCalendarDayDate(date)));
@@ -63,12 +88,52 @@ export function EditPhysicalStatsBody({
       weight,
       height,
       fatPercentage: fatPercentage ?? undefined,
+      units,
     });
-  }, [dob, gender, weight, height, fatPercentage, onFormChange]);
+  }, [dob, gender, weight, height, fatPercentage, units, onFormChange]);
 
   return (
     <>
       <View className="gap-8 px-4 pb-6 pt-2">
+        {/* Units */}
+        <View className="gap-2">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
+            {t('editFitnessDetails.units')}
+          </Text>
+          <SegmentedControl
+            options={[
+              {
+                label: t('editFitnessDetails.imperial'),
+                value: 'imperial',
+                icon: (
+                  <Scale
+                    size={theme.iconSize.md}
+                    color={
+                      units === 'imperial'
+                        ? theme.colors.accent.primary
+                        : theme.colors.text.tertiary
+                    }
+                  />
+                ),
+              },
+              {
+                label: t('editFitnessDetails.metric'),
+                value: 'metric',
+                icon: (
+                  <Ruler
+                    size={theme.iconSize.md}
+                    color={
+                      units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    }
+                  />
+                ),
+              },
+            ]}
+            value={units}
+            onValueChange={(val) => onUnitsChange?.(val as 'imperial' | 'metric')}
+          />
+        </View>
+
         {/* Date of Birth */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-semibold text-text-tertiary">
@@ -121,19 +186,31 @@ export function EditPhysicalStatsBody({
               />
             </View>
             <View className="flex-1">
-              <TextInput
-                label={t('editFitnessDetails.height')}
-                value={height}
-                onChangeText={setHeight}
-                placeholder="0"
-                keyboardType="numeric"
-                selectTextOnFocus={true}
-                icon={
-                  <Text className="text-center text-sm font-medium text-text-tertiary">
-                    {getHeightUnit(units)}
-                  </Text>
-                }
-              />
+              {units === 'imperial' ? (
+                <HeightPickerInput
+                  label={t('editFitnessDetails.height')}
+                  totalInches={parseFloat(height) || 67}
+                  onPress={() => setIsHeightPickerVisible(true)}
+                />
+              ) : (
+                <TextInput
+                  label={t('editFitnessDetails.height')}
+                  value={height}
+                  onChangeText={(text) => {
+                    const dotIndex = text.indexOf('.');
+                    if (dotIndex !== -1 && text.length - dotIndex > 3) {
+                      return;
+                    }
+                    setHeight(text);
+                  }}
+                  placeholder="0"
+                  keyboardType="numeric"
+                  selectTextOnFocus={true}
+                  icon={
+                    <Text className="text-center text-sm font-medium text-text-tertiary">cm</Text>
+                  }
+                />
+              )}
             </View>
           </View>
 
@@ -189,6 +266,14 @@ export function EditPhysicalStatsBody({
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={getLocalCalendarYear(new Date())}
+      />
+
+      <HeightPickerModal
+        visible={isHeightPickerVisible}
+        onClose={() => setIsHeightPickerVisible(false)}
+        totalInches={parseFloat(height) || 67}
+        onHeightSelect={(totalInches) => setHeight(String(totalInches))}
+        title={t('heightPicker.selectHeight')}
       />
     </>
   );

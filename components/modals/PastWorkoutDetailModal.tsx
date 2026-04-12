@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
-import { createElement, useRef, useState } from 'react';
+import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -439,6 +439,16 @@ export default function PastWorkoutDetailModal({
     exercises: Exercise[];
   } | null>(null);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsEditModalVisible(false);
+      setIsEditMetadataVisible(false);
+      setIsPreviewModalVisible(false);
+      setEditingExerciseId(null);
+      setIsMenuVisible(false);
+    }
+  }, [visible, setIsMenuVisible]);
+
   const handleShare = async () => {
     if (!workout) {
       return;
@@ -546,7 +556,7 @@ export default function PastWorkoutDetailModal({
     return (
       <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
         <View className="flex-1 items-center justify-center">
-          {isLoading ? (
+          {isLoading || !workoutId ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           ) : (
             <Text className="text-text-secondary">{t('common.error')}</Text>

@@ -17,6 +17,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 import {
   localCalendarDayPlusDays,
   localDayKeyPlusCalendarDaysFromNow,
@@ -45,12 +46,18 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const theme = useTheme();
   const { t } = useTranslation();
   const { goal: currentGoal } = useCurrentNutritionGoal();
-  const { units } = useSettings();
+  const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [metrics, setMetrics] = useState<CheckinMetrics | null>(null);
   const [isNutritionGoalsModalVisible, setIsNutritionGoalsModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setIsNutritionGoalsModalVisible(false);
+    }
+  }, [visible]);
 
   const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
     if (!currentGoal) {
@@ -354,7 +361,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   new Date(localDayStartMs(new Date())),
                   -(6 - i)
                 );
-                // TODO: do we need to use i18n here?
                 const dayKey = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[
                   dayInstant.getDay()
                 ];
@@ -399,10 +405,22 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text className="text-base font-medium leading-relaxed text-gray-300">
-              {t('nutrition.checkin.summaryIntro', { target: currentGoal?.totalCalories ?? 0 })}
-              <Text style={{ color: theme.colors.status.warning }}>
+              {t('nutrition.checkin.summaryIntro', {
+                target: formatInteger(currentGoal?.totalCalories ?? 0),
+              })}
+              <Text
+                style={[
+                  { color: theme.colors.status.warning },
+                  intuitiveEatingMode ? blurFilter(4) : undefined,
+                ]}
+              >
                 {' '}
-                {formatInteger(avgCalories)} {t('common.kcal')}/day
+                {intuitiveEatingMode
+                  ? t('common.labelColonValue', {
+                      label: t('common.time.daily'),
+                      value: `0 ${t('common.kcal')}`,
+                    })
+                  : `${formatInteger(avgCalories)} ${t('common.kcal')}/${t('common.time.daily').toLowerCase()}`}
               </Text>
               . {t('nutrition.checkin.summaryOutro')}
               <Text
@@ -431,8 +449,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.avgIntake')}
                 </Text>
-                <Text className="mt-1 text-xl font-black text-white">
-                  {formatInteger(avgCalories)}{' '}
+                <Text
+                  className="mt-1 text-xl font-black text-white"
+                  style={intuitiveEatingMode ? blurFilter(4) : undefined}
+                >
+                  {intuitiveEatingMode ? '0' : formatInteger(avgCalories)}{' '}
                   <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text>
                 </Text>
               </View>

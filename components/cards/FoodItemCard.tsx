@@ -18,6 +18,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { GenericCard } from './GenericCard';
@@ -34,6 +35,7 @@ type FoodItemCardProps = {
   portion?: number;
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
   variant?: 'default' | 'compact';
+  intuitiveMode?: boolean;
 };
 
 const MacroItem = ({
@@ -43,6 +45,7 @@ const MacroItem = ({
   unit,
   shortLabel,
   valueMode = 'decimal1',
+  intuitiveMode = false,
 }: {
   icon: any;
   value: number;
@@ -51,6 +54,7 @@ const MacroItem = ({
   shortLabel?: string;
   /** `integer` = kcal-style; `decimal1` = grams/macros */
   valueMode?: 'integer' | 'decimal1';
+  intuitiveMode?: boolean;
 }) => {
   const theme = useTheme();
   const { width: windowWidth } = useWindowDimensions();
@@ -67,9 +71,12 @@ const MacroItem = ({
   return (
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
-      <Text className="text-xs text-text-secondary">
+      <Text
+        className="text-xs text-text-secondary"
+        style={intuitiveMode ? blurFilter(4) : undefined}
+      >
         {t('food.macroValueFormat', {
-          value: displayValue,
+          value: intuitiveMode ? '0' : displayValue,
           unit: unit || '',
           label: displayLabel || '',
         })}
@@ -90,6 +97,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   mealType,
   portion,
   variant = 'default',
+  intuitiveMode = false,
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -172,6 +180,7 @@ export const FoodItemCard = memo(function FoodItemCard({
               value={calories}
               label={t('food.common.kcal')}
               valueMode="integer"
+              intuitiveMode={intuitiveMode}
             />
           </View>
           {variant === 'default' ? (
@@ -182,6 +191,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 label={t('food.macros.protein')}
                 shortLabel={t('food.macros.proteinShort')}
                 unit={massUnit}
+                intuitiveMode={intuitiveMode}
               />
               <MacroItem
                 icon={Wheat}
@@ -189,6 +199,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 label={t('food.macros.carbs')}
                 shortLabel={t('food.macros.carbsShort')}
                 unit={massUnit}
+                intuitiveMode={intuitiveMode}
               />
               <MacroItem
                 icon={Droplet}
@@ -196,6 +207,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 label={t('food.macros.fat')}
                 shortLabel={t('food.macros.fatShort')}
                 unit={massUnit}
+                intuitiveMode={intuitiveMode}
               />
             </View>
           ) : null}

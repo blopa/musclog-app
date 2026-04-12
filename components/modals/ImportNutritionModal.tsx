@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -37,6 +38,19 @@ export function ImportNutritionModal({
   const insets = useSafeAreaInsets();
   const [rawText, setRawText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Keep screen awake during AI nutrition import processing
+  useEffect(() => {
+    if (isProcessing) {
+      activateKeepAwakeAsync('import-nutrition').catch(() => {});
+    } else {
+      deactivateKeepAwake('import-nutrition').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('import-nutrition').catch(() => {});
+    };
+  }, [isProcessing]);
 
   const handleProcessText = useCallback(async () => {
     if (!rawText.trim()) {

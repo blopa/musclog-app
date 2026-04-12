@@ -5,6 +5,7 @@ import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
 
@@ -18,6 +19,7 @@ type FoodInfoCardProps = {
     fat: number;
     source?: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog';
   };
+  intuitiveMode?: boolean;
 };
 
 const getSourceText = (
@@ -38,7 +40,7 @@ const getSourceText = (
   }
 };
 
-export function FoodInfoCard({ food }: FoodInfoCardProps) {
+export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
@@ -71,10 +73,15 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
             ) : null}
           </View>
           <View className="items-end">
-            <Text className="text-4xl font-black tracking-tight text-accent-primary">
-              {formatInteger(Math.round(food.calories), {
-                useGrouping: false,
-              })}
+            <Text
+              className="text-4xl font-black tracking-tight text-accent-primary"
+              style={intuitiveMode ? blurFilter(8) : undefined}
+            >
+              {intuitiveMode
+                ? '000'
+                : formatInteger(Math.round(food.calories), {
+                    useGrouping: false,
+                  })}
             </Text>
             <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('food.common.kcal')}
@@ -119,8 +126,13 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">
-                  {formatRoundedDecimal(food.protein, 1)}g
+                <Text
+                  className="text-xl font-bold text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.protein, 1),
+                  })}
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -128,8 +140,13 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">
-                  {formatRoundedDecimal(food.carbs, 1)}g
+                <Text
+                  className="text-xl font-bold text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.carbs, 1),
+                  })}
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -137,8 +154,13 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">
-                  {formatRoundedDecimal(food.fat, 1)}g
+                <Text
+                  className="text-xl font-bold text-text-primary"
+                  style={intuitiveMode ? blurFilter(4) : undefined}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveMode ? 0 : formatRoundedDecimal(food.fat, 1),
+                  })}
                 </Text>
               </View>
             </View>
@@ -163,34 +185,61 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-indigo-500" />
-                    <Text className="text-xs text-text-secondary">
-                      {t('food.macros.protein')} ({formatInteger(Math.round(proteinPercent))}%)
+                    <Text
+                      className="text-xs text-text-secondary"
+                      style={intuitiveMode ? blurFilter(4) : undefined}
+                    >
+                      {t('food.macros.protein')} (
+                      {intuitiveMode ? '0' : formatInteger(Math.round(proteinPercent))}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">
-                    {formatRoundedDecimal(food.protein, 1)}g
+                  <Text
+                    className="text-xs font-bold text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.protein, 1),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-yellow-500" />
-                    <Text className="text-xs text-text-secondary">
-                      {t('food.macros.fat')} ({formatInteger(Math.round(fatPercent))}%)
+                    <Text
+                      className="text-xs text-text-secondary"
+                      style={intuitiveMode ? blurFilter(4) : undefined}
+                    >
+                      {t('food.macros.fat')} (
+                      {intuitiveMode ? '0' : formatInteger(Math.round(fatPercent))}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">
-                    {formatRoundedDecimal(food.fat, 1)}g
+                  <Text
+                    className="text-xs font-bold text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.fat, 1),
+                    })}
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-emerald-500" />
-                    <Text className="text-xs text-text-secondary">
-                      {t('food.macros.carbs')} ({formatInteger(Math.round(carbsPercent))}%)
+                    <Text
+                      className="text-xs text-text-secondary"
+                      style={intuitiveMode ? blurFilter(4) : undefined}
+                    >
+                      {t('food.macros.carbs')} (
+                      {intuitiveMode ? '0' : formatInteger(Math.round(carbsPercent))}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">
-                    {formatRoundedDecimal(food.carbs, 1)}g
+                  <Text
+                    className="text-xs font-bold text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {t('common.weightFormatG', {
+                      value: intuitiveMode ? 0 : formatRoundedDecimal(food.carbs, 1),
+                    })}
                   </Text>
                 </View>
               </View>

@@ -8,6 +8,7 @@ import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
@@ -33,6 +34,7 @@ export function ScannedFoodDetailsModal({
 }: ScannedFoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { intuitiveEatingMode } = useSettings();
   const [amount, setAmount] = useState(100);
 
   const { data: productData, isLoading, error } = useFoodProductDetails(barcode);
@@ -110,7 +112,7 @@ export function ScannedFoodDetailsModal({
 
     return (
       <View>
-        <FoodInfoCard food={foodInfo} />
+        <FoodInfoCard food={foodInfo} intuitiveMode={intuitiveEatingMode} />
         <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
         <ServingSizeSelector value={amount} onChange={setAmount} />
 

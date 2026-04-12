@@ -31,6 +31,8 @@ module.exports = defineConfig([
       'local/no-react-lazy': 'off',
       // Disallow direct imports from theme.ts
       'local/no-theme-import': 'warn',
+      // Modal files that render sub-modals must implement ghost-modal cleanup
+      'local/require-sub-modal-cleanup': 'warn',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',

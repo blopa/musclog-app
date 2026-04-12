@@ -57,6 +57,13 @@ export function GenericEditModal({
     }
   }, [visible, initialValues]);
 
+  useEffect(() => {
+    if (!visible) {
+      setDatePickerVisible(false);
+      setSelectMenuVisible(false);
+    }
+  }, [visible]);
+
   const handleFieldChange = (key: string, value: any) => {
     setFormValues((prev) => ({
       ...prev,

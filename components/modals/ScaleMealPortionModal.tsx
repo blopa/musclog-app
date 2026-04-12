@@ -6,6 +6,7 @@ import { BottomPopUp } from '@/components/BottomPopUp';
 import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 
@@ -38,6 +39,7 @@ export function ScaleMealPortionModal({
 }: ScaleMealPortionModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { intuitiveEatingMode } = useSettings();
   const [targetGrams, setTargetGrams] = useState(initialTotalGrams);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -121,6 +123,7 @@ export function ScaleMealPortionModal({
             carbs={previewNutrients.carbs}
             fat={previewNutrients.fat}
             fiber={previewNutrients.fiber}
+            intuitiveMode={intuitiveEatingMode}
           />
         ) : null}
         <ServingSizeSelector value={targetGrams} onChange={setTargetGrams} />

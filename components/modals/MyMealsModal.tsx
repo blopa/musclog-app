@@ -1,3 +1,4 @@
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -119,6 +120,32 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      setAddMealModalVisible(false);
+      setCreateMealModalVisible(false);
+      setLogMealModalVisible(false);
+      setSelectedMealForLogging(null);
+      setMenuMealId(null);
+      setEditMealId(null);
+      setDeleteMealId(null);
+      setGenerateMealContextVisible(false);
+    }
+  }, [visible]);
+
+  // Keep screen awake during AI meal generation
+  useEffect(() => {
+    if (isGeneratingMealAI) {
+      activateKeepAwakeAsync('my-meals-ai-generation').catch(() => {});
+    } else {
+      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
+    };
+  }, [isGeneratingMealAI]);
+
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
     mode: 'list',
@@ -164,9 +191,15 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               tags,
               calories: nutrients.calories,
               macros: {
-                protein: `${formatRoundedDecimal(nutrients.protein, 2)}g`,
-                carbs: `${formatRoundedDecimal(nutrients.carbs, 2)}g`,
-                fat: `${formatRoundedDecimal(nutrients.fat, 2)}g`,
+                protein: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.protein, 2),
+                }),
+                carbs: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.carbs, 2),
+                }),
+                fat: t('common.weightFormatG', {
+                  value: formatRoundedDecimal(nutrients.fat, 2),
+                }),
               },
               image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
             };

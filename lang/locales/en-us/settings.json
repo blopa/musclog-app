@@ -102,6 +102,8 @@
       "alwaysAllowFoodEditingSubtitle": "Force food details to be editable even when sourced from the API",
       "showWeightPrediction": "Show Weight Prediction",
       "showWeightPredictionSubtitle": "Show a predicted weight card on the profile screen when no weight has been logged for 4 days",
+      "intuitiveEatingMode": "Intuitive Tracking Mode",
+      "intuitiveEatingModeSubtitle": "Hide tracked amounts in the daily summary card, showing ?? instead of exact values",
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",

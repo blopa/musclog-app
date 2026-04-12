@@ -102,6 +102,8 @@
       "alwaysAllowFoodEditingSubtitle": "Forçar que os detalhes dos alimentos sejam editáveis mesmo quando vierem da API",
       "showWeightPrediction": "Mostrar Previsão de Peso",
       "showWeightPredictionSubtitle": "Mostrar um cartão de peso previsto na tela de perfil quando nenhum peso for registrado por 4 dias",
+      "intuitiveEatingMode": "Modo de Rastreamento Intuitivo",
+      "intuitiveEatingModeSubtitle": "Oculta as quantidades registradas no cartão de resumo diário, mostrando ?? em vez dos valores exatos",
       "charts": "GRÁFICOS",
       "chartTooltipLeft": "Tooltip à Esquerda",
       "chartTooltipLeftSubtitle": "Mostrar tooltips de dados do gráfico no canto superior esquerdo em vez do superior direito",

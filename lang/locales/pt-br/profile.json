@@ -40,7 +40,7 @@
     },
     "weightPrediction": {
       "title": "Peso Previsto",
-      "subtitle": "Estimado com base no TDEE e nos últimos 4 dias de rastreamento calórico"
+      "subtitle": "Estimado com base no TDEE e no rastreamento calórico desde o último registro de peso"
     }
   }
 }

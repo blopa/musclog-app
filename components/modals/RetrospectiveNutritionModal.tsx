@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -40,6 +41,19 @@ export function RetrospectiveNutritionModal({
   const insets = useSafeAreaInsets();
   const [description, setDescription] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Keep screen awake during AI retrospective nutrition processing
+  useEffect(() => {
+    if (isProcessing) {
+      activateKeepAwakeAsync('retrospective-nutrition').catch(() => {});
+    } else {
+      deactivateKeepAwake('retrospective-nutrition').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('retrospective-nutrition').catch(() => {});
+    };
+  }, [isProcessing]);
 
   const handleProcessDescription = useCallback(async () => {
     if (!description.trim()) {

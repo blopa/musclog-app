@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from 'react-native';
 
 import { FoodSearchItemCard } from '@/components/cards/FoodSearchItemCard';
-import { Button } from '@/components/theme/Button';
 import { MealType } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
+import { type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useTheme } from '@/hooks/useTheme';
 import { type UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
@@ -22,22 +21,25 @@ type FoodItem = UnifiedFoodResult & {
   image?: ImageSourcePropType;
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
+  lastGramWeight?: number;
 };
 
 type RecentNutritionHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
   onFoodClick: (food: FoodItem) => void;
-  portion100gName: string;
+  portion100gName?: string;
   mealType?: MealType;
+  intuitiveMode?: boolean;
 };
 
 export function RecentNutritionHistoryModal({
   visible,
   onClose,
   onFoodClick,
-  portion100gName,
+  portion100gName = '100g',
   mealType,
+  intuitiveMode = false,
 }: RecentNutritionHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -51,9 +53,10 @@ export function RecentNutritionHistoryModal({
   }) as UseMealsResultBasic & { recentFoods: any[] };
 
   const foods = useMemo(() => {
-    return (recentFoodsRaw || []).map((food) => {
+    return (recentFoodsRaw || []).map((item) => {
+      const food = item.food;
+
       return {
-        ...food,
         id: food.id,
         name: food.name ?? '',
         description: t('foodSearch.foodDescriptionPer100g', {
@@ -80,6 +83,7 @@ export function RecentNutritionHistoryModal({
         iconName: 'utensils-crossed',
         iconColor: theme.colors.accent.primary,
         iconBgColor: theme.colors.accent.primary10,
+        lastGramWeight: item.lastGramWeight,
         _raw: food,
       } as FoodItem;
     });
@@ -121,6 +125,7 @@ export function RecentNutritionHistoryModal({
                     key={food.id}
                     food={food}
                     onAddPress={() => onFoodClick(food)}
+                    intuitiveMode={intuitiveMode}
                   />
                 ))}
               </>

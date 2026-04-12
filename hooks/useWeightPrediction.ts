@@ -9,7 +9,8 @@ import { useEmpiricalTDEE } from './useEmpiricalTDEE';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
 
-const PREDICTION_DAYS = 4;
+/** Minimum days since last weigh-in before we show a prediction */
+const MIN_DAYS_SINCE_WEIGHT = 4;
 
 export interface UseWeightPredictionResult {
   /** Whether the prediction card should be shown */
@@ -19,6 +20,7 @@ export interface UseWeightPredictionResult {
   isLoading: boolean;
 }
 
+// TODO: check if there were any workouts and steps since last weight and use that to predict if weight change was just fat or muscle
 export function useWeightPrediction(): UseWeightPredictionResult {
   const [dataLoading, setDataLoading] = useState(true);
   const [conditionsMet, setConditionsMet] = useState(false);
@@ -40,10 +42,10 @@ export function useWeightPrediction(): UseWeightPredictionResult {
 
         const today = new Date();
         const todayStart = localDayStartMs(today);
-        // Start of 4 days ago (inclusive lower bound of our window)
-        const windowStart = localDayKeyPlusCalendarDays(todayStart, -PREDICTION_DAYS);
+        // Start of the minimum gap window
+        const windowStart = localDayKeyPlusCalendarDays(todayStart, -MIN_DAYS_SINCE_WEIGHT);
 
-        // Condition 1: no weight logged in the last 4 days
+        // Condition 1: no weight logged in the last MIN_DAYS_SINCE_WEIGHT days
         const latestWeight = await UserMetricService.getLatest('weight');
         if (!latestWeight) {
           setConditionsMet(false);
@@ -51,21 +53,29 @@ export function useWeightPrediction(): UseWeightPredictionResult {
         }
 
         if (latestWeight.date >= windowStart) {
-          // Weight was logged within the 4-day window → nothing to predict
+          // Weight was logged too recently → nothing to predict
           setConditionsMet(false);
           return;
         }
 
-        // Condition 2: all 4 days have calorie data
+        // Condition 2: collect calorie data for every day since the last weigh-in
+        const daysSinceLastWeight = Math.round(
+          (todayStart - latestWeight.date) / (24 * 60 * 60 * 1000)
+        );
+
         const caloriesPerDay: number[] = [];
-        for (let i = 1; i <= PREDICTION_DAYS; i++) {
+        for (let i = 1; i <= daysSinceLastWeight; i++) {
           const dayStart = localDayKeyPlusCalendarDays(todayStart, -i);
           const nutrients = await NutritionService.getDailyNutrients(new Date(dayStart));
-          if (nutrients.calories <= 0) {
-            setConditionsMet(false);
-            return;
+          if (nutrients.calories > 0) {
+            caloriesPerDay.push(nutrients.calories);
           }
-          caloriesPerDay.push(nutrients.calories);
+        }
+
+        // Need at least MIN_DAYS_SINCE_WEIGHT days of calorie data to make a useful prediction
+        if (caloriesPerDay.length < MIN_DAYS_SINCE_WEIGHT) {
+          setConditionsMet(false);
+          return;
         }
 
         const decrypted = await latestWeight.getDecrypted();

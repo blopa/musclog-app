@@ -1,4 +1,16 @@
+import * as Localization from 'expo-localization';
+
 import type { Units } from '@/constants/settings';
+
+/**
+ * Returns the default unit system based on the user's device region.
+ * Defaults to 'imperial' for US, otherwise 'metric'.
+ */
+export function getDefaultUnits(): Units {
+  const locales = Localization.getLocales();
+  const regionCode = locales[0]?.regionCode;
+  return regionCode === 'US' ? 'imperial' : 'metric';
+}
 
 export function getWeightUnit(units: Units): 'kg' | 'lbs' {
   return units === 'imperial' ? 'lbs' : 'kg';

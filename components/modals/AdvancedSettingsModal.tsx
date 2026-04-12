@@ -86,6 +86,8 @@ export function AdvancedSettingsModal({
     handleShowWeightPredictionChange,
     requireExportEncryption: debouncedRequireExportEncryption,
     handleRequireExportEncryptionChange,
+    intuitiveEatingMode: debouncedIntuitiveEatingMode,
+    handleIntuitiveEatingModeChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -250,6 +252,27 @@ export function AdvancedSettingsModal({
       ),
       value: debouncedShowWeightPrediction,
       onValueChange: handleShowWeightPredictionChange,
+    },
+    {
+      key: 'intuitive-eating-mode',
+      label: t('settings.advancedSettings.intuitiveEatingMode'),
+      subtitle: t('settings.advancedSettings.intuitiveEatingModeSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Coffee size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedIntuitiveEatingMode,
+      onValueChange: handleIntuitiveEatingModeChange,
     },
   ];
 

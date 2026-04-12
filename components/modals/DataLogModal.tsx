@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Q } from '@nozbe/watermelondb';
 import type { TFunction } from 'i18next';
-import { type ComponentProps, useState } from 'react';
+import { type ComponentProps, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -589,6 +589,23 @@ export function DataLogModal({
   const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
   const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
   const [createGenericModalVisible, setCreateGenericModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setShowMenu(false);
+      setShowCreateMenu(false);
+      setDeleteModalVisible(false);
+      setEditModalVisible(false);
+      setPastWorkoutDetailVisible(false);
+      setCreateMealModalVisible(false);
+      setCreateFoodModalVisible(false);
+      setCreateExerciseModalVisible(false);
+      setCreateFoodPortionModalVisible(false);
+      setCreateWorkoutModalVisible(false);
+      setCreateWorkoutOptionsModalVisible(false);
+      setCreateGenericModalVisible(false);
+    }
+  }, [visible]);
 
   const translations = getDataLogModalTranslations(variant, t, { units });
 

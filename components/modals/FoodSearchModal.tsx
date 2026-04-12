@@ -1,3 +1,4 @@
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import {
   AlertTriangle,
   Apple,
@@ -44,7 +45,6 @@ import { type MealType } from '@/database/models';
 import Meal from '@/database/models/Meal';
 import { FoodPortionService, NutritionService } from '@/database/services';
 import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
-import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import useNutritionLogs from '@/hooks/useNutritionLogs';
@@ -52,6 +52,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
+import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 import { captureException } from '@/utils/sentry';
@@ -93,6 +94,7 @@ type FoodItem = UnifiedFoodResult & {
   image?: ImageSourcePropType;
   grade?: string; // e.g., "A", "A+"
   gradeColor?: string;
+  lastGramWeight?: number;
 };
 
 type FoodSearchModalProps = {
@@ -218,17 +220,18 @@ type MealCardData = {
 type MealSearchCardProps = {
   mealData: MealCardData;
   onAddPress: () => void;
+  intuitiveMode?: boolean;
 };
 
-function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
+function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSearchCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
-    protein: formatRoundedDecimal(mealData.protein, 2),
-    carbs: formatRoundedDecimal(mealData.carbs, 2),
-    fat: formatRoundedDecimal(mealData.fat, 2),
+    protein: intuitiveMode ? '0' : formatRoundedDecimal(mealData.protein, 2),
+    carbs: intuitiveMode ? '0' : formatRoundedDecimal(mealData.carbs, 2),
+    fat: intuitiveMode ? '0' : formatRoundedDecimal(mealData.fat, 2),
   });
 
   return (
@@ -263,8 +266,12 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
             {mealData.description}
           </Text>
         ) : null}
-        <Text className="mt-0.5 text-sm text-text-secondary">
-          {formatRoundedDecimal(mealData.calories, 2)} {t('food.common.kcal')} • {macroSummary}
+        <Text
+          className="mt-0.5 text-sm text-text-secondary"
+          style={intuitiveMode ? blurFilter(4) : undefined}
+        >
+          {intuitiveMode ? '0' : formatRoundedDecimal(mealData.calories, 2)} {t('food.common.kcal')}{' '}
+          • {macroSummary}
         </Text>
       </View>
 
@@ -331,7 +338,7 @@ export function FoodSearchModal({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
-  const { foodSearchSource } = useSettings();
+  const { foodSearchSource, intuitiveEatingMode } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -351,6 +358,21 @@ export function FoodSearchModal({
       mealType,
       logDate,
     });
+
+  // When this modal is hidden (for any reason), tear down every child modal that
+  // was opened inside it. Without this, a sub-modal that was visible when the parent
+  // closed (e.g. RecentNutritionHistoryModal opened → food tracked → FoodSearchModal
+  // closed) keeps its native window alive and intercepts touches on the next open.
+  useEffect(() => {
+    if (!visible) {
+      setIsRecentNutritionHistoryModalVisible(false);
+      setConfirmSameAsYesterdayVisible(false);
+      setIsFoodDetailsVisible(false);
+      setSelectedFood(null);
+      setIsMealDetailsVisible(false);
+      setSelectedMeal(null);
+    }
+  }, [visible]);
 
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
@@ -385,9 +407,10 @@ export function FoodSearchModal({
   }) as UseMealsResultBasic & { recentFoods: any[] };
 
   const recentFoods = useMemo(() => {
-    return (recentFoodsRaw || []).map((food) => {
+    return (recentFoodsRaw || []).map((item) => {
+      const food = item.food;
+
       return {
-        ...food,
         id: food.id,
         name: food.name ?? '',
         description: t('foodSearch.foodDescriptionPer100g', {
@@ -414,6 +437,7 @@ export function FoodSearchModal({
         iconName: 'utensils-crossed',
         iconColor: theme.colors.accent.primary,
         iconBgColor: theme.colors.accent.primary10,
+        lastGramWeight: item.lastGramWeight,
         _raw: food,
       } as FoodItem;
     });
@@ -470,6 +494,20 @@ export function FoodSearchModal({
     usdaLimit,
     debounceMs: 600,
   });
+
+  // Keep screen awake while searching external APIs to prevent the phone from
+  // turning off the screen and killing network requests
+  useEffect(() => {
+    if (isLoadingAPI) {
+      activateKeepAwakeAsync('food-search-api').catch(() => {});
+    } else {
+      deactivateKeepAwake('food-search-api').catch(() => {});
+    }
+
+    return () => {
+      deactivateKeepAwake('food-search-api').catch(() => {});
+    };
+  }, [isLoadingAPI]);
 
   const [showCancelSearch, setShowCancelSearch] = useState(false);
 
@@ -836,6 +874,9 @@ export function FoodSearchModal({
       iconBgColor: food.source === 'local' ? theme.colors.accent.primary10 : undefined,
     };
 
+    // Always close the history modal before opening food details — if it was open,
+    // leaving it visible would stack two native modal windows and block touches.
+    setIsRecentNutritionHistoryModalVisible(false);
     setSelectedFood(foodItem);
     setIsFoodDetailsVisible(true);
   };
@@ -930,6 +971,7 @@ export function FoodSearchModal({
               <Pressable
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
+                hitSlop={8}
               >
                 <View className="rounded-lg p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -972,6 +1014,7 @@ export function FoodSearchModal({
                               key={mealData.meal.id}
                               mealData={mealData}
                               onAddPress={() => handleMealSelect(mealData.meal)}
+                              intuitiveMode={intuitiveEatingMode}
                             />
                           ))
                         ) : (
@@ -1051,6 +1094,7 @@ export function FoodSearchModal({
                                       onAddPress={() =>
                                         handleFoodClick({ ...food, name: food.name ?? '' })
                                       }
+                                      intuitiveMode={intuitiveEatingMode}
                                     />
                                   ))}
                                 </View>
@@ -1152,6 +1196,7 @@ export function FoodSearchModal({
                                                 : searchSessionIcon,
                                             }}
                                             onAddPress={() => handleFoodClick(food)}
+                                            intuitiveMode={intuitiveEatingMode}
                                           />
                                         ))}
                                       </View>
@@ -1243,6 +1288,7 @@ export function FoodSearchModal({
                                           key={`usda-${food.id}`}
                                           food={{ ...food, iconComponent: searchSessionIcon }}
                                           onAddPress={() => handleFoodClick(food)}
+                                          intuitiveMode={intuitiveEatingMode}
                                         />
                                       ))}
                                     </View>
@@ -1338,6 +1384,7 @@ export function FoodSearchModal({
                                 key={food.id}
                                 food={food}
                                 onAddPress={() => handleFoodClick(food)}
+                                intuitiveMode={intuitiveEatingMode}
                               />
                             ))}
                             {hasMoreFavoriteFoods ? (
@@ -1386,6 +1433,7 @@ export function FoodSearchModal({
                                 key={mealData.meal.id}
                                 mealData={mealData}
                                 onAddPress={() => handleMealSelect(mealData.meal)}
+                                intuitiveMode={intuitiveEatingMode}
                               />
                             ))}
                             {hasMoreMeals ? (
@@ -1432,6 +1480,7 @@ export function FoodSearchModal({
                               key={food.id}
                               food={food}
                               onAddPress={() => handleFoodClick(food)}
+                              intuitiveMode={intuitiveEatingMode}
                             />
                           ))
                         ) : (
@@ -1480,6 +1529,7 @@ export function FoodSearchModal({
                             setSelectedFood(food);
                             setIsFoodDetailsVisible(true);
                           }}
+                          intuitiveMode={intuitiveEatingMode}
                         />
                       ))
                     )}
@@ -1512,6 +1562,7 @@ export function FoodSearchModal({
             food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
             initialMealType={mealType}
             initialDate={logDate}
+            initialServingSize={selectedFood.lastGramWeight}
             onAddFood={(data) => {
               // Call the original onFoodSelect with the food and additional data
               onFoodSelect?.({
@@ -1572,6 +1623,7 @@ export function FoodSearchModal({
           onFoodClick={handleFoodClick}
           portion100gName={portion100gName}
           mealType={mealType}
+          intuitiveMode={intuitiveEatingMode}
         />
 
         <ConfirmationModal

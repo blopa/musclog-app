@@ -41,6 +41,7 @@ import enUsFreeTraining from './locales/en-us/freeTraining.json';
 import enUsGoalHistoryCard from './locales/en-us/goalHistoryCard.json';
 import enUsGoalsManagement from './locales/en-us/goalsManagement.json';
 import enUsHealthConnect from './locales/en-us/healthConnect.json';
+import enUsHeightPicker from './locales/en-us/heightPicker.json';
 import enUsHome from './locales/en-us/home.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
@@ -110,6 +111,7 @@ import ptBrFreeTraining from './locales/pt-br/freeTraining.json';
 import ptBrGoalHistoryCard from './locales/pt-br/goalHistoryCard.json';
 import ptBrGoalsManagement from './locales/pt-br/goalsManagement.json';
 import ptBrHealthConnect from './locales/pt-br/healthConnect.json';
+import ptBrHeightPicker from './locales/pt-br/heightPicker.json';
 import ptBrHome from './locales/pt-br/home.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
@@ -179,6 +181,7 @@ import ruRuFreeTraining from './locales/ru-ru/freeTraining.json';
 import ruRuGoalHistoryCard from './locales/ru-ru/goalHistoryCard.json';
 import ruRuGoalsManagement from './locales/ru-ru/goalsManagement.json';
 import ruRuHealthConnect from './locales/ru-ru/healthConnect.json';
+import ruRuHeightPicker from './locales/ru-ru/heightPicker.json';
 import ruRuHome from './locales/ru-ru/home.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
@@ -258,6 +261,7 @@ const resources = {
       ...enUsGoalHistoryCard,
       ...enUsGoalsManagement,
       ...enUsHealthConnect,
+      ...enUsHeightPicker,
       ...enUsHome,
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
@@ -331,6 +335,7 @@ const resources = {
       ...ptBrGoalHistoryCard,
       ...ptBrGoalsManagement,
       ...ptBrHealthConnect,
+      ...ptBrHeightPicker,
       ...ptBrHome,
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
@@ -404,6 +409,7 @@ const resources = {
       ...ruRuGoalHistoryCard,
       ...ruRuGoalsManagement,
       ...ruRuHealthConnect,
+      ...ruRuHeightPicker,
       ...ruRuHome,
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,

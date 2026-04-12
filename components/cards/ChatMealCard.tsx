@@ -5,7 +5,9 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { blurFilter } from '@/utils/blurFilter';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
@@ -27,6 +29,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { intuitiveEatingMode } = useSettings();
   const totalCalories = formatRoundedDecimal(
     meals.reduce((s, m) => s + m.calories, 0),
     2
@@ -65,8 +68,14 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
           {t('meals.chatMealCard.mealCount', { count: meals.length })}
         </Text>
         <View className="flex-row items-baseline gap-1">
-          <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
-            {totalCalories}
+          <Text
+            className="text-2xl font-bold"
+            style={[
+              { color: theme.colors.text.primary },
+              intuitiveEatingMode ? blurFilter(6) : undefined,
+            ]}
+          >
+            {intuitiveEatingMode ? '000' : totalCalories}
           </Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('common.kcal')}
@@ -91,8 +100,15 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               >
                 {getMealLabel(meal.mealType)}
               </Text>
-              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {formatRoundedDecimal(meal.calories, 2)} {t('common.kcal')}
+              <Text
+                className="text-sm font-semibold"
+                style={[
+                  { color: theme.colors.text.primary },
+                  intuitiveEatingMode ? blurFilter(4) : undefined,
+                ]}
+              >
+                {intuitiveEatingMode ? '0' : formatRoundedDecimal(meal.calories, 2)}{' '}
+                {t('common.kcal')}
               </Text>
             </View>
 
@@ -108,8 +124,16 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 >
                   P
                 </Text>
-                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  {formatRoundedDecimal(meal.protein, 2)}g
+                <Text
+                  className="text-xs font-bold"
+                  style={[
+                    { color: theme.colors.accent.primary },
+                    intuitiveEatingMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.protein, 2),
+                  })}
                 </Text>
               </View>
 
@@ -122,8 +146,16 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 >
                   C
                 </Text>
-                <Text className="text-xs font-bold" style={{ color: theme.colors.status.indigo }}>
-                  {formatRoundedDecimal(meal.carbs, 2)}g
+                <Text
+                  className="text-xs font-bold"
+                  style={[
+                    { color: theme.colors.status.indigo },
+                    intuitiveEatingMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.carbs, 2),
+                  })}
                 </Text>
               </View>
 
@@ -136,8 +168,16 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 >
                   F
                 </Text>
-                <Text className="text-xs font-bold" style={{ color: theme.colors.status.warning }}>
-                  {formatRoundedDecimal(meal.fats, 2)}g
+                <Text
+                  className="text-xs font-bold"
+                  style={[
+                    { color: theme.colors.status.warning },
+                    intuitiveEatingMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {t('common.weightFormatG', {
+                    value: intuitiveEatingMode ? 0 : formatRoundedDecimal(meal.fats, 2),
+                  })}
                 </Text>
               </View>
             </View>

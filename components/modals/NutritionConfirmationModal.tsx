@@ -58,26 +58,26 @@ export function NutritionConfirmationModal({
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {formatRoundedDecimal(item.protein, 2)}g
+            {t('common.weightFormatG', { value: formatRoundedDecimal(item.protein, 2) })}
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {formatRoundedDecimal(item.carbs, 2)}g
+            {t('common.weightFormatG', { value: formatRoundedDecimal(item.carbs, 2) })}
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {formatRoundedDecimal(item.fat, 2)}g
+            {t('common.weightFormatG', { value: formatRoundedDecimal(item.fat, 2) })}
           </Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {formatRoundedDecimal(item.fiber, 2)}g
+              {t('common.weightFormatG', { value: formatRoundedDecimal(item.fiber, 2) })}
             </Text>
           </View>
         ) : null}
@@ -114,7 +114,7 @@ export function NutritionConfirmationModal({
                 {t('common.labelWithColon', { label: t('nutrition.protein') })}
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatRoundedDecimal(totals.totalProtein, 2)}g
+                {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalProtein, 2) })}
               </Text>
             </View>
             <View className="flex-row justify-between">
@@ -122,7 +122,7 @@ export function NutritionConfirmationModal({
                 {t('common.labelWithColon', { label: t('nutrition.carbs') })}
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatRoundedDecimal(totals.totalCarbs, 2)}g
+                {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalCarbs, 2) })}
               </Text>
             </View>
             <View className="flex-row justify-between">
@@ -130,7 +130,7 @@ export function NutritionConfirmationModal({
                 {t('common.labelWithColon', { label: t('nutrition.fat') })}
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatRoundedDecimal(totals.totalFat, 2)}g
+                {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalFat, 2) })}
               </Text>
             </View>
           </View>

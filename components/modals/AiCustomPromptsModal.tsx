@@ -1,5 +1,5 @@
 import { Edit2, Plus, Trash2 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -29,6 +29,14 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [promptToDelete, setPromptToDelete] = useState<AiCustomPrompt | null>(null);
   const [isDeletingPrompt, setIsDeletingPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setEditingPrompt(null);
+      setIsAddModalVisible(false);
+      setPromptToDelete(null);
+    }
+  }, [visible]);
 
   const handleDelete = async () => {
     if (!promptToDelete) {

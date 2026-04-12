@@ -39,6 +39,12 @@ export function PortionSizesPickerModal({
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedIds);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      setCreateModalVisible(false);
+    }
+  }, [visible]);
+
   // Paginated global portions (newest first); app + user-created via includeAllPortionSources
   const {
     portions: loadedPortions,
@@ -67,7 +73,9 @@ export function PortionSizesPickerModal({
       return {
         id: portion.id,
         label: portion.name,
-        description: `${formatInteger(Math.round(portion.gramWeight))}g`,
+        description: t('common.weightFormatG', {
+          value: formatInteger(Math.round(portion.gramWeight)),
+        }),
         icon: IconComponent || (() => null as any),
         iconBgColor: theme.colors.accent.primary,
         iconColor: theme.colors.text.black,
