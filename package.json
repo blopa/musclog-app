@@ -3,6 +3,8 @@
   "version": "2.6.2",
   "scripts": {
     "playwright-runner": "node tests/run-tests.js",
+    "screenshots": "npm run build-android-web && npm run playwright-runner --",
+    "screenshots-portrait": "npm run build-android-web && npm run playwright-runner --project=portrait-6.7",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
