@@ -140,7 +140,11 @@ export default function NutritionGoalsResults() {
     }
 
     if (savedGoal) {
-      const totalMacroCals = savedGoal.protein * 4 + savedGoal.carbs * 4 + savedGoal.fats * 9;
+      const totalMacroCals =
+        savedGoal.protein * 4 +
+        Math.max(0, savedGoal.carbs - savedGoal.fiber) * 4 +
+        savedGoal.fats * 9 +
+        savedGoal.fiber * 2;
       const effectiveTotal = totalMacroCals > 0 ? totalMacroCals : savedGoal.totalCalories || 1;
 
       return {
@@ -149,7 +153,7 @@ export default function NutritionGoalsResults() {
         carbs: savedGoal.carbs,
         fats: savedGoal.fats,
         proteinPct: Math.round((savedGoal.protein * 4 * 100) / effectiveTotal),
-        carbsPct: Math.round((savedGoal.carbs * 4 * 100) / effectiveTotal),
+        carbsPct: Math.round((Math.max(0, savedGoal.carbs - savedGoal.fiber) * 4 * 100) / effectiveTotal),
         fatsPct: Math.round((savedGoal.fats * 9 * 100) / effectiveTotal),
         goalLabel: null,
         startWeight: 0,

@@ -621,7 +621,7 @@ export class MigrationService {
         .fetch();
 
       const logCalFromProtein = protein * 4;
-      const logCalFromCarbs = carbs * 4;
+      const logCalFromCarbs = Math.max(0, carbs - 0) * 4; // Fiber unknown here usually
       const logCalFromFat = fat * 9;
       const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
       const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
@@ -635,7 +635,7 @@ export class MigrationService {
           continue;
         }
         const foodCalFromProtein = food.protein * 4;
-        const foodCalFromCarbs = food.carbs * 4;
+        const foodCalFromCarbs = Math.max(0, food.carbs - food.fiber) * 4 + food.fiber * 2;
         const foodCalFromFat = food.fat * 9;
         const foodPctProtein = foodCalFromProtein / food.calories;
         const foodPctCarbs = foodCalFromCarbs / food.calories;

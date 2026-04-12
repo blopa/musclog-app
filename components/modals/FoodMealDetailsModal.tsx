@@ -97,13 +97,15 @@ function areCoreMacrosEffectivelyZero(data: {
   protein?: unknown;
   carbs?: unknown;
   fat?: unknown;
+  fiber?: unknown;
 }): boolean {
   const eps = 1e-6;
   return (
     Math.abs(toFiniteMacro(data.calories)) < eps &&
     Math.abs(toFiniteMacro(data.protein)) < eps &&
     Math.abs(toFiniteMacro(data.carbs)) < eps &&
-    Math.abs(toFiniteMacro(data.fat)) < eps
+    Math.abs(toFiniteMacro(data.fat)) < eps &&
+    Math.abs(toFiniteMacro(data.fiber)) < eps
   );
 }
 
@@ -192,6 +194,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
 } | null {
   if (!isSuccessFoodDetailProductState(state)) {
     return null;
@@ -206,6 +209,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
       protein: toFiniteMacro(parseFloat(p.protein ?? 0)),
       carbs: toFiniteMacro(parseFloat(p.carbs ?? 0)),
       fat: toFiniteMacro(parseFloat(p.fat ?? 0)),
+      fiber: toFiniteMacro(parseFloat(p.fiber ?? 0)),
     };
   }
 
@@ -233,12 +237,16 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
         (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
           normFactor
       ),
+      fiber: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
+          normFactor
+      ),
     };
   }
 
   const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
   if (!nutrients) {
-    return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
   }
   const offKeys = {
     calories: 'energy-kcal',
@@ -248,11 +256,23 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   } as const;
   const getNum = (key: keyof typeof offKeys) =>
     toFiniteMacro((getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number);
+
+  const directFiber = getNutrimentValue(nutrients, 'fiber');
+  let fiber: number;
+  if (directFiber !== undefined && directFiber >= 0) {
+    fiber = directFiber;
+  } else {
+    const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+    const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+    fiber = carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+  }
+
   return {
     calories: getNum('calories'),
     protein: getNum('protein'),
     carbs: getNum('carbs'),
     fat: getNum('fat'),
+    fiber: toFiniteMacro(fiber),
   };
 }
 
@@ -391,6 +411,7 @@ export function FoodMealDetailsModal({
     protein?: number;
     carbs?: number;
     fat?: number;
+    fiber?: number;
     micros?: Partial<MicrosData>;
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
@@ -413,6 +434,7 @@ export function FoodMealDetailsModal({
     protein: string;
     carbs: string;
     fat: string;
+    fiber: string;
     micronutrients: MicronutrientFormStrings;
   } | null>(null);
 
@@ -1078,13 +1100,15 @@ export function FoodMealDetailsModal({
       (editedOverrides.calories != null ||
         editedOverrides.protein != null ||
         editedOverrides.carbs != null ||
-        editedOverrides.fat != null)
+        editedOverrides.fat != null ||
+        editedOverrides.fiber != null)
         ? {
             ...baseNutritionalData,
             calories: editedOverrides.calories ?? baseNutritionalData.calories,
             protein: editedOverrides.protein ?? baseNutritionalData.protein,
             carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
             fat: editedOverrides.fat ?? baseNutritionalData.fat,
+            fiber: editedOverrides.fiber ?? baseNutritionalData.fiber,
           }
         : baseNutritionalData;
 
@@ -1863,20 +1887,21 @@ export function FoodMealDetailsModal({
       name: getFoodMealName(),
       barcode: currentBarcode,
       description: currentDescription,
-      calories: formatAppRoundedDecimal(locale, baseNutritionalData.calories, 2),
-      protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
-      carbs: formatAppRoundedDecimal(locale, baseNutritionalData.carbs, 2),
-      fat: formatAppRoundedDecimal(locale, baseNutritionalData.fat, 2),
+      calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
+      protein: formatAppRoundedDecimal(locale, nutritionalData.protein, 2),
+      carbs: formatAppRoundedDecimal(locale, nutritionalData.carbs, 2),
+      fat: formatAppRoundedDecimal(locale, nutritionalData.fat, 2),
+      fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
       micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
     setEditMicroOpen(false);
     setIsEditPopUpVisible(true);
   }, [
     getFoodMealName,
-    baseNutritionalData.calories,
-    baseNutritionalData.protein,
-    baseNutritionalData.carbs,
-    baseNutritionalData.fat,
+    nutritionalData.calories,
+    nutritionalData.protein,
+    nutritionalData.carbs,
+    nutritionalData.fat,
     barcode,
     productFromSearch,
     food,
@@ -1894,6 +1919,7 @@ export function FoodMealDetailsModal({
     const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
     const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
     const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
+    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
     setEditedOverrides({
       name: editForm.name.trim() || undefined,
       barcode: editForm.barcode.trim() || undefined,
@@ -1902,6 +1928,7 @@ export function FoodMealDetailsModal({
       protein: Number.isFinite(pro) ? pro : undefined,
       carbs: Number.isFinite(carb) ? carb : undefined,
       fat: Number.isFinite(f) ? f : undefined,
+      fiber: Number.isFinite(fib) ? fib : undefined,
       micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
     });
     setEditForm(null);
@@ -1916,7 +1943,7 @@ export function FoodMealDetailsModal({
   }, [inferredCaloriesPer100g]);
 
   const handleEditFormNumericChange = useCallback(
-    (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
+    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
       const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
       setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
     },
@@ -2362,6 +2389,17 @@ export function FoodMealDetailsModal({
                   <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
                 }
                 variant="error"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.macros.fiber')}
+                value={editForm.fiber}
+                onChange={handleEditFormNumericChange('fiber')}
+                allowDecimals
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                }
+                variant="success"
                 size="half"
               />
             </View>
