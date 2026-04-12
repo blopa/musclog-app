@@ -2,7 +2,7 @@
   "name": "musclog",
   "version": "2.6.2",
   "scripts": {
-    "playwright": "node tests/run-tests.js",
+    "playwright-runner": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
@@ -110,7 +110,6 @@
     "expo-linear-gradient": "~55.0.13",
     "expo-linking": "~55.0.12",
     "expo-localization": "~55.0.13",
-    "expo-modules-core": "55.0.21",
     "expo-notifications": "~55.0.18",
     "expo-router": "~55.0.12",
     "expo-screen-orientation": "~55.0.13",
