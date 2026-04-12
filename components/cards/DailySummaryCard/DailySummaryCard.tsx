@@ -189,26 +189,29 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || proteinStatus === 'not-reached' ? (
-                  <Text
-                    className="text-xs"
-                    style={{
-                      color: showColoredIndicators
-                        ? getProgressBarColor(proteinStatus, theme)
-                        : theme.colors.text.onColorful,
-                    }}
-                  >
+                  <View className="flex-row items-baseline">
                     <Text
+                      className="text-xs font-bold"
                       style={{
-                        fontWeight: '700',
+                        color: showColoredIndicators
+                          ? getProgressBarColor(proteinStatus, theme)
+                          : theme.colors.text.onColorful,
                         ...(intuitiveMode ? blurFilter(4) : {}),
                       }}
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.protein.value, 1)}
                     </Text>
-                    <Text style={{ fontWeight: '400' }}>
+                    <Text
+                      className="text-xs font-normal"
+                      style={{
+                        color: showColoredIndicators
+                          ? getProgressBarColor(proteinStatus, theme)
+                          : theme.colors.text.onColorful,
+                      }}
+                    >
                       {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.protein.goal)) })}`}
                     </Text>
-                  </Text>
+                  </View>
                 ) : null}
               </View>
               <View
@@ -252,26 +255,29 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || carbsStatus === 'not-reached' ? (
-                  <Text
-                    className="text-xs"
-                    style={{
-                      color: showColoredIndicators
-                        ? getProgressBarColor(carbsStatus, theme)
-                        : theme.colors.text.onColorful,
-                    }}
-                  >
+                  <View className="flex-row items-baseline">
                     <Text
+                      className="text-xs font-bold"
                       style={{
-                        fontWeight: '700',
+                        color: showColoredIndicators
+                          ? getProgressBarColor(carbsStatus, theme)
+                          : theme.colors.text.onColorful,
                         ...(intuitiveMode ? blurFilter(4) : {}),
                       }}
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.carbs.value, 1)}
                     </Text>
-                    <Text style={{ fontWeight: '400' }}>
+                    <Text
+                      className="text-xs font-normal"
+                      style={{
+                        color: showColoredIndicators
+                          ? getProgressBarColor(carbsStatus, theme)
+                          : theme.colors.text.onColorful,
+                      }}
+                    >
                       {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.carbs.goal)) })}`}
                     </Text>
-                  </Text>
+                  </View>
                 ) : null}
               </View>
               <View
@@ -315,26 +321,29 @@ export function DailySummaryCard({
                   <AlertCircle size={16} color={theme.colors.status.warning} strokeWidth={2.5} />
                 ) : null}
                 {!highlightThresholds || fatsStatus === 'not-reached' ? (
-                  <Text
-                    className="text-xs"
-                    style={{
-                      color: showColoredIndicators
-                        ? getProgressBarColor(fatsStatus, theme)
-                        : theme.colors.text.onColorful,
-                    }}
-                  >
+                  <View className="flex-row items-baseline">
                     <Text
+                      className="text-xs font-bold"
                       style={{
-                        fontWeight: '700',
+                        color: showColoredIndicators
+                          ? getProgressBarColor(fatsStatus, theme)
+                          : theme.colors.text.onColorful,
                         ...(intuitiveMode ? blurFilter(4) : {}),
                       }}
                     >
                       {intuitiveMode ? '0' : formatDecimal(macros.fats.value, 1)}
                     </Text>
-                    <Text style={{ fontWeight: '400' }}>
+                    <Text
+                      className="text-xs font-normal"
+                      style={{
+                        color: showColoredIndicators
+                          ? getProgressBarColor(fatsStatus, theme)
+                          : theme.colors.text.onColorful,
+                      }}
+                    >
                       {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macros.fats.goal)) })}`}
                     </Text>
-                  </Text>
+                  </View>
                 ) : null}
               </View>
               <View
