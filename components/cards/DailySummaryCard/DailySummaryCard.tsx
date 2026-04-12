@@ -287,7 +287,7 @@ export function DailySummaryCard({
         {/* Alcohol — subtle note, no goal/progress */}
         {secondaryNutrients && (secondaryNutrients.alcohol ?? 0) > 0 ? (
           <View
-            className="flex-row items-center justify-end pt-1"
+            className="flex-row items-center justify-start pt-2"
             style={{
               borderTopWidth: 1,
               borderTopColor: theme.colors.overlay.white30,
@@ -301,16 +301,17 @@ export function DailySummaryCard({
                 color: theme.colors.overlay.white70,
               }}
             >
-              {t('dailySummaryCard.alcohol')}
+              {t('dailySummaryCard.alcoholLabel')}
             </Text>
             <Text
-              className="ml-1.5"
+              className="ml-1.5 font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
-                color: theme.colors.overlay.white70,
+                color: theme.colors.text.onColorful,
                 ...(intuitiveMode ? blurFilter(4) : {}),
               }}
             >
+              {t('dailySummaryCard.alcohol')}{' '}
               {t('common.weightFormatG', {
                 value: intuitiveMode ? 0 : formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
               })}

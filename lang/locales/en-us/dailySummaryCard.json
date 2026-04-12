@@ -1,6 +1,7 @@
 {
   "dailySummaryCard": {
     "alcohol": "Alcohol",
+    "alcoholLabel": "You've also consumed:",
     "carbs": "Carbs",
     "fiber": "Fiber",
     "fiberShort": "FI",
