@@ -21,6 +21,8 @@ import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+import { GoalCreationMethodModal } from './GoalCreationMethodModal';
+import { GoalWizardModal } from './GoalWizardModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 
 interface GoalHistoryItem {
@@ -73,6 +75,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const theme = useTheme();
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
+  const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
+  const [wizardModalVisible, setWizardModalVisible] = useState(false);
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
@@ -80,9 +84,14 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
   const [isDeletingGoal, setIsDeletingGoal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [pendingWizardPrefill, setPendingWizardPrefill] = useState<Partial<NutritionGoals> | null>(
+    null
+  );
 
   useEffect(() => {
     if (!visible) {
+      setCreationMethodModalVisible(false);
+      setWizardModalVisible(false);
       setNutritionGoalsModalVisible(false);
       setConfirmDeleteVisible(false);
       setSelectedGoal(null);
@@ -156,6 +165,28 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const handleNewGoal = () => {
     setSelectedGoal(null);
     setIsEditing(false);
+    setCreationMethodModalVisible(true);
+  };
+
+  const handleSelectManualCreation = () => {
+    setCreationMethodModalVisible(false);
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleSelectGuidedCreation = () => {
+    setCreationMethodModalVisible(false);
+    setWizardModalVisible(true);
+  };
+
+  const handleWizardComplete = (prefill: Partial<NutritionGoals>) => {
+    setWizardModalVisible(false);
+    // Merge wizard answers into the form's initial goals (but don't overwrite
+    // any values that are already set from a previous goal).
+    setSelectedGoal(null);
+    setIsEditing(false);
+    // Pass prefill via currentGoalsData override — achieved by storing it temporarily
+    // in selectedGoal's form data. We use a local state for the one-shot prefill.
+    setPendingWizardPrefill(prefill);
     setNutritionGoalsModalVisible(true);
   };
 
@@ -211,6 +242,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleCloseNutritionGoalsModal = () => {
     setNutritionGoalsModalVisible(false);
+    setPendingWizardPrefill(null);
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
@@ -242,6 +274,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       }
       await refresh();
       setNutritionGoalsModalVisible(false);
+      setPendingWizardPrefill(null);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       captureException(error, {
@@ -252,7 +285,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   };
 
   const editModalInitialGoals =
-    isEditing && selectedGoal ? goalToFormData(selectedGoal) : currentGoalsData;
+    isEditing && selectedGoal
+      ? goalToFormData(selectedGoal)
+      : (pendingWizardPrefill ?? currentGoalsData);
 
   return (
     <>
@@ -368,6 +403,19 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           </ScrollView>
         )}
       </FullScreenModal>
+
+      <GoalCreationMethodModal
+        visible={creationMethodModalVisible}
+        onClose={() => setCreationMethodModalVisible(false)}
+        onSelectManual={handleSelectManualCreation}
+        onSelectGuided={handleSelectGuidedCreation}
+      />
+
+      <GoalWizardModal
+        visible={wizardModalVisible}
+        onClose={() => setWizardModalVisible(false)}
+        onComplete={handleWizardComplete}
+      />
 
       <NutritionGoalsModal
         visible={nutritionGoalsModalVisible}
