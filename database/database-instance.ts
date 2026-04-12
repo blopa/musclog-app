@@ -1,3 +1,10 @@
+/**
+ * Database instance for the app.
+ * This file is separate from index.ts to avoid require cycles.
+ * Models that need the database instance should import from this file.
+ * ALWAYS IMPORT FROM THIS FILE AND NOT FROM INDEX.
+ */
+
 import { Database } from '@nozbe/watermelondb';
 
 import adapter from './adapter';
