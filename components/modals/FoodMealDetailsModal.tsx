@@ -944,6 +944,11 @@ export function FoodMealDetailsModal({
         sugar: getNum('sugar'),
         saturatedFat: getNum('saturatedFat'),
         sodium: Number.isFinite(sodium) ? sodium : 0,
+        // OFF stores minerals in grams per 100g — no unit conversion needed
+        alcohol: getNutrimentValue(nutrients, 'alcohol') ?? 0,
+        potassium: getNutrimentValue(nutrients, 'potassium') ?? 0,
+        magnesium: getNutrimentValue(nutrients, 'magnesium') ?? 0,
+        zinc: getNutrimentValue(nutrients, 'zinc') ?? 0,
       };
     }
 
@@ -999,11 +1004,19 @@ export function FoodMealDetailsModal({
       const nut = mappedProduct.nutriments;
       let sugar = 0,
         saturatedFat = 0,
-        sodium = 0;
+        sodium = 0,
+        alcohol = 0,
+        potassium = 0,
+        magnesium = 0,
+        zinc = 0;
       if (isMappedNutriments(nut)) {
         sugar = nut.macronutrients?.sugars ?? 0;
         saturatedFat = nut.macronutrients?.saturatedFat ?? 0;
         sodium = nut.minerals?.sodium ?? nut.other?.salt ?? 0;
+        alcohol = nut.macronutrients?.alcohol ?? 0;
+        potassium = nut.minerals?.potassium ?? 0;
+        magnesium = nut.minerals?.magnesium ?? 0;
+        zinc = nut.minerals?.zinc ?? 0;
       }
 
       return {
@@ -1015,6 +1028,10 @@ export function FoodMealDetailsModal({
         sugar,
         saturatedFat,
         sodium,
+        alcohol,
+        potassium,
+        magnesium,
+        zinc,
       };
     }
 
@@ -1046,6 +1063,10 @@ export function FoodMealDetailsModal({
           sugar: getNum('sugars'),
           saturatedFat: getNum('saturated-fat'),
           sodium: Number.isFinite(sodium) ? sodium : 0,
+          alcohol: getNum('alcohol'),
+          potassium: getNum('potassium'),
+          magnesium: getNum('magnesium'),
+          zinc: getNum('zinc'),
         };
       }
     }
@@ -1059,6 +1080,10 @@ export function FoodMealDetailsModal({
       sugar: 0,
       saturatedFat: 0,
       sodium: 0,
+      alcohol: 0,
+      potassium: 0,
+      magnesium: 0,
+      zinc: 0,
     };
   }, [
     productDetails,
