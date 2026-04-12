@@ -89,7 +89,9 @@ import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
-import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
+import Exercise from '@/database/models/Exercise';
+import WorkoutLog from '@/database/models/WorkoutLog';
+import { EnrichedWorkoutLogSet, ExerciseService, WorkoutService } from '@/database/services';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 
 export default function ModalsTestScreen() {
@@ -178,6 +180,11 @@ export default function ModalsTestScreen() {
 
   // Workout History Modal
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
+  const [workoutHistoryData, setWorkoutHistoryData] = useState<{
+    workoutLog: WorkoutLog;
+    sets: EnrichedWorkoutLogSet[];
+    exercises: Exercise[];
+  } | null>(null);
 
   // Date Picker Modal
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -203,6 +210,7 @@ export default function ModalsTestScreen() {
 
   // View Exercise Modal
   const [isViewExerciseVisible, setIsViewExerciseVisible] = useState(false);
+  const [viewExerciseId, setViewExerciseId] = useState<string | undefined>(undefined);
 
   // Create Exercise Modal
   const [isCreateExerciseVisible, setIsCreateExerciseVisible] = useState(false);
@@ -795,7 +803,18 @@ export default function ModalsTestScreen() {
               label="Open Workout History Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsWorkoutHistoryVisible(true)}
+              onPress={async () => {
+                const logs = await WorkoutService.getWorkoutHistory(undefined, 1);
+                if (logs[0]) {
+                  const data = await WorkoutService.getWorkoutWithDetails(logs[0].id);
+                  setWorkoutHistoryData({
+                    workoutLog: data.workoutLog,
+                    sets: data.sets,
+                    exercises: data.exercises,
+                  });
+                }
+                setIsWorkoutHistoryVisible(true);
+              }}
             />
           </View>
 
@@ -942,7 +961,11 @@ export default function ModalsTestScreen() {
               label="Open View Exercise Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsViewExerciseVisible(true)}
+              onPress={async () => {
+                const exercises = await ExerciseService.getAllExercises();
+                setViewExerciseId(exercises[0]?.id);
+                setIsViewExerciseVisible(true);
+              }}
             />
           </View>
 
@@ -1870,11 +1893,15 @@ export default function ModalsTestScreen() {
 
       <WorkoutSessionHistoryModal
         visible={isWorkoutHistoryVisible}
-        onClose={() => setIsWorkoutHistoryVisible(false)}
-        workoutLog={null}
-        sets={[]}
-        exercises={[]}
+        onClose={() => {
+          setIsWorkoutHistoryVisible(false);
+          setWorkoutHistoryData(null);
+        }}
+        workoutLog={workoutHistoryData?.workoutLog ?? null}
+        sets={workoutHistoryData?.sets ?? []}
+        exercises={workoutHistoryData?.exercises ?? []}
         currentSetOrder={null}
+        shouldShowTimer={false}
       />
 
       <WorkoutSessionOverviewModal
