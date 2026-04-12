@@ -174,12 +174,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           <StackedBarChart
             data={nutritionHistory.map((d) => ({
               x: d.date,
-              segments: [
-                d.protein * 4,
-                Math.max(0, d.carbs - d.fiber) * 4,
-                d.fat * 9,
-                d.fiber * 2,
-              ],
+              segments: [d.protein * 4, Math.max(0, d.carbs - d.fiber) * 4, d.fat * 9, d.fiber * 2],
             }))}
             height={200}
             stackColors={macroColors}
@@ -222,12 +217,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           <StackedBarLineChart
             data={combinedData.map((d, i) => ({
               x: i,
-              segments: [
-                d.protein * 4,
-                Math.max(0, d.carbs - d.fiber) * 4,
-                d.fat * 9,
-                d.fiber * 2,
-              ],
+              segments: [d.protein * 4, Math.max(0, d.carbs - d.fiber) * 4, d.fat * 9, d.fiber * 2],
               lineValue: d.weight,
             }))}
             height={200}

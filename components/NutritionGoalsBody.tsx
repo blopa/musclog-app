@@ -160,10 +160,10 @@ function MacrosDistributionChart({
   const digestibleCarbs = Math.max(0, carbs - fiber);
   const totalCals = protein * 4 + digestibleCarbs * 4 + fats * 9 + fiber * 2;
 
-  const proteinPercentage = totalCals > 0 ? (protein * 4 / totalCals) * 100 : 0;
-  const carbsPercentage = totalCals > 0 ? (digestibleCarbs * 4 / totalCals) * 100 : 0;
-  const fatsPercentage = totalCals > 0 ? (fats * 9 / totalCals) * 100 : 0;
-  const fiberPercentage = totalCals > 0 ? (fiber * 2 / totalCals) * 100 : 0;
+  const proteinPercentage = totalCals > 0 ? ((protein * 4) / totalCals) * 100 : 0;
+  const carbsPercentage = totalCals > 0 ? ((digestibleCarbs * 4) / totalCals) * 100 : 0;
+  const fatsPercentage = totalCals > 0 ? ((fats * 9) / totalCals) * 100 : 0;
+  const fiberPercentage = totalCals > 0 ? ((fiber * 2) / totalCals) * 100 : 0;
 
   // Insights are typically based on non-fiber macro split
   const macroInsight = getMacroInsight(proteinPercentage, carbsPercentage, fatsPercentage);

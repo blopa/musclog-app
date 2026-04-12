@@ -153,7 +153,9 @@ export default function NutritionGoalsResults() {
         carbs: savedGoal.carbs,
         fats: savedGoal.fats,
         proteinPct: Math.round((savedGoal.protein * 4 * 100) / effectiveTotal),
-        carbsPct: Math.round((Math.max(0, savedGoal.carbs - savedGoal.fiber) * 4 * 100) / effectiveTotal),
+        carbsPct: Math.round(
+          (Math.max(0, savedGoal.carbs - savedGoal.fiber) * 4 * 100) / effectiveTotal
+        ),
         fatsPct: Math.round((savedGoal.fats * 9 * 100) / effectiveTotal),
         goalLabel: null,
         startWeight: 0,

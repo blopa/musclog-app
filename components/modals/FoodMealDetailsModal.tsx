@@ -6,6 +6,7 @@ import {
   Droplet,
   Dumbbell,
   Edit3,
+  Leaf,
   Pencil,
   PlusCircle,
   RefreshCcwDot,
@@ -218,6 +219,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
     const rawServingSize = (product as any).servingSize;
     const isBranded = (product as any).dataType === 'Branded';
     const normFactor = isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+
     return {
       calories: toFiniteMacro(
         (mapUSDANutritient(nutrients, '1008') ??
@@ -837,6 +839,7 @@ export function FoodMealDetailsModal({
         const isBranded = (product as any).dataType === 'Branded';
         const normFactor =
           isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+
         return {
           calories:
             (mapUSDANutritient(nutrients, '1008') ??
@@ -863,8 +866,10 @@ export function FoodMealDetailsModal({
           saturatedFat:
             (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
             normFactor,
+          // Sodium is reported in MG by USDA; convert to grams for storage
           sodium:
-            (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+            ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+              1000) *
             normFactor,
         };
       }
@@ -943,8 +948,10 @@ export function FoodMealDetailsModal({
         saturatedFat:
           (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
           normFactor,
+        // Sodium is reported in MG by USDA; convert to grams for storage
         sodium:
-          (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+          ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+            1000) *
           normFactor,
       };
     }
