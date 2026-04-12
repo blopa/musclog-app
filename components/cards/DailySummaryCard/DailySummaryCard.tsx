@@ -311,12 +311,9 @@ export function DailySummaryCard({
                 ...(intuitiveMode ? blurFilter(4) : {}),
               }}
             >
-              {intuitiveMode
-                // TODO: use i18n
-                ? '0g'
-                : t('common.weightFormatG', {
-                    value: formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
-                  })}
+              {t('common.weightFormatG', {
+                value: intuitiveMode ? 0 : formatDecimal(secondaryNutrients.alcohol ?? 0, 1),
+              })}
             </Text>
           </View>
         ) : null}

@@ -4,6 +4,7 @@ import * as Sharing from 'expo-sharing';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -44,12 +45,10 @@ export function useChartCapture() {
       await writeAsStringAsync(fileUri, base64, { encoding: EncodingType.Base64 });
       await Sharing.shareAsync(fileUri, { mimeType: 'image/png' });
 
-      // TODO: use i18n here
-      showSnackbar('success', 'Chart saved');
+      showSnackbar('success', i18n.t('progress.chartExported'));
     } catch (error) {
       console.error('Chart capture failed:', error);
-      // TODO: use i18n here
-      showSnackbar('error', 'Failed to export chart');
+      showSnackbar('error', i18n.t('progress.chartExportFailed'));
     } finally {
       setIsCapturing(false);
     }

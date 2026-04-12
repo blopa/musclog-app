@@ -2,6 +2,7 @@ import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
+import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
 
@@ -226,11 +227,9 @@ export default class NutritionLog extends Model {
     }
     try {
       const food = await this.food;
-      // TODO: use i18n here
-      return food?.name ?? 'Unknown';
+      return food?.name ?? i18n.t('meals.unknownFood');
     } catch {
-      // TODO: use i18n here
-      return 'Unknown';
+      return i18n.t('meals.unknownFood');
     }
   }
 
@@ -241,14 +240,6 @@ export default class NutritionLog extends Model {
 
   // Helper method to get readable meal type
   getMealTypeLabel(): string {
-    const labels = {
-      // TODO: use i18n here
-      breakfast: 'Breakfast',
-      lunch: 'Lunch',
-      dinner: 'Dinner',
-      snack: 'Snack',
-      other: 'Other',
-    };
-    return labels[this.type] || this.type;
+    return i18n.t(`meals.tags.${this.type}`);
   }
 }
