@@ -21,7 +21,7 @@ import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { getRecentWorkoutInsights } from '@/utils/coachAI';
 import { formatAppInteger } from '@/utils/formatAppNumber';
-import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
@@ -157,8 +157,8 @@ export default function WorkoutSummaryScreen() {
               if (goal.goalType === '1rm' && goal.targetWeight) {
                 progress.push({
                   exerciseName: goal.exerciseNameSnapshot || prForExercise.exerciseName,
-                  current: prForExercise.newRecord.weight,
-                  target: goal.targetWeight,
+                  current: displayWeightKgNumeric(prForExercise.newRecord.weight, units),
+                  target: displayWeightKgNumeric(goal.targetWeight, units),
                   unit: weightUnit,
                 });
               }

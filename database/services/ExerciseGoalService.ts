@@ -4,12 +4,17 @@ import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import ExerciseGoal, { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
 
+/**
+ * Input for creating or updating an ExerciseGoal.
+ * Note: All weight values (targetWeight, baseline1rm) must be provided in KILOGRAMS.
+ * The UI layer is responsible for converting from/to Imperial units if necessary.
+ */
 export interface ExerciseGoalInput {
   goalType: ExerciseGoalType;
   exerciseId?: string;
   exerciseNameSnapshot?: string;
-  targetWeight?: number; // kg
-  baseline1rm?: number; // kg
+  targetWeight?: number; // Always in kg
+  baseline1rm?: number; // Always in kg
   targetSessionsPerWeek?: number;
   targetStepsPerDay?: number;
   targetDistanceM?: number;
