@@ -7,14 +7,24 @@ import {
   ChevronRight,
   Droplet,
   Leaf,
+  Minus,
   Percent,
+  Plus,
   Scale,
   TrendingUp,
   Wheat,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import {
   CALORIES_FOR_CARBS,
@@ -277,6 +287,12 @@ export function NutritionGoalsBody({
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const isInitialMount = useRef(true);
+  const isManualCalorieUpdate = useRef(false);
+  const [isCalorieEditing, setIsCalorieEditing] = useState(false);
+  const [calorieInputValue, setCalorieInputValue] = useState(() =>
+    (initialGoals?.totalCalories ?? 2450).toString()
+  );
+  const calorieInputRef = useRef<TextInput>(null);
 
   // Dynamically compute sensible max values for macros depending on eating phase
   const macroMax = useMemo(() => {
@@ -328,6 +344,57 @@ export function NutritionGoalsBody({
       });
     });
   }, []);
+
+  const handleCaloriesChange = useCallback(
+    (newCalories: number) => {
+      const sanitized = Math.max(0, newCalories);
+      if (sanitized === totalCalories) {
+        return;
+      }
+
+      isManualCalorieUpdate.current = true;
+      const oldCalories = totalCalories;
+
+      if (oldCalories > 0) {
+        const ratio = sanitized / oldCalories;
+        setProtein((prev) => Math.round(prev * ratio));
+        setCarbs((prev) => Math.round(prev * ratio));
+        setFats((prev) => Math.round(prev * ratio));
+        setFiber((prev) => Math.round(prev * ratio));
+      }
+
+      setTotalCalories(sanitized);
+    },
+    [totalCalories]
+  );
+
+  // Calorie input sync
+  useEffect(() => {
+    if (!isCalorieEditing) {
+      setCalorieInputValue(totalCalories.toString());
+    }
+  }, [totalCalories, isCalorieEditing]);
+
+  const handleCaloriePress = () => {
+    setIsCalorieEditing(true);
+    setTimeout(() => {
+      calorieInputRef.current?.focus();
+    }, 100);
+  };
+
+  const handleCalorieSubmit = () => {
+    calorieInputRef.current?.blur();
+  };
+
+  const handleCalorieBlur = () => {
+    setIsCalorieEditing(false);
+    const num = parseInt(calorieInputValue, 10);
+    if (!Number.isNaN(num)) {
+      handleCaloriesChange(num);
+    } else {
+      setCalorieInputValue(totalCalories.toString());
+    }
+  };
 
   // Auto-recalculate BMI when target weight changes (only while BMI is active)
   useEffect(() => {
@@ -441,6 +508,12 @@ export function NutritionGoalsBody({
       return;
     }
     isInitialMount.current = false;
+
+    if (isManualCalorieUpdate.current) {
+      isManualCalorieUpdate.current = false;
+      return;
+    }
+
     // Note: Fiber is typically included in the total carbs (4kcal/g) on labels,
     // but for accuracy we count net carbs at 4kcal/g and fiber at 2kcal/g.
     const digestibleCarbs = Math.max(0, carbs - fiber);
@@ -487,13 +560,53 @@ export function NutritionGoalsBody({
             <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
               {t('nutritionGoals.totalDailyCalories')}
             </Text>
-            <View className="flex-row items-baseline gap-2">
-              <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {formatInteger(totalCalories)}
-              </Text>
-              <Text className="text-lg font-semibold uppercase text-accent-primary">
-                {t('food.common.kcal')}
-              </Text>
+            <View className="w-full flex-row items-center justify-center gap-6">
+              <Pressable
+                onPress={() => handleCaloriesChange(totalCalories - 50)}
+                className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
+                style={{ backgroundColor: theme.colors.background.white10 }}
+                hitSlop={12}
+              >
+                <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              </Pressable>
+
+              <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
+                {isCalorieEditing ? (
+                  <TextInput
+                    ref={calorieInputRef}
+                    value={calorieInputValue}
+                    onChangeText={setCalorieInputValue}
+                    onBlur={handleCalorieBlur}
+                    onSubmitEditing={handleCalorieSubmit}
+                    keyboardType="numeric"
+                    className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
+                    style={{
+                      minWidth: 80,
+                      color: theme.colors.text.primary,
+                    }}
+                    returnKeyType="done"
+                    selectTextOnFocus
+                  />
+                ) : (
+                  <Pressable onPress={handleCaloriePress}>
+                    <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                      {formatInteger(totalCalories)}
+                    </Text>
+                  </Pressable>
+                )}
+                <Text className="text-lg font-semibold uppercase text-accent-primary">
+                  {t('food.common.kcal')}
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={() => handleCaloriesChange(totalCalories + 50)}
+                className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
+                style={{ backgroundColor: theme.colors.background.white10 }}
+                hitSlop={12}
+              >
+                <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              </Pressable>
             </View>
           </View>
         </View>
