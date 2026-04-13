@@ -88,5 +88,22 @@ describe('exerciseGoalProjection', () => {
       });
       expect(result.status).toBe('on_track');
     });
+
+    it('projects longer timelines for tier transitions', () => {
+      const dayMs = 24 * 60 * 60 * 1000;
+      // 80kg lifter at 75kg 1RM is Novice (RS 0.93)
+      // Target 100kg is Intermediate (RS 1.25)
+      const bodyWeight = 80;
+      const dataPoints: ProgressiveOverloadDataPoint[] = [
+        { date: 0, weight: 70, reps: 1, volume: 70, estimated1RM: 70 },
+        { date: 7 * dayMs, weight: 72.5, reps: 1, volume: 72.5, estimated1RM: 72.5 },
+        { date: 14 * dayMs, weight: 75, reps: 1, volume: 75, estimated1RM: 75 },
+      ];
+      const result = projectGoal({ dataPoints, baseline1rm: 70, targetWeight: 100, bodyWeight });
+
+      // Linear would be (100-75)/2.5 = 10 weeks.
+      // Non-linear should be > 10 weeks because the rate will drop when entering Intermediate tier (RS > 1.0).
+      expect(result.projectedWeeks).toBeGreaterThan(10);
+    });
   });
 });

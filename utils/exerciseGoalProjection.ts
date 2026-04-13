@@ -176,20 +176,48 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     loadMultiplier
   );
 
-  // Calculate projection
-  const remainingKg = targetWeight - currentEstimated1RM;
-  const projectedWeeks = remainingKg / weeklyProgressionRate;
+  // Calculate non-linear projection using a step-simulation.
+  // This accounts for the Law of Diminishing Returns: as the lifter approaches
+  // their target (and potentially moves into higher training tiers), their
+  // rate of progress naturally decelerates.
+  let sim1RM = currentEstimated1RM;
+  let simWeeks = 0;
+  const MAX_SIM_WEEKS = 104; // 2 years hard cap
 
-  // Cap at 2 years to avoid absurd projections
-  const MAX_WEEKS = 104; // 2 years
-  const cappedWeeks = Math.min(projectedWeeks, MAX_WEEKS);
+  // Determine user's current "Performance Ratio" vs the theoretical cap for their tier.
+  const currentRS = currentEstimated1RM / (bw * loadMultiplier);
+  const currentCapPercent = getRealisticWeeklyRateCapPercent(currentRS);
+  const currentCapKg = (currentCapPercent / 100) * currentEstimated1RM;
 
-  const projectedDate = new Date(Date.now() + cappedWeeks * 7 * 24 * 60 * 60 * 1000);
+  // performanceRatio > 1 means they are currently outperforming standard realistic bounds
+  // performanceRatio < 1 means they are progressing slower than the tier's capacity.
+  let performanceRatio = weeklyProgressionRate / Math.max(currentCapKg, 0.01);
+
+  while (sim1RM < targetWeight && simWeeks < MAX_SIM_WEEKS) {
+    simWeeks += 1;
+
+    // Recalculate cap for the simulated weight level
+    const simRS = sim1RM / (bw * loadMultiplier);
+    const simCapPercent = getRealisticWeeklyRateCapPercent(simRS);
+    const simCapKg = (simCapPercent / 100) * sim1RM;
+
+    // Projected gain for this week maintains the user's performance ratio but
+    // is constrained by the new tier's biological capacity.
+    const gain = simCapKg * performanceRatio;
+    sim1RM += Math.max(gain, 0.001); // Ensure simulation moves forward
+
+    // Slight decay in performance ratio (0.2% per week) to simulate the
+    // cumulative cost of long-term adaptation and diminishing returns.
+    performanceRatio *= 0.998;
+  }
+
+  const projectedWeeks = simWeeks;
+  const projectedDate = new Date(Date.now() + projectedWeeks * 7 * 24 * 60 * 60 * 1000);
 
   return {
     currentEstimated1RM,
     weeklyProgressionRate,
-    projectedWeeks: cappedWeeks,
+    projectedWeeks,
     projectedDate,
     progressPercent,
     deltaFromBaseline,
@@ -197,6 +225,16 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     dataPointCount: dataPoints.length,
     isRealistic,
   };
+}
+
+/**
+ * Returns the realistic upper bound for weekly progression (as % of 1RM)
+ * based on the lifter's training tier.
+ */
+function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
+  if (normalizedRS < 1.0) return 1.5; // Novice
+  if (normalizedRS < 1.8) return 0.5; // Intermediate
+  return 0.15; // Advanced
 }
 
 /**
@@ -220,20 +258,8 @@ export function isProgressionRateRealistic(
   }
 
   // Normalize relative strength using the loadMultiplier.
-  // E.g., Squat (multiplier ~1.2) vs Bench (multiplier ~0.8).
-  // A 100kg bench at 100kg BW is more "advanced" than a 100kg squat.
   const normalizedRelativeStrength = currentWeight / (bodyWeight * loadMultiplier);
-
-  let upperThreshold = 1.0; // Default fallback
-
-  // Dynamic thresholding based on normalized training tiers
-  if (normalizedRelativeStrength < 1.0) {
-    upperThreshold = 1.5; // Novice: primarily neural adaptations
-  } else if (normalizedRelativeStrength < 1.8) {
-    upperThreshold = 0.5; // Intermediate: morphological hypertrophy
-  } else {
-    upperThreshold = 0.15; // Advanced: approaching genetic asymptote
-  }
+  const upperThreshold = getRealisticWeeklyRateCapPercent(normalizedRelativeStrength);
 
   return percentPerWeek <= upperThreshold;
 }
