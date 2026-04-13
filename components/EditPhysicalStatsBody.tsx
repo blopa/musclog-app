@@ -1,3 +1,4 @@
+import { subYears } from 'date-fns';
 import { Ruler, Scale } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -266,6 +267,20 @@ export function EditPhysicalStatsBody({
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={getLocalCalendarYear(new Date())}
+        quickDates={[
+          {
+            label: t('datePicker.xYearsAgo', { count: 18 }),
+            date: localCalendarDayDate(subYears(new Date(), 18)),
+          },
+          {
+            label: t('datePicker.xYearsAgo', { count: 25 }),
+            date: localCalendarDayDate(subYears(new Date(), 25)),
+          },
+          {
+            label: t('datePicker.xYearsAgo', { count: 30 }),
+            date: localCalendarDayDate(subYears(new Date(), 30)),
+          },
+        ]}
       />
 
       <HeightPickerModal

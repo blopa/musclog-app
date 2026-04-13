@@ -530,6 +530,20 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           }}
           minYear={new Date().getFullYear()}
           maxYear={new Date().getFullYear() + 10}
+          quickDates={[
+            {
+              label: t('common.oneMonthFromNow'),
+              date: addMonths(new Date(), 1),
+            },
+            {
+              label: t('common.monthsFromNow', { count: 3 }),
+              date: addMonths(new Date(), 3),
+            },
+            {
+              label: t('common.monthsFromNow', { count: 6 }),
+              date: addMonths(new Date(), 6),
+            },
+          ]}
         />
       </View>
     );
