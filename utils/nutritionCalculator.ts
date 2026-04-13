@@ -913,9 +913,9 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
     fiber,
     eatingPhase,
     targetWeight: plan.projectedWeightKg,
-    targetBodyFat: plan.targetBodyFat ?? 0,
-    targetBMI: plan.targetBMI ?? 0,
-    targetFFMI: plan.targetFFMI ?? 0,
+    targetBodyFat: plan.targetBodyFat,
+    targetBMI: plan.targetBMI,
+    targetFFMI: plan.targetFFMI,
     targetDate: null,
   };
 }
@@ -1152,6 +1152,38 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     estimatedLeanChangeKg = comp.leanChangeKg;
   }
 
+  // Calculate target metrics for the plan
+  const targetBMI =
+    heightCm > 0
+      ? bmiFromWeightAndHeightM(projection.projectedWeightKg, heightCm / 100)
+      : undefined;
+
+  let targetBodyFat: number | undefined;
+  if (useBodyFat) {
+    if (weightGoal === 'lose') {
+      targetBodyFat = estimateTargetBodyFatWhenCutting(
+        weightKg,
+        projection.projectedWeightKg,
+        bodyFatPercent!
+      );
+    } else if (weightGoal === 'maintain') {
+      targetBodyFat = bodyFatPercent;
+    } else if (weightGoal === 'gain') {
+      const { fatChangeKg } = getWeightChangeComposition(
+        weightKg * (bodyFatPercent! / 100),
+        totalWeightChangeKg,
+        input.liftingExperience
+      );
+      const newFatMassKg = weightKg * (bodyFatPercent! / 100) + fatChangeKg;
+      targetBodyFat = parseFloat(((newFatMassKg / projection.projectedWeightKg) * 100).toFixed(1));
+    }
+  }
+
+  const targetFFMI =
+    heightCm > 0 && targetBodyFat !== undefined
+      ? ffmiFromWeightHeightAndBodyFat(projection.projectedWeightKg, heightCm / 100, targetBodyFat)
+      : undefined;
+
   return {
     bmr,
     tdee,
@@ -1167,5 +1199,8 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     ...(dailyCalorieSurplus !== undefined && { dailyCalorieSurplus }),
     ...(estimatedFatChangeKg !== undefined && { estimatedFatChangeKg }),
     ...(estimatedLeanChangeKg !== undefined && { estimatedLeanChangeKg }),
+    targetBMI,
+    targetBodyFat,
+    targetFFMI,
   };
 }

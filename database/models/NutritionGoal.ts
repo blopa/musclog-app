@@ -19,9 +19,9 @@ export default class NutritionGoal extends Model {
   @field('fiber') fiber!: number;
   @field('eating_phase') eatingPhase!: EatingPhase;
   @field('target_weight') targetWeight!: number;
-  @field('target_body_fat') targetBodyFat!: number;
-  @field('target_bmi') targetBmi!: number;
-  @field('target_ffmi') targetFfmi!: number;
+  @field('target_body_fat') targetBodyFat?: number | null;
+  @field('target_bmi') targetBmi?: number | null;
+  @field('target_ffmi') targetFfmi?: number | null;
   @field('target_date') targetDate?: number | null;
   @field('effective_until') effectiveUntil?: number | null;
   @field('created_at') createdAt!: number;

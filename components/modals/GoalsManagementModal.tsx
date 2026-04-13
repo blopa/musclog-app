@@ -34,7 +34,7 @@ interface GoalHistoryItem {
   carbs: number;
   fat: number;
   weight: number;
-  bodyFat: number;
+  bodyFat?: number | null;
 }
 
 interface CurrentGoal {
@@ -44,9 +44,9 @@ interface CurrentGoal {
   carbs: number;
   fat: number;
   targetWeight?: number;
-  bodyFat?: number;
-  ffmi?: number;
-  bmi?: number;
+  bodyFat?: number | null;
+  ffmi?: number | null;
+  bmi?: number | null;
   goalDate?: string;
 }
 

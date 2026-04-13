@@ -396,7 +396,7 @@ export default function SetGoals() {
       weightKg,
       heightCm,
       age: age > 0 ? age : 25,
-      activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
+      activityLevel: (user.activityLevel || 2) as 1 | 2 | 3 | 4 | 5,
       weightGoal: normalizeWeightGoal(user.weightGoal),
       fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
       liftingExperience: user.liftingExperience || 'intermediate',

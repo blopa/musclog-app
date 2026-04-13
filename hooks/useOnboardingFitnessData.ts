@@ -47,7 +47,7 @@ export function useOnboardingFitnessData() {
           height: DEFAULT_HEIGHT_CM,
           weightGoal: 'maintain',
           fitnessGoal: 'general',
-          activityLevel: 3,
+          activityLevel: 2,
           gender: 'other',
           experience: 'intermediate',
         });
@@ -96,7 +96,7 @@ export function useOnboardingFitnessData() {
       fatPercentage: currentFormData?.fatPercentage ?? initialData?.fatPercentage,
       weightGoal: currentFormData?.weightGoal ?? initialData?.weightGoal ?? 'maintain',
       fitnessGoal: currentFormData?.fitnessGoal ?? initialData?.fitnessGoal ?? 'general',
-      activityLevel: currentFormData?.activityLevel ?? initialData?.activityLevel ?? 3,
+      activityLevel: currentFormData?.activityLevel ?? initialData?.activityLevel ?? 2,
       gender: currentFormData?.gender ?? initialData?.gender ?? 'other',
       experience: currentFormData?.experience ?? initialData?.experience ?? 'intermediate',
     };
