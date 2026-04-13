@@ -90,6 +90,7 @@
       "disableEncryptionInputLabel": "Type the phrase below to confirm",
       "disableEncryptionConfirmPhrase": "make my data unsecure",
       "disableEncryptionHint": "You must type the exact phrase above to proceed.",
+      "biometricAuthPrompt": "Authenticate to disable encryption requirement",
       "exportFailedMessage": "An error occurred while exporting. Please try again.",
       "importFailedMessage": "An error occurred while importing. Please check the file and try again.",
       "importSuccessMessage": "Data imported successfully",
