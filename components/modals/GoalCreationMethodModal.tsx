@@ -1,4 +1,4 @@
-import { ChevronRight, PenLine, Sparkles } from 'lucide-react-native';
+import { Calculator, ChevronRight, PenLine, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -11,6 +11,7 @@ type GoalCreationMethodModalProps = {
   onClose: () => void;
   onSelectManual: () => void;
   onSelectGuided: () => void;
+  onSelectAutoCalculate: () => void;
 };
 
 export function GoalCreationMethodModal({
@@ -18,6 +19,7 @@ export function GoalCreationMethodModal({
   onClose,
   onSelectManual,
   onSelectGuided,
+  onSelectAutoCalculate,
 }: GoalCreationMethodModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -113,6 +115,59 @@ export function GoalCreationMethodModal({
               <ChevronRight
                 size={theme.iconSize.sm}
                 color={theme.colors.accent.primary}
+                style={{ marginTop: 2 }}
+              />
+            </View>
+          </View>
+        </Pressable>
+
+        {/* Auto-calculate option */}
+        <Pressable
+          onPress={onSelectAutoCalculate}
+          style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+        >
+          <View
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: theme.colors.border.light,
+              backgroundColor: theme.colors.background.card,
+              padding: 20,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+              <View
+                style={{
+                  borderRadius: 12,
+                  padding: 12,
+                  backgroundColor: theme.colors.background.secondaryDark,
+                }}
+              >
+                <Calculator size={theme.iconSize.md} color={theme.colors.text.secondary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.primary,
+                    marginBottom: 4,
+                  }}
+                >
+                  {t('goalsManagement.goalCreationMethod.autoCalculateTitle')}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.text.secondary,
+                  }}
+                >
+                  {t('goalsManagement.goalCreationMethod.autoCalculateDescription')}
+                </Text>
+              </View>
+              <ChevronRight
+                size={theme.iconSize.sm}
+                color={theme.colors.text.secondary}
                 style={{ marginTop: 2 }}
               />
             </View>

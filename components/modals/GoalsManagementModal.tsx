@@ -182,6 +182,14 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     setNutritionGoalsModalVisible(true);
   };
 
+  const handleSelectAutoCalculate = () => {
+    setCreationMethodModalVisible(false);
+    setSelectedGoal(null);
+    setIsEditing(false);
+    setPendingWizardPrefill(computedDefaults);
+    setNutritionGoalsModalVisible(true);
+  };
+
   const handleSelectGuidedCreation = () => {
     setCreationMethodModalVisible(false);
     setWizardModalVisible(true);
@@ -425,6 +433,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         onClose={() => setCreationMethodModalVisible(false)}
         onSelectManual={handleSelectManualCreation}
         onSelectGuided={handleSelectGuidedCreation}
+        onSelectAutoCalculate={handleSelectAutoCalculate}
       />
 
       <GoalWizardModal
