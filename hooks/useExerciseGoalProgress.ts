@@ -81,7 +81,9 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
       subscription = query.observe().subscribe({
         next: () => {
-          if (debounceTimer) clearTimeout(debounceTimer);
+          if (debounceTimer) {
+            clearTimeout(debounceTimer);
+          }
           debounceTimer = setTimeout(() => {
             loadData();
           }, 500);
@@ -94,24 +96,33 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         .query(Q.where('deleted_at', Q.eq(null)), Q.take(1));
 
       subscription = query.observe().subscribe({
-      next: () => {
-        if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          loadData();
-        }, 500);
-      },
-      error: (err: Error) => console.error('useExerciseGoalProgress subscription error:', err),
-    });
+        next: () => {
+          if (debounceTimer) {
+            clearTimeout(debounceTimer);
+          }
+          debounceTimer = setTimeout(() => {
+            loadData();
+          }, 500);
+        },
+        error: (err: Error) => console.error('useExerciseGoalProgress subscription error:', err),
+      });
+    }
 
     return () => {
       subscription.unsubscribe();
-      if (debounceTimer) clearTimeout(debounceTimer);
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
     };
   }, [goal.exerciseId, goal.goalType, loadData]);
 
   const projection = useMemo<ProjectionResult | null>(() => {
-    if (goal.goalType !== '1rm') return null;
-    if (goal.targetWeight === null || goal.baseline1rm === null) return null;
+    if (goal.goalType !== '1rm') {
+      return null;
+    }
+    if (goal.targetWeight === null || goal.baseline1rm === null) {
+      return null;
+    }
 
     return projectGoal({
       dataPoints,

@@ -24,7 +24,7 @@ interface GoalHistoryItem {
   carbs: number;
   fat: number;
   weight: number;
-  bodyFat: number;
+  bodyFat?: number | null;
 }
 
 interface GoalHistoryCardProps {
@@ -177,12 +177,14 @@ export function GoalHistoryCard({
                 <Text className="text-xs font-bold text-text-secondary">
                   {weightDisplay} {t(weightUnitKey)}
                 </Text>
-                <Text
-                  className="text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}
-                >
-                  {formatRoundedDecimal(goal.bodyFat, 1)}% {t('goalHistoryCard.bf')}
-                </Text>
+                {goal.bodyFat != null ? (
+                  <Text
+                    className="text-text-secondary"
+                    style={{ fontSize: theme.typography.fontSize.xs }}
+                  >
+                    {formatRoundedDecimal(goal.bodyFat, 1)}% {t('goalHistoryCard.bf')}
+                  </Text>
+                ) : null}
               </View>
             </View>
           </View>

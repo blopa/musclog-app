@@ -42,7 +42,9 @@
       "guidedDescription": "We'll guide you step-by-step to the right calorie and macro targets.",
       "recommended": "Recommended",
       "manualTitle": "Set Manually",
-      "manualDescription": "Enter your calories, macros, and targets directly."
+      "manualDescription": "Enter your calories, macros, and targets directly.",
+      "autoCalculateTitle": "Calculate it for me",
+      "autoCalculateDescription": "We calculate your targets using the Mifflin-St Jeor formula based on your profile."
     },
     "goalWizard": {
       "title": "Set Up Your Goal",

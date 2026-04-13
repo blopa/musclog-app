@@ -2,7 +2,11 @@ import { ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NutritionGoals, NutritionGoalsBody } from '@/components/NutritionGoalsBody';
+import {
+  NutritionGoals,
+  NutritionGoalsBody,
+  type NutritionGoalsInitialValues,
+} from '@/components/NutritionGoalsBody';
 import { Button } from '@/components/theme/Button';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -11,12 +15,12 @@ type NutritionGoalsModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: (goals: NutritionGoals) => void;
-  initialGoals?: Partial<NutritionGoals>;
+  initialGoals: NutritionGoalsInitialValues;
   isEditing?: boolean;
 };
 
 // Re-export for convenience
-export type { NutritionGoals };
+export type { NutritionGoals, NutritionGoalsInitialValues };
 
 export function NutritionGoalsModal({
   visible,

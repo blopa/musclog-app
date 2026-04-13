@@ -112,14 +112,14 @@ export class ExerciseGoalService {
       if (existingGoalToSupersede) {
         await existingGoalToSupersede.update((record) => {
           record.effectiveUntil = now;
-          record.updatedAt = now;
+          record.updatedAt = new Date(now);
         });
       }
 
       for (const goal of existingConsistencyGoals) {
         await goal.update((record) => {
           record.effectiveUntil = now;
-          record.updatedAt = now;
+          record.updatedAt = new Date(now);
         });
       }
 

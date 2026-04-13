@@ -92,6 +92,7 @@ import { Button } from '@/components/theme/Button';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, ExerciseService, WorkoutService } from '@/database/services';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 
 export default function ModalsTestScreen() {
@@ -100,6 +101,7 @@ export default function ModalsTestScreen() {
 
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
+  const { defaults: nutritionGoalsTestDefaults } = useDefaultNutritionGoals();
 
   // Setting Modal
   const [isBasicSettingsVisible, setIsBasicSettingsVisible] = useState(false);
@@ -1667,6 +1669,7 @@ export default function ModalsTestScreen() {
         visible={isNutritionGoalsVisible}
         onClose={() => setIsNutritionGoalsVisible(false)}
         onSave={handleSaveGoals}
+        initialGoals={nutritionGoalsTestDefaults}
       />
 
       <EditPersonalInfoModal

@@ -39,6 +39,7 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
             iconColor: theme.colors.text.primary,
             iconBgColor: theme.colors.text.primary20,
             title: t('common.edit'),
+            description: '',
             onPress: onEdit,
           },
         ]
@@ -59,7 +60,9 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
   ];
 
   const render1RMGoal = () => {
-    if (!projection) return null;
+    if (!projection) {
+      return null;
+    }
 
     const currentWeightDisplay = formatDisplayWeightKg(
       locale,
@@ -67,7 +70,11 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
       projection.currentEstimated1RM
     );
     const targetWeightDisplay = formatDisplayWeightKg(locale, units, goal.targetWeight ?? 0);
-    const deltaDisplay = formatDisplayWeightKg(locale, units, Math.abs(projection.deltaFromBaseline));
+    const deltaDisplay = formatDisplayWeightKg(
+      locale,
+      units,
+      Math.abs(projection.deltaFromBaseline)
+    );
 
     return (
       <View className="p-4">
@@ -96,9 +103,11 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
             <Text className="text-sm text-text-secondary">
               {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
             </Text>
-            <Text className="text-sm font-bold text-text-primary">{projection.progressPercent}%</Text>
+            <Text className="text-sm font-bold text-text-primary">
+              {projection.progressPercent}%
+            </Text>
           </View>
-          <View className="h-2 w-full overflow-hidden rounded-full bg-surface-variant">
+          <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
             <View
               className="h-full bg-accent-primary"
               style={{ width: `${projection.progressPercent}%` }}
@@ -126,20 +135,20 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
         </View>
 
         {projection.status === 'achieved' ? (
-          <View className="rounded-lg bg-status-success10 p-3">
-            <Text className="text-center font-bold text-status-success">
+          <View className="bg-status-success10 rounded-lg p-3">
+            <Text className="text-status-success text-center font-bold">
               {t('exerciseGoals.card.achieved')}
             </Text>
           </View>
         ) : projection.status === 'stalling' ? (
-          <View className="rounded-lg bg-status-warning10 p-3">
-            <Text className="text-center text-sm font-medium text-status-warning">
+          <View className="bg-status-warning10 rounded-lg p-3">
+            <Text className="text-status-warning text-center text-sm font-medium">
               {t('exerciseGoals.card.stalling')}
             </Text>
           </View>
         ) : projection.status === 'declining' ? (
-          <View className="rounded-lg bg-status-error10 p-3">
-            <Text className="text-center text-sm font-medium text-status-error">
+          <View className="bg-status-error10 rounded-lg p-3">
+            <Text className="text-status-error text-center text-sm font-medium">
               {t('exerciseGoals.card.declining')}
             </Text>
           </View>
@@ -201,15 +210,17 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
   };
 
   return (
-    <GenericCard variant="card" className="mb-4">
-      {goal.goalType === '1rm' ? render1RMGoal() : renderConsistencyGoal()}
+    <View className="mb-4">
+      <GenericCard variant="card">
+        {goal.goalType === '1rm' ? render1RMGoal() : renderConsistencyGoal()}
 
-      <BottomPopUpMenu
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        title={t('exerciseGoals.title')}
-        items={menuItems}
-      />
-    </GenericCard>
+        <BottomPopUpMenu
+          visible={menuVisible}
+          onClose={() => setMenuVisible(false)}
+          title={t('exerciseGoals.title')}
+          items={menuItems}
+        />
+      </GenericCard>
+    </View>
   );
 }

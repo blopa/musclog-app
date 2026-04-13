@@ -26,11 +26,13 @@ export interface ProjectionResult {
  * Applies an exponential decay factor to prioritize recent data.
  */
 export function weightedLinearRegressionSlope(
-  points: Array<{ x: number; y: number }>,
+  points: { x: number; y: number }[],
   halfLifeWeeks: number = 12
 ): number {
   const n = points.length;
-  if (n < 2) return 0;
+  if (n < 2) {
+    return 0;
+  }
 
   const lambda = Math.log(2) / halfLifeWeeks;
   const currentX = points[n - 1].x;
@@ -53,7 +55,9 @@ export function weightedLinearRegressionSlope(
   }
 
   const denominator = sumW * sumWXX - sumWX * sumWX;
-  if (Math.abs(denominator) < 1e-10) return 0;
+  if (Math.abs(denominator) < 1e-10) {
+    return 0;
+  }
 
   return (sumW * sumWXY - sumWX * sumWY) / denominator;
 }
@@ -251,8 +255,12 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
  * based on the lifter's training tier.
  */
 function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
-  if (normalizedRS < 1.0) return 1.5; // Novice
-  if (normalizedRS < 1.8) return 0.5; // Intermediate
+  if (normalizedRS < 1.0) {
+    return 1.5;
+  } // Novice
+  if (normalizedRS < 1.8) {
+    return 0.5;
+  } // Intermediate
   return 0.15; // Advanced
 }
 
@@ -268,7 +276,9 @@ export function isProgressionRateRealistic(
   loadMultiplier: number = 1.0,
   userGender: 'male' | 'female' | 'other' = 'male'
 ): boolean {
-  if (currentWeight <= 0) return true;
+  if (currentWeight <= 0) {
+    return true;
+  }
 
   const percentPerWeek = (requiredRatePerWeek / currentWeight) * 100;
 

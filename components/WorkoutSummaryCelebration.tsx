@@ -1,12 +1,10 @@
-import { Home, MessageCircle } from 'lucide-react-native';
+import { Home, MessageCircle, Trophy } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
-
-import { Trophy } from 'lucide-react-native';
 
 import { GenericCard } from './cards/GenericCard';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
@@ -172,7 +170,7 @@ export function WorkoutSummaryCelebration({
                           </Text>
                         </View>
                       </View>
-                      <View className="h-2 w-full overflow-hidden rounded-full bg-surface-variant">
+                      <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
                         <View
                           className="h-full bg-accent-primary"
                           style={{ width: `${progress}%` }}

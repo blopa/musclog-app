@@ -25,9 +25,9 @@ export { default as WorkoutTemplateExercise } from './WorkoutTemplateExercise';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
-export type { ExerciseGoalType } from './ExerciseGoal';
 export type { ChatMessageType, ChatSender } from './ChatMessage';
 export type { EquipmentType, ExerciseSource, MechanicType, MuscleGroup } from './Exercise';
+export type { ExerciseGoalType } from './ExerciseGoal';
 export type { MicrosData } from './Food';
 export type { BirthControlType, MenstrualCycleUpdate } from './MenstrualCycle';
 export type { EatingPhase } from './NutritionGoal';

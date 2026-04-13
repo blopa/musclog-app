@@ -6,9 +6,9 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
-import Exercise from '@/database/models/Exercise';
 import { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
 import { ExerciseService, UserMetricService, WorkoutAnalytics } from '@/database/services';
+import { UserService } from '@/database/services/UserService';
 import { type ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -23,7 +23,7 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
-import { ExercisesModal } from './ExercisesModal';
+import ExercisesModal, { type ExerciseData } from './ExercisesModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type CreationStep = 'type' | 'exercise' | 'target' | 'summary';
@@ -42,12 +42,12 @@ export default function ExerciseGoalCreationModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { units } = useSettings();
-  const { locale } = useFormatAppNumber();
+  const { locale, formatRoundedDecimal } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const [step, setStep] = useState<CreationStep>('type');
   const [goalType, setGoalType] = useState<ExerciseGoalType>('1rm');
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseData | null>(null);
   const [targetWeightDisplay, setTargetWeightDisplay] = useState(
     units === 'imperial' ? '225' : '100'
   );
@@ -136,16 +136,25 @@ export default function ExerciseGoalCreationModal({
   }, [projection]);
 
   const handleNext = () => {
-    if (step === 'type') setStep('exercise');
-    else if (step === 'exercise') setStep('target');
-    else if (step === 'target') setStep('summary');
+    if (step === 'type') {
+      setStep('exercise');
+    } else if (step === 'exercise') {
+      setStep('target');
+    } else if (step === 'target') {
+      setStep('summary');
+    }
   };
 
   const handleBack = () => {
-    if (step === 'exercise') setStep('type');
-    else if (step === 'target') setStep('exercise');
-    else if (step === 'summary') setStep('target');
-    else onClose();
+    if (step === 'exercise') {
+      setStep('type');
+    } else if (step === 'target') {
+      setStep('exercise');
+    } else if (step === 'summary') {
+      setStep('target');
+    } else {
+      onClose();
+    }
   };
 
   const handleSave = () => {
@@ -170,11 +179,11 @@ export default function ExerciseGoalCreationModal({
           handleNext();
         }}
         className={`rounded-2xl border p-4 ${
-          goalType === '1rm' ? 'border-accent-primary bg-accent-primary10' : 'border-border bg-card'
+          goalType === '1rm' ? 'bg-accent-primary10 border-accent-primary' : 'border-border bg-card'
         }`}
       >
         <View className="flex-row items-center gap-4">
-          <View className="rounded-xl bg-accent-primary20 p-3">
+          <View className="bg-accent-primary20 rounded-xl p-3">
             <TrendingUp size={24} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
@@ -195,12 +204,12 @@ export default function ExerciseGoalCreationModal({
         }}
         className={`rounded-2xl border p-4 ${
           goalType === 'consistency'
-            ? 'border-accent-primary bg-accent-primary10'
+            ? 'bg-accent-primary10 border-accent-primary'
             : 'border-border bg-card'
         }`}
       >
         <View className="flex-row items-center gap-4">
-          <View className="rounded-xl bg-accent-primary20 p-3">
+          <View className="bg-accent-primary20 rounded-xl p-3">
             <Dumbbell size={24} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
@@ -215,9 +224,9 @@ export default function ExerciseGoalCreationModal({
       </Pressable>
 
       {['steps_per_day', 'distance_per_session', 'pace', 'duration'].map((type) => (
-        <View key={type} className="rounded-2xl border border-border bg-card p-4 opacity-50">
+        <View key={type} className="border-border bg-card rounded-2xl border p-4 opacity-50">
           <View className="flex-row items-center gap-4">
-            <View className="rounded-xl bg-surface-variant p-3">
+            <View className="bg-surface-variant rounded-xl p-3">
               <TrendingUp size={24} color={theme.colors.text.tertiary} />
             </View>
             <View className="flex-1">
@@ -238,7 +247,7 @@ export default function ExerciseGoalCreationModal({
     <View className="gap-4">
       <Pressable
         onPress={() => setExercisePickerVisible(true)}
-        className="rounded-2xl border border-border bg-card p-4"
+        className="border-border bg-card rounded-2xl border p-4"
       >
         <Text className="text-sm text-text-secondary">
           {t('exerciseGoals.creation.chooseExercise')}
@@ -248,12 +257,12 @@ export default function ExerciseGoalCreationModal({
         </Text>
       </Pressable>
 
-      {isLoadingHistory && (
+      {isLoadingHistory ? (
         <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-      )}
+      ) : null}
 
-      {selectedExercise && !isLoadingHistory && (
-        <View className="rounded-2xl bg-surface-variant p-4">
+      {selectedExercise && !isLoadingHistory ? (
+        <View className="bg-surface-variant rounded-2xl p-4">
           {current1RM !== null ? (
             <Text className="text-sm text-text-primary">
               {t('exerciseGoals.creation.currentEstimated1RM', {
@@ -267,12 +276,12 @@ export default function ExerciseGoalCreationModal({
             </Text>
           )}
         </View>
-      )}
+      ) : null}
 
       <ExercisesModal
         visible={exercisePickerVisible}
         onClose={() => setExercisePickerVisible(false)}
-        onSelectExercise={(exercise) => {
+        onSelectExercise={(exercise: ExerciseData) => {
           setSelectedExercise(exercise);
           setExercisePickerVisible(false);
           handleNext();
@@ -289,14 +298,18 @@ export default function ExerciseGoalCreationModal({
             label={t('exerciseGoals.creation.targetWeight', { unit: t(weightUnitKey) })}
             value={parseFloat(targetWeightDisplay)}
             onChangeValue={(v) => setTargetWeightDisplay(v.toString())}
-            onIncrement={() => setTargetWeightDisplay((parseFloat(targetWeightDisplay) + 2.5).toString())}
-            onDecrement={() => setTargetWeightDisplay((parseFloat(targetWeightDisplay) - 2.5).toString())}
+            onIncrement={() =>
+              setTargetWeightDisplay((parseFloat(targetWeightDisplay) + 2.5).toString())
+            }
+            onDecrement={() =>
+              setTargetWeightDisplay((parseFloat(targetWeightDisplay) - 2.5).toString())
+            }
             unit={t(weightUnitKey)}
             step={2.5}
           />
 
-          {projection?.projectedWeeks && (
-            <View className="mt-4 rounded-xl bg-accent-primary10 p-4">
+          {projection?.projectedWeeks ? (
+            <View className="bg-accent-primary10 mt-4 rounded-xl p-4">
               <Text className="text-sm font-bold text-accent-primary">
                 {t('exerciseGoals.creation.projectionPreview', {
                   weeks: Math.ceil(projection.projectedWeeks),
@@ -307,9 +320,9 @@ export default function ExerciseGoalCreationModal({
                 })}
               </Text>
             </View>
-          )}
+          ) : null}
 
-          <View className="mt-4 flex-row items-start gap-3 rounded-xl bg-surface-variant p-4">
+          <View className="bg-surface-variant mt-4 flex-row items-start gap-3 rounded-xl p-4">
             <Lightbulb size={20} color={theme.colors.accent.primary} />
             <Text className="flex-1 text-sm text-text-secondary">
               {isRealistic
@@ -326,8 +339,7 @@ export default function ExerciseGoalCreationModal({
           onIncrement={() => setSessionsPerWeek((v) => Math.min(7, v + 1))}
           onDecrement={() => setSessionsPerWeek((v) => Math.max(1, v - 1))}
           step={1}
-          min={1}
-          max={7}
+          maxFractionDigits={0}
         />
       )}
 
@@ -352,7 +364,7 @@ export default function ExerciseGoalCreationModal({
 
   const renderSummaryStep = () => (
     <View className="gap-4">
-      <View className="rounded-2xl bg-card p-4 border border-border">
+      <View className="bg-card border-border rounded-2xl border p-4">
         <Text className="mb-2 text-xs font-bold uppercase tracking-widest text-text-tertiary">
           {t('exerciseGoals.creation.summaryTitle')}
         </Text>
@@ -363,31 +375,35 @@ export default function ExerciseGoalCreationModal({
               {t(`exerciseGoals.goalTypes.${goalType}`)}
             </Text>
           </View>
-          {selectedExercise && (
+          {selectedExercise ? (
             <View className="flex-row justify-between">
               <Text className="text-text-secondary">Exercise</Text>
               <Text className="font-bold text-text-primary">{selectedExercise.name}</Text>
             </View>
-          )}
-          {goalType === '1rm' && (
+          ) : null}
+          {goalType === '1rm' ? (
             <View className="flex-row justify-between">
               <Text className="text-text-secondary">Target</Text>
               <Text className="font-bold text-text-primary">
                 {targetWeightDisplay} {t(weightUnitKey)}
               </Text>
             </View>
-          )}
-          {goalType === 'consistency' && (
+          ) : null}
+          {goalType === 'consistency' ? (
             <View className="flex-row justify-between">
               <Text className="text-text-secondary">Frequency</Text>
               <Text className="font-bold text-text-primary">{sessionsPerWeek}x / week</Text>
             </View>
-          )}
+          ) : null}
           <View className="flex-row justify-between">
             <Text className="text-text-secondary">Target Date</Text>
             <Text className="font-bold text-text-primary">
               {targetDate
-                ? targetDate.toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' })
+                ? targetDate.toLocaleDateString(locale, {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
                 : 'Not set'}
             </Text>
           </View>
@@ -408,7 +424,7 @@ export default function ExerciseGoalCreationModal({
         label={step === 'summary' ? t('exerciseGoals.creation.save') : t('common.next')}
         variant="gradientCta"
         className="flex-2"
-        disabled={step === 'exercise' && !selectedExercise}
+        disabled={step === 'exercise' ? !selectedExercise : false}
         onPress={step === 'summary' ? handleSave : handleNext}
       />
     </View>
@@ -421,19 +437,22 @@ export default function ExerciseGoalCreationModal({
       title={t('exerciseGoals.creation.title')}
       footer={footer}
     >
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        {renderStepContent()}
-      </ScrollView>
+      <ScrollView contentContainerStyle={{ padding: 20 }}>{renderStepContent()}</ScrollView>
     </FullScreenModal>
   );
 
   function renderStepContent() {
     switch (step) {
-      case 'type': return renderTypeStep();
-      case 'exercise': return renderExerciseStep();
-      case 'target': return renderTargetStep();
-      case 'summary': return renderSummaryStep();
-      default: return null;
+      case 'type':
+        return renderTypeStep();
+      case 'exercise':
+        return renderExerciseStep();
+      case 'target':
+        return renderTargetStep();
+      case 'summary':
+        return renderSummaryStep();
+      default:
+        return null;
     }
   }
 }

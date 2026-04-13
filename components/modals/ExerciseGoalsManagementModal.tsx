@@ -60,11 +60,7 @@ export default function ExerciseGoalsManagementModal({
   };
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('exerciseGoals.title')}
-    >
+    <FullScreenModal visible={visible} onClose={onClose} title={t('exerciseGoals.title')}>
       <ScrollView contentContainerStyle={{ padding: 20 }}>
         <View className="mb-6 flex-row items-center justify-between">
           <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
@@ -72,7 +68,7 @@ export default function ExerciseGoalsManagementModal({
           </Text>
           <Button
             label={t('exerciseGoals.newGoal')}
-            variant="ghost"
+            variant="outline"
             size="sm"
             icon={Plus}
             onPress={() => setCreationModalVisible(true)}
@@ -80,7 +76,7 @@ export default function ExerciseGoalsManagementModal({
         </View>
 
         {activeGoals.length === 0 && !isLoadingActive ? (
-          <View className="mb-8 rounded-2xl bg-surface-variant p-8 items-center">
+          <View className="bg-surface-variant mb-8 items-center rounded-2xl p-8">
             <Text className="text-center text-sm text-text-secondary">
               {t('exerciseGoals.emptyState')}
             </Text>
@@ -97,7 +93,7 @@ export default function ExerciseGoalsManagementModal({
           </View>
         )}
 
-        {historyGoals.length > 0 && (
+        {historyGoals.length > 0 ? (
           <View>
             <Text className="mb-6 text-xs font-bold uppercase tracking-widest text-text-secondary">
               {t('exerciseGoals.history')}
@@ -106,19 +102,19 @@ export default function ExerciseGoalsManagementModal({
               <ExerciseGoalHistoryCard
                 key={goal.id}
                 goal={goal}
-                isLast={index === historyGoals.length - 1 && !hasMore}
+                isLast={index === historyGoals.length - 1 ? !hasMore : false}
               />
             ))}
-            {hasMore && (
+            {hasMore ? (
               <Button
                 label={t('common.loadMore')}
-                variant="ghost"
+                variant="outline"
                 onPress={loadMore}
                 loading={isLoadingHistory}
               />
-            )}
+            ) : null}
           </View>
-        )}
+        ) : null}
       </ScrollView>
 
       <ExerciseGoalCreationModal

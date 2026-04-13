@@ -1,5 +1,5 @@
 import { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
-import { projectGoal, weightedLinearRegressionSlope } from '../exerciseGoalProjection';
+import { projectGoal, weightedLinearRegressionSlope } from '@/utils/exerciseGoalProjection';
 
 describe('exerciseGoalProjection', () => {
   describe('weightedLinearRegressionSlope', () => {
@@ -56,7 +56,7 @@ describe('exerciseGoalProjection', () => {
         baseline1rm: 115,
         targetWeight: 130,
         bodyWeight,
-        loadMultiplier: 1.4
+        loadMultiplier: 1.4,
       });
       expect(result.status).toBe('on_track');
       expect(result.isRealistic).toBe(true);
@@ -76,7 +76,7 @@ describe('exerciseGoalProjection', () => {
         targetWeight: 90,
         bodyWeight: 60,
         loadMultiplier: 1.0,
-        userGender: 'female'
+        userGender: 'female',
       });
       // 1.5% weekly gain (1.2kg on 80kg) should be unrealistic for advanced female
       expect(result.isRealistic).toBe(false);

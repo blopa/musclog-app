@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { ChevronRight, Dumbbell, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,10 +12,18 @@ import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import {
+  calculateMacros,
+  fiberFromCalories,
+  getEffectiveKcalPerKgGain,
+  getEffectiveKcalPerKgWeightLoss,
+  getMinCalories,
+} from '@/utils/nutritionCalculator';
 import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -24,7 +32,11 @@ import ExerciseGoalsManagementModal from './ExerciseGoalsManagementModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GoalCreationMethodModal } from './GoalCreationMethodModal';
 import { GoalWizardModal } from './GoalWizardModal';
-import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
+import {
+  NutritionGoals,
+  NutritionGoalsInitialValues,
+  NutritionGoalsModal,
+} from './NutritionGoalsModal';
 
 interface GoalHistoryItem {
   id: number;
@@ -35,7 +47,7 @@ interface GoalHistoryItem {
   carbs: number;
   fat: number;
   weight: number;
-  bodyFat: number;
+  bodyFat?: number | null;
 }
 
 interface CurrentGoal {
@@ -45,9 +57,9 @@ interface CurrentGoal {
   carbs: number;
   fat: number;
   targetWeight?: number;
-  bodyFat?: number;
-  ffmi?: number;
-  bmi?: number;
+  bodyFat?: number | null;
+  ffmi?: number | null;
+  bmi?: number | null;
   goalDate?: string;
 }
 
@@ -56,7 +68,7 @@ type GoalsManagementModalProps = {
   onClose: () => void;
 };
 
-function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
+function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
   return {
     totalCalories: goal.totalCalories,
     protein: goal.protein,
@@ -126,12 +138,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     };
   }, [current, dateFnsLocale]);
 
-  const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
+  const currentGoalsData = useMemo<NutritionGoalsInitialValues | undefined>(() => {
     if (!current) {
       return undefined;
     }
     return goalToFormData(current);
   }, [current]);
+
+  const defaultEatingPhase =
+    pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
+  const { defaults: computedDefaults, planData } = useDefaultNutritionGoals(defaultEatingPhase);
 
   // Keep raw NutritionGoal alongside display data to enable edit/delete
   const historyWithRaw = useMemo(
@@ -172,6 +188,14 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleSelectManualCreation = () => {
     setCreationMethodModalVisible(false);
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleSelectAutoCalculate = () => {
+    setCreationMethodModalVisible(false);
+    setSelectedGoal(null);
+    setIsEditing(false);
+    setPendingWizardPrefill(computedDefaults);
     setNutritionGoalsModalVisible(true);
   };
 
@@ -286,10 +310,69 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
   };
 
-  const editModalInitialGoals =
-    isEditing && selectedGoal
-      ? goalToFormData(selectedGoal)
-      : (pendingWizardPrefill ?? currentGoalsData);
+  // TODO: should this be its own hook?
+  const editModalInitialGoals = useMemo(() => {
+    if (isEditing && selectedGoal) {
+      return goalToFormData(selectedGoal);
+    }
+
+    if (pendingWizardPrefill) {
+      const base = { ...computedDefaults, ...pendingWizardPrefill };
+
+      // If the wizard supplied a target weight + date, compute the required daily
+      // calorie deficit/surplus synchronously using already-loaded plan data (TDEE,
+      // current weight, etc.). This avoids a race condition where the async hook
+      // hasn't finished recomputing by the time the modal opens.
+      const { targetWeight, targetDate, eatingPhase } = pendingWizardPrefill;
+      if (
+        targetWeight != null &&
+        targetDate != null &&
+        eatingPhase != null &&
+        eatingPhase !== 'maintain' &&
+        planData != null &&
+        planData.tdee > 0
+      ) {
+        const daysToGoal = differenceInCalendarDays(new Date(targetDate), new Date());
+        const weightDeltaKg = targetWeight - planData.currentWeightKg;
+
+        if (daysToGoal > 0 && Math.abs(weightDeltaKg) >= 0.1) {
+          let dateAwareCalories: number;
+
+          if (weightDeltaKg < 0) {
+            const fatMassKg =
+              planData.bodyFatPercent != null
+                ? planData.currentWeightKg * (planData.bodyFatPercent / 100)
+                : planData.currentWeightKg * 0.25;
+            const kcalPerKg = getEffectiveKcalPerKgWeightLoss(fatMassKg, weightDeltaKg);
+            const dailyDeficit = (Math.abs(weightDeltaKg) * kcalPerKg) / daysToGoal;
+            const minCals = getMinCalories(planData.gender, planData.bmr);
+            dateAwareCalories = Math.max(minCals, Math.round(planData.tdee - dailyDeficit));
+          } else {
+            const kcalPerKg = getEffectiveKcalPerKgGain(planData.liftingExperience);
+            const dailySurplus = Math.min(
+              (weightDeltaKg * kcalPerKg) / daysToGoal,
+              1000 // cap at +1000 kcal/day
+            );
+            dateAwareCalories = Math.round(planData.tdee + dailySurplus);
+          }
+
+          const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal);
+          return {
+            ...base,
+            totalCalories: dateAwareCalories,
+            protein: macros.protein,
+            carbs: macros.carbs,
+            fats: macros.fats,
+            fiber: fiberFromCalories(dateAwareCalories),
+          };
+        }
+      }
+
+      return base;
+    }
+
+    return currentGoalsData ?? computedDefaults;
+  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults, planData]);
 
   return (
     <>
@@ -413,7 +496,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
                 <TouchableOpacity
                   onPress={() => setExerciseGoalsModalVisible(true)}
-                  className="rounded-xl border border-border bg-surface p-4"
+                  className="border-border bg-surface rounded-xl border p-4"
                   activeOpacity={0.7}
                 >
                   <View className="flex-row items-center justify-between">
@@ -450,6 +533,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         onClose={() => setCreationMethodModalVisible(false)}
         onSelectManual={handleSelectManualCreation}
         onSelectGuided={handleSelectGuidedCreation}
+        onSelectAutoCalculate={handleSelectAutoCalculate}
       />
 
       <GoalWizardModal

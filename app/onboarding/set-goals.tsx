@@ -396,7 +396,7 @@ export default function SetGoals() {
       weightKg,
       heightCm,
       age: age > 0 ? age : 25,
-      activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
+      activityLevel: (user.activityLevel || 2) as 1 | 2 | 3 | 4 | 5,
       weightGoal: normalizeWeightGoal(user.weightGoal),
       fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
       liftingExperience: user.liftingExperience || 'intermediate',
@@ -409,14 +409,15 @@ export default function SetGoals() {
     const plan = calculateNutritionPlan(input);
     const heightM = convert(heightCm, 'cm').to('m') as number;
 
-    const targetBMI = heightM > 0 ? bmiFromWeightAndHeightM(plan.projectedWeightKg, heightM) : 0;
+    const targetBMI =
+      heightM > 0 ? bmiFromWeightAndHeightM(plan.projectedWeightKg, heightM) : undefined;
     const eatingPhase: EatingPhase =
       plan.targetCalories < plan.tdee
         ? 'cut'
         : plan.targetCalories > plan.tdee
           ? 'bulk'
           : 'maintain';
-    let targetBodyFat = 0;
+    let targetBodyFat: number | undefined;
     if (eatingPhase === 'cut' && rawBodyFat != null && rawBodyFat >= 1 && rawBodyFat <= 99) {
       targetBodyFat = estimateTargetBodyFatWhenCutting(
         plan.currentWeightKg,
@@ -426,11 +427,11 @@ export default function SetGoals() {
     } else if (eatingPhase === 'maintain' && rawBodyFat != null) {
       targetBodyFat = rawBodyFat;
     }
-    const bodyFatForFfmi = targetBodyFat > 0 ? targetBodyFat : (rawBodyFat ?? 0);
+    const bodyFatForFfmi = targetBodyFat ?? rawBodyFat;
     const targetFFMI =
-      heightM > 0 && bodyFatForFfmi >= 0
+      heightM > 0 && bodyFatForFfmi != null
         ? ffmiFromWeightHeightAndBodyFat(plan.projectedWeightKg, heightM, bodyFatForFfmi)
-        : 0;
+        : undefined;
 
     // Set a goal date for 90 days from now if the eatingPhase is either cut or bulk
     const goalDate =

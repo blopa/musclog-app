@@ -127,10 +127,23 @@ export const migrations = schemaMigrations({
       ],
     },
 
-    // Version 8: Add exercise_goals table for strength (1RM) and consistency tracking.
+    // Version 8: Make target body-composition columns nullable and backfill
+    // existing sentinel 0 values to NULL. Body fat, BMI, and FFMI can all be
+    // unset, but the schema was missing isOptional so WatermelonDB sanitized
+    // missing values to 0 on read/write.
     {
       toVersion: 8,
       steps: [
+        unsafeExecuteSql(
+          'UPDATE nutrition_goals SET target_body_fat = NULL WHERE target_body_fat = 0;'
+        ),
+        unsafeExecuteSql('UPDATE nutrition_goals SET target_bmi = NULL WHERE target_bmi = 0;'),
+        unsafeExecuteSql('UPDATE nutrition_goals SET target_ffmi = NULL WHERE target_ffmi = 0;'),
+        unsafeExecuteSql(
+          'UPDATE nutrition_checkins SET target_body_fat = NULL WHERE target_body_fat = 0;'
+        ),
+        unsafeExecuteSql('UPDATE nutrition_checkins SET target_bmi = NULL WHERE target_bmi = 0;'),
+        unsafeExecuteSql('UPDATE nutrition_checkins SET target_ffmi = NULL WHERE target_ffmi = 0;'),
         createTable({
           name: 'exercise_goals',
           columns: [

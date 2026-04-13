@@ -34,6 +34,7 @@ import { useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -59,6 +60,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
+  const { defaults: nutritionGoalsDefaults } = useDefaultNutritionGoals();
   const { isAiConfigured, intuitiveEatingMode } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
@@ -660,6 +662,7 @@ export default function HomeScreen() {
         visible={isNutritionGoalsVisible}
         onClose={handleCloseNutritionGoals}
         onSave={handleSaveNutritionGoals}
+        initialGoals={nutritionGoalsDefaults}
       />
 
       {/* Food Search Modal */}
