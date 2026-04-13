@@ -12,6 +12,7 @@ import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
 import { localDayStartMs } from '@/utils/calendarDate';
@@ -23,7 +24,11 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GoalCreationMethodModal } from './GoalCreationMethodModal';
 import { GoalWizardModal } from './GoalWizardModal';
-import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
+import {
+  NutritionGoals,
+  NutritionGoalsInitialValues,
+  NutritionGoalsModal,
+} from './NutritionGoalsModal';
 
 interface GoalHistoryItem {
   id: number;
@@ -55,7 +60,7 @@ type GoalsManagementModalProps = {
   onClose: () => void;
 };
 
-function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
+function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
   return {
     totalCalories: goal.totalCalories,
     protein: goal.protein,
@@ -124,12 +129,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     };
   }, [current, dateFnsLocale]);
 
-  const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
+  const currentGoalsData = useMemo<NutritionGoalsInitialValues | undefined>(() => {
     if (!current) {
       return undefined;
     }
     return goalToFormData(current);
   }, [current]);
+
+  const defaultEatingPhase =
+    pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
+  const { defaults: computedDefaults } = useDefaultNutritionGoals(defaultEatingPhase);
 
   // Keep raw NutritionGoal alongside display data to enable edit/delete
   const historyWithRaw = useMemo(
@@ -284,10 +293,17 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
   };
 
-  const editModalInitialGoals =
-    isEditing && selectedGoal
-      ? goalToFormData(selectedGoal)
-      : (pendingWizardPrefill ?? currentGoalsData);
+  const editModalInitialGoals = useMemo(() => {
+    if (isEditing && selectedGoal) {
+      return goalToFormData(selectedGoal);
+    }
+
+    if (pendingWizardPrefill) {
+      return { ...computedDefaults, ...pendingWizardPrefill };
+    }
+
+    return currentGoalsData ?? computedDefaults;
+  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults]);
 
   return (
     <>

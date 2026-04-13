@@ -73,10 +73,19 @@ export type NutritionGoals = {
   goalStartDate?: number | null;
 };
 
+export type NutritionGoalsInitialValues = Partial<NutritionGoals> & {
+  totalCalories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  fiber: number;
+  eatingPhase: EatingPhase;
+};
+
 type NutritionGoalsModalBodyProps = {
   onSave?: (goals: NutritionGoals) => void;
   onFormChange?: (goals: NutritionGoals) => void;
-  initialGoals?: Partial<NutritionGoals>;
+  initialGoals: NutritionGoalsInitialValues;
   showSaveButton?: boolean;
   showSubtitle?: boolean;
   showGoalStartDate?: boolean;
@@ -269,25 +278,23 @@ export function NutritionGoalsBody({
   const { formatInteger } = useFormatAppNumber();
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
-  const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
-  const [protein, setProtein] = useState(initialGoals?.protein ?? 180);
-  const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
-  const [fats, setFats] = useState(initialGoals?.fats ?? 80);
-  const [fiber, setFiber] = useState(initialGoals?.fiber ?? 30);
-  const [eatingPhase, setEatingPhase] = useState<EatingPhase>(
-    initialGoals?.eatingPhase ?? 'maintain'
-  );
+  const [totalCalories, setTotalCalories] = useState(initialGoals.totalCalories);
+  const [protein, setProtein] = useState(initialGoals.protein);
+  const [carbs, setCarbs] = useState(initialGoals.carbs);
+  const [fats, setFats] = useState(initialGoals.fats);
+  const [fiber, setFiber] = useState(initialGoals.fiber);
+  const [eatingPhase, setEatingPhase] = useState<EatingPhase>(initialGoals.eatingPhase);
   const [targetWeight, setTargetWeight] = useState<number | null>(
-    initialGoals?.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
+    initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
   );
   const [targetBodyFat, setTargetBodyFat] = useState<number | null>(
-    initialGoals?.targetBodyFat ?? null
+    initialGoals.targetBodyFat ?? null
   );
-  const [targetBMI, setTargetBMI] = useState<number | null>(initialGoals?.targetBMI ?? null);
-  const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals?.targetFFMI ?? null);
-  const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
+  const [targetBMI, setTargetBMI] = useState<number | null>(initialGoals.targetBMI ?? null);
+  const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals.targetFFMI ?? null);
+  const [targetDate, setTargetDate] = useState<number | null>(initialGoals.targetDate ?? null);
   const [goalStartDate, setGoalStartDate] = useState<number | null>(
-    initialGoals?.goalStartDate ?? null
+    initialGoals.goalStartDate ?? null
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
@@ -296,20 +303,19 @@ export function NutritionGoalsBody({
   const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
   const isInitialMount = useRef(true);
   const isManualCalorieUpdate = useRef(false);
-  const hasAppliedComputedDefaults = useRef(false);
   const macrosArePristine = useRef(true);
-  const previousEatingPhase = useRef(initialGoals?.eatingPhase ?? 'maintain');
+  const previousEatingPhase = useRef(initialGoals.eatingPhase);
   const [isCalorieEditing, setIsCalorieEditing] = useState(false);
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
-    (initialGoals?.totalCalories ?? 2450).toString()
+    initialGoals.totalCalories.toString()
   );
   const calorieInputRef = useRef<TextInput>(null);
 
   const preciseMacros = useRef({
-    protein: initialGoals?.protein ?? 180,
-    carbs: initialGoals?.carbs ?? 250,
-    fats: initialGoals?.fats ?? 80,
-    fiber: initialGoals?.fiber ?? 30,
+    protein: initialGoals.protein,
+    carbs: initialGoals.carbs,
+    fats: initialGoals.fats,
+    fiber: initialGoals.fiber,
   });
 
   const macroCalorieRatios = useRef({
@@ -416,63 +422,6 @@ export function NutritionGoalsBody({
   }, []);
 
   const { user } = useUser();
-
-  // Compute inferred macro defaults from user profile when no initialGoals are provided
-  useEffect(() => {
-    if (hasAppliedComputedDefaults.current) {
-      return;
-    }
-    if (initialGoals?.totalCalories != null) {
-      hasAppliedComputedDefaults.current = true;
-      return;
-    }
-    if (!user || latestWeightKg == null || userHeightM == null) {
-      return;
-    }
-
-    const heightCm = userHeightM * 100;
-    const age = user.getAge();
-    const fitnessGoal = user.fitnessGoal ?? 'general';
-    const activityLevel = user.activityLevel ?? 3;
-    const liftingExperience = user.liftingExperience ?? 'intermediate';
-    const gender = user.gender ?? 'other';
-
-    try {
-      const plan = calculateNutritionPlan({
-        gender,
-        weightKg: latestWeightKg,
-        heightCm,
-        age,
-        activityLevel: Math.max(1, Math.min(5, activityLevel)) as 1 | 2 | 3 | 4 | 5,
-        weightGoal: eatingPhaseToWeightGoal(eatingPhase),
-        fitnessGoal,
-        liftingExperience,
-        bodyFatPercent: latestBodyFatPercent ?? undefined,
-      });
-
-      const fiberValue = fiberFromCalories(plan.targetCalories);
-
-      preciseMacros.current = {
-        protein: plan.protein,
-        carbs: plan.carbs,
-        fats: plan.fats,
-        fiber: fiberValue,
-      };
-
-      isManualCalorieUpdate.current = true;
-      setTotalCalories(plan.targetCalories);
-      setProtein(plan.protein);
-      setCarbs(plan.carbs);
-      setFats(plan.fats);
-      setFiber(fiberValue);
-      setCalorieInputValue(plan.targetCalories.toString());
-      syncMacroRatios();
-      hasAppliedComputedDefaults.current = true;
-    } catch {
-      // If calculation fails, keep hardcoded defaults already in state
-      hasAppliedComputedDefaults.current = true;
-    }
-  }, [user, latestWeightKg, userHeightM, eatingPhase, latestBodyFatPercent, syncMacroRatios]);
 
   // Recalculate macros when eating phase changes if inputs are still pristine
   useEffect(() => {
