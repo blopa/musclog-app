@@ -457,7 +457,8 @@ export function Button({
       </View>
     ) : null;
 
-  const showBalanceSpacer = Icon != null && width !== 'auto';
+  const hasVisibleIcon = iconRowChild != null;
+  const showBalanceSpacer = hasVisibleIcon && width !== 'auto';
 
   const buttonContent = (
     <View
@@ -465,18 +466,17 @@ export function Button({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: Icon ? config.gap : theme.spacing.gap.zero,
+        gap: hasVisibleIcon ? config.gap : theme.spacing.gap.zero,
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}
     >
+      {iconPosition === 'left' ? iconRowChild : null}
       {showBalanceSpacer && iconPosition === 'right' ? (
         <View style={{ width: iconSize, flexShrink: 0 }} />
-      ) : (
-        iconRowChild
-      )}
+      ) : null}
       <View
         style={{
-          ...(Icon && width && width !== 'auto' ? { flex: 1 } : {}),
+          ...(hasVisibleIcon && width && width !== 'auto' ? { flex: 1 } : {}),
           flexShrink: 1,
           minWidth: 0,
           maxWidth: '100%',
@@ -488,9 +488,8 @@ export function Button({
       </View>
       {showBalanceSpacer && iconPosition === 'left' ? (
         <View style={{ width: iconSize, flexShrink: 0 }} />
-      ) : (
-        iconRowChild
-      )}
+      ) : null}
+      {iconPosition === 'right' ? iconRowChild : null}
     </View>
   );
 
