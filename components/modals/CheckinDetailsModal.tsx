@@ -14,6 +14,7 @@ import {
   NutritionCheckinService,
 } from '@/database/services/NutritionCheckinService';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -59,9 +60,22 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     }
   }, [visible]);
 
-  const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
+  const { defaults: computedDefaults } = useDefaultNutritionGoals(
+    (currentGoal?.eatingPhase as EatingPhase) ?? 'maintain'
+  );
+
+  const initialGoals = useMemo<
+    Partial<NutritionGoals> & {
+      totalCalories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+      fiber: number;
+      eatingPhase: EatingPhase;
+    }
+  >(() => {
     if (!currentGoal) {
-      return undefined;
+      return computedDefaults;
     }
 
     return {
@@ -77,7 +91,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       targetFFMI: currentGoal.targetFfmi,
       targetDate: currentGoal.targetDate ?? null,
     };
-  }, [currentGoal]);
+  }, [currentGoal, computedDefaults]);
 
   useEffect(() => {
     async function loadData() {
@@ -141,7 +155,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           weightKg: userDecrypted.value,
           heightCm: heightDecrypted.value,
           age: 25,
-          activityLevel: 3,
+          activityLevel: 2,
           weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
           fitnessGoal: 'general',
           liftingExperience: 'intermediate',
@@ -493,9 +507,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
                 </Text>
                 <Text className="mt-1 text-[10px] font-medium text-gray-500">
-                  {t('nutrition.checkin.targetShort', {
-                    value: formatDecimal(checkin.targetBodyFat, 1),
-                  })}
+                  {checkin.targetBodyFat != null
+                    ? t('nutrition.checkin.targetShort', {
+                        value: formatDecimal(checkin.targetBodyFat, 1),
+                      })
+                    : null}
                 </Text>
               </View>
               <View

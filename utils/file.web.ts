@@ -1,7 +1,7 @@
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
-import { router } from 'expo-router';
 
 import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
+import { reloadApp } from '@/utils/app';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -238,9 +238,4 @@ export function shouldSeedDevData() {
   }
 
   return false;
-}
-
-export async function reloadApp() {
-  router.replace('/');
-  window.location.reload();
 }

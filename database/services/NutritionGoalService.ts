@@ -1,20 +1,15 @@
 import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
-import { Platform } from 'react-native';
 
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
-import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
+import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionCheckinService } from './NutritionCheckinService';
 
-async function triggerWidgetUpdate(): Promise<void> {
-  if (Platform.OS !== 'android') {
-    return;
-  }
-
-  await requestNutritionWidgetUpdate();
+function triggerWidgetUpdate(): void {
+  widgetEvents.emitNutritionWidgetUpdate();
 }
 
 export interface NutritionGoalInput {
@@ -102,16 +97,16 @@ export class NutritionGoalService {
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
         r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = null;
         r.createdAt = now;
         r.updatedAt = now;
       });
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
 
       return goal;
     });
@@ -215,7 +210,7 @@ export class NutritionGoalService {
         record.updatedAt = Date.now();
       });
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
 
       return goal;
     });
@@ -363,9 +358,9 @@ export class NutritionGoalService {
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
         r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = newEffectiveUntil;
         r.createdAt = startDate;
@@ -405,7 +400,7 @@ export class NutritionGoalService {
 
       await goal.markAsDeleted();
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     });
   }
 }

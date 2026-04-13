@@ -272,7 +272,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       try {
         const userContent = [
           context.description.trim(),
-          context.tags.length > 0 ? `Preferences: ${context.tags.join(', ')}` : '',
+          context.tags.length > 0
+            ? `${i18n.t('meals.generateAI.preferencesLabel')}: ${context.tags.join(', ')}`
+            : '',
         ]
           .filter(Boolean)
           .join('. ');

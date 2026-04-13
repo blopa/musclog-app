@@ -116,6 +116,7 @@ export default function CardsTestScreen() {
               protein: { value: 165, goal: 220 },
               carbs: { value: 250, goal: 220 },
               fats: { value: 73, goal: 73 },
+              fiber: { value: 18, goal: 25 },
             }}
           />
         </TestSection>

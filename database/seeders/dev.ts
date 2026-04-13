@@ -8,8 +8,8 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
+import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
-import { database } from '@/database/index';
 import ChatMessage from '@/database/models/ChatMessage';
 import Exercise, {
   type EquipmentType,

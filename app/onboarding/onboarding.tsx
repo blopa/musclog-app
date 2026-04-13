@@ -610,21 +610,19 @@ export default function OnboardingScreen() {
 
           {/* Navigation Buttons */}
           <View className="w-full flex-row items-center justify-between">
-            {currentStep > 0 ? (
-              <Button
-                label={t('onboarding.back')}
-                variant="outline"
-                size="sm"
-                icon={ArrowLeft}
-                iconPosition="left"
-                onPress={handleBack}
-                style={{
-                  borderColor: theme.colors.background.white10,
-                }}
-              />
-            ) : (
-              <View style={{ width: theme.size['14'] }} />
-            )}
+            <Button
+              label={t('onboarding.back')}
+              variant="outline"
+              size="sm"
+              icon={ArrowLeft}
+              iconPosition="left"
+              onPress={handleBack}
+              style={{
+                borderColor: theme.colors.background.white10,
+                opacity: currentStep > 0 ? 1 : 0,
+              }}
+              disabled={currentStep === 0}
+            />
 
             <Button
               label={currentStep === 3 ? t('onboarding.getStarted') : t('onboarding.next')}

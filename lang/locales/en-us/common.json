@@ -19,6 +19,8 @@
     "oneWeekAgo": "1 week ago",
     "weeksAgo": "{{count}} weeks ago",
     "monthsAgo": "{{count}} months ago",
+    "oneMonthFromNow": "1 month from now",
+    "monthsFromNow": "{{count}} months from now",
     "seeAll": "See all",
     "kcal": "kcal",
     "min": "min",

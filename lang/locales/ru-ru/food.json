@@ -79,7 +79,11 @@
       "proteinLegend": "Белок",
       "carbsLegend": "Углеводы",
       "fatLegend": "Жиры",
-      "fiberLegend": "Клетчатка"
+      "fiberLegend": "Клетчатка",
+      "alcohol": "Алкоголь",
+      "potassium": "Калий",
+      "magnesium": "Магний",
+      "zinc": "Цинк"
     },
     "actions": {
       "mealMenuSubtitle": "Что вы хотите сделать с этим приёмом пищи?",
@@ -290,6 +294,9 @@
       "sugars": "Сахара",
       "saturatedFat": "Насыщенные жиры",
       "salt": "Соль",
+      "potassium": "Калий",
+      "magnesium": "Магний",
+      "zinc": "Цинк",
       "loadingDetails": "Загрузка деталей...",
       "loadingMoreDetails": "Загрузка дополнительных деталей...",
       "successMessage": "Продукт успешно записан!",

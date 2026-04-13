@@ -1,14 +1,10 @@
-import { reloadAppAsync } from 'expo';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import * as Updates from 'expo-updates';
-import { DevSettings } from 'react-native';
 
 import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
 
@@ -170,26 +166,4 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 export function shouldSeedDevData() {
   // return __DEV__;
   return false;
-}
-
-export async function reloadApp() {
-  if (__DEV__) {
-    // In development mode, use DevSettings.reload() to reload the app (does not work in prod)
-    DevSettings.reload();
-    return;
-  }
-
-  // Production mode: try multiple reload strategies
-  try {
-    if (reloadAppAsync) {
-      await reloadAppAsync();
-    } else if (Updates.isEnabled) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      await Updates.reloadAsync();
-    }
-
-    router.replace('/');
-  } catch (error) {
-    router.replace('/');
-  }
 }

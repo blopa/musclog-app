@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -9,13 +9,10 @@ import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
 } from '@/utils/calendarDate';
-import {
-  calculateEstimated1RMForSet,
-  calculateSetVolume,
-  getUserBodyWeightKgForVolume,
-} from '@/utils/workoutCalculator';
+import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
 
 import { SettingsService } from './SettingsService';
+import { UserMetricService } from './UserMetricService';
 
 type EnrichedSet = WorkoutLogSet & {
   exerciseId: string;
@@ -165,7 +162,7 @@ export class WorkoutAnalytics {
     bodyWeightKg?: number
   ): Promise<PersonalRecord[]> {
     const records: PersonalRecord[] = [];
-    const bwKg = bodyWeightKg ?? (await getUserBodyWeightKgForVolume());
+    const bwKg = bodyWeightKg ?? (await UserMetricService.getUserBodyWeightKgForVolume());
     const sets = await this.getEnrichedSetsForWorkout(workoutLog);
 
     const exerciseSets = new Map<string, EnrichedSet[]>();
@@ -344,7 +341,7 @@ export class WorkoutAnalytics {
       return [];
     }
 
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
 
     // Get all sets for these log exercises
     const logExerciseIds = logExercises.map((le) => le.id);
@@ -477,7 +474,7 @@ export class WorkoutAnalytics {
       );
     }
 
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
     // Process each workout
     for (const workout of validWorkouts) {
       const sets = await this.getEnrichedSetsForWorkout(workout);

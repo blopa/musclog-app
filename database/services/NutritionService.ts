@@ -13,14 +13,10 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
+import { widgetEvents } from '@/utils/widgetEvents';
 
-async function triggerWidgetUpdate(): Promise<void> {
-  if (Platform.OS !== 'android') {
-    return;
-  }
-
-  await requestNutritionWidgetUpdate();
+function triggerWidgetUpdate(): void {
+  widgetEvents.emitNutritionWidgetUpdate();
 }
 
 /**
@@ -111,7 +107,7 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  await triggerWidgetUpdate();
+  triggerWidgetUpdate();
 }
 
 export class NutritionService {
@@ -165,7 +161,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     // Health Connect / Apple Health (user-entered only — health-sourced records
@@ -289,9 +285,17 @@ export class NutritionService {
     carbs: number;
     fat: number;
     fiber: number;
+    alcohol: number;
     byMealType: Record<
       MealType,
-      { calories: number; protein: number; carbs: number; fat: number; fiber: number }
+      {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      }
     >;
   }> {
     try {
@@ -303,12 +307,13 @@ export class NutritionService {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        alcohol: 0,
         byMealType: {
-          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
         },
       };
 
@@ -322,12 +327,14 @@ export class NutritionService {
           totals.carbs += nutrients.carbs;
           totals.fat += nutrients.fat;
           totals.fiber += nutrients.fiber;
+          totals.alcohol += nutrients.alcohol;
 
           totals.byMealType[mealType].calories += nutrients.calories;
           totals.byMealType[mealType].protein += nutrients.protein;
           totals.byMealType[mealType].carbs += nutrients.carbs;
           totals.byMealType[mealType].fat += nutrients.fat;
           totals.byMealType[mealType].fiber += nutrients.fiber;
+          totals.byMealType[mealType].alcohol += nutrients.alcohol;
         } catch (error) {
           // Skip individual log errors to prevent total failure
           console.error('Error calculating nutrients for log:', error);
@@ -345,12 +352,13 @@ export class NutritionService {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        alcohol: 0,
         byMealType: {
-          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
         },
       };
     }
@@ -439,7 +447,7 @@ export class NutritionService {
       return log;
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
 
     return updatedLog;
   }
@@ -452,7 +460,7 @@ export class NutritionService {
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -493,7 +501,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -512,7 +520,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -552,7 +560,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -578,7 +586,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -630,7 +638,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -702,7 +710,14 @@ export class NutritionService {
     {
       log: NutritionLog;
       food: Food | null;
-      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      nutrients: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      };
       gramWeight: number;
       displayName: string;
     }[]
@@ -1017,7 +1032,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -1203,7 +1218,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {

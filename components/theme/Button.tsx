@@ -457,6 +457,8 @@ export function Button({
       </View>
     ) : null;
 
+  const showBalanceSpacer = Icon != null && width !== 'auto';
+
   const buttonContent = (
     <View
       style={{
@@ -467,7 +469,11 @@ export function Button({
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}
     >
-      {iconPosition === 'left' ? iconRowChild : null}
+      {showBalanceSpacer && iconPosition === 'right' ? (
+        <View style={{ width: iconSize, flexShrink: 0 }} />
+      ) : (
+        iconRowChild
+      )}
       <View
         style={{
           ...(Icon && width && width !== 'auto' ? { flex: 1 } : {}),
@@ -480,7 +486,11 @@ export function Button({
       >
         {textElement}
       </View>
-      {iconPosition === 'right' ? iconRowChild : null}
+      {showBalanceSpacer && iconPosition === 'left' ? (
+        <View style={{ width: iconSize, flexShrink: 0 }} />
+      ) : (
+        iconRowChild
+      )}
     </View>
   );
 

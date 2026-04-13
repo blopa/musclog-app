@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 
 jest.mock('@nozbe/watermelondb', () => ({

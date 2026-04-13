@@ -40,8 +40,8 @@
     },
     "cycleSetup": {
       "anchor": {
-        "title": "Último Período",
-        "description": "Quando seu último período começou? Isso nos ajuda a calibrar sua fase atual."
+        "title": "Última Menstruação",
+        "description": "Quando sua última menstruação começou? Isso nos ajuda a calibrar sua fase atual."
       },
       "birthControl": {
         "title": "Anticoncepcional Hormonal",

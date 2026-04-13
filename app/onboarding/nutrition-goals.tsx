@@ -17,7 +17,7 @@ import {
   UserMetricService,
 } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
-import { useSettings } from '@/hooks/useSettings';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
 import {
@@ -34,7 +34,7 @@ export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();
-  const { units } = useSettings();
+  const { defaults: computedDefaults, isLoading: isLoadingDefaults } = useDefaultNutritionGoals();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
   const params = useLocalSearchParams<{
@@ -73,9 +73,25 @@ export default function NutritionGoalsScreen() {
 
   // Map goal data or stored plan to initialGoals format.
   // Prefer stored plan (e.g. from "Adjust Goals Manually") over DB goal so the user sees the plan they just viewed.
-  const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
+  const initialGoals = useMemo<
+    Partial<NutritionGoals> & {
+      totalCalories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+      fiber: number;
+      eatingPhase: EatingPhase;
+    }
+  >(() => {
     if (storedPlanGoals) {
-      return storedPlanGoals;
+      return storedPlanGoals as Partial<NutritionGoals> & {
+        totalCalories: number;
+        protein: number;
+        carbs: number;
+        fats: number;
+        fiber: number;
+        eatingPhase: EatingPhase;
+      };
     }
 
     if (goal) {
@@ -94,8 +110,8 @@ export default function NutritionGoalsScreen() {
       };
     }
 
-    return undefined;
-  }, [goal, storedPlanGoals]);
+    return computedDefaults;
+  }, [goal, storedPlanGoals, computedDefaults]);
 
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {
@@ -129,7 +145,7 @@ export default function NutritionGoalsScreen() {
             weightKg: userDecrypted.value,
             heightCm: heightDecrypted.value,
             age: 25, // fallback
-            activityLevel: 3, // fallback
+            activityLevel: 2, // fallback
             weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
@@ -173,7 +189,7 @@ export default function NutritionGoalsScreen() {
     [isAdjusting, isCheckinAdjusting, router, t]
   );
 
-  if (isLoading) {
+  if (isLoading || isLoadingDefaults) {
     return (
       <MasterLayout showNavigationMenu={false}>
         <View className="flex-1 items-center justify-center">

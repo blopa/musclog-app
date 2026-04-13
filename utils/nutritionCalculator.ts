@@ -2,6 +2,7 @@ import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
 
 import { NutritionGoals } from '@/components/NutritionGoalsBody';
+import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type {
   EatingPhase,
   FitnessGoal,
@@ -239,7 +240,10 @@ function lambertW(z: number): number {
  * initialFatMassKg = current fat mass (kg), deltaWeightKg = planned weight change (negative for loss).
  * Returns kcal per kg so that (deficit in kcal) / (this value) = weight loss in kg.
  */
-function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg: number): number {
+export function getEffectiveKcalPerKgWeightLoss(
+  initialFatMassKg: number,
+  deltaWeightKg: number
+): number {
   const dBw = deltaWeightKg;
   if (dBw >= 0 || initialFatMassKg <= 0) {
     return RHO_FAT_KCAL_PER_KG;
@@ -249,13 +253,16 @@ function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg
     Math.exp(dBw / FORBES_C) *
     initialFatMassKg *
     Math.exp(initialFatMassKg / FORBES_C);
+
   const w = lambertW(arg);
   if (Number.isNaN(w)) {
     return 7700;
-  } // fallback
+  }
+
   const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (FORBES_C / dBw) * w;
   const effective =
     RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
+
   return Math.max(1000, Math.min(9500, effective)); // clamp to plausible range
 }
 
@@ -661,9 +668,9 @@ export function calculateMacros(targetCalories: number, fitnessGoal: FitnessGoal
   const { carbsPct, proteinPct, fatsPct } = MACRO_SPLITS[fitnessGoal] ?? MACRO_SPLITS.general;
 
   return {
-    protein: Math.round((targetCalories * proteinPct) / 100 / 4),
-    carbs: Math.round((targetCalories * carbsPct) / 100 / 4),
-    fats: Math.round((targetCalories * fatsPct) / 100 / 9),
+    protein: Math.round((targetCalories * proteinPct) / 100 / CALORIES_FOR_PROTEIN),
+    carbs: Math.round((targetCalories * carbsPct) / 100 / CALORIES_FOR_CARBS),
+    fats: Math.round((targetCalories * fatsPct) / 100 / CALORIES_FOR_FAT),
     proteinPct,
     carbsPct,
     fatsPct,
@@ -912,9 +919,9 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
     fiber,
     eatingPhase,
     targetWeight: plan.projectedWeightKg,
-    targetBodyFat: plan.targetBodyFat ?? 0,
-    targetBMI: plan.targetBMI ?? 0,
-    targetFFMI: plan.targetFFMI ?? 0,
+    targetBodyFat: plan.targetBodyFat,
+    targetBMI: plan.targetBMI,
+    targetFFMI: plan.targetFFMI,
     targetDate: null,
   };
 }
@@ -926,9 +933,9 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
 export interface WeeklyCheckinData {
   checkinDate: number;
   targetWeight: number;
-  targetBodyFat: number;
-  targetBmi: number;
-  targetFfmi: number;
+  targetBodyFat?: number;
+  targetBmi?: number;
+  targetFfmi?: number;
 }
 
 /**
@@ -977,7 +984,7 @@ export function generateWeeklyCheckins(
       (currentWeightKg + dailyWeightChangeKg * daysElapsed).toFixed(1)
     );
 
-    let intermediateBodyFat = 0;
+    let intermediateBodyFat: number | undefined;
     if (currentBodyFatPercent !== null && currentBodyFatPercent > 0) {
       if (isCutting) {
         intermediateBodyFat = estimateTargetBodyFatWhenCutting(
@@ -1004,11 +1011,12 @@ export function generateWeeklyCheckins(
       }
     }
 
-    const intermediateBmi = bmiFromWeightAndHeightM(intermediateWeight, heightM);
+    const intermediateBmi =
+      heightM > 0 ? bmiFromWeightAndHeightM(intermediateWeight, heightM) : undefined;
     const intermediateFfmi =
-      intermediateBodyFat > 0
+      intermediateBodyFat != null && heightM > 0
         ? ffmiFromWeightHeightAndBodyFat(intermediateWeight, heightM, intermediateBodyFat)
-        : 0;
+        : undefined;
 
     checkins.push({
       checkinDate,
@@ -1151,6 +1159,38 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     estimatedLeanChangeKg = comp.leanChangeKg;
   }
 
+  // Calculate target metrics for the plan
+  const targetBMI =
+    heightCm > 0
+      ? bmiFromWeightAndHeightM(projection.projectedWeightKg, heightCm / 100)
+      : undefined;
+
+  let targetBodyFat: number | undefined;
+  if (useBodyFat) {
+    if (weightGoal === 'lose') {
+      targetBodyFat = estimateTargetBodyFatWhenCutting(
+        weightKg,
+        projection.projectedWeightKg,
+        bodyFatPercent!
+      );
+    } else if (weightGoal === 'maintain') {
+      targetBodyFat = bodyFatPercent;
+    } else if (weightGoal === 'gain') {
+      const { fatChangeKg } = getWeightChangeComposition(
+        weightKg * (bodyFatPercent! / 100),
+        totalWeightChangeKg,
+        input.liftingExperience
+      );
+      const newFatMassKg = weightKg * (bodyFatPercent! / 100) + fatChangeKg;
+      targetBodyFat = parseFloat(((newFatMassKg / projection.projectedWeightKg) * 100).toFixed(1));
+    }
+  }
+
+  const targetFFMI =
+    heightCm > 0 && targetBodyFat !== undefined
+      ? ffmiFromWeightHeightAndBodyFat(projection.projectedWeightKg, heightCm / 100, targetBodyFat)
+      : undefined;
+
   return {
     bmr,
     tdee,
@@ -1166,5 +1206,8 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     ...(dailyCalorieSurplus !== undefined && { dailyCalorieSurplus }),
     ...(estimatedFatChangeKg !== undefined && { estimatedFatChangeKg }),
     ...(estimatedLeanChangeKg !== undefined && { estimatedLeanChangeKg }),
+    targetBMI,
+    targetBodyFat,
+    targetFFMI,
   };
 }

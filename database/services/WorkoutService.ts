@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -259,7 +259,8 @@ export class WorkoutService {
       }
 
       // Complete the workout (this calculates volume)
-      await workoutLog.completeWorkout();
+      const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+      await workoutLog.completeWorkout(bodyWeightKg);
 
       // Clear active workout from AsyncStorage
       const activeWorkoutLogId = await getActiveWorkoutLogId();
@@ -719,7 +720,8 @@ export class WorkoutService {
         }
       });
 
-      const finalTotal = await workoutLog.calculateVolume();
+      const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+      const finalTotal = await workoutLog.calculateVolume(bodyWeightKg);
       return { workoutLogId, totalVolume: finalTotal };
     } catch (error) {
       if (error instanceof Error) {
@@ -1059,8 +1061,9 @@ export class WorkoutService {
       return;
     }
 
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
     const entries = await Promise.all(
-      logs.map(async (log) => ({ log, volume: await log.calculateVolume() }))
+      logs.map(async (log) => ({ log, volume: await log.calculateVolume(bodyWeightKg) }))
     );
 
     const now = Date.now();

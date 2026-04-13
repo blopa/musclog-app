@@ -1,13 +1,16 @@
+import { Platform } from 'react-native';
 import type { WidgetInfo } from 'react-native-android-widget';
 import { requestWidgetUpdate } from 'react-native-android-widget';
 
-import { NutritionGoalService, NutritionService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionWidget } from './NutritionWidget';
 
 /**
- * Request an update for the Nutrition widget
- * This helper function provides the renderWidget callback required by requestWidgetUpdate
+ * Request an update for the Nutrition widget.
+ * Call this from UI components after making changes to nutrition data.
  */
 export async function requestNutritionWidgetUpdate(): Promise<void> {
   await requestWidgetUpdate({
@@ -33,3 +36,16 @@ export async function requestNutritionWidgetUpdate(): Promise<void> {
     },
   });
 }
+
+/**
+ * Subscribe to widget update events from database services.
+ * This breaks the circular dependency between services and widget helpers.
+ */
+widgetEvents.onNutritionWidgetUpdate(() => {
+  // Only trigger on Android
+  if (Platform.OS === 'android') {
+    requestNutritionWidgetUpdate().catch((error: Error) => {
+      console.error('Failed to update nutrition widget:', error);
+    });
+  }
+});

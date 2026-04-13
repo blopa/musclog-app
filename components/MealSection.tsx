@@ -85,26 +85,29 @@ export const MealSectionHeader = memo(function MealSectionHeader({
               : `${formatInteger(Math.round(totalCalories), { useGrouping: false })} ${t('food.common.kcal')}`}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
-            <Text className="text-sm" style={intuitiveMode ? blurFilter(4) : undefined}>
-              <Text style={{ color: theme.colors.macros.protein.text }}>
+            <View
+              className="flex-row items-center"
+              style={intuitiveMode ? blurFilter(4) : undefined}
+            >
+              <Text className="text-sm" style={{ color: theme.colors.macros.protein.text }}>
                 {t('common.labelColonValue', {
                   label: t('food.macros.proteinShort'),
                   value: t('common.weightFormatG', {
                     value: intuitiveMode ? 0 : formatInteger(Math.round(totalProtein)),
                   }),
                 })}
-              </Text>{' '}
-              <Text className="text-text-secondary">•</Text>{' '}
-              <Text style={{ color: theme.colors.macros.carbs.text }}>
+              </Text>
+              <Text className="text-sm text-text-secondary">{' • '}</Text>
+              <Text className="text-sm" style={{ color: theme.colors.macros.carbs.text }}>
                 {t('common.labelColonValue', {
                   label: t('food.macros.carbsShort'),
                   value: t('common.weightFormatG', {
                     value: intuitiveMode ? 0 : formatInteger(Math.round(totalCarbs)),
                   }),
                 })}
-              </Text>{' '}
-              <Text className="text-text-secondary">•</Text>{' '}
-              <Text style={{ color: theme.colors.macros.fat.text }}>
+              </Text>
+              <Text className="text-sm text-text-secondary">{' • '}</Text>
+              <Text className="text-sm" style={{ color: theme.colors.macros.fat.text }}>
                 {t('common.labelColonValue', {
                   label: t('food.macros.fatShort'),
                   value: t('common.weightFormatG', {
@@ -112,7 +115,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
                   }),
                 })}
               </Text>
-            </Text>
+            </View>
           ) : null}
         </View>
         {menuButton}

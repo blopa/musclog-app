@@ -8,12 +8,13 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import type { Units } from '@/constants/settings';
 import type { EnrichedWorkoutLogSet } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { getExerciseIconConfig, isBodyweightExercise } from '@/utils/workout';
-import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -64,7 +65,7 @@ export function FreeSessionExerciseCompleteModal({
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   useEffect(() => {
-    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+    void UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
   }, []);
 
   const { setsCompleted, totalVolumeKg } = useMemo(() => {

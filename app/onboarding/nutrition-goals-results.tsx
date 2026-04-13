@@ -14,6 +14,12 @@ import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  CALORIES_FOR_CARBS,
+  CALORIES_FOR_FAT,
+  CALORIES_FOR_FIBER,
+  CALORIES_FOR_PROTEIN,
+} from '@/constants/nutrition';
 import { type EatingPhase } from '@/database/models';
 import {
   NutritionCheckinService,
@@ -25,9 +31,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
-  bmiFromWeightAndHeightM,
-  estimateTargetBodyFatWhenCutting,
-  ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
   generateWeeklyCheckins,
   inchesToCm,
@@ -136,11 +139,18 @@ export default function NutritionGoalsResults() {
         dailyCalorieSurplus: parsedPlan.dailyCalorieSurplus,
         estimatedFatChangeKg: parsedPlan.estimatedFatChangeKg,
         estimatedLeanChangeKg: parsedPlan.estimatedLeanChangeKg,
+        targetBodyFat: parsedPlan.targetBodyFat,
+        targetBMI: parsedPlan.targetBMI,
+        targetFFMI: parsedPlan.targetFFMI,
       };
     }
 
     if (savedGoal) {
-      const totalMacroCals = savedGoal.protein * 4 + savedGoal.carbs * 4 + savedGoal.fats * 9;
+      const totalMacroCals =
+        savedGoal.protein * CALORIES_FOR_PROTEIN +
+        Math.max(0, savedGoal.carbs - savedGoal.fiber) * CALORIES_FOR_CARBS +
+        savedGoal.fats * CALORIES_FOR_FAT +
+        savedGoal.fiber * CALORIES_FOR_FIBER;
       const effectiveTotal = totalMacroCals > 0 ? totalMacroCals : savedGoal.totalCalories || 1;
 
       return {
@@ -148,9 +158,12 @@ export default function NutritionGoalsResults() {
         protein: savedGoal.protein,
         carbs: savedGoal.carbs,
         fats: savedGoal.fats,
-        proteinPct: Math.round((savedGoal.protein * 4 * 100) / effectiveTotal),
-        carbsPct: Math.round((savedGoal.carbs * 4 * 100) / effectiveTotal),
-        fatsPct: Math.round((savedGoal.fats * 9 * 100) / effectiveTotal),
+        proteinPct: Math.round((savedGoal.protein * CALORIES_FOR_PROTEIN * 100) / effectiveTotal),
+        carbsPct: Math.round(
+          (Math.max(0, savedGoal.carbs - savedGoal.fiber) * CALORIES_FOR_CARBS * 100) /
+            effectiveTotal
+        ),
+        fatsPct: Math.round((savedGoal.fats * CALORIES_FOR_FAT * 100) / effectiveTotal),
         goalLabel: null,
         startWeight: 0,
         projectedWeight: 0,
@@ -309,25 +322,6 @@ export default function NutritionGoalsResults() {
         }
 
         const fiber = fiberFromCalories(parsedPlan.targetCalories);
-        const targetBMI =
-          heightM > 0 ? bmiFromWeightAndHeightM(parsedPlan.projectedWeightKg, heightM) : 0;
-
-        let targetBodyFat = 0;
-        if (eatingPhase === 'cut' && currentBodyFatPercent != null) {
-          targetBodyFat = estimateTargetBodyFatWhenCutting(
-            parsedPlan.currentWeightKg,
-            parsedPlan.projectedWeightKg,
-            currentBodyFatPercent
-          );
-        } else if (eatingPhase === 'maintain' && currentBodyFatPercent != null) {
-          targetBodyFat = currentBodyFatPercent;
-        }
-
-        const bodyFatForFfmi = targetBodyFat > 0 ? targetBodyFat : (currentBodyFatPercent ?? 0);
-        const targetFFMI =
-          heightM > 0 && bodyFatForFfmi > 0
-            ? ffmiFromWeightHeightAndBodyFat(parsedPlan.projectedWeightKg, heightM, bodyFatForFfmi)
-            : 0;
 
         const startDate = Date.now();
         const targetDate = localDayKeyPlusCalendarDays(
@@ -343,9 +337,9 @@ export default function NutritionGoalsResults() {
           fiber,
           eatingPhase: eatingPhase,
           targetWeight: parsedPlan.projectedWeightKg,
-          targetBodyFat,
-          targetBMI,
-          targetFFMI,
+          targetBodyFat: parsedPlan.targetBodyFat,
+          targetBMI: parsedPlan.targetBMI,
+          targetFFMI: parsedPlan.targetFFMI,
           targetDate,
         });
 

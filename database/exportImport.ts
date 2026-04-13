@@ -16,8 +16,8 @@ import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
+import { reloadApp } from '@/utils/app';
 import { decrypt, encrypt } from '@/utils/encryption';
-import { reloadApp } from '@/utils/file';
 import { captureException } from '@/utils/sentry';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 

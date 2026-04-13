@@ -17,7 +17,7 @@ export type NutritionCheckinDisplayItem = {
   iconColor: string;
   iconBgColor: string;
   checkinTargetWeight: number;
-  checkinTargetBodyFat: number;
+  checkinTargetBodyFat: number | null;
   status: string;
 };
 
@@ -58,7 +58,7 @@ function checkinToDisplayItem(
     iconColor: iconColors.color,
     iconBgColor: iconColors.bg,
     checkinTargetWeight: checkin.targetWeight,
-    checkinTargetBodyFat: checkin.targetBodyFat,
+    checkinTargetBodyFat: checkin.targetBodyFat ?? null,
     status: checkin.status ?? 'pending',
   };
 }

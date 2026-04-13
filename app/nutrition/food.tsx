@@ -182,18 +182,32 @@ export default function FoodScreen() {
   const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
   const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
 
-  const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
-    useDailyNutritionSummary({
-      date: selectedDate,
-      enableReactivity: true,
-      visible: true,
-    });
+  const {
+    logs,
+    dailyNutrients,
+    secondaryNutrients,
+    isLoading,
+    refresh,
+    totalCount,
+    nutritionGoal,
+  } = useDailyNutritionSummary({
+    date: selectedDate,
+    enableReactivity: true,
+    visible: true,
+  });
 
   const [resolvedLogs, setResolvedLogs] = useState<
     {
       log: NutritionLog;
       food: Food | null;
-      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      nutrients: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      };
       gramWeight: number;
       displayName: string;
     }[]
@@ -1033,7 +1047,7 @@ export default function FoodScreen() {
 
   const selectedMealGroupNutrients = useMemo(() => {
     if (!selectedMealGroup) {
-      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 };
     }
 
     return selectedMealGroup.entries.reduce(
@@ -1043,8 +1057,9 @@ export default function FoodScreen() {
         carbs: acc.carbs + e.nutrients.carbs,
         fat: acc.fat + e.nutrients.fat,
         fiber: acc.fiber + e.nutrients.fiber,
+        alcohol: acc.alcohol + e.nutrients.alcohol,
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 }
     );
   }, [selectedMealGroup]);
 
@@ -1057,7 +1072,7 @@ export default function FoodScreen() {
 
   const selectedMealNutrients = useMemo(() => {
     if (!selectedMealForMenu) {
-      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 };
     }
     return (mealsByType[selectedMealForMenu] || []).reduce(
       (acc, e) => ({
@@ -1066,8 +1081,9 @@ export default function FoodScreen() {
         carbs: acc.carbs + e.nutrients.carbs,
         fat: acc.fat + e.nutrients.fat,
         fiber: acc.fiber + e.nutrients.fiber,
+        alcohol: acc.alcohol + e.nutrients.alcohol,
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 }
     );
   }, [selectedMealForMenu, mealsByType]);
 
@@ -1255,7 +1271,12 @@ export default function FoodScreen() {
                         value: dailyNutrients?.fat || 0,
                         goal: nutritionGoal?.fats || 80,
                       },
+                      fiber: {
+                        value: dailyNutrients?.fiber || 0,
+                        goal: nutritionGoal?.fiber || 0,
+                      },
                     }}
+                    secondaryNutrients={secondaryNutrients}
                     intuitiveMode={intuitiveEatingMode}
                     menuButton={
                       <MenuButton

@@ -49,7 +49,14 @@ export type UseNutritionLogsResultRecentLogs = {
   recentNutritionLogs: {
     log: NutritionLog;
     food: Food | null;
-    nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
     gramWeight: number;
     displayName: string;
   }[];
@@ -66,6 +73,7 @@ export type UseNutritionLogsResultDaily = {
     carbs: number;
     fat: number;
     fiber: number;
+    alcohol: number;
     byMealType: Record<
       MealType,
       {
@@ -74,6 +82,7 @@ export type UseNutritionLogsResultDaily = {
         carbs: number;
         fat: number;
         fiber: number;
+        alcohol: number;
       }
     >;
   };
@@ -160,12 +169,13 @@ export function useNutritionLogs({
       carbs: 0,
       fat: 0,
       fiber: 0,
+      alcohol: 0,
       byMealType: {
-        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
       },
     }),
     []
@@ -187,7 +197,14 @@ export function useNutritionLogs({
     {
       log: NutritionLog;
       food: Food | null;
-      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      nutrients: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      };
       gramWeight: number;
       displayName: string;
     }[]

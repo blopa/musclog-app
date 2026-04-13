@@ -1,3 +1,4 @@
+import * as LocalAuthentication from 'expo-local-authentication';
 import {
   Activity,
   AlertTriangle,
@@ -152,6 +153,48 @@ export function AdvancedSettingsModal({
       showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
     }
   }, [t, showSnackbar]);
+
+  const onRequireExportEncryptionToggle = useCallback(
+    async (value: boolean) => {
+      if (!value && debouncedRequireExportEncryption) {
+        // User is trying to disable - attempt biometric auth first
+        try {
+          const hasHardware = await LocalAuthentication.hasHardwareAsync();
+          const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+          if (hasHardware && isEnrolled) {
+            const result = await LocalAuthentication.authenticateAsync({
+              promptMessage: t('settings.advancedSettings.biometricAuthPrompt'),
+            });
+
+            if (result.success) {
+              handleRequireExportEncryptionChange(false);
+              return;
+            } else if (
+              result.error === 'user_cancel' ||
+              result.error === 'app_cancel' ||
+              result.error === 'system_cancel'
+            ) {
+              // User canceled biometric auth, don't fallback to manual phrase
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Biometric authentication error:', error);
+          captureException(error, {
+            data: { context: 'AdvancedSettingsModal.onValueChange.biometrics' },
+          });
+        }
+
+        // Fallback to manual phrase confirmation if biometrics unavailable or failed
+        setDisableEncryptionModalVisible(true);
+      } else {
+        // Enabling or no change - proceed normally
+        handleRequireExportEncryptionChange(value);
+      }
+    },
+    [debouncedRequireExportEncryption, t, handleRequireExportEncryptionChange]
+  );
 
   // Data log modal visibility – each row opens its corresponding modal
   const [showFoodDataModal, setShowFoodDataModal] = useState(false);
@@ -371,15 +414,7 @@ export function AdvancedSettingsModal({
                     </View>
                   ),
                   value: debouncedRequireExportEncryption,
-                  onValueChange: (value: boolean) => {
-                    if (!value && debouncedRequireExportEncryption) {
-                      // User is trying to disable - show confirmation modal
-                      setDisableEncryptionModalVisible(true);
-                    } else {
-                      // Enabling or no change - proceed normally
-                      handleRequireExportEncryptionChange(value);
-                    }
-                  },
+                  onValueChange: onRequireExportEncryptionToggle,
                 },
               ]}
             />

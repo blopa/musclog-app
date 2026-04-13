@@ -1,3 +1,4 @@
+import { subWeeks } from 'date-fns';
 import {
   Activity,
   CheckCircle2,
@@ -218,6 +219,20 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
           setIsDatePickerVisible(false);
         }}
         maxYear={getLocalCalendarYear(new Date())}
+        quickDates={[
+          {
+            label: t('common.oneWeekAgo'),
+            date: localCalendarDayDate(subWeeks(new Date(), 1)),
+          },
+          {
+            label: t('common.weeksAgo', { count: 2 }),
+            date: localCalendarDayDate(subWeeks(new Date(), 2)),
+          },
+          {
+            label: t('common.weeksAgo', { count: 4 }),
+            date: localCalendarDayDate(subWeeks(new Date(), 4)),
+          },
+        ]}
       />
 
       <BottomPopUpMenu

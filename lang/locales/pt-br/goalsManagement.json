@@ -35,6 +35,50 @@
       "phaseMaintain": "Manutenção",
       "phaseBulk": "Volume"
     },
+    "goalCreationMethod": {
+      "title": "Nova Meta",
+      "subtitle": "Como você gostaria de configurar sua nova meta?",
+      "guidedTitle": "Responder Algumas Perguntas",
+      "guidedDescription": "Vamos guiá-lo passo a passo para os alvos certos de calorias e macros.",
+      "recommended": "Recomendado",
+      "manualTitle": "Configurar Manualmente",
+      "manualDescription": "Digite diretamente suas calorias, macros e metas.",
+      "autoCalculateTitle": "Calcular para mim",
+      "autoCalculateDescription": "Calculamos seus alvos usando a fórmula de Mifflin-St Jeor com base no seu perfil."
+    },
+    "goalWizard": {
+      "title": "Configurar sua Meta",
+      "step": "Etapa {{current}} de {{total}}",
+      "next": "Próximo",
+      "back": "Voltar",
+      "createGoal": "Criar Meta",
+      "goalType": {
+        "title": "Qual é o seu principal objetivo?",
+        "subtitle": "Isso nos ajuda a recomendar os alvos certos de calorias e macros para você.",
+        "lose": "Perder Peso",
+        "loseDescription": "Reduza a gordura corporal com um déficit calórico.",
+        "maintain": "Manter Peso",
+        "maintainDescription": "Mantenha seu peso atual e composição corporal.",
+        "gain": "Ganhar Peso",
+        "gainDescription": "Construa músculo e força com um superávit calórico."
+      },
+      "goalWeight": {
+        "titleMain": "Qual é o seu",
+        "titleAccent": "peso-alvo?",
+        "subtitle": "Defina o peso que você deseja atingir. Seu peso atual é exibido como referência.",
+        "label": "Peso-Alvo",
+        "currentWeightLabel": "Seu peso atual",
+        "tipLoseBF": "Mirar em 0,5–1% do seu peso corporal por semana é uma taxa sustentável que ajuda a preservar a massa muscular durante o cutting.",
+        "tipGain": "Ganhar 0,25–0,5 kg por semana minimiza o ganho de gordura e ainda permite um crescimento muscular constante."
+      },
+      "targetDate": {
+        "title": "Quando você quer alcançar sua meta?",
+        "subtitle": "Definir um prazo ajuda a acompanhar seu progresso ao longo do tempo.",
+        "label": "Data-Alvo",
+        "notSet": "Sem data específica",
+        "clear": "Limpar data"
+      }
+    },
     "manageCheckinData": {
       "title": "Check-ins de Nutrição",
       "searchPlaceholder": "Pesquisar check-ins...",

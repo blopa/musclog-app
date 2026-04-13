@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { UserProfileUpdate } from '@/database/models/User';
 import { UserService } from '@/database/services/UserService';
 import { generateUUID } from '@/utils/uuid';
