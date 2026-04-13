@@ -597,9 +597,9 @@ export async function getInitialValues(
         fiber: recordAny.fiber ?? 0,
         eatingPhase: recordAny.eatingPhase ?? 'maintain',
         targetWeight: recordAny.targetWeight ?? 0,
-        targetBodyFat: recordAny.targetBodyFat ?? 0,
-        targetBMI: recordAny.targetBmi ?? 0,
-        targetFFMI: recordAny.targetFfmi ?? 0,
+        targetBodyFat: recordAny.targetBodyFat ?? undefined,
+        targetBMI: recordAny.targetBmi ?? undefined,
+        targetFFMI: recordAny.targetFfmi ?? undefined,
       };
 
     case 'chatMessage':
@@ -612,9 +612,9 @@ export async function getInitialValues(
         checkinDate: recordAny.checkinDate ?? Date.now(),
         status: recordAny.status ?? 'pending',
         targetWeight: recordAny.targetWeight ?? 0,
-        targetBodyFat: recordAny.targetBodyFat ?? 0,
-        targetBmi: recordAny.targetBmi ?? 0,
-        targetFfmi: recordAny.targetFfmi ?? 0,
+        targetBodyFat: recordAny.targetBodyFat ?? undefined,
+        targetBmi: recordAny.targetBmi ?? undefined,
+        targetFfmi: recordAny.targetFfmi ?? undefined,
       };
 
     default:
@@ -834,9 +834,9 @@ export function getCreateInitialValues(
         fiber: 0,
         eatingPhase: 'maintain',
         targetWeight: 0,
-        targetBodyFat: 0,
-        targetBMI: 0,
-        targetFFMI: 0,
+        targetBodyFat: undefined,
+        targetBMI: undefined,
+        targetFFMI: undefined,
       };
 
     case 'nutritionCheckin':
@@ -844,9 +844,9 @@ export function getCreateInitialValues(
         checkinDate: Date.now(),
         status: 'pending',
         targetWeight: 0,
-        targetBodyFat: 0,
-        targetBmi: 0,
-        targetFfmi: 0,
+        targetBodyFat: undefined,
+        targetBmi: undefined,
+        targetFfmi: undefined,
       };
 
     case 'meal':
@@ -946,9 +946,9 @@ export async function createRecord(
         fiber: (values.fiber as number) ?? 0,
         eatingPhase: values.eatingPhase as any,
         targetWeight: targetWeightKg,
-        targetBodyFat: (values.targetBodyFat as number) ?? 0,
-        targetBMI: (values.targetBMI as number) ?? 0,
-        targetFFMI: (values.targetFFMI as number) ?? 0,
+        targetBodyFat: values.targetBodyFat as number | undefined,
+        targetBMI: values.targetBMI as number | undefined,
+        targetFFMI: values.targetFFMI as number | undefined,
       });
       break;
     }
@@ -968,9 +968,9 @@ export async function createRecord(
         checkinDate: (values.checkinDate as number) ?? Date.now(),
         status: values.status as any,
         targetWeight: targetWeightKg,
-        targetBodyFat: (values.targetBodyFat as number) ?? 0,
-        targetBmi: (values.targetBmi as number) ?? 0,
-        targetFfmi: (values.targetFfmi as number) ?? 0,
+        targetBodyFat: values.targetBodyFat as number | undefined,
+        targetBmi: values.targetBmi as number | undefined,
+        targetFfmi: values.targetFfmi as number | undefined,
       });
       break;
     }

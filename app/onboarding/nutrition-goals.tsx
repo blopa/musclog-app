@@ -145,7 +145,7 @@ export default function NutritionGoalsScreen() {
             weightKg: userDecrypted.value,
             heightCm: heightDecrypted.value,
             age: 25, // fallback
-            activityLevel: 3, // fallback
+            activityLevel: 2, // fallback
             weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',

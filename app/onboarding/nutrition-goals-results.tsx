@@ -142,6 +142,9 @@ export default function NutritionGoalsResults() {
         dailyCalorieSurplus: parsedPlan.dailyCalorieSurplus,
         estimatedFatChangeKg: parsedPlan.estimatedFatChangeKg,
         estimatedLeanChangeKg: parsedPlan.estimatedLeanChangeKg,
+        targetBodyFat: parsedPlan.targetBodyFat,
+        targetBMI: parsedPlan.targetBMI,
+        targetFFMI: parsedPlan.targetFFMI,
       };
     }
 
@@ -356,9 +359,9 @@ export default function NutritionGoalsResults() {
           fiber,
           eatingPhase: eatingPhase,
           targetWeight: parsedPlan.projectedWeightKg,
-          targetBodyFat,
-          targetBMI,
-          targetFFMI,
+          targetBodyFat: parsedPlan.targetBodyFat,
+          targetBMI: parsedPlan.targetBMI,
+          targetFFMI: parsedPlan.targetFFMI,
           targetDate,
         });
 

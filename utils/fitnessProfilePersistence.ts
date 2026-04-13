@@ -124,7 +124,7 @@ export async function loadFitnessDetailsInitialData(
       fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
       weightGoal: user.weightGoal ?? 'maintain',
       fitnessGoal: user.fitnessGoal,
-      activityLevel: user.activityLevel ?? 3,
+      activityLevel: user.activityLevel ?? 2,
       gender: user.gender,
       experience: user.liftingExperience ?? 'intermediate',
     };
@@ -138,7 +138,7 @@ export async function loadFitnessDetailsInitialData(
     fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
     weightGoal: 'maintain',
     fitnessGoal: 'general',
-    activityLevel: 3,
+    activityLevel: 2,
     gender: 'other',
     experience: 'intermediate',
   };

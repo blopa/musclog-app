@@ -97,9 +97,9 @@ export class NutritionGoalService {
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
         r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = null;
         r.createdAt = now;
@@ -358,9 +358,9 @@ export class NutritionGoalService {
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
         r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = newEffectiveUntil;
         r.createdAt = startDate;

@@ -155,7 +155,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           weightKg: userDecrypted.value,
           heightCm: heightDecrypted.value,
           age: 25,
-          activityLevel: 3,
+          activityLevel: 2,
           weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
           fitnessGoal: 'general',
           liftingExperience: 'intermediate',
@@ -507,9 +507,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
                 </Text>
                 <Text className="mt-1 text-[10px] font-medium text-gray-500">
-                  {t('nutrition.checkin.targetShort', {
-                    value: formatDecimal(checkin.targetBodyFat, 1),
-                  })}
+                  {checkin.targetBodyFat != null
+                    ? t('nutrition.checkin.targetShort', {
+                        value: formatDecimal(checkin.targetBodyFat, 1),
+                      })
+                    : null}
                 </Text>
               </View>
               <View
