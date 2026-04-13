@@ -37,11 +37,15 @@ import { UserMetricService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useUser } from '@/hooks/useUser';
 import i18n from '@/lang/lang';
 import { localDayStartMs } from '@/utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
+  calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
   ffmiFromWeightHeightAndBodyFat,
+  fiberFromCalories,
 } from '@/utils/nutritionCalculator';
 import { displayToKg, kgToDisplay, storedHeightToCm } from '@/utils/unitConversion';
 
@@ -51,6 +55,8 @@ import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInlineInput } from './theme/StepperInlineInput';
+
+const CALORIES_STEP = 12;
 
 export type NutritionGoals = {
   totalCalories: number;
@@ -286,13 +292,53 @@ export function NutritionGoalsBody({
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
+  const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null);
+  const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
   const isInitialMount = useRef(true);
   const isManualCalorieUpdate = useRef(false);
+  const hasAppliedComputedDefaults = useRef(false);
+  const macrosArePristine = useRef(true);
+  const previousEatingPhase = useRef(initialGoals?.eatingPhase ?? 'maintain');
   const [isCalorieEditing, setIsCalorieEditing] = useState(false);
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
     (initialGoals?.totalCalories ?? 2450).toString()
   );
   const calorieInputRef = useRef<TextInput>(null);
+
+  const preciseMacros = useRef({
+    protein: initialGoals?.protein ?? 180,
+    carbs: initialGoals?.carbs ?? 250,
+    fats: initialGoals?.fats ?? 80,
+    fiber: initialGoals?.fiber ?? 30,
+  });
+
+  const macroCalorieRatios = useRef({
+    protein: 0,
+    carbs: 0,
+    fats: 0,
+    fiber: 0,
+  });
+
+  const syncMacroRatios = useCallback(() => {
+    const digestibleCarbs = Math.max(0, preciseMacros.current.carbs - preciseMacros.current.fiber);
+    const totalCals =
+      preciseMacros.current.protein * CALORIES_FOR_PROTEIN +
+      digestibleCarbs * CALORIES_FOR_CARBS +
+      preciseMacros.current.fats * CALORIES_FOR_FAT +
+      preciseMacros.current.fiber * CALORIES_FOR_FIBER;
+    if (totalCals > 0) {
+      macroCalorieRatios.current = {
+        protein: (preciseMacros.current.protein * CALORIES_FOR_PROTEIN) / totalCals,
+        carbs: (digestibleCarbs * CALORIES_FOR_CARBS) / totalCals,
+        fats: (preciseMacros.current.fats * CALORIES_FOR_FAT) / totalCals,
+        fiber: (preciseMacros.current.fiber * CALORIES_FOR_FIBER) / totalCals,
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    syncMacroRatios();
+  }, [syncMacroRatios]);
 
   // Dynamically compute sensible max values for macros depending on eating phase
   const macroMax = useMemo(() => {
@@ -345,6 +391,145 @@ export function NutritionGoalsBody({
     });
   }, []);
 
+  // Load user's latest weight and body fat for macro inference
+  useEffect(() => {
+    UserMetricService.getLatest('weight').then((metric) => {
+      if (!metric) {
+        return;
+      }
+      metric.getDecrypted().then((dec) => {
+        if (dec != null) {
+          setLatestWeightKg(dec.value);
+        }
+      });
+    });
+    UserMetricService.getLatest('body_fat').then((metric) => {
+      if (!metric) {
+        return;
+      }
+      metric.getDecrypted().then((dec) => {
+        if (dec != null) {
+          setLatestBodyFatPercent(dec.value);
+        }
+      });
+    });
+  }, []);
+
+  const { user } = useUser();
+
+  // Compute inferred macro defaults from user profile when no initialGoals are provided
+  useEffect(() => {
+    if (hasAppliedComputedDefaults.current) {
+      return;
+    }
+    if (initialGoals?.totalCalories != null) {
+      hasAppliedComputedDefaults.current = true;
+      return;
+    }
+    if (!user || latestWeightKg == null || userHeightM == null) {
+      return;
+    }
+
+    const heightCm = userHeightM * 100;
+    const age = user.getAge();
+    const fitnessGoal = user.fitnessGoal ?? 'general';
+    const activityLevel = user.activityLevel ?? 3;
+    const liftingExperience = user.liftingExperience ?? 'intermediate';
+    const gender = user.gender ?? 'other';
+
+    try {
+      const plan = calculateNutritionPlan({
+        gender,
+        weightKg: latestWeightKg,
+        heightCm,
+        age,
+        activityLevel: Math.max(1, Math.min(5, activityLevel)) as 1 | 2 | 3 | 4 | 5,
+        weightGoal: eatingPhaseToWeightGoal(eatingPhase),
+        fitnessGoal,
+        liftingExperience,
+        bodyFatPercent: latestBodyFatPercent ?? undefined,
+      });
+
+      const fiberValue = fiberFromCalories(plan.targetCalories);
+
+      preciseMacros.current = {
+        protein: plan.protein,
+        carbs: plan.carbs,
+        fats: plan.fats,
+        fiber: fiberValue,
+      };
+
+      isManualCalorieUpdate.current = true;
+      setTotalCalories(plan.targetCalories);
+      setProtein(plan.protein);
+      setCarbs(plan.carbs);
+      setFats(plan.fats);
+      setFiber(fiberValue);
+      setCalorieInputValue(plan.targetCalories.toString());
+      syncMacroRatios();
+      hasAppliedComputedDefaults.current = true;
+    } catch {
+      // If calculation fails, keep hardcoded defaults already in state
+      hasAppliedComputedDefaults.current = true;
+    }
+  }, [user, latestWeightKg, userHeightM, eatingPhase, latestBodyFatPercent, syncMacroRatios]);
+
+  // Recalculate macros when eating phase changes if inputs are still pristine
+  useEffect(() => {
+    if (eatingPhase === previousEatingPhase.current) {
+      return;
+    }
+    previousEatingPhase.current = eatingPhase;
+
+    if (!macrosArePristine.current) {
+      return;
+    }
+    if (!user || latestWeightKg == null || userHeightM == null) {
+      return;
+    }
+
+    const heightCm = userHeightM * 100;
+    const age = user.getAge();
+    const fitnessGoal = user.fitnessGoal ?? 'general';
+    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
+    const liftingExperience = user.liftingExperience ?? 'intermediate';
+    const gender = user.gender ?? 'other';
+
+    try {
+      const plan = calculateNutritionPlan({
+        gender,
+        weightKg: latestWeightKg,
+        heightCm,
+        age,
+        activityLevel,
+        weightGoal: eatingPhaseToWeightGoal(eatingPhase),
+        fitnessGoal,
+        liftingExperience,
+        bodyFatPercent: latestBodyFatPercent ?? undefined,
+      });
+
+      const fiberValue = fiberFromCalories(plan.targetCalories);
+
+      preciseMacros.current = {
+        protein: plan.protein,
+        carbs: plan.carbs,
+        fats: plan.fats,
+        fiber: fiberValue,
+      };
+
+      isManualCalorieUpdate.current = true;
+      setTotalCalories(plan.targetCalories);
+      setProtein(plan.protein);
+      setCarbs(plan.carbs);
+      setFats(plan.fats);
+      setFiber(fiberValue);
+      setCalorieInputValue(plan.targetCalories.toString());
+      syncMacroRatios();
+    } catch {
+      // ignore
+    }
+  }, [eatingPhase, user, latestWeightKg, userHeightM, latestBodyFatPercent, syncMacroRatios]);
+
   const handleCaloriesChange = useCallback(
     (newCalories: number) => {
       const sanitized = Math.max(0, newCalories);
@@ -353,17 +538,27 @@ export function NutritionGoalsBody({
       }
 
       isManualCalorieUpdate.current = true;
-      const oldCalories = totalCalories;
+      macrosArePristine.current = false;
 
-      if (oldCalories > 0) {
-        const ratio = sanitized / oldCalories;
-        setProtein((prev) => Math.round(prev * ratio));
-        setCarbs((prev) => Math.round(prev * ratio));
-        setFats((prev) => Math.round(prev * ratio));
-        setFiber((prev) => Math.round(prev * ratio));
-      }
+      const newProtein = (sanitized * macroCalorieRatios.current.protein) / CALORIES_FOR_PROTEIN;
+      const newDigestibleCarbs =
+        (sanitized * macroCalorieRatios.current.carbs) / CALORIES_FOR_CARBS;
+      const newFiber = (sanitized * macroCalorieRatios.current.fiber) / CALORIES_FOR_FIBER;
+      const newCarbs = newDigestibleCarbs + newFiber;
+      const newFats = (sanitized * macroCalorieRatios.current.fats) / CALORIES_FOR_FAT;
 
-      setTotalCalories(sanitized);
+      preciseMacros.current = {
+        protein: newProtein,
+        carbs: newCarbs,
+        fats: newFats,
+        fiber: newFiber,
+      };
+
+      setProtein(Math.round(newProtein));
+      setCarbs(Math.round(newCarbs));
+      setFats(Math.round(newFats));
+      setFiber(Math.round(newFiber));
+      setTotalCalories(Math.round(sanitized));
     },
     [totalCalories]
   );
@@ -427,11 +622,28 @@ export function NutritionGoalsBody({
   // If the eating phase changes to a lower-max (e.g. bulk -> cut), clamp current macro values
   // so they never exceed the allowed maximum for the selected phase.
   useEffect(() => {
-    setProtein((curr) => Math.min(curr, macroMax.protein));
-    setCarbs((curr) => Math.min(curr, macroMax.carbs));
-    setFats((curr) => Math.min(curr, macroMax.fats));
-    setFiber((curr) => Math.min(curr, macroMax.fiber));
-  }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber]);
+    setProtein((curr) => {
+      const next = Math.min(curr, macroMax.protein);
+      preciseMacros.current.protein = next;
+      return next;
+    });
+    setCarbs((curr) => {
+      const next = Math.min(curr, macroMax.carbs);
+      preciseMacros.current.carbs = next;
+      return next;
+    });
+    setFats((curr) => {
+      const next = Math.min(curr, macroMax.fats);
+      preciseMacros.current.fats = next;
+      return next;
+    });
+    setFiber((curr) => {
+      const next = Math.min(curr, macroMax.fiber);
+      preciseMacros.current.fiber = next;
+      return next;
+    });
+    syncMacroRatios();
+  }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
   // Call onFormChange whenever form data changes
   useEffect(() => {
@@ -516,12 +728,12 @@ export function NutritionGoalsBody({
 
     // Note: Fiber is typically included in the total carbs (4kcal/g) on labels,
     // but for accuracy we count net carbs at 4kcal/g and fiber at 2kcal/g.
-    const digestibleCarbs = Math.max(0, carbs - fiber);
+    const digestibleCarbs = Math.max(0, preciseMacros.current.carbs - preciseMacros.current.fiber);
     const calculatedCalories =
-      protein * CALORIES_FOR_PROTEIN +
+      preciseMacros.current.protein * CALORIES_FOR_PROTEIN +
       digestibleCarbs * CALORIES_FOR_CARBS +
-      fats * CALORIES_FOR_FAT +
-      fiber * CALORIES_FOR_FIBER;
+      preciseMacros.current.fats * CALORIES_FOR_FAT +
+      preciseMacros.current.fiber * CALORIES_FOR_FIBER;
     setTotalCalories(Math.round(calculatedCalories));
   }, [protein, carbs, fats, fiber, initialGoals?.totalCalories]);
 
@@ -562,7 +774,7 @@ export function NutritionGoalsBody({
             </Text>
             <View className="w-full flex-row items-center justify-center gap-6">
               <Pressable
-                onPress={() => handleCaloriesChange(totalCalories - 50)}
+                onPress={() => handleCaloriesChange(totalCalories - CALORIES_STEP)}
                 className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                 style={{ backgroundColor: theme.colors.background.white10 }}
                 hitSlop={12}
@@ -600,7 +812,7 @@ export function NutritionGoalsBody({
               </View>
 
               <Pressable
-                onPress={() => handleCaloriesChange(totalCalories + 50)}
+                onPress={() => handleCaloriesChange(totalCalories + CALORIES_STEP)}
                 className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                 style={{ backgroundColor: theme.colors.background.white10 }}
                 hitSlop={12}
@@ -702,9 +914,26 @@ export function NutritionGoalsBody({
             maxFractionDigits={0}
             icon={showIcons ? Beef : undefined}
             iconSize="sm"
-            onIncrement={() => setProtein(Math.min(macroMax.protein, protein + 1))}
-            onDecrement={() => setProtein(Math.max(0, protein - 1))}
-            onChangeValue={setProtein}
+            onIncrement={() => {
+              const next = Math.min(macroMax.protein, protein + 1);
+              preciseMacros.current.protein = next;
+              macrosArePristine.current = false;
+              setProtein(next);
+              syncMacroRatios();
+            }}
+            onDecrement={() => {
+              const next = Math.max(0, protein - 1);
+              preciseMacros.current.protein = next;
+              macrosArePristine.current = false;
+              setProtein(next);
+              syncMacroRatios();
+            }}
+            onChangeValue={(val) => {
+              preciseMacros.current.protein = val;
+              macrosArePristine.current = false;
+              setProtein(val);
+              syncMacroRatios();
+            }}
           />
           <StepperInlineInput
             label={t('nutritionGoals.carbohydrates')}
@@ -714,9 +943,26 @@ export function NutritionGoalsBody({
             maxFractionDigits={0}
             icon={showIcons ? Wheat : undefined}
             iconSize="sm"
-            onIncrement={() => setCarbs(Math.min(macroMax.carbs, carbs + 1))}
-            onDecrement={() => setCarbs(Math.max(0, carbs - 1))}
-            onChangeValue={setCarbs}
+            onIncrement={() => {
+              const next = Math.min(macroMax.carbs, carbs + 1);
+              preciseMacros.current.carbs = next;
+              macrosArePristine.current = false;
+              setCarbs(next);
+              syncMacroRatios();
+            }}
+            onDecrement={() => {
+              const next = Math.max(0, carbs - 1);
+              preciseMacros.current.carbs = next;
+              macrosArePristine.current = false;
+              setCarbs(next);
+              syncMacroRatios();
+            }}
+            onChangeValue={(val) => {
+              preciseMacros.current.carbs = val;
+              macrosArePristine.current = false;
+              setCarbs(val);
+              syncMacroRatios();
+            }}
           />
           <StepperInlineInput
             label={t('nutritionGoals.fats')}
@@ -726,9 +972,26 @@ export function NutritionGoalsBody({
             maxFractionDigits={0}
             icon={showIcons ? Droplet : undefined}
             iconSize="sm"
-            onIncrement={() => setFats(Math.min(macroMax.fats, fats + 1))}
-            onDecrement={() => setFats(Math.max(0, fats - 1))}
-            onChangeValue={setFats}
+            onIncrement={() => {
+              const next = Math.min(macroMax.fats, fats + 1);
+              preciseMacros.current.fats = next;
+              macrosArePristine.current = false;
+              setFats(next);
+              syncMacroRatios();
+            }}
+            onDecrement={() => {
+              const next = Math.max(0, fats - 1);
+              preciseMacros.current.fats = next;
+              macrosArePristine.current = false;
+              setFats(next);
+              syncMacroRatios();
+            }}
+            onChangeValue={(val) => {
+              preciseMacros.current.fats = val;
+              macrosArePristine.current = false;
+              setFats(val);
+              syncMacroRatios();
+            }}
           />
           <StepperInlineInput
             label={t('food.macros.fiber')}
@@ -738,9 +1001,26 @@ export function NutritionGoalsBody({
             maxFractionDigits={0}
             icon={showIcons ? Leaf : undefined}
             iconSize="sm"
-            onIncrement={() => setFiber(Math.min(macroMax.fiber, fiber + 1))}
-            onDecrement={() => setFiber(Math.max(0, fiber - 1))}
-            onChangeValue={setFiber}
+            onIncrement={() => {
+              const next = Math.min(macroMax.fiber, fiber + 1);
+              preciseMacros.current.fiber = next;
+              macrosArePristine.current = false;
+              setFiber(next);
+              syncMacroRatios();
+            }}
+            onDecrement={() => {
+              const next = Math.max(0, fiber - 1);
+              preciseMacros.current.fiber = next;
+              macrosArePristine.current = false;
+              setFiber(next);
+              syncMacroRatios();
+            }}
+            onChangeValue={(val) => {
+              preciseMacros.current.fiber = val;
+              macrosArePristine.current = false;
+              setFiber(val);
+              syncMacroRatios();
+            }}
           />
         </View>
 
