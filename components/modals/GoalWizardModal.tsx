@@ -562,8 +562,6 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
     }
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────────
-
   const footer = (
     <View style={{ flexDirection: 'row', gap: 12 }}>
       <Button

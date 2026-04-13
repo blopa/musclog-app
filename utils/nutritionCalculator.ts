@@ -240,7 +240,10 @@ function lambertW(z: number): number {
  * initialFatMassKg = current fat mass (kg), deltaWeightKg = planned weight change (negative for loss).
  * Returns kcal per kg so that (deficit in kcal) / (this value) = weight loss in kg.
  */
-function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg: number): number {
+export function getEffectiveKcalPerKgWeightLoss(
+  initialFatMassKg: number,
+  deltaWeightKg: number
+): number {
   const dBw = deltaWeightKg;
   if (dBw >= 0 || initialFatMassKg <= 0) {
     return RHO_FAT_KCAL_PER_KG;
@@ -250,13 +253,16 @@ function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg
     Math.exp(dBw / FORBES_C) *
     initialFatMassKg *
     Math.exp(initialFatMassKg / FORBES_C);
+
   const w = lambertW(arg);
   if (Number.isNaN(w)) {
     return 7700;
-  } // fallback
+  }
+
   const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (FORBES_C / dBw) * w;
   const effective =
     RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
+
   return Math.max(1000, Math.min(9500, effective)); // clamp to plausible range
 }
 

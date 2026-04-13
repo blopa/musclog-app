@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import {
+  calculateMacros,
+  fiberFromCalories,
+  getEffectiveKcalPerKgGain,
+  getEffectiveKcalPerKgWeightLoss,
+  getMinCalories,
+} from '@/utils/nutritionCalculator';
 import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -138,7 +145,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const defaultEatingPhase =
     pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
-  const { defaults: computedDefaults } = useDefaultNutritionGoals(defaultEatingPhase);
+  const { defaults: computedDefaults, planData } = useDefaultNutritionGoals(defaultEatingPhase);
 
   // Keep raw NutritionGoal alongside display data to enable edit/delete
   const historyWithRaw = useMemo(
@@ -301,17 +308,69 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
   };
 
+  // TODO: should this be its own hook?
   const editModalInitialGoals = useMemo(() => {
     if (isEditing && selectedGoal) {
       return goalToFormData(selectedGoal);
     }
 
     if (pendingWizardPrefill) {
-      return { ...computedDefaults, ...pendingWizardPrefill };
+      const base = { ...computedDefaults, ...pendingWizardPrefill };
+
+      // If the wizard supplied a target weight + date, compute the required daily
+      // calorie deficit/surplus synchronously using already-loaded plan data (TDEE,
+      // current weight, etc.). This avoids a race condition where the async hook
+      // hasn't finished recomputing by the time the modal opens.
+      const { targetWeight, targetDate, eatingPhase } = pendingWizardPrefill;
+      if (
+        targetWeight != null &&
+        targetDate != null &&
+        eatingPhase != null &&
+        eatingPhase !== 'maintain' &&
+        planData != null &&
+        planData.tdee > 0
+      ) {
+        const daysToGoal = differenceInCalendarDays(new Date(targetDate), new Date());
+        const weightDeltaKg = targetWeight - planData.currentWeightKg;
+
+        if (daysToGoal > 0 && Math.abs(weightDeltaKg) >= 0.1) {
+          let dateAwareCalories: number;
+
+          if (weightDeltaKg < 0) {
+            const fatMassKg =
+              planData.bodyFatPercent != null
+                ? planData.currentWeightKg * (planData.bodyFatPercent / 100)
+                : planData.currentWeightKg * 0.25;
+            const kcalPerKg = getEffectiveKcalPerKgWeightLoss(fatMassKg, weightDeltaKg);
+            const dailyDeficit = (Math.abs(weightDeltaKg) * kcalPerKg) / daysToGoal;
+            const minCals = getMinCalories(planData.gender, planData.bmr);
+            dateAwareCalories = Math.max(minCals, Math.round(planData.tdee - dailyDeficit));
+          } else {
+            const kcalPerKg = getEffectiveKcalPerKgGain(planData.liftingExperience);
+            const dailySurplus = Math.min(
+              (weightDeltaKg * kcalPerKg) / daysToGoal,
+              1000 // cap at +1000 kcal/day
+            );
+            dateAwareCalories = Math.round(planData.tdee + dailySurplus);
+          }
+
+          const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal);
+          return {
+            ...base,
+            totalCalories: dateAwareCalories,
+            protein: macros.protein,
+            carbs: macros.carbs,
+            fats: macros.fats,
+            fiber: fiberFromCalories(dateAwareCalories),
+          };
+        }
+      }
+
+      return base;
     }
 
     return currentGoalsData ?? computedDefaults;
-  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults]);
+  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults, planData]);
 
   return (
     <>

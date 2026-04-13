@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { NutritionGoals } from '@/components/NutritionGoalsBody';
-import { EatingPhase } from '@/database/models';
+import { EatingPhase, FitnessGoal, Gender, LiftingExperience } from '@/database/models';
 import { UserMetricService } from '@/database/services';
 import {
   calculateNutritionPlan,
@@ -19,6 +19,16 @@ type RequiredMacroFields = {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
+};
+
+export type PlanData = {
+  tdee: number;
+  bmr: number;
+  currentWeightKg: number;
+  bodyFatPercent?: number;
+  gender: Gender;
+  fitnessGoal: FitnessGoal;
+  liftingExperience: LiftingExperience;
 };
 
 function getFallbackDefaults(
@@ -45,6 +55,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
   const [defaults, setDefaults] = useState<Partial<NutritionGoals> & RequiredMacroFields>(() =>
     getFallbackDefaults(eatingPhase)
   );
+  const [planData, setPlanData] = useState<PlanData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -55,6 +66,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
       if (!user) {
         if (isMounted) {
           setDefaults(getFallbackDefaults(eatingPhase));
+          setPlanData(null);
           setIsLoading(false);
         }
         return;
@@ -73,6 +85,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
       if (!weightDecrypted || !heightDecrypted) {
         if (isMounted) {
           setDefaults(getFallbackDefaults(eatingPhase));
+          setPlanData(null);
           setIsLoading(false);
         }
         return;
@@ -85,6 +98,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
       const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
       const liftingExperience = user.liftingExperience ?? 'intermediate';
       const gender = user.gender ?? 'other';
+      const bodyFatPercent = bodyFatDecrypted?.value ?? undefined;
 
       try {
         const plan = calculateNutritionPlan({
@@ -96,7 +110,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           weightGoal: eatingPhaseToWeightGoal(eatingPhase),
           fitnessGoal,
           liftingExperience,
-          bodyFatPercent: bodyFatDecrypted?.value ?? undefined,
+          bodyFatPercent,
         });
 
         const fiberValue = fiberFromCalories(plan.targetCalories);
@@ -116,11 +130,21 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
             targetDate: null,
             goalStartDate: null,
           });
+          setPlanData({
+            tdee: plan.tdee,
+            bmr: plan.bmr,
+            currentWeightKg: weightKg,
+            bodyFatPercent,
+            gender,
+            fitnessGoal,
+            liftingExperience,
+          });
           setIsLoading(false);
         }
       } catch {
         if (isMounted) {
           setDefaults(getFallbackDefaults(eatingPhase));
+          setPlanData(null);
           setIsLoading(false);
         }
       }
@@ -132,5 +156,5 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
     };
   }, [user, eatingPhase]);
 
-  return { defaults, isLoading };
+  return { defaults, isLoading, planData };
 }
