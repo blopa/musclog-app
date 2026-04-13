@@ -92,6 +92,9 @@
       "deleteCheckinDesc": "Навсегда удалить эту отметку",
       "subtitleFormat": "Цель {{targetWeight}} {{unit}} • {{targetBodyFat}}% жировой массы",
       "checkinDate": "Дата отметки"
-    }
+    },
+    "exerciseGoals": "ЦЕЛИ ПО ТРЕНИРОВКАМ",
+    "exerciseGoalsTitle": "Сила и стабильность",
+    "exerciseGoalsSubtitle": "Отслеживайте целевые показатели 1ПМ и частоту тренировок"
   }
 }
