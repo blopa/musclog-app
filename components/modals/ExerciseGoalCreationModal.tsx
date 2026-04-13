@@ -63,6 +63,7 @@ export default function ExerciseGoalCreationModal({
   const [exerciseDataPoints, setExerciseDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [current1RM, setCurrent1RM] = useState<number | null>(null);
   const [bodyWeight, setBodyWeight] = useState(0);
+  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
 
   useEffect(() => {
     if (!visible) {
@@ -85,10 +86,12 @@ export default function ExerciseGoalCreationModal({
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
         UserMetricService.getUserBodyWeightKgForVolume(),
+        UserService.getCurrentUser(),
       ])
-        .then(([data, bw]) => {
+        .then(([data, bw, user]) => {
           setExerciseDataPoints(data);
           setBodyWeight(bw);
+          setUserGender(user?.gender ?? 'male');
           if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
             setCurrent1RM(latest1RM);
@@ -115,6 +118,7 @@ export default function ExerciseGoalCreationModal({
       targetWeight: targetKg,
       bodyWeight,
       loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
+      userGender,
     });
   }, [
     selectedExercise,
@@ -123,6 +127,7 @@ export default function ExerciseGoalCreationModal({
     current1RM,
     exerciseDataPoints,
     bodyWeight,
+    userGender,
     units,
   ]);
 

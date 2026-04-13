@@ -13,7 +13,7 @@
     "type": "compound",
     "description": "Variação do supino realizada em um banco inclinado para trabalhar a parte superior do peitoral.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.8
+    "loadMultiplier": 0.9
   },
   {
     "name": "Supino Declinado",
@@ -37,7 +37,7 @@
     "type": "compound",
     "description": "Exercício para o corpo todo que envolve levantar uma barra do chão até a posição ereta.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Máquina de Crucifix",
@@ -61,7 +61,7 @@
     "type": "compound",
     "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo e depois volta a ficar de pé.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Agachamento com Barra",
@@ -69,7 +69,7 @@
     "type": "compound",
     "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo, com uma barra apoiada na parte superior das costas, e depois volta a ficar de pé.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Leg Press",
@@ -365,7 +365,7 @@
     "type": "compound",
     "description": "Variação do levantamento terra com stance aberto que trabalha a parte interna das coxas e glúteos.",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Máquina de Abdução do Quadril",

@@ -13,7 +13,7 @@
     "type": "compound",
     "description": "A variation of the bench press performed on an inclined bench to target the upper chest.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.8
+    "loadMultiplier": 0.9
   },
   {
     "name": "Declined Bench Press",
@@ -61,7 +61,7 @@
     "type": "compound",
     "description": "A lower body exercise where you bend your knees and hips to lower your body, then stand back up.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Barbell Back Squat",
@@ -69,7 +69,7 @@
     "type": "compound",
     "description": "A lower body exercise where you bend your knees and hips to lower your body, with a barbell placed across your upper back, then stand back up.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Leg Press Machine",

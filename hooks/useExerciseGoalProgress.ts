@@ -5,7 +5,7 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { UserMetricService, WorkoutAnalytics } from '@/database/services';
+import { UserMetricService, UserService, WorkoutAnalytics } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
@@ -23,32 +23,30 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
   const [bodyWeight, setBodyWeight] = useState(0);
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
+  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
 
-    if (goal.goalType === '1rm' && goal.exerciseId) {
-      try {
+    try {
+      if (goal.goalType === '1rm' && goal.exerciseId) {
         const goalCreatedAt = goal.createdAt.getTime();
-        const [filteredData, bw, exercise] = await Promise.all([
+        const [filteredData, bw, exercise, user] = await Promise.all([
           WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
             startDate: goalCreatedAt,
             endDate: Date.now(),
           }),
           UserMetricService.getUserBodyWeightKgForVolume(),
           database.get<Exercise>('exercises').find(goal.exerciseId),
+          UserService.getCurrentUser(),
         ]);
 
         setDataPoints(filteredData);
         setBodyWeight(bw);
         setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
-      } catch (err) {
-        console.error('Error loading exercise goal progress:', err);
-        setDataPoints([]);
-      }
-    } else if (goal.goalType === 'consistency') {
-      try {
+        setUserGender(user?.gender ?? 'male');
+      } else if (goal.goalType === 'consistency') {
         const now = new Date();
         const weekStartMs = localDayStartMs(now) - 6 * 86_400_000;
 
@@ -58,24 +56,9 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           .fetchCount();
 
         setSessionsThisWeek(count);
-      } catch (err) {
-        console.error('Error loading consistency goal progress:', err);
-        setSessionsThisWeek(0);
       }
-    }
-
-    setIsLoading(true);
-    try {
-      const goalCreatedAt = goal.createdAt.getTime();
-      const filteredData = await WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
-        startDate: goalCreatedAt,
-        endDate: Date.now(),
-      });
-
-      setDataPoints(filteredData);
     } catch (err) {
       console.error('Error loading exercise goal progress:', err);
-      setDataPoints([]);
     } finally {
       setIsLoading(false);
     }
@@ -136,8 +119,17 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       targetWeight: goal.targetWeight,
       bodyWeight,
       loadMultiplier,
+      userGender,
     });
-  }, [dataPoints, goal.goalType, goal.targetWeight, goal.baseline1rm, bodyWeight, loadMultiplier]);
+  }, [
+    dataPoints,
+    goal.goalType,
+    goal.targetWeight,
+    goal.baseline1rm,
+    bodyWeight,
+    loadMultiplier,
+    userGender,
+  ]);
 
   return {
     projection,

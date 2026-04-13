@@ -6,6 +6,7 @@ export interface ProjectionInputs {
   targetWeight: number;
   bodyWeight?: number; // Optional but highly recommended for realism nudges
   loadMultiplier?: number; // From Exercise model, ensures i18n independence
+  userGender?: 'male' | 'female' | 'other';
 }
 
 export interface ProjectionResult {
@@ -69,7 +70,19 @@ function weeksBetween(startMs: number, endMs: number): number {
  * Project goal completion based on workout history
  */
 export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
-  const { dataPoints, baseline1rm, targetWeight, bodyWeight, loadMultiplier = 1.0 } = inputs;
+  const {
+    dataPoints: rawDataPoints,
+    baseline1rm,
+    targetWeight,
+    bodyWeight,
+    loadMultiplier = 1.0,
+    userGender = 'male',
+  } = inputs;
+
+  // Scientific Refinement: Filter out high-rep sets (reps > 10) for 1RM prediction.
+  // Standard formulas (Brzycki, Epley) lose significant accuracy beyond 10 reps
+  // as the set becomes a measure of metabolic endurance rather than neurological strength.
+  const dataPoints = rawDataPoints.filter((dp) => dp.reps <= 10);
 
   // No history at all
   if (dataPoints.length === 0) {
@@ -140,10 +153,15 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   // Advanced lifters progress slower, so the "stalling" threshold should be lower for them.
   // We use loadMultiplier to normalize relative strength across different exercises.
   const bw = bodyWeight && bodyWeight > 0 ? bodyWeight : 80; // fallback to 80kg if unknown
-  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadMultiplier);
 
-  // Stalling threshold: 0.1 kg/week for novices, 0.02 kg/week for advanced
-  const stallingThreshold = normalizedRelativeStrength > 1.5 ? 0.02 : 0.1;
+  // Sex-Aware Normalization: Women typically have absolute strength caps $\sim 60-70\%$ of men.
+  // We adjust the relative strength benchmark to ensure training tiers are accurate for both sexes.
+  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
+  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadMultiplier * genderFactor);
+
+  // Stalling threshold: 0.1 kg/week for novices, 0.05 kg/week for advanced.
+  // Capped at 0.05kg to ensure we don't flag progress smaller than what can be physically loaded (microplates).
+  const stallingThreshold = normalizedRelativeStrength > 1.5 ? 0.05 : 0.1;
 
   let status: ProjectionResult['status'];
   if (weeklyProgressionRate > stallingThreshold) {
@@ -173,7 +191,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     currentEstimated1RM,
     bodyWeight ?? 0,
     weeklyProgressionRate,
-    loadMultiplier
+    loadMultiplier,
+    userGender
   );
 
   // Calculate non-linear projection using a step-simulation.
@@ -197,7 +216,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     simWeeks += 1;
 
     // Recalculate cap for the simulated weight level
-    const simRS = sim1RM / (bw * loadMultiplier);
+    const simRS = sim1RM / (bw * loadMultiplier * genderFactor);
     const simCapPercent = getRealisticWeeklyRateCapPercent(simRS);
     const simCapKg = (simCapPercent / 100) * sim1RM;
 
@@ -246,7 +265,8 @@ export function isProgressionRateRealistic(
   currentWeight: number,
   bodyWeight: number,
   requiredRatePerWeek: number,
-  loadMultiplier: number = 1.0
+  loadMultiplier: number = 1.0,
+  userGender: 'male' | 'female' | 'other' = 'male'
 ): boolean {
   if (currentWeight <= 0) return true;
 
@@ -257,8 +277,9 @@ export function isProgressionRateRealistic(
     return percentPerWeek <= 1.0;
   }
 
-  // Normalize relative strength using the loadMultiplier.
-  const normalizedRelativeStrength = currentWeight / (bodyWeight * loadMultiplier);
+  // Normalize relative strength using the loadMultiplier and gender factor.
+  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
+  const normalizedRelativeStrength = currentWeight / (bodyWeight * loadMultiplier * genderFactor);
   const upperThreshold = getRealisticWeeklyRateCapPercent(normalizedRelativeStrength);
 
   return percentPerWeek <= upperThreshold;
