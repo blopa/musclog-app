@@ -31,9 +31,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
-  bmiFromWeightAndHeightM,
-  estimateTargetBodyFatWhenCutting,
-  ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
   generateWeeklyCheckins,
   inchesToCm,
@@ -325,25 +322,6 @@ export default function NutritionGoalsResults() {
         }
 
         const fiber = fiberFromCalories(parsedPlan.targetCalories);
-        const targetBMI =
-          heightM > 0 ? bmiFromWeightAndHeightM(parsedPlan.projectedWeightKg, heightM) : 0;
-
-        let targetBodyFat = 0;
-        if (eatingPhase === 'cut' && currentBodyFatPercent != null) {
-          targetBodyFat = estimateTargetBodyFatWhenCutting(
-            parsedPlan.currentWeightKg,
-            parsedPlan.projectedWeightKg,
-            currentBodyFatPercent
-          );
-        } else if (eatingPhase === 'maintain' && currentBodyFatPercent != null) {
-          targetBodyFat = currentBodyFatPercent;
-        }
-
-        const bodyFatForFfmi = targetBodyFat > 0 ? targetBodyFat : (currentBodyFatPercent ?? 0);
-        const targetFFMI =
-          heightM > 0 && bodyFatForFfmi > 0
-            ? ffmiFromWeightHeightAndBodyFat(parsedPlan.projectedWeightKg, heightM, bodyFatForFfmi)
-            : 0;
 
         const startDate = Date.now();
         const targetDate = localDayKeyPlusCalendarDays(

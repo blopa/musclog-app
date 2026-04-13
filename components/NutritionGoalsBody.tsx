@@ -288,10 +288,10 @@ export function NutritionGoalsBody({
     initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
   );
   const [targetBodyFat, setTargetBodyFat] = useState<number | null>(
-    initialGoals.targetBodyFat ?? null
+    initialGoals.targetBodyFat || null
   );
-  const [targetBMI, setTargetBMI] = useState<number | null>(initialGoals.targetBMI ?? null);
-  const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals.targetFFMI ?? null);
+  const [targetBMI, setTargetBMI] = useState<number | null>(initialGoals.targetBMI || null);
+  const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals.targetFFMI || null);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals.targetDate ?? null);
   const [goalStartDate, setGoalStartDate] = useState<number | null>(
     initialGoals.goalStartDate ?? null

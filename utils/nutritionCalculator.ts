@@ -927,9 +927,9 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
 export interface WeeklyCheckinData {
   checkinDate: number;
   targetWeight: number;
-  targetBodyFat: number;
-  targetBmi: number;
-  targetFfmi: number;
+  targetBodyFat?: number;
+  targetBmi?: number;
+  targetFfmi?: number;
 }
 
 /**
@@ -978,7 +978,7 @@ export function generateWeeklyCheckins(
       (currentWeightKg + dailyWeightChangeKg * daysElapsed).toFixed(1)
     );
 
-    let intermediateBodyFat = 0;
+    let intermediateBodyFat: number | undefined;
     if (currentBodyFatPercent !== null && currentBodyFatPercent > 0) {
       if (isCutting) {
         intermediateBodyFat = estimateTargetBodyFatWhenCutting(
@@ -1005,11 +1005,12 @@ export function generateWeeklyCheckins(
       }
     }
 
-    const intermediateBmi = bmiFromWeightAndHeightM(intermediateWeight, heightM);
+    const intermediateBmi =
+      heightM > 0 ? bmiFromWeightAndHeightM(intermediateWeight, heightM) : undefined;
     const intermediateFfmi =
-      intermediateBodyFat > 0
+      intermediateBodyFat != null && heightM > 0
         ? ffmiFromWeightHeightAndBodyFat(intermediateWeight, heightM, intermediateBodyFat)
-        : 0;
+        : undefined;
 
     checkins.push({
       checkinDate,
