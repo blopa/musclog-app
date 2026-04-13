@@ -19,6 +19,8 @@
     "oneWeekAgo": "1 semana atrás",
     "weeksAgo": "{{count}} semanas atrás",
     "monthsAgo": "{{count}} meses atrás",
+    "oneMonthFromNow": "Daqui a 1 mês",
+    "monthsFromNow": "Daqui a {{count}} meses",
     "seeAll": "Ver tudo",
     "kcal": "kcal",
     "min": "min",

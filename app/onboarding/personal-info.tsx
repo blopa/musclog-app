@@ -95,7 +95,7 @@ export default function PersonalInfo() {
           avatarColor: data.avatarColor,
           fitnessGoal: 'general',
           weightGoal: 'maintain',
-          activityLevel: 3, // Default, will be updated
+          activityLevel: 2, // Default, will be updated
           liftingExperience: 'beginner', // Default, will be updated
         });
       }

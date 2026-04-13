@@ -42,7 +42,9 @@
       "guidedDescription": "Vamos guiá-lo passo a passo para os alvos certos de calorias e macros.",
       "recommended": "Recomendado",
       "manualTitle": "Configurar Manualmente",
-      "manualDescription": "Digite diretamente suas calorias, macros e metas."
+      "manualDescription": "Digite diretamente suas calorias, macros e metas.",
+      "autoCalculateTitle": "Calcular para mim",
+      "autoCalculateDescription": "Calculamos seus alvos usando a fórmula de Mifflin-St Jeor com base no seu perfil."
     },
     "goalWizard": {
       "title": "Configurar sua Meta",
