@@ -100,9 +100,9 @@ export function Migrations() {
       return;
     }
 
-    ExerciseService.syncAppExercises().catch((err) =>
-      console.warn('[ExerciseService] syncAppExercises error:', err)
-    );
+    ExerciseService.syncAppExercises()
+      .then(() => ExerciseService.syncExerciseMultipliers())
+      .catch((err) => console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err));
   }, [isStaticExport]);
 
   // Backfill order_index for existing app exercises on every boot.
