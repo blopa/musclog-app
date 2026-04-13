@@ -1,13 +1,11 @@
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 
-export type ExerciseType = 'squat' | 'bench' | 'deadlift' | 'overhead_press' | 'other';
-
 export interface ProjectionInputs {
   dataPoints: ProgressiveOverloadDataPoint[]; // Sorted by date ascending
   baseline1rm: number;
   targetWeight: number;
   bodyWeight?: number; // Optional but highly recommended for realism nudges
-  exerciseType?: ExerciseType;
+  loadMultiplier?: number; // From Exercise model, ensures i18n independence
 }
 
 export interface ProjectionResult {
@@ -71,7 +69,7 @@ function weeksBetween(startMs: number, endMs: number): number {
  * Project goal completion based on workout history
  */
 export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
-  const { dataPoints, baseline1rm, targetWeight, bodyWeight, exerciseType = 'other' } = inputs;
+  const { dataPoints, baseline1rm, targetWeight, bodyWeight, loadMultiplier = 1.0 } = inputs;
 
   // No history at all
   if (dataPoints.length === 0) {
@@ -140,10 +138,12 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
 
   // Determine status based on relative progression thresholds
   // Advanced lifters progress slower, so the "stalling" threshold should be lower for them.
-  const relativeStrength = bodyWeight && bodyWeight > 0 ? currentEstimated1RM / bodyWeight : 1.0;
+  // We use loadMultiplier to normalize relative strength across different exercises.
+  const bw = bodyWeight && bodyWeight > 0 ? bodyWeight : 80; // fallback to 80kg if unknown
+  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadMultiplier);
 
   // Stalling threshold: 0.1 kg/week for novices, 0.02 kg/week for advanced
-  const stallingThreshold = relativeStrength > 1.5 ? 0.02 : 0.1;
+  const stallingThreshold = normalizedRelativeStrength > 1.5 ? 0.02 : 0.1;
 
   let status: ProjectionResult['status'];
   if (weeklyProgressionRate > stallingThreshold) {
@@ -173,7 +173,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     currentEstimated1RM,
     bodyWeight ?? 0,
     weeklyProgressionRate,
-    exerciseType
+    loadMultiplier
   );
 
   // Calculate projection
@@ -202,12 +202,13 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
 /**
  * Check if a progression rate is realistic for a given baseline and target weight.
  * Boundary boundary scales inversely with the lifter's relative strength.
+ * Uses loadMultiplier for i18n-safe exercise categorization.
  */
 export function isProgressionRateRealistic(
   currentWeight: number,
   bodyWeight: number,
   requiredRatePerWeek: number,
-  exerciseType: ExerciseType = 'other'
+  loadMultiplier: number = 1.0
 ): boolean {
   if (currentWeight <= 0) return true;
 
@@ -218,28 +219,20 @@ export function isProgressionRateRealistic(
     return percentPerWeek <= 1.0;
   }
 
-  const relativeStrength = currentWeight / bodyWeight;
+  // Normalize relative strength using the loadMultiplier.
+  // E.g., Squat (multiplier ~1.2) vs Bench (multiplier ~0.8).
+  // A 100kg bench at 100kg BW is more "advanced" than a 100kg squat.
+  const normalizedRelativeStrength = currentWeight / (bodyWeight * loadMultiplier);
 
   let upperThreshold = 1.0; // Default fallback
 
-  // Dynamic thresholding based on relative strength tiers
-  // Tiers adjusted by exercise type (Deadlifts have higher absolute strength standards)
-  if (exerciseType === 'deadlift') {
-    if (relativeStrength < 1.5) upperThreshold = 1.5;      // Novice
-    else if (relativeStrength < 2.2) upperThreshold = 0.5; // Intermediate
-    else upperThreshold = 0.15;                            // Advanced
-  } else if (exerciseType === 'squat') {
-    if (relativeStrength < 1.2) upperThreshold = 1.5;
-    else if (relativeStrength < 1.8) upperThreshold = 0.5;
-    else upperThreshold = 0.15;
-  } else if (exerciseType === 'bench' || exerciseType === 'overhead_press') {
-    if (relativeStrength < 0.8) upperThreshold = 1.2;
-    else if (relativeStrength < 1.2) upperThreshold = 0.4;
-    else upperThreshold = 0.1;
+  // Dynamic thresholding based on normalized training tiers
+  if (normalizedRelativeStrength < 1.0) {
+    upperThreshold = 1.5; // Novice: primarily neural adaptations
+  } else if (normalizedRelativeStrength < 1.8) {
+    upperThreshold = 0.5; // Intermediate: morphological hypertrophy
   } else {
-    // General 'other' exercises
-    if (relativeStrength < 1.0) upperThreshold = 1.0;
-    else upperThreshold = 0.3;
+    upperThreshold = 0.15; // Advanced: approaching genetic asymptote
   }
 
   return percentPerWeek <= upperThreshold;

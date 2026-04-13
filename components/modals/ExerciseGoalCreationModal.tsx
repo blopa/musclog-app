@@ -14,7 +14,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
-  type ExerciseType,
   isProgressionRateRealistic,
   projectGoal,
   type ProjectionResult,
@@ -104,16 +103,6 @@ export default function ExerciseGoalCreationModal({
     }
   }, [selectedExercise, goalType, units]);
 
-  const exerciseType = useMemo<ExerciseType>(() => {
-    if (!selectedExercise) return 'other';
-    const name = selectedExercise.name.toLowerCase();
-    if (name.includes('deadlift')) return 'deadlift';
-    if (name.includes('squat')) return 'squat';
-    if (name.includes('bench')) return 'bench';
-    if (name.includes('overhead') || name.includes('military')) return 'overhead_press';
-    return 'other';
-  }, [selectedExercise]);
-
   const projection = useMemo<ProjectionResult | null>(() => {
     if (!selectedExercise || goalType !== '1rm' || !targetWeightDisplay || current1RM === null) {
       return null;
@@ -125,7 +114,7 @@ export default function ExerciseGoalCreationModal({
       baseline1rm: current1RM,
       targetWeight: targetKg,
       bodyWeight,
-      exerciseType,
+      loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
     });
   }, [
     selectedExercise,
@@ -134,7 +123,6 @@ export default function ExerciseGoalCreationModal({
     current1RM,
     exerciseDataPoints,
     bodyWeight,
-    exerciseType,
     units,
   ]);
 

@@ -8,11 +8,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import { UserMetricService, WorkoutAnalytics } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { localDayStartMs } from '@/utils/calendarDate';
-import {
-  type ExerciseType,
-  projectGoal,
-  type ProjectionResult,
-} from '@/utils/exerciseGoalProjection';
+import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
 
 interface UseExerciseGoalProgressResult {
   projection: ProjectionResult | null;
@@ -26,7 +22,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [dataPoints, setDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
   const [bodyWeight, setBodyWeight] = useState(0);
-  const [exerciseType, setExerciseType] = useState<ExerciseType>('other');
+  const [loadMultiplier, setLoadMultiplier] = useState(1.0);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -46,16 +42,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
         setDataPoints(filteredData);
         setBodyWeight(bw);
-
-        if (exercise.name.toLowerCase().includes('deadlift')) setExerciseType('deadlift');
-        else if (exercise.name.toLowerCase().includes('squat')) setExerciseType('squat');
-        else if (exercise.name.toLowerCase().includes('bench')) setExerciseType('bench');
-        else if (
-          exercise.name.toLowerCase().includes('overhead') ||
-          exercise.name.toLowerCase().includes('military')
-        )
-          setExerciseType('overhead_press');
-        else setExerciseType('other');
+        setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
       } catch (err) {
         console.error('Error loading exercise goal progress:', err);
         setDataPoints([]);
@@ -148,9 +135,9 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       baseline1rm: goal.baseline1rm,
       targetWeight: goal.targetWeight,
       bodyWeight,
-      exerciseType,
+      loadMultiplier,
     });
-  }, [dataPoints, goal.goalType, goal.targetWeight, goal.baseline1rm, bodyWeight, exerciseType]);
+  }, [dataPoints, goal.goalType, goal.targetWeight, goal.baseline1rm, bodyWeight, loadMultiplier]);
 
   return {
     projection,
