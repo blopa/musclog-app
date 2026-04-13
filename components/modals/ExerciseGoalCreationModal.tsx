@@ -8,12 +8,13 @@ import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import Exercise from '@/database/models/Exercise';
 import { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
-import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { ExerciseService, UserMetricService, WorkoutAnalytics } from '@/database/services';
 import { type ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
+  type ExerciseType,
   isProgressionRateRealistic,
   projectGoal,
   type ProjectionResult,
@@ -62,6 +63,7 @@ export default function ExerciseGoalCreationModal({
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [exerciseDataPoints, setExerciseDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [current1RM, setCurrent1RM] = useState<number | null>(null);
+  const [bodyWeight, setBodyWeight] = useState(0);
 
   useEffect(() => {
     if (!visible) {
@@ -81,9 +83,13 @@ export default function ExerciseGoalCreationModal({
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
       setIsLoadingHistory(true);
-      WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id)
-        .then((data) => {
+      Promise.all([
+        WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
+        UserMetricService.getUserBodyWeightKgForVolume(),
+      ])
+        .then(([data, bw]) => {
           setExerciseDataPoints(data);
+          setBodyWeight(bw);
           if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
             setCurrent1RM(latest1RM);
@@ -98,6 +104,16 @@ export default function ExerciseGoalCreationModal({
     }
   }, [selectedExercise, goalType, units]);
 
+  const exerciseType = useMemo<ExerciseType>(() => {
+    if (!selectedExercise) return 'other';
+    const name = selectedExercise.name.toLowerCase();
+    if (name.includes('deadlift')) return 'deadlift';
+    if (name.includes('squat')) return 'squat';
+    if (name.includes('bench')) return 'bench';
+    if (name.includes('overhead') || name.includes('military')) return 'overhead_press';
+    return 'other';
+  }, [selectedExercise]);
+
   const projection = useMemo<ProjectionResult | null>(() => {
     if (!selectedExercise || goalType !== '1rm' || !targetWeightDisplay || current1RM === null) {
       return null;
@@ -108,12 +124,22 @@ export default function ExerciseGoalCreationModal({
       dataPoints: exerciseDataPoints,
       baseline1rm: current1RM,
       targetWeight: targetKg,
+      bodyWeight,
+      exerciseType,
     });
-  }, [selectedExercise, goalType, targetWeightDisplay, current1RM, exerciseDataPoints, units]);
+  }, [
+    selectedExercise,
+    goalType,
+    targetWeightDisplay,
+    current1RM,
+    exerciseDataPoints,
+    bodyWeight,
+    exerciseType,
+    units,
+  ]);
 
   const isRealistic = useMemo(() => {
-    if (!projection || projection.weeklyProgressionRate <= 0) return true;
-    return isProgressionRateRealistic(projection.currentEstimated1RM, projection.weeklyProgressionRate);
+    return projection?.isRealistic ?? true;
   }, [projection]);
 
   const handleNext = () => {

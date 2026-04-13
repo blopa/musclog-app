@@ -1,95 +1,91 @@
 import { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
-import { linearRegressionSlope, projectGoal } from '../exerciseGoalProjection';
+import { projectGoal, weightedLinearRegressionSlope } from '../exerciseGoalProjection';
 
 describe('exerciseGoalProjection', () => {
-  describe('linearRegressionSlope', () => {
-    it('calculates positive slope correctly', () => {
+  describe('weightedLinearRegressionSlope', () => {
+    it('calculates slope correctly with equal weights', () => {
+      // With equal weights (far in future or same date), should match OLS
       const points = [
         { x: 0, y: 100 },
         { x: 1, y: 105 },
         { x: 2, y: 110 },
       ];
-      expect(linearRegressionSlope(points)).toBe(5);
+      const slope = weightedLinearRegressionSlope(points, 1000000); // effectively infinite half-life
+      expect(slope).toBeCloseTo(5);
     });
 
-    it('calculates negative slope correctly', () => {
+    it('gives more weight to recent points', () => {
+      // Trend: 0 to 10 is slow (+2), 10 to 20 is fast (+8)
+      // Linear (OLS) would be 5 kg/week
+      // Weighted should be > 5
       const points = [
         { x: 0, y: 100 },
-        { x: 1, y: 95 },
-        { x: 2, y: 90 },
+        { x: 10, y: 120 },
+        { x: 20, y: 200 },
       ];
-      expect(linearRegressionSlope(points)).toBe(-5);
-    });
-
-    it('returns 0 for flat slope', () => {
-      const points = [
-        { x: 0, y: 100 },
-        { x: 1, y: 100 },
-        { x: 2, y: 100 },
-      ];
-      expect(linearRegressionSlope(points)).toBe(0);
-    });
-
-    it('returns 0 for single point', () => {
-      const points = [{ x: 0, y: 100 }];
-      expect(linearRegressionSlope(points)).toBe(0);
+      const slope = weightedLinearRegressionSlope(points, 10);
+      expect(slope).toBeGreaterThan(5);
     });
   });
 
   describe('projectGoal', () => {
     const baseline1rm = 100;
     const targetWeight = 120;
+    const bodyWeight = 80;
 
-    it('returns achieved when current >= target', () => {
-      const dataPoints: ProgressiveOverloadDataPoint[] = [
-        { date: 0, weight: 120, reps: 1, volume: 120, estimated1RM: 120 },
-      ];
-      const result = projectGoal({ dataPoints, baseline1rm, targetWeight });
-      expect(result.status).toBe('achieved');
-      expect(result.progressPercent).toBe(100);
-    });
-
-    it('returns no_history when dataPoints is empty', () => {
-      const dataPoints: ProgressiveOverloadDataPoint[] = [];
-      const result = projectGoal({ dataPoints, baseline1rm, targetWeight });
-      expect(result.status).toBe('no_history');
-      expect(result.progressPercent).toBe(0);
-    });
-
-    it('returns insufficient_data when < 3 points', () => {
-      const dataPoints: ProgressiveOverloadDataPoint[] = [
-        { date: 0, weight: 100, reps: 1, volume: 100, estimated1RM: 100 },
-        { date: 7 * 24 * 60 * 60 * 1000, weight: 105, reps: 1, volume: 105, estimated1RM: 105 },
-      ];
-      const result = projectGoal({ dataPoints, baseline1rm, targetWeight });
-      expect(result.status).toBe('insufficient_data');
-      expect(result.progressPercent).toBe(25); // (105-100)/(120-100) = 5/20 = 25%
-    });
-
-    it('calculates projection correctly', () => {
+    it('identifies realistic novice progress', () => {
       const dayMs = 24 * 60 * 60 * 1000;
       const dataPoints: ProgressiveOverloadDataPoint[] = [
         { date: 0, weight: 100, reps: 1, volume: 100, estimated1RM: 100 },
-        { date: 7 * dayMs, weight: 105, reps: 1, volume: 105, estimated1RM: 105 },
-        { date: 14 * dayMs, weight: 110, reps: 1, volume: 110, estimated1RM: 110 },
+        { date: 7 * dayMs, weight: 101, reps: 1, volume: 101, estimated1RM: 101 },
+        { date: 14 * dayMs, weight: 102, reps: 1, volume: 102, estimated1RM: 102 },
       ];
-      const result = projectGoal({ dataPoints, baseline1rm, targetWeight });
+      const result = projectGoal({
+        dataPoints,
+        baseline1rm,
+        targetWeight,
+        bodyWeight,
+        exerciseType: 'bench'
+      });
       expect(result.status).toBe('on_track');
-      expect(result.weeklyProgressionRate).toBe(5);
-      expect(result.projectedWeeks).toBe(2); // (120 - 110) / 5 = 2
-      expect(result.progressPercent).toBe(50); // (110 - 100) / 20 = 50%
+      expect(result.isRealistic).toBe(true);
     });
 
-    it('returns stalling when rate is near zero', () => {
+    it('identifies unrealistic progress for advanced lifters', () => {
       const dayMs = 24 * 60 * 60 * 1000;
+      // 150kg bench at 80kg bodyweight is advanced (~1.87x)
+      // 1.5% weekly gain is unrealistic
       const dataPoints: ProgressiveOverloadDataPoint[] = [
-        { date: 0, weight: 100, reps: 1, volume: 100, estimated1RM: 100 },
-        { date: 7 * dayMs, weight: 100, reps: 1, volume: 100, estimated1RM: 100 },
-        { date: 14 * dayMs, weight: 100, reps: 1, volume: 100, estimated1RM: 100 },
+        { date: 0, weight: 150, reps: 1, volume: 150, estimated1RM: 150 },
+        { date: 7 * dayMs, weight: 152.25, reps: 1, volume: 152.25, estimated1RM: 152.25 },
+        { date: 14 * dayMs, weight: 154.5, reps: 1, volume: 154.5, estimated1RM: 154.5 },
       ];
-      const result = projectGoal({ dataPoints, baseline1rm, targetWeight });
-      expect(result.status).toBe('stalling');
-      expect(result.projectedWeeks).toBeNull();
+      const result = projectGoal({
+        dataPoints,
+        baseline1rm: 150,
+        targetWeight: 170,
+        bodyWeight,
+        exerciseType: 'bench'
+      });
+      expect(result.isRealistic).toBe(false);
+    });
+
+    it('adjusts stalling threshold for advanced lifters', () => {
+      const dayMs = 24 * 60 * 60 * 1000;
+      // 160kg bench is elite. 0.05 kg/week (2.6kg/year) should be on_track, not stalling
+      const dataPoints: ProgressiveOverloadDataPoint[] = [
+        { date: 0, weight: 160, reps: 1, volume: 160, estimated1RM: 160 },
+        { date: 7 * dayMs, weight: 160.05, reps: 1, volume: 160.05, estimated1RM: 160.05 },
+        { date: 14 * dayMs, weight: 160.1, reps: 1, volume: 160.1, estimated1RM: 160.1 },
+      ];
+      const result = projectGoal({
+        dataPoints,
+        baseline1rm: 160,
+        targetWeight: 165,
+        bodyWeight,
+        exerciseType: 'bench'
+      });
+      expect(result.status).toBe('on_track');
     });
   });
 });

@@ -2,12 +2,17 @@ import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '@/database';
+import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { WorkoutAnalytics } from '@/database/services';
+import { UserMetricService, WorkoutAnalytics } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { localDayStartMs } from '@/utils/calendarDate';
-import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
+import {
+  type ExerciseType,
+  projectGoal,
+  type ProjectionResult,
+} from '@/utils/exerciseGoalProjection';
 
 interface UseExerciseGoalProgressResult {
   projection: ProjectionResult | null;
@@ -20,6 +25,8 @@ interface UseExerciseGoalProgressResult {
 export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProgressResult {
   const [dataPoints, setDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
+  const [bodyWeight, setBodyWeight] = useState(0);
+  const [exerciseType, setExerciseType] = useState<ExerciseType>('other');
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -28,12 +35,27 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     if (goal.goalType === '1rm' && goal.exerciseId) {
       try {
         const goalCreatedAt = goal.createdAt.getTime();
-        const filteredData = await WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
-          startDate: goalCreatedAt,
-          endDate: Date.now(),
-        });
+        const [filteredData, bw, exercise] = await Promise.all([
+          WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
+            startDate: goalCreatedAt,
+            endDate: Date.now(),
+          }),
+          UserMetricService.getUserBodyWeightKgForVolume(),
+          database.get<Exercise>('exercises').find(goal.exerciseId),
+        ]);
 
         setDataPoints(filteredData);
+        setBodyWeight(bw);
+
+        if (exercise.name.toLowerCase().includes('deadlift')) setExerciseType('deadlift');
+        else if (exercise.name.toLowerCase().includes('squat')) setExerciseType('squat');
+        else if (exercise.name.toLowerCase().includes('bench')) setExerciseType('bench');
+        else if (
+          exercise.name.toLowerCase().includes('overhead') ||
+          exercise.name.toLowerCase().includes('military')
+        )
+          setExerciseType('overhead_press');
+        else setExerciseType('other');
       } catch (err) {
         console.error('Error loading exercise goal progress:', err);
         setDataPoints([]);
@@ -125,8 +147,10 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       dataPoints,
       baseline1rm: goal.baseline1rm,
       targetWeight: goal.targetWeight,
+      bodyWeight,
+      exerciseType,
     });
-  }, [dataPoints, goal.goalType, goal.targetWeight, goal.baseline1rm]);
+  }, [dataPoints, goal.goalType, goal.targetWeight, goal.baseline1rm, bodyWeight, exerciseType]);
 
   return {
     projection,
