@@ -1,4 +1,4 @@
-import { Dumbbell, MoreVertical, Pencil, Trash2 } from 'lucide-react-native';
+import { Dumbbell, Eye, Pencil, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -19,19 +19,37 @@ interface CurrentExerciseGoalCardProps {
   goal: ExerciseGoal;
   onEdit?: () => void;
   onDelete?: () => void;
+  onViewDetails?: () => void;
 }
 
-export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerciseGoalCardProps) {
+export function CurrentExerciseGoalCard({
+  goal,
+  onEdit,
+  onDelete,
+  onViewDetails,
+}: CurrentExerciseGoalCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const { locale, formatRoundedDecimal } = useFormatAppNumber();
-  const { projection, sessionsThisWeek, isLoading } = useExerciseGoalProgress(goal);
+  const { projection, sessionsThisWeek } = useExerciseGoalProgress(goal);
   const [menuVisible, setMenuVisible] = useState(false);
 
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const menuItems: BottomPopUpMenuItem[] = [
+    ...(onViewDetails
+      ? [
+          {
+            icon: Eye,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('exerciseGoals.detail.viewDetails'),
+            description: '',
+            onPress: onViewDetails,
+          },
+        ]
+      : []),
     ...(onEdit
       ? [
           {
@@ -120,7 +138,8 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
                   {t('exerciseGoals.card.currentEstimate')}
                 </Text>
                 <Text className="text-base font-bold text-text-primary">
-                  {formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)} {t(weightUnitKey)}
+                  {formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)}{' '}
+                  {t(weightUnitKey)}
                 </Text>
               </View>
               <View className="items-end">

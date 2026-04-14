@@ -61,6 +61,13 @@
       "overdue": "Целевая дата прошла",
       "sessionsThisWeek": "{{count}} из {{target}} тренировок на этой неделе",
       "congratulations": "Поздравляем!"
+    },
+    "detail": {
+      "viewDetails": "Подробнее",
+      "progress": "Прогресс",
+      "baseline": "Базовый",
+      "progressChart": "Прогресс 1ПМ",
+      "achievement": "Достижение"
     }
   }
 }

@@ -109,7 +109,9 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     }
 
     return () => {
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }

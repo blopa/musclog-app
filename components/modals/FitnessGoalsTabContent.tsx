@@ -1,13 +1,15 @@
-import { Plus } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { CurrentExerciseGoalCard } from '@/components/cards/CurrentExerciseGoalCard';
 import { ExerciseGoalHistoryCard } from '@/components/cards/ExerciseGoalHistoryCard';
 import { Button } from '@/components/theme/Button';
+import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { useExerciseGoals } from '@/hooks/useExerciseGoals';
-import { useTheme } from '@/hooks/useTheme';
+
+import { ExerciseGoalDetailModal } from './ExerciseGoalDetailModal';
 
 interface FitnessGoalsTabContentProps {
   visible: boolean;
@@ -16,7 +18,7 @@ interface FitnessGoalsTabContentProps {
 
 export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabContentProps) {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const [detailGoal, setDetailGoal] = useState<ExerciseGoal | null>(null);
 
   const { goals: activeGoals, isLoading: isLoadingActive } = useExerciseGoals({
     mode: 'active',
@@ -63,6 +65,7 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
                 key={goal.id}
                 goal={goal}
                 onDelete={() => handleDeleteGoal(goal.id)}
+                onViewDetails={() => setDetailGoal(goal)}
               />
             ))}
           </View>
@@ -91,6 +94,20 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
           </View>
         ) : null}
       </View>
+
+      <ExerciseGoalDetailModal
+        visible={detailGoal != null}
+        goal={detailGoal}
+        onClose={() => setDetailGoal(null)}
+        onDelete={
+          detailGoal
+            ? () => {
+                handleDeleteGoal(detailGoal.id);
+                setDetailGoal(null);
+              }
+            : undefined
+        }
+      />
     </ScrollView>
   );
 }

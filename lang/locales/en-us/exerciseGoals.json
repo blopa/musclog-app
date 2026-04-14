@@ -61,6 +61,13 @@
       "overdue": "Target date passed",
       "sessionsThisWeek": "{{count}} of {{target}} sessions this week",
       "congratulations": "Congratulations!"
+    },
+    "detail": {
+      "viewDetails": "View Details",
+      "progress": "Progress",
+      "baseline": "Baseline",
+      "progressChart": "1RM Progress",
+      "achievement": "Achievement"
     }
   }
 }

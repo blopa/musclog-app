@@ -61,6 +61,13 @@
       "overdue": "Data meta ultrapassada",
       "sessionsThisWeek": "{{count}} de {{target}} sessões esta semana",
       "congratulations": "Parabéns!"
+    },
+    "detail": {
+      "viewDetails": "Ver Detalhes",
+      "progress": "Progresso",
+      "baseline": "Base",
+      "progressChart": "Progresso de 1RM",
+      "achievement": "Conquista"
     }
   }
 }
