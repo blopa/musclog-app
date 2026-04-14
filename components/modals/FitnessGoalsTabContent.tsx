@@ -48,15 +48,6 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
           <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
             {t('exerciseGoals.currentGoals')}
           </Text>
-          {activeGoals.length > 0 ? (
-            <Button
-              label={t('exerciseGoals.newGoal')}
-              variant="outline"
-              size="sm"
-              icon={Plus}
-              onPress={onNewGoal}
-            />
-          ) : null}
         </View>
 
         {activeGoals.length === 0 && !isLoadingActive ? (
