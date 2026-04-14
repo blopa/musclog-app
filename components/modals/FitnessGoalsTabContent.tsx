@@ -64,14 +64,6 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
             <Text className="text-center text-sm text-text-secondary">
               {t('exerciseGoals.emptyState')}
             </Text>
-            <Button
-              label={t('exerciseGoals.newGoal')}
-              variant="outline"
-              size="sm"
-              icon={Plus}
-              className="mt-4"
-              onPress={onNewGoal}
-            />
           </View>
         ) : (
           <View className="mb-8">

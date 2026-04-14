@@ -29,12 +29,12 @@ import { FitnessGoalsTabContent } from './FitnessGoalsTabContent';
 import { FullScreenModal } from './FullScreenModal';
 import { GoalCreationMethodModal } from './GoalCreationMethodModal';
 import { GoalWizardModal } from './GoalWizardModal';
-import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 import {
   NutritionGoals,
   NutritionGoalsInitialValues,
   NutritionGoalsModal,
 } from './NutritionGoalsModal';
+import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 
 interface GoalsManagementModalProps {
   visible: boolean;
@@ -347,7 +347,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
         {activeTab === 'nutrition' ? (
           <NutritionGoalsTabContent
-            visible={visible && activeTab === 'nutrition'}
+            visible={visible ? activeTab === 'nutrition' : false}
             onEditGoal={handleEditGoal}
             onDeleteGoal={handleDeleteGoal}
             onRegenerateCheckins={handleRegenerateCheckins}
@@ -356,7 +356,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           />
         ) : (
           <FitnessGoalsTabContent
-            visible={visible && activeTab === 'fitness'}
+            visible={visible ? activeTab === 'fitness' : false}
             onNewGoal={() => setExerciseGoalCreationModalVisible(true)}
           />
         )}
