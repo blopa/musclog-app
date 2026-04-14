@@ -1,10 +1,11 @@
 import { useFocusEffect } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Dumbbell, Plus, Repeat, Search, WifiOff } from 'lucide-react-native';
+import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { GradientText } from '@/components/GradientText';
@@ -14,6 +15,7 @@ import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -21,6 +23,7 @@ import { Button } from '@/components/theme/Button';
 import DashedButton from '@/components/theme/DashedButton';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
@@ -60,11 +63,13 @@ export default function WorkoutsScreen() {
   ];
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isScreenMenuVisible, setIsScreenMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
   const [isCreateOptionsVisible, setIsCreateOptionsVisible] = useState(false);
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
+  const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
@@ -297,6 +302,7 @@ export default function WorkoutsScreen() {
               >
                 {t('workouts.title')}
               </GradientText>
+              <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
             </View>
             {/* Add spacing below header */}
             <View style={{ height: theme.spacing.gap.lg }} />
@@ -749,6 +755,40 @@ export default function WorkoutsScreen() {
         cancelLabel={t('workouts.interruptedSession.discardCancel')}
         variant="destructive"
         isLoading={isDiscardingInterrupted}
+      />
+
+      <BottomPopUpMenu
+        visible={isScreenMenuVisible}
+        onClose={() => setIsScreenMenuVisible(false)}
+        title={t('workouts.title')}
+        items={[
+          {
+            icon: Plus,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: `${theme.colors.accent.primary}20`,
+            title: t('workouts.createTemplate.title'),
+            description: t('workouts.createTemplate.description'),
+            onPress: () => {
+              setIsCreateOptionsVisible(true);
+            },
+          },
+          {
+            icon: Target,
+            iconColor: theme.colors.accent.secondary,
+            iconBgColor: `${theme.colors.accent.secondary}20`,
+            title: t('exerciseGoals.title'),
+            description: t('goalsManagement.exerciseGoalsSubtitle'),
+            onPress: () => {
+              setIsGoalsManagementModalVisible(true);
+            },
+          },
+        ]}
+      />
+
+      <GoalsManagementModal
+        visible={isGoalsManagementModalVisible}
+        onClose={() => setIsGoalsManagementModalVisible(false)}
+        tab="fitness"
       />
 
       {/* Workout Session Overview Modal */}

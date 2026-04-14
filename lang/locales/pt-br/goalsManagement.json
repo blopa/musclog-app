@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Gerenciamento de Metas",
+    "nutritionAndBodyTab": "Nutrição e Corpo",
+    "fitnessAndExerciseTab": "Fitness e Exercício",
     "subtitle": "Acompanhe seu progresso e histórico.",
     "currentGoals": "METAS ATUAIS",
     "active": "Ativo",

@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Управление целями",
+    "nutritionAndBodyTab": "Питание и тело",
+    "fitnessAndExerciseTab": "Фитнес и тренировки",
     "subtitle": "Отслеживайте прогресс и историю.",
     "currentGoals": "ТЕКУЩИЕ ЦЕЛИ",
     "active": "Активная",
