@@ -30,8 +30,6 @@ type AddFoodModalProps = {
   onTrackCustomMealPress?: () => void;
   onQuickTrackMealPress?: () => void;
   isAiEnabled?: boolean;
-
-  // TODO: implement the showTrackByMealType prop
   showTrackByMealType?: boolean;
 };
 
