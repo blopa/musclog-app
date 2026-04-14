@@ -30,6 +30,7 @@ import enUsEditSetDetails from './locales/en-us/editSetDetails.json';
 import enUsEmptyStates from './locales/en-us/emptyStates.json';
 import enUsEndWorkout from './locales/en-us/endWorkout.json';
 import enUsErrors from './locales/en-us/errors.json';
+import enUsExerciseGoals from './locales/en-us/exerciseGoals.json';
 import enUsExercises from './locales/en-us/exercises.json';
 import enUsExerciseTransition from './locales/en-us/exerciseTransition.json';
 import enUsExpiresIn from './locales/en-us/expires_in.json';
@@ -100,6 +101,7 @@ import ptBrEditSetDetails from './locales/pt-br/editSetDetails.json';
 import ptBrEmptyStates from './locales/pt-br/emptyStates.json';
 import ptBrEndWorkout from './locales/pt-br/endWorkout.json';
 import ptBrErrors from './locales/pt-br/errors.json';
+import ptBrExerciseGoals from './locales/pt-br/exerciseGoals.json';
 import ptBrExercises from './locales/pt-br/exercises.json';
 import ptBrExerciseTransition from './locales/pt-br/exerciseTransition.json';
 import ptBrExpiresIn from './locales/pt-br/expires_in.json';
@@ -170,6 +172,7 @@ import ruRuEditSetDetails from './locales/ru-ru/editSetDetails.json';
 import ruRuEmptyStates from './locales/ru-ru/emptyStates.json';
 import ruRuEndWorkout from './locales/ru-ru/endWorkout.json';
 import ruRuErrors from './locales/ru-ru/errors.json';
+import ruRuExerciseGoals from './locales/ru-ru/exerciseGoals.json';
 import ruRuExercises from './locales/ru-ru/exercises.json';
 import ruRuExerciseTransition from './locales/ru-ru/exerciseTransition.json';
 import ruRuExpiresIn from './locales/ru-ru/expires_in.json';
@@ -250,6 +253,7 @@ const resources = {
       ...enUsEmptyStates,
       ...enUsEndWorkout,
       ...enUsErrors,
+      ...enUsExerciseGoals,
       ...enUsExerciseTransition,
       ...enUsExercises,
       ...enUsExpiresIn,
@@ -324,6 +328,7 @@ const resources = {
       ...ptBrEmptyStates,
       ...ptBrEndWorkout,
       ...ptBrErrors,
+      ...ptBrExerciseGoals,
       ...ptBrExerciseTransition,
       ...ptBrExercises,
       ...ptBrExpiresIn,
@@ -398,6 +403,7 @@ const resources = {
       ...ruRuEmptyStates,
       ...ruRuEndWorkout,
       ...ruRuErrors,
+      ...ruRuExerciseGoals,
       ...ruRuExerciseTransition,
       ...ruRuExercises,
       ...ruRuExpiresIn,

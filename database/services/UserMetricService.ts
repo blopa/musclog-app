@@ -6,6 +6,7 @@ import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
+import { captureException } from '@/utils/sentry';
 
 export class UserMetricService {
   /**
@@ -137,7 +138,11 @@ export class UserMetricService {
         value: plain.value,
         date: plain.date,
         timezone: plain.timezone,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        captureException(err, {
+          data: { context: 'UserMetricService.saveUserMetric.healthConnect' },
+        });
+      });
 
       if (hcId) {
         await database.write(async () => {

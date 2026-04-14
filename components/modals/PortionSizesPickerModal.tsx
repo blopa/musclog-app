@@ -81,7 +81,7 @@ export function PortionSizesPickerModal({
         iconColor: theme.colors.text.black,
       };
     });
-  }, [loadedPortions, theme.colors.accent.primary, theme.colors.text.black, formatInteger]);
+  }, [loadedPortions, t, formatInteger, theme.colors.accent.primary, theme.colors.text.black]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {

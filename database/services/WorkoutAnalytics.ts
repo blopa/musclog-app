@@ -457,6 +457,60 @@ export class WorkoutAnalytics {
   }
 
   /**
+   * Get the date (started_at) of the first workout where the user logged an actual
+   * 1RM set at or above targetWeight for a given exercise since a specific date.
+   * Returns null if no such workout exists.
+   */
+  static async getPerformed1RMDate(
+    exerciseId: string,
+    targetWeight: number,
+    sinceDate: number
+  ): Promise<number | null> {
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return null;
+    }
+
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const logExerciseMap = new Map(logExercises.map((le) => [le.id, le.workoutLogId]));
+
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('reps', 1),
+        Q.where('weight', Q.gte(targetWeight)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (sets.length === 0) {
+      return null;
+    }
+
+    const workoutLogIds = Array.from(
+      new Set(sets.map((s) => logExerciseMap.get(s.logExerciseId) ?? '').filter(Boolean))
+    );
+
+    const workouts = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('id', Q.oneOf(workoutLogIds)),
+        Q.where('started_at', Q.gte(sinceDate)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.sortBy('started_at', Q.asc),
+        Q.take(1)
+      )
+      .fetch();
+
+    return workouts[0]?.startedAt ?? null;
+  }
+
+  /**
    * Calculate total volume per muscle group for a set of workouts
    */
   static async calculateMuscleGroupVolume(

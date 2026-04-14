@@ -1,4 +1,4 @@
-import { Home, MessageCircle } from 'lucide-react-native';
+import { Home, MessageCircle, Trophy } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 
+import { GenericCard } from './cards/GenericCard';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
@@ -20,6 +21,7 @@ type WorkoutSummaryCelebrationProps = {
   volume?: string; // e.g., "12,450 kg"
   personalRecords?: number; // e.g., 2
   caloriesBurned?: number; // e.g., 350
+  goalProgress?: { exerciseName: string; current: number; target: number; unit: string }[];
 };
 
 // TODO: UI issue here
@@ -32,6 +34,7 @@ export function WorkoutSummaryCelebration({
   volume = '12,450 kg',
   personalRecords = 2,
   caloriesBurned,
+  goalProgress = [],
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -142,6 +145,48 @@ export function WorkoutSummaryCelebration({
             personalRecords={personalRecords}
             caloriesBurned={caloriesBurned}
           />
+
+          {/* Goal Progress Nudge */}
+          {goalProgress.length > 0 ? (
+            <View className="mt-6 w-full gap-4">
+              {goalProgress.map((item, index) => {
+                const progress = Math.min(100, Math.round((item.current / item.target) * 100));
+                return (
+                  <GenericCard key={index} variant="card">
+                    <View className="p-4">
+                      <View className="mb-3 flex-row items-center gap-3">
+                        <View
+                          className="rounded-lg p-2"
+                          style={{ backgroundColor: theme.colors.accent.primary10 }}
+                        >
+                          <Trophy size={20} color={theme.colors.accent.primary} />
+                        </View>
+                        <View>
+                          <Text className="font-bold text-text-primary">
+                            {item.exerciseName} Goal
+                          </Text>
+                          <Text className="text-xs text-text-secondary">
+                            {item.current} / {item.target} {item.unit}
+                          </Text>
+                        </View>
+                      </View>
+                      <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
+                        <View
+                          className="h-full bg-accent-primary"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </View>
+                      <Text className="mt-2 text-center text-xs font-bold text-accent-primary">
+                        {progress === 100
+                          ? t('exerciseGoals.card.congratulations')
+                          : `${progress}% to Goal`}
+                      </Text>
+                    </View>
+                  </GenericCard>
+                );
+              })}
+            </View>
+          ) : null}
 
           {/* Spacer */}
           <View className="flex-1" />

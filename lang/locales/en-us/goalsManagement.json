@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Goals Management",
+    "nutritionAndBodyTab": "Nutrition & Body",
+    "fitnessAndExerciseTab": "Fitness & Exercise",
     "subtitle": "Track your progress and history.",
     "currentGoals": "CURRENT GOALS",
     "active": "Active",
@@ -92,6 +94,9 @@
       "deleteCheckinDesc": "Permanently remove this check-in",
       "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
       "checkinDate": "Check-in Date"
-    }
+    },
+    "exerciseGoals": "EXERCISE GOALS",
+    "exerciseGoalsTitle": "Strength & Consistency",
+    "exerciseGoalsSubtitle": "Track 1RM targets and workout frequency"
   }
 }

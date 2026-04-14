@@ -105,6 +105,8 @@ type CreateMealModalProps = {
   onTracked?: () => void;
   /** Optional initial foods to prefill the modal (create mode). */
   initialFoods?: { food: Food; amount: number }[];
+  /** For quickTrack mode: pre-selected meal type instead of defaulting to 'lunch'. */
+  initialMealType?: MealType;
 };
 
 const MacroCard = ({
@@ -339,6 +341,7 @@ export function CreateMealModal({
   logDate,
   onTracked,
   initialFoods,
+  initialMealType = 'lunch',
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -361,7 +364,7 @@ export function CreateMealModal({
     localCalendarDayDate(logDate ?? new Date())
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType);
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
   const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);

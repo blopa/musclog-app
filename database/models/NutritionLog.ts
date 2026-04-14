@@ -5,6 +5,7 @@ import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/en
 import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
+import { captureException } from '@/utils/sentry';
 
 import type { MicrosData } from './Food';
 import Food from './Food';
@@ -146,9 +147,13 @@ export default class NutritionLog extends Model {
   // Get the actual gram weight for this nutrition log entry
   async getGramWeight(): Promise<number> {
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        return this.amount * (portion.gramWeight ?? 0);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          return this.amount * (portion.gramWeight ?? 0);
+        }
+      } catch (error) {
+        captureException(error, { data: { context: 'NutritionLog.getGramWeight' } });
       }
     }
 

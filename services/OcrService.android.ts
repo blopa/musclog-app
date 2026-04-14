@@ -11,6 +11,8 @@ import {
   recognizeText as mlkitRecognizeText,
 } from 'rn-mlkit-ocr';
 
+import { captureException } from '@/utils/sentry';
+
 import type { OcrResult } from './OcrService';
 
 export async function initializeOcr(_language: string = 'eng'): Promise<void> {
@@ -34,6 +36,7 @@ export async function recognizeText(
       processingTimeMs: Date.now() - startTime,
     };
   } catch (error) {
+    captureException(error, { data: { context: 'OcrService.android.recognizeTextAndroid' } });
     console.error('[OCR] rn-mlkit-ocr recognition failed:', error);
     return { text: '', blocks: [], processingTimeMs: Date.now() - startTime };
   }

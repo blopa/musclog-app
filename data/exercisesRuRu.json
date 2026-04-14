@@ -13,7 +13,7 @@
     "type": "compound",
     "description": "Вариация жима лёжа, выполняемая на наклонной скамье для акцента на верхнюю часть груди.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.8
+    "loadMultiplier": 0.9
   },
   {
     "name": "Жим лёжа на скамье с отрицательным наклоном",
@@ -37,7 +37,7 @@
     "type": "compound",
     "description": "Упражнение для всего тела, при котором вы поднимаете штангу с земли в положение стоя.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Сведение рук в тренажёре бабочка",
@@ -61,7 +61,7 @@
     "type": "compound",
     "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело, а затем встаёте.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Приседания со штангой на плечах",
@@ -69,7 +69,7 @@
     "type": "compound",
     "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело со штангой на верхней части спины, а затем встаёте.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.2
+    "loadMultiplier": 1.4
   },
   {
     "name": "Жим ногами в тренажёре",
@@ -365,7 +365,7 @@
     "type": "compound",
     "description": "Вариация становой тяги с широкой постановкой ног, направленная на внутреннюю поверхность бёдер и ягодицы.",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Отведение бёдер в тренажёре",

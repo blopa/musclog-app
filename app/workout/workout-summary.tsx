@@ -9,14 +9,20 @@ import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
-import { ChatService, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import {
+  ChatService,
+  ExerciseGoalService,
+  WorkoutAnalytics,
+  WorkoutService,
+} from '@/database/services';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { getRecentWorkoutInsights } from '@/utils/coachAI';
 import { formatAppInteger } from '@/utils/formatAppNumber';
-import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
@@ -37,6 +43,9 @@ export default function WorkoutSummaryScreen() {
   const [volume, setVolume] = useState<string>('');
   const [caloriesBurned, setCaloriesBurned] = useState<number>(0);
   const [personalRecords, setPersonalRecords] = useState<number>(0);
+  const [goalProgress, setGoalProgress] = useState<
+    { exerciseName: string; current: number; target: number; unit: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
@@ -129,6 +138,36 @@ export default function WorkoutSummaryScreen() {
             : 0;
         setPersonalRecords(prsCount);
 
+        // Check for goal progress
+        const relevantExerciseIds = [...new Set(personalRecordsData.map((pr) => pr.exerciseId))];
+        const progress: {
+          exerciseName: string;
+          current: number;
+          target: number;
+          unit: string;
+        }[] = [];
+
+        for (const exerciseId of relevantExerciseIds) {
+          const activeGoals = await ExerciseGoalService.getActiveGoalsForExercise(exerciseId);
+          const prForExercise = personalRecordsData.find(
+            (pr) => pr.exerciseId === exerciseId && pr.type === 'weight'
+          );
+
+          if (prForExercise && activeGoals.length > 0) {
+            for (const goal of activeGoals) {
+              if (goal.goalType === '1rm' && goal.targetWeight) {
+                progress.push({
+                  exerciseName: goal.exerciseNameSnapshot || prForExercise.exerciseName,
+                  current: displayWeightKgNumeric(prForExercise.newRecord.weight, units),
+                  target: displayWeightKgNumeric(goal.targetWeight, units),
+                  unit: weightUnit,
+                });
+              }
+            }
+          }
+        }
+        setGoalProgress(progress);
+
         // Build rich summary for the LLM (as if the user said "I just completed...")
         const llmSummary = await buildWorkoutCompletedSummaryForLLM(workoutLogId, {
           volumeStr,
@@ -220,8 +259,10 @@ export default function WorkoutSummaryScreen() {
         showSnackbar('error', t('workout.summary.failedToGetFeedback'));
       }
     } catch (err) {
-      console.error('[WorkoutSummary] Error getting feedback:', err);
-      showSnackbar('error', t('workout.summary.failedToGetFeedback'));
+      await handleError(err, 'workout-summary.getFeedback', {
+        snackbarMessage: t('workout.summary.failedToGetFeedback'),
+        consoleMessage: '[WorkoutSummary] Error getting feedback:',
+      });
     } finally {
       setIsFeedbackLoading(false);
     }
@@ -259,6 +300,7 @@ export default function WorkoutSummaryScreen() {
       volume={volume}
       personalRecords={personalRecords}
       caloriesBurned={caloriesBurned}
+      goalProgress={goalProgress}
     />
   );
 }

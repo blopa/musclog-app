@@ -55,6 +55,7 @@ import {
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
 import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
@@ -290,6 +291,7 @@ export function useChatMessages(
           setHasMore(lookAhead.length > 0);
         }
       } catch (err) {
+        captureException(err, { data: { context: 'useChatMessages.loadMessages' } });
         console.error('[useChatMessages] initial load error:', err);
       } finally {
         if (!cancelled) {
@@ -339,6 +341,7 @@ export function useChatMessages(
         setHasMore(lookAhead.length > 0);
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useChatMessages.loadMoreMessages' } });
       console.error('[useChatMessages] loadMore error:', err);
     } finally {
       setIsLoadingMore(false);
@@ -403,6 +406,7 @@ export function useChatMessages(
           setPendingIntention(null);
         }
       } catch (err) {
+        captureException(err, { data: { context: 'useChatMessages.clearHistory' } });
         console.error('[useChatMessages] clearHistory error:', err);
         throw err;
       }

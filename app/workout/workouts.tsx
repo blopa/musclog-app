@@ -1,10 +1,11 @@
 import { useFocusEffect } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Dumbbell, Plus, Repeat, Search, WifiOff, X } from 'lucide-react-native';
+import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { GradientText } from '@/components/GradientText';
@@ -14,6 +15,7 @@ import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -21,6 +23,7 @@ import { Button } from '@/components/theme/Button';
 import DashedButton from '@/components/theme/DashedButton';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
@@ -60,11 +63,13 @@ export default function WorkoutsScreen() {
   ];
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isScreenMenuVisible, setIsScreenMenuVisible] = useState(false);
   const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>('');
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
   const [isCreateOptionsVisible, setIsCreateOptionsVisible] = useState(false);
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
+  const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
@@ -81,7 +86,6 @@ export default function WorkoutsScreen() {
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);
   const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
     useState(false);
@@ -289,67 +293,36 @@ export default function WorkoutsScreen() {
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
-              {!isSearchActive ? (
-                <GradientText
-                  colors={theme.colors.gradients.workoutsTitle}
-                  style={{
-                    fontSize: theme.typography.fontSize['4xl'],
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
-                >
-                  {t('workouts.title')}
-                </GradientText>
-              ) : (
-                <View className="mr-4 flex-1">
-                  <TextInput
-                    label=""
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    placeholder={t('workouts.searchPlaceholder')}
-                    icon={
-                      searchQuery ? (
-                        <Pressable
-                          onPress={() => {
-                            setSearchQuery('');
-                          }}
-                        >
-                          <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                        </Pressable>
-                      ) : (
-                        <Search size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                      )
-                    }
-                    onFocus={() => setIsSearchActive(true)}
-                  />
-                </View>
-              )}
-              <View className="ml-4 flex-row gap-4">
-                {isSearchActive ? (
-                  <Pressable
-                    className="rounded-lg p-2"
-                    onPress={() => {
-                      setIsSearchActive(false);
-                      setSearchQuery('');
-                    }}
-                  >
-                    <X size={theme.iconSize.md} color={theme.colors.text.primary} />
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    className="rounded-lg p-2"
-                    onPress={() => {
-                      setIsSearchActive(true);
-                    }}
-                  >
-                    <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
-                  </Pressable>
-                )}
-              </View>
+              <GradientText
+                colors={theme.colors.gradients.workoutsTitle}
+                style={{
+                  fontSize: theme.typography.fontSize['4xl'],
+                  fontWeight: theme.typography.fontWeight.bold,
+                }}
+              >
+                {t('workouts.title')}
+              </GradientText>
+              <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
             </View>
             {/* Add spacing below header */}
             <View style={{ height: theme.spacing.gap.lg }} />
             {/* Filter Tabs */}
-            <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
+            <FilterTabs
+              tabs={FILTER_TABS}
+              activeTab={activeFilter}
+              onTabChange={setActiveFilter}
+              showContainer={false}
+            />
+            {/* Search Input */}
+            <View className="mt-3">
+              <TextInput
+                label=""
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={t('workouts.searchPlaceholder')}
+                icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+              />
+            </View>
           </View>
 
           {/* Workouts List */}
@@ -782,6 +755,40 @@ export default function WorkoutsScreen() {
         cancelLabel={t('workouts.interruptedSession.discardCancel')}
         variant="destructive"
         isLoading={isDiscardingInterrupted}
+      />
+
+      <BottomPopUpMenu
+        visible={isScreenMenuVisible}
+        onClose={() => setIsScreenMenuVisible(false)}
+        title={t('workouts.title')}
+        items={[
+          {
+            icon: Plus,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: `${theme.colors.accent.primary}20`,
+            title: t('workouts.createTemplate.title'),
+            description: t('workouts.createTemplate.description'),
+            onPress: () => {
+              setIsCreateOptionsVisible(true);
+            },
+          },
+          {
+            icon: Target,
+            iconColor: theme.colors.accent.secondary,
+            iconBgColor: `${theme.colors.accent.secondary}20`,
+            title: t('exerciseGoals.title'),
+            description: t('goalsManagement.exerciseGoalsSubtitle'),
+            onPress: () => {
+              setIsGoalsManagementModalVisible(true);
+            },
+          },
+        ]}
+      />
+
+      <GoalsManagementModal
+        visible={isGoalsManagementModalVisible}
+        onClose={() => setIsGoalsManagementModalVisible(false)}
+        tab="fitness"
       />
 
       {/* Workout Session Overview Modal */}

@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Gerenciamento de Metas",
+    "nutritionAndBodyTab": "Nutrição e Corpo",
+    "fitnessAndExerciseTab": "Fitness e Exercício",
     "subtitle": "Acompanhe seu progresso e histórico.",
     "currentGoals": "METAS ATUAIS",
     "active": "Ativo",
@@ -92,6 +94,9 @@
       "deleteCheckinDesc": "Remover permanentemente este check-in",
       "subtitleFormat": "Meta {{targetWeight}} {{unit}} • {{targetBodyFat}}% gordura corporal",
       "checkinDate": "Data do Check-in"
-    }
+    },
+    "exerciseGoals": "METAS DE EXERCÍCIO",
+    "exerciseGoalsTitle": "Força e Constância",
+    "exerciseGoalsSubtitle": "Acompanhe metas de 1RM e frequência de treinos"
   }
 }

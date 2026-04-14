@@ -2026,6 +2026,7 @@ export default function ModalsTestScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementVisible}
         onClose={() => setIsGoalsManagementVisible(false)}
+        tab="nutrition"
       />
 
       <PastWorkoutsHistoryModal

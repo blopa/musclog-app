@@ -8,6 +8,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
+import { handleError } from '@/utils/handleError';
 import {
   createExerciseOption,
   type ExerciseMetadata,
@@ -103,12 +104,14 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       });
       setExerciseMetadata(metadataMap);
     } catch (error) {
-      console.error('Error loading template:', error);
-      showSnackbar('error', t('createWorkout.loadError'));
+      await handleError(error, 'useWorkoutForm.loadTemplate', {
+        snackbarMessage: t('createWorkout.loadError'),
+        consoleMessage: 'Error loading template:',
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [isEditMode, templateId, t, showSnackbar, units]);
+  }, [isEditMode, templateId, t, units]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -158,11 +161,13 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
         setExercises((prev) => [...prev, newExercise]);
       } catch (error) {
-        console.error('Error adding exercise:', error);
-        showSnackbar('error', t('createWorkout.addExerciseError'));
+        await handleError(error, 'useWorkoutForm.addExercise', {
+          snackbarMessage: t('createWorkout.addExerciseError'),
+          consoleMessage: 'Error adding exercise:',
+        });
       }
     },
-    [theme, units, showSnackbar, t]
+    [theme, units, t]
   );
 
   const handleSave = useCallback(async () => {
@@ -190,8 +195,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       onSaveSuccess?.();
     } catch (error) {
-      console.error('Error saving template:', error);
-      showSnackbar('error', t('createWorkout.saveError'));
+      await handleError(error, 'useWorkoutForm.saveTemplate', {
+        snackbarMessage: t('createWorkout.saveError'),
+        consoleMessage: 'Error saving template:',
+      });
     } finally {
       setIsSaving(false);
     }

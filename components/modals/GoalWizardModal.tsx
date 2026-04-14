@@ -487,38 +487,51 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
 
     return (
       <View style={{ gap: 12 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 2,
+          }}
+        >
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+            {t('goalsManagement.goalWizard.targetDate.label')}
+          </Text>
+          {targetDate !== null ? (
+            <Pressable
+              onPress={() => setTargetDate(null)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+              })}
+            >
+              <X size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  textTransform: 'uppercase',
+                  color: theme.colors.text.tertiary,
+                }}
+              >
+                {t('goalsManagement.goalWizard.targetDate.clear')}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+
         <DatePickerInput
           selectedDate={displayDate}
           onPress={() => setDatePickerVisible(true)}
-          label={t('goalsManagement.goalWizard.targetDate.label')}
+          hideLabel
           variant="default"
           unset={targetDate === null}
           unsetPlaceholder={t('goalsManagement.goalWizard.targetDate.notSet')}
           dateDisplay="single-line"
         />
-
-        {targetDate !== null ? (
-          <Pressable
-            onPress={() => setTargetDate(null)}
-            style={({ pressed }) => ({
-              opacity: pressed ? 0.7 : 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-              paddingVertical: 4,
-            })}
-          >
-            <X size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.tertiary,
-              }}
-            >
-              {t('goalsManagement.goalWizard.targetDate.clear')}
-            </Text>
-          </Pressable>
-        ) : null}
 
         <DatePickerModal
           visible={datePickerVisible}
@@ -574,14 +587,10 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
         onPress={handleBack}
       />
       <Button
-        label={
-          isLastStep
-            ? t('goalsManagement.goalWizard.createGoal')
-            : t('goalsManagement.goalWizard.next')
-        }
+        label={t('goalsManagement.goalWizard.next')}
         variant="gradientCta"
         size="md"
-        width="flex-2"
+        width="flex-1"
         disabled={!canAdvance}
         onPress={handleNext}
       />

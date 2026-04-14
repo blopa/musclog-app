@@ -54,6 +54,7 @@ const RESTORE_ORDER: string[] = [
   // Goal and tracking tables
   'nutrition_goals',
   'nutrition_checkins',
+  'exercise_goals',
   'menstrual_cycles',
 
   // Log tables (depend on templates and master data)

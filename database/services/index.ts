@@ -14,6 +14,7 @@ export { ChatService } from './ChatService';
 export { AiCustomPromptService } from './AiCustomPromptService';
 
 // Export existing services
+export { ExerciseGoalService } from './ExerciseGoalService';
 export {
   type MigrateAllOptions,
   type MigrationProgressInfo,

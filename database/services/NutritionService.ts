@@ -13,6 +13,7 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { captureException } from '@/utils/sentry';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 function triggerWidgetUpdate(): void {
@@ -182,7 +183,11 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        captureException(err, {
+          data: { context: 'NutritionService.addNutritionLog.healthConnect' },
+        });
+      });
 
       if (hcId) {
         await database.write(async () => {
@@ -338,6 +343,9 @@ export class NutritionService {
         } catch (error) {
           // Skip individual log errors to prevent total failure
           console.error('Error calculating nutrients for log:', error);
+          captureException(error, {
+            data: { context: 'NutritionService.getDailyNutrients.logLoop' },
+          });
           continue;
         }
       }
@@ -345,6 +353,7 @@ export class NutritionService {
       return totals;
     } catch (error) {
       console.error('Error getting daily nutrients:', error);
+      captureException(error, { data: { context: 'NutritionService.getDailyNutrients' } });
       // Return default values on error
       return {
         calories: 0,
@@ -1051,7 +1060,11 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        captureException(err, {
+          data: { context: 'NutritionService.updateNutritionLog.healthConnect' },
+        });
+      });
     }
 
     return log;
@@ -1089,9 +1102,14 @@ export class NutritionService {
             fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
             fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
-        } catch {
-          // Food not found — fall back to LLM values
-          return ingredient;
+        } catch (error) {
+          captureException(error, {
+            data: { context: 'NutritionService.normalizeAiMealIngredients' },
+          });
+          // Food not found — fall back to LLM values and strip the invalid foodId
+          // so callers create a custom food instead of linking a missing record.
+          const { foodId: _, ...rest } = ingredient;
+          return rest as T;
         }
       })
     );
@@ -1239,9 +1257,16 @@ export class NutritionService {
             carbs: nutrients.carbs,
             fat: nutrients.fat,
             fiber: nutrients.fiber,
-          }).catch(() => undefined);
+          }).catch((err) => {
+            captureException(err, {
+              data: { context: 'NutritionService.syncLogToHealthPlatform.healthConnect' },
+            });
+          });
         } catch (error) {
           console.error('Error syncing log to health platform:', error);
+          captureException(error, {
+            data: { context: 'NutritionService.syncLogToHealthPlatform' },
+          });
         }
       }
     }

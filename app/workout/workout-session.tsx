@@ -382,6 +382,7 @@ export default function WorkoutSessionScreen() {
     router,
     params.showFeedback,
     isSessionFeedbackModalVisible,
+    currentSetData,
   ]);
 
   // Set initial exercise if provided in URL

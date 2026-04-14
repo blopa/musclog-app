@@ -60,6 +60,8 @@ import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '@/utils/
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
+import { handleError } from '@/utils/handleError';
+import { captureException } from '@/utils/sentry';
 
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
@@ -124,6 +126,8 @@ export default function FoodScreen() {
   const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
+  const [addFoodModalPreselectedMealType, setAddFoodModalPreselectedMealType] =
+    useState<MealType | null>(null);
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
@@ -426,6 +430,7 @@ export default function FoodScreen() {
       setIsMealGroupScaleModalVisible(false);
       setSelectedMealGroup(null);
     } catch (error) {
+      captureException(error, { data: { context: 'food.scaleMealGroupPortions' } });
       console.error('Error scaling meal group portions:', error);
       showSnackbar('error', t('food.actions.scaleMealPortionError'));
     } finally {
@@ -480,6 +485,7 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.performMealGroupAction' } });
       console.error('Error performing meal group action:', error);
       const errorKey = getMealActionErrorKey(mealGroupActionMode);
       showSnackbar('error', t(errorKey));
@@ -564,6 +570,7 @@ export default function FoodScreen() {
       setSelectedMealGroup(null);
       openCoach();
     } catch (error) {
+      captureException(error, { data: { context: 'food.getMealGroupInsights' } });
       console.error('Error getting meal group insights:', error);
       showSnackbar('error', t('food.actions.getMealInsightsError'));
     } finally {
@@ -630,6 +637,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.moveSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleMoveFood' } });
       console.error('Error moving food:', error);
       showSnackbar('error', t('food.actions.moveError'));
     } finally {
@@ -659,6 +667,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.splitSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleSplitFood' } });
       console.error('Error splitting food:', error);
       showSnackbar('error', t('food.actions.splitError'));
     } finally {
@@ -680,6 +689,7 @@ export default function FoodScreen() {
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
       showSnackbar('success', t('food.actions.deleteSuccess'));
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleDeleteFood' } });
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
@@ -740,7 +750,8 @@ export default function FoodScreen() {
 
   const handleAddFoodToMeal = (mealType: MealType) => {
     setSelectedMealType(mealType);
-    setIsFoodSearchModalVisible(true);
+    setAddFoodModalPreselectedMealType(mealType);
+    setIsAddFoodModalVisible(true);
   };
 
   const handleMealMenuPress = (mealType: MealType) => {
@@ -765,6 +776,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.deleteAllSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleDeleteAllMealItems' } });
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
@@ -854,8 +866,10 @@ export default function FoodScreen() {
       setIsScaleMealPortionModalVisible(false);
       setSelectedMealForMenu(null);
     } catch (error) {
-      console.error('Error scaling meal portions:', error);
-      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      await handleError(error, 'food.scaleMealPortions', {
+        snackbarMessage: t('food.actions.scaleMealPortionError'),
+        consoleMessage: 'Error scaling meal portions:',
+      });
     } finally {
       setIsScaleMealPortionLoading(false);
     }
@@ -920,8 +934,10 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.mergeDuplicatesSuccess'));
       await refresh();
     } catch (error) {
-      console.error('Error merging duplicate foods:', error);
-      showSnackbar('error', t('food.actions.mergeDuplicatesError'));
+      await handleError(error, 'food.mergeDuplicateFoods', {
+        snackbarMessage: t('food.actions.mergeDuplicatesError'),
+        consoleMessage: 'Error merging duplicate foods:',
+      });
     } finally {
       setIsMergeDuplicatesLoading(false);
       setIsMergeDuplicatesVisible(false);
@@ -965,10 +981,11 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
-      console.error('Error performing meal action:', error);
       const errorKey = getMealActionErrorKey(mealActionMode);
-
-      showSnackbar('error', t(errorKey));
+      await handleError(error, 'food.performMealAction', {
+        snackbarMessage: t(errorKey),
+        consoleMessage: 'Error performing meal action:',
+      });
     } finally {
       setIsMealActionLoading(false);
       setIsMealActionModalVisible(false);
@@ -1026,8 +1043,10 @@ export default function FoodScreen() {
       setSelectedMealForMenu(null);
       openCoach();
     } catch (error) {
-      console.error('Error getting meal insights:', error);
-      showSnackbar('error', t('food.actions.getMealInsightsError'));
+      await handleError(error, 'food.getMealInsights', {
+        snackbarMessage: t('food.actions.getMealInsightsError'),
+        consoleMessage: 'Error getting meal insights:',
+      });
     } finally {
       setIsMealInsightsLoading(false);
     }
@@ -1339,7 +1358,10 @@ export default function FoodScreen() {
                         variant="secondaryGradient"
                         size="sm"
                         width="flex-1"
-                        onPress={() => setIsAddFoodModalVisible(true)}
+                        onPress={() => {
+                          setAddFoodModalPreselectedMealType(null);
+                          setIsAddFoodModalVisible(true);
+                        }}
                       />
                     </View>
                   </View>
@@ -1607,6 +1629,7 @@ export default function FoodScreen() {
       <AddFoodModal
         isAiEnabled={isAiConfigured}
         visible={isAddFoodModalVisible}
+        showTrackByMealType={!addFoodModalPreselectedMealType}
         onClose={() => setIsAddFoodModalVisible(false)}
         onMealTypeSelect={(mealType) => {
           setSelectedMealType(mealType);
@@ -1615,11 +1638,21 @@ export default function FoodScreen() {
         }}
         onAiCameraPress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false, logDate: selectedDate });
+          openCamera({
+            mode: 'ai-meal-photo',
+            hideCameraModePicker: false,
+            logDate: selectedDate,
+            mealType: selectedMealType,
+          });
         }}
         onScanBarcodePress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false, logDate: selectedDate });
+          openCamera({
+            mode: 'barcode-scan',
+            hideCameraModePicker: false,
+            logDate: selectedDate,
+            mealType: selectedMealType,
+          });
         }}
         onSearchFoodPress={() => {
           setIsAddFoodModalVisible(false);
@@ -1646,6 +1679,7 @@ export default function FoodScreen() {
         onClose={() => setIsQuickTrackMealModalVisible(false)}
         mode="quickTrack"
         logDate={selectedDate}
+        initialMealType={selectedMealType}
         onTracked={() => {
           refresh();
           setIsQuickTrackMealModalVisible(false);
@@ -1672,6 +1706,7 @@ export default function FoodScreen() {
       <MyMealsModal
         visible={isMyMealsModalVisible}
         onClose={() => setIsMyMealsModalVisible(false)}
+        initialMealType={selectedMealType}
       />
 
       {/* Create Custom Food Modal */}
@@ -1680,6 +1715,7 @@ export default function FoodScreen() {
         trackFoodAfterSave={true}
         onClose={() => setIsCreateCustomFoodVisible(false)}
         isAiEnabled={isAiConfigured}
+        initialMealType={selectedMealType}
       />
 
       {/* Food Search Modal */}
@@ -1725,6 +1761,7 @@ export default function FoodScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
         onClose={() => setIsGoalsManagementModalVisible(false)}
+        tab="nutrition"
       />
 
       {/* Food Menu Modal */}
@@ -1897,8 +1934,9 @@ export default function FoodScreen() {
           try {
             await refresh();
           } catch (_error) {
-            // Show error snackbar to user
-            showSnackbar('error', t('food.errors.refreshFailed'));
+            await handleError(_error, 'food.handleRefresh', {
+              snackbarMessage: t('food.errors.refreshFailed'),
+            });
 
             // Reload the current screen using expo-router
             router.replace('/nutrition/food');

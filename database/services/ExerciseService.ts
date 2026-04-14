@@ -750,4 +750,50 @@ export class ExerciseService {
     console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
     return prepared.length;
   }
+
+  /**
+   * Updates `loadMultiplier` for existing app exercises to match the latest values
+   * in the bundled JSON files. This ensures that users who already have these
+   * exercises in their DB get the refined scientific multipliers.
+   */
+  static async syncExerciseMultipliers(): Promise<void> {
+    const exercisesJson = getExercisesData();
+
+    // Map of name -> loadMultiplier from JSON
+    const multiplierMap = new Map(
+      exercisesJson.map((ex) => [ex.name.toLowerCase(), ex.loadMultiplier])
+    );
+
+    // Fetch all app exercises
+    const appExercises = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const toUpdate: { exercise: Exercise; newMultiplier: number }[] = [];
+
+    for (const exercise of appExercises) {
+      const newMultiplier = multiplierMap.get((exercise.name ?? '').toLowerCase());
+      if (
+        newMultiplier !== undefined &&
+        Math.abs((exercise.loadMultiplier ?? 0) - newMultiplier) > 0.001
+      ) {
+        toUpdate.push({ exercise, newMultiplier });
+      }
+    }
+
+    if (toUpdate.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (const { exercise, newMultiplier } of toUpdate) {
+        await exercise.update((e) => {
+          e.loadMultiplier = newMultiplier;
+        });
+      }
+    });
+
+    console.log(`[syncExerciseMultipliers] Updated ${toUpdate.length} exercise(s)`);
+  }
 }
