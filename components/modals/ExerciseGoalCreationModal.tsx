@@ -1,9 +1,9 @@
 import { addMonths } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Calendar, Dumbbell, Lightbulb, Search, TrendingUp, User } from 'lucide-react-native';
+import { Dumbbell, Lightbulb, Minus, Plus, Search, TrendingUp, User } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
 import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -214,7 +214,9 @@ export default function ExerciseGoalCreationModal({
     };
     allExercises.forEach((exercise) => {
       const group = normalizeMuscleGroup(exercise.muscleGroup ?? '');
-      if (!group) {return;}
+      if (!group) {
+        return;
+      }
 
       const exerciseType = getExerciseType(
         exercise.mechanicType ?? '',
@@ -234,9 +236,7 @@ export default function ExerciseGoalCreationModal({
             ? theme.colors.background.white5
             : theme.colors.accent.primary10,
         iconColor:
-          exerciseType === 'bodyweight'
-            ? theme.colors.text.secondary
-            : theme.colors.accent.primary,
+          exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
         imageUrl: exercise.imageUrl,
       };
 
@@ -548,16 +548,6 @@ export default function ExerciseGoalCreationModal({
         onPress={() => setDatePickerVisible(true)}
         unset={!targetDate}
       />
-
-      <DatePickerModal
-        visible={datePickerVisible}
-        onClose={() => setDatePickerVisible(false)}
-        selectedDate={targetDate || addMonths(new Date(), 3)}
-        onDateSelect={(date) => {
-          setTargetDate(date);
-          setDatePickerVisible(false);
-        }}
-      />
     </View>
   );
 
@@ -741,83 +731,87 @@ export default function ExerciseGoalCreationModal({
           >
             {t('exerciseGoals.creation.targetLabel')}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 4 }}>
-            <Text
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 8,
+              gap: 8,
+            }}
+          >
+            <Pressable
+              onPress={() => {
+                if (goalType === '1rm') {
+                  setTargetWeightDisplay((parseFloat(targetWeightDisplay) - 2.5).toString());
+                } else {
+                  setSessionsPerWeek((v) => Math.max(1, v - 1));
+                }
+              }}
               style={{
-                fontSize: theme.typography.fontSize.xl,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.accent.primary,
+                height: 32,
+                width: 32,
+                borderRadius: 999,
+                backgroundColor: theme.colors.accent.primary10,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {goalType === '1rm' ? targetWeightDisplay : sessionsPerWeek}
-            </Text>
-            <Text
+              <Minus size={16} color={theme.colors.accent.primary} />
+            </Pressable>
+            <View style={{ flex: 1, alignItems: 'center' }}>
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xl,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: theme.colors.accent.primary,
+                }}
+              >
+                {goalType === '1rm' ? targetWeightDisplay : sessionsPerWeek}
+              </Text>
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.sm,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: theme.colors.accent.primary,
+                }}
+              >
+                {goalType === '1rm' ? t(weightUnitKey) : t('exerciseGoals.creation.perWeek')}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => {
+                if (goalType === '1rm') {
+                  setTargetWeightDisplay((parseFloat(targetWeightDisplay) + 2.5).toString());
+                } else {
+                  setSessionsPerWeek((v) => Math.min(7, v + 1));
+                }
+              }}
               style={{
-                fontSize: theme.typography.fontSize.sm,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.accent.primary,
-                marginLeft: 4,
+                height: 32,
+                width: 32,
+                borderRadius: 999,
+                backgroundColor: theme.colors.accent.primary10,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {goalType === '1rm' ? t(weightUnitKey) : t('exerciseGoals.creation.perWeek')}
-            </Text>
+              <Plus size={16} color={theme.colors.accent.primary} />
+            </Pressable>
           </View>
         </View>
       </View>
 
       {/* Target Date */}
-      <View
-        style={{
-          borderRadius: 20,
-          backgroundColor: theme.colors.background.card,
-          padding: 16,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 16,
-        }}
-      >
-        <View
-          style={{
-            height: 48,
-            width: 48,
-            borderRadius: 12,
-            backgroundColor: theme.colors.background.secondaryDark,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Calendar size={24} color={theme.colors.text.secondary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            {t('exerciseGoals.creation.targetDateShort')}
-          </Text>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.lg,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.primary,
-              marginTop: 2,
-            }}
-          >
-            {targetDate
-              ? targetDate.toLocaleDateString(locale, {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
-              : t('exerciseGoals.creation.notSet')}
-          </Text>
-        </View>
-      </View>
+      <DatePickerInput
+        label={t('exerciseGoals.creation.targetDateShort')}
+        selectedDate={targetDate || addMonths(new Date(), 3)}
+        onPress={() => setDatePickerVisible(true)}
+        unset={!targetDate}
+        unsetPlaceholder={t('exerciseGoals.creation.notSet')}
+        variant="default"
+        showLeadingIcon={true}
+        dateDisplay="stacked"
+      />
 
       {/* Projection info (optional extra) */}
       {projection?.projectedWeeks ? (
@@ -851,7 +845,9 @@ export default function ExerciseGoalCreationModal({
   );
 
   const footer = (() => {
-    if (step === 'type') {return null;}
+    if (step === 'type') {
+      return null;
+    }
     if (step === 'summary') {
       return (
         <View style={{ width: '100%', gap: 12 }}>
@@ -874,12 +870,7 @@ export default function ExerciseGoalCreationModal({
     }
     return (
       <View className="flex-row gap-3">
-        <Button
-          label={t('common.back')}
-          variant="outline"
-          width="flex-1"
-          onPress={handleBack}
-        />
+        <Button label={t('common.back')} variant="outline" width="flex-1" onPress={handleBack} />
         <Button
           label={t('common.next')}
           variant="gradientCta"
@@ -899,6 +890,15 @@ export default function ExerciseGoalCreationModal({
       footer={footer}
     >
       <View style={{ padding: 20 }}>{renderStepContent()}</View>
+      <DatePickerModal
+        visible={datePickerVisible}
+        onClose={() => setDatePickerVisible(false)}
+        selectedDate={targetDate || addMonths(new Date(), 3)}
+        onDateSelect={(date) => {
+          setTargetDate(date);
+          setDatePickerVisible(false);
+        }}
+      />
     </FullScreenModal>
   );
 
