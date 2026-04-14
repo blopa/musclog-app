@@ -33,6 +33,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { localDayStartMs } from '@/utils/calendarDate';
+import { captureException } from '@/utils/sentry';
 
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
@@ -143,6 +144,9 @@ export async function writeNutritionLogToHealthConnect(
     const ids = await healthConnectService.insertRecords([record]);
     return ids[0];
   } catch (err) {
+    captureException(err, {
+      data: { context: 'healthConnectNutrition.android.writeNutritionLogToHealthConnect' },
+    });
     console.warn('[healthConnectNutrition] writeNutritionLogToHealthConnect failed:', err);
     return undefined;
   }

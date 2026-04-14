@@ -299,8 +299,10 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               try {
                 await database.get<Food>('foods').find(ingredient.foodId);
                 return { foodId: ingredient.foodId, amount: ingredient.grams };
-              } catch {
-                // TODO: send error to sentry
+              } catch (error) {
+                captureException(error, {
+                  data: { context: 'MyMealsModal.handleGenerateMealAIWithContext' },
+                });
               }
             }
 

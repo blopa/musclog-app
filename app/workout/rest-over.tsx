@@ -22,6 +22,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { captureException } from '@/utils/sentry';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 export default function RestOverScreen() {
@@ -268,6 +269,7 @@ export default function RestOverScreen() {
                   `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
                 );
               } catch (err) {
+                captureException(err, { data: { context: 'rest-over.onFinishAndSave' } });
                 console.error('Error completing workout:', err);
               }
             }
@@ -317,6 +319,7 @@ export default function RestOverScreen() {
                   `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
                 );
               } catch (err) {
+                captureException(err, { data: { context: 'rest-over.onFinishWorkout' } });
                 console.error('Error completing workout:', err);
               }
             }

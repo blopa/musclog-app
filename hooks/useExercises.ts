@@ -5,6 +5,7 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { ExerciseService } from '@/database/services';
+import { captureException } from '@/utils/sentry';
 
 // Hook parameters
 export interface UseExercisesParams {
@@ -190,6 +191,7 @@ export function useExercises({
         setEquipmentTypes(equipmentTypesList);
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useExercises.loadExercises' } });
       console.error('Error loading exercises:', err);
       setExercises([]);
       setHasMore(false);
@@ -280,6 +282,7 @@ export function useExercises({
         setHasMore(newOffset < allExercises.length);
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useExercises.loadMoreExercises' } });
       console.error('Error loading more exercises:', err);
       setHasMore(false);
     } finally {

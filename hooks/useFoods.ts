@@ -5,6 +5,7 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import Food from '@/database/models/Food';
 import { FoodService } from '@/database/services';
+import { captureException } from '@/utils/sentry';
 
 // Hook parameters
 export interface UseFoodsParams {
@@ -96,6 +97,7 @@ export function useFoods({
 
       setFoods(foodsList);
     } catch (err) {
+      captureException(err, { data: { context: 'useFoods.loadFoods' } });
       console.error('Error loading foods:', err);
       setFoods([]);
       setHasMore(false);
@@ -147,6 +149,7 @@ export function useFoods({
         setHasMore(newOffset < allFoods.length);
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useFoods.loadMoreFoods' } });
       console.error('Error loading more foods:', err);
       setHasMore(false);
     } finally {

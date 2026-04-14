@@ -44,6 +44,7 @@ import packageJson from '@/package.json';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
+import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
@@ -183,6 +184,9 @@ export default function HomeScreen() {
         await NutritionGoalService.saveGoals(goals);
         setIsNutritionGoalsVisible(false);
       } catch (error) {
+        // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+        // also make it so that sending to sentry and/or showing a snackbar are optional
+        captureException(error, { data: { context: 'index.saveNutritionGoals' } });
         console.error('Failed to save nutrition goals:', error);
         showSnackbar('error', t('errors.somethingWentWrong'));
       }
@@ -258,11 +262,13 @@ export default function HomeScreen() {
               router.replace('/onboarding/landing');
             }
           } catch (e) {
+            captureException(e, { data: { context: 'index.restoreOnboardingStep' } });
             console.error('Error restoring onboarding step, falling back to landing', e);
             router.replace('/onboarding/landing');
           }
         }
       } catch (error) {
+        captureException(error, { data: { context: 'index.checkOnboardingStatus' } });
         console.error('Error checking onboarding status:', error);
       } finally {
         setIsCheckingOnboarding(false);

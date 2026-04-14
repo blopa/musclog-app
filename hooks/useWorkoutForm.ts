@@ -8,6 +8,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
+import { captureException } from '@/utils/sentry';
 import {
   createExerciseOption,
   type ExerciseMetadata,
@@ -103,6 +104,9 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       });
       setExerciseMetadata(metadataMap);
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'useWorkoutForm.loadTemplate' } });
       console.error('Error loading template:', error);
       showSnackbar('error', t('createWorkout.loadError'));
     } finally {
@@ -158,6 +162,9 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
         setExercises((prev) => [...prev, newExercise]);
       } catch (error) {
+        // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+        // also make it so that sending to sentry and/or showing a snackbar are optional
+        captureException(error, { data: { context: 'useWorkoutForm.addExercise' } });
         console.error('Error adding exercise:', error);
         showSnackbar('error', t('createWorkout.addExerciseError'));
       }
@@ -190,6 +197,9 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       onSaveSuccess?.();
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'useWorkoutForm.saveTemplate' } });
       console.error('Error saving template:', error);
       showSnackbar('error', t('createWorkout.saveError'));
     } finally {

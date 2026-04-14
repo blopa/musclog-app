@@ -1,6 +1,8 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import { captureException } from '@/utils/sentry';
+
 import Food from './Food';
 import FoodPortion from './FoodPortion';
 import Meal from './Meal';
@@ -59,8 +61,8 @@ export default class MealFood extends Model {
         if (portion) {
           return this.amount * (portion.gramWeight ?? 0);
         }
-      } catch {
-        // TODO: send error to sentry
+      } catch (error) {
+        captureException(error, { data: { context: 'MealFood.getGramWeight' } });
       }
     }
 
@@ -109,8 +111,8 @@ export default class MealFood extends Model {
           const totalGrams = this.amount * (portion.gramWeight ?? 0);
           return food.getNutrientsForAmount(totalGrams);
         }
-      } catch {
-        // TODO: send error to sentry
+      } catch (error) {
+        captureException(error, { data: { context: 'MealFood.getNutrients' } });
       }
     }
 

@@ -5,6 +5,7 @@ import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/en
 import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
+import { captureException } from '@/utils/sentry';
 
 import type { MicrosData } from './Food';
 import Food from './Food';
@@ -151,8 +152,8 @@ export default class NutritionLog extends Model {
         if (portion) {
           return this.amount * (portion.gramWeight ?? 0);
         }
-      } catch {
-        // TODO: send error to sentry
+      } catch (error) {
+        captureException(error, { data: { context: 'NutritionLog.getGramWeight' } });
       }
     }
 

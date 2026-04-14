@@ -60,6 +60,7 @@ import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '@/utils/
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
+import { captureException } from '@/utils/sentry';
 
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
@@ -426,6 +427,7 @@ export default function FoodScreen() {
       setIsMealGroupScaleModalVisible(false);
       setSelectedMealGroup(null);
     } catch (error) {
+      captureException(error, { data: { context: 'food.scaleMealGroupPortions' } });
       console.error('Error scaling meal group portions:', error);
       showSnackbar('error', t('food.actions.scaleMealPortionError'));
     } finally {
@@ -480,6 +482,7 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.performMealGroupAction' } });
       console.error('Error performing meal group action:', error);
       const errorKey = getMealActionErrorKey(mealGroupActionMode);
       showSnackbar('error', t(errorKey));
@@ -564,6 +567,7 @@ export default function FoodScreen() {
       setSelectedMealGroup(null);
       openCoach();
     } catch (error) {
+      captureException(error, { data: { context: 'food.getMealGroupInsights' } });
       console.error('Error getting meal group insights:', error);
       showSnackbar('error', t('food.actions.getMealInsightsError'));
     } finally {
@@ -630,6 +634,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.moveSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleMoveFood' } });
       console.error('Error moving food:', error);
       showSnackbar('error', t('food.actions.moveError'));
     } finally {
@@ -659,6 +664,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.splitSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleSplitFood' } });
       console.error('Error splitting food:', error);
       showSnackbar('error', t('food.actions.splitError'));
     } finally {
@@ -680,6 +686,7 @@ export default function FoodScreen() {
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
       showSnackbar('success', t('food.actions.deleteSuccess'));
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleDeleteFood' } });
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
@@ -765,6 +772,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.deleteAllSuccess'));
       await refresh();
     } catch (error) {
+      captureException(error, { data: { context: 'food.handleDeleteAllMealItems' } });
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
@@ -854,6 +862,9 @@ export default function FoodScreen() {
       setIsScaleMealPortionModalVisible(false);
       setSelectedMealForMenu(null);
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'food.scaleMealPortions' } });
       console.error('Error scaling meal portions:', error);
       showSnackbar('error', t('food.actions.scaleMealPortionError'));
     } finally {
@@ -920,6 +931,9 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.mergeDuplicatesSuccess'));
       await refresh();
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'food.mergeDuplicateFoods' } });
       console.error('Error merging duplicate foods:', error);
       showSnackbar('error', t('food.actions.mergeDuplicatesError'));
     } finally {
@@ -965,6 +979,9 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'food.performMealAction' } });
       console.error('Error performing meal action:', error);
       const errorKey = getMealActionErrorKey(mealActionMode);
 
@@ -1026,6 +1043,9 @@ export default function FoodScreen() {
       setSelectedMealForMenu(null);
       openCoach();
     } catch (error) {
+      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+      // also make it so that sending to sentry and/or showing a snackbar are optional
+      captureException(error, { data: { context: 'food.getMealInsights' } });
       console.error('Error getting meal insights:', error);
       showSnackbar('error', t('food.actions.getMealInsightsError'));
     } finally {
@@ -1897,6 +1917,9 @@ export default function FoodScreen() {
           try {
             await refresh();
           } catch (_error) {
+            // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
+            // also make it so that sending to sentry and/or showing a snackbar are optional
+            captureException(_error, { data: { context: 'food.handleRefresh' } });
             // Show error snackbar to user
             showSnackbar('error', t('food.errors.refreshFailed'));
 

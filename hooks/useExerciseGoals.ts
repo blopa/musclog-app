@@ -5,6 +5,7 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { captureException } from '@/utils/sentry';
 
 type Mode = 'active' | 'history';
 
@@ -65,6 +66,7 @@ export function useExerciseGoals({
         }
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useExerciseGoals.loadGoals' } });
       console.error('Error loading exercise goals:', err);
       setGoals([]);
       setHasMore(false);
@@ -93,6 +95,7 @@ export function useExerciseGoals({
         }
       }
     } catch (err) {
+      captureException(err, { data: { context: 'useExerciseGoals.loadMoreGoals' } });
       console.error('Error loading more exercise goals:', err);
       setHasMore(false);
     } finally {

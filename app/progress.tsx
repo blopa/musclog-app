@@ -33,6 +33,7 @@ import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { healthDataSyncService } from '@/services/healthDataSync';
+import { captureException } from '@/utils/sentry';
 
 export default function ProgressScreen() {
   const { t } = useTranslation();
@@ -101,6 +102,7 @@ export default function ProgressScreen() {
       await healthDataSyncService.syncFromHealthConnect({ lookbackDays: 30 });
       refresh();
     } catch (e) {
+      captureException(e, { data: { context: 'progress.handleSync' } });
       console.error(e);
     } finally {
       setIsSyncing(false);
