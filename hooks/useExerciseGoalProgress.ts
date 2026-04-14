@@ -120,13 +120,20 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     if (goal.goalType !== '1rm') {
       return null;
     }
-    if (goal.targetWeight === null || goal.baseline1rm === null) {
+    if (goal.targetWeight === null) {
+      return null;
+    }
+
+    const effectiveBaseline =
+      goal.baseline1rm ?? (dataPoints.length > 0 ? dataPoints[0].estimated1RM : null);
+
+    if (effectiveBaseline === null) {
       return null;
     }
 
     return projectGoal({
       dataPoints,
-      baseline1rm: goal.baseline1rm,
+      baseline1rm: effectiveBaseline,
       targetWeight: goal.targetWeight,
       bodyWeight,
       loadMultiplier,

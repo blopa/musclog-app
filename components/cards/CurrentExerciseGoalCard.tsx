@@ -103,7 +103,7 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
                   {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
                 </Text>
                 <Text className="text-sm font-bold text-text-primary">
-                  {projection.progressPercent}%
+                  {formatRoundedDecimal(projection.progressPercent, 2)}%
                 </Text>
               </View>
               <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
