@@ -8,7 +8,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import {
   createExerciseOption,
   type ExerciseMetadata,
@@ -104,15 +104,14 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       });
       setExerciseMetadata(metadataMap);
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'useWorkoutForm.loadTemplate' } });
-      console.error('Error loading template:', error);
-      showSnackbar('error', t('createWorkout.loadError'));
+      await handleError(error, 'useWorkoutForm.loadTemplate', {
+        snackbarMessage: t('createWorkout.loadError'),
+        consoleMessage: 'Error loading template:',
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [isEditMode, templateId, t, showSnackbar, units]);
+  }, [isEditMode, templateId, t, units]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -162,11 +161,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
         setExercises((prev) => [...prev, newExercise]);
       } catch (error) {
-        // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-        // also make it so that sending to sentry and/or showing a snackbar are optional
-        captureException(error, { data: { context: 'useWorkoutForm.addExercise' } });
-        console.error('Error adding exercise:', error);
-        showSnackbar('error', t('createWorkout.addExerciseError'));
+        await handleError(error, 'useWorkoutForm.addExercise', {
+          snackbarMessage: t('createWorkout.addExerciseError'),
+          consoleMessage: 'Error adding exercise:',
+        });
       }
     },
     [theme, units, showSnackbar, t]
@@ -197,11 +195,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       onSaveSuccess?.();
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'useWorkoutForm.saveTemplate' } });
-      console.error('Error saving template:', error);
-      showSnackbar('error', t('createWorkout.saveError'));
+      await handleError(error, 'useWorkoutForm.saveTemplate', {
+        snackbarMessage: t('createWorkout.saveError'),
+        consoleMessage: 'Error saving template:',
+      });
     } finally {
       setIsSaving(false);
     }

@@ -22,7 +22,7 @@ import AiService from '@/services/AiService';
 import { getRecentWorkoutInsights } from '@/utils/coachAI';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
@@ -259,11 +259,10 @@ export default function WorkoutSummaryScreen() {
         showSnackbar('error', t('workout.summary.failedToGetFeedback'));
       }
     } catch (err) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(err, { data: { context: 'workout-summary.getFeedback' } });
-      console.error('[WorkoutSummary] Error getting feedback:', err);
-      showSnackbar('error', t('workout.summary.failedToGetFeedback'));
+      await handleError(err, 'workout-summary.getFeedback', {
+        snackbarMessage: t('workout.summary.failedToGetFeedback'),
+        consoleMessage: '[WorkoutSummary] Error getting feedback:',
+      });
     } finally {
       setIsFeedbackLoading(false);
     }

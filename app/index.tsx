@@ -43,6 +43,7 @@ import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
 import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
@@ -184,11 +185,10 @@ export default function HomeScreen() {
         await NutritionGoalService.saveGoals(goals);
         setIsNutritionGoalsVisible(false);
       } catch (error) {
-        // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-        // also make it so that sending to sentry and/or showing a snackbar are optional
-        captureException(error, { data: { context: 'index.saveNutritionGoals' } });
-        console.error('Failed to save nutrition goals:', error);
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        await handleError(error, 'index.saveNutritionGoals', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+          consoleMessage: 'Failed to save nutrition goals:',
+        });
       }
     },
     [t]

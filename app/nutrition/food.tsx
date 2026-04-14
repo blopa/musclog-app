@@ -60,6 +60,7 @@ import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '@/utils/
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
+import { handleError } from '@/utils/handleError';
 import { captureException } from '@/utils/sentry';
 
 /**
@@ -862,11 +863,10 @@ export default function FoodScreen() {
       setIsScaleMealPortionModalVisible(false);
       setSelectedMealForMenu(null);
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'food.scaleMealPortions' } });
-      console.error('Error scaling meal portions:', error);
-      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      await handleError(error, 'food.scaleMealPortions', {
+        snackbarMessage: t('food.actions.scaleMealPortionError'),
+        consoleMessage: 'Error scaling meal portions:',
+      });
     } finally {
       setIsScaleMealPortionLoading(false);
     }
@@ -931,11 +931,10 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.mergeDuplicatesSuccess'));
       await refresh();
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'food.mergeDuplicateFoods' } });
-      console.error('Error merging duplicate foods:', error);
-      showSnackbar('error', t('food.actions.mergeDuplicatesError'));
+      await handleError(error, 'food.mergeDuplicateFoods', {
+        snackbarMessage: t('food.actions.mergeDuplicatesError'),
+        consoleMessage: 'Error merging duplicate foods:',
+      });
     } finally {
       setIsMergeDuplicatesLoading(false);
       setIsMergeDuplicatesVisible(false);
@@ -979,13 +978,11 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'food.performMealAction' } });
-      console.error('Error performing meal action:', error);
       const errorKey = getMealActionErrorKey(mealActionMode);
-
-      showSnackbar('error', t(errorKey));
+      await handleError(error, 'food.performMealAction', {
+        snackbarMessage: t(errorKey),
+        consoleMessage: 'Error performing meal action:',
+      });
     } finally {
       setIsMealActionLoading(false);
       setIsMealActionModalVisible(false);
@@ -1043,11 +1040,10 @@ export default function FoodScreen() {
       setSelectedMealForMenu(null);
       openCoach();
     } catch (error) {
-      // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-      // also make it so that sending to sentry and/or showing a snackbar are optional
-      captureException(error, { data: { context: 'food.getMealInsights' } });
-      console.error('Error getting meal insights:', error);
-      showSnackbar('error', t('food.actions.getMealInsightsError'));
+      await handleError(error, 'food.getMealInsights', {
+        snackbarMessage: t('food.actions.getMealInsightsError'),
+        consoleMessage: 'Error getting meal insights:',
+      });
     } finally {
       setIsMealInsightsLoading(false);
     }
@@ -1917,11 +1913,9 @@ export default function FoodScreen() {
           try {
             await refresh();
           } catch (_error) {
-            // TODO: migrate this to a function that will do these 3: send to sentry, show a snackbar and console.error (only if in dev mode)
-            // also make it so that sending to sentry and/or showing a snackbar are optional
-            captureException(_error, { data: { context: 'food.handleRefresh' } });
-            // Show error snackbar to user
-            showSnackbar('error', t('food.errors.refreshFailed'));
+            await handleError(_error, 'food.handleRefresh', {
+              snackbarMessage: t('food.errors.refreshFailed'),
+            });
 
             // Reload the current screen using expo-router
             router.replace('/nutrition/food');
