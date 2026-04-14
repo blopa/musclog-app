@@ -1,8 +1,9 @@
 import { addMonths } from 'date-fns';
-import { Dumbbell, Lightbulb, Search, TrendingUp, User } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Calendar, Dumbbell, Lightbulb, Search, TrendingUp, User } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
 
 import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -19,6 +20,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
+import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -560,57 +562,317 @@ export default function ExerciseGoalCreationModal({
   );
 
   const renderSummaryStep = () => (
-    <View className="gap-4">
-      <View className="bg-card border-border rounded-2xl border p-4">
-        <Text className="mb-2 text-xs font-bold uppercase tracking-widest text-text-tertiary">
-          {t('exerciseGoals.creation.summaryTitle')}
-        </Text>
-        <View className="gap-3">
-          <View className="flex-row justify-between">
-            <Text className="text-text-secondary">Type</Text>
-            <Text className="font-bold text-text-primary">
-              {t(`exerciseGoals.goalTypes.${goalType}`)}
+    <View style={{ gap: 16 }}>
+      {/* Hero */}
+      <View
+        style={{
+          borderRadius: 24,
+          overflow: 'hidden',
+          height: 200,
+          backgroundColor: theme.colors.background.card,
+        }}
+      >
+        <Image
+          source={
+            selectedExercise?.imageUrl?.trim()
+              ? { uri: selectedExercise.imageUrl }
+              : FALLBACK_EXERCISE_IMAGE
+          }
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.85)']}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              alignSelf: 'flex-start',
+              backgroundColor: theme.colors.accent.primary20,
+              paddingHorizontal: 12,
+              paddingVertical: 4,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: theme.colors.accent.primary,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.accent.primary,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}
+            >
+              {t('exerciseGoals.creation.reviewSummary')}
             </Text>
           </View>
-          {selectedExercise ? (
-            <View className="flex-row justify-between">
-              <Text className="text-text-secondary">Exercise</Text>
-              <Text className="font-bold text-text-primary">{selectedExercise.name}</Text>
-            </View>
-          ) : null}
-          {goalType === '1rm' ? (
-            <View className="flex-row justify-between">
-              <Text className="text-text-secondary">Target</Text>
-              <Text className="font-bold text-text-primary">
-                {targetWeightDisplay} {t(weightUnitKey)}
-              </Text>
-            </View>
-          ) : null}
-          {goalType === 'consistency' ? (
-            <View className="flex-row justify-between">
-              <Text className="text-text-secondary">Frequency</Text>
-              <Text className="font-bold text-text-primary">{sessionsPerWeek}x / week</Text>
-            </View>
-          ) : null}
-          <View className="flex-row justify-between">
-            <Text className="text-text-secondary">Target Date</Text>
-            <Text className="font-bold text-text-primary">
-              {targetDate
-                ? targetDate.toLocaleDateString(locale, {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                : 'Not set'}
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.primary,
+              marginTop: 8,
+            }}
+          >
+            {t('exerciseGoals.creation.confirmTitle')}
+          </Text>
+        </View>
+      </View>
+
+      {/* Exercise Card */}
+      <View
+        style={{
+          borderRadius: 20,
+          backgroundColor: theme.colors.background.card,
+          padding: 20,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}
+            >
+              {t('exerciseGoals.creation.exerciseLabel')}
+            </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xl,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.primary,
+                marginTop: 4,
+              }}
+              numberOfLines={1}
+            >
+              {selectedExercise?.name || '-'}
+            </Text>
+          </View>
+          <View
+            style={{
+              height: 48,
+              width: 48,
+              borderRadius: 12,
+              backgroundColor: theme.colors.background.secondaryDark,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Dumbbell size={24} color={theme.colors.accent.primary} />
+          </View>
+        </View>
+      </View>
+
+      {/* Type + Target Row */}
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View
+          style={{
+            flex: 1,
+            borderRadius: 20,
+            backgroundColor: theme.colors.background.card,
+            padding: 16,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
+            {t('exerciseGoals.creation.typeLabel')}
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.lg,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.primary,
+              marginTop: 4,
+            }}
+          >
+            {t(`exerciseGoals.goalTypes.${goalType}`)}
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            borderRadius: 20,
+            backgroundColor: theme.colors.background.card,
+            padding: 16,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
+            {t('exerciseGoals.creation.targetLabel')}
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 4 }}>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xl,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.accent.primary,
+              }}
+            >
+              {goalType === '1rm' ? targetWeightDisplay : sessionsPerWeek}
+            </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.accent.primary,
+                marginLeft: 4,
+              }}
+            >
+              {goalType === '1rm' ? t(weightUnitKey) : t('exerciseGoals.creation.perWeek')}
             </Text>
           </View>
         </View>
       </View>
+
+      {/* Target Date */}
+      <View
+        style={{
+          borderRadius: 20,
+          backgroundColor: theme.colors.background.card,
+          padding: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 16,
+        }}
+      >
+        <View
+          style={{
+            height: 48,
+            width: 48,
+            borderRadius: 12,
+            backgroundColor: theme.colors.background.secondaryDark,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Calendar size={24} color={theme.colors.text.secondary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.secondary,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
+            {t('exerciseGoals.creation.targetDateShort')}
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.lg,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.text.primary,
+              marginTop: 2,
+            }}
+          >
+            {targetDate
+              ? targetDate.toLocaleDateString(locale, {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : t('exerciseGoals.creation.notSet')}
+          </Text>
+        </View>
+      </View>
+
+      {/* Projection info (optional extra) */}
+      {projection?.projectedWeeks ? (
+        <View
+          style={{
+            borderRadius: 20,
+            backgroundColor: theme.colors.accent.primary10,
+            padding: 16,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xs,
+              fontWeight: theme.typography.fontWeight.bold,
+              color: theme.colors.accent.primary,
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
+            {t('exerciseGoals.creation.projectionPreview', {
+              weeks: Math.ceil(projection.projectedWeeks),
+              date: projection.projectedDate?.toLocaleDateString(locale, {
+                month: 'short',
+                year: 'numeric',
+              }),
+            })}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 
-  const footer =
-    step === 'type' ? null : (
+  const footer = (() => {
+    if (step === 'type') {return null;}
+    if (step === 'summary') {
+      return (
+        <View style={{ width: '100%', gap: 12 }}>
+          <Button
+            label={t('exerciseGoals.creation.save')}
+            variant="gradientCta"
+            size="md"
+            width="full"
+            onPress={handleSave}
+          />
+          <Button
+            label={t('common.back')}
+            variant="outline"
+            size="md"
+            width="full"
+            onPress={handleBack}
+          />
+        </View>
+      );
+    }
+    return (
       <View className="flex-row gap-3">
         <Button
           label={t('common.back')}
@@ -619,14 +881,15 @@ export default function ExerciseGoalCreationModal({
           onPress={handleBack}
         />
         <Button
-          label={step === 'summary' ? t('exerciseGoals.creation.save') : t('common.next')}
+          label={t('common.next')}
           variant="gradientCta"
           width="flex-2"
           disabled={step === 'exercise' ? !selectedExercise : false}
-          onPress={step === 'summary' ? handleSave : handleNext}
+          onPress={handleNext}
         />
       </View>
     );
+  })();
 
   return (
     <FullScreenModal

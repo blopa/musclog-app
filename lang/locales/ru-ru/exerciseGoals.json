@@ -36,7 +36,15 @@
       "projectionSlower": "Вы опережаете график на {{weeks}} недель.",
       "summaryTitle": "Сводка цели",
       "realisticNudge": "Эта цель кажется реалистичной для вашего текущего уровня.",
-      "ambitiousNudge": "Это амбициозная цель! До неё может потребоваться некоторое время."
+      "ambitiousNudge": "Это амбициозная цель! До неё может потребоваться некоторое время.",
+      "reviewSummary": "Обзор",
+      "confirmTitle": "Подтвердите новую цель",
+      "exerciseLabel": "Упражнение",
+      "typeLabel": "Тип",
+      "targetLabel": "Цель",
+      "notSet": "Не задана",
+      "perWeek": "/ неделя",
+      "targetDateShort": "Целевая дата"
     },
     "card": {
       "target": "Цель",

@@ -36,7 +36,15 @@
       "projectionSlower": "Você está {{weeks}} semanas à frente do cronograma.",
       "summaryTitle": "Resumo da Meta",
       "realisticNudge": "Essa meta parece realista para seu nível atual.",
-      "ambitiousNudge": "Essa é uma meta ambiciosa! Pode levar algum tempo para alcançá-la."
+      "ambitiousNudge": "Essa é uma meta ambiciosa! Pode levar algum tempo para alcançá-la.",
+      "reviewSummary": "Resumo da Revisão",
+      "confirmTitle": "Confirme Sua Nova Meta",
+      "exerciseLabel": "Exercício",
+      "typeLabel": "Tipo",
+      "targetLabel": "Meta",
+      "notSet": "Não definida",
+      "perWeek": "/ semana",
+      "targetDateShort": "Data Meta"
     },
     "card": {
       "target": "Meta",

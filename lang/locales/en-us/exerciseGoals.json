@@ -36,7 +36,15 @@
       "projectionSlower": "You're ahead of schedule by {{weeks}} weeks.",
       "summaryTitle": "Goal Summary",
       "realisticNudge": "This target seems realistic for your current level.",
-      "ambitiousNudge": "That's an ambitious goal! It might take some time to get there."
+      "ambitiousNudge": "That's an ambitious goal! It might take some time to get there.",
+      "reviewSummary": "Review Summary",
+      "confirmTitle": "Confirm Your New Goal",
+      "exerciseLabel": "Exercise",
+      "typeLabel": "Type",
+      "targetLabel": "Target",
+      "notSet": "Not set",
+      "perWeek": "/ week",
+      "targetDateShort": "Target Date"
     },
     "card": {
       "target": "Target",
