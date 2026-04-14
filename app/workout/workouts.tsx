@@ -1,9 +1,9 @@
 import { useFocusEffect } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Dumbbell, Plus, Repeat, Search, WifiOff, X } from 'lucide-react-native';
+import { Dumbbell, Plus, Repeat, Search, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -81,7 +81,6 @@ export default function WorkoutsScreen() {
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);
   const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
     useState(false);
@@ -289,67 +288,35 @@ export default function WorkoutsScreen() {
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
-              {!isSearchActive ? (
-                <GradientText
-                  colors={theme.colors.gradients.workoutsTitle}
-                  style={{
-                    fontSize: theme.typography.fontSize['4xl'],
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
-                >
-                  {t('workouts.title')}
-                </GradientText>
-              ) : (
-                <View className="mr-4 flex-1">
-                  <TextInput
-                    label=""
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    placeholder={t('workouts.searchPlaceholder')}
-                    icon={
-                      searchQuery ? (
-                        <Pressable
-                          onPress={() => {
-                            setSearchQuery('');
-                          }}
-                        >
-                          <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                        </Pressable>
-                      ) : (
-                        <Search size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                      )
-                    }
-                    onFocus={() => setIsSearchActive(true)}
-                  />
-                </View>
-              )}
-              <View className="ml-4 flex-row gap-4">
-                {isSearchActive ? (
-                  <Pressable
-                    className="rounded-lg p-2"
-                    onPress={() => {
-                      setIsSearchActive(false);
-                      setSearchQuery('');
-                    }}
-                  >
-                    <X size={theme.iconSize.md} color={theme.colors.text.primary} />
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    className="rounded-lg p-2"
-                    onPress={() => {
-                      setIsSearchActive(true);
-                    }}
-                  >
-                    <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
-                  </Pressable>
-                )}
-              </View>
+              <GradientText
+                colors={theme.colors.gradients.workoutsTitle}
+                style={{
+                  fontSize: theme.typography.fontSize['4xl'],
+                  fontWeight: theme.typography.fontWeight.bold,
+                }}
+              >
+                {t('workouts.title')}
+              </GradientText>
             </View>
             {/* Add spacing below header */}
             <View style={{ height: theme.spacing.gap.lg }} />
             {/* Filter Tabs */}
-            <FilterTabs tabs={FILTER_TABS} activeTab={activeFilter} onTabChange={setActiveFilter} />
+            <FilterTabs
+              tabs={FILTER_TABS}
+              activeTab={activeFilter}
+              onTabChange={setActiveFilter}
+              showContainer={false}
+            />
+            {/* Search Input */}
+            <View className="mt-3">
+              <TextInput
+                label=""
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={t('workouts.searchPlaceholder')}
+                icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+              />
+            </View>
           </View>
 
           {/* Workouts List */}
