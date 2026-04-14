@@ -54,9 +54,13 @@ export default class MealFood extends Model {
   // Get the actual gram weight for this meal food entry
   async getGramWeight(): Promise<number> {
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        return this.amount * (portion.gramWeight ?? 0);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          return this.amount * (portion.gramWeight ?? 0);
+        }
+      } catch {
+        // TODO: send error to sentry
       }
     }
 
@@ -72,7 +76,19 @@ export default class MealFood extends Model {
     fat: number;
     fiber: number;
   }> {
-    const food = await this.food;
+    let food: Food | null = null;
+    try {
+      food = await this.food;
+    } catch {
+      // Food missing — return zeroes
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+    }
 
     if (!food) {
       return {
@@ -85,12 +101,16 @@ export default class MealFood extends Model {
     }
 
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        // Use portion-based calculation
-        // amount = number of portions
-        const totalGrams = this.amount * (portion.gramWeight ?? 0);
-        return food.getNutrientsForAmount(totalGrams);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          // Use portion-based calculation
+          // amount = number of portions
+          const totalGrams = this.amount * (portion.gramWeight ?? 0);
+          return food.getNutrientsForAmount(totalGrams);
+        }
+      } catch {
+        // TODO: send error to sentry
       }
     }
 

@@ -1090,8 +1090,11 @@ export class NutritionService {
             fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
         } catch {
-          // Food not found — fall back to LLM values
-          return ingredient;
+          // TODO: send error to sentry
+          // Food not found — fall back to LLM values and strip the invalid foodId
+          // so callers create a custom food instead of linking a missing record.
+          const { foodId: _, ...rest } = ingredient;
+          return rest as T;
         }
       })
     );

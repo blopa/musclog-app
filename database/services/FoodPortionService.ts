@@ -405,8 +405,19 @@ export class FoodPortionService {
       Q.where('deleted_at', Q.eq(null))
     ).fetch();
 
-    // Extract the FoodPortion objects from each junction entry
-    return Promise.all(foodFoodPortions.map((ffp) => ffp.foodPortion));
+    // Extract the FoodPortion objects from each junction entry,
+    // filtering out any orphans where the portion no longer exists.
+    const portions = await Promise.all(
+      foodFoodPortions.map(async (ffp) => {
+        try {
+          return await ffp.foodPortion;
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    return portions.filter((p): p is FoodPortion => p !== null);
   }
 
   /**

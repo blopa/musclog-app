@@ -5,6 +5,7 @@ import { database } from '@/database/database-instance';
 import Food, { type MicrosData } from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
+import MealFood from '@/database/models/MealFood';
 import { ProductV3 } from '@/types/openFoodFacts';
 import { getProductName } from '@/utils/openFoodFactsMapper';
 
@@ -459,11 +460,29 @@ export class FoodService {
 
   /**
    * Delete food (soft delete)
+   * Also soft-deletes all associated meal_foods and food_food_portions.
    */
   static async deleteFood(id: string): Promise<void> {
-    const food = await database.get<Food>('foods').find(id);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
-    await food.markAsDeleted();
+    return await database.write(async (writer) => {
+      const food = await database.get<Food>('foods').find(id);
+      await writer.callWriter(() => food.markAsDeleted());
+
+      const mealFoods = await database
+        .get<MealFood>('meal_foods')
+        .query(Q.where('food_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      for (const mealFood of mealFoods) {
+        await writer.callWriter(() => mealFood.markAsDeleted());
+      }
+
+      const foodFoodPortions = await database
+        .get<FoodFoodPortion>('food_food_portions')
+        .query(Q.where('food_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      for (const ffp of foodFoodPortions) {
+        await writer.callWriter(() => ffp.markAsDeleted());
+      }
+    });
   }
 
   /**

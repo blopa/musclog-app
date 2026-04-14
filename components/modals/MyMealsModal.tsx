@@ -11,6 +11,8 @@ import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
 import { FoodService, MealService, NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -294,7 +296,12 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
           normalized.map(async (ingredient) => {
             // Reuse the existing food when the LLM matched one; create custom otherwise
             if (ingredient.foodId) {
-              return { foodId: ingredient.foodId, amount: ingredient.grams };
+              try {
+                await database.get<Food>('foods').find(ingredient.foodId);
+                return { foodId: ingredient.foodId, amount: ingredient.grams };
+              } catch {
+                // TODO: send error to sentry
+              }
             }
 
             const food = await FoodService.createCustomFood(ingredient.name, {

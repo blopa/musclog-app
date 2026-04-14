@@ -146,9 +146,13 @@ export default class NutritionLog extends Model {
   // Get the actual gram weight for this nutrition log entry
   async getGramWeight(): Promise<number> {
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        return this.amount * (portion.gramWeight ?? 0);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          return this.amount * (portion.gramWeight ?? 0);
+        }
+      } catch {
+        // TODO: send error to sentry
       }
     }
 
