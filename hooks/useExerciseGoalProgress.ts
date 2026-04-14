@@ -5,7 +5,12 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { ExerciseGoalService, UserMetricService, UserService, WorkoutAnalytics } from '@/database/services';
+import {
+  ExerciseGoalService,
+  UserMetricService,
+  UserService,
+  WorkoutAnalytics,
+} from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
@@ -29,7 +34,9 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
   const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
   const [recentAverage1RM, setRecentAverage1RM] = useState<number | null>(null);
-  const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(() => goal.baseline1rm);
+  const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(
+    () => goal.baseline1rm
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   // Sync local baseline state when the goal instance changes (e.g. modal opens)
@@ -43,23 +50,24 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     try {
       if (goal.goalType === '1rm' && goal.exerciseId) {
         const goalCreatedAt = goal.createdAt.getTime();
-        const [filteredData, performed1RMDate, recentAverage, bw, exercise, user] = await Promise.all([
-          WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
-            startDate: goalCreatedAt,
-            endDate: Date.now(),
-          }),
-          goal.targetWeight != null
-            ? WorkoutAnalytics.getPerformed1RMDate(
-                goal.exerciseId,
-                goal.targetWeight,
-                goalCreatedAt
-              )
-            : Promise.resolve(null),
-          WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId),
-          UserMetricService.getUserBodyWeightKgForVolume(),
-          database.get<Exercise>('exercises').find(goal.exerciseId),
-          UserService.getCurrentUser(),
-        ]);
+        const [filteredData, performed1RMDate, recentAverage, bw, exercise, user] =
+          await Promise.all([
+            WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
+              startDate: goalCreatedAt,
+              endDate: Date.now(),
+            }),
+            goal.targetWeight != null
+              ? WorkoutAnalytics.getPerformed1RMDate(
+                  goal.exerciseId,
+                  goal.targetWeight,
+                  goalCreatedAt
+                )
+              : Promise.resolve(null),
+            WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId),
+            UserMetricService.getUserBodyWeightKgForVolume(),
+            database.get<Exercise>('exercises').find(goal.exerciseId),
+            UserService.getCurrentUser(),
+          ]);
 
         setDataPoints(filteredData);
         setHasPerformed1RMDate(performed1RMDate);

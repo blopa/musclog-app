@@ -117,10 +117,13 @@ export default function ExerciseGoalCreationModal({
   const [goalType, setGoalType] = useState<ExerciseGoalType>('1rm');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseData | null>(null);
   const [targetWeightDisplay, setTargetWeightDisplay] = useState(
+    // TODO: use the loadMultiplier from the exercise to calculate this, we have a code for it somewhere already
     units === 'imperial' ? '225' : '100'
   );
   const [sessionsPerWeek, setSessionsPerWeek] = useState(3);
-  const [targetDate, setTargetDate] = useState<Date | null>(null);
+  // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+  // to determine a realistic end date for the user to be able to reach the goal 1RM
+  const [targetDate, setTargetDate] = useState<Date | null>(addMonths(new Date(), 3));
   const [notes, setNotes] = useState('');
 
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
@@ -155,9 +158,12 @@ export default function ExerciseGoalCreationModal({
       setStep('type');
       setGoalType('1rm');
       setSelectedExercise(null);
+      // TODO: use the loadMultiplier from the exercise to calculate this, we have a code for it somewhere already
       setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
       setSessionsPerWeek(3);
-      setTargetDate(null);
+      // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+      // to determine a realistic end date for the user to be able to reach the goal 1RM
+      setTargetDate(addMonths(new Date(), 3));
       setNotes('');
       setExerciseDataPoints([]);
       setCurrent1RM(null);
@@ -170,7 +176,9 @@ export default function ExerciseGoalCreationModal({
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
       setIsLoadingHistory(true);
-      setTargetDate(null);
+      // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+      // to determine a realistic end date for the user to be able to reach the goal 1RM
+      setTargetDate(addMonths(new Date(), 3));
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
         WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
@@ -188,13 +196,17 @@ export default function ExerciseGoalCreationModal({
 
           if (recent1RM != null) {
             nextCurrent1RM = recent1RM;
-            nextTargetDisplay = (Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2).toString();
+            nextTargetDisplay = (
+              Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2
+            ).toString();
             setCurrent1RM(recent1RM);
             setTargetWeightDisplay(nextTargetDisplay);
           } else if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
             nextCurrent1RM = latest1RM;
-            nextTargetDisplay = (Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2).toString();
+            nextTargetDisplay = (
+              Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2
+            ).toString();
             setCurrent1RM(latest1RM);
             setTargetWeightDisplay(nextTargetDisplay);
           } else {
@@ -213,7 +225,15 @@ export default function ExerciseGoalCreationModal({
             });
             if (proj.projectedDate) {
               setTargetDate(proj.projectedDate);
+            } else {
+              // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+              // to determine a realistic end date for the user to be able to reach the goal 1RM
+              setTargetDate(addMonths(new Date(), 3));
             }
+          } else {
+            // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+            // to determine a realistic end date for the user to be able to reach the goal 1RM
+            setTargetDate(addMonths(new Date(), 3));
           }
         })
         .finally(() => setIsLoadingHistory(false));
@@ -571,6 +591,8 @@ export default function ExerciseGoalCreationModal({
 
       <DatePickerInput
         label={t('exerciseGoals.creation.targetDate')}
+        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onPress={() => setDatePickerVisible(true)}
         unset={!targetDate}
@@ -831,6 +853,8 @@ export default function ExerciseGoalCreationModal({
       {/* Target Date */}
       <DatePickerInput
         label={t('exerciseGoals.creation.targetDateShort')}
+        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onPress={() => setDatePickerVisible(true)}
         unset={!targetDate}
@@ -920,6 +944,8 @@ export default function ExerciseGoalCreationModal({
       <DatePickerModal
         visible={datePickerVisible}
         onClose={() => setDatePickerVisible(false)}
+        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onDateSelect={(date) => {
           setTargetDate(date);

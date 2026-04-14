@@ -582,7 +582,9 @@ export class WorkoutAnalytics {
     const setsByWorkout = new Map<string, typeof sets>();
     for (const set of sets) {
       const workoutId = logExerciseMap.get(set.logExerciseId) ?? '';
-      if (!workoutId) continue;
+      if (!workoutId) {
+        continue;
+      }
       if (!setsByWorkout.has(workoutId)) {
         setsByWorkout.set(workoutId, []);
       }
@@ -592,8 +594,12 @@ export class WorkoutAnalytics {
     const firstSet1RMs: number[] = [];
     for (const workoutSets of setsByWorkout.values()) {
       const firstSet = workoutSets.reduce((earliest, current) => {
-        if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) return current;
-        if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) return earliest;
+        if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) {
+          return current;
+        }
+        if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) {
+          return earliest;
+        }
         return (current.createdAt ?? 0) < (earliest.createdAt ?? 0) ? current : earliest;
       });
 

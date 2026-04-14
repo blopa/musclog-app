@@ -125,7 +125,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
       weeklyProgressionRate: 0,
       projectedWeeks: null,
       projectedDate: null,
-      progressPercent: totalGap > 0 ? Math.min(100, Math.max(0, (effectiveDelta / totalGap) * 100)) : 0,
+      progressPercent:
+        totalGap > 0 ? Math.min(100, Math.max(0, (effectiveDelta / totalGap) * 100)) : 0,
       deltaFromBaseline: effectiveDelta,
       status: 'no_history',
       achievedDate: null,
@@ -135,7 +136,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   }
 
   // Get current estimated 1RM (latest data point or override)
-  const currentEstimated1RM = inputs.currentEstimated1RM ?? dataPoints[dataPoints.length - 1].estimated1RM;
+  const currentEstimated1RM =
+    inputs.currentEstimated1RM ?? dataPoints[dataPoints.length - 1].estimated1RM;
   const deltaFromBaseline = currentEstimated1RM - baseline1rm;
 
   // Already achieved or capable?

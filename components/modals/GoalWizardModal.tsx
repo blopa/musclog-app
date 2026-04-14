@@ -483,6 +483,8 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   };
 
   const renderTargetDateStep = () => {
+    // TODO: instead of simply adding 3 months to the current date, use a smart calculation
+    // to determine a realistic end date for the user to be able to reach the goal body weight
     const displayDate = targetDate ?? addMonths(new Date(), 3);
 
     return (
