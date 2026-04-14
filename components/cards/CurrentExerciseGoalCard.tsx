@@ -60,21 +60,7 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
   ];
 
   const render1RMGoal = () => {
-    if (!projection) {
-      return null;
-    }
-
-    const currentWeightDisplay = formatDisplayWeightKg(
-      locale,
-      units,
-      projection.currentEstimated1RM
-    );
     const targetWeightDisplay = formatDisplayWeightKg(locale, units, goal.targetWeight ?? 0);
-    const deltaDisplay = formatDisplayWeightKg(
-      locale,
-      units,
-      Math.abs(projection.deltaFromBaseline)
-    );
 
     return (
       <View className="p-4">
@@ -98,79 +84,98 @@ export function CurrentExerciseGoalCard({ goal, onEdit, onDelete }: CurrentExerc
           <MenuButton onPress={() => setMenuVisible(true)} />
         </View>
 
-        <View className="mb-4">
-          <View className="mb-1 flex-row justify-between">
-            <Text className="text-sm text-text-secondary">
-              {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
+        {!projection ? (
+          <>
+            <View className="mb-4">
+              <Text className="text-sm text-text-secondary">
+                {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
+              </Text>
+            </View>
+            <Text className="text-center text-sm italic text-text-tertiary">
+              {t('exerciseGoals.card.noHistory')}
             </Text>
-            <Text className="text-sm font-bold text-text-primary">
-              {projection.progressPercent}%
-            </Text>
-          </View>
-          <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
-            <View
-              className="h-full bg-accent-primary"
-              style={{ width: `${projection.progressPercent}%` }}
-            />
-          </View>
-        </View>
+          </>
+        ) : (
+          <>
+            <View className="mb-4">
+              <View className="mb-1 flex-row justify-between">
+                <Text className="text-sm text-text-secondary">
+                  {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
+                </Text>
+                <Text className="text-sm font-bold text-text-primary">
+                  {projection.progressPercent}%
+                </Text>
+              </View>
+              <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
+                <View
+                  className="h-full bg-accent-primary"
+                  style={{ width: `${projection.progressPercent}%` }}
+                />
+              </View>
+            </View>
 
-        <View className="mb-4 flex-row justify-between">
-          <View>
-            <Text className="text-xs text-text-secondary">
-              {t('exerciseGoals.card.currentEstimate')}
-            </Text>
-            <Text className="text-base font-bold text-text-primary">
-              {currentWeightDisplay} {t(weightUnitKey)}
-            </Text>
-          </View>
-          <View className="items-end">
-            <Text className="text-xs text-text-secondary">
-              {t('exerciseGoals.card.deltaSinceStart', {
-                value: deltaDisplay,
-                unit: t(weightUnitKey),
-              })}
-            </Text>
-          </View>
-        </View>
+            <View className="mb-4 flex-row justify-between">
+              <View>
+                <Text className="text-xs text-text-secondary">
+                  {t('exerciseGoals.card.currentEstimate')}
+                </Text>
+                <Text className="text-base font-bold text-text-primary">
+                  {formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)} {t(weightUnitKey)}
+                </Text>
+              </View>
+              <View className="items-end">
+                <Text className="text-xs text-text-secondary">
+                  {t('exerciseGoals.card.deltaSinceStart', {
+                    value: formatDisplayWeightKg(
+                      locale,
+                      units,
+                      Math.abs(projection.deltaFromBaseline)
+                    ),
+                    unit: t(weightUnitKey),
+                  })}
+                </Text>
+              </View>
+            </View>
 
-        {projection.status === 'achieved' ? (
-          <View className="bg-status-success10 rounded-lg p-3">
-            <Text className="text-status-success text-center font-bold">
-              {t('exerciseGoals.card.achieved')}
-            </Text>
-          </View>
-        ) : projection.status === 'stalling' ? (
-          <View className="bg-status-warning10 rounded-lg p-3">
-            <Text className="text-status-warning text-center text-sm font-medium">
-              {t('exerciseGoals.card.stalling')}
-            </Text>
-          </View>
-        ) : projection.status === 'declining' ? (
-          <View className="bg-status-error10 rounded-lg p-3">
-            <Text className="text-status-error text-center text-sm font-medium">
-              {t('exerciseGoals.card.declining')}
-            </Text>
-          </View>
-        ) : projection.status === 'insufficient_data' ? (
-          <Text className="text-center text-sm italic text-text-tertiary">
-            {t('exerciseGoals.card.insufficientData')}
-          </Text>
-        ) : projection.status === 'no_history' ? (
-          <Text className="text-center text-sm italic text-text-tertiary">
-            {t('exerciseGoals.card.noHistory')}
-          </Text>
-        ) : projection.projectedWeeks && projection.projectedDate ? (
-          <Text className="text-sm text-text-secondary">
-            {t('exerciseGoals.card.projectedDate', {
-              weeks: Math.ceil(projection.projectedWeeks),
-              date: projection.projectedDate.toLocaleDateString(locale, {
-                month: 'short',
-                year: 'numeric',
-              }),
-            })}
-          </Text>
-        ) : null}
+            {projection.status === 'achieved' ? (
+              <View className="bg-status-success10 rounded-lg p-3">
+                <Text className="text-status-success text-center font-bold">
+                  {t('exerciseGoals.card.achieved')}
+                </Text>
+              </View>
+            ) : projection.status === 'stalling' ? (
+              <View className="bg-status-warning10 rounded-lg p-3">
+                <Text className="text-status-warning text-center text-sm font-medium">
+                  {t('exerciseGoals.card.stalling')}
+                </Text>
+              </View>
+            ) : projection.status === 'declining' ? (
+              <View className="bg-status-error10 rounded-lg p-3">
+                <Text className="text-status-error text-center text-sm font-medium">
+                  {t('exerciseGoals.card.declining')}
+                </Text>
+              </View>
+            ) : projection.status === 'insufficient_data' ? (
+              <Text className="text-center text-sm italic text-text-tertiary">
+                {t('exerciseGoals.card.insufficientData')}
+              </Text>
+            ) : projection.status === 'no_history' ? (
+              <Text className="text-center text-sm italic text-text-tertiary">
+                {t('exerciseGoals.card.noHistory')}
+              </Text>
+            ) : projection.projectedWeeks && projection.projectedDate ? (
+              <Text className="text-sm text-text-secondary">
+                {t('exerciseGoals.card.projectedDate', {
+                  weeks: Math.ceil(projection.projectedWeeks),
+                  date: projection.projectedDate.toLocaleDateString(locale, {
+                    month: 'short',
+                    year: 'numeric',
+                  }),
+                })}
+              </Text>
+            ) : null}
+          </>
+        )}
       </View>
     );
   };
