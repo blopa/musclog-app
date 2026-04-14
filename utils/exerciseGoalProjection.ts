@@ -7,6 +7,7 @@ export interface ProjectionInputs {
   bodyWeight?: number; // Optional but highly recommended for realism nudges
   loadMultiplier?: number; // From Exercise model, ensures i18n independence
   userGender?: 'male' | 'female' | 'other';
+  hasPerformed1RMDate?: number | null; // Date of first actual 1RM set at/above target logged
 }
 
 export interface ProjectionResult {
@@ -16,7 +17,15 @@ export interface ProjectionResult {
   projectedDate: Date | null;
   progressPercent: number; // 0–100, clamped, baseline-anchored
   deltaFromBaseline: number; // kg gained since goal started
-  status: 'on_track' | 'stalling' | 'declining' | 'achieved' | 'insufficient_data' | 'no_history';
+  status:
+    | 'on_track'
+    | 'stalling'
+    | 'declining'
+    | 'achieved'
+    | 'ready_to_achieve'
+    | 'insufficient_data'
+    | 'no_history';
+  achievedDate: number | null;
   dataPointCount: number;
   isRealistic: boolean;
 }
@@ -81,6 +90,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     bodyWeight,
     loadMultiplier = 1.0,
     userGender = 'male',
+    hasPerformed1RMDate = null,
   } = inputs;
 
   // Scientific Refinement: Filter out high-rep sets (reps > 10) for 1RM prediction.
@@ -107,7 +117,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   const currentEstimated1RM = dataPoints[dataPoints.length - 1].estimated1RM;
   const deltaFromBaseline = currentEstimated1RM - baseline1rm;
 
-  // Already achieved?
+  // Already achieved or capable?
   if (currentEstimated1RM >= targetWeight) {
     return {
       currentEstimated1RM,
@@ -116,7 +126,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
       projectedDate: new Date(),
       progressPercent: 100,
       deltaFromBaseline,
-      status: 'achieved',
+      status: hasPerformed1RMDate != null ? 'achieved' : 'ready_to_achieve',
+      achievedDate: hasPerformed1RMDate ?? null,
       dataPointCount: dataPoints.length,
       isRealistic: true,
     };

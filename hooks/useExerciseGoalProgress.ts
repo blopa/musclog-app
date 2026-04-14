@@ -24,6 +24,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [bodyWeight, setBodyWeight] = useState(0);
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
+  const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -32,17 +33,25 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     try {
       if (goal.goalType === '1rm' && goal.exerciseId) {
         const goalCreatedAt = goal.createdAt.getTime();
-        const [filteredData, bw, exercise, user] = await Promise.all([
+        const [filteredData, performed1RMDate, bw, exercise, user] = await Promise.all([
           WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
             startDate: goalCreatedAt,
             endDate: Date.now(),
           }),
+          goal.targetWeight != null
+            ? WorkoutAnalytics.getPerformed1RMDate(
+                goal.exerciseId,
+                goal.targetWeight,
+                goalCreatedAt
+              )
+            : Promise.resolve(null),
           UserMetricService.getUserBodyWeightKgForVolume(),
           database.get<Exercise>('exercises').find(goal.exerciseId),
           UserService.getCurrentUser(),
         ]);
 
         setDataPoints(filteredData);
+        setHasPerformed1RMDate(performed1RMDate);
         setBodyWeight(bw);
         setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
         setUserGender(user?.gender ?? 'male');
@@ -62,7 +71,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     } finally {
       setIsLoading(false);
     }
-  }, [goal.exerciseId, goal.goalType, goal.createdAt]);
+  }, [goal.exerciseId, goal.goalType, goal.createdAt, goal.targetWeight]);
 
   // Initial load
   useEffect(() => {
@@ -140,6 +149,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       bodyWeight,
       loadMultiplier,
       userGender,
+      hasPerformed1RMDate,
     });
   }, [
     dataPoints,
@@ -149,6 +159,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     bodyWeight,
     loadMultiplier,
     userGender,
+    hasPerformed1RMDate,
   ]);
 
   return {

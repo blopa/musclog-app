@@ -54,12 +54,13 @@
       "averageFrequency": "Logging every {{days}} days on average",
       "stalling": "No recent progress detected. Consider adjusting your training.",
       "declining": "Your estimated 1RM has trended down recently.",
-      "achieved": "You've reached your goal! Set a new one?",
+      "achieved": "You hit your goal on {{date}}!",
       "insufficientData": "Log at least 3 sessions to see a projection.",
       "noHistory": "No sessions logged yet. Start tracking to see progress.",
       "daysLeft": "{{days}} days left",
       "overdue": "Target date passed",
       "sessionsThisWeek": "{{count}} of {{target}} sessions this week",
+      "readyToAchieve": "You have the strength to hit this! Go for the 1RM next workout.",
       "congratulations": "Congratulations!"
     },
     "detail": {

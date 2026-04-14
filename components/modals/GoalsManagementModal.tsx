@@ -10,7 +10,6 @@ import NutritionGoal from '@/database/models/NutritionGoal';
 import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
-import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import {
@@ -39,6 +38,8 @@ import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 interface GoalsManagementModalProps {
   visible: boolean;
   onClose: () => void;
+  // TODO: implement this prop - open the modal to a specific tab
+  tab: 'nutrition' | 'fitness';
 }
 
 function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
@@ -57,8 +58,7 @@ function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
   };
 }
 
-export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
-  const theme = useTheme();
+export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
   const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);

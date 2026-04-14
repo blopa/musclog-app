@@ -158,19 +158,45 @@ export function CurrentExerciseGoalCard({
 
             {projection.status === 'achieved' ? (
               <View className="bg-status-success10 rounded-lg p-3">
-                <Text className="text-status-success text-center font-bold">
-                  {t('exerciseGoals.card.achieved')}
+                <Text
+                  className="text-center font-bold"
+                  style={{ color: theme.colors.status.success }}
+                >
+                  {projection.achievedDate
+                    ? t('exerciseGoals.card.achieved', {
+                        date: new Date(projection.achievedDate).toLocaleDateString(locale, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }),
+                      })
+                    : t('exerciseGoals.card.achieved')}
+                </Text>
+              </View>
+            ) : projection.status === 'ready_to_achieve' ? (
+              <View className="bg-accent-primary10 rounded-lg p-3">
+                <Text
+                  className="text-center text-sm font-medium"
+                  style={{ color: theme.colors.accent.primary }}
+                >
+                  {t('exerciseGoals.card.readyToAchieve')}
                 </Text>
               </View>
             ) : projection.status === 'stalling' ? (
               <View className="bg-status-warning10 rounded-lg p-3">
-                <Text className="text-status-warning text-center text-sm font-medium">
+                <Text
+                  className="text-center text-sm font-medium"
+                  style={{ color: theme.colors.status.warning }}
+                >
                   {t('exerciseGoals.card.stalling')}
                 </Text>
               </View>
             ) : projection.status === 'declining' ? (
               <View className="bg-status-error10 rounded-lg p-3">
-                <Text className="text-status-error text-center text-sm font-medium">
+                <Text
+                  className="text-center text-sm font-medium"
+                  style={{ color: theme.colors.status.error }}
+                >
                   {t('exerciseGoals.card.declining')}
                 </Text>
               </View>

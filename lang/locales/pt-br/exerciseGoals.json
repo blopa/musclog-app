@@ -54,12 +54,13 @@
       "averageFrequency": "Registrando a cada {{days}} dias em média",
       "stalling": "Nenhum progresso recente detectado. Considere ajustar seu treino.",
       "declining": "Seu 1RM estimado diminuiu recentemente.",
-      "achieved": "Você atingiu sua meta! Definir uma nova?",
+      "achieved": "Você atingiu essa meta em {{date}}!",
       "insufficientData": "Registre pelo menos 3 sessões para ver uma projeção.",
       "noHistory": "Nenhuma sessão registrada ainda. Comece a acompanhar para ver o progresso.",
       "daysLeft": "Faltam {{days}} dias",
       "overdue": "Data meta ultrapassada",
       "sessionsThisWeek": "{{count}} de {{target}} sessões esta semana",
+      "readyToAchieve": "Você tem força para bater essa meta! Vá pelo 1RM no próximo treino.",
       "congratulations": "Parabéns!"
     },
     "detail": {
