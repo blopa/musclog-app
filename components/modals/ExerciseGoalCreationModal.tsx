@@ -19,7 +19,11 @@ import { useExercises } from '@/hooks/useExercises';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
+import {
+  estimateConservativeTargetDate,
+  projectGoal,
+  type ProjectionResult,
+} from '@/utils/exerciseGoalProjection';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
@@ -121,9 +125,7 @@ export default function ExerciseGoalCreationModal({
     units === 'imperial' ? '225' : '100'
   );
   const [sessionsPerWeek, setSessionsPerWeek] = useState(3);
-  // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-  // to determine a realistic end date for the user to be able to reach the goal 1RM
-  const [targetDate, setTargetDate] = useState<Date | null>(addMonths(new Date(), 3));
+  const [targetDate, setTargetDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState('');
 
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
@@ -161,9 +163,7 @@ export default function ExerciseGoalCreationModal({
       // TODO: use the loadMultiplier from the exercise to calculate this, we have a code for it somewhere already
       setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
       setSessionsPerWeek(3);
-      // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-      // to determine a realistic end date for the user to be able to reach the goal 1RM
-      setTargetDate(addMonths(new Date(), 3));
+      setTargetDate(null);
       setNotes('');
       setExerciseDataPoints([]);
       setCurrent1RM(null);
@@ -176,9 +176,7 @@ export default function ExerciseGoalCreationModal({
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
       setIsLoadingHistory(true);
-      // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-      // to determine a realistic end date for the user to be able to reach the goal 1RM
-      setTargetDate(addMonths(new Date(), 3));
+      setTargetDate(null);
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
         WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
@@ -226,14 +224,18 @@ export default function ExerciseGoalCreationModal({
             if (proj.projectedDate) {
               setTargetDate(proj.projectedDate);
             } else {
-              // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-              // to determine a realistic end date for the user to be able to reach the goal 1RM
-              setTargetDate(addMonths(new Date(), 3));
+              setTargetDate(
+                estimateConservativeTargetDate(
+                  nextCurrent1RM,
+                  targetKg,
+                  bw,
+                  selectedExercise.loadMultiplier ?? 1.0,
+                  user?.gender ?? 'male'
+                )
+              );
             }
           } else {
-            // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-            // to determine a realistic end date for the user to be able to reach the goal 1RM
-            setTargetDate(addMonths(new Date(), 3));
+            setTargetDate(null);
           }
         })
         .finally(() => setIsLoadingHistory(false));
@@ -591,8 +593,6 @@ export default function ExerciseGoalCreationModal({
 
       <DatePickerInput
         label={t('exerciseGoals.creation.targetDate')}
-        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onPress={() => setDatePickerVisible(true)}
         unset={!targetDate}
@@ -853,8 +853,6 @@ export default function ExerciseGoalCreationModal({
       {/* Target Date */}
       <DatePickerInput
         label={t('exerciseGoals.creation.targetDateShort')}
-        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onPress={() => setDatePickerVisible(true)}
         unset={!targetDate}
@@ -944,8 +942,6 @@ export default function ExerciseGoalCreationModal({
       <DatePickerModal
         visible={datePickerVisible}
         onClose={() => setDatePickerVisible(false)}
-        // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-        // to determine a realistic end date for the user to be able to reach the goal 1RM
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onDateSelect={(date) => {
           setTargetDate(date);
