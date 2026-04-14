@@ -37,7 +37,7 @@ export function Migrations() {
     if (!isInsideWorkoutDomain) {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
-  }, [segments, isStaticExport]);
+  }, [segments]);
 
   // Backfill the exercise `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
@@ -50,7 +50,7 @@ export function Migrations() {
     ExerciseService.backfillExerciseSources().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseSources error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Backfill the food_portion `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
@@ -63,7 +63,7 @@ export function Migrations() {
     FoodPortionService.backfillPortionSources().catch((err) =>
       console.warn('[FoodPortionService] backfillPortionSources error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
@@ -103,7 +103,7 @@ export function Migrations() {
     ExerciseService.syncAppExercises()
       .then(() => ExerciseService.syncExerciseMultipliers())
       .catch((err) => console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err));
-  }, [isStaticExport]);
+  }, []);
 
   // Backfill order_index for existing app exercises on every boot.
   // Ensures app exercises appear in the same order as the JSON file.
@@ -115,7 +115,7 @@ export function Migrations() {
     ExerciseService.backfillExerciseOrderIndex().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Web fallback for the v7 migration: replace file:// exercise image URIs with
   // cloud URLs. LokiJS (web) silently ignores unsafeExecuteSql, so we run the
@@ -128,7 +128,7 @@ export function Migrations() {
     ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
       console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
   // Runs once per boot but exits immediately when there is nothing to do.
@@ -140,7 +140,7 @@ export function Migrations() {
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Encrypt any API keys that were stored as plaintext before this migration was introduced.
   // Idempotent: already-encrypted keys are detected and left untouched.
@@ -235,7 +235,7 @@ export function Migrations() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, [isStaticExport]);
+  }, []);
 
   return null;
 }

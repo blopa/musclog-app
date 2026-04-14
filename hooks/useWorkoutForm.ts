@@ -167,7 +167,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         });
       }
     },
-    [theme, units, showSnackbar, t]
+    [theme, units, t]
   );
 
   const handleSave = useCallback(async () => {

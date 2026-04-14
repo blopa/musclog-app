@@ -1994,17 +1994,20 @@ export function FoodMealDetailsModal({
     setEditMicroOpen(false);
     setIsEditPopUpVisible(true);
   }, [
+    productFromSearch,
+    editedOverrides?.barcode,
+    editedOverrides?.description,
+    food?.barcode,
+    food?.description,
+    localFood?.barcode,
+    barcode,
     getFoodMealName,
+    locale,
     nutritionalData.calories,
     nutritionalData.protein,
     nutritionalData.carbs,
     nutritionalData.fat,
-    barcode,
-    productFromSearch,
-    food,
-    localFood,
-    editedOverrides,
-    locale,
+    nutritionalData.fiber,
     effectiveMicrosPer100g,
   ]);
 
