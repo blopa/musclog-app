@@ -1,5 +1,4 @@
 import { Plus } from 'lucide-react-native';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -10,22 +9,14 @@ import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { useExerciseGoals } from '@/hooks/useExerciseGoals';
 import { useTheme } from '@/hooks/useTheme';
 
-import ExerciseGoalCreationModal from './ExerciseGoalCreationModal';
-import { FullScreenModal } from './FullScreenModal';
-
-interface ExerciseGoalsManagementModalProps {
+interface FitnessGoalsTabContentProps {
   visible: boolean;
-  onClose: () => void;
+  onNewGoal: () => void;
 }
 
-export default function ExerciseGoalsManagementModal({
-  visible,
-  onClose,
-}: ExerciseGoalsManagementModalProps) {
+export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabContentProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-
-  const [creationModalVisible, setCreationModalVisible] = useState(false);
 
   const { goals: activeGoals, isLoading: isLoadingActive } = useExerciseGoals({
     mode: 'active',
@@ -42,15 +33,6 @@ export default function ExerciseGoalsManagementModal({
     visible,
   });
 
-  const handleSaveGoal = async (data: any) => {
-    try {
-      await ExerciseGoalService.saveGoal(data);
-      setCreationModalVisible(false);
-    } catch (error) {
-      console.error('Error saving exercise goal:', error);
-    }
-  };
-
   const handleDeleteGoal = async (id: string) => {
     try {
       await ExerciseGoalService.deleteGoal(id);
@@ -60,19 +42,21 @@ export default function ExerciseGoalsManagementModal({
   };
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('exerciseGoals.title')}>
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <View className="flex-1 px-4 pb-32 pt-6">
         <View className="mb-6 flex-row items-center justify-between">
           <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
             {t('exerciseGoals.currentGoals')}
           </Text>
-          <Button
-            label={t('exerciseGoals.newGoal')}
-            variant="outline"
-            size="sm"
-            icon={Plus}
-            onPress={() => setCreationModalVisible(true)}
-          />
+          {activeGoals.length > 0 ? (
+            <Button
+              label={t('exerciseGoals.newGoal')}
+              variant="outline"
+              size="sm"
+              icon={Plus}
+              onPress={onNewGoal}
+            />
+          ) : null}
         </View>
 
         {activeGoals.length === 0 && !isLoadingActive ? (
@@ -80,6 +64,14 @@ export default function ExerciseGoalsManagementModal({
             <Text className="text-center text-sm text-text-secondary">
               {t('exerciseGoals.emptyState')}
             </Text>
+            <Button
+              label={t('exerciseGoals.newGoal')}
+              variant="outline"
+              size="sm"
+              icon={Plus}
+              className="mt-4"
+              onPress={onNewGoal}
+            />
           </View>
         ) : (
           <View className="mb-8">
@@ -115,13 +107,7 @@ export default function ExerciseGoalsManagementModal({
             ) : null}
           </View>
         ) : null}
-      </ScrollView>
-
-      <ExerciseGoalCreationModal
-        visible={creationModalVisible}
-        onClose={() => setCreationModalVisible(false)}
-        onSave={handleSaveGoal}
-      />
-    </FullScreenModal>
+      </View>
+    </ScrollView>
   );
 }
