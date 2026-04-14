@@ -10,6 +10,9 @@ type GoalOptionItemProps = {
   onPress: () => void;
   isRecommended?: boolean;
   recommendedText?: string;
+  isSelected?: boolean;
+  disabled?: boolean;
+  showChevron?: boolean;
 };
 
 export function GoalOptionItem({
@@ -19,20 +22,24 @@ export function GoalOptionItem({
   onPress,
   isRecommended = false,
   recommendedText,
+  isSelected = false,
+  disabled = false,
+  showChevron = true,
 }: GoalOptionItemProps) {
   const theme = useTheme();
+  const isActive = isRecommended || isSelected;
 
   return (
     <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+      onPress={disabled ? undefined : onPress}
+      style={({ pressed }) => ({ opacity: disabled ? 0.5 : pressed ? 0.85 : 1 })}
     >
       <View
         style={{
           borderRadius: 16,
-          borderWidth: isRecommended ? 1.5 : 1,
-          borderColor: isRecommended ? theme.colors.accent.primary : theme.colors.border.light,
-          backgroundColor: isRecommended ? theme.colors.accent.primary10 : theme.colors.background.card,
+          borderWidth: isActive ? 1.5 : 1,
+          borderColor: isActive ? theme.colors.accent.primary : theme.colors.border.light,
+          backgroundColor: isActive ? theme.colors.accent.primary10 : theme.colors.background.card,
           padding: 20,
         }}
       >
@@ -41,7 +48,9 @@ export function GoalOptionItem({
             style={{
               borderRadius: 12,
               padding: 12,
-              backgroundColor: isRecommended ? theme.colors.accent.primary20 : theme.colors.background.secondaryDark,
+              backgroundColor: isActive
+                ? theme.colors.accent.primary20
+                : theme.colors.background.secondaryDark,
             }}
           >
             {icon}
@@ -60,12 +69,12 @@ export function GoalOptionItem({
                 style={{
                   fontSize: theme.typography.fontSize.base,
                   fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.primary,
+                  color: disabled ? theme.colors.text.tertiary : theme.colors.text.primary,
                 }}
               >
                 {title}
               </Text>
-              {isRecommended && recommendedText && (
+              {isRecommended && recommendedText ? (
                 <View
                   style={{
                     borderRadius: 999,
@@ -84,22 +93,24 @@ export function GoalOptionItem({
                     {recommendedText}
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
             <Text
               style={{
                 fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.secondary,
+                color: disabled ? theme.colors.text.tertiary : theme.colors.text.secondary,
               }}
             >
               {description}
             </Text>
           </View>
-          <ChevronRight
-            size={theme.iconSize.sm}
-            color={isRecommended ? theme.colors.accent.primary : theme.colors.text.secondary}
-            style={{ marginTop: 2 }}
-          />
+          {showChevron && !disabled ? (
+            <ChevronRight
+              size={theme.iconSize.sm}
+              color={isActive ? theme.colors.accent.primary : theme.colors.text.secondary}
+              style={{ marginTop: 2 }}
+            />
+          ) : null}
         </View>
       </View>
     </Pressable>

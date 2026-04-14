@@ -1,30 +1,45 @@
 import { addMonths } from 'date-fns';
-import { Dumbbell, Lightbulb, TrendingUp, X } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { Dumbbell, Lightbulb, Search, TrendingUp, User } from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
+import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
+import { TextInput } from '@/components/theme/TextInput';
 import { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
-import { ExerciseService, UserMetricService, WorkoutAnalytics } from '@/database/services';
+import { UserMetricService, WorkoutAnalytics } from '@/database/services';
 import { UserService } from '@/database/services/UserService';
 import { type ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
+import { useExercises } from '@/hooks/useExercises';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
 import {
-  isProgressionRateRealistic,
-  projectGoal,
-  type ProjectionResult,
-} from '@/utils/exerciseGoalProjection';
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '@/utils/exerciseTranslation';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
-import ExercisesModal, { type ExerciseData } from './ExercisesModal';
 import { FullScreenModal } from './FullScreenModal';
+import { GoalOptionItem } from './GoalOptionItem';
+
+type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
+
+type ExerciseData = {
+  id: string;
+  name: string;
+  muscleGroup: string;
+  imageUrl?: string;
+  loadMultiplier?: number;
+};
 
 type CreationStep = 'type' | 'exercise' | 'target' | 'summary';
 
@@ -32,6 +47,57 @@ interface ExerciseGoalCreationModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
+}
+
+function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
+  const normalized = muscleGroup.toLowerCase();
+  if (normalized.includes('chest')) {
+    return 'chest';
+  }
+  if (normalized.includes('back') || normalized.includes('lat')) {
+    return 'back';
+  }
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  ) {
+    return 'legs';
+  }
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  ) {
+    return 'arms';
+  }
+  return null;
+}
+
+function getExerciseType(mechanicType: string, equipmentType: string): string {
+  const mechanic = mechanicType?.toLowerCase() || '';
+  const equipment = equipmentType?.toLowerCase() || '';
+  if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
+    return 'bodyweight';
+  }
+  if (mechanic.includes('compound')) {
+    return 'compound';
+  }
+  if (equipment.includes('machine')) {
+    return 'machine';
+  }
+  return 'isolation';
+}
+
+function getExerciseIcon(type: string) {
+  if (type === 'bodyweight') {
+    return User;
+  }
+  return Dumbbell;
 }
 
 export default function ExerciseGoalCreationModal({
@@ -55,8 +121,25 @@ export default function ExerciseGoalCreationModal({
   const [targetDate, setTargetDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState('');
 
-  const [exercisePickerVisible, setExercisePickerVisible] = useState(false);
+  const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  const {
+    exercises: allExercises,
+    isLoading: exercisesLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  } = useExercises({
+    visible: step === 'exercise',
+    enableReactivity: true,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    searchTerm: searchQuery.trim() || undefined,
+    initialLimit: 20,
+    batchSize: 20,
+  });
 
   // Live projection preview
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -76,6 +159,8 @@ export default function ExerciseGoalCreationModal({
       setNotes('');
       setExerciseDataPoints([]);
       setCurrent1RM(null);
+      setActiveMuscle('all');
+      setSearchQuery('');
       return;
     }
   }, [visible, units]);
@@ -106,6 +191,91 @@ export default function ExerciseGoalCreationModal({
     }
   }, [selectedExercise, goalType, units]);
 
+  const muscleTabs = useMemo(
+    () => [
+      { id: 'all', label: t('workouts.addExercise.muscleGroups.all') },
+      { id: 'chest', label: t('workouts.addExercise.muscleGroups.chest') },
+      { id: 'back', label: t('workouts.addExercise.muscleGroups.back') },
+      { id: 'legs', label: t('workouts.addExercise.muscleGroups.legs') },
+      { id: 'arms', label: t('workouts.addExercise.muscleGroups.arms') },
+    ],
+    [t]
+  );
+
+  const exerciseOptions = useMemo(() => {
+    const grouped: Record<MuscleGroupFilter, SelectorOption<string>[]> = {
+      all: [],
+      chest: [],
+      back: [],
+      legs: [],
+      arms: [],
+    };
+    allExercises.forEach((exercise) => {
+      const group = normalizeMuscleGroup(exercise.muscleGroup ?? '');
+      if (!group) {return;}
+
+      const exerciseType = getExerciseType(
+        exercise.mechanicType ?? '',
+        exercise.equipmentType ?? ''
+      );
+      const Icon = getExerciseIcon(exerciseType);
+      const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup ?? '');
+      const exerciseTypeI18nKey = getExerciseTypeTranslationKey(exerciseType);
+
+      const option: SelectorOption<string> = {
+        id: exercise.id,
+        label: exercise.name ?? '',
+        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+        icon: Icon,
+        iconBgColor:
+          exerciseType === 'bodyweight'
+            ? theme.colors.background.white5
+            : theme.colors.accent.primary10,
+        iconColor:
+          exerciseType === 'bodyweight'
+            ? theme.colors.text.secondary
+            : theme.colors.accent.primary,
+        imageUrl: exercise.imageUrl,
+      };
+
+      grouped[group].push(option);
+      grouped.all.push(option);
+    });
+    return grouped;
+  }, [allExercises, theme, t]);
+
+  const filteredExercises = useMemo(
+    () => exerciseOptions[activeMuscle],
+    [exerciseOptions, activeMuscle]
+  );
+
+  const handleNext = useCallback(() => {
+    if (step === 'type') {
+      setStep('exercise');
+    } else if (step === 'exercise') {
+      setStep('target');
+    } else if (step === 'target') {
+      setStep('summary');
+    }
+  }, [step]);
+
+  const handleSelectExercise = useCallback(
+    (id: string) => {
+      const exercise = allExercises.find((e) => e.id === id);
+      if (exercise) {
+        setSelectedExercise({
+          id: exercise.id,
+          name: exercise.name,
+          muscleGroup: exercise.muscleGroup ?? '',
+          imageUrl: exercise.imageUrl,
+          loadMultiplier: exercise.loadMultiplier ?? 1.0,
+        });
+        handleNext();
+      }
+    },
+    [allExercises, handleNext]
+  );
+
   const projection = useMemo<ProjectionResult | null>(() => {
     if (!selectedExercise || goalType !== '1rm' || !targetWeightDisplay || current1RM === null) {
       return null;
@@ -135,16 +305,6 @@ export default function ExerciseGoalCreationModal({
     return projection?.isRealistic ?? true;
   }, [projection]);
 
-  const handleNext = () => {
-    if (step === 'type') {
-      setStep('exercise');
-    } else if (step === 'exercise') {
-      setStep('target');
-    } else if (step === 'target') {
-      setStep('summary');
-    }
-  };
-
   const handleBack = () => {
     if (step === 'exercise') {
       setStep('type');
@@ -172,123 +332,160 @@ export default function ExerciseGoalCreationModal({
   };
 
   const renderTypeStep = () => (
-    <View className="gap-4">
-      <Pressable
+    <View style={{ gap: 12 }}>
+      <Text
+        style={{
+          fontSize: theme.typography.fontSize.sm,
+          color: theme.colors.text.secondary,
+          marginBottom: 8,
+        }}
+      >
+        {t('exerciseGoals.creation.chooseType')}
+      </Text>
+
+      <GoalOptionItem
+        icon={<TrendingUp size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+        title={t('exerciseGoals.goalTypes.1rm')}
+        description={t('exerciseGoals.goalTypes.1rmDescription')}
         onPress={() => {
           setGoalType('1rm');
           handleNext();
         }}
-        className={`rounded-2xl border p-4 ${
-          goalType === '1rm' ? 'bg-accent-primary10 border-accent-primary' : 'border-border bg-card'
-        }`}
-      >
-        <View className="flex-row items-center gap-4">
-          <View className="bg-accent-primary20 rounded-xl p-3">
-            <TrendingUp size={24} color={theme.colors.accent.primary} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
-              {t('exerciseGoals.goalTypes.1rm')}
-            </Text>
-            <Text className="text-sm text-text-secondary">
-              Set a strength target for a specific exercise.
-            </Text>
-          </View>
-        </View>
-      </Pressable>
+        isSelected={goalType === '1rm'}
+      />
 
-      <Pressable
+      <GoalOptionItem
+        icon={<Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+        title={t('exerciseGoals.goalTypes.consistency')}
+        description={t('exerciseGoals.goalTypes.consistencyDescription')}
         onPress={() => {
           setGoalType('consistency');
           handleNext();
         }}
-        className={`rounded-2xl border p-4 ${
-          goalType === 'consistency'
-            ? 'bg-accent-primary10 border-accent-primary'
-            : 'border-border bg-card'
-        }`}
-      >
-        <View className="flex-row items-center gap-4">
-          <View className="bg-accent-primary20 rounded-xl p-3">
-            <Dumbbell size={24} color={theme.colors.accent.primary} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
-              {t('exerciseGoals.goalTypes.consistency')}
-            </Text>
-            <Text className="text-sm text-text-secondary">
-              Target a certain number of workouts per week.
-            </Text>
-          </View>
-        </View>
-      </Pressable>
+        isSelected={goalType === 'consistency'}
+      />
 
       {['steps_per_day', 'distance_per_session', 'pace', 'duration'].map((type) => (
-        <View key={type} className="border-border bg-card rounded-2xl border p-4 opacity-50">
-          <View className="flex-row items-center gap-4">
-            <View className="bg-surface-variant rounded-xl p-3">
-              <TrendingUp size={24} color={theme.colors.text.tertiary} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-lg font-bold text-text-tertiary">
-                {t(`exerciseGoals.goalTypes.${type}`)}
-              </Text>
-              <Text className="text-xs font-bold text-accent-primary">
-                {t('exerciseGoals.creation.comingSoon')}
-              </Text>
-            </View>
-          </View>
-        </View>
+        <GoalOptionItem
+          key={type}
+          icon={<TrendingUp size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+          title={t(`exerciseGoals.goalTypes.${type}`)}
+          description={t('exerciseGoals.creation.comingSoon')}
+          onPress={() => {}}
+          disabled
+        />
       ))}
     </View>
   );
 
-  const renderExerciseStep = () => (
-    <View className="gap-4">
-      <Pressable
-        onPress={() => setExercisePickerVisible(true)}
-        className="border-border bg-card rounded-2xl border p-4"
-      >
-        <Text className="text-sm text-text-secondary">
-          {t('exerciseGoals.creation.chooseExercise')}
-        </Text>
-        <Text className="mt-1 text-lg font-bold text-text-primary">
-          {selectedExercise?.name || t('exerciseGoals.creation.searchPlaceholder')}
-        </Text>
-      </Pressable>
+  const renderExerciseStep = () => {
+    if (selectedExercise) {
+      const rawExercise = allExercises.find((e) => e.id === selectedExercise.id);
+      return (
+        <View style={{ gap: 16 }}>
+          <SelectedExerciseCard
+            exerciseName={selectedExercise.name}
+            exerciseCategory={selectedExercise.muscleGroup}
+            exerciseType={
+              rawExercise
+                ? getExerciseType(rawExercise.mechanicType ?? '', rawExercise.equipmentType ?? '')
+                : 'isolation'
+            }
+            onChange={() => setSelectedExercise(null)}
+          />
+          {isLoadingHistory ? (
+            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+          ) : null}
+          {!isLoadingHistory ? (
+            <View className="bg-surface-variant rounded-2xl p-4">
+              {current1RM !== null ? (
+                <Text className="text-sm text-text-primary">
+                  {t('exerciseGoals.creation.currentEstimated1RM', {
+                    value: formatRoundedDecimal(kgToDisplay(current1RM, units), 1),
+                    unit: t(weightUnitKey),
+                  })}
+                </Text>
+              ) : (
+                <Text className="text-sm text-text-secondary">
+                  {t('exerciseGoals.creation.noHistoryForExercise')}
+                </Text>
+              )}
+            </View>
+          ) : null}
+        </View>
+      );
+    }
 
-      {isLoadingHistory ? (
-        <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-      ) : null}
-
-      {selectedExercise && !isLoadingHistory ? (
-        <View className="bg-surface-variant rounded-2xl p-4">
-          {current1RM !== null ? (
-            <Text className="text-sm text-text-primary">
-              {t('exerciseGoals.creation.currentEstimated1RM', {
-                value: formatRoundedDecimal(kgToDisplay(current1RM, units), 1),
-                unit: t(weightUnitKey),
-              })}
-            </Text>
+    return (
+      <View style={{ gap: 16 }}>
+        <View>
+          <FilterTabs
+            tabs={muscleTabs}
+            activeTab={activeMuscle}
+            onTabChange={(id) => setActiveMuscle(id as MuscleGroupFilter)}
+            showContainer={false}
+            withCheckmark={true}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+          />
+        </View>
+        <View>
+          <TextInput
+            label=""
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t('workouts.addExercise.searchPlaceholderAll')}
+            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+        </View>
+        <View>
+          {exercisesLoading && filteredExercises.length === 0 ? (
+            <View className="items-center justify-center py-12">
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          ) : filteredExercises.length > 0 ? (
+            <>
+              <OptionsSelector
+                title=""
+                options={filteredExercises}
+                selectedId={undefined}
+                onSelect={handleSelectExercise as any}
+              />
+              {hasMore ? (
+                <View className="py-4">
+                  <Button
+                    label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
+                    variant="outline"
+                    size="md"
+                    width="full"
+                    onPress={loadMore}
+                    disabled={isLoadingMore}
+                    loading={isLoadingMore}
+                  />
+                </View>
+              ) : null}
+            </>
           ) : (
-            <Text className="text-sm text-text-secondary">
-              {t('exerciseGoals.creation.noHistoryForExercise')}
-            </Text>
+            <View className="items-center justify-center py-12">
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.base,
+                  color: theme.colors.text.secondary,
+                  textAlign: 'center',
+                }}
+              >
+                {searchQuery
+                  ? t('workouts.addExercise.noExercisesFound', { query: searchQuery })
+                  : t('workouts.addExercise.noExercisesAvailable', {
+                      muscle:
+                        muscleTabs.find((tab) => tab.id === activeMuscle)?.label ?? activeMuscle,
+                    })}
+              </Text>
+            </View>
           )}
         </View>
-      ) : null}
-
-      <ExercisesModal
-        visible={exercisePickerVisible}
-        onClose={() => setExercisePickerVisible(false)}
-        onSelectExercise={(exercise: ExerciseData) => {
-          setSelectedExercise(exercise);
-          setExercisePickerVisible(false);
-          handleNext();
-        }}
-      />
-    </View>
-  );
+      </View>
+    );
+  };
 
   const renderTargetStep = () => (
     <View className="gap-6">
@@ -412,23 +609,24 @@ export default function ExerciseGoalCreationModal({
     </View>
   );
 
-  const footer = (
-    <View className="flex-row gap-3">
-      <Button
-        label={step === 'type' ? t('common.cancel') : t('common.back')}
-        variant="outline"
-        className="flex-1"
-        onPress={handleBack}
-      />
-      <Button
-        label={step === 'summary' ? t('exerciseGoals.creation.save') : t('common.next')}
-        variant="gradientCta"
-        className="flex-2"
-        disabled={step === 'exercise' ? !selectedExercise : false}
-        onPress={step === 'summary' ? handleSave : handleNext}
-      />
-    </View>
-  );
+  const footer =
+    step === 'type' ? null : (
+      <View className="flex-row gap-3">
+        <Button
+          label={t('common.back')}
+          variant="outline"
+          width="flex-1"
+          onPress={handleBack}
+        />
+        <Button
+          label={step === 'summary' ? t('exerciseGoals.creation.save') : t('common.next')}
+          variant="gradientCta"
+          width="flex-2"
+          disabled={step === 'exercise' ? !selectedExercise : false}
+          onPress={step === 'summary' ? handleSave : handleNext}
+        />
+      </View>
+    );
 
   return (
     <FullScreenModal
@@ -437,7 +635,7 @@ export default function ExerciseGoalCreationModal({
       title={t('exerciseGoals.creation.title')}
       footer={footer}
     >
-      <ScrollView contentContainerStyle={{ padding: 20 }}>{renderStepContent()}</ScrollView>
+      <View style={{ padding: 20 }}>{renderStepContent()}</View>
     </FullScreenModal>
   );
 

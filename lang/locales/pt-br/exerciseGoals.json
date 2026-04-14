@@ -10,7 +10,9 @@
     "deleteGoalMessage": "Esta meta e seu histórico de progresso serão permanentemente excluídos.",
     "goalTypes": {
       "1rm": "Meta de Levantamento",
+      "1rmDescription": "Defina uma meta de força para um exercício específico.",
       "consistency": "Consistência",
+      "consistencyDescription": "Defina uma meta de treinos por semana.",
       "steps_per_day": "Passos Diários",
       "distance_per_session": "Distância",
       "pace": "Ritmo",

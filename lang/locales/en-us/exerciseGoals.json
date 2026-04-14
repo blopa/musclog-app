@@ -10,7 +10,9 @@
     "deleteGoalMessage": "This goal and its progress history will be permanently deleted.",
     "goalTypes": {
       "1rm": "Lift Goal",
+      "1rmDescription": "Set a strength target for a specific exercise.",
       "consistency": "Consistency",
+      "consistencyDescription": "Target a certain number of workouts per week.",
       "steps_per_day": "Daily Steps",
       "distance_per_session": "Distance",
       "pace": "Pace",
