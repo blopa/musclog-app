@@ -38,7 +38,6 @@ import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 interface GoalsManagementModalProps {
   visible: boolean;
   onClose: () => void;
-  // TODO: implement this prop - open the modal to a specific tab
   tab: 'nutrition' | 'fitness';
 }
 
@@ -78,7 +77,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   const refreshNutritionRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   useEffect(() => {
-    if (!visible) {
+    if (visible) {
+      setActiveTab(tab);
+    } else {
       setCreationMethodModalVisible(false);
       setWizardModalVisible(false);
       setNutritionGoalsModalVisible(false);
@@ -86,7 +87,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       setConfirmDeleteVisible(false);
       setSelectedGoal(null);
     }
-  }, [visible]);
+  }, [visible, tab]);
 
   const nutritionGoalResult = useCurrentNutritionGoal({
     mode: 'history',

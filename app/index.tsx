@@ -688,6 +688,7 @@ export default function HomeScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
         onClose={handleCloseGoalsManagement}
+        tab="nutrition"
       />
 
       {/* Create Custom Food Modal */}

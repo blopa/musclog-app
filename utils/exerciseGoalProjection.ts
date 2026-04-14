@@ -108,6 +108,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
       progressPercent: 0,
       deltaFromBaseline: 0,
       status: 'no_history',
+      achievedDate: null,
       dataPointCount: 0,
       isRealistic: true,
     };
@@ -149,6 +150,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
       progressPercent,
       deltaFromBaseline,
       status: 'insufficient_data',
+      achievedDate: null,
       dataPointCount: dataPoints.length,
       isRealistic: true,
     };
@@ -197,6 +199,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
       progressPercent,
       deltaFromBaseline,
       status,
+      achievedDate: null,
       dataPointCount: dataPoints.length,
       isRealistic: true,
     };
@@ -256,6 +259,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     progressPercent,
     deltaFromBaseline,
     status,
+    achievedDate: null,
     dataPointCount: dataPoints.length,
     isRealistic,
   };

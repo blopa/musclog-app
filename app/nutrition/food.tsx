@@ -1741,6 +1741,7 @@ export default function FoodScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
         onClose={() => setIsGoalsManagementModalVisible(false)}
+        tab="nutrition"
       />
 
       {/* Food Menu Modal */}
