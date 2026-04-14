@@ -172,14 +172,22 @@ export default function ExerciseGoalCreationModal({
       setIsLoadingHistory(true);
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
+        WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
         UserMetricService.getUserBodyWeightKgForVolume(),
         UserService.getCurrentUser(),
       ])
-        .then(([data, bw, user]) => {
+        .then(([data, recentAverage, bw, user]) => {
           setExerciseDataPoints(data);
           setBodyWeight(bw);
           setUserGender(user?.gender ?? 'male');
-          if (data.length > 0) {
+
+          const recent1RM = recentAverage?.average1RM;
+          if (recent1RM != null) {
+            setCurrent1RM(recent1RM);
+            setTargetWeightDisplay(
+              (Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2).toString()
+            );
+          } else if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
             setCurrent1RM(latest1RM);
             setTargetWeightDisplay(

@@ -1,4 +1,4 @@
-import { Dumbbell, Eye, Pencil, Trash2 } from 'lucide-react-native';
+import { Dumbbell, Eye, Pencil, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -32,12 +32,32 @@ export function CurrentExerciseGoalCard({
   const { t } = useTranslation();
   const { units } = useSettings();
   const { locale, formatRoundedDecimal } = useFormatAppNumber();
-  const { projection, sessionsThisWeek } = useExerciseGoalProgress(goal);
+  const { projection, sessionsThisWeek, recalculateBaseline, isLoading } = useExerciseGoalProgress(goal);
   const [menuVisible, setMenuVisible] = useState(false);
 
   const weightUnitKey = getWeightUnitI18nKey(units);
 
+  const handleRecalculate = async () => {
+    if (isLoading) {
+      return;
+    }
+    setMenuVisible(false);
+    await recalculateBaseline();
+  };
+
   const menuItems: BottomPopUpMenuItem[] = [
+    ...(goal.goalType === '1rm'
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('exerciseGoals.detail.recalculateBaseline'),
+            description: '',
+            onPress: handleRecalculate,
+          },
+        ]
+      : []),
     ...(onViewDetails
       ? [
           {

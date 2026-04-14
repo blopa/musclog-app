@@ -5,7 +5,7 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { UserMetricService, UserService, WorkoutAnalytics } from '@/database/services';
+import { ExerciseGoalService, UserMetricService, UserService, WorkoutAnalytics } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
@@ -16,6 +16,7 @@ interface UseExerciseGoalProgressResult {
   dataPoints: ProgressiveOverloadDataPoint[];
   sessionsThisWeek: number;
   refresh: () => Promise<void>;
+  recalculateBaseline: () => Promise<void>;
 }
 
 export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProgressResult {
@@ -25,7 +26,14 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
   const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
+  const [recentAverage1RM, setRecentAverage1RM] = useState<number | null>(null);
+  const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(() => goal.baseline1rm);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sync local baseline state when the goal instance changes (e.g. modal opens)
+  useEffect(() => {
+    setCurrentBaseline1rm(goal.baseline1rm ?? null);
+  }, [goal.id, goal.baseline1rm]);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -33,7 +41,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     try {
       if (goal.goalType === '1rm' && goal.exerciseId) {
         const goalCreatedAt = goal.createdAt.getTime();
-        const [filteredData, performed1RMDate, bw, exercise, user] = await Promise.all([
+        const [filteredData, performed1RMDate, recentAverage, bw, exercise, user] = await Promise.all([
           WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
             startDate: goalCreatedAt,
             endDate: Date.now(),
@@ -45,6 +53,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
                 goalCreatedAt
               )
             : Promise.resolve(null),
+          WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId),
           UserMetricService.getUserBodyWeightKgForVolume(),
           database.get<Exercise>('exercises').find(goal.exerciseId),
           UserService.getCurrentUser(),
@@ -52,6 +61,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
         setDataPoints(filteredData);
         setHasPerformed1RMDate(performed1RMDate);
+        setRecentAverage1RM(recentAverage?.average1RM ?? null);
         setBodyWeight(bw);
         setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
         setUserGender(user?.gender ?? 'male');
@@ -136,7 +146,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     }
 
     const effectiveBaseline =
-      goal.baseline1rm ?? (dataPoints.length > 0 ? dataPoints[0].estimated1RM : null);
+      currentBaseline1rm ?? (dataPoints.length > 0 ? dataPoints[0].estimated1RM : null);
 
     if (effectiveBaseline === null) {
       return null;
@@ -150,17 +160,38 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       loadMultiplier,
       userGender,
       hasPerformed1RMDate,
+      currentEstimated1RM: recentAverage1RM ?? undefined,
     });
   }, [
     dataPoints,
     goal.goalType,
     goal.targetWeight,
-    goal.baseline1rm,
+    currentBaseline1rm,
     bodyWeight,
     loadMultiplier,
     userGender,
     hasPerformed1RMDate,
+    recentAverage1RM,
   ]);
+
+  const recalculateBaseline = useCallback(async () => {
+    if (goal.goalType !== '1rm' || !goal.exerciseId) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const recentAverage = await WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId);
+      if (recentAverage != null) {
+        await ExerciseGoalService.updateBaseline1rm(goal.id, recentAverage.average1RM);
+        setCurrentBaseline1rm(recentAverage.average1RM);
+      }
+      await loadData();
+    } catch (err) {
+      console.error('Error recalculating baseline:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [goal.id, goal.exerciseId, goal.goalType, loadData]);
 
   return {
     projection,
@@ -168,5 +199,6 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     dataPoints,
     sessionsThisWeek,
     refresh: loadData,
+    recalculateBaseline,
   };
 }

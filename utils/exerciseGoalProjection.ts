@@ -8,6 +8,7 @@ export interface ProjectionInputs {
   loadMultiplier?: number; // From Exercise model, ensures i18n independence
   userGender?: 'male' | 'female' | 'other';
   hasPerformed1RMDate?: number | null; // Date of first actual 1RM set at/above target logged
+  currentEstimated1RM?: number | null; // Override derived from recent first-set average
 }
 
 export interface ProjectionResult {
@@ -100,13 +101,32 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
 
   // No history at all
   if (dataPoints.length === 0) {
+    const effectiveCurrent1RM = inputs.currentEstimated1RM ?? baseline1rm;
+    const effectiveDelta = effectiveCurrent1RM - baseline1rm;
+    const totalGap = targetWeight - baseline1rm;
+
+    if (effectiveCurrent1RM >= targetWeight) {
+      return {
+        currentEstimated1RM: effectiveCurrent1RM,
+        weeklyProgressionRate: 0,
+        projectedWeeks: 0,
+        projectedDate: new Date(),
+        progressPercent: 100,
+        deltaFromBaseline: effectiveDelta,
+        status: hasPerformed1RMDate != null ? 'achieved' : 'ready_to_achieve',
+        achievedDate: hasPerformed1RMDate ?? null,
+        dataPointCount: 0,
+        isRealistic: true,
+      };
+    }
+
     return {
-      currentEstimated1RM: baseline1rm,
+      currentEstimated1RM: effectiveCurrent1RM,
       weeklyProgressionRate: 0,
       projectedWeeks: null,
       projectedDate: null,
-      progressPercent: 0,
-      deltaFromBaseline: 0,
+      progressPercent: totalGap > 0 ? Math.min(100, Math.max(0, (effectiveDelta / totalGap) * 100)) : 0,
+      deltaFromBaseline: effectiveDelta,
       status: 'no_history',
       achievedDate: null,
       dataPointCount: 0,
@@ -114,8 +134,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     };
   }
 
-  // Get current estimated 1RM (latest data point)
-  const currentEstimated1RM = dataPoints[dataPoints.length - 1].estimated1RM;
+  // Get current estimated 1RM (latest data point or override)
+  const currentEstimated1RM = inputs.currentEstimated1RM ?? dataPoints[dataPoints.length - 1].estimated1RM;
   const deltaFromBaseline = currentEstimated1RM - baseline1rm;
 
   // Already achieved or capable?

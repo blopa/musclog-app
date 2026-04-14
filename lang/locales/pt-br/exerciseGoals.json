@@ -65,6 +65,7 @@
     },
     "detail": {
       "viewDetails": "Ver Detalhes",
+      "recalculateBaseline": "Recalcular base",
       "progress": "Progresso",
       "baseline": "Base",
       "progressChart": "Progresso de 1RM",

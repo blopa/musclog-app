@@ -65,6 +65,7 @@
     },
     "detail": {
       "viewDetails": "Подробнее",
+      "recalculateBaseline": "Пересчитать базу",
       "progress": "Прогресс",
       "baseline": "Базовый",
       "progressChart": "Прогресс 1ПМ",
