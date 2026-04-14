@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { MenuButton } from '@/components/theme/MenuButton';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { useExerciseGoalProgress } from '@/hooks/useExerciseGoalProgress';
@@ -32,16 +33,34 @@ export function CurrentExerciseGoalCard({
   const { t } = useTranslation();
   const { units } = useSettings();
   const { locale, formatRoundedDecimal } = useFormatAppNumber();
-  const { projection, sessionsThisWeek, recalculateBaseline, isLoading } = useExerciseGoalProgress(goal);
+  const {
+    projection,
+    sessionsThisWeek,
+    recalculateBaseline,
+    isLoading,
+    currentBaseline1rm,
+    recentAverage1RM,
+    dataPoints,
+  } = useExerciseGoalProgress(goal);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [confirmRecalculateVisible, setConfirmRecalculateVisible] = useState(false);
 
   const weightUnitKey = getWeightUnitI18nKey(units);
 
-  const handleRecalculate = async () => {
+  const handleRecalculate = () => {
     if (isLoading) {
       return;
     }
     setMenuVisible(false);
+    if (recentAverage1RM != null) {
+      setConfirmRecalculateVisible(true);
+    } else {
+      recalculateBaseline();
+    }
+  };
+
+  const handleConfirmRecalculate = async () => {
+    setConfirmRecalculateVisible(false);
     await recalculateBaseline();
   };
 
@@ -291,6 +310,24 @@ export function CurrentExerciseGoalCard({
           items={menuItems}
         />
       </GenericCard>
+
+      <ConfirmationModal
+        visible={confirmRecalculateVisible}
+        onClose={() => setConfirmRecalculateVisible(false)}
+        onConfirm={handleConfirmRecalculate}
+        title={t('exerciseGoals.detail.recalculateBaselineTitle')}
+        message={t('exerciseGoals.detail.recalculateBaselineConfirmation', {
+          oldValue: formatDisplayWeightKg(
+            locale,
+            units,
+            currentBaseline1rm ?? (dataPoints.length > 0 ? dataPoints[0].estimated1RM : 0)
+          ),
+          oldUnit: t(weightUnitKey),
+          newValue: formatDisplayWeightKg(locale, units, recentAverage1RM ?? 0),
+          newUnit: t(weightUnitKey),
+        })}
+        confirmLabel={t('common.confirm')}
+      />
     </View>
   );
 }

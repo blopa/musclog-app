@@ -170,6 +170,7 @@ export default function ExerciseGoalCreationModal({
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
       setIsLoadingHistory(true);
+      setTargetDate(null);
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
         WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
@@ -182,19 +183,37 @@ export default function ExerciseGoalCreationModal({
           setUserGender(user?.gender ?? 'male');
 
           const recent1RM = recentAverage?.average1RM;
+          let nextCurrent1RM: number | null = null;
+          let nextTargetDisplay: string | undefined;
+
           if (recent1RM != null) {
+            nextCurrent1RM = recent1RM;
+            nextTargetDisplay = (Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2).toString();
             setCurrent1RM(recent1RM);
-            setTargetWeightDisplay(
-              (Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2).toString()
-            );
+            setTargetWeightDisplay(nextTargetDisplay);
           } else if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
+            nextCurrent1RM = latest1RM;
+            nextTargetDisplay = (Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2).toString();
             setCurrent1RM(latest1RM);
-            setTargetWeightDisplay(
-              (Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2).toString()
-            );
+            setTargetWeightDisplay(nextTargetDisplay);
           } else {
             setCurrent1RM(null);
+          }
+
+          if (nextCurrent1RM != null && nextTargetDisplay != null) {
+            const targetKg = displayToKg(parseFloat(nextTargetDisplay), units);
+            const proj = projectGoal({
+              dataPoints: data,
+              baseline1rm: nextCurrent1RM,
+              targetWeight: targetKg,
+              bodyWeight: bw,
+              loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
+              userGender: user?.gender ?? 'male',
+            });
+            if (proj.projectedDate) {
+              setTargetDate(proj.projectedDate);
+            }
           }
         })
         .finally(() => setIsLoadingHistory(false));

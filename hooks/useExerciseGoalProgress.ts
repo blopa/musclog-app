@@ -15,6 +15,8 @@ interface UseExerciseGoalProgressResult {
   isLoading: boolean;
   dataPoints: ProgressiveOverloadDataPoint[];
   sessionsThisWeek: number;
+  currentBaseline1rm: number | null;
+  recentAverage1RM: number | null;
   refresh: () => Promise<void>;
   recalculateBaseline: () => Promise<void>;
 }
@@ -198,6 +200,8 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     isLoading,
     dataPoints,
     sessionsThisWeek,
+    currentBaseline1rm,
+    recentAverage1RM,
     refresh: loadData,
     recalculateBaseline,
   };

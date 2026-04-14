@@ -66,6 +66,8 @@
     "detail": {
       "viewDetails": "Подробнее",
       "recalculateBaseline": "Пересчитать базу",
+      "recalculateBaselineTitle": "Пересчитать базу",
+      "recalculateBaselineConfirmation": "Базовое значение будет обновлено с {{oldValue}} {{oldUnit}} на {{newValue}} {{newUnit}}. Вы уверены, что хотите это сделать?",
       "progress": "Прогресс",
       "baseline": "Базовый",
       "progressChart": "Прогресс 1ПМ",
