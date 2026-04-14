@@ -30,6 +30,9 @@ type AddFoodModalProps = {
   onTrackCustomMealPress?: () => void;
   onQuickTrackMealPress?: () => void;
   isAiEnabled?: boolean;
+
+  // TODO: implement the showTrackByMealType prop
+  showTrackByMealType?: boolean;
 };
 
 export function AddFoodModal({
@@ -43,6 +46,7 @@ export function AddFoodModal({
   onTrackCustomMealPress,
   onQuickTrackMealPress,
   isAiEnabled = true,
+  showTrackByMealType = true,
 }: AddFoodModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -98,43 +102,50 @@ export function AddFoodModal({
       >
         <View className="gap-8">
           {/* Track by Meal Type */}
-          <View>
-            <View className="mb-4 flex-row items-center gap-2">
-              <Clock size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-              <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-                {t('food.addFoodModal.trackByMealType')}
-              </Text>
-            </View>
-            <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
-              {mealTypes.map((meal) => (
-                <View key={meal.mealType} style={{ flex: 1, minWidth: '30%', maxWidth: '33.333%' }}>
+          {showTrackByMealType ? (
+            <View>
+              <View className="mb-4 flex-row items-center gap-2">
+                <Clock size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+                  {t('food.addFoodModal.trackByMealType')}
+                </Text>
+              </View>
+              <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
+                {mealTypes.map((meal) => (
+                  <View
+                    key={meal.mealType}
+                    style={{ flex: 1, minWidth: '30%', maxWidth: '33.333%' }}
+                  >
+                    <MealTypeButton
+                      icon={meal.icon}
+                      label={meal.label}
+                      iconBgColor={meal.iconBgColor}
+                      iconColor={meal.iconColor}
+                      onPress={() => {
+                        onMealTypeSelect?.(meal.mealType);
+                        onClose();
+                      }}
+                    />
+                  </View>
+                ))}
+                <View
+                  style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}
+                >
                   <MealTypeButton
-                    icon={meal.icon}
-                    label={meal.label}
-                    iconBgColor={meal.iconBgColor}
-                    iconColor={meal.iconColor}
+                    icon={MoreHorizontal}
+                    label={t('food.meals.other')}
+                    iconBgColor={theme.colors.status.gray10}
+                    iconColor={theme.colors.text.secondary}
+                    span={2}
                     onPress={() => {
-                      onMealTypeSelect?.(meal.mealType);
+                      onMealTypeSelect?.('other' as MealType);
                       onClose();
                     }}
                   />
                 </View>
-              ))}
-              <View style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}>
-                <MealTypeButton
-                  icon={MoreHorizontal}
-                  label={t('food.meals.other')}
-                  iconBgColor={theme.colors.status.gray10}
-                  iconColor={theme.colors.text.secondary}
-                  span={2}
-                  onPress={() => {
-                    onMealTypeSelect?.('other' as MealType);
-                    onClose();
-                  }}
-                />
               </View>
             </View>
-          </View>
+          ) : null}
 
           {/* Tracking Method */}
           <View>
