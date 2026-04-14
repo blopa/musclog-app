@@ -1,20 +1,16 @@
-import { differenceInCalendarDays, format } from 'date-fns';
-import { ChevronRight, Dumbbell, Plus } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { differenceInCalendarDays } from 'date-fns';
+import { Plus } from 'lucide-react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { CurrentGoalsCard } from '@/components/cards/CurrentGoalsCard';
-import { GoalHistoryCard } from '@/components/cards/GoalHistoryCard';
 import { Button } from '@/components/theme/Button';
 import { type EatingPhase } from '@/database/models';
 import NutritionGoal from '@/database/models/NutritionGoal';
-import { NutritionGoalService } from '@/database/services';
+import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
-import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
-import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import {
@@ -28,45 +24,22 @@ import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
-import ExerciseGoalsManagementModal from './ExerciseGoalsManagementModal';
+import ExerciseGoalCreationModal from './ExerciseGoalCreationModal';
+import { FitnessGoalsTabContent } from './FitnessGoalsTabContent';
 import { FullScreenModal } from './FullScreenModal';
 import { GoalCreationMethodModal } from './GoalCreationMethodModal';
 import { GoalWizardModal } from './GoalWizardModal';
+import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 import {
   NutritionGoals,
   NutritionGoalsInitialValues,
   NutritionGoalsModal,
 } from './NutritionGoalsModal';
 
-interface GoalHistoryItem {
-  id: number;
-  dateRange: string;
-  phase: EatingPhaseUI;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  weight: number;
-  bodyFat?: number | null;
-}
-
-interface CurrentGoal {
-  phase: EatingPhaseUI;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  targetWeight?: number;
-  bodyFat?: number | null;
-  ffmi?: number | null;
-  bmi?: number | null;
-  goalDate?: string;
-}
-
-type GoalsManagementModalProps = {
+interface GoalsManagementModalProps {
   visible: boolean;
   onClose: () => void;
-};
+}
 
 function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
   return {
@@ -87,10 +60,11 @@ function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
+  const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
   const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
   const [wizardModalVisible, setWizardModalVisible] = useState(false);
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
+  const [exerciseGoalCreationModalVisible, setExerciseGoalCreationModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
@@ -100,90 +74,47 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [pendingWizardPrefill, setPendingWizardPrefill] = useState<Partial<NutritionGoals> | null>(
     null
   );
-  const [exerciseGoalsModalVisible, setExerciseGoalsModalVisible] = useState(false);
+
+  const refreshNutritionRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   useEffect(() => {
     if (!visible) {
       setCreationMethodModalVisible(false);
       setWizardModalVisible(false);
       setNutritionGoalsModalVisible(false);
+      setExerciseGoalCreationModalVisible(false);
       setConfirmDeleteVisible(false);
       setSelectedGoal(null);
     }
   }, [visible]);
 
-  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
+  const nutritionGoalResult = useCurrentNutritionGoal({
     mode: 'history',
     visible,
   });
 
-  const currentGoal = useMemo<CurrentGoal | null>(() => {
-    if (!current) {
-      return null;
-    }
-
-    return {
-      phase: convertEatingPhaseToUI(current.eatingPhase),
-      calories: current.totalCalories,
-      protein: current.protein,
-      carbs: current.carbs,
-      fat: current.fats,
-      targetWeight: current.targetWeight,
-      bodyFat: current.targetBodyFat,
-      bmi: current.targetBmi,
-      ffmi: current.targetFfmi,
-      goalDate: current.targetDate
-        ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
-        : undefined,
-    };
-  }, [current, dateFnsLocale]);
+  const currentNutritionGoal =
+    'current' in nutritionGoalResult ? nutritionGoalResult.current : null;
 
   const currentGoalsData = useMemo<NutritionGoalsInitialValues | undefined>(() => {
-    if (!current) {
+    if (!currentNutritionGoal) {
       return undefined;
     }
-    return goalToFormData(current);
-  }, [current]);
+    return goalToFormData(currentNutritionGoal);
+  }, [currentNutritionGoal]);
 
   const defaultEatingPhase =
     pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
   const { defaults: computedDefaults, planData } = useDefaultNutritionGoals(defaultEatingPhase);
 
-  // Keep raw NutritionGoal alongside display data to enable edit/delete
-  const historyWithRaw = useMemo(
-    () =>
-      goals
-        .filter((goal) => goal.effectiveUntil !== null)
-        .map((goal, index) => {
-          const startDate = new Date(goal.createdAt);
-          const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
-          const dateRange =
-            format(startDate, 'MMM d', { locale: dateFnsLocale }) ===
-            format(endDate, 'MMM d', { locale: dateFnsLocale })
-              ? format(startDate, 'MMM d, yyyy', { locale: dateFnsLocale })
-              : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
-
-          const display: GoalHistoryItem = {
-            id: parseInt(goal.id, 10) || index,
-            dateRange,
-            phase: convertEatingPhaseToUI(goal.eatingPhase),
-            calories: goal.totalCalories,
-            protein: goal.protein,
-            carbs: goal.carbs,
-            fat: goal.fats,
-            weight: goal.targetWeight,
-            bodyFat: goal.targetBodyFat,
-          };
-
-          return { display, raw: goal };
-        }),
-    [goals, dateFnsLocale]
-  );
-
   const handleNewGoal = () => {
-    setSelectedGoal(null);
-    setIsEditing(false);
-    setCreationMethodModalVisible(true);
+    if (activeTab === 'nutrition') {
+      setSelectedGoal(null);
+      setIsEditing(false);
+      setCreationMethodModalVisible(true);
+    } else {
+      setExerciseGoalCreationModalVisible(true);
+    }
   };
 
   const handleSelectManualCreation = () => {
@@ -206,12 +137,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleWizardComplete = (prefill: Partial<NutritionGoals>) => {
     setWizardModalVisible(false);
-    // Merge wizard answers into the form's initial goals (but don't overwrite
-    // any values that are already set from a previous goal).
     setSelectedGoal(null);
     setIsEditing(false);
-    // Pass prefill via currentGoalsData override — achieved by storing it temporarily
-    // in selectedGoal's form data. We use a local state for the one-shot prefill.
     setPendingWizardPrefill(prefill);
     setNutritionGoalsModalVisible(true);
   };
@@ -229,8 +156,6 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleRegenerateCheckins = async (goal: NutritionGoal) => {
     setIsRegenerating(true);
-    // Use setTimeout to ensure the UI has time to update the loading state
-    // and show the loading indicator before starting the heavy DB operations
     setTimeout(async () => {
       try {
         await NutritionGoalService.regenerateCheckins(goal.id);
@@ -255,7 +180,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     await flushLoadingPaint();
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
-      await refresh();
+      if (refreshNutritionRef.current) {
+        await refreshNutritionRef.current();
+      }
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
       captureException(error, { data: { context: 'GoalsManagementModal.handleConfirmDelete' } });
@@ -298,7 +225,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           await NutritionGoalService.saveGoals(input);
         }
       }
-      await refresh();
+      if (refreshNutritionRef.current) {
+        await refreshNutritionRef.current();
+      }
       setNutritionGoalsModalVisible(false);
       setPendingWizardPrefill(null);
     } catch (error) {
@@ -310,7 +239,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
   };
 
-  // TODO: should this be its own hook?
+  const handleSaveExerciseGoal = async (data: any) => {
+    try {
+      await ExerciseGoalService.saveGoal(data);
+      setExerciseGoalCreationModalVisible(false);
+    } catch (error) {
+      console.error('Error saving exercise goal:', error);
+      showSnackbar('error', t('errors.somethingWentWrong'));
+    }
+  };
+
   const editModalInitialGoals = useMemo(() => {
     if (isEditing && selectedGoal) {
       return goalToFormData(selectedGoal);
@@ -318,11 +256,6 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
     if (pendingWizardPrefill) {
       const base = { ...computedDefaults, ...pendingWizardPrefill };
-
-      // If the wizard supplied a target weight + date, compute the required daily
-      // calorie deficit/surplus synchronously using already-loaded plan data (TDEE,
-      // current weight, etc.). This avoids a race condition where the async hook
-      // hasn't finished recomputing by the time the modal opens.
       const { targetWeight, targetDate, eatingPhase } = pendingWizardPrefill;
       if (
         targetWeight != null &&
@@ -349,10 +282,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             dateAwareCalories = Math.max(minCals, Math.round(planData.tdee - dailyDeficit));
           } else {
             const kcalPerKg = getEffectiveKcalPerKgGain(planData.liftingExperience);
-            const dailySurplus = Math.min(
-              (weightDeltaKg * kcalPerKg) / daysToGoal,
-              1000 // cap at +1000 kcal/day
-            );
+            const dailySurplus = Math.min((weightDeltaKg * kcalPerKg) / daysToGoal, 1000);
             dateAwareCalories = Math.round(planData.tdee + dailySurplus);
           }
 
@@ -364,7 +294,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             carbs: macros.carbs,
             fats: macros.fats,
             fiber: fiberFromCalories(dateAwareCalories),
-          };
+          } as NutritionGoalsInitialValues;
         }
       }
 
@@ -392,139 +322,43 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         }
         scrollable={false}
       >
-        {isLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-          </View>
+        <View className="flex-row border-b border-border-light px-4">
+          <Pressable
+            onPress={() => setActiveTab('nutrition')}
+            className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+          >
+            <Text
+              className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}
+            >
+              {t('goalsManagement.nutritionAndBodyTab')}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setActiveTab('fitness')}
+            className={`py-4 ${activeTab === 'fitness' ? 'border-b-2 border-accent-primary' : ''}`}
+          >
+            <Text
+              className={`text-sm font-semibold ${activeTab === 'fitness' ? 'text-accent-primary' : 'text-text-tertiary'}`}
+            >
+              {t('goalsManagement.fitnessAndExerciseTab')}
+            </Text>
+          </Pressable>
+        </View>
+
+        {activeTab === 'nutrition' ? (
+          <NutritionGoalsTabContent
+            visible={visible && activeTab === 'nutrition'}
+            onEditGoal={handleEditGoal}
+            onDeleteGoal={handleDeleteGoal}
+            onRegenerateCheckins={handleRegenerateCheckins}
+            isRegenerating={isRegenerating}
+            refreshRef={refreshNutritionRef}
+          />
         ) : (
-          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="shrink-0 px-4 pb-6" />
-            {/* Scrollable content */}
-            <View className="flex-1 px-4 pb-32">
-              {/* Current Goals Section */}
-              {currentGoal ? (
-                <View className="mb-8">
-                  <View className="mb-3 flex-row items-center justify-between">
-                    <Text
-                      className="font-bold uppercase tracking-widest text-text-secondary"
-                      style={{ fontSize: theme.typography.fontSize.xs }}
-                    >
-                      {t('goalsManagement.currentGoals')}
-                    </Text>
-                    <View
-                      className="rounded-full border px-2"
-                      style={{
-                        backgroundColor: theme.colors.accent.primary10,
-                        borderColor: theme.colors.accent.primary20,
-                        paddingVertical: theme.spacing.padding.xsHalf,
-                      }}
-                    >
-                      <Text
-                        className="font-bold text-accent-primary"
-                        style={{ fontSize: theme.typography.fontSize.xs }}
-                      >
-                        {t('goalsManagement.active')}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Current Goal Card */}
-                  <CurrentGoalsCard
-                    goal={currentGoal}
-                    onEdit={current ? () => handleEditGoal(current) : undefined}
-                    onRegenerateCheckins={
-                      current ? () => handleRegenerateCheckins(current) : undefined
-                    }
-                    onDelete={current ? () => handleDeleteGoal(current) : undefined}
-                    isRegenerating={isRegenerating}
-                  />
-                </View>
-              ) : null}
-
-              {/* Goals History Section */}
-              {historyWithRaw.length > 0 ? (
-                <View className="mb-6">
-                  <Text
-                    className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}
-                  >
-                    {t('goalsManagement.history')}
-                  </Text>
-
-                  <View>
-                    {historyWithRaw.map(({ display, raw }, index) => {
-                      const isLast = index === historyWithRaw.length - 1;
-                      return (
-                        <GoalHistoryCard
-                          key={display.id}
-                          goal={display}
-                          isLast={isLast}
-                          onEdit={() => handleEditGoal(raw)}
-                          onRegenerateCheckins={() => handleRegenerateCheckins(raw)}
-                          onDelete={() => handleDeleteGoal(raw)}
-                          isRegenerating={isRegenerating}
-                        />
-                      );
-                    })}
-                  </View>
-                </View>
-              ) : null}
-
-              {/* Empty state */}
-              {!currentGoal && historyWithRaw.length === 0 ? (
-                <View className="flex-1 items-center justify-center py-16">
-                  <Text className="text-center text-text-secondary">
-                    {t('goalsManagement.subtitle')}
-                  </Text>
-                  <Text className="mt-2 text-center text-xs text-text-tertiary">
-                    {t('goalsManagement.emptyStateMessage')}
-                  </Text>
-                </View>
-              ) : null}
-
-              {/* Exercise Goals Section */}
-              <View className="mb-8 mt-4">
-                <View className="mb-3 flex-row items-center justify-between">
-                  <Text
-                    className="font-bold uppercase tracking-widest text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}
-                  >
-                    {t('goalsManagement.exerciseGoals')}
-                  </Text>
-                  <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => setExerciseGoalsModalVisible(true)}
-                  className="border-border bg-surface rounded-xl border p-4"
-                  activeOpacity={0.7}
-                >
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center gap-3">
-                      <View
-                        className="rounded-lg p-2"
-                        style={{ backgroundColor: theme.colors.accent.secondary10 }}
-                      >
-                        <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.secondary} />
-                      </View>
-                      <View className="flex-1">
-                        <Text className="font-semibold text-text-primary">
-                          {t('goalsManagement.exerciseGoalsTitle')}
-                        </Text>
-                        <Text className="text-sm text-text-secondary">
-                          {t('goalsManagement.exerciseGoalsSubtitle')}
-                        </Text>
-                      </View>
-                    </View>
-                    <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Bottom spacing for navigation */}
-            <View style={{ height: theme.size['24'] }} />
-          </ScrollView>
+          <FitnessGoalsTabContent
+            visible={visible && activeTab === 'fitness'}
+            onNewGoal={() => setExerciseGoalCreationModalVisible(true)}
+          />
         )}
       </FullScreenModal>
 
@@ -550,9 +384,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         isEditing={isEditing}
       />
 
-      <ExerciseGoalsManagementModal
-        visible={exerciseGoalsModalVisible}
-        onClose={() => setExerciseGoalsModalVisible(false)}
+      <ExerciseGoalCreationModal
+        visible={exerciseGoalCreationModalVisible}
+        onClose={() => setExerciseGoalCreationModalVisible(false)}
+        onSave={handleSaveExerciseGoal}
       />
 
       <ConfirmationModal

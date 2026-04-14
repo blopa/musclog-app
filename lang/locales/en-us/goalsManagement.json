@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Goals Management",
+    "nutritionAndBodyTab": "Nutrition & Body",
+    "fitnessAndExerciseTab": "Fitness & Exercise",
     "subtitle": "Track your progress and history.",
     "currentGoals": "CURRENT GOALS",
     "active": "Active",
