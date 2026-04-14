@@ -40,6 +40,7 @@ import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import { FoodService } from '@/database/services';
@@ -69,6 +70,8 @@ type NewCustomFoodModalProps = {
   trackFoodAfterSave?: boolean;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
+  /** Pre-selected meal type to use when tracking the newly created food. */
+  initialMealType?: MealType;
 };
 
 export default function CreateCustomFoodModal({
@@ -77,6 +80,7 @@ export default function CreateCustomFoodModal({
   onSave,
   trackFoodAfterSave = false,
   isAiEnabled = true,
+  initialMealType,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const { units } = useSettings();
@@ -946,6 +950,7 @@ export default function CreateCustomFoodModal({
           }}
           food={createdFood}
           isAiEnabled={isAiEnabled}
+          initialMealType={initialMealType}
         />
       ) : null}
       <PortionSizesPickerModal

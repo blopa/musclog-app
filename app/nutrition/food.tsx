@@ -126,6 +126,8 @@ export default function FoodScreen() {
   const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
+  const [addFoodModalPreselectedMealType, setAddFoodModalPreselectedMealType] =
+    useState<MealType | null>(null);
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
@@ -748,7 +750,8 @@ export default function FoodScreen() {
 
   const handleAddFoodToMeal = (mealType: MealType) => {
     setSelectedMealType(mealType);
-    setIsFoodSearchModalVisible(true);
+    setAddFoodModalPreselectedMealType(mealType);
+    setIsAddFoodModalVisible(true);
   };
 
   const handleMealMenuPress = (mealType: MealType) => {
@@ -1355,7 +1358,10 @@ export default function FoodScreen() {
                         variant="secondaryGradient"
                         size="sm"
                         width="flex-1"
-                        onPress={() => setIsAddFoodModalVisible(true)}
+                        onPress={() => {
+                          setAddFoodModalPreselectedMealType(null);
+                          setIsAddFoodModalVisible(true);
+                        }}
                       />
                     </View>
                   </View>
@@ -1623,6 +1629,7 @@ export default function FoodScreen() {
       <AddFoodModal
         isAiEnabled={isAiConfigured}
         visible={isAddFoodModalVisible}
+        showTrackByMealType={!addFoodModalPreselectedMealType}
         onClose={() => setIsAddFoodModalVisible(false)}
         onMealTypeSelect={(mealType) => {
           setSelectedMealType(mealType);
@@ -1631,11 +1638,21 @@ export default function FoodScreen() {
         }}
         onAiCameraPress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false, logDate: selectedDate });
+          openCamera({
+            mode: 'ai-meal-photo',
+            hideCameraModePicker: false,
+            logDate: selectedDate,
+            mealType: selectedMealType,
+          });
         }}
         onScanBarcodePress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false, logDate: selectedDate });
+          openCamera({
+            mode: 'barcode-scan',
+            hideCameraModePicker: false,
+            logDate: selectedDate,
+            mealType: selectedMealType,
+          });
         }}
         onSearchFoodPress={() => {
           setIsAddFoodModalVisible(false);
@@ -1662,6 +1679,7 @@ export default function FoodScreen() {
         onClose={() => setIsQuickTrackMealModalVisible(false)}
         mode="quickTrack"
         logDate={selectedDate}
+        initialMealType={selectedMealType}
         onTracked={() => {
           refresh();
           setIsQuickTrackMealModalVisible(false);
@@ -1688,6 +1706,7 @@ export default function FoodScreen() {
       <MyMealsModal
         visible={isMyMealsModalVisible}
         onClose={() => setIsMyMealsModalVisible(false)}
+        initialMealType={selectedMealType}
       />
 
       {/* Create Custom Food Modal */}
@@ -1696,6 +1715,7 @@ export default function FoodScreen() {
         trackFoodAfterSave={true}
         onClose={() => setIsCreateCustomFoodVisible(false)}
         isAiEnabled={isAiConfigured}
+        initialMealType={selectedMealType}
       />
 
       {/* Food Search Modal */}
