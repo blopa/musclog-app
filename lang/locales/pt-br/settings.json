@@ -79,6 +79,7 @@
         "backupFromTo": "Migração: v{{from}} para v{{to}}",
         "backupDate": "Criado em {{date}}",
         "export": "Exportar Backup",
+        "exportDisabled": "Exportação desativada - criptografia necessária ou banco de dados indisponível",
         "restore": "Restaurar Banco de Dados",
         "delete": "Excluir Backup",
         "deleteConfirmTitle": "Excluir Backup?",

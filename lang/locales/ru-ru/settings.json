@@ -79,6 +79,7 @@
         "backupFromTo": "Миграция: v{{from}} на v{{to}}",
         "backupDate": "Создан {{date}}",
         "export": "Экспортировать бэкап",
+        "exportDisabled": "Export disabled - encryption required or database unavailable",
         "restore": "Восстановить базу данных",
         "delete": "Удалить бэкап",
         "deleteConfirmTitle": "Удалить бэкап?",

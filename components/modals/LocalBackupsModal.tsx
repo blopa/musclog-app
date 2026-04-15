@@ -11,6 +11,7 @@ import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
 import { type BackupFileMeta, deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
@@ -36,15 +37,33 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [restoreModalVisible, setRestoreModalVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [requireExportEncryption, setRequireExportEncryption] = useState(true);
+  const [databaseFailedToInitiate, setDatabaseFailedToInitiate] = useState(false);
 
   const fetchBackups = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Always try to get backups first
       const data = await getStoredBackups();
       setBackups(data);
+      
+      // Try to get settings separately - if this fails, we still have the backups
+      try {
+        const requireExportSetting = await SettingsService.getRequireExportEncryption();
+        setRequireExportEncryption(requireExportSetting);
+        setDatabaseFailedToInitiate(false);
+      } catch (settingsError) {
+        console.error('Failed to get settings, treating as disabled:', settingsError);
+        // If we can't get settings, assume database failed and treat as if setting was disabled
+        setDatabaseFailedToInitiate(true);
+        setRequireExportEncryption(false); // Consider as disabled to allow export
+      }
     } catch (error) {
       console.error('Failed to fetch backups:', error);
       captureException(error, { data: { context: 'LocalBackupsModal.fetchBackups' } });
+      setDatabaseFailedToInitiate(true);
+      setRequireExportEncryption(false); // Consider as disabled to allow export
+      setBackups([]);
     } finally {
       setIsLoading(false);
     }
@@ -126,14 +145,18 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     }
   };
 
+  const canExport = !requireExportEncryption || databaseFailedToInitiate;
+
   const menuItems: BottomPopUpMenuItem[] = [
     {
       icon: (props) => <MaterialIcons name="share" {...props} />,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.background.iconDarker,
+      iconColor: canExport ? theme.colors.text.primary : theme.colors.text.tertiary,
+      iconBgColor: canExport
+        ? theme.colors.background.iconDarker
+        : theme.colors.background.darkGray,
       title: t('settings.advancedSettings.localBackups.export'),
-      description: '',
-      onPress: handleExport,
+      description: canExport ? '' : t('settings.advancedSettings.localBackups.exportDisabled'),
+      onPress: canExport ? handleExport : () => {},
     },
     {
       icon: (props) => <MaterialIcons name="restore" {...props} />,
