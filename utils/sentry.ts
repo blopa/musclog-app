@@ -25,7 +25,7 @@ async function checkConsentAndInitialize(): Promise<boolean> {
     showSnackbar('error', 'errors.databaseError.title', {
       subtitle: 'errors.databaseError.description',
     });
-    
+
     return true;
   }
 }
