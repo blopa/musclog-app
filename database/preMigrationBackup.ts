@@ -110,6 +110,13 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
   return keep;
 }
 
+/**
+ * No-op on native: the backup is triggered via migrationEvents.onStart in
+ * adapter.ts, not through this entry point. On web this function is replaced
+ * by the real implementation in preMigrationBackup.web.ts.
+ */
+export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
+
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
