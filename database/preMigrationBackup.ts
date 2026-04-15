@@ -1,14 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { deleteAsync } from 'expo-file-system';
 import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
-import { openDatabaseSync } from 'expo-sqlite';
 
 import { captureException } from '@/utils/sentry';
 
+import { dumpDatabase } from './exportDb';
+
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
-const DATABASE_NAME = 'musclog';
-const ASYNC_STORAGE_EXCLUDED_KEYS = new Set(['encryptionKey', 'tempNutritionPlan']);
 
 type BackupFileMeta = {
   uri: string;
@@ -47,10 +46,6 @@ function getVersions(event: unknown): { fromVersion: number | null; toVersion: n
 
 function formatVersion(value: number | null): string {
   return value == null ? 'unknown' : String(value);
-}
-
-function quoteIdentifier(identifier: string): string {
-  return `"${identifier.replace(/"/g, '""')}"`;
 }
 
 async function getStoredBackups(): Promise<BackupFileMeta[]> {
@@ -123,60 +118,14 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
         throw new Error('Cache directory is not available');
       }
 
-      const db = openDatabaseSync(DATABASE_NAME, {
-        enableChangeListener: true,
-        useNewConnection: true,
-      });
-
-      const userVersionRows = (await db.getAllAsync('PRAGMA user_version;')) as {
-        user_version?: number;
-      }[];
-      const sqliteUserVersion = normalizeVersion(userVersionRows[0]?.user_version);
-
-      const tableRows = (await db.getAllAsync(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
-      )) as { name: string }[];
-      const tableNames = tableRows.map((row) => row.name);
-
-      // Keep top-level payload table-shaped (like exportImport.dumpDatabase) so backups
-      // are easy to inspect and reason about.
-      const dbData: Record<string, unknown> = {
-        _exportVersion: sqliteUserVersion ?? toVersion ?? fromVersion ?? -1,
-      };
-      for (const tableName of tableNames) {
-        const rows = await db.getAllAsync(`SELECT * FROM ${quoteIdentifier(tableName)};`);
-        dbData[tableName] = rows as unknown[];
-      }
-
-      const allKeys = await AsyncStorage.getAllKeys();
-      const keysToBackup = allKeys.filter((k) => !ASYNC_STORAGE_EXCLUDED_KEYS.has(k));
-      if (keysToBackup.length > 0) {
-        const pairs = await AsyncStorage.multiGet(keysToBackup);
-        const asyncStorageData: Record<string, string | null> = {};
-        for (const [key, value] of pairs) {
-          asyncStorageData[key] = value;
-        }
-        dbData._async_storage_ = asyncStorageData;
-      }
+      const jsonString = await dumpDatabase();
 
       const createdAt = new Date().toISOString();
       const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
       const fileName = `${timestamp}-pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}.json`;
       const uri = `${cacheDirectory}${fileName}`;
 
-      dbData._pre_migration_meta_ = {
-        type: 'musclog_pre_migration_backup',
-        createdAt,
-        dbName: DATABASE_NAME,
-        migration: {
-          fromVersion,
-          toVersion,
-        },
-        sqliteUserVersion,
-        tableCount: tableNames.length,
-      };
-
-      await writeAsStringAsync(uri, JSON.stringify(dbData, null, 2));
+      await writeAsStringAsync(uri, jsonString);
 
       const existing = await getStoredBackups();
       const next = await pruneOldBackups([

@@ -1,152 +1,117 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { openDatabaseSync } from 'expo-sqlite';
 
-import { CURRENT_DATABASE_VERSION, ENCRYPTION_KEY } from '@/constants/database';
-import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import {
-  GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
-  OPENAI_API_KEY_SETTING_TYPE,
-} from '@/constants/settings';
+  ASYNC_STORAGE_EXCLUDED_KEYS,
+  RESTORE_ORDER,
+  SETTINGS_EXCLUDED_TYPES,
+} from '@/constants/exportImport';
 import { encrypt } from '@/utils/encryption';
 
-import { database } from './database-instance';
-import type NutritionLog from './models/NutritionLog';
-import type UserMetric from './models/UserMetric';
+import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
 
-/** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
-const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
+const DATABASE_NAME = 'musclog';
 
-/** Table names in dependency order for restore (parents before children). */
-const RESTORE_ORDER: string[] = [
-  // Independent master tables
-  'exercises',
-  'users',
-  'foods',
-  'food_portions',
-  'meals',
-  'workout_templates',
-  'settings',
-
-  // Template-dependent tables
-  'schedules',
-  'workout_template_exercises',
-  'workout_template_sets',
-
-  // Food/Meal junction tables
-  'food_food_portions',
-  'meal_foods',
-
-  // Goal and tracking tables
-  'nutrition_goals',
-  'nutrition_checkins',
-  'exercise_goals',
-  'menstrual_cycles',
-
-  // Log tables (depend on templates and master data)
-  'workout_logs',
-  'workout_log_exercises',
-  'workout_log_sets',
-  'nutrition_logs',
-  'user_metrics',
-  'user_metrics_notes',
-
-  // Chat messages (independent)
-  'chat_messages',
-
-  // AI custom prompts (independent)
-  'ai_custom_prompts',
-];
-
-const SETTINGS_EXCLUDED_TYPES = [GOOGLE_GEMINI_API_KEY_SETTING_TYPE, OPENAI_API_KEY_SETTING_TYPE];
+function quoteIdentifier(identifier: string): string {
+  return `"${identifier.replace(/"/g, '""')}"`;
+}
 
 export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
 };
 
-function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
-  const raw = (record as { _raw?: Record<string, unknown> })._raw;
-  if (!raw || typeof raw !== 'object') {
-    return {};
-  }
-
-  return { ...raw };
-}
-
 /**
- * Dump the entire database to a JSON-serializable object.
- * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup is device-independent.
- * API key settings are excluded.
+ * Dump the entire database to a JSON-serializable object using a raw SQLite connection.
+ * This avoids going through the WatermelonDB singleton, making it safe to call before
+ * or during WatermelonDB migrations (e.g. from preMigrationBackup).
+ * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup
+ * is device-independent. API key settings are excluded.
  */
 export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
+  const db = openDatabaseSync(DATABASE_NAME, { useNewConnection: true });
+
+  // Discover tables that actually exist — essential when called pre-migration,
+  // where new tables added by the pending migration don't exist yet.
+  const tableRows = (await db.getAllAsync(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+  )) as { name: string }[];
+  const existingTables = new Set(tableRows.map((r) => r.name));
+
   const dbData: ExportDump = {
     _exportVersion: CURRENT_DATABASE_VERSION,
   };
 
   for (const tableName of RESTORE_ORDER) {
-    const collection = database.get(tableName as any);
-    const records = await collection.query().fetch();
+    if (!existingTables.has(tableName)) {
+      continue;
+    }
+
+    // _status = 'deleted' are WatermelonDB soft-deleted rows; exclude them to match
+    // what collection.query().fetch() returns.
+    const rows = (await db.getAllAsync(
+      `SELECT * FROM ${quoteIdentifier(tableName)} WHERE _status != 'deleted';`
+    )) as Record<string, unknown>[];
 
     if (tableName === 'settings') {
-      const rows = records as { _raw?: Record<string, unknown>; type?: string }[];
-      dbData.settings = rows
-        .filter((r) => {
-          const raw = r._raw ?? r;
-          const type = (raw as Record<string, unknown>).type;
-          return !SETTINGS_EXCLUDED_TYPES.includes(String(type));
-        })
-        .map((r) => getRawRow(r));
+      dbData.settings = rows.filter((row) => !SETTINGS_EXCLUDED_TYPES.includes(String(row.type)));
       continue;
     }
 
     if (tableName === 'user_metrics') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as UserMetric[]) {
-        const raw = getRawRow(record);
-        const decrypted = await record.getDecrypted();
-        const row: Record<string, unknown> = {
-          ...raw,
-          value: decrypted.value,
-          unit: decrypted.unit ?? '',
-          _decrypted: true,
-        };
-        delete (row as Record<string, unknown>).valueRaw;
-        delete (row as Record<string, unknown>).unitRaw;
-        rows.push(row);
-      }
-      dbData.user_metrics = rows;
+      const decryptedRows = await Promise.all(
+        rows.map(async (row) => {
+          const [value, unit] = await Promise.all([
+            decryptNumber(row.value as string | undefined),
+            decryptOptionalString(row.unit as string | undefined),
+          ]);
+
+          return { ...row, value, unit, _decrypted: true };
+        })
+      );
+      dbData.user_metrics = decryptedRows;
       continue;
     }
 
     if (tableName === 'nutrition_logs') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as NutritionLog[]) {
-        const raw = getRawRow(record);
-        const snapshot = await record.getDecryptedSnapshot();
-        const row: Record<string, unknown> = {
-          ...raw,
-          logged_food_name: snapshot.loggedFoodName ?? '',
-          logged_calories: snapshot.loggedCalories,
-          logged_protein: snapshot.loggedProtein,
-          logged_carbs: snapshot.loggedCarbs,
-          logged_fat: snapshot.loggedFat,
-          logged_fiber: snapshot.loggedFiber,
-          logged_micros_json: snapshot.loggedMicros ? JSON.stringify(snapshot.loggedMicros) : '',
-          _decrypted: true,
-        };
-        delete (row as Record<string, unknown>).loggedFoodNameRaw;
-        delete (row as Record<string, unknown>).loggedCaloriesRaw;
-        delete (row as Record<string, unknown>).loggedProteinRaw;
-        delete (row as Record<string, unknown>).loggedCarbsRaw;
-        delete (row as Record<string, unknown>).loggedFatRaw;
-        delete (row as Record<string, unknown>).loggedFiberRaw;
-        delete (row as Record<string, unknown>).loggedMicrosRaw;
-        rows.push(row);
-      }
-      dbData.nutrition_logs = rows;
+      const decryptedRows = await Promise.all(
+        rows.map(async (row) => {
+          const [
+            logged_food_name,
+            logged_calories,
+            logged_protein,
+            logged_carbs,
+            logged_fat,
+            logged_fiber,
+            micros,
+          ] = await Promise.all([
+            decryptOptionalString(row.logged_food_name as string | undefined),
+            decryptNumber(row.logged_calories as string | undefined),
+            decryptNumber(row.logged_protein as string | undefined),
+            decryptNumber(row.logged_carbs as string | undefined),
+            decryptNumber(row.logged_fat as string | undefined),
+            decryptNumber(row.logged_fiber as string | undefined),
+            decryptJson(row.logged_micros_json as string | undefined),
+          ]);
+          return {
+            ...row,
+            logged_food_name: logged_food_name ?? '',
+            logged_calories,
+            logged_protein,
+            logged_carbs,
+            logged_fat,
+            logged_fiber,
+            logged_micros_json: Object.keys(micros).length > 0 ? JSON.stringify(micros) : '',
+            _decrypted: true,
+          };
+        })
+      );
+      dbData.nutrition_logs = decryptedRows;
       continue;
     }
 
-    dbData[tableName] = records.map((r) => getRawRow(r));
+    dbData[tableName] = rows;
   }
 
   // Dump AsyncStorage (exclude device-specific and session-only keys)
