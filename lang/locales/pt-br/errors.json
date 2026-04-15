@@ -11,6 +11,10 @@
     "reload": "Recarregar",
     "aiCreditsError": "Limite de uso do serviço de IA excedido. Por favor, verifique sua chave de API ou tente novamente mais tarde.",
     "aiProcessingError": "Desculpe, tive dificuldade para processar essa solicitação. Por favor, tente novamente em um momento.",
-    "aiProcessingErrorTitle": "Erro ao processar solicitação"
+    "aiProcessingErrorTitle": "Erro ao processar solicitação",
+    "databaseError": {
+      "title": "Erro de Banco de Dados",
+      "description": "Ocorreu um erro de banco de dados. O relatório de erros foi ativado para ajudar a resolver este problema."
+    }
   }
 }
