@@ -142,6 +142,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   // Goal weight in display units; initialized from DB weight when available
   const [goalWeightDisplay, setGoalWeightDisplay] = useState(defaultWeightDisplay);
   const [targetDate, setTargetDate] = useState<Date | null>(null);
+  const [hasManuallySetTargetDate, setHasManuallySetTargetDate] = useState(false);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   // Load current weight from DB when modal opens
@@ -152,6 +153,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
       setGoalType(null);
       setGoalWeightDisplay(defaultWeightDisplay);
       setTargetDate(null);
+      setHasManuallySetTargetDate(false);
       return;
     }
 
@@ -209,12 +211,12 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   // Estimate how many weeks the goal will take based on weight delta and available data.
   // Lose: 0.75% of body weight/week (midpoint of 0.5–1%) if BF data exists; else 0.5 kg/week.
   // Gain: 0.25 kg/week (conservative lean-bulk rate).
-  const calculateEstimatedTargetDate = (): Date | null => {
+  const calculateEstimatedTargetDate = (weightDisplay: number = goalWeightDisplay): Date | null => {
     if (!goalType || goalType === 'maintain' || !currentWeightKg) {
       return null;
     }
 
-    const goalWeightKg = displayToKg(goalWeightDisplay, units);
+    const goalWeightKg = displayToKg(weightDisplay, units);
     const weightDeltaKg = Math.abs(goalWeightKg - currentWeightKg);
     if (weightDeltaKg <= 0) {
       return null;
@@ -238,8 +240,8 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
       handleComplete();
     } else {
       const nextStep = steps[currentStepIndex + 1];
-      // Auto-fill target date when transitioning from goal_weight → target_date
-      if (nextStep === 'target_date' && currentStep === 'goal_weight' && targetDate === null) {
+      // Auto-fill target date when transitioning to target_date if not manually set
+      if (nextStep === 'target_date' && targetDate === null && !hasManuallySetTargetDate) {
         const estimated = calculateEstimatedTargetDate();
         if (estimated) {
           setTargetDate(estimated);
@@ -483,9 +485,8 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   };
 
   const renderTargetDateStep = () => {
-    // TODO: instead of simply adding 3 months to the current date, use a smart calculation
-    // to determine a realistic end date for the user to be able to reach the goal body weight
-    const displayDate = targetDate ?? addMonths(new Date(), 3);
+    const estimatedDate = calculateEstimatedTargetDate();
+    const displayDate = targetDate ?? estimatedDate ?? addMonths(new Date(), 3);
 
     return (
       <View style={{ gap: 12 }}>
@@ -541,6 +542,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           selectedDate={displayDate}
           onDateSelect={(date) => {
             setTargetDate(date);
+            setHasManuallySetTargetDate(true);
             setDatePickerVisible(false);
           }}
           minYear={new Date().getFullYear()}
