@@ -21,38 +21,28 @@ export function initializeSentry() {
     sendDefaultPii: false,
     enableAutoSessionTracking: false,
     tracesSampleRate: 0,
+    maxBreadcrumbs: 0,
+    beforeBreadcrumb() {
+      return null;
+    },
     beforeSend(event) {
-      const minimalEvent = {
-        ...event,
-        // Keep only the requested metadata.
-        contexts: {
-          app: {
-            app_version: appVersion,
-          },
-          device: {
-            model: phoneModel,
-          },
+      // Keep only requested context fields.
+      event.contexts = {
+        app: {
+          app_version: appVersion,
+        },
+        device: {
+          model: phoneModel,
         },
       };
 
-      // Drop non-required fields to keep payload minimal.
-      delete minimalEvent.user;
-      delete minimalEvent.request;
-      delete minimalEvent.tags;
-      delete minimalEvent.extra;
-      delete minimalEvent.breadcrumbs;
-      delete minimalEvent.modules;
-      delete minimalEvent.server_name;
-      delete minimalEvent.release;
-      delete minimalEvent.environment;
-      delete minimalEvent.sdk;
-      delete minimalEvent.debug_meta;
-      delete minimalEvent.transaction;
-      delete minimalEvent.fingerprint;
-      delete minimalEvent.platform;
-      delete minimalEvent.dist;
+      // Remove optional data we do not want to send.
+      delete event.user; // User identity context (id/email/username/ip when present)
+      delete event.request; // HTTP request metadata (URL, headers, method, etc.)
+      delete event.server_name; // Host/device name identifier
+      delete event.fingerprint; // Custom grouping key for issue grouping behavior
 
-      return minimalEvent;
+      return event;
     },
   });
 
