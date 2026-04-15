@@ -2,6 +2,7 @@ import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
+import { getWebBackupContent } from '@/database/preMigrationBackup';
 import { reloadApp } from '@/utils/app';
 
 function getExportFileName(): string {
@@ -10,6 +11,39 @@ function getExportFileName(): string {
 }
 
 export async function downloadFile(uri: string, fileName?: string): Promise<void> {
+  if (uri.startsWith('web-backup://')) {
+    const { getWebBackupContent, getStoredBackups } =
+      await import('@/database/preMigrationBackup.web');
+    const hash = uri.replace('web-backup://', '');
+    const content = getWebBackupContent(hash);
+    if (!content) {
+      throw new Error(`[WebBackup] Backup not found: ${hash}`);
+    }
+
+    // Build a descriptive filename from the metadata index.
+    const backups = await getStoredBackups();
+    const meta = backups.find((b) => b.uri === uri);
+    const ts = meta
+      ? new Date(meta.createdAt).toISOString().replace(/[:.]/g, '-').slice(0, 19)
+      : hash;
+    const versionStr =
+      meta?.fromVersion != null && meta?.toVersion != null
+        ? `-v${meta.fromVersion}-to-v${meta.toVersion}`
+        : '';
+    const resolvedFileName =
+      fileName && fileName !== hash ? fileName : `${ts}-pre-migration${versionStr}.json`;
+
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = resolvedFileName;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    return;
+  }
+
   const a = document.createElement('a');
   a.href = uri;
   if (fileName) {
@@ -205,6 +239,16 @@ export async function openCropperAsync(options: any): Promise<{ path: string }> 
 }
 
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
+  if (fileUri.startsWith('web-backup://')) {
+    const hash = fileUri.replace('web-backup://', '');
+    const content = getWebBackupContent(hash);
+    if (!content) {
+      throw new Error(`[WebBackup] Backup not found: ${hash}`);
+    }
+
+    return content;
+  }
+
   try {
     // Fetch the file from the URI
     const response = await fetch(fileUri);

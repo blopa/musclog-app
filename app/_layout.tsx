@@ -8,8 +8,8 @@ import * as Device from 'expo-device';
 import { Stack } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { cssInterop } from 'nativewind';
-import { useEffect } from 'react';
-import { FlatList, Platform, ScrollView, SectionList, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { FlatList, Platform, ScrollView, SectionList, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -26,6 +26,7 @@ import { SnackbarProvider } from '@/context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
 import { UnreadChatProvider } from '@/context/UnreadChatContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
+import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
 import { captureException } from '@/utils/sentry';
 
 // Fix NativeWind className support on iOS for these components
@@ -52,6 +53,21 @@ const queryClient = new QueryClient({
 function AppContent() {
   const { theme, isDark } = useThemeContext();
 
+  // On web, run the pre-migration backup check before <Migrations> mounts so
+  // that JS-level data transformations in Migrations.tsx cannot run first.
+  // On native this state is initialised to true (no gate needed).
+  const [webBackupDone, setWebBackupDone] = useState(Platform.OS !== 'web');
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    runWebPreMigrationBackupIfNeeded()
+      .catch((err) => console.warn('[WebBackup] Startup check failed:', err))
+      .finally(() => setWebBackupDone(true));
+  }, []);
+
   useEffect(() => {
     // Lock orientation to portrait on phones, allow all orientations on tablets
     async function configureOrientation() {
@@ -72,9 +88,17 @@ function AppContent() {
     configureOrientation().catch((err) => console.warn('[Orientation] Setup error:', err));
   }, []);
 
+  if (!webBackupDone) {
+    // Show a blank screen in the app's background colour while the backup check
+    // runs (typically < 1 s). Avoids a jarring flash on first load after upgrade.
+    return <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }} />;
+  }
+
   return (
     <>
       {Platform.OS !== 'web' ? <SystemBars style={isDark ? 'light' : 'dark'} /> : null}
+      <Migrations />
+      <LanguageInitializer />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -116,8 +140,6 @@ function RootLayout() {
               <SettingsProvider>
                 <MenstrualCycleProvider>
                   <ThemeProvider>
-                    <Migrations />
-                    <LanguageInitializer />
                     <UnreadChatProvider>
                       <SnackbarProvider>
                         <SmartCameraProvider>

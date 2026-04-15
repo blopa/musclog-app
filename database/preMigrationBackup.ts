@@ -48,6 +48,10 @@ function formatVersion(value: number | null): string {
   return value == null ? 'unknown' : String(value);
 }
 
+export function getWebBackupContent(hash: string): string | null {
+  return null;
+}
+
 export async function getStoredBackups(): Promise<BackupFileMeta[]> {
   const raw = await AsyncStorage.getItem(PRE_MIGRATION_BACKUPS_KEY);
   if (!raw) {
