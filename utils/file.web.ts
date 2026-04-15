@@ -1,7 +1,7 @@
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 
-import { dumpDatabase } from '@/database/export';
-import { restoreDatabase } from '@/database/import';
+import { dumpDatabase } from '@/database/exportDb';
+import { restoreDatabase } from '@/database/importDb';
 import { reloadApp } from '@/utils/app';
 
 function getExportFileName(): string {

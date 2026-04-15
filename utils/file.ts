@@ -6,8 +6,8 @@ import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.t
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
 
-import { dumpDatabase } from '@/database/export';
-import { restoreDatabase } from '@/database/import';
+import { dumpDatabase } from '@/database/exportDb';
+import { restoreDatabase } from '@/database/importDb';
 
 import { detectBarcodes } from './barcodeScanner';
 type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
