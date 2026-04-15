@@ -46,7 +46,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       // Always try to get backups first
       const data = await getStoredBackups();
       setBackups(data);
-      
+
       // Try to get settings separately - if this fails, we still have the backups
       try {
         const requireExportSetting = await SettingsService.getRequireExportEncryption();
