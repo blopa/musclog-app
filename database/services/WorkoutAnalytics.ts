@@ -511,6 +511,118 @@ export class WorkoutAnalytics {
   }
 
   /**
+   * Get the average estimated 1RM from the first set of a given exercise
+   * across completed workouts in the last N weeks.
+   * This smooths out daily variance and fatigue by averaging first-set
+   * performance rather than relying on a single latest workout.
+   */
+  static async getRecentFirstSetAverage1RM(
+    exerciseId: string,
+    weeks: number = 2
+  ): Promise<{ average1RM: number; setCount: number } | null> {
+    const cutoffMs = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000;
+
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return null;
+    }
+
+    const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
+    const workouts = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('id', Q.oneOf(workoutLogIds)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('started_at', Q.gte(cutoffMs))
+      )
+      .fetch();
+
+    const validWorkoutIds = new Set(workouts.map((w) => w.id));
+    const validLogExercises = logExercises.filter((le) => validWorkoutIds.has(le.workoutLogId));
+
+    if (validLogExercises.length === 0) {
+      return null;
+    }
+
+    let exercise: Exercise;
+    try {
+      exercise = await database.get<Exercise>('exercises').find(exerciseId);
+    } catch {
+      return null;
+    }
+
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+    const logExerciseIds = validLogExercises.map((le) => le.id);
+
+    const rawSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const logExerciseMap = new Map(validLogExercises.map((le) => [le.id, le.workoutLogId]));
+
+    // Build plain objects from _raw so we always read actual DB values
+    const sets = rawSets.map((set) => {
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        weight: (r.weight as number) ?? 0,
+        reps: (r.reps as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+      };
+    });
+
+    // Group by workout and pick the true first set (lowest set_order, then earliest created_at)
+    const setsByWorkout = new Map<string, typeof sets>();
+    for (const set of sets) {
+      const workoutId = logExerciseMap.get(set.logExerciseId) ?? '';
+      if (!workoutId) {
+        continue;
+      }
+      if (!setsByWorkout.has(workoutId)) {
+        setsByWorkout.set(workoutId, []);
+      }
+      setsByWorkout.get(workoutId)!.push(set);
+    }
+
+    const firstSet1RMs: number[] = [];
+    for (const workoutSets of setsByWorkout.values()) {
+      const firstSet = workoutSets.reduce((earliest, current) => {
+        if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) {
+          return current;
+        }
+        if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) {
+          return earliest;
+        }
+        return (current.createdAt ?? 0) < (earliest.createdAt ?? 0) ? current : earliest;
+      });
+
+      firstSet1RMs.push(
+        calculateEstimated1RMForSet(
+          firstSet.weight,
+          firstSet.reps,
+          firstSet.repsInReserve,
+          exercise.equipmentType,
+          bodyWeightKg
+        )
+      );
+    }
+
+    if (firstSet1RMs.length === 0) {
+      return null;
+    }
+
+    const average1RM = firstSet1RMs.reduce((sum, v) => sum + v, 0) / firstSet1RMs.length;
+    return { average1RM, setCount: firstSet1RMs.length };
+  }
+
+  /**
    * Calculate total volume per muscle group for a set of workouts
    */
   static async calculateMuscleGroupVolume(

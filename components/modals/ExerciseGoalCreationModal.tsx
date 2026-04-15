@@ -19,7 +19,11 @@ import { useExercises } from '@/hooks/useExercises';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
+import {
+  estimateConservativeTargetDate,
+  projectGoal,
+  type ProjectionResult,
+} from '@/utils/exerciseGoalProjection';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
@@ -121,6 +125,7 @@ export default function ExerciseGoalCreationModal({
   );
   const [sessionsPerWeek, setSessionsPerWeek] = useState(3);
   const [targetDate, setTargetDate] = useState<Date | null>(null);
+  const [hasManuallySetTargetDate, setHasManuallySetTargetDate] = useState(false);
   const [notes, setNotes] = useState('');
 
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
@@ -158,6 +163,7 @@ export default function ExerciseGoalCreationModal({
       setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
       setSessionsPerWeek(3);
       setTargetDate(null);
+      setHasManuallySetTargetDate(false);
       setNotes('');
       setExerciseDataPoints([]);
       setCurrent1RM(null);
@@ -170,28 +176,101 @@ export default function ExerciseGoalCreationModal({
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
       setIsLoadingHistory(true);
+      setTargetDate(null);
+      setHasManuallySetTargetDate(false);
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
+        WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
         UserMetricService.getUserBodyWeightKgForVolume(),
         UserService.getCurrentUser(),
       ])
-        .then(([data, bw, user]) => {
+        .then(([data, recentAverage, bw, user]) => {
           setExerciseDataPoints(data);
           setBodyWeight(bw);
           setUserGender(user?.gender ?? 'male');
-          if (data.length > 0) {
+
+          const recent1RM = recentAverage?.average1RM;
+          let nextTargetDisplay: string | undefined;
+
+          if (recent1RM != null) {
+            nextTargetDisplay = (
+              Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2
+            ).toString();
+            setCurrent1RM(recent1RM);
+            setTargetWeightDisplay(nextTargetDisplay);
+          } else if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
+
+            nextTargetDisplay = (
+              Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2
+            ).toString();
             setCurrent1RM(latest1RM);
-            setTargetWeightDisplay(
-              (Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2).toString()
-            );
+            setTargetWeightDisplay(nextTargetDisplay);
           } else {
             setCurrent1RM(null);
+            // No history: suggest bodyWeight × loadMultiplier as a default target.
+            // This equals the novice→intermediate threshold used in the goal projection.
+            const defaultTargetKg =
+              Math.round((bw * (selectedExercise.loadMultiplier ?? 1.0)) / 2.5) * 2.5;
+            setTargetWeightDisplay(
+              (Math.round(kgToDisplay(defaultTargetKg, units) * 2) / 2).toString()
+            );
           }
         })
         .finally(() => setIsLoadingHistory(false));
     }
   }, [selectedExercise, goalType, units]);
+
+  // Recalculate target date whenever the target weight changes,
+  // as long as the user hasn't manually overridden it.
+  useEffect(() => {
+    if (
+      goalType !== '1rm' ||
+      !selectedExercise ||
+      current1RM === null ||
+      hasManuallySetTargetDate
+    ) {
+      return;
+    }
+
+    const targetKg = displayToKg(parseFloat(targetWeightDisplay), units);
+    if (Number.isNaN(targetKg) || targetKg <= 0) {
+      return;
+    }
+
+    const proj = projectGoal({
+      dataPoints: exerciseDataPoints,
+      baseline1rm: current1RM,
+      targetWeight: targetKg,
+      bodyWeight,
+      loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
+      userGender,
+    });
+
+    if (proj.projectedDate) {
+      setTargetDate(proj.projectedDate);
+    } else {
+      setTargetDate(
+        estimateConservativeTargetDate(
+          current1RM,
+          targetKg,
+          bodyWeight,
+          selectedExercise.loadMultiplier ?? 1.0,
+          userGender
+        )
+      );
+    }
+  }, [
+    targetWeightDisplay,
+    selectedExercise,
+    goalType,
+    current1RM,
+    exerciseDataPoints,
+    bodyWeight,
+    userGender,
+    units,
+    hasManuallySetTargetDate,
+  ]);
 
   const muscleTabs = useMemo(
     () => [
@@ -896,6 +975,7 @@ export default function ExerciseGoalCreationModal({
         selectedDate={targetDate || addMonths(new Date(), 3)}
         onDateSelect={(date) => {
           setTargetDate(date);
+          setHasManuallySetTargetDate(true);
           setDatePickerVisible(false);
         }}
       />

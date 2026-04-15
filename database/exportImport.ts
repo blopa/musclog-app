@@ -364,7 +364,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               continue;
             }
 
-            const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+            const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
             (rec as any)[camel] = value;
           }
         })

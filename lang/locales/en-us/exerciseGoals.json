@@ -65,6 +65,9 @@
     },
     "detail": {
       "viewDetails": "View Details",
+      "recalculateBaseline": "Recalculate baseline",
+      "recalculateBaselineTitle": "Recalculate baseline",
+      "recalculateBaselineConfirmation": "Baseline will be updated from {{oldValue}} {{oldUnit}} to {{newValue}} {{newUnit}}. Are you sure you want to do that?",
       "progress": "Progress",
       "baseline": "Baseline",
       "progressChart": "1RM Progress",

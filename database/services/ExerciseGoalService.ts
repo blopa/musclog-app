@@ -1,7 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
-import Exercise from '@/database/models/Exercise';
 import ExerciseGoal, { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
 
 /**
@@ -187,6 +186,23 @@ export class ExerciseGoalService {
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
+  }
+
+  /**
+   * Update only the baseline 1RM for a goal.
+   */
+  static async updateBaseline1rm(id: string, baseline1rm: number): Promise<ExerciseGoal> {
+    return await database.write(async () => {
+      const goal = await database.get<ExerciseGoal>('exercise_goals').find(id);
+      if (goal.deletedAt) {
+        throw new Error('Cannot update deleted goal');
+      }
+      await goal.update((record) => {
+        record.baseline1rm = baseline1rm;
+        record.updatedAt = new Date();
+      });
+      return goal;
+    });
   }
 
   static async deleteGoal(id: string): Promise<void> {

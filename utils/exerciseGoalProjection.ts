@@ -8,6 +8,7 @@ export interface ProjectionInputs {
   loadMultiplier?: number; // From Exercise model, ensures i18n independence
   userGender?: 'male' | 'female' | 'other';
   hasPerformed1RMDate?: number | null; // Date of first actual 1RM set at/above target logged
+  currentEstimated1RM?: number | null; // Override derived from recent first-set average
 }
 
 export interface ProjectionResult {
@@ -100,13 +101,33 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
 
   // No history at all
   if (dataPoints.length === 0) {
+    const effectiveCurrent1RM = inputs.currentEstimated1RM ?? baseline1rm;
+    const effectiveDelta = effectiveCurrent1RM - baseline1rm;
+    const totalGap = targetWeight - baseline1rm;
+
+    if (effectiveCurrent1RM >= targetWeight) {
+      return {
+        currentEstimated1RM: effectiveCurrent1RM,
+        weeklyProgressionRate: 0,
+        projectedWeeks: 0,
+        projectedDate: new Date(),
+        progressPercent: 100,
+        deltaFromBaseline: effectiveDelta,
+        status: hasPerformed1RMDate != null ? 'achieved' : 'ready_to_achieve',
+        achievedDate: hasPerformed1RMDate ?? null,
+        dataPointCount: 0,
+        isRealistic: true,
+      };
+    }
+
     return {
-      currentEstimated1RM: baseline1rm,
+      currentEstimated1RM: effectiveCurrent1RM,
       weeklyProgressionRate: 0,
       projectedWeeks: null,
       projectedDate: null,
-      progressPercent: 0,
-      deltaFromBaseline: 0,
+      progressPercent:
+        totalGap > 0 ? Math.min(100, Math.max(0, (effectiveDelta / totalGap) * 100)) : 0,
+      deltaFromBaseline: effectiveDelta,
       status: 'no_history',
       achievedDate: null,
       dataPointCount: 0,
@@ -114,8 +135,9 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     };
   }
 
-  // Get current estimated 1RM (latest data point)
-  const currentEstimated1RM = dataPoints[dataPoints.length - 1].estimated1RM;
+  // Get current estimated 1RM (latest data point or override)
+  const currentEstimated1RM =
+    inputs.currentEstimated1RM ?? dataPoints[dataPoints.length - 1].estimated1RM;
   const deltaFromBaseline = currentEstimated1RM - baseline1rm;
 
   // Already achieved or capable?
@@ -269,7 +291,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
  * Returns the realistic upper bound for weekly progression (as % of 1RM)
  * based on the lifter's training tier.
  */
-function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
+export function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
   if (normalizedRS < 1.0) {
     return 1.5;
   } // Novice
@@ -277,6 +299,37 @@ function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
     return 0.5;
   } // Intermediate
   return 0.15; // Advanced
+}
+
+/**
+ * Estimate a conservative target date when insufficient workout history
+ * is available to run a full projection. Uses the same tier-based caps
+ * as the main simulator but assumes the user will progress at the
+ * realistic upper-bound for their current strength level.
+ */
+export function estimateConservativeTargetDate(
+  current1RM: number,
+  targetWeight: number,
+  bodyWeight: number,
+  loadMultiplier: number = 1.0,
+  userGender: 'male' | 'female' | 'other' = 'male'
+): Date {
+  if (current1RM <= 0 || targetWeight <= current1RM) {
+    return new Date();
+  }
+
+  const bw = bodyWeight > 0 ? bodyWeight : 80;
+  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
+  const normalizedRS = current1RM / (bw * loadMultiplier * genderFactor);
+  const capPercent = getRealisticWeeklyRateCapPercent(normalizedRS);
+  const weeklyGainKg = current1RM * (capPercent / 100);
+
+  const gap = targetWeight - current1RM;
+  // If the cap is extremely small, push the date out to the 2-year max.
+  const weeks = weeklyGainKg > 0.001 ? Math.ceil(gap / weeklyGainKg) : 104;
+  const cappedWeeks = Math.min(Math.max(weeks, 1), 104);
+
+  return new Date(Date.now() + cappedWeeks * 7 * 24 * 60 * 60 * 1000);
 }
 
 /**

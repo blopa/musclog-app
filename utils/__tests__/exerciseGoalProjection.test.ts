@@ -1,5 +1,9 @@
 import { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
-import { projectGoal, weightedLinearRegressionSlope } from '@/utils/exerciseGoalProjection';
+import {
+  estimateConservativeTargetDate,
+  projectGoal,
+  weightedLinearRegressionSlope,
+} from '@/utils/exerciseGoalProjection';
 
 describe('exerciseGoalProjection', () => {
   describe('weightedLinearRegressionSlope', () => {
@@ -46,15 +50,15 @@ describe('exerciseGoalProjection', () => {
     it('identifies realistic novice progress (low normalized RS)', () => {
       const dayMs = 24 * 60 * 60 * 1000;
       const dataPoints: ProgressiveOverloadDataPoint[] = [
-        { date: 0, weight: 100, reps: 5, volume: 500, estimated1RM: 115 },
-        { date: 7 * dayMs, weight: 102.5, reps: 5, volume: 512.5, estimated1RM: 117.5 },
-        { date: 14 * dayMs, weight: 105, reps: 5, volume: 525, estimated1RM: 120 },
+        { date: 0, weight: 70, reps: 5, volume: 350, estimated1RM: 80 },
+        { date: 7 * dayMs, weight: 71, reps: 5, volume: 355, estimated1RM: 81 },
+        { date: 14 * dayMs, weight: 72, reps: 5, volume: 360, estimated1RM: 82 },
       ];
-      // Squat-like load multiplier (1.4). 120 / (80 * 1.4) = 1.07 (Early Intermediate)
+      // Squat-like load multiplier (1.4). 82 / (80 * 1.4) = 0.732 (Novice)
       const result = projectGoal({
         dataPoints,
-        baseline1rm: 115,
-        targetWeight: 130,
+        baseline1rm: 80,
+        targetWeight: 100,
         bodyWeight,
         loadMultiplier: 1.4,
       });
@@ -96,6 +100,41 @@ describe('exerciseGoalProjection', () => {
 
       // Simulation should push the date out further than linear division
       expect(result.projectedWeeks).toBeGreaterThan(10);
+    });
+  });
+
+  describe('estimateConservativeTargetDate', () => {
+    it('returns today when target is already reached', () => {
+      const date = estimateConservativeTargetDate(100, 100, 80);
+      expect(date.getTime()).toBeLessThanOrEqual(Date.now() + 86400000);
+    });
+
+    it('returns today when current 1RM is invalid', () => {
+      const date = estimateConservativeTargetDate(0, 120, 80);
+      expect(date.getTime()).toBeLessThanOrEqual(Date.now() + 86400000);
+    });
+
+    it('gives a shorter timeline for novices than intermediates', () => {
+      // Novice: 80kg lifter, 50kg 1RM → 70kg target (RS 0.625, cap 1.5%)
+      const noviceDate = estimateConservativeTargetDate(50, 70, 80, 1.0, 'male');
+      // Intermediate: 80kg lifter, 120kg 1RM → 140kg target (RS 1.5, cap 0.5%)
+      const intermediateDate = estimateConservativeTargetDate(120, 140, 80, 1.0, 'male');
+
+      // Novice should be faster because higher cap % outweighs lower baseline
+      expect(noviceDate.getTime()).toBeLessThan(intermediateDate.getTime());
+    });
+
+    it('caps timeline at 104 weeks (2 years)', () => {
+      const date = estimateConservativeTargetDate(200, 300, 80, 1.0, 'male');
+      const twoYearsMs = 104 * 7 * 24 * 60 * 60 * 1000;
+      expect(date.getTime()).toBeLessThanOrEqual(Date.now() + twoYearsMs + 86400000);
+    });
+
+    it('applies gender factor (female gets longer timeline for same absolute weight)', () => {
+      const maleDate = estimateConservativeTargetDate(80, 100, 60, 1.0, 'male');
+      const femaleDate = estimateConservativeTargetDate(80, 100, 60, 1.0, 'female');
+      // Female is treated as more advanced due to 0.7 factor, so timeline should be longer
+      expect(femaleDate.getTime()).toBeGreaterThanOrEqual(maleDate.getTime());
     });
   });
 });
