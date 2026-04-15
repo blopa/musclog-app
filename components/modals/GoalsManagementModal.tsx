@@ -302,62 +302,60 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults, planData]);
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('goalsManagement.title')}
-        headerRight={
-          <Button
-            label={t('goalsManagement.newGoal')}
-            icon={Plus}
-            iconPosition="left"
-            variant="gradientCta"
-            size="sm"
-            onPress={handleNewGoal}
-          />
-        }
-        scrollable={false}
-      >
-        <View className="flex-row border-b border-border-light px-4">
-          <Pressable
-            onPress={() => setActiveTab('nutrition')}
-            className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('goalsManagement.title')}
+      headerRight={
+        <Button
+          label={t('goalsManagement.newGoal')}
+          icon={Plus}
+          iconPosition="left"
+          variant="gradientCta"
+          size="sm"
+          onPress={handleNewGoal}
+        />
+      }
+      scrollable={false}
+    >
+      <View className="flex-row border-b border-border-light px-4">
+        <Pressable
+          onPress={() => setActiveTab('nutrition')}
+          className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+        >
+          <Text
+            className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}
           >
-            <Text
-              className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}
-            >
-              {t('goalsManagement.nutritionAndBodyTab')}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setActiveTab('fitness')}
-            className={`py-4 ${activeTab === 'fitness' ? 'border-b-2 border-accent-primary' : ''}`}
+            {t('goalsManagement.nutritionAndBodyTab')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveTab('fitness')}
+          className={`py-4 ${activeTab === 'fitness' ? 'border-b-2 border-accent-primary' : ''}`}
+        >
+          <Text
+            className={`text-sm font-semibold ${activeTab === 'fitness' ? 'text-accent-primary' : 'text-text-tertiary'}`}
           >
-            <Text
-              className={`text-sm font-semibold ${activeTab === 'fitness' ? 'text-accent-primary' : 'text-text-tertiary'}`}
-            >
-              {t('goalsManagement.fitnessAndExerciseTab')}
-            </Text>
-          </Pressable>
-        </View>
+            {t('goalsManagement.fitnessAndExerciseTab')}
+          </Text>
+        </Pressable>
+      </View>
 
-        {activeTab === 'nutrition' ? (
-          <NutritionGoalsTabContent
-            visible={visible ? activeTab === 'nutrition' : false}
-            onEditGoal={handleEditGoal}
-            onDeleteGoal={handleDeleteGoal}
-            onRegenerateCheckins={handleRegenerateCheckins}
-            isRegenerating={isRegenerating}
-            refreshRef={refreshNutritionRef}
-          />
-        ) : (
-          <FitnessGoalsTabContent
-            visible={visible ? activeTab === 'fitness' : false}
-            onNewGoal={() => setExerciseGoalCreationModalVisible(true)}
-          />
-        )}
-      </FullScreenModal>
+      {activeTab === 'nutrition' ? (
+        <NutritionGoalsTabContent
+          visible={visible ? activeTab === 'nutrition' : false}
+          onEditGoal={handleEditGoal}
+          onDeleteGoal={handleDeleteGoal}
+          onRegenerateCheckins={handleRegenerateCheckins}
+          isRegenerating={isRegenerating}
+          refreshRef={refreshNutritionRef}
+        />
+      ) : (
+        <FitnessGoalsTabContent
+          visible={visible ? activeTab === 'fitness' : false}
+          onNewGoal={() => setExerciseGoalCreationModalVisible(true)}
+        />
+      )}
 
       <GoalCreationMethodModal
         visible={creationMethodModalVisible}
@@ -400,6 +398,6 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         variant="destructive"
         isLoading={isDeletingGoal}
       />
-    </>
+    </FullScreenModal>
   );
 }

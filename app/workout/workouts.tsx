@@ -676,7 +676,46 @@ export default function WorkoutsScreen() {
             setIsBrowseTemplatesVisible(false);
           }
         }}
-      />
+      >
+        <ConfirmationModal
+          visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
+          onClose={() => {
+            setIsCreateFromTemplateConfirmationVisible(false);
+            setSelectedRawTemplate(null);
+          }}
+          onConfirm={async () => {
+            if (!selectedRawTemplate) {
+              return;
+            }
+
+            setIsCreatingWorkoutsFromTemplate(true);
+            await flushLoadingPaint();
+
+            try {
+              const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
+              if (!rawTemplate) {
+                console.error('Could not find raw template data');
+                setIsCreatingWorkoutsFromTemplate(false);
+                return;
+              }
+
+              await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+              showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
+              setIsBrowseTemplatesVisible(false);
+            } catch (error) {
+              console.error('Error creating workouts from template:', error);
+              showSnackbar('error', t('common.error'));
+            } finally {
+              setIsCreatingWorkoutsFromTemplate(false);
+            }
+          }}
+          title={t('workouts.createFromTemplate.title')}
+          message={t('workouts.createFromTemplate.message')}
+          confirmLabel={t('workouts.createFromTemplate.confirm')}
+          cancelLabel={t('workouts.createFromTemplate.cancel')}
+          isLoading={isCreatingWorkoutsFromTemplate}
+        />
+      </BrowseTemplatesModal>
       <ConfirmationModal
         visible={isDeleteConfirmationVisible}
         onClose={() => setIsDeleteConfirmationVisible(false)}
@@ -686,44 +725,6 @@ export default function WorkoutsScreen() {
         confirmLabel={t('workouts.delete')}
         variant="destructive"
         isLoading={isDeletingWorkoutTemplate}
-      />
-      <ConfirmationModal
-        visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
-        onClose={() => {
-          setIsCreateFromTemplateConfirmationVisible(false);
-          setSelectedRawTemplate(null);
-        }}
-        onConfirm={async () => {
-          if (!selectedRawTemplate) {
-            return;
-          }
-
-          setIsCreatingWorkoutsFromTemplate(true);
-          await flushLoadingPaint();
-
-          try {
-            const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
-            if (!rawTemplate) {
-              console.error('Could not find raw template data');
-              setIsCreatingWorkoutsFromTemplate(false);
-              return;
-            }
-
-            await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-            showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
-            setIsBrowseTemplatesVisible(false);
-          } catch (error) {
-            console.error('Error creating workouts from template:', error);
-            showSnackbar('error', t('common.error'));
-          } finally {
-            setIsCreatingWorkoutsFromTemplate(false);
-          }
-        }}
-        title={t('workouts.createFromTemplate.title')}
-        message={t('workouts.createFromTemplate.message')}
-        confirmLabel={t('workouts.createFromTemplate.confirm')}
-        cancelLabel={t('workouts.createFromTemplate.cancel')}
-        isLoading={isCreatingWorkoutsFromTemplate}
       />
       {/* Discard Interrupted Session Confirmation */}
       <ConfirmationModal
