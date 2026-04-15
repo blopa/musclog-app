@@ -9,15 +9,21 @@ function getExportFileName(): string {
   return `${timestamp}-musclog-export.json`;
 }
 
+export async function downloadFile(uri: string, fileName?: string): Promise<void> {
+  const a = document.createElement('a');
+  a.href = uri;
+  if (fileName) {
+    a.download = fileName;
+  }
+  a.click();
+}
+
 export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
   const dbDump = await dumpDatabase(encryptionPhrase);
   const fileName = getExportFileName();
   const blob = new Blob([dbDump], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
+  await downloadFile(url, fileName);
   URL.revokeObjectURL(url);
 }
 

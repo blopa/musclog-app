@@ -1,8 +1,24 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
 
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
+
+// Read the current DB version before WatermelonDB opens its connection, so we
+// can pass accurate fromVersion/toVersion to the pre-migration backup.
+function readCurrentDbVersion(): number | null {
+  try {
+    const db = openDatabaseSync('musclog');
+    const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
+    db.closeSync();
+    return result?.user_version ?? null;
+  } catch {
+    return null;
+  }
+}
+
+const currentDbVersion = readCurrentDbVersion();
 
 // Note: The JSI SQLiteAdapter warning ("JSI SQLiteAdapter not available... falling back to asynchronous operation")
 // is expected and harmless in the following scenarios:
@@ -18,9 +34,11 @@ export default new SQLiteAdapter({
   jsi: true,
   migrationEvents: {
     onStart: () => {
-      createPreMigrationBackup().catch((error) => {
-        console.warn('[PreMigrationBackup] onStart callback failed:', error);
-      });
+      createPreMigrationBackup({ fromVersion: currentDbVersion, toVersion: schema.version }).catch(
+        (error) => {
+          console.warn('[PreMigrationBackup] onStart callback failed:', error);
+        }
+      );
     },
     onError: () => {
       console.warn('[SQLiteMigration] Migration failed');
