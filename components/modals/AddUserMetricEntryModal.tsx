@@ -17,7 +17,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -258,9 +258,9 @@ export default function AddUserMetricEntryModal({
 
       onClose();
     } catch (error) {
-      console.error('Error saving user metrics:', error);
-      captureException(error, { data: { context: 'AddUserMetricEntryModal.handleSave' } });
-      showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
+      handleError(error, 'AddUserMetricEntryModal.handleSave', {
+        snackbarMessage: t('bodyMetrics.addEntry.errorSaving'),
+      });
     } finally {
       setIsSaving(false);
     }

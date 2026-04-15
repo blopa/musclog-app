@@ -27,7 +27,7 @@ import {
   setRestTimerEndAt,
 } from '@/utils/activeWorkoutStorage';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 export default function RestTimerScreen() {
@@ -289,7 +289,7 @@ export default function RestTimerScreen() {
           await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: remaining });
         }
       } catch (err) {
-        captureException(err, { data: { context: 'rest-timer.handleMinus5s' } });
+        handleError(err, 'rest-timer.handleMinus5s');
         console.error('Error saving rest time:', err);
       }
     };
@@ -313,7 +313,7 @@ export default function RestTimerScreen() {
           await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: remaining });
         }
       } catch (err) {
-        captureException(err, { data: { context: 'rest-timer.handlePlus5s' } });
+        handleError(err, 'rest-timer.handlePlus5s');
         console.error('Error saving rest time:', err);
       }
     };
@@ -519,7 +519,7 @@ export default function RestTimerScreen() {
                   `/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
                 );
               } catch (err) {
-                captureException(err, { data: { context: 'rest-timer.onFinishWorkout' } });
+                handleError(err, 'rest-timer.onFinishWorkout');
                 console.error('Error completing workout:', err);
               }
             }

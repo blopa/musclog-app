@@ -11,7 +11,7 @@ import {
   localDayStartMs,
   localNextDayStartMsFromDate,
 } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
@@ -337,7 +337,7 @@ export function useNutritionLogs({
         setTotalCount(allLogs.length);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useNutritionLogs.loadLogs' } });
+      handleError(err, 'useNutritionLogs.loadLogs');
       console.error('Error loading nutrition logs:', err);
       setLogs([]);
       setHasMore(false);
@@ -402,7 +402,7 @@ export function useNutritionLogs({
         setHasMore(newOffset < allLogs.length);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useNutritionLogs.loadMoreLogs' } });
+      handleError(err, 'useNutritionLogs.loadMoreLogs');
       console.error('Error loading more nutrition logs:', err);
       setHasMore(false);
     } finally {

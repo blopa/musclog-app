@@ -10,7 +10,7 @@ import {
   localDayClosedRangeMaxMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { CenteredModal } from './CenteredModal';
@@ -147,9 +147,9 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
 
       onClose();
     } catch (error) {
-      console.error('Error saving cycle log:', error);
-      captureException(error, { data: { context: 'CycleLogModal.handleSave' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'CycleLogModal.handleSave', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }

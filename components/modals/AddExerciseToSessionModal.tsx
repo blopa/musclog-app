@@ -19,7 +19,7 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -192,13 +192,13 @@ export function AddExerciseToSessionModal({
       onAdded?.();
       onClose();
     } catch (err) {
-      console.error('Error adding exercise to session:', err);
-      captureException(err, { data: { context: 'AddExerciseToSessionModal.handleSubmit' } });
-      showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
+      handleError(err, 'AddExerciseToSessionModal.handleSubmit', {
+        snackbarMessage: err instanceof Error ? err.message : t('common.error'),
+      });
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedExerciseId, workoutLogId, numberOfSets, onAdded, onClose, showSnackbar, t]);
+  }, [selectedExerciseId, workoutLogId, numberOfSets, onAdded, onClose, t]);
 
   const muscleTabs = useMemo(
     () => [

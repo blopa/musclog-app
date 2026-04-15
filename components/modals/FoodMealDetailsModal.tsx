@@ -65,6 +65,7 @@ import {
 } from '@/utils/calendarDate';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
+import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
@@ -83,7 +84,6 @@ import {
 } from '@/utils/openFoodFactsMapper';
 import { getProductName } from '@/utils/productName';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { captureException } from '@/utils/sentry';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 
@@ -1627,16 +1627,9 @@ export function FoodMealDetailsModal({
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
-          console.error('Error logging meal:', err);
-
-          captureException(err, {
-            data: {
-              context: 'FoodMealDetailsModal.handleAddFood',
-              // TODO: add meal barcode
-            },
+          handleError(err, 'FoodMealDetailsModal.handleAddFood', {
+            snackbarMessage: t('food.foodDetails.errorMessage'),
           });
-
-          showSnackbar('error', t('food.foodDetails.errorMessage'));
         } finally {
           setIsAddingFood(false);
         }
@@ -1665,16 +1658,9 @@ export function FoodMealDetailsModal({
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
-          console.error('Error updating food log:', err);
-
-          captureException(err, {
-            data: {
-              context: 'FoodMealDetailsModal.handleAddFood',
-              // TODO: add meal barcod
-            },
+          handleError(err, 'FoodMealDetailsModal.handleAddFood', {
+            snackbarMessage: t('food.foodDetails.errorMessage'),
           });
-
-          showSnackbar('error', t('food.foodDetails.errorMessage'));
         } finally {
           setIsAddingFood(false);
         }
@@ -1916,16 +1902,9 @@ export function FoodMealDetailsModal({
 
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
-      console.error('Error tracking food:', error);
-
-      captureException(error, {
-        data: {
-          context: 'FoodMealDetailsModal.handleAddFood 2',
-          // TODO: add meal barcode
-        },
+      handleError(error, 'FoodMealDetailsModal.handleAddFood 2', {
+        snackbarMessage: t('food.foodDetails.errorMessage'),
       });
-
-      showSnackbar('error', t('food.foodDetails.errorMessage'));
     } finally {
       setIsAddingFood(false);
     }
@@ -2132,7 +2111,7 @@ export function FoodMealDetailsModal({
         setLocalCanEdit(true);
       }
     } catch (error) {
-      captureException(error, { data: { context: 'FoodMealDetailsModal.handleTryAnotherSource' } });
+      handleError(error, 'FoodMealDetailsModal.handleTryAnotherSource');
       setAlternateSourceLookupFailed(true);
       setLocalCanEdit(true);
     } finally {

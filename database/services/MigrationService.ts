@@ -32,7 +32,7 @@ import {
 import i18n from '@/lang/lang';
 import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
 import { decryptDatabaseValue } from '@/utils/encryption';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 /** Step keys for progress reporting during migration (for landing screen copy). */
@@ -177,7 +177,7 @@ export class MigrationService {
       return (result[0]?.count ?? 0) > 0;
     } catch (error) {
       console.error('Error accessing old database:', error);
-      captureException(error, { data: { context: 'MigrationService.hasOldDatabaseData' } });
+      handleError(error, 'MigrationService.hasOldDatabaseData');
       return false;
     }
   }
@@ -219,7 +219,7 @@ export class MigrationService {
       return result.length > 0;
     } catch (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
-      captureException(error, { data: { context: 'MigrationService.checkTableExists' } });
+      handleError(error, 'MigrationService.checkTableExists');
       return false;
     }
   }
@@ -261,7 +261,7 @@ export class MigrationService {
       return date.getTime();
     } catch (error) {
       console.warn('Failed to parse timestamp:', textTimestamp);
-      captureException(error, { data: { context: 'MigrationService.parseTimestamp' } });
+      handleError(error, 'MigrationService.parseTimestamp');
       return Date.now();
     }
   }
@@ -427,9 +427,7 @@ export class MigrationService {
               'Encrypted value:',
               encryptedValue
             );
-            captureException(error, {
-              data: { context: 'MigrationService.migrateUserMetricsEntry' },
-            });
+            handleError(error, 'MigrationService.migrateUserMetricsEntry');
             // Continue with other metrics instead of failing completely
           }
         }
@@ -670,9 +668,7 @@ export class MigrationService {
       return bestMatch?.id || null;
     } catch (error) {
       console.error('Error finding food by nutritional profile:', error);
-      captureException(error, {
-        data: { context: 'MigrationService.findFoodByNutritionalProfile' },
-      });
+      handleError(error, 'MigrationService.findFoodByNutritionalProfile');
       return null;
     }
   }
@@ -897,7 +893,7 @@ export class MigrationService {
         migratedCount++;
       } catch (error) {
         console.error('Error migrating nutrition log:', error, 'Data:', oldLog);
-        captureException(error, { data: { context: 'MigrationService.migrateNutritionLog' } });
+        handleError(error, 'MigrationService.migrateNutritionLog');
         // Continue with other logs instead of failing completely
       }
       processedRows++;
@@ -1963,7 +1959,7 @@ export class MigrationService {
       console.log('Migration completed successfully!');
     } catch (error) {
       console.error('Migration failed:', error);
-      captureException(error, { data: { context: 'MigrationService.runMigration' } });
+      handleError(error, 'MigrationService.runMigration');
       result.error = error instanceof Error ? error.message : 'Unknown error';
       result.details.errors.push(result.error);
       result.success = false;
@@ -2099,7 +2095,7 @@ export class MigrationService {
       }
     } catch (error) {
       console.error('Error getting migration summary:', error);
-      captureException(error, { data: { context: 'MigrationService.getMigrationSummary' } });
+      handleError(error, 'MigrationService.getMigrationSummary');
     }
 
     return {

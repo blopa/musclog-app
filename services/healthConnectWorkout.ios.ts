@@ -16,7 +16,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -141,9 +141,7 @@ export async function writeWorkoutToHealthConnect(
 
     return workout.uuid;
   } catch (error) {
-    captureException(error, {
-      data: { context: 'healthConnectWorkout.ios.writeWorkoutToHealthConnect' },
-    });
+    handleError(error, 'healthConnectWorkout.ios.writeWorkoutToHealthConnect');
     console.warn('[healthConnectWorkout.iOS] Failed to write workout:', error);
     return undefined;
   }

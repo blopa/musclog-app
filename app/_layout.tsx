@@ -27,7 +27,7 @@ import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
 import { UnreadChatProvider } from '@/context/UnreadChatContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 // Fix NativeWind className support on iOS for these components
 // These components don't properly support className on iOS without cssInterop
@@ -121,14 +121,7 @@ function RootLayout() {
           <SafeAreaProvider>
             <Sentry.ErrorBoundary
               onError={(error, errorInfo) => {
-                // Use our consent-aware captureException
-                captureException(error, {
-                  data: {
-                    react: {
-                      componentStack: errorInfo,
-                    },
-                  },
-                });
+                handleError(error, 'app._layout.errorBoundary');
               }}
               fallback={({ error, resetError }) => (
                 <ErrorFallbackScreen

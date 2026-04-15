@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Food from '@/database/models/Food';
 import { NutritionService } from '@/database/services';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 // Hook parameters
 export interface UseFavoriteFoodsParams {
@@ -50,7 +50,7 @@ export function useFavoriteFoods({
         setTotalCount(count);
         setError(null);
       } catch (err) {
-        captureException(err, { data: { context: 'useFavoriteFoods.loadCount' } });
+        handleError(err, 'useFavoriteFoods.loadCount');
         console.error('Error loading favorite foods count:', err);
         setError(err as Error);
         setTotalCount(0);
@@ -82,7 +82,7 @@ export function useFavoriteFoods({
       setHasMore(foodsList.length === initialLimit && foodsList.length < count);
       setCurrentOffset(foodsList.length);
     } catch (err) {
-      captureException(err, { data: { context: 'useFavoriteFoods.loadFavorites' } });
+      handleError(err, 'useFavoriteFoods.loadFavorites');
       console.error('Error loading favorite foods:', err);
       setFoods([]);
       setHasMore(false);
@@ -124,7 +124,7 @@ export function useFavoriteFoods({
         setHasMore(newOffset < totalCount);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useFavoriteFoods.loadMoreFavorites' } });
+      handleError(err, 'useFavoriteFoods.loadMoreFavorites');
       console.error('Error loading more favorite foods:', err);
       setHasMore(false);
       setError(err as Error);

@@ -12,6 +12,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { handleError } from '@/utils/handleError';
 import {
   calculateMacros,
   fiberFromCalories,
@@ -19,7 +20,6 @@ import {
   getEffectiveKcalPerKgWeightLoss,
   getMinCalories,
 } from '@/utils/nutritionCalculator';
-import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -161,11 +161,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       try {
         await NutritionGoalService.regenerateCheckins(goal.id);
       } catch (error) {
-        console.error('Error regenerating check-ins:', error);
-        captureException(error, {
-          data: { context: 'GoalsManagementModal.handleRegenerateCheckins' },
+        handleError(error, 'GoalsManagementModal.handleRegenerateCheckins', {
+          snackbarMessage: t('errors.somethingWentWrong'),
         });
-        showSnackbar('error', t('errors.somethingWentWrong'));
       } finally {
         setIsRegenerating(false);
       }
@@ -185,9 +183,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         await refreshNutritionRef.current();
       }
     } catch (error) {
-      console.error('Error deleting nutrition goal:', error);
-      captureException(error, { data: { context: 'GoalsManagementModal.handleConfirmDelete' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'GoalsManagementModal.handleConfirmDelete', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsDeletingGoal(false);
       setGoalToDelete(null);
@@ -232,11 +230,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       setNutritionGoalsModalVisible(false);
       setPendingWizardPrefill(null);
     } catch (error) {
-      console.error('Error saving nutrition goals:', error);
-      captureException(error, {
-        data: { context: 'GoalsManagementModal.handleSaveNutritionGoals' },
+      handleError(error, 'GoalsManagementModal.handleSaveNutritionGoals', {
+        snackbarMessage: t('errors.somethingWentWrong'),
       });
-      showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 

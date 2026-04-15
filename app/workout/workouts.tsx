@@ -37,7 +37,7 @@ import { useWorkoutTemplateDetails } from '@/hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -247,12 +247,12 @@ export default function WorkoutsScreen() {
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
       } catch (err) {
-        console.error('Error starting workout:', err);
-        captureException(err, { data: { context: 'workouts.handleStartWorkout' } });
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        handleError(err, 'workouts.handleStartWorkout', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
       }
     },
-    [showSnackbar, t]
+    [t]
   );
 
   // Helper function to open preview modal (now synchronous!)
@@ -742,7 +742,7 @@ export default function WorkoutsScreen() {
             setInterruptedWorkoutLog(null);
           } catch (err) {
             console.error('Error discarding interrupted workout:', err);
-            captureException(err, { data: { context: 'workouts.discardInterrupted' } });
+            handleError(err, 'workouts.discardInterrupted');
             showSnackbar('error', t('errors.somethingWentWrong'));
           } finally {
             setIsDiscardingInterrupted(false);
@@ -822,7 +822,7 @@ export default function WorkoutsScreen() {
               await log.markAsDeleted();
             } catch (err) {
               console.error('Error canceling workout:', err);
-              captureException(err, { data: { context: 'workouts.cancelWorkout' } });
+              handleError(err, 'workouts.cancelWorkout');
               showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }

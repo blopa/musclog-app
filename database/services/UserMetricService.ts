@@ -6,7 +6,7 @@ import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export class UserMetricService {
   /**
@@ -139,9 +139,7 @@ export class UserMetricService {
         date: plain.date,
         timezone: plain.timezone,
       }).catch((err) => {
-        captureException(err, {
-          data: { context: 'UserMetricService.saveUserMetric.healthConnect' },
-        });
+        handleError(err, 'UserMetricService.saveUserMetric.healthConnect');
       });
 
       if (hcId) {

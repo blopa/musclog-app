@@ -12,7 +12,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -77,11 +77,9 @@ export function GenericEditModal({
       await onSave(formValues);
       onClose();
     } catch (error) {
-      console.error('Error saving record:', error);
-      captureException(error, { data: { context: 'GenericEditModal.handleSave' } });
-      const errorMessage = error instanceof Error ? error.message : t('common.saveError');
-      showSnackbar('error', errorMessage, {
-        subtitle: t('common.saveErrorSubtitle'),
+      handleError(error, 'GenericEditModal.handleSave', {
+        snackbarMessage: error instanceof Error ? error.message : t('common.saveError'),
+        snackbarOptions: { subtitle: t('common.saveErrorSubtitle') },
       });
     } finally {
       setIsSaving(false);

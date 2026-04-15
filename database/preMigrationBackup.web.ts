@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import { isStaticExport } from '@/constants/platform';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { dumpDatabase } from './exportDb';
 import type { BackupFileMeta } from './preMigrationBackup';
@@ -187,9 +187,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     console.log(`[WebBackup] Created backup v${fromVersion}→v${toVersion} (hash: ${hash})`);
   } catch (error) {
     console.error('[WebBackup] Failed to create backup:', error);
-    captureException(error, {
-      data: { context: 'preMigrationBackup.web', fromVersion, toVersion },
-    });
+    handleError(error, 'preMigrationBackup.web');
   } finally {
     // Always advance the stored version so the backup doesn't run again on
     // the next launch even if the dump above failed.

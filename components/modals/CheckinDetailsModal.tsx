@@ -24,13 +24,12 @@ import {
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
 } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
 } from '@/utils/nutritionCalculator';
-import { captureException } from '@/utils/sentry';
-import { showSnackbar } from '@/utils/snackbarService';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -177,9 +176,9 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
       onClose();
     } catch (e) {
-      captureException(e, { data: { context: 'CheckinDetailsModal.handleSave' } });
-      showSnackbar('error', t('nutritionGoals.errorSaving'));
-      console.error('Error saving nutrition goals:', e);
+      handleError(e, 'CheckinDetailsModal.handleSave', {
+        snackbarMessage: t('nutritionGoals.errorSaving'),
+      });
     }
   };
 

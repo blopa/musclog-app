@@ -54,8 +54,8 @@ import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnified
 import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
-import { captureException } from '@/utils/sentry';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
@@ -909,9 +909,9 @@ export function FoodSearchModal({
       onClose();
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
-      console.error('Error logging same as yesterday:', err);
-      captureException(err, { data: { context: 'FoodSearchModal.handleSameAsYesterday' } });
-      showSnackbar('error', t('foodSearch.sameAsYesterdayError'));
+      handleError(err, 'FoodSearchModal.handleSameAsYesterday', {
+        snackbarMessage: t('foodSearch.sameAsYesterdayError'),
+      });
     } finally {
       setIsAddingSameAsYesterday(false);
     }

@@ -34,7 +34,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { exportDatabase, importDatabase } from '@/utils/file';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { CenteredModal } from './CenteredModal';
 import {
@@ -123,9 +123,9 @@ export function AdvancedSettingsModal({
       setExportModalVisible(false);
       setEncryptionPhrase('');
     } catch (err) {
-      console.error('Export failed:', err);
-      captureException(err, { data: { context: 'AdvancedSettingsModal.handleExportConfirm' } });
-      showSnackbar('error', t('settings.advancedSettings.exportFailedMessage'));
+      handleError(err, 'AdvancedSettingsModal.handleExportConfirm', {
+        snackbarMessage: t('settings.advancedSettings.exportFailedMessage'),
+      });
     } finally {
       setLoading(false);
     }
@@ -138,23 +138,23 @@ export function AdvancedSettingsModal({
       setImportModalVisible(false);
       setDecryptionPhrase('');
     } catch (err) {
-      console.error('Import failed:', err);
-      captureException(err, { data: { context: 'AdvancedSettingsModal.handleImportConfirm' } });
-      showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
+      handleError(err, 'AdvancedSettingsModal.handleImportConfirm', {
+        snackbarMessage: t('settings.advancedSettings.importFailedMessage'),
+      });
     } finally {
       setLoading(false);
     }
-  }, [decryptionPhrase, t, showSnackbar]);
+  }, [decryptionPhrase, t]);
 
   const handleOpenAppSettings = useCallback(async () => {
     try {
       await Linking.openSettings();
     } catch (err) {
-      console.error('Failed to open settings:', err);
-      captureException(err, { data: { context: 'AdvancedSettingsModal.handleOpenAppSettings' } });
-      showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
+      handleError(err, 'AdvancedSettingsModal.handleOpenAppSettings', {
+        snackbarMessage: t('settings.advancedSettings.openSettingsFailedMessage'),
+      });
     }
-  }, [t, showSnackbar]);
+  }, [t]);
 
   const onRequireExportEncryptionToggle = useCallback(
     async (value: boolean) => {
@@ -182,10 +182,7 @@ export function AdvancedSettingsModal({
             }
           }
         } catch (error) {
-          console.error('Biometric authentication error:', error);
-          captureException(error, {
-            data: { context: 'AdvancedSettingsModal.onValueChange.biometrics' },
-          });
+          handleError(error, 'AdvancedSettingsModal.onValueChange.biometrics');
         }
 
         // Fallback to manual phrase confirmation if biometrics unavailable or failed

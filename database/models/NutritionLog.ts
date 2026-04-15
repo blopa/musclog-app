@@ -4,8 +4,8 @@ import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
 import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
-import { captureException } from '@/utils/sentry';
 
 import type { MicrosData } from './Food';
 import Food from './Food';
@@ -153,7 +153,7 @@ export default class NutritionLog extends Model {
           return this.amount * (portion.gramWeight ?? 0);
         }
       } catch (error) {
-        captureException(error, { data: { context: 'NutritionLog.getGramWeight' } });
+        handleError(error, 'NutritionLog.getGramWeight');
       }
     }
 

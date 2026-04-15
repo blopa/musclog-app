@@ -45,7 +45,6 @@ import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
-import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
@@ -262,13 +261,13 @@ export default function HomeScreen() {
               router.replace('/onboarding/landing');
             }
           } catch (e) {
-            captureException(e, { data: { context: 'index.restoreOnboardingStep' } });
+            handleError(e, 'index.restoreOnboardingStep');
             console.error('Error restoring onboarding step, falling back to landing', e);
             router.replace('/onboarding/landing');
           }
         }
       } catch (error) {
-        captureException(error, { data: { context: 'index.checkOnboardingStatus' } });
+        handleError(error, 'index.checkOnboardingStatus');
         console.error('Error checking onboarding status:', error);
       } finally {
         setIsCheckingOnboarding(false);

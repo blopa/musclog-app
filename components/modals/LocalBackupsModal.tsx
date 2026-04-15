@@ -15,7 +15,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -59,8 +59,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         setRequireExportEncryption(false); // Consider as disabled to allow export
       }
     } catch (error) {
-      console.error('Failed to fetch backups:', error);
-      captureException(error, { data: { context: 'LocalBackupsModal.fetchBackups' } });
+      handleError(error, 'LocalBackupsModal.fetchBackups');
       setDatabaseFailedToInitiate(true);
       setRequireExportEncryption(false); // Consider as disabled to allow export
       setBackups([]);
@@ -114,9 +113,9 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         await reloadApp();
       }, 1500);
     } catch (error) {
-      console.error('Restore failed:', error);
-      captureException(error, { data: { context: 'LocalBackupsModal.handleConfirmRestore' } });
-      showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
+      handleError(error, 'LocalBackupsModal.handleConfirmRestore', {
+        snackbarMessage: t('settings.advancedSettings.importFailedMessage'),
+      });
     } finally {
       setIsProcessing(false);
     }

@@ -14,7 +14,7 @@ import {
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
 } from '@/utils/activeWorkoutStorage';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
@@ -344,7 +344,7 @@ export class WorkoutService {
         }
       } catch (err) {
         console.warn('MWEM calorie calculation failed:', err);
-        captureException(err, { data: { context: 'WorkoutService.calculateMwemCalories' } });
+        handleError(err, 'WorkoutService.calculateMwemCalories');
       }
 
       // Detect personal records
@@ -397,7 +397,7 @@ export class WorkoutService {
         }
       } catch (err) {
         console.warn('Health Connect workout write failed:', err);
-        captureException(err, { data: { context: 'WorkoutService.writeWorkoutToHealthConnect' } });
+        handleError(err, 'WorkoutService.writeWorkoutToHealthConnect');
       }
 
       return {
@@ -611,9 +611,7 @@ export class WorkoutService {
               await setToDelete.markAsDeleted();
             } catch (err) {
               console.warn(`Failed to delete set ${deletedId}:`, err);
-              captureException(err, {
-                data: { context: 'WorkoutService.updateWorkoutLogExercises.deleteSet' },
-              });
+              handleError(err, 'WorkoutService.updateWorkoutLogExercises.deleteSet');
             }
           }
         }
@@ -722,9 +720,7 @@ export class WorkoutService {
             }
           } catch (err) {
             console.warn(`Failed to update set ${update.setId}:`, err);
-            captureException(err, {
-              data: { context: 'WorkoutService.updateWorkoutLogExercises.updateSet' },
-            });
+            handleError(err, 'WorkoutService.updateWorkoutLogExercises.updateSet');
           }
         }
       });

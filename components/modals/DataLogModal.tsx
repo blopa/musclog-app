@@ -40,7 +40,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUserMetricDataLogs } from '@/hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '@/hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '@/hooks/useWorkoutTemplateDataLogs';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -874,9 +874,9 @@ export function DataLogModal({
       }
       await refresh();
     } catch (error) {
-      console.error('Toggle favorite failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleToggleFavorite' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'DataLogModal.handleToggleFavorite', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
 
@@ -910,9 +910,9 @@ export function DataLogModal({
         await NutritionGoalService.regenerateCheckins(selectedItem.id);
         showSnackbar('success', t('common.success'));
       } catch (error) {
-        console.error('Regenerate check-ins failed:', error);
-        captureException(error, { data: { context: 'DataLogModal.handleRegenerateCheckins' } });
-        showSnackbar('error', t('common.error'));
+        handleError(error, 'DataLogModal.handleRegenerateCheckins', {
+          snackbarMessage: t('common.error'),
+        });
       } finally {
         setIsRegenerating(false);
       }
@@ -957,9 +957,9 @@ export function DataLogModal({
       }
       await refresh();
     } catch (error) {
-      console.error('Duplicate failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleDuplicate' } });
-      showSnackbar('error', t('common.duplicateFailed'));
+      handleError(error, 'DataLogModal.handleDuplicate', {
+        snackbarMessage: t('common.duplicateFailed'),
+      });
     } finally {
       setIsDuplicating(false);
     }
@@ -1046,9 +1046,9 @@ export function DataLogModal({
       await refresh();
       setDeleteModalVisible(false);
     } catch (error) {
-      console.error('Delete failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleDelete' } });
-      showSnackbar('error', t('common.deleteFailed'));
+      handleError(error, 'DataLogModal.handleDelete', {
+        snackbarMessage: t('common.deleteFailed'),
+      });
     } finally {
       setIsDeleting(false);
     }

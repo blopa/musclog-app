@@ -23,7 +23,7 @@ import { database } from '@/database';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import Setting from '@/database/models/Setting';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 import {
@@ -212,9 +212,7 @@ export async function writeUserMetricToHealthConnect(
       return s?.uuid;
     }
   } catch (e) {
-    captureException(e, {
-      data: { context: 'healthConnectFitness.ios.writeUserMetricToHealthConnect' },
-    });
+    handleError(e, 'healthConnectFitness.ios.writeUserMetricToHealthConnect');
     console.warn('[healthConnectFitness.iOS] writeUserMetricToHealthConnect failed:', e);
   }
   return undefined;
@@ -256,7 +254,7 @@ export async function syncFitnessMetrics(
       totals.deleted += counts.deleted;
       totals.skipped += counts.skipped;
     } catch (err) {
-      captureException(err, { data: { context: 'healthConnectFitness.ios.syncLoop' } });
+      handleError(err, 'healthConnectFitness.ios.syncLoop');
       console.warn(`[healthConnectFitness.iOS] Failed to sync ${def.hkId}:`, err);
     }
   }

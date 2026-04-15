@@ -6,7 +6,7 @@ import { database } from '@/database';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import { MealService } from '@/database/services';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 // Hook parameters
 export interface UseMealsParams {
@@ -135,7 +135,7 @@ export function useMeals({
         setTotalCount(allMeals.length);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useMeals.loadMeals' } });
+      handleError(err, 'useMeals.loadMeals');
       console.error('Error loading meals:', err);
       setMeals([]);
       setHasMore(false);
@@ -171,7 +171,7 @@ export function useMeals({
         setTotalNutrients(undefined);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useMeals.loadMealWithFoods' } });
+      handleError(err, 'useMeals.loadMealWithFoods');
       console.error('Error loading meal with foods:', err);
       setMeal(null);
       setFoods([]);
@@ -225,7 +225,7 @@ export function useMeals({
         setHasMore(newOffset < allMeals.length);
       }
     } catch (err) {
-      captureException(err, { data: { context: 'useMeals.loadMoreMeals' } });
+      handleError(err, 'useMeals.loadMoreMeals');
       console.error('Error loading more meals:', err);
       setHasMore(false);
     } finally {

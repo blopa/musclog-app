@@ -28,7 +28,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { localDayStartMs } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 
@@ -173,9 +173,7 @@ export async function writeNutritionLogToHealthConnect(
     );
     return correlation?.uuid;
   } catch (err) {
-    captureException(err, {
-      data: { context: 'healthConnectNutrition.ios.writeNutritionLogToHealthConnect' },
-    });
+    handleError(err, 'healthConnectNutrition.ios.writeNutritionLogToHealthConnect');
     console.warn('[healthConnectNutrition.iOS] writeNutritionLogToHealthConnect failed:', err);
     return undefined;
   }

@@ -22,7 +22,7 @@ import { database } from '@/database';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import Setting from '@/database/models/Setting';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
@@ -178,9 +178,7 @@ export async function writeUserMetricToHealthConnect(
     const ids = await healthConnectService.insertRecords([record]);
     return ids[0];
   } catch (err) {
-    captureException(err, {
-      data: { context: 'healthConnectFitness.android.writeUserMetricToHealthConnect' },
-    });
+    handleError(err, 'healthConnectFitness.android.writeUserMetricToHealthConnect');
     console.warn('[healthConnectFitness] writeUserMetricToHealthConnect failed:', err);
     return undefined;
   }
@@ -239,7 +237,7 @@ export async function syncFitnessMetrics(
       totals.deleted += counts.deleted;
       totals.skipped += counts.skipped;
     } catch (err) {
-      captureException(err, { data: { context: 'healthConnectFitness.android.syncLoop' } });
+      handleError(err, 'healthConnectFitness.android.syncLoop');
       console.warn(`[healthConnectFitness] Failed to sync ${hcType}:`, err);
     }
   }

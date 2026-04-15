@@ -13,8 +13,7 @@ import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
-import { captureException } from '@/utils/sentry';
-import { showSnackbar } from '@/utils/snackbarService';
+import { handleError } from '@/utils/handleError';
 
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -132,9 +131,9 @@ export function PortionSizesPickerModal({
         setLocalSelectedIds((prev) => Array.from(new Set([...prev, created.id])));
       }
     } catch (err) {
-      console.error('Error creating food portion:', err);
-      captureException(err, { data: { context: 'PortionSizesPickerModal.handleCreatePortion' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'PortionSizesPickerModal.handleCreatePortion', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setCreateModalVisible(false);
     }

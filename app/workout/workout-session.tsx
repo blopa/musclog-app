@@ -75,7 +75,7 @@ import {
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { formatAppDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
@@ -473,9 +473,9 @@ export default function WorkoutSessionScreen() {
       // Defer closing modal so navigation can run first and we avoid a flash of the session screen
       setTimeout(() => setIsLogSetModalVisible(false), 0);
     } catch (err) {
-      console.error('Error completing set:', err);
-      captureException(err, { data: { context: 'workout-session.handleCompleteSet' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'workout-session.handleCompleteSet', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -517,9 +517,9 @@ export default function WorkoutSessionScreen() {
         );
       }
     } catch (err) {
-      console.error('Error skipping set:', err);
-      captureException(err, { data: { context: 'workout-session.handleSkipSet' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'workout-session.handleSkipSet', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -550,9 +550,9 @@ export default function WorkoutSessionScreen() {
       setRepsInReserve(data.repsInReserve);
       await refresh();
     } catch (err) {
-      console.error('Error updating set:', err);
-      captureException(err, { data: { context: 'workout-session.handleEditSet' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'workout-session.handleEditSet', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -587,9 +587,9 @@ export default function WorkoutSessionScreen() {
 
       await refresh();
     } catch (err) {
-      console.error('Error replacing exercise:', err);
-      captureException(err, { data: { context: 'workout-session.handleReplaceExercise' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'workout-session.handleReplaceExercise', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -610,9 +610,9 @@ export default function WorkoutSessionScreen() {
       setIsSessionFeedbackModalVisible(true);
       setIsEndWorkoutModalVisible(false);
     } catch (err) {
-      console.error('Error completing workout:', err);
-      captureException(err, { data: { context: 'workout-session.handleFinishWorkout' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'workout-session.handleFinishWorkout', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
