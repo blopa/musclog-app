@@ -9,7 +9,7 @@ import { dumpDatabase } from './exportDb';
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
 
-type BackupFileMeta = {
+export type BackupFileMeta = {
   uri: string;
   createdAt: string;
   fromVersion: number | null;
@@ -48,7 +48,7 @@ function formatVersion(value: number | null): string {
   return value == null ? 'unknown' : String(value);
 }
 
-async function getStoredBackups(): Promise<BackupFileMeta[]> {
+export async function getStoredBackups(): Promise<BackupFileMeta[]> {
   const raw = await AsyncStorage.getItem(PRE_MIGRATION_BACKUPS_KEY);
   if (!raw) {
     return [];
@@ -74,6 +74,19 @@ async function getStoredBackups(): Promise<BackupFileMeta[]> {
 
 async function writeStoredBackups(backups: BackupFileMeta[]): Promise<void> {
   await AsyncStorage.setItem(PRE_MIGRATION_BACKUPS_KEY, JSON.stringify(backups));
+}
+
+export async function deleteBackup(uri: string): Promise<void> {
+  const backups = await getStoredBackups();
+  const next = backups.filter((b) => b.uri !== uri);
+
+  try {
+    await deleteAsync(uri, { idempotent: true });
+  } catch (error) {
+    console.error('[PreMigrationBackup] Failed to delete file:', error);
+  }
+
+  await writeStoredBackups(next);
 }
 
 async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
