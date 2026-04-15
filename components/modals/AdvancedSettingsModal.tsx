@@ -51,6 +51,7 @@ import {
   WorkoutTemplateDataModal,
 } from './DataLogModal';
 import { FullScreenModal } from './FullScreenModal';
+import { LocalBackupsModal } from './LocalBackupsModal';
 
 type AdvancedSettingsModalProps = {
   visible: boolean;
@@ -105,6 +106,7 @@ export function AdvancedSettingsModal({
   const [encryptionPhrase, setEncryptionPhrase] = useState('');
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
+  const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
 
   // Disable encryption confirmation modal state
   const [disableEncryptionModalVisible, setDisableEncryptionModalVisible] = useState(false);
@@ -373,6 +375,21 @@ export function AdvancedSettingsModal({
               title={t('settings.advancedSettings.exportFitnessData')}
               subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
               onPress={() => setExportModalVisible(true)}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              }
+            />
+            <SettingsCard
+              icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              iconContainerStyle={{
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.sm,
+                backgroundColor: theme.colors.accent.primary20,
+              }}
+              title={t('settings.advancedSettings.manageLocalBackups')}
+              subtitle={t('settings.advancedSettings.manageLocalBackupsSubtitle')}
+              onPress={() => setLocalBackupsModalVisible(true)}
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
@@ -867,6 +884,11 @@ export function AdvancedSettingsModal({
       <ChatMessageDataModal
         visible={showChatMessagesModal}
         onClose={() => setShowChatMessagesModal(false)}
+      />
+
+      <LocalBackupsModal
+        visible={localBackupsModalVisible}
+        onClose={() => setLocalBackupsModalVisible(false)}
       />
     </>
   );

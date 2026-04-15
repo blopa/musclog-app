@@ -20,15 +20,15 @@ what changes `exportDb.web.ts` requires to support raw reads.
 
 These are the concrete facts needed for implementation:
 
-| Detail | Value |
-|--------|-------|
-| LokiJS package | `@nozbe/lokijs` (v1.5.12-wmelon6) |
-| IndexedDB database name | `"musclog"` (from `adapter.web.ts`) |
-| IndexedDB object store | `"LokiIncrementalData"` (hardcoded in `IncrementalIndexedDBAdapter`) |
-| Schema version key | `_loki_schema_version` stored in the `local_storage` Loki collection |
-| Migration trigger | `_databaseVersion < schema.version` in `DatabaseDriver.js` |
-| Data format per collection | Array of plain objects (same snake_case column names as SQLite `_raw`) |
-| LokiJS-internal fields | `$loki` (row id) and `meta` (timestamps) — must be stripped from export rows |
+| Detail                     | Value                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| LokiJS package             | `@nozbe/lokijs` (v1.5.12-wmelon6)                                            |
+| IndexedDB database name    | `"musclog"` (from `adapter.web.ts`)                                          |
+| IndexedDB object store     | `"LokiIncrementalData"` (hardcoded in `IncrementalIndexedDBAdapter`)         |
+| Schema version key         | `_loki_schema_version` stored in the `local_storage` Loki collection         |
+| Migration trigger          | `_databaseVersion < schema.version` in `DatabaseDriver.js`                   |
+| Data format per collection | Array of plain objects (same snake_case column names as SQLite `_raw`)       |
+| LokiJS-internal fields     | `$loki` (row id) and `meta` (timestamps) — must be stripped from export rows |
 
 When `useIncrementalIndexedDB: false` (i.e. `isStaticExport: true`), LokiJS does not
 persist to IndexedDB at all — the database is fully in-memory and reset on each page
@@ -74,6 +74,7 @@ runWebPreMigrationBackupIfNeeded(): Promise<void>
    IndexedDB persistence, nothing to back up).
 
 2. **Version check via bare Loki**:
+
    ```
    import Loki from '@nozbe/lokijs';
    import IncrementalIndexedDBAdapter from '@nozbe/lokijs/src/incremental-indexeddb-adapter';
@@ -92,11 +93,13 @@ runWebPreMigrationBackupIfNeeded(): Promise<void>
    `Number(schemaVersion) >= CURRENT_DATABASE_VERSION`, return.
 
 4. **Dump data from bare Loki** (reuse helper — see `exportDb.web.ts` changes below):
+
    ```
    const jsonString = await dumpDatabaseFromLoki(loki);
    ```
 
 5. **Trigger browser download**:
+
    ```
    const blob = new Blob([jsonString], { type: 'application/json' });
    const url = URL.createObjectURL(blob);
@@ -127,7 +130,6 @@ This is the raw-Loki equivalent of `dumpDatabase()`:
    - `const rows = col.find()` — returns all LokiJS records
    - Strip LokiJS internal fields from each row: `const { $loki, meta, ...row } = record`
    - Filter `_status === 'deleted'` rows (WatermelonDB soft-deletes)
-   
 2. Apply same special-casing as native `exportDb.ts`:
    - **`settings`**: filter out `SETTINGS_EXCLUDED_TYPES`
    - **`user_metrics`**: decrypt `value` + `unit` via `decryptNumber`/`decryptOptionalString`
@@ -169,12 +171,12 @@ any native impact.
 
 ## Edge Cases
 
-| Case | Behaviour |
-|------|-----------|
-| Static export (`isStaticExport: true`) | Skip entirely — no IndexedDB, no data to back up |
-| Fresh install (no `_loki_schema_version`) | Skip — no pre-existing data |
-| User already backed up this version pair | Skip (check `localStorage` guard key) |
-| Backup download blocked by browser | Log warning; proceed with migration anyway (backup is best-effort, like native) |
+| Case                                                    | Behaviour                                                                                      |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Static export (`isStaticExport: true`)                  | Skip entirely — no IndexedDB, no data to back up                                               |
+| Fresh install (no `_loki_schema_version`)               | Skip — no pre-existing data                                                                    |
+| User already backed up this version pair                | Skip (check `localStorage` guard key)                                                          |
+| Backup download blocked by browser                      | Log warning; proceed with migration anyway (backup is best-effort, like native)                |
 | `useIncrementalIndexedDB: false` with non-static export | Currently not possible in config, but if added later: adapt to use `LokiMemoryAdapter` instead |
 
 ---
