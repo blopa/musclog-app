@@ -1,6 +1,7 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 
 import { migrations } from './migrations';
+import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
 
 // Note: The JSI SQLiteAdapter warning ("JSI SQLiteAdapter not available... falling back to asynchronous operation")
@@ -15,4 +16,17 @@ export default new SQLiteAdapter({
   migrations,
   dbName: 'musclog',
   jsi: true,
+  migrationEvents: {
+    onStart: () => {
+      createPreMigrationBackup().catch((error) => {
+        console.warn('[PreMigrationBackup] onStart callback failed:', error);
+      });
+    },
+    onError: () => {
+      console.warn('[SQLiteMigration] Migration failed');
+    },
+    onSuccess: () => {
+      console.log('[SQLiteMigration] Migration completed');
+    },
+  },
 });
