@@ -216,7 +216,6 @@ export default function ExerciseGoalCreationModal({
               (Math.round(kgToDisplay(defaultTargetKg, units) * 2) / 2).toString()
             );
           }
-
         })
         .finally(() => setIsLoadingHistory(false));
     }

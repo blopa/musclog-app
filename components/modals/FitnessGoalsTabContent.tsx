@@ -9,6 +9,7 @@ import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { useExerciseGoals } from '@/hooks/useExerciseGoals';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { ExerciseGoalDetailModal } from './ExerciseGoalDetailModal';
 
 interface FitnessGoalsTabContentProps {
@@ -19,6 +20,8 @@ interface FitnessGoalsTabContentProps {
 export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabContentProps) {
   const { t } = useTranslation();
   const [detailGoal, setDetailGoal] = useState<ExerciseGoal | null>(null);
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
+  const [isDeletingGoal, setIsDeletingGoal] = useState(false);
 
   const { goals: activeGoals, isLoading: isLoadingActive } = useExerciseGoals({
     mode: 'active',
@@ -35,11 +38,23 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
     visible,
   });
 
-  const handleDeleteGoal = async (id: string) => {
+  const handleDeleteGoal = (id: string) => {
+    setGoalToDelete(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!goalToDelete) {
+      return;
+    }
+    setIsDeletingGoal(true);
     try {
-      await ExerciseGoalService.deleteGoal(id);
+      await ExerciseGoalService.deleteGoal(goalToDelete);
+      setDetailGoal(null);
     } catch (error) {
       console.error('Error deleting exercise goal:', error);
+    } finally {
+      setIsDeletingGoal(false);
+      setGoalToDelete(null);
     }
   };
 
@@ -99,14 +114,18 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
         visible={detailGoal != null}
         goal={detailGoal}
         onClose={() => setDetailGoal(null)}
-        onDelete={
-          detailGoal
-            ? () => {
-                handleDeleteGoal(detailGoal.id);
-                setDetailGoal(null);
-              }
-            : undefined
-        }
+        onDelete={detailGoal ? () => handleDeleteGoal(detailGoal.id) : undefined}
+      />
+
+      <ConfirmationModal
+        visible={goalToDelete != null}
+        onClose={() => setGoalToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title={t('exerciseGoals.deleteGoal')}
+        message={t('exerciseGoals.deleteGoalMessage')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
+        isLoading={isDeletingGoal}
       />
     </ScrollView>
   );
