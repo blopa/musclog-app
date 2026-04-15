@@ -2,11 +2,11 @@ import type { CaptureContext, EventHint, SeverityLevel } from '@sentry/core';
 import * as Sentry from '@sentry/react-native';
 
 import { SettingsService } from '@/database/services/SettingsService';
-import { initializeSentry, isSentryInitialized } from '@/sentry-init';
+import { initializeSentry } from '@/sentry-init';
+import { showSnackbar } from '@/utils/snackbarService';
 
 async function checkConsentAndInitialize(): Promise<boolean> {
   try {
-    // Get the current anonymousBugReport setting
     const settings = await SettingsService.getAnonymousBugReport();
 
     if (!settings) {
@@ -14,14 +14,19 @@ async function checkConsentAndInitialize(): Promise<boolean> {
     }
 
     // Initialize Sentry if not already done
-    if (!isSentryInitialized()) {
-      initializeSentry();
-    }
+    initializeSentry();
 
     return true;
-  } catch (error) {
-    console.error('[Sentry] Error checking consent:', error);
-    return false;
+  } catch (_) {
+    // Initialize Sentry anyway if database is broken or something else fails
+    initializeSentry();
+
+    // Show message to user about database issue
+    showSnackbar('error', 'errors.databaseError.title', {
+      subtitle: 'errors.databaseError.description',
+    });
+
+    return true;
   }
 }
 

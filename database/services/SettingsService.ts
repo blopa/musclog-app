@@ -491,6 +491,13 @@ export class SettingsService {
   }
 
   /**
+   * Get the require export encryption setting
+   */
+  static async getRequireExportEncryption(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true);
+  }
+
+  /**
    * Get the always allow food editing setting
    */
   static async getAlwaysAllowFoodEditing(): Promise<boolean> {

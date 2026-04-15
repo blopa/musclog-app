@@ -6,7 +6,8 @@ import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.t
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
 
-import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
+import { dumpDatabase } from '@/database/exportDb';
+import { restoreDatabase } from '@/database/importDb';
 
 import { detectBarcodes } from './barcodeScanner';
 type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
@@ -18,6 +19,15 @@ function getExportFileName(): string {
   return `${timestamp}-musclog-export.json`;
 }
 
+export async function downloadFile(uri: string, fileName?: string): Promise<void> {
+  try {
+    await Sharing.shareAsync(uri);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    throw error;
+  }
+}
+
 export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
   try {
     const dbDump = await dumpDatabase(encryptionPhrase);
@@ -27,7 +37,7 @@ export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
 
     const fileUri = `${cacheDirectory}${getExportFileName()}`;
     await writeAsStringAsync(fileUri, dbDump);
-    await Sharing.shareAsync(fileUri);
+    await downloadFile(fileUri);
   } catch (error) {
     console.error('Error exporting database:', error);
     throw error;
