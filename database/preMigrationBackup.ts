@@ -8,6 +8,7 @@ import { captureException } from '@/utils/sentry';
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
 const DATABASE_NAME = 'musclog';
+const ASYNC_STORAGE_EXCLUDED_KEYS = new Set(['encryptionKey', 'tempNutritionPlan']);
 
 type BackupFileMeta = {
   uri: string;
@@ -137,10 +138,25 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
       )) as { name: string }[];
       const tableNames = tableRows.map((row) => row.name);
 
-      const tables: Record<string, unknown[]> = {};
+      // Keep top-level payload table-shaped (like exportImport.dumpDatabase) so backups
+      // are easy to inspect and reason about.
+      const dbData: Record<string, unknown> = {
+        _exportVersion: sqliteUserVersion ?? toVersion ?? fromVersion ?? -1,
+      };
       for (const tableName of tableNames) {
         const rows = await db.getAllAsync(`SELECT * FROM ${quoteIdentifier(tableName)};`);
-        tables[tableName] = rows as unknown[];
+        dbData[tableName] = rows as unknown[];
+      }
+
+      const allKeys = await AsyncStorage.getAllKeys();
+      const keysToBackup = allKeys.filter((k) => !ASYNC_STORAGE_EXCLUDED_KEYS.has(k));
+      if (keysToBackup.length > 0) {
+        const pairs = await AsyncStorage.multiGet(keysToBackup);
+        const asyncStorageData: Record<string, string | null> = {};
+        for (const [key, value] of pairs) {
+          asyncStorageData[key] = value;
+        }
+        dbData._async_storage_ = asyncStorageData;
       }
 
       const createdAt = new Date().toISOString();
@@ -148,7 +164,7 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
       const fileName = `${timestamp}-pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}.json`;
       const uri = `${cacheDirectory}${fileName}`;
 
-      const payload = {
+      dbData._pre_migration_meta_ = {
         type: 'musclog_pre_migration_backup',
         createdAt,
         dbName: DATABASE_NAME,
@@ -158,10 +174,9 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
         },
         sqliteUserVersion,
         tableCount: tableNames.length,
-        tables,
       };
 
-      await writeAsStringAsync(uri, JSON.stringify(payload, null, 2));
+      await writeAsStringAsync(uri, JSON.stringify(dbData, null, 2));
 
       const existing = await getStoredBackups();
       const next = await pruneOldBackups([
