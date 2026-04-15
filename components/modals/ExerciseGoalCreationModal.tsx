@@ -121,7 +121,6 @@ export default function ExerciseGoalCreationModal({
   const [goalType, setGoalType] = useState<ExerciseGoalType>('1rm');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseData | null>(null);
   const [targetWeightDisplay, setTargetWeightDisplay] = useState(
-    // TODO: use the loadMultiplier from the exercise to calculate this, we have a code for it somewhere already
     units === 'imperial' ? '225' : '100'
   );
   const [sessionsPerWeek, setSessionsPerWeek] = useState(3);
@@ -161,7 +160,6 @@ export default function ExerciseGoalCreationModal({
       setStep('type');
       setGoalType('1rm');
       setSelectedExercise(null);
-      // TODO: use the loadMultiplier from the exercise to calculate this, we have a code for it somewhere already
       setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
       setSessionsPerWeek(3);
       setTargetDate(null);
@@ -192,11 +190,9 @@ export default function ExerciseGoalCreationModal({
           setUserGender(user?.gender ?? 'male');
 
           const recent1RM = recentAverage?.average1RM;
-          let nextCurrent1RM: number | null = null;
           let nextTargetDisplay: string | undefined;
 
           if (recent1RM != null) {
-            nextCurrent1RM = recent1RM;
             nextTargetDisplay = (
               Math.round(kgToDisplay(recent1RM * 1.1, units) * 2) / 2
             ).toString();
@@ -204,7 +200,7 @@ export default function ExerciseGoalCreationModal({
             setTargetWeightDisplay(nextTargetDisplay);
           } else if (data.length > 0) {
             const latest1RM = data[data.length - 1].estimated1RM;
-            nextCurrent1RM = latest1RM;
+
             nextTargetDisplay = (
               Math.round(kgToDisplay(latest1RM * 1.1, units) * 2) / 2
             ).toString();
@@ -212,6 +208,13 @@ export default function ExerciseGoalCreationModal({
             setTargetWeightDisplay(nextTargetDisplay);
           } else {
             setCurrent1RM(null);
+            // No history: suggest bodyWeight × loadMultiplier as a default target.
+            // This equals the novice→intermediate threshold used in the goal projection.
+            const defaultTargetKg =
+              Math.round((bw * (selectedExercise.loadMultiplier ?? 1.0)) / 2.5) * 2.5;
+            setTargetWeightDisplay(
+              (Math.round(kgToDisplay(defaultTargetKg, units) * 2) / 2).toString()
+            );
           }
 
         })
