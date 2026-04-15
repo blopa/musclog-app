@@ -120,32 +120,25 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   };
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('settings.visualSettings.title')}
-      >
-        <View className="gap-2 py-6">
-          <View
-            style={{
-              marginHorizontal: theme.spacing.padding.base,
-            }}
-          >
-            <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
-              {t('settings.visualSettings.sectionTitle')}
-            </Text>
-            <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
-              {t('settings.visualSettings.sectionSubtitle')}
-            </Text>
+    <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
+      <View className="gap-2 py-6">
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.visualSettings.sectionTitle')}
+          </Text>
+          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.visualSettings.sectionSubtitle')}
+          </Text>
 
-            {renderPickerButton(1)}
-            {renderPickerButton(2)}
-            {renderPickerButton(3)}
-          </View>
+          {renderPickerButton(1)}
+          {renderPickerButton(2)}
+          {renderPickerButton(3)}
         </View>
-      </FullScreenModal>
-
+      </View>
       <BottomPopUpMenu
         visible={activeSlot !== null}
         onClose={() => setActiveSlot(null)}
@@ -153,6 +146,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.visualSettings.selectItem')}
         items={menuItems}
       />
-    </>
+    </FullScreenModal>
   );
 }

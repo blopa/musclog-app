@@ -176,65 +176,63 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
   ];
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('settings.advancedSettings.localBackups.title')}
-      >
-        <ScrollView className="mt-6 px-4">
-          {isLoading ? (
-            <View className="gap-4">
-              {[1, 2, 3].map((i) => (
-                <SkeletonLoader
-                  key={i}
-                  height={80}
-                  width="100%"
-                  borderRadius={theme.borderRadius.lg}
-                />
-              ))}
-            </View>
-          ) : backups.length === 0 ? (
-            <View className="items-center justify-center py-12">
-              <MaterialIcons name="backup" size={48} color={theme.colors.text.tertiary} />
-              <Text className="mt-4 text-base font-medium text-text-secondary">
-                {t('settings.advancedSettings.localBackups.noBackups')}
-              </Text>
-              <Text className="mt-2 text-center text-sm text-text-tertiary">
-                {t('settings.advancedSettings.localBackups.noBackupsDesc')}
-              </Text>
-            </View>
-          ) : (
-            <View className="gap-3">
-              {backups.map((backup) => (
-                <GenericCard
-                  key={backup.uri}
-                  variant="card"
-                  isPressable
-                  onPress={() => handleItemPress(backup)}
-                >
-                  <View className="flex-row items-center justify-between p-4">
-                    <View className="flex-1 gap-1">
-                      <Text className="text-base font-semibold text-text-primary">
-                        {t('settings.advancedSettings.localBackups.backupFromTo', {
-                          from: backup.fromVersion || '?',
-                          to: backup.toVersion || '?',
-                        })}
-                      </Text>
-                      <Text className="text-sm text-text-secondary">
-                        {t('settings.advancedSettings.localBackups.backupDate', {
-                          date: format(new Date(backup.createdAt), 'PPPp'),
-                        })}
-                      </Text>
-                    </View>
-                    <MenuButton onPress={() => handleItemPress(backup)} />
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('settings.advancedSettings.localBackups.title')}
+    >
+      <ScrollView className="mt-6 px-4">
+        {isLoading ? (
+          <View className="gap-4">
+            {[1, 2, 3].map((i) => (
+              <SkeletonLoader
+                key={i}
+                height={80}
+                width="100%"
+                borderRadius={theme.borderRadius.lg}
+              />
+            ))}
+          </View>
+        ) : backups.length === 0 ? (
+          <View className="items-center justify-center py-12">
+            <MaterialIcons name="backup" size={48} color={theme.colors.text.tertiary} />
+            <Text className="mt-4 text-base font-medium text-text-secondary">
+              {t('settings.advancedSettings.localBackups.noBackups')}
+            </Text>
+            <Text className="mt-2 text-center text-sm text-text-tertiary">
+              {t('settings.advancedSettings.localBackups.noBackupsDesc')}
+            </Text>
+          </View>
+        ) : (
+          <View className="gap-3">
+            {backups.map((backup) => (
+              <GenericCard
+                key={backup.uri}
+                variant="card"
+                isPressable
+                onPress={() => handleItemPress(backup)}
+              >
+                <View className="flex-row items-center justify-between p-4">
+                  <View className="flex-1 gap-1">
+                    <Text className="text-base font-semibold text-text-primary">
+                      {t('settings.advancedSettings.localBackups.backupFromTo', {
+                        from: backup.fromVersion || '?',
+                        to: backup.toVersion || '?',
+                      })}
+                    </Text>
+                    <Text className="text-sm text-text-secondary">
+                      {t('settings.advancedSettings.localBackups.backupDate', {
+                        date: format(new Date(backup.createdAt), 'PPPp'),
+                      })}
+                    </Text>
                   </View>
-                </GenericCard>
-              ))}
-            </View>
-          )}
-        </ScrollView>
-      </FullScreenModal>
+                  <MenuButton onPress={() => handleItemPress(backup)} />
+                </View>
+              </GenericCard>
+            ))}
+          </View>
+        )}
+      </ScrollView>
 
       <BottomPopUpMenu
         visible={showMenu}
@@ -264,6 +262,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         variant="primary"
         isLoading={isProcessing}
       />
-    </>
+    </FullScreenModal>
   );
 }

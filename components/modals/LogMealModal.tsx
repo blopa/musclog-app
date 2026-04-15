@@ -149,106 +149,103 @@ export function LogMealModal({
   );
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('meals.logMeal')}
-        footer={footer}
-        scrollable
-        closable={!isLogging}
-      >
-        <View className="mb-6 mt-6 gap-6 px-4">
-          <MealNutritionHighlightCard
-            header={
-              <View className="mb-4 flex-row items-start justify-between">
-                <View className="flex-1">
-                  <View className="mb-2 flex-row items-center gap-2">
-                    <Text
-                      className="text-xs font-semibold uppercase tracking-wider"
-                      style={{
-                        color: theme.colors.text.secondary,
-                        backgroundColor: theme.colors.background.white5,
-                        paddingHorizontal: theme.spacing.padding.xs,
-                        paddingVertical: theme.spacing.padding.xsHalf,
-                        borderRadius: theme.borderRadius.sm,
-                        alignSelf: 'flex-start',
-                      }}
-                    >
-                      {meal.type}
-                    </Text>
-                    {ingredients && ingredients.length > 0 ? (
-                      <Pressable
-                        onPress={() => setShowIngredients(true)}
-                        hitSlop={8}
-                        className="active:opacity-60"
-                      >
-                        <Info size={16} color={theme.colors.accent.primary} />
-                      </Pressable>
-                    ) : null}
-                  </View>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('meals.logMeal')}
+      footer={footer}
+      scrollable
+      closable={!isLogging}
+    >
+      <View className="mb-6 mt-6 gap-6 px-4">
+        <MealNutritionHighlightCard
+          header={
+            <View className="mb-4 flex-row items-start justify-between">
+              <View className="flex-1">
+                <View className="mb-2 flex-row items-center gap-2">
                   <Text
-                    className="mb-1 text-2xl font-bold leading-tight tracking-tight"
-                    style={{ color: theme.colors.text.primary }}
+                    className="text-xs font-semibold uppercase tracking-wider"
+                    style={{
+                      color: theme.colors.text.secondary,
+                      backgroundColor: theme.colors.background.white5,
+                      paddingHorizontal: theme.spacing.padding.xs,
+                      paddingVertical: theme.spacing.padding.xsHalf,
+                      borderRadius: theme.borderRadius.sm,
+                      alignSelf: 'flex-start',
+                    }}
                   >
-                    {meal.name}
+                    {meal.type}
                   </Text>
-                  <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                    {t('meals.customMeal')} • {t('meals.createdByYou')}
-                  </Text>
+                  {ingredients && ingredients.length > 0 ? (
+                    <Pressable
+                      onPress={() => setShowIngredients(true)}
+                      hitSlop={8}
+                      className="active:opacity-60"
+                    >
+                      <Info size={16} color={theme.colors.accent.primary} />
+                    </Pressable>
+                  ) : null}
                 </View>
-
-                {meal.image ? (
-                  <Image
-                    source={{ uri: meal.image }}
-                    className="ml-3 h-16 w-16 rounded-lg"
-                    style={{ backgroundColor: theme.colors.background.overlay }}
-                  />
-                ) : null}
+                <Text
+                  className="mb-1 text-2xl font-bold leading-tight tracking-tight"
+                  style={{ color: theme.colors.text.primary }}
+                >
+                  {meal.name}
+                </Text>
+                <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                  {t('meals.customMeal')} • {t('meals.createdByYou')}
+                </Text>
               </View>
-            }
-            calories={scaledMeal.calories}
-            protein={scaledMeal.protein}
-            carbs={scaledMeal.carbs}
-            fat={scaledMeal.fat}
-            intuitiveMode={intuitiveEatingMode}
+
+              {meal.image ? (
+                <Image
+                  source={{ uri: meal.image }}
+                  className="ml-3 h-16 w-16 rounded-lg"
+                  style={{ backgroundColor: theme.colors.background.overlay }}
+                />
+              ) : null}
+            </View>
+          }
+          calories={scaledMeal.calories}
+          protein={scaledMeal.protein}
+          carbs={scaledMeal.carbs}
+          fat={scaledMeal.fat}
+          intuitiveMode={intuitiveEatingMode}
+        />
+
+        <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
+
+        <DatePickerInput
+          selectedDate={selectedDate}
+          onPress={() => setShowDatePicker(true)}
+          label={t('food.foodDetails.date')}
+          variant="default"
+        />
+
+        {/* Meal Type Selector */}
+        <View>
+          <Text
+            className="mb-3 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('meals.mealType')}
+          </Text>
+          <FilterTabs
+            tabs={[
+              { id: 'breakfast', label: t('food.meals.breakfast') },
+              { id: 'lunch', label: t('food.meals.lunch') },
+              { id: 'dinner', label: t('food.meals.dinner') },
+              { id: 'snack', label: t('food.meals.snacks') },
+              { id: 'other', label: t('food.meals.other') },
+            ]}
+            activeTab={selectedMealType}
+            onTabChange={(tabId) => setSelectedMealType(tabId as MealType)}
+            showContainer={false}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
           />
-
-          <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
-
-          <DatePickerInput
-            selectedDate={selectedDate}
-            onPress={() => setShowDatePicker(true)}
-            label={t('food.foodDetails.date')}
-            variant="default"
-          />
-
-          {/* Meal Type Selector */}
-          <View>
-            <Text
-              className="mb-3 text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
-              {t('meals.mealType')}
-            </Text>
-            <FilterTabs
-              tabs={[
-                { id: 'breakfast', label: t('food.meals.breakfast') },
-                { id: 'lunch', label: t('food.meals.lunch') },
-                { id: 'dinner', label: t('food.meals.dinner') },
-                { id: 'snack', label: t('food.meals.snacks') },
-                { id: 'other', label: t('food.meals.other') },
-              ]}
-              activeTab={selectedMealType}
-              onTabChange={(tabId) => setSelectedMealType(tabId as MealType)}
-              showContainer={false}
-              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
-            />
-          </View>
         </View>
-      </FullScreenModal>
+      </View>
 
-      {/* Date Picker Modal */}
       <DatePickerModal
         visible={showDatePicker}
         onClose={() => setShowDatePicker(false)}
@@ -259,7 +256,6 @@ export function LogMealModal({
         }}
       />
 
-      {/* Ingredients Detail Popup */}
       {ingredients && ingredients.length > 0 ? (
         <CenteredModal
           visible={showIngredients}
@@ -354,6 +350,6 @@ export function LogMealModal({
           </ScrollView>
         </CenteredModal>
       ) : null}
-    </>
+    </FullScreenModal>
   );
 }

@@ -1,6 +1,7 @@
 # iOS UIViewController Presentation Hierarchy Issue
 
 ## The Bug
+
 When **Modal A** is presented on iOS, React Native mounts it in a dedicated `UIViewController`.
 At that point, the original host that presented Modal A is no longer the active presenter.
 
@@ -16,6 +17,7 @@ The safe rule is:
   it from the correct native controller.
 
 ## Known Good Pattern
+
 `FoodSearchModal` is the reference implementation.
 
 In `components/modals/FoodSearchModal.tsx:930-1639`, follow-up modals are rendered inside the
@@ -38,6 +40,7 @@ This works on iOS because the child modals are presented from the active modal's
 ## Already Fixed
 
 ### `GoalsManagementModal`
+
 Fixed in `components/modals/GoalsManagementModal.tsx`.
 
 Before:
@@ -67,6 +70,7 @@ After:
 ```
 
 ### Workout template confirmation flow
+
 Fixed in:
 
 - `app/workout/workouts.tsx`
@@ -76,10 +80,12 @@ Fixed in:
 that confirmation as a sibling on the screen.
 
 ## Confirmed Remaining Cases
+
 These were manually checked during a repo-wide scan. They are the places that still match the same
 iOS-risk pattern.
 
 ### 1. `AdvancedSettingsModal` is a modal hub with many sibling follow-up modals
+
 File:
 
 - `components/modals/AdvancedSettingsModal.tsx:350-886`
@@ -104,6 +110,7 @@ Fix:
 - `LocalBackupsModal` should also be rendered inside the `AdvancedSettingsModal` tree.
 
 ### 2. `LocalBackupsModal` opens menus and confirmations as siblings
+
 File:
 
 - `components/modals/LocalBackupsModal.tsx:180-257`
@@ -124,6 +131,7 @@ Fix:
 - Render the `BottomPopUpMenu` and both `ConfirmationModal`s inside the `FullScreenModal`.
 
 ### 3. `CheckinDetailsModal` opens `NutritionGoalsModal` as a sibling
+
 File:
 
 - `components/modals/CheckinDetailsModal.tsx:195-200`
@@ -144,6 +152,7 @@ Fix:
 - Move `NutritionGoalsModal` inside the `FullScreenModal` in both branches.
 
 ### 4. `CycleLogModal` opens the date picker as a sibling
+
 File:
 
 - `components/modals/CycleLogModal.tsx:168-253`
@@ -162,6 +171,7 @@ Fix:
 - Render `DatePickerModal` inside the `CenteredModal` children.
 
 ### 5. `LogMealModal` opens follow-up modals as siblings
+
 File:
 
 - `components/modals/LogMealModal.tsx:153-264`
@@ -181,6 +191,7 @@ Fix:
 - Move both follow-up modals inside the `FullScreenModal`.
 
 ### 6. `MealEstimationModal` opens delete confirmation as a sibling
+
 File:
 
 - `components/modals/MealEstimationModal.tsx:120-154`
@@ -199,6 +210,7 @@ Fix:
 - Render the confirmation modal inside the `FullScreenModal`.
 
 ### 7. `PortionSizesPickerModal` opens `CreateFoodPortionModal` as a sibling
+
 File:
 
 - `components/modals/PortionSizesPickerModal.tsx:144-256`
@@ -217,6 +229,7 @@ Fix:
 - Render `CreateFoodPortionModal` inside the `FullScreenModal`.
 
 ### 8. `ViewExerciseModal` opens menu/edit/delete flows as siblings
+
 File:
 
 - `components/modals/ViewExerciseModal.tsx:385-648`
@@ -237,6 +250,7 @@ Fix:
 - Move `ConfirmationModal` and `GenericEditModal` inside the `FullScreenModal`.
 
 ### 9. `VisualSettingsModal` opens the picker menu as a sibling
+
 File:
 
 - `components/modals/VisualSettingsModal.tsx:124-149`
@@ -255,6 +269,7 @@ Fix:
 - Render the `BottomPopUpMenu` inside the `FullScreenModal`.
 
 ### 10. `FoodMealDetailsModal` mixes a safe child modal and an unsafe sibling popup
+
 File:
 
 - `components/modals/FoodMealDetailsModal.tsx:2172-2323`
@@ -275,6 +290,7 @@ Fix:
 - Move the `BottomPopUp` inside the `FullScreenModal`.
 
 ### 11. `DataLogModal` is another modal hub with many sibling follow-up modals
+
 File:
 
 - `components/modals/DataLogModal.tsx:1368-1611`
@@ -301,6 +317,7 @@ Fix:
   pattern.
 
 ## Pattern To Use Everywhere
+
 Unsafe:
 
 ```tsx
