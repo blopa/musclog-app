@@ -64,6 +64,7 @@
 - **Avoid Deadlocks**: Never nest `database.write()` calls. Methods decorated with `@writer` should not be called from within another write block.
 - **Web Compatibility**: On web, `unsafeResetDatabase()` must also be wrapped in a write block.
 - **JSON Fields**: Use the `@json` decorator for complex object fields (e.g., `@json('micros_json')`, `@json('week_days_json')`). Keep a plaintext date field alongside encrypted fields when the date is needed for DB queries.
+- **Boot-time DB-ready gate**: `seedProductionData()` calls `unsafeResetDatabase()` on a fresh install, which temporarily swaps the real adapter for an `ErrorAdapter` that throws `"Cannot call database.adapter.underlyingAdapter while the database is being reset"` on any query. Any code that runs at app startup (e.g. inside a `useEffect` in `Migrations.tsx`) and touches the DB **must** await `waitForDbReady()` from `database/dbReady.ts` before issuing queries. `seedProductionData()` calls `markDbReady()` when it finishes (both the fast-path and the full reset+seed path).
 
 ### Component Design
 
