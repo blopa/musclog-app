@@ -101,7 +101,7 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured, intuitiveEatingMode } = useSettings();
+  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -1295,6 +1295,7 @@ export default function FoodScreen() {
                     }}
                     secondaryNutrients={secondaryNutrients}
                     intuitiveMode={intuitiveEatingMode}
+                    nutritionDisplay={nutritionDisplay}
                     menuButton={
                       <MenuButton
                         onPress={() => setIsGoalsManagementModalVisible(true)}

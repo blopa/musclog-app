@@ -229,6 +229,20 @@
         "checkin": "Отметка"
       }
     },
+    "nutritionDisplay": {
+      "sectionTitle": "Отображение питания",
+      "sectionSubtitle": "Выберите, какие макросы отображаются в сводке питания.",
+      "label": "Видимые макросы",
+      "popupTitle": "Видимые макросы",
+      "popupSubtitle": "Переключить отображение макросов",
+      "allSelected": "Все макросы",
+      "selected": "{{count}} макроса",
+      "carbs": "Углеводы",
+      "protein": "Белок",
+      "fats": "Жиры",
+      "fiber": "Клетчатка",
+      "alcohol": "Алкоголь"
+    },
     "notificationsSettings": {
       "title": "Уведомления",
       "subtitle": "Оповещения о тренировках, питании и цикле",

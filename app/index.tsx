@@ -62,7 +62,7 @@ export default function HomeScreen() {
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults } = useDefaultNutritionGoals();
-  const { isAiConfigured, intuitiveEatingMode } = useSettings();
+  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
@@ -413,6 +413,7 @@ export default function HomeScreen() {
                 }}
                 secondaryNutrients={dailySecondaryNutrients}
                 intuitiveMode={intuitiveEatingMode}
+                nutritionDisplay={nutritionDisplay}
                 menuButton={
                   <MenuButton
                     onPress={() => setIsGoalsManagementModalVisible(true)}

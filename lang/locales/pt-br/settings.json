@@ -229,6 +229,20 @@
         "checkin": "Verificação"
       }
     },
+    "nutritionDisplay": {
+      "sectionTitle": "Exibição de Nutrição",
+      "sectionSubtitle": "Escolha quais macros são exibidos no resumo nutricional.",
+      "label": "Macros Visíveis",
+      "popupTitle": "Macros Visíveis",
+      "popupSubtitle": "Alternar quais macros são exibidos",
+      "allSelected": "Todos os macros",
+      "selected": "{{count}} macros",
+      "carbs": "Carboidratos",
+      "protein": "Proteína",
+      "fats": "Gorduras",
+      "fiber": "Fibra",
+      "alcohol": "Álcool"
+    },
     "notificationsSettings": {
       "title": "Notificações",
       "subtitle": "Alertas de treino, nutrição e ciclo",

@@ -31,6 +31,7 @@ import {
   NOTIFICATIONS_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
+  NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -89,6 +90,7 @@ type SettingsState = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  nutritionDisplay: string;
   isLoading: boolean;
 };
 
@@ -129,6 +131,7 @@ const DEFAULT_STATE: SettingsState = {
   showWeightPrediction: true,
   requireExportEncryption: true,
   intuitiveEatingMode: false,
+  nutritionDisplay: '11111',
   isLoading: true,
 };
 
@@ -227,6 +230,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
+    nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     isLoading: false,
   };
 }
@@ -267,6 +271,7 @@ export type SettingsContextType = UseSettingsResult & {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  nutritionDisplay: string;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
