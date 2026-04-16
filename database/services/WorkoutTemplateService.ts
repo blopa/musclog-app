@@ -18,7 +18,7 @@ import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
@@ -714,7 +714,7 @@ export class WorkoutTemplateService {
       }
     } catch (err) {
       console.warn('Failed to fetch suggested weight from history:', err);
-      captureException(err, { data: { context: 'WorkoutTemplateService.getSuggestedWeight' } });
+      handleError(err, 'WorkoutTemplateService.getSuggestedWeight');
     }
 
     // 2. Fallback to profile-based calculation

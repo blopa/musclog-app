@@ -21,7 +21,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
 // All app screens for navigation
@@ -566,7 +566,7 @@ export default function DebugTestScreen() {
               Send a test exception to verify crash reporting in your Sentry project.
             </Text>
             <Button
-              onPress={() => captureException(new Error('Test Sentry'))}
+              onPress={() => handleError(new Error('Test Sentry'), 'debug.testSentry')}
               label="Send test error to Sentry"
               size="sm"
               variant="secondary"

@@ -5,6 +5,7 @@ import { NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
+import { handleError } from './handleError';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -33,7 +34,6 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { wrapUserContent } from './promptSanitizer';
-import { captureException } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -419,9 +419,7 @@ async function sendViaOpenAI(
     console.error('[coachAI] sendViaOpenAI error:', error);
 
     // Log detailed error for debugging but don't expose internals to user
-    captureException(error, {
-      data: { context: 'coachAI.sendViaOpenAI', provider: 'openai' },
-    });
+    handleError(error, 'coachAI.sendViaOpenAI');
 
     if (isAiCreditsError(error)) {
       throw new AiCreditsError(i18n.t('errors.aiCreditsError'));

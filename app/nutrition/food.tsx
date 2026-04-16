@@ -61,7 +61,6 @@ import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 import { handleError } from '@/utils/handleError';
-import { captureException } from '@/utils/sentry';
 
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
@@ -102,7 +101,7 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured, intuitiveEatingMode } = useSettings();
+  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -430,9 +429,9 @@ export default function FoodScreen() {
       setIsMealGroupScaleModalVisible(false);
       setSelectedMealGroup(null);
     } catch (error) {
-      captureException(error, { data: { context: 'food.scaleMealGroupPortions' } });
-      console.error('Error scaling meal group portions:', error);
-      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      handleError(error, 'food.scaleMealGroupPortions', {
+        snackbarMessage: t('food.actions.scaleMealPortionError'),
+      });
     } finally {
       setIsMealGroupScaleLoading(false);
     }
@@ -485,10 +484,9 @@ export default function FoodScreen() {
       }
       await refresh();
     } catch (error) {
-      captureException(error, { data: { context: 'food.performMealGroupAction' } });
-      console.error('Error performing meal group action:', error);
-      const errorKey = getMealActionErrorKey(mealGroupActionMode);
-      showSnackbar('error', t(errorKey));
+      handleError(error, 'food.performMealGroupAction', {
+        snackbarMessage: t(getMealActionErrorKey(mealGroupActionMode)),
+      });
     } finally {
       setIsMealGroupActionLoading(false);
       setIsMealGroupActionModalVisible(false);
@@ -570,9 +568,9 @@ export default function FoodScreen() {
       setSelectedMealGroup(null);
       openCoach();
     } catch (error) {
-      captureException(error, { data: { context: 'food.getMealGroupInsights' } });
-      console.error('Error getting meal group insights:', error);
-      showSnackbar('error', t('food.actions.getMealInsightsError'));
+      handleError(error, 'food.getMealGroupInsights', {
+        snackbarMessage: t('food.actions.getMealInsightsError'),
+      });
     } finally {
       setIsMealGroupInsightsLoading(false);
     }
@@ -637,7 +635,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.moveSuccess'));
       await refresh();
     } catch (error) {
-      captureException(error, { data: { context: 'food.handleMoveFood' } });
+      handleError(error, 'food.handleMoveFood');
       console.error('Error moving food:', error);
       showSnackbar('error', t('food.actions.moveError'));
     } finally {
@@ -667,7 +665,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.splitSuccess'));
       await refresh();
     } catch (error) {
-      captureException(error, { data: { context: 'food.handleSplitFood' } });
+      handleError(error, 'food.handleSplitFood');
       console.error('Error splitting food:', error);
       showSnackbar('error', t('food.actions.splitError'));
     } finally {
@@ -689,7 +687,7 @@ export default function FoodScreen() {
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
       showSnackbar('success', t('food.actions.deleteSuccess'));
     } catch (error) {
-      captureException(error, { data: { context: 'food.handleDeleteFood' } });
+      handleError(error, 'food.handleDeleteFood');
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
@@ -776,7 +774,7 @@ export default function FoodScreen() {
       showSnackbar('success', t('food.actions.deleteAllSuccess'));
       await refresh();
     } catch (error) {
-      captureException(error, { data: { context: 'food.handleDeleteAllMealItems' } });
+      handleError(error, 'food.handleDeleteAllMealItems');
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
@@ -1297,6 +1295,7 @@ export default function FoodScreen() {
                     }}
                     secondaryNutrients={secondaryNutrients}
                     intuitiveMode={intuitiveEatingMode}
+                    nutritionDisplay={nutritionDisplay}
                     menuButton={
                       <MenuButton
                         onPress={() => setIsGoalsManagementModalVisible(true)}

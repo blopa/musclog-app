@@ -229,6 +229,20 @@
         "checkin": "Check-in"
       }
     },
+    "nutritionDisplay": {
+      "sectionTitle": "Nutrition Display",
+      "sectionSubtitle": "Choose which macros are shown in the nutrition summary.",
+      "label": "Visible Macros",
+      "popupTitle": "Visible Macros",
+      "popupSubtitle": "Toggle which macros are shown",
+      "allSelected": "All macros",
+      "selected": "{{count}} macros",
+      "carbs": "Carbohydrates",
+      "protein": "Protein",
+      "fats": "Fats",
+      "fiber": "Fiber",
+      "alcohol": "Alcohol"
+    },
     "notificationsSettings": {
       "title": "Notifications",
       "subtitle": "Workout, nutrition, and cycle alerts",

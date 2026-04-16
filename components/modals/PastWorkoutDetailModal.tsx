@@ -25,7 +25,7 @@ import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import { XAxisLabel } from '@/utils/chartUtils';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
@@ -529,11 +529,9 @@ export default function PastWorkoutDetailModal({
         });
       }
     } catch (err) {
-      console.error('Failed to save workout to Health Connect:', err);
-      captureException(err, {
-        data: { context: 'PastWorkoutDetailModal.handleSaveToHealthConnect' },
+      handleError(err, 'PastWorkoutDetailModal.handleSaveToHealthConnect', {
+        snackbarMessage: t('errors.somethingWentWrong'),
       });
-      showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
       setIsSavingToHC(false);
     }
@@ -729,9 +727,9 @@ export default function PastWorkoutDetailModal({
               // reload handled reactively by subscription, but keep reload for safety
               await reload();
             } catch (err) {
-              console.error('Failed to save edited sets:', err);
-              captureException(err, { data: { context: 'PastWorkoutDetailModal.saveEditedSets' } });
-              showSnackbar('error', t('errors.somethingWentWrong'));
+              handleError(err, 'PastWorkoutDetailModal.saveEditedSets', {
+                snackbarMessage: t('errors.somethingWentWrong'),
+              });
             }
           }}
           workoutId={workoutId!}

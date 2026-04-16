@@ -336,6 +336,9 @@ export default function ExerciseGoalCreationModal({
     } else if (step === 'exercise') {
       setStep('target');
     } else if (step === 'target') {
+      if (!targetDate) {
+        setTargetDate(addMonths(new Date(), 3));
+      }
       setStep('summary');
     }
   }, [step]);

@@ -7,7 +7,7 @@ import {
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
 } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';
 
@@ -80,7 +80,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
       setAllAggregationData(fetched);
       setData(dailyData);
     } catch (err) {
-      captureException(err, { data: { context: 'useProgressData.fetchProgressData' } });
+      handleError(err, 'useProgressData.fetchProgressData');
       console.error('Error fetching progress data:', err);
       setError(err instanceof Error ? err : new Error('Unknown error'));
     } finally {

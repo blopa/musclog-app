@@ -32,6 +32,12 @@ type DailySummaryCardProps = {
   highlightThresholdStyle?: 'default' | 'none' | 'simple';
   menuButton?: React.ReactNode;
   intuitiveMode?: boolean;
+  /**
+   * 5-char binary string controlling which macros are shown.
+   * Positions: 0=carbs, 1=protein, 2=fats, 3=fiber, 4=alcohol.
+   * Defaults to '11111' (show all). Pass from useSettings().nutritionDisplay.
+   */
+  nutritionDisplay?: string;
 };
 
 export function DailySummaryCard({
@@ -41,7 +47,13 @@ export function DailySummaryCard({
   highlightThresholdStyle = 'none',
   menuButton,
   intuitiveMode = false,
+  nutritionDisplay = '11111',
 }: DailySummaryCardProps) {
+  const showCarbs = nutritionDisplay[0] !== '0';
+  const showProtein = nutritionDisplay[1] !== '0';
+  const showFats = nutritionDisplay[2] !== '0';
+  const showFiber = nutritionDisplay[3] !== '0';
+  const showAlcohol = nutritionDisplay[4] !== '0';
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
   const { t } = useTranslation();
@@ -179,30 +191,46 @@ export function DailySummaryCard({
         {macros ? (
           <View className="flex-row gap-2 pt-1">
             {[
-              {
-                label: isNarrow
-                  ? t('dailySummaryCard.proteinShort')
-                  : t('dailySummaryCard.protein'),
-                value: macros.protein.value,
-                goal: macros.protein.goal,
-                progress: proteinProgress,
-                status: proteinStatus,
-              },
-              {
-                label: isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs'),
-                value: macros.carbs.value,
-                goal: macros.carbs.goal,
-                progress: carbsProgress,
-                status: carbsStatus,
-              },
-              {
-                label: isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats'),
-                value: macros.fats.value,
-                goal: macros.fats.goal,
-                progress: fatsProgress,
-                status: fatsStatus,
-              },
-              ...(macros.fiber.goal > 0
+              ...(showProtein
+                ? [
+                    {
+                      label: isNarrow
+                        ? t('dailySummaryCard.proteinShort')
+                        : t('dailySummaryCard.protein'),
+                      value: macros.protein.value,
+                      goal: macros.protein.goal,
+                      progress: proteinProgress,
+                      status: proteinStatus,
+                    },
+                  ]
+                : []),
+              ...(showCarbs
+                ? [
+                    {
+                      label: isNarrow
+                        ? t('dailySummaryCard.carbsShort')
+                        : t('dailySummaryCard.carbs'),
+                      value: macros.carbs.value,
+                      goal: macros.carbs.goal,
+                      progress: carbsProgress,
+                      status: carbsStatus,
+                    },
+                  ]
+                : []),
+              ...(showFats
+                ? [
+                    {
+                      label: isNarrow
+                        ? t('dailySummaryCard.fatsShort')
+                        : t('dailySummaryCard.fats'),
+                      value: macros.fats.value,
+                      goal: macros.fats.goal,
+                      progress: fatsProgress,
+                      status: fatsStatus,
+                    },
+                  ]
+                : []),
+              ...(showFiber && macros.fiber.goal > 0
                 ? [
                     {
                       label: isNarrow
@@ -285,7 +313,7 @@ export function DailySummaryCard({
         ) : null}
 
         {/* Alcohol — subtle note, no goal/progress */}
-        {secondaryNutrients && (secondaryNutrients.alcohol ?? 0) > 0 ? (
+        {showAlcohol && secondaryNutrients && (secondaryNutrients.alcohol ?? 0) > 0 ? (
           <View
             className="flex-row items-center justify-start pt-2"
             style={{

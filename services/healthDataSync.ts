@@ -7,7 +7,7 @@ import {
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
 import i18n from '@/lang/lang';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { healthConnectService } from './healthConnect';
 import {
@@ -101,7 +101,7 @@ class HealthDataSyncService {
 
       return settings.length > 0 && settings[0].value === 'true';
     } catch (error) {
-      captureException(error, { data: { context: 'healthDataSync.isSyncEnabled' } });
+      handleError(error, 'healthDataSync.isSyncEnabled');
       console.error('Error checking sync enabled status:', error);
       return false;
     }
@@ -139,7 +139,7 @@ class HealthDataSyncService {
 
       return parseInt(settings[0].value, 10);
     } catch (error) {
-      captureException(error, { data: { context: 'healthDataSync.getLastSyncTime' } });
+      handleError(error, 'healthDataSync.getLastSyncTime');
       console.error('Error getting last sync time:', error);
       return 0;
     }
@@ -271,7 +271,7 @@ class HealthDataSyncService {
 
       result.status = result.errors.length === 0 ? SyncStatus.SUCCESS : SyncStatus.ERROR;
     } catch (error) {
-      captureException(error, { data: { context: 'healthDataSync.syncHealthData' } });
+      handleError(error, 'healthDataSync.syncHealthData');
       console.error('Critical error during Health Connect sync:', error);
       result.status = SyncStatus.ERROR;
       if (error instanceof HealthConnectError) {

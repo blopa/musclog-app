@@ -202,6 +202,14 @@ export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption
  */
 export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
 
+/**
+ * Setting type for which macros to display in the nutrition summary.
+ * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
+ * '1' = visible, '0' = hidden. Default: '11111' (all visible).
+ * Example: '10100' = only carbs and fats visible.
+ */
+export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -235,4 +243,6 @@ export type UseSettingsResult = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
+  nutritionDisplay: string;
 };

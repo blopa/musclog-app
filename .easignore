@@ -52,6 +52,11 @@ expo-env.d.ts
 #android/
 #ios/
 
+# iOS build artifacts — EAS runs pod install on its servers
+ios/Pods/
+ios/build/
+ios/DerivedData/
+
 musclog-316d75352408.json
 .last-run.json
 test-results/

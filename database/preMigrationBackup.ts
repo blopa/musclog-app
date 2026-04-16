@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { deleteAsync } from 'expo-file-system';
 import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { dumpDatabase } from './exportDb';
 
@@ -167,12 +167,7 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
       console.log(`[PreMigrationBackup] Created: ${uri}`);
     } catch (error) {
       console.error('[PreMigrationBackup] Failed to create backup:', error);
-      captureException(error, {
-        data: {
-          context: 'database.preMigrationBackup',
-          signature,
-        },
-      });
+      handleError(error, 'database.preMigrationBackup');
     } finally {
       inFlightBackup = null;
     }

@@ -381,258 +381,249 @@ export default function ViewExerciseModal({
   }
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={displayName}
-        headerRight={
-          <MenuButton
-            size="lg"
-            color={theme.colors.text.white}
-            onPress={() => setIsMenuVisible(true)}
-            className="h-10 w-10"
-          />
-        }
-      >
-        {isLoadingData || !exercise ? (
-          <View className="flex-1 items-center justify-center p-8">
-            <Text style={{ color: theme.colors.text.secondary }}>
-              {isLoadingData ? t('common.loading') : t('common.notFound')}
-            </Text>
-          </View>
-        ) : (
-          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
-              <Image
-                source={backgroundImage}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: '100%',
-                  height: '100%',
-                  opacity: theme.colors.opacity.medium,
-                }}
-                resizeMode="cover"
-              />
-              <LinearGradient
-                colors={theme.colors.gradients.overlayDark}
-                locations={[0, 0.7, 1]}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: theme.spacing.padding.xl,
-                  zIndex: theme.zIndex.overlayLow,
-                }}
-              >
-                <Button
-                  label={t('exercises.viewExercise.watchTechnique')}
-                  onPress={handleWatchTechnique}
-                  icon={Video}
-                  iconColor={theme.colors.accent.secondary}
-                  variant="secondary"
-                  size="sm"
-                  width="auto"
-                  style={{ alignSelf: 'flex-start' }}
-                />
-                <Text
-                  className="mb-6 text-4xl font-bold"
-                  style={{ color: theme.colors.text.white }}
-                >
-                  {displayName}
-                </Text>
-                <View className="mb-6 flex-row flex-wrap gap-3">
-                  <LinearGradient
-                    colors={theme.colors.gradients.blueEmerald}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 8,
-                      borderRadius: 9999,
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Text
-                      className="text-xs font-medium uppercase tracking-wide"
-                      style={{ color: theme.colors.overlay.white80 }}
-                    >
-                      {t('exercises.viewExercise.primaryMuscle')}
-                    </Text>
-                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                      {primaryMuscle}
-                    </Text>
-                  </LinearGradient>
-                  <View
-                    className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                    style={{
-                      backgroundColor: theme.colors.background.darkGreenVariant,
-                      borderColor: theme.colors.background.gray700,
-                    }}
-                  >
-                    <Text
-                      className="text-xs font-medium uppercase tracking-wide"
-                      style={{ color: theme.colors.overlay.white80 }}
-                    >
-                      {t('exercises.viewExercise.equipment')}
-                    </Text>
-                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                      {equipment}
-                    </Text>
-                  </View>
-                  <View
-                    className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                    style={{
-                      backgroundColor: theme.colors.background.darkGreenVariant,
-                      borderColor: theme.colors.background.gray700,
-                    }}
-                  >
-                    <Text
-                      className="text-xs font-medium uppercase tracking-wide"
-                      style={{ color: theme.colors.overlay.white80 }}
-                    >
-                      {t('exercises.viewExercise.mechanic')}
-                    </Text>
-                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                      {mechanic}
-                    </Text>
-                  </View>
-                </View>
-              </LinearGradient>
-            </View>
-
-            <View
-              className="px-4 py-6"
-              style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={displayName}
+      headerRight={
+        <MenuButton
+          size="lg"
+          color={theme.colors.text.white}
+          onPress={() => setIsMenuVisible(true)}
+          className="h-10 w-10"
+        />
+      }
+    >
+      {isLoadingData || !exercise ? (
+        <View className="flex-1 items-center justify-center p-8">
+          <Text style={{ color: theme.colors.text.secondary }}>
+            {isLoadingData ? t('common.loading') : t('common.notFound')}
+          </Text>
+        </View>
+      ) : (
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
+            <Image
+              source={backgroundImage}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100%',
+                height: '100%',
+                opacity: theme.colors.opacity.medium,
+              }}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={theme.colors.gradients.overlayDark}
+              locations={[0, 0.7, 1]}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: theme.spacing.padding.xl,
+                zIndex: theme.zIndex.overlayLow,
+              }}
             >
-              <GenericCard variant="default" size="sm">
-                <View className="p-6">
-                  <Text
-                    className="mb-2 text-xs font-medium uppercase tracking-wide"
-                    style={{ color: theme.colors.text.secondary }}
-                  >
-                    {t('exercises.viewExercise.personalBest')}
-                  </Text>
-                  <View className="flex-row items-baseline gap-2">
-                    <Text
-                      className="text-5xl font-bold"
-                      style={{ color: theme.colors.accent.secondary }}
-                    >
-                      {personalBest != null
-                        ? formatDisplayWeightKg(locale, units, personalBest.value)
-                        : '—'}
-                    </Text>
-                    <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {personalBest
-                        ? t(`exercises.units.${personalBest.unit}`)
-                        : t('exercises.units.kg')}
-                    </Text>
-                  </View>
-                </View>
-              </GenericCard>
-              <GenericCard variant="default" size="sm">
-                <View className="p-6">
-                  <Text
-                    className="mb-2 text-xs font-medium uppercase tracking-wide"
-                    style={{ color: theme.colors.text.secondary }}
-                  >
-                    {t('exercises.viewExercise.avgFrequency')}
-                  </Text>
-                  <View className="flex-row items-baseline gap-2">
-                    <Text
-                      className="text-5xl font-bold"
-                      style={{ color: theme.colors.status.indigoLight }}
-                    >
-                      {formatRoundedDecimal(avgFrequency.value, 1)}
-                    </Text>
-                    <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {t(`exercises.frequency.${avgFrequency.unit}`, {
-                        value: formatRoundedDecimal(avgFrequency.value, 1),
-                      })}
-                    </Text>
-                  </View>
-                </View>
-              </GenericCard>
-            </View>
-
-            <View className="px-4 py-4">
-              <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
-                  {t('exercises.viewExercise.workoutsUsingThis')}
-                </Text>
-                <View
-                  className="rounded-full px-3 py-1.5"
-                  style={{ backgroundColor: theme.colors.accent.secondary20 }}
+              <Button
+                label={t('exercises.viewExercise.watchTechnique')}
+                onPress={handleWatchTechnique}
+                icon={Video}
+                iconColor={theme.colors.accent.secondary}
+                variant="secondary"
+                size="sm"
+                width="auto"
+                style={{ alignSelf: 'flex-start' }}
+              />
+              <Text className="mb-6 text-4xl font-bold" style={{ color: theme.colors.text.white }}>
+                {displayName}
+              </Text>
+              <View className="mb-6 flex-row flex-wrap gap-3">
+                <LinearGradient
+                  colors={theme.colors.gradients.blueEmerald}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    borderRadius: 9999,
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    overflow: 'hidden',
+                  }}
                 >
                   <Text
-                    className="text-xs font-bold"
+                    className="text-xs font-medium uppercase tracking-wide"
+                    style={{ color: theme.colors.overlay.white80 }}
+                  >
+                    {t('exercises.viewExercise.primaryMuscle')}
+                  </Text>
+                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                    {primaryMuscle}
+                  </Text>
+                </LinearGradient>
+                <View
+                  className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                  style={{
+                    backgroundColor: theme.colors.background.darkGreenVariant,
+                    borderColor: theme.colors.background.gray700,
+                  }}
+                >
+                  <Text
+                    className="text-xs font-medium uppercase tracking-wide"
+                    style={{ color: theme.colors.overlay.white80 }}
+                  >
+                    {t('exercises.viewExercise.equipment')}
+                  </Text>
+                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                    {equipment}
+                  </Text>
+                </View>
+                <View
+                  className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                  style={{
+                    backgroundColor: theme.colors.background.darkGreenVariant,
+                    borderColor: theme.colors.background.gray700,
+                  }}
+                >
+                  <Text
+                    className="text-xs font-medium uppercase tracking-wide"
+                    style={{ color: theme.colors.overlay.white80 }}
+                  >
+                    {t('exercises.viewExercise.mechanic')}
+                  </Text>
+                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                    {mechanic}
+                  </Text>
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+          <View className="px-4 py-6" style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}>
+            <GenericCard variant="default" size="sm">
+              <View className="p-6">
+                <Text
+                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('exercises.viewExercise.personalBest')}
+                </Text>
+                <View className="flex-row items-baseline gap-2">
+                  <Text
+                    className="text-5xl font-bold"
                     style={{ color: theme.colors.accent.secondary }}
                   >
-                    {workoutsWithTheme.length} {t('exercises.viewExercise.templates')}
+                    {personalBest != null
+                      ? formatDisplayWeightKg(locale, units, personalBest.value)
+                      : '—'}
+                  </Text>
+                  <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
+                    {personalBest
+                      ? t(`exercises.units.${personalBest.unit}`)
+                      : t('exercises.units.kg')}
                   </Text>
                 </View>
               </View>
-              <View style={{ gap: theme.spacing.gap.md }}>
-                {workoutsWithTheme.map((workout) => (
-                  <SettingsCard
-                    key={workout.id}
-                    icon={
-                      <LinearGradient
-                        colors={workout.iconGradient}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          borderRadius: theme.borderRadius['2xl'],
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <workout.icon
-                          size={theme.iconSize['3xl']}
-                          color={theme.colors.text.white}
-                          fill="none"
-                        />
-                      </LinearGradient>
-                    }
-                    title={workout.name}
-                    subtitle={workout.subtitle}
-                    onPress={() => handleWorkoutPress(workout.id)}
-                    rightIcon={
-                      <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                    }
-                    iconContainerStyle={{
-                      width: theme.size['16'],
-                      height: theme.size['16'],
-                      borderRadius: theme.borderRadius['2xl'],
-                      padding: theme.spacing.padding.zero,
-                      overflow: 'hidden',
-                    }}
-                  />
-                ))}
+            </GenericCard>
+            <GenericCard variant="default" size="sm">
+              <View className="p-6">
+                <Text
+                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('exercises.viewExercise.avgFrequency')}
+                </Text>
+                <View className="flex-row items-baseline gap-2">
+                  <Text
+                    className="text-5xl font-bold"
+                    style={{ color: theme.colors.status.indigoLight }}
+                  >
+                    {formatRoundedDecimal(avgFrequency.value, 1)}
+                  </Text>
+                  <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
+                    {t(`exercises.frequency.${avgFrequency.unit}`, {
+                      value: formatRoundedDecimal(avgFrequency.value, 1),
+                    })}
+                  </Text>
+                </View>
+              </View>
+            </GenericCard>
+          </View>
+
+          <View className="px-4 py-4">
+            <View className="mb-4 flex-row items-center justify-between">
+              <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
+                {t('exercises.viewExercise.workoutsUsingThis')}
+              </Text>
+              <View
+                className="rounded-full px-3 py-1.5"
+                style={{ backgroundColor: theme.colors.accent.secondary20 }}
+              >
+                <Text
+                  className="text-xs font-bold"
+                  style={{ color: theme.colors.accent.secondary }}
+                >
+                  {workoutsWithTheme.length} {t('exercises.viewExercise.templates')}
+                </Text>
               </View>
             </View>
-            <View style={{ height: theme.size['100'] }} />
-          </ScrollView>
-        )}
+            <View style={{ gap: theme.spacing.gap.md }}>
+              {workoutsWithTheme.map((workout) => (
+                <SettingsCard
+                  key={workout.id}
+                  icon={
+                    <LinearGradient
+                      colors={workout.iconGradient}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius['2xl'],
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <workout.icon
+                        size={theme.iconSize['3xl']}
+                        color={theme.colors.text.white}
+                        fill="none"
+                      />
+                    </LinearGradient>
+                  }
+                  title={workout.name}
+                  subtitle={workout.subtitle}
+                  onPress={() => handleWorkoutPress(workout.id)}
+                  rightIcon={
+                    <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                  }
+                  iconContainerStyle={{
+                    width: theme.size['16'],
+                    height: theme.size['16'],
+                    borderRadius: theme.borderRadius['2xl'],
+                    padding: theme.spacing.padding.zero,
+                    overflow: 'hidden',
+                  }}
+                />
+              ))}
+            </View>
+          </View>
+          <View style={{ height: theme.size['100'] }} />
+        </ScrollView>
+      )}
 
-        <BottomPopUpMenu
-          visible={isMenuVisible}
-          onClose={() => setIsMenuVisible(false)}
-          title={displayName}
-          subtitle={t('exercises.viewExercise.exerciseOptions')}
-          items={menuItems}
-        />
-      </FullScreenModal>
-
+      <BottomPopUpMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        title={displayName}
+        subtitle={t('exercises.viewExercise.exerciseOptions')}
+        items={menuItems}
+      />
       <ConfirmationModal
         visible={deleteConfirmVisible}
         onClose={() => setDeleteConfirmVisible(false)}
@@ -644,7 +635,6 @@ export default function ViewExerciseModal({
         isLoading={isDeleting}
         warning={dependencyWarning}
       />
-
       <GenericEditModal
         visible={editModalVisible}
         onClose={handleCloseEditModal}
@@ -655,6 +645,6 @@ export default function ViewExerciseModal({
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
       />
-    </>
+    </FullScreenModal>
   );
 }

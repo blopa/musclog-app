@@ -49,12 +49,12 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
+import { handleError } from '@/utils/handleError';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { captureException } from '@/utils/sentry';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -238,9 +238,9 @@ export default function CreateCustomFoodModal({
         // Open FoodDetailsModal to allow tracking/editing the newly created food
         setIsFoodDetailsVisible(true);
       } catch (err) {
-        console.error('Error creating custom food:', err);
-        captureException(err, { data: { context: 'CreateCustomFoodModal.handleSave' } });
-        showSnackbar('error', t('food.newCustomFood.errorSaving'));
+        handleError(err, 'CreateCustomFoodModal.handleSave', {
+          snackbarMessage: t('food.newCustomFood.errorSaving'),
+        });
       } finally {
         setIsSaving(false);
       }

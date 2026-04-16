@@ -8,7 +8,7 @@ import {
 } from '@/constants/misc';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
@@ -42,12 +42,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     const details = validationResult.details;
     const errorMessage = `Export validation failed with ${details.length} error(s):\n${details.slice(0, 10).join('\n')}${details.length > 10 ? '\n...and more' : ''}`;
 
-    captureException(new Error(errorMessage), {
-      data: {
-        validationErrors: details.slice(0, 20),
-        totalErrors: details.length,
-      },
-    });
+    handleError(new Error(errorMessage), 'importDb.validateExport');
 
     throw new Error(errorMessage);
   }

@@ -13,8 +13,7 @@ import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
-import { captureException } from '@/utils/sentry';
-import { showSnackbar } from '@/utils/snackbarService';
+import { handleError } from '@/utils/handleError';
 
 import { CreateFoodPortionModal } from './CreateFoodPortionModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -132,133 +131,130 @@ export function PortionSizesPickerModal({
         setLocalSelectedIds((prev) => Array.from(new Set([...prev, created.id])));
       }
     } catch (err) {
-      console.error('Error creating food portion:', err);
-      captureException(err, { data: { context: 'PortionSizesPickerModal.handleCreatePortion' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'PortionSizesPickerModal.handleCreatePortion', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setCreateModalVisible(false);
     }
   };
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('portionSizes.selectTitle')}
-        scrollable={true}
-        footer={
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: theme.spacing.gap.base,
-            }}
-          >
-            <Button
-              label={t('portionSizes.addNew')}
-              variant="secondaryGradient"
-              size="sm"
-              width="flex-1"
-              onPress={handleAddNew}
-            />
-            <Button
-              label={t('common.confirm', `Confirm (${localSelectedIds.length})`)}
-              variant="gradientCta"
-              size="sm"
-              width="flex-2"
-              onPress={handleConfirm}
-            />
-          </View>
-        }
-      >
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('portionSizes.selectTitle')}
+      scrollable={true}
+      footer={
         <View
           style={{
-            flex: 1,
-            paddingVertical: theme.spacing.padding.sm,
+            flexDirection: 'row',
+            gap: theme.spacing.gap.base,
           }}
         >
-          {/* Search Input (themed) */}
-          <View
-            style={{
-              marginBottom: theme.spacing.padding.lg,
-              paddingHorizontal: theme.spacing.padding.base,
-            }}
-          >
-            <TextInput
-              label=""
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={t('portionSizes.searchPlaceholder')}
-              icon={
-                searchQuery ? (
-                  <Pressable onPress={() => setSearchQuery('')}>
-                    <X size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                  </Pressable>
-                ) : (
-                  <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-                )
-              }
-            />
-          </View>
-
-          <View
-            style={{
-              paddingHorizontal: theme.spacing.padding.base,
-            }}
-          >
-            {/* Loading State */}
-            {isLoading ? (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-              </View>
-            ) : (
-              <View style={{ flex: 1 }}>
-                {filteredOptions.length > 0 ? (
-                  <OptionsMultiSelector
-                    title=""
-                    options={filteredOptions}
-                    selectedIds={localSelectedIds}
-                    onChange={setLocalSelectedIds}
-                  />
-                ) : (
-                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text
-                      style={{
-                        fontSize: theme.typography.fontSize.base,
-                        color: theme.colors.text.secondary,
-                      }}
-                    >
-                      {t('portionSizes.noResults')}
-                    </Text>
-                  </View>
-                )}
-                {hasMore ? (
-                  <View style={{ paddingVertical: theme.spacing.padding.base }}>
-                    <Button
-                      label={
-                        isLoadingMore ? t('portionSizes.loadingMore') : t('portionSizes.loadMore')
-                      }
-                      onPress={loadMore}
-                      size="sm"
-                      variant="outline"
-                      disabled={isLoadingMore}
-                      loading={isLoadingMore}
-                      width="full"
-                      iconPosition="left"
-                    />
-                  </View>
-                ) : null}
-              </View>
-            )}
-          </View>
+          <Button
+            label={t('portionSizes.addNew')}
+            variant="secondaryGradient"
+            size="sm"
+            width="flex-1"
+            onPress={handleAddNew}
+          />
+          <Button
+            label={t('common.confirm', `Confirm (${localSelectedIds.length})`)}
+            variant="gradientCta"
+            size="sm"
+            width="flex-2"
+            onPress={handleConfirm}
+          />
         </View>
-      </FullScreenModal>
+      }
+    >
+      <View
+        style={{
+          flex: 1,
+          paddingVertical: theme.spacing.padding.sm,
+        }}
+      >
+        {/* Search Input (themed) */}
+        <View
+          style={{
+            marginBottom: theme.spacing.padding.lg,
+            paddingHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <TextInput
+            label=""
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t('portionSizes.searchPlaceholder')}
+            icon={
+              searchQuery ? (
+                <Pressable onPress={() => setSearchQuery('')}>
+                  <X size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                </Pressable>
+              ) : (
+                <Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              )
+            }
+          />
+        </View>
 
+        <View
+          style={{
+            paddingHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          {/* Loading State */}
+          {isLoading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          ) : (
+            <View style={{ flex: 1 }}>
+              {filteredOptions.length > 0 ? (
+                <OptionsMultiSelector
+                  title=""
+                  options={filteredOptions}
+                  selectedIds={localSelectedIds}
+                  onChange={setLocalSelectedIds}
+                />
+              ) : (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      color: theme.colors.text.secondary,
+                    }}
+                  >
+                    {t('portionSizes.noResults')}
+                  </Text>
+                </View>
+              )}
+              {hasMore ? (
+                <View style={{ paddingVertical: theme.spacing.padding.base }}>
+                  <Button
+                    label={
+                      isLoadingMore ? t('portionSizes.loadingMore') : t('portionSizes.loadMore')
+                    }
+                    onPress={loadMore}
+                    size="sm"
+                    variant="outline"
+                    disabled={isLoadingMore}
+                    loading={isLoadingMore}
+                    width="full"
+                    iconPosition="left"
+                  />
+                </View>
+              ) : null}
+            </View>
+          )}
+        </View>
+      </View>
       <CreateFoodPortionModal
         visible={isCreateModalVisible}
         onClose={() => setCreateModalVisible(false)}
         onCreatePortion={handleCreatePortion}
       />
-    </>
+    </FullScreenModal>
   );
 }

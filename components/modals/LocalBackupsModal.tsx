@@ -15,7 +15,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -59,8 +59,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         setRequireExportEncryption(false); // Consider as disabled to allow export
       }
     } catch (error) {
-      console.error('Failed to fetch backups:', error);
-      captureException(error, { data: { context: 'LocalBackupsModal.fetchBackups' } });
+      handleError(error, 'LocalBackupsModal.fetchBackups');
       setDatabaseFailedToInitiate(true);
       setRequireExportEncryption(false); // Consider as disabled to allow export
       setBackups([]);
@@ -114,9 +113,9 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         await reloadApp();
       }, 1500);
     } catch (error) {
-      console.error('Restore failed:', error);
-      captureException(error, { data: { context: 'LocalBackupsModal.handleConfirmRestore' } });
-      showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
+      handleError(error, 'LocalBackupsModal.handleConfirmRestore', {
+        snackbarMessage: t('settings.advancedSettings.importFailedMessage'),
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -177,65 +176,63 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
   ];
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('settings.advancedSettings.localBackups.title')}
-      >
-        <ScrollView className="mt-6 px-4">
-          {isLoading ? (
-            <View className="gap-4">
-              {[1, 2, 3].map((i) => (
-                <SkeletonLoader
-                  key={i}
-                  height={80}
-                  width="100%"
-                  borderRadius={theme.borderRadius.lg}
-                />
-              ))}
-            </View>
-          ) : backups.length === 0 ? (
-            <View className="items-center justify-center py-12">
-              <MaterialIcons name="backup" size={48} color={theme.colors.text.tertiary} />
-              <Text className="mt-4 text-base font-medium text-text-secondary">
-                {t('settings.advancedSettings.localBackups.noBackups')}
-              </Text>
-              <Text className="mt-2 text-center text-sm text-text-tertiary">
-                {t('settings.advancedSettings.localBackups.noBackupsDesc')}
-              </Text>
-            </View>
-          ) : (
-            <View className="gap-3">
-              {backups.map((backup) => (
-                <GenericCard
-                  key={backup.uri}
-                  variant="card"
-                  isPressable
-                  onPress={() => handleItemPress(backup)}
-                >
-                  <View className="flex-row items-center justify-between p-4">
-                    <View className="flex-1 gap-1">
-                      <Text className="text-base font-semibold text-text-primary">
-                        {t('settings.advancedSettings.localBackups.backupFromTo', {
-                          from: backup.fromVersion || '?',
-                          to: backup.toVersion || '?',
-                        })}
-                      </Text>
-                      <Text className="text-sm text-text-secondary">
-                        {t('settings.advancedSettings.localBackups.backupDate', {
-                          date: format(new Date(backup.createdAt), 'PPPp'),
-                        })}
-                      </Text>
-                    </View>
-                    <MenuButton onPress={() => handleItemPress(backup)} />
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('settings.advancedSettings.localBackups.title')}
+    >
+      <ScrollView className="mt-6 px-4">
+        {isLoading ? (
+          <View className="gap-4">
+            {[1, 2, 3].map((i) => (
+              <SkeletonLoader
+                key={i}
+                height={80}
+                width="100%"
+                borderRadius={theme.borderRadius.lg}
+              />
+            ))}
+          </View>
+        ) : backups.length === 0 ? (
+          <View className="items-center justify-center py-12">
+            <MaterialIcons name="backup" size={48} color={theme.colors.text.tertiary} />
+            <Text className="mt-4 text-base font-medium text-text-secondary">
+              {t('settings.advancedSettings.localBackups.noBackups')}
+            </Text>
+            <Text className="mt-2 text-center text-sm text-text-tertiary">
+              {t('settings.advancedSettings.localBackups.noBackupsDesc')}
+            </Text>
+          </View>
+        ) : (
+          <View className="gap-3">
+            {backups.map((backup) => (
+              <GenericCard
+                key={backup.uri}
+                variant="card"
+                isPressable
+                onPress={() => handleItemPress(backup)}
+              >
+                <View className="flex-row items-center justify-between p-4">
+                  <View className="flex-1 gap-1">
+                    <Text className="text-base font-semibold text-text-primary">
+                      {t('settings.advancedSettings.localBackups.backupFromTo', {
+                        from: backup.fromVersion || '?',
+                        to: backup.toVersion || '?',
+                      })}
+                    </Text>
+                    <Text className="text-sm text-text-secondary">
+                      {t('settings.advancedSettings.localBackups.backupDate', {
+                        date: format(new Date(backup.createdAt), 'PPPp'),
+                      })}
+                    </Text>
                   </View>
-                </GenericCard>
-              ))}
-            </View>
-          )}
-        </ScrollView>
-      </FullScreenModal>
+                  <MenuButton onPress={() => handleItemPress(backup)} />
+                </View>
+              </GenericCard>
+            ))}
+          </View>
+        )}
+      </ScrollView>
 
       <BottomPopUpMenu
         visible={showMenu}
@@ -265,6 +262,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         variant="primary"
         isLoading={isProcessing}
       />
-    </>
+    </FullScreenModal>
   );
 }

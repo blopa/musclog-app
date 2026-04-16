@@ -47,8 +47,7 @@ import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
 } from '@/utils/fitnessProfilePersistence';
-import { captureException } from '@/utils/sentry';
-import { showSnackbar } from '@/utils/snackbarService';
+import { handleError } from '@/utils/handleError';
 import { kgToDisplay } from '@/utils/unitConversion';
 
 export default function ProfileScreen() {
@@ -256,9 +255,9 @@ export default function ProfileScreen() {
         avatarColor: data.avatarColor || null,
       });
     } catch (err) {
-      console.error('Failed to save personal info:', err);
-      captureException(err, { data: { context: 'profile.handleSavePersonalInfo' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'profile.handleSavePersonalInfo', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
 
@@ -266,9 +265,9 @@ export default function ProfileScreen() {
     try {
       await persistFitnessDetails(data);
     } catch (err) {
-      console.error('Failed to save fitness details:', err);
-      captureException(err, { data: { context: 'profile.handleSaveFitnessDetails' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'profile.handleSaveFitnessDetails', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
 

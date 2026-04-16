@@ -1,7 +1,7 @@
 import { GEMINI_MODELS } from '@/constants/ai';
 import { SettingsService } from '@/database/services';
 import type { CoachAIConfig } from '@/utils/coachAI';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export class AiService {
   /**
@@ -35,7 +35,7 @@ export class AiService {
         };
       }
     } catch (error) {
-      captureException(error, { data: { context: 'AiService.getAiConfig' } });
+      handleError(error, 'AiService.getAiConfig');
       console.error('[AiService] Error resolving AI config:', error);
     }
 

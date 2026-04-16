@@ -167,6 +167,13 @@ export function Migrations() {
   }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
+  //
+  // IMPORTANT — DB-ready race: this effect fires at mount, which is before (or
+  // concurrent with) seedProductionData() in app/onboarding/landing.tsx.
+  // On a fresh install, seedProductionData() calls unsafeResetDatabase(), which
+  // temporarily replaces the SQLite adapter with an ErrorAdapter that throws on
+  // any query. Any boot task that touches the DB (e.g. configureDailyTasks) must
+  // await waitForDbReady() from database/dbReady.ts before issuing queries.
   useEffect(() => {
     if (Platform.OS === 'web' || isStaticExport) {
       return;

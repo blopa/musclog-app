@@ -10,7 +10,7 @@ import {
   localDayClosedRangeMaxMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { CenteredModal } from './CenteredModal';
@@ -147,9 +147,9 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
 
       onClose();
     } catch (error) {
-      console.error('Error saving cycle log:', error);
-      captureException(error, { data: { context: 'CycleLogModal.handleSave' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'CycleLogModal.handleSave', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -164,92 +164,87 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   };
 
   return (
-    <>
-      <CenteredModal
-        visible={visible}
-        onClose={onClose}
-        title={t('cycle.logDaily')}
-        footer={
-          <View className="flex-row gap-4">
-            <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
-            <Button
-              label={t('common.save')}
-              onPress={handleSave}
-              variant="accent"
-              width="flex-1"
-              loading={isSaving}
-            />
-          </View>
-        }
-      >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View className="mb-6">
-            <DatePickerInput
-              hideLabel
-              selectedDate={selectedDate}
-              onPress={() => setIsDatePickerVisible(true)}
-              variant="compact"
-            />
-          </View>
+    <CenteredModal
+      visible={visible}
+      onClose={onClose}
+      title={t('cycle.logDaily')}
+      footer={
+        <View className="flex-row gap-4">
+          <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
+          <Button
+            label={t('common.save')}
+            onPress={handleSave}
+            variant="accent"
+            width="flex-1"
+            loading={isSaving}
+          />
+        </View>
+      }
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="mb-6">
+          <DatePickerInput
+            hideLabel
+            selectedDate={selectedDate}
+            onPress={() => setIsDatePickerVisible(true)}
+            variant="compact"
+          />
+        </View>
 
-          {/* Flow Intensity */}
-          <View className="mb-6">
-            <Text className="mb-4 text-lg font-bold text-text-primary">
-              {t('cycle.flowIntensity')}
-            </Text>
-            <View className="flex-row justify-between">
-              {[1, 2, 3, 4, 5].map((level) => (
-                <Pressable
-                  key={level}
-                  onPress={() => setFlow(level)}
-                  className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
-                    flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-white/10'
-                  }`}
+        {/* Flow Intensity */}
+        <View className="mb-6">
+          <Text className="mb-4 text-lg font-bold text-text-primary">
+            {t('cycle.flowIntensity')}
+          </Text>
+          <View className="flex-row justify-between">
+            {[1, 2, 3, 4, 5].map((level) => (
+              <Pressable
+                key={level}
+                onPress={() => setFlow(level)}
+                className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
+                  flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-white/10'
+                }`}
+              >
+                <Text
+                  className={flow === level ? 'font-bold text-accent-primary' : 'text-text-primary'}
                 >
-                  <Text
-                    className={
-                      flow === level ? 'font-bold text-accent-primary' : 'text-text-primary'
-                    }
-                  >
-                    {level}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+                  {level}
+                </Text>
+              </Pressable>
+            ))}
           </View>
+        </View>
 
-          {/* Symptoms */}
-          <View className="mb-2">
-            <Text className="mb-4 text-lg font-bold text-text-primary">
-              {t('cycle.symptomsTitle')}
-            </Text>
-            <View className="flex-row flex-wrap gap-3">
-              {symptomOptions.map((option) => (
-                <Pressable
-                  key={option.value}
-                  onPress={() => toggleSymptom(option.value)}
-                  className={`rounded-full border-2 px-4 py-2 ${
+        {/* Symptoms */}
+        <View className="mb-2">
+          <Text className="mb-4 text-lg font-bold text-text-primary">
+            {t('cycle.symptomsTitle')}
+          </Text>
+          <View className="flex-row flex-wrap gap-3">
+            {symptomOptions.map((option) => (
+              <Pressable
+                key={option.value}
+                onPress={() => toggleSymptom(option.value)}
+                className={`rounded-full border-2 px-4 py-2 ${
+                  symptoms.includes(option.value)
+                    ? 'bg-accent-primary10 border-accent-primary'
+                    : 'border-white/10'
+                }`}
+              >
+                <Text
+                  className={
                     symptoms.includes(option.value)
-                      ? 'bg-accent-primary10 border-accent-primary'
-                      : 'border-white/10'
-                  }`}
+                      ? 'font-bold text-accent-primary'
+                      : 'text-text-primary'
+                  }
                 >
-                  <Text
-                    className={
-                      symptoms.includes(option.value)
-                        ? 'font-bold text-accent-primary'
-                        : 'text-text-primary'
-                    }
-                  >
-                    {option.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+                  {option.label}
+                </Text>
+              </Pressable>
+            ))}
           </View>
-        </ScrollView>
-      </CenteredModal>
-
+        </View>
+      </ScrollView>
       <DatePickerModal
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
@@ -257,6 +252,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
         maxYear={getLocalCalendarYear(new Date())}
       />
-    </>
+    </CenteredModal>
   );
 }

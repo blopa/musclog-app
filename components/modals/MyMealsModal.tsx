@@ -24,8 +24,8 @@ import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
 import { trackMeal } from '@/utils/coachAI';
+import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { captureException } from '@/utils/sentry';
 
 import { AddMealModal } from './AddMealModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
@@ -303,9 +303,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                 await database.get<Food>('foods').find(ingredient.foodId);
                 return { foodId: ingredient.foodId, amount: ingredient.grams };
               } catch (error) {
-                captureException(error, {
-                  data: { context: 'MyMealsModal.handleGenerateMealAIWithContext' },
-                });
+                handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext');
               }
             }
 
@@ -406,8 +404,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
 
         await shareText(message, { title: meal.name ?? undefined });
       } catch (error) {
-        captureException(error, { data: { context: 'MyMealsModal.handleShareMealAsRecipe' } });
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        handleError(error, 'MyMealsModal.handleShareMealAsRecipe', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
       }
     },
     [formatRoundedDecimal, shareText, showSnackbar, t]
@@ -423,9 +422,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       await MealService.deleteMeal(deleteMealId);
       await refresh();
     } catch (error) {
-      console.error('Error deleting meal:', error);
-      captureException(error, { data: { context: 'MyMealsModal.handleConfirmDelete' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'MyMealsModal.handleConfirmDelete', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsDeleting(false);
       setDeleteMealId(null);

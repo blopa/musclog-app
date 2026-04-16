@@ -40,7 +40,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
@@ -472,9 +472,9 @@ export function CreateMealModal({
       onSave?.();
       onClose();
     } catch (error) {
-      console.error('Error deleting meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleDeleteMeal' } });
-      showSnackbar('error', t('common.deleteFailed'));
+      handleError(error, 'CreateMealModal.handleDeleteMeal', {
+        snackbarMessage: t('common.deleteFailed'),
+      });
     } finally {
       setIsDeletingMeal(false);
     }
@@ -513,9 +513,9 @@ export function CreateMealModal({
       onClose();
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
-      console.error('Error tracking quick meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleTrack' } });
-      showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
+      handleError(error, 'CreateMealModal.handleTrack', {
+        snackbarMessage: t('food.quickTrackMeal.errorMessage'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -570,9 +570,9 @@ export function CreateMealModal({
       // Close modal
       onClose();
     } catch (error) {
-      console.error('Error saving meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleSave' } });
-      showSnackbar('error', t('food.createMeal.saveFailed'));
+      handleError(error, 'CreateMealModal.handleSave', {
+        snackbarMessage: t('food.createMeal.saveFailed'),
+      });
     } finally {
       setIsSaving(false);
     }

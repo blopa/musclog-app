@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Exercise from '@/database/models/Exercise';
 import { WorkoutService } from '@/database/services';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -75,7 +75,7 @@ export function useActiveWorkout(workoutLogId?: string) {
       })
       .catch((err) => {
         console.error('Error getting active workout:', err);
-        captureException(err);
+        handleError(err, 'useActiveWorkout.getActiveWorkout');
         setResolvedLogId(null);
         setNoActiveError(err instanceof Error ? err.message : 'Failed to get active workout');
       });

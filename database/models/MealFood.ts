@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import Food from './Food';
 import FoodPortion from './FoodPortion';
@@ -62,7 +62,7 @@ export default class MealFood extends Model {
           return this.amount * (portion.gramWeight ?? 0);
         }
       } catch (error) {
-        captureException(error, { data: { context: 'MealFood.getGramWeight' } });
+        handleError(error, 'MealFood.getGramWeight');
       }
     }
 
@@ -112,7 +112,7 @@ export default class MealFood extends Model {
           return food.getNutrientsForAmount(totalGrams);
         }
       } catch (error) {
-        captureException(error, { data: { context: 'MealFood.getNutrients' } });
+        handleError(error, 'MealFood.getNutrients');
       }
     }
 

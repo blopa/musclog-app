@@ -17,7 +17,7 @@ import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -67,9 +67,9 @@ export default function LandingScreen() {
           router.navigate('/');
         }
       } catch (error) {
-        console.error('Error initializing app:', error);
-        captureException(error, { data: { context: 'landing.initializeApp' } });
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        handleError(error, 'landing.initializeApp', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
       } finally {
         setIsInitializing(false);
       }

@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -22,6 +22,7 @@ interface ExerciseGoalDetailModalProps {
   goal: ExerciseGoal | null;
   onClose: () => void;
   onDelete?: () => void;
+  children?: ReactNode;
 }
 
 export function ExerciseGoalDetailModal({
@@ -29,6 +30,7 @@ export function ExerciseGoalDetailModal({
   goal,
   onClose,
   onDelete,
+  children,
 }: ExerciseGoalDetailModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -396,6 +398,7 @@ export function ExerciseGoalDetailModal({
           {goal.goalType === '1rm' ? render1RMContent() : renderConsistencyContent()}
         </View>
       </ScrollView>
+      {children}
     </FullScreenModal>
   );
 }

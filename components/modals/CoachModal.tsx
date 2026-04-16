@@ -72,7 +72,7 @@ import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import { createThumbnail, pickDocument } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -1027,9 +1027,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       await shareText(lines.join('\n'));
     } catch (err) {
-      console.error('[CoachModal] shareHistory failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleShareHistory' } });
-      showSnackbar('error', t('coach.share.failed'));
+      handleError(err, 'CoachModal.handleShareHistory', {
+        snackbarMessage: t('coach.share.failed'),
+      });
     }
   }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
 
@@ -1045,9 +1045,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await clearHistory(conversationContext);
       showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
-      console.error('[CoachModal] clearHistory failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleConfirmClearHistory' } });
-      showSnackbar('error', t('coach.errors.generalError'));
+      handleError(err, 'CoachModal.handleConfirmClearHistory', {
+        snackbarMessage: t('coach.errors.generalError'),
+      });
     } finally {
       setIsClearingHistory(false);
     }
@@ -1065,9 +1065,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await deleteMessage(id);
       showSnackbar('success', t('coach.message.deleted'));
     } catch (err) {
-      console.error('[CoachModal] deleteMessage failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleConfirmDeleteMessage' } });
-      showSnackbar('error', t('coach.errors.generalError'));
+      handleError(err, 'CoachModal.handleConfirmDeleteMessage', {
+        snackbarMessage: t('coach.errors.generalError'),
+      });
     } finally {
       setIsDeletingMessage(false);
     }

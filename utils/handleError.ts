@@ -5,6 +5,12 @@ type HandleErrorOptions = {
   sendToSentry?: boolean;
   showSnackbar?: boolean;
   snackbarMessage?: string;
+  snackbarOptions?: {
+    subtitle?: string;
+    action?: string;
+    onAction?: () => void;
+    duration?: number;
+  };
   consoleMessage?: string;
 };
 
@@ -17,6 +23,7 @@ export async function handleError(
     sendToSentry = true,
     showSnackbar: shouldShowSnackbar = true,
     snackbarMessage,
+    snackbarOptions,
     consoleMessage,
   } = options;
 
@@ -29,6 +36,6 @@ export async function handleError(
   }
 
   if (shouldShowSnackbar && snackbarMessage) {
-    showSnackbar('error', snackbarMessage);
+    showSnackbar('error', snackbarMessage, snackbarOptions);
   }
 }

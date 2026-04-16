@@ -27,6 +27,7 @@ import {
   NOTIFICATIONS_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
+  NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -516,6 +517,23 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the nutrition display setting.
+   * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
+   * '1' = visible, '0' = hidden. Default: '11111'.
+   */
+  static async setNutritionDisplay(value: string) {
+    await SettingsService.setStringSetting(NUTRITION_DISPLAY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the nutrition display setting.
+   * Returns a 5-char binary string. Defaults to '11111' (all visible).
+   */
+  static async getNutritionDisplay(): Promise<string> {
+    return SettingsService.getStringSetting(NUTRITION_DISPLAY_SETTING_TYPE, '11111');
   }
 
   /**

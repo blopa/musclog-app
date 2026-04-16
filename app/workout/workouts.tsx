@@ -37,7 +37,7 @@ import { useWorkoutTemplateDetails } from '@/hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -247,12 +247,12 @@ export default function WorkoutsScreen() {
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
       } catch (err) {
-        console.error('Error starting workout:', err);
-        captureException(err, { data: { context: 'workouts.handleStartWorkout' } });
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        handleError(err, 'workouts.handleStartWorkout', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
       }
     },
-    [showSnackbar, t]
+    [t]
   );
 
   // Helper function to open preview modal (now synchronous!)
@@ -676,7 +676,46 @@ export default function WorkoutsScreen() {
             setIsBrowseTemplatesVisible(false);
           }
         }}
-      />
+      >
+        <ConfirmationModal
+          visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
+          onClose={() => {
+            setIsCreateFromTemplateConfirmationVisible(false);
+            setSelectedRawTemplate(null);
+          }}
+          onConfirm={async () => {
+            if (!selectedRawTemplate) {
+              return;
+            }
+
+            setIsCreatingWorkoutsFromTemplate(true);
+            await flushLoadingPaint();
+
+            try {
+              const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
+              if (!rawTemplate) {
+                console.error('Could not find raw template data');
+                setIsCreatingWorkoutsFromTemplate(false);
+                return;
+              }
+
+              await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+              showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
+              setIsBrowseTemplatesVisible(false);
+            } catch (error) {
+              console.error('Error creating workouts from template:', error);
+              showSnackbar('error', t('common.error'));
+            } finally {
+              setIsCreatingWorkoutsFromTemplate(false);
+            }
+          }}
+          title={t('workouts.createFromTemplate.title')}
+          message={t('workouts.createFromTemplate.message')}
+          confirmLabel={t('workouts.createFromTemplate.confirm')}
+          cancelLabel={t('workouts.createFromTemplate.cancel')}
+          isLoading={isCreatingWorkoutsFromTemplate}
+        />
+      </BrowseTemplatesModal>
       <ConfirmationModal
         visible={isDeleteConfirmationVisible}
         onClose={() => setIsDeleteConfirmationVisible(false)}
@@ -686,44 +725,6 @@ export default function WorkoutsScreen() {
         confirmLabel={t('workouts.delete')}
         variant="destructive"
         isLoading={isDeletingWorkoutTemplate}
-      />
-      <ConfirmationModal
-        visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
-        onClose={() => {
-          setIsCreateFromTemplateConfirmationVisible(false);
-          setSelectedRawTemplate(null);
-        }}
-        onConfirm={async () => {
-          if (!selectedRawTemplate) {
-            return;
-          }
-
-          setIsCreatingWorkoutsFromTemplate(true);
-          await flushLoadingPaint();
-
-          try {
-            const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
-            if (!rawTemplate) {
-              console.error('Could not find raw template data');
-              setIsCreatingWorkoutsFromTemplate(false);
-              return;
-            }
-
-            await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-            showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
-            setIsBrowseTemplatesVisible(false);
-          } catch (error) {
-            console.error('Error creating workouts from template:', error);
-            showSnackbar('error', t('common.error'));
-          } finally {
-            setIsCreatingWorkoutsFromTemplate(false);
-          }
-        }}
-        title={t('workouts.createFromTemplate.title')}
-        message={t('workouts.createFromTemplate.message')}
-        confirmLabel={t('workouts.createFromTemplate.confirm')}
-        cancelLabel={t('workouts.createFromTemplate.cancel')}
-        isLoading={isCreatingWorkoutsFromTemplate}
       />
       {/* Discard Interrupted Session Confirmation */}
       <ConfirmationModal
@@ -742,7 +743,7 @@ export default function WorkoutsScreen() {
             setInterruptedWorkoutLog(null);
           } catch (err) {
             console.error('Error discarding interrupted workout:', err);
-            captureException(err, { data: { context: 'workouts.discardInterrupted' } });
+            handleError(err, 'workouts.discardInterrupted');
             showSnackbar('error', t('errors.somethingWentWrong'));
           } finally {
             setIsDiscardingInterrupted(false);
@@ -822,7 +823,7 @@ export default function WorkoutsScreen() {
               await log.markAsDeleted();
             } catch (err) {
               console.error('Error canceling workout:', err);
-              captureException(err, { data: { context: 'workouts.cancelWorkout' } });
+              handleError(err, 'workouts.cancelWorkout');
               showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }

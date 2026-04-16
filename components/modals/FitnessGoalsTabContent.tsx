@@ -115,18 +115,18 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
         goal={detailGoal}
         onClose={() => setDetailGoal(null)}
         onDelete={detailGoal ? () => handleDeleteGoal(detailGoal.id) : undefined}
-      />
-
-      <ConfirmationModal
-        visible={goalToDelete != null}
-        onClose={() => setGoalToDelete(null)}
-        onConfirm={handleConfirmDelete}
-        title={t('exerciseGoals.deleteGoal')}
-        message={t('exerciseGoals.deleteGoalMessage')}
-        confirmLabel={t('common.delete')}
-        variant="destructive"
-        isLoading={isDeletingGoal}
-      />
+      >
+        <ConfirmationModal
+          visible={goalToDelete != null}
+          onClose={() => setGoalToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          title={t('exerciseGoals.deleteGoal')}
+          message={t('exerciseGoals.deleteGoalMessage')}
+          confirmLabel={t('common.delete')}
+          variant="destructive"
+          isLoading={isDeletingGoal}
+        />
+      </ExerciseGoalDetailModal>
     </ScrollView>
   );
 }

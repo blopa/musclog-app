@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -127,12 +127,14 @@ type BrowseTemplatesModalProps = {
   visible: boolean;
   onClose: () => void;
   onTemplateSelect?: (template: WorkoutTemplate) => void;
+  children?: ReactNode;
 };
 
 export function BrowseTemplatesModal({
   visible,
   onClose,
   onTemplateSelect,
+  children,
 }: BrowseTemplatesModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -315,6 +317,8 @@ export function BrowseTemplatesModal({
         {/* Template List */}
         <View className="gap-2 px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
       </ScrollView>
+
+      {children}
     </FullScreenModal>
   );
 }

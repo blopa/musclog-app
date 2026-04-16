@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { WorkoutService } from '@/database/services';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 export function useEditWorkoutSets() {
   const [isSaving, setIsSaving] = useState(false);
@@ -29,7 +29,7 @@ export function useEditWorkoutSets() {
       setIsSaving(false);
       return res;
     } catch (err) {
-      captureException(err, { data: { context: 'useEditWorkoutSets.saveSets' } });
+      handleError(err, 'useEditWorkoutSets.saveSets');
       const e = err instanceof Error ? err : new Error(String(err));
       setError(e);
       setIsSaving(false);

@@ -4,6 +4,7 @@ import * as Localization from 'expo-localization';
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
 import { database } from '@/database/database-instance';
+import { markDbReady } from '@/database/dbReady';
 import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import Setting from '@/database/models/Setting';
@@ -218,6 +219,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       // Repair any exercises that were seeded without an image due to a prior bug
       await ExerciseService.repairMissingExerciseImages();
       console.log('Production data seeding already completed, skipping');
+      // Signal that the DB is ready for queries (fast-path: no reset was needed).
+      markDbReady();
       return true;
     }
 
@@ -388,6 +391,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');
 
+    // Signal that the DB is ready for queries (full reset+seed path).
+    markDbReady();
     return true;
   } catch (error) {
     console.error('Error seeding production data:', error);

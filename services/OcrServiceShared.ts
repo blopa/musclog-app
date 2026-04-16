@@ -9,7 +9,7 @@
 import { deleteAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system';
 import { cacheDirectory, EncodingType } from 'expo-file-system/legacy';
 
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import type { OcrResult } from './OcrService';
 
@@ -58,7 +58,7 @@ export async function recognizeText(
       processingTimeMs: Date.now() - startTime,
     };
   } catch (error) {
-    captureException(error, { data: { context: 'OcrServiceShared.recognizeTextGutenOcr' } });
+    handleError(error, 'OcrServiceShared.recognizeTextGutenOcr');
     console.error('[OCR] Guten OCR recognition failed:', error);
     return { text: '', confidence: 0, blocks: [], processingTimeMs: Date.now() - startTime };
   }
