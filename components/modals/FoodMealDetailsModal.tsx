@@ -2168,337 +2168,335 @@ export function FoodMealDetailsModal({
   const actionLabel = getActionLabel();
 
   return (
-    <>
-      <FullScreenModal
-        visible={isFoodDetailsModalVisible}
-        onClose={onClose}
-        title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
-        scrollable={true}
-        scrollViewRef={scrollViewRef}
-        headerRight={
-          mode !== 'meal' ? (
-            <Pressable
-              onPress={() => setIsFavorite(!isFavorite)}
-              className="flex-row items-center gap-1"
-            >
-              <BookmarkPlus
-                size={theme.iconSize.sm}
-                color={theme.colors.accent.primary}
-                fill={isFavorite ? theme.colors.accent.primary : 'none'}
-              />
-              <Text className="text-sm font-medium text-accent-primary">
-                {t('food.foodDetails.addFavorite')}
-              </Text>
-            </Pressable>
+    <FullScreenModal
+      visible={isFoodDetailsModalVisible}
+      onClose={onClose}
+      title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
+      scrollable={true}
+      scrollViewRef={scrollViewRef}
+      headerRight={
+        mode !== 'meal' ? (
+          <Pressable
+            onPress={() => setIsFavorite(!isFavorite)}
+            className="flex-row items-center gap-1"
+          >
+            <BookmarkPlus
+              size={theme.iconSize.sm}
+              color={theme.colors.accent.primary}
+              fill={isFavorite ? theme.colors.accent.primary : 'none'}
+            />
+            <Text className="text-sm font-medium text-accent-primary">
+              {t('food.foodDetails.addFavorite')}
+            </Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => setIsFavorite(!isFavorite)}
+            className="flex-row items-center gap-1"
+          >
+            <BookmarkPlus
+              size={theme.iconSize.sm}
+              color={theme.colors.accent.primary}
+              fill={isFavorite ? theme.colors.accent.primary : 'none'}
+            />
+            <Text className="text-sm font-medium text-accent-primary">
+              {t('food.foodDetails.addFavorite')}
+            </Text>
+          </Pressable>
+        )
+      }
+      footer={
+        <View className="pb-6">
+          <Button
+            label={actionLabel}
+            icon={foodLog ? RefreshCcwDot : PlusCircle}
+            variant="gradientCta"
+            size="sm"
+            width="full"
+            onPress={handleAddFood}
+            disabled={
+              isAddingFood ||
+              (mode === 'meal' && mealAmountGrams < 1) ||
+              (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
+              (isLoadingMealNutrients && mode === 'meal')
+            }
+            loading={isAddingFood}
+          />
+        </View>
+      }
+    >
+      <View className="flex-1 px-4 pb-6">
+        <FoodNutritionSectionCard
+          food={scaledFood}
+          canEdit={localCanEdit || hasNoNutrition}
+          mode={mode}
+          showIncompleteWarning={hasNoNutrition}
+          onEditPress={handleOpenEditPopUp}
+          nutritionalData={nutritionalData}
+          servingSize={servingSize}
+          isLoadingDetails={isLoadingDetails}
+          onTryAnotherSource={
+            hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
+          }
+          isRefetchingSource={isRefetchingSource}
+          alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+          caloriesTooLowWarning={
+            showCaloriesTooLowWarning
+              ? {
+                  inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+                  onAccept: handleAcceptInferredCalories,
+                }
+              : undefined
+          }
+          intuitiveMode={intuitiveEatingMode}
+        />
+
+        {/* Form Sections */}
+        <View className="mt-6 gap-6">
+          {/* Same serving size input for both food and meal (editable, same UX) */}
+          {mode !== 'meal' ? (
+            <ServingSizeSelector
+              value={servingSize}
+              onChange={setServingSize}
+              onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+              productServingSize={parsedProductServingSize}
+              productMeasures={parsedProductMeasures}
+            />
           ) : (
-            <Pressable
-              onPress={() => setIsFavorite(!isFavorite)}
-              className="flex-row items-center gap-1"
-            >
-              <BookmarkPlus
-                size={theme.iconSize.sm}
-                color={theme.colors.accent.primary}
-                fill={isFavorite ? theme.colors.accent.primary : 'none'}
-              />
-              <Text className="text-sm font-medium text-accent-primary">
-                {t('food.foodDetails.addFavorite')}
-              </Text>
-            </Pressable>
-          )
+            <ServingSizeSelector
+              value={mealAmountGrams}
+              onChange={(v) => setMealAmountGrams(Math.round(v))}
+              onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+              quickSizes={
+                totalMealGrams > 0
+                  ? [
+                      { label: '½×', value: Math.round(totalMealGrams * 0.5) },
+                      { label: '1×', value: totalMealGrams },
+                      { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
+                      { label: '2×', value: totalMealGrams * 2 },
+                    ]
+                  : []
+              }
+            />
+          )}
+
+          {/* Meal Selection */}
+          <View>
+            <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+              {t('food.foodDetails.meal')}
+            </Text>
+            <FilterTabs
+              tabs={mealTabs}
+              activeTab={selectedMeal}
+              onTabChange={(tabId) => setSelectedMeal(tabId as MealType)}
+              showContainer={false}
+              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+            />
+          </View>
+
+          <DatePickerInput
+            selectedDate={selectedDate}
+            onPress={() => setIsDatePickerVisible(true)}
+            variant="default"
+          />
+        </View>
+      </View>
+
+      {/* footer is handled by FullScreenModal */}
+
+      {/* Date Picker Modal */}
+      {isDatePickerVisible ? (
+        <DatePickerModal
+          visible={isDatePickerVisible}
+          onClose={() => setIsDatePickerVisible(false)}
+          selectedDate={selectedDate}
+          onDateSelect={(date) => {
+            setSelectedDate(localCalendarDayDate(date));
+            setIsDatePickerVisible(false);
+          }}
+        />
+      ) : null}
+      <BottomPopUp
+        visible={isEditPopUpVisible ? editForm !== null : false}
+        onClose={() => {
+          setIsEditPopUpVisible(false);
+          setEditForm(null);
+          setEditMicroOpen(false);
+        }}
+        title={t('food.foodDetails.editFoodInfo')}
+        subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
+        headerIcon={
+          <View
+            className="h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: theme.colors.status.purple20 }}
+          >
+            <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          </View>
         }
         footer={
-          <View className="pb-6">
-            <Button
-              label={actionLabel}
-              icon={foodLog ? RefreshCcwDot : PlusCircle}
-              variant="gradientCta"
-              size="sm"
-              width="full"
-              onPress={handleAddFood}
-              disabled={
-                isAddingFood ||
-                (mode === 'meal' && mealAmountGrams < 1) ||
-                (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
-                (isLoadingMealNutrients && mode === 'meal')
-              }
-              loading={isAddingFood}
-            />
-          </View>
+          <Button
+            label={t('common.save')}
+            variant="gradientCta"
+            size="sm"
+            width="full"
+            onPress={handleSaveEditPopUp}
+          />
         }
       >
-        <View className="flex-1 px-4 pb-6">
-          <FoodNutritionSectionCard
-            food={scaledFood}
-            canEdit={localCanEdit || hasNoNutrition}
-            mode={mode}
-            showIncompleteWarning={hasNoNutrition}
-            onEditPress={handleOpenEditPopUp}
-            nutritionalData={nutritionalData}
-            servingSize={servingSize}
-            isLoadingDetails={isLoadingDetails}
-            onTryAnotherSource={
-              hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
-            }
-            isRefetchingSource={isRefetchingSource}
-            alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
-            caloriesTooLowWarning={
-              showCaloriesTooLowWarning
-                ? {
-                    inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
-                    onAccept: handleAcceptInferredCalories,
-                  }
-                : undefined
-            }
-            intuitiveMode={intuitiveEatingMode}
-          />
-
-          {/* Form Sections */}
-          <View className="mt-6 gap-6">
-            {/* Same serving size input for both food and meal (editable, same UX) */}
-            {mode !== 'meal' ? (
-              <ServingSizeSelector
-                value={servingSize}
-                onChange={setServingSize}
-                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-                productServingSize={parsedProductServingSize}
-                productMeasures={parsedProductMeasures}
-              />
-            ) : (
-              <ServingSizeSelector
-                value={mealAmountGrams}
-                onChange={(v) => setMealAmountGrams(Math.round(v))}
-                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-                quickSizes={
-                  totalMealGrams > 0
-                    ? [
-                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
-                        { label: '1×', value: totalMealGrams },
-                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
-                        { label: '2×', value: totalMealGrams * 2 },
-                      ]
-                    : []
-                }
-              />
-            )}
-
-            {/* Meal Selection */}
-            <View>
-              <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
-                {t('food.foodDetails.meal')}
-              </Text>
-              <FilterTabs
-                tabs={mealTabs}
-                activeTab={selectedMeal}
-                onTabChange={(tabId) => setSelectedMeal(tabId as MealType)}
-                showContainer={false}
-                scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
-              />
-            </View>
-
-            <DatePickerInput
-              selectedDate={selectedDate}
-              onPress={() => setIsDatePickerVisible(true)}
-              variant="default"
+        {editForm ? (
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            className="gap-5"
+          >
+            {/* Food Name - same style as CreateCustomFoodModal */}
+            <TextInput
+              label={t('food.foodDetails.foodName')}
+              value={editForm.name}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, name: text } : null))
+              }
+              placeholder={t('food.foodDetails.foodNamePlaceholder')}
+              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
             />
-          </View>
-        </View>
 
-        {/* footer is handled by FullScreenModal */}
-
-        {/* Date Picker Modal */}
-        {isDatePickerVisible ? (
-          <DatePickerModal
-            visible={isDatePickerVisible}
-            onClose={() => setIsDatePickerVisible(false)}
-            selectedDate={selectedDate}
-            onDateSelect={(date) => {
-              setSelectedDate(localCalendarDayDate(date));
-              setIsDatePickerVisible(false);
-            }}
-          />
-        ) : null}
-        <BottomPopUp
-          visible={isEditPopUpVisible ? editForm !== null : false}
-          onClose={() => {
-            setIsEditPopUpVisible(false);
-            setEditForm(null);
-            setEditMicroOpen(false);
-          }}
-          title={t('food.foodDetails.editFoodInfo')}
-          subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
-          headerIcon={
-            <View
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.status.purple20 }}
-            >
-              <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
-            </View>
-          }
-          footer={
-            <Button
-              label={t('common.save')}
-              variant="gradientCta"
-              size="sm"
-              width="full"
-              onPress={handleSaveEditPopUp}
-            />
-          }
-        >
-          {editForm ? (
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              className="gap-5"
-            >
-              {/* Food Name - same style as CreateCustomFoodModal */}
+            {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
+            <View className="relative">
               <TextInput
-                label={t('food.foodDetails.foodName')}
-                value={editForm.name}
+                label={t('food.foodDetails.barcode')}
+                value={editForm.barcode}
                 onChangeText={(text) =>
-                  setEditForm((prev) => (prev ? { ...prev, name: text } : null))
+                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
-                placeholder={t('food.foodDetails.foodNamePlaceholder')}
-                icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+                placeholder={t('food.foodDetails.barcodePlaceholder')}
+                keyboardType="numeric"
               />
+              <Pressable
+                className="absolute right-2 items-center justify-center rounded-lg"
+                style={{
+                  ...(Platform.OS !== 'web'
+                    ? { top: theme.size['14'] / 2 }
+                    : { top: theme.size['18'] / 2 }),
+                  width: theme.size['10'],
+                  height: theme.size['10'],
+                  backgroundColor: theme.colors.accent.primary10,
+                }}
+                onPress={() => setShowBarcodeScannerInEdit(true)}
+              >
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </Pressable>
+            </View>
 
-              {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
-              <View className="relative">
-                <TextInput
-                  label={t('food.foodDetails.barcode')}
-                  value={editForm.barcode}
-                  onChangeText={(text) =>
-                    setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
-                  }
-                  placeholder={t('food.foodDetails.barcodePlaceholder')}
-                  keyboardType="numeric"
-                />
-                <Pressable
-                  className="absolute right-2 items-center justify-center rounded-lg"
+            {/* Description */}
+            <TextInput
+              label={t('food.foodDetails.description')}
+              value={editForm.description}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, description: text } : null))
+              }
+              placeholder={t('food.foodDetails.descriptionPlaceholder')}
+              icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              multiline
+            />
+
+            {/* Macronutrients - card layout like CreateCustomFoodModal */}
+            <View className="flex-row items-center gap-2">
+              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients')}
+              </Text>
+            </View>
+
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              {t('food.foodDetails.macrosPer100g')}
+            </Text>
+
+            <MacroInput
+              label={t('food.newCustomFood.calories')}
+              value={editForm.calories}
+              onChange={handleEditFormNumericChange('calories')}
+              allowDecimals
+              topRightElement={
+                <View
+                  className="rounded-full px-2"
                   style={{
-                    ...(Platform.OS !== 'web'
-                      ? { top: theme.size['14'] / 2 }
-                      : { top: theme.size['18'] / 2 }),
-                    width: theme.size['10'],
-                    height: theme.size['10'],
+                    paddingVertical: theme.spacing.padding.xsHalf,
                     backgroundColor: theme.colors.accent.primary10,
                   }}
-                  onPress={() => setShowBarcodeScannerInEdit(true)}
                 >
-                  <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                </Pressable>
-              </View>
+                  <Text className="text-xs font-medium text-accent-primary">
+                    {t('food.common.kcal')}
+                  </Text>
+                </View>
+              }
+              variant="default"
+              size="full"
+            />
 
-              {/* Description */}
-              <TextInput
-                label={t('food.foodDetails.description')}
-                value={editForm.description}
-                onChangeText={(text) =>
-                  setEditForm((prev) => (prev ? { ...prev, description: text } : null))
-                }
-                placeholder={t('food.foodDetails.descriptionPlaceholder')}
-                icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-                multiline
-              />
-
-              {/* Macronutrients - card layout like CreateCustomFoodModal */}
-              <View className="flex-row items-center gap-2">
-                <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                <Text className="text-xl font-bold text-text-primary">
-                  {t('food.newCustomFood.macronutrients')}
-                </Text>
-              </View>
-
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-                {t('food.foodDetails.macrosPer100g')}
-              </Text>
-
+            <View className="flex-row flex-wrap gap-4">
               <MacroInput
-                label={t('food.newCustomFood.calories')}
-                value={editForm.calories}
-                onChange={handleEditFormNumericChange('calories')}
+                label={t('food.newCustomFood.protein')}
+                value={editForm.protein}
+                onChange={handleEditFormNumericChange('protein')}
                 allowDecimals
                 topRightElement={
-                  <View
-                    className="rounded-full px-2"
-                    style={{
-                      paddingVertical: theme.spacing.padding.xsHalf,
-                      backgroundColor: theme.colors.accent.primary10,
-                    }}
-                  >
-                    <Text className="text-xs font-medium text-accent-primary">
-                      {t('food.common.kcal')}
-                    </Text>
-                  </View>
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 }
-                variant="default"
-                size="full"
+                variant="success"
+                size="half"
               />
-
-              <View className="flex-row flex-wrap gap-4">
-                <MacroInput
-                  label={t('food.newCustomFood.protein')}
-                  value={editForm.protein}
-                  onChange={handleEditFormNumericChange('protein')}
-                  allowDecimals
-                  topRightElement={
-                    <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
-                  }
-                  variant="success"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.newCustomFood.carbs')}
-                  value={editForm.carbs}
-                  onChange={handleEditFormNumericChange('carbs')}
-                  allowDecimals
-                  topRightElement={
-                    <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
-                  }
-                  variant="warning"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.newCustomFood.fat')}
-                  value={editForm.fat}
-                  onChange={handleEditFormNumericChange('fat')}
-                  allowDecimals
-                  topRightElement={
-                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
-                  }
-                  variant="error"
-                  size="half"
-                />
-                <MacroInput
-                  label={t('food.macros.fiber')}
-                  value={editForm.fiber}
-                  onChange={handleEditFormNumericChange('fiber')}
-                  allowDecimals
-                  topRightElement={
-                    <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
-                  }
-                  variant="success"
-                  size="half"
-                />
-              </View>
-              <MicronutrientsExpandableSection
-                microOpen={editMicroOpen}
-                onToggleMicro={() => setEditMicroOpen((o) => !o)}
-                values={editForm.micronutrients}
-                decimalSeparator={decimalSeparator}
-                onMicronutrientChange={(key, value) =>
-                  setEditForm((prev) =>
-                    prev
-                      ? {
-                          ...prev,
-                          micronutrients: { ...prev.micronutrients, [key]: value },
-                        }
-                      : null
-                  )
+              <MacroInput
+                label={t('food.newCustomFood.carbs')}
+                value={editForm.carbs}
+                onChange={handleEditFormNumericChange('carbs')}
+                allowDecimals
+                topRightElement={
+                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
                 }
+                variant="warning"
+                size="half"
               />
-            </KeyboardAvoidingView>
-          ) : null}
-        </BottomPopUp>
-      </FullScreenModal>
+              <MacroInput
+                label={t('food.newCustomFood.fat')}
+                value={editForm.fat}
+                onChange={handleEditFormNumericChange('fat')}
+                allowDecimals
+                topRightElement={
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                }
+                variant="error"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.macros.fiber')}
+                value={editForm.fiber}
+                onChange={handleEditFormNumericChange('fiber')}
+                allowDecimals
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                }
+                variant="success"
+                size="half"
+              />
+            </View>
+            <MicronutrientsExpandableSection
+              microOpen={editMicroOpen}
+              onToggleMicro={() => setEditMicroOpen((o) => !o)}
+              values={editForm.micronutrients}
+              decimalSeparator={decimalSeparator}
+              onMicronutrientChange={(key, value) =>
+                setEditForm((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        micronutrients: { ...prev.micronutrients, [key]: value },
+                      }
+                    : null
+                )
+              }
+            />
+          </KeyboardAvoidingView>
+        ) : null}
+      </BottomPopUp>
 
       <BarcodeCameraModal
         visible={showBarcodeScannerInEdit}
@@ -2508,6 +2506,6 @@ export function FoodMealDetailsModal({
           setShowBarcodeScannerInEdit(false);
         }}
       />
-    </>
+    </FullScreenModal>
   );
 }

@@ -105,130 +105,128 @@ export function MoveCopyMealModal({
     isBusy || (mode === 'split' && (splitPercentage < 1 || splitPercentage > 99));
 
   return (
-    <>
-      <BottomPopUp
-        visible={visible}
-        onClose={isBusy ? undefined : onClose}
-        title={title}
-        footer={
-          <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
-            <Button
-              label={t('common.cancel')}
-              variant="outline"
-              size="sm"
-              width="flex-1"
-              onPress={onClose}
-              disabled={isBusy}
-            />
-            <Button
-              label={t('common.confirm')}
-              variant="gradientCta"
-              size="sm"
-              width="flex-1"
-              onPress={handleConfirm}
-              disabled={isConfirmDisabled}
-              loading={isBusy}
-            />
-          </View>
-        }
-      >
-        <View
-          className="gap-5"
-          pointerEvents={isBusy ? 'none' : 'auto'}
-          style={{ opacity: isBusy ? 0.65 : 1 }}
-        >
-          {/* Target Date */}
-          <DatePickerInput
-            label={t('food.actions.targetDate')}
-            selectedDate={targetDate}
-            onPress={() => setIsDatePickerVisible(true)}
+    <BottomPopUp
+      visible={visible}
+      onClose={isBusy ? undefined : onClose}
+      title={title}
+      footer={
+        <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+          <Button
+            label={t('common.cancel')}
+            variant="outline"
+            size="sm"
+            width="flex-1"
+            onPress={onClose}
             disabled={isBusy}
-            variant="compact"
           />
+          <Button
+            label={t('common.confirm')}
+            variant="gradientCta"
+            size="sm"
+            width="flex-1"
+            onPress={handleConfirm}
+            disabled={isConfirmDisabled}
+            loading={isBusy}
+          />
+        </View>
+      }
+    >
+      <View
+        className="gap-5"
+        pointerEvents={isBusy ? 'none' : 'auto'}
+        style={{ opacity: isBusy ? 0.65 : 1 }}
+      >
+        {/* Target Date */}
+        <DatePickerInput
+          label={t('food.actions.targetDate')}
+          selectedDate={targetDate}
+          onPress={() => setIsDatePickerVisible(true)}
+          disabled={isBusy}
+          variant="compact"
+        />
 
-          {/* Split Percentage (only for split mode) */}
-          {mode === 'split' ? (
-            <View className="gap-2">
-              <View className="flex-row items-center justify-between">
-                <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{ color: theme.colors.text.secondary }}
-                >
-                  {t('food.actions.splitPercentage')}
-                </Text>
-                <Text
-                  className="font-bold"
+        {/* Split Percentage (only for split mode) */}
+        {mode === 'split' ? (
+          <View className="gap-2">
+            <View className="flex-row items-center justify-between">
+              <Text
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                {t('food.actions.splitPercentage')}
+              </Text>
+              <Text
+                className="font-bold"
+                style={{
+                  color: theme.colors.accent.primary,
+                  fontSize: theme.typography.fontSize.sm,
+                }}
+              >
+                {splitPercentage}%
+              </Text>
+            </View>
+            {/* Preset buttons */}
+            <View className="flex-row gap-2">
+              {SPLIT_PRESETS.map((preset) => (
+                <Pressable
+                  key={preset}
+                  className="flex-1 items-center justify-center rounded-xl border py-2"
                   style={{
-                    color: theme.colors.accent.primary,
-                    fontSize: theme.typography.fontSize.sm,
+                    borderColor:
+                      splitPercentage === preset
+                        ? theme.colors.accent.primary
+                        : theme.colors.background.white10,
+                    backgroundColor:
+                      splitPercentage === preset
+                        ? theme.colors.accent.primary10
+                        : theme.colors.background.white5,
                   }}
+                  onPress={() => handlePresetPress(preset)}
                 >
-                  {splitPercentage}%
-                </Text>
-              </View>
-              {/* Preset buttons */}
-              <View className="flex-row gap-2">
-                {SPLIT_PRESETS.map((preset) => (
-                  <Pressable
-                    key={preset}
-                    className="flex-1 items-center justify-center rounded-xl border py-2"
+                  <Text
+                    className="font-semibold"
                     style={{
-                      borderColor:
+                      color:
                         splitPercentage === preset
                           ? theme.colors.accent.primary
-                          : theme.colors.background.white10,
-                      backgroundColor:
-                        splitPercentage === preset
-                          ? theme.colors.accent.primary10
-                          : theme.colors.background.white5,
+                          : theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
                     }}
-                    onPress={() => handlePresetPress(preset)}
                   >
-                    <Text
-                      className="font-semibold"
-                      style={{
-                        color:
-                          splitPercentage === preset
-                            ? theme.colors.accent.primary
-                            : theme.colors.text.secondary,
-                        fontSize: theme.typography.fontSize.sm,
-                      }}
-                    >
-                      {preset}%
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-              {/* Slider */}
-              <Slider
-                value={splitPercentage}
-                min={1}
-                max={99}
-                step={1}
-                onChange={setSplitPercentage}
-              />
+                    {preset}%
+                  </Text>
+                </Pressable>
+              ))}
             </View>
-          ) : null}
-
-          {/* Target Meal Type */}
-          <View className="gap-2">
-            <Text
-              className="text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
-              {t('food.actions.targetMealType')}
-            </Text>
-            <FilterTabs
-              tabs={mealTabs}
-              activeTab={targetMealType}
-              onTabChange={(tabId) => setTargetMealType(tabId as MealType)}
-              showContainer={false}
-              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+            {/* Slider */}
+            <Slider
+              value={splitPercentage}
+              min={1}
+              max={99}
+              step={1}
+              onChange={setSplitPercentage}
             />
           </View>
+        ) : null}
+
+        {/* Target Meal Type */}
+        <View className="gap-2">
+          <Text
+            className="text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('food.actions.targetMealType')}
+          </Text>
+          <FilterTabs
+            tabs={mealTabs}
+            activeTab={targetMealType}
+            onTabChange={(tabId) => setTargetMealType(tabId as MealType)}
+            showContainer={false}
+            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+          />
         </View>
-        <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
-      </BottomPopUp>
+      </View>
+      <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
 
       {isDatePickerVisible ? (
         <DatePickerModal
@@ -241,6 +239,6 @@ export function MoveCopyMealModal({
           }}
         />
       ) : null}
-    </>
+    </BottomPopUp>
   );
 }
