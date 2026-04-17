@@ -206,7 +206,13 @@
       "promptContextExercise": "Exercise",
       "memorySettings": "MEMORY SETTINGS",
       "maxAiMemories": "Max AI Memories",
-      "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations"
+      "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
+      "onDeviceAi": {
+        "sectionTitle": "ON-DEVICE AI",
+        "toggle": "Use On-Device AI",
+        "toggleSubtitle": "Process AI requests locally. No API key needed.",
+        "privacyNote": "Your data stays on device. Response quality may differ from cloud AI. Android: foreground use only."
+      }
     },
     "visualSettings": {
       "title": "Interface",

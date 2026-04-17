@@ -206,7 +206,13 @@
       "promptContextExercise": "Exercício",
       "memorySettings": "CONFIGURAÇÕES DE MEMÓRIA",
       "maxAiMemories": "Máximo de Memórias de IA",
-      "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas"
+      "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas",
+      "onDeviceAi": {
+        "sectionTitle": "IA NO DISPOSITIVO",
+        "toggle": "Usar IA no Dispositivo",
+        "toggleSubtitle": "Processa pedidos de IA localmente. Sem necessidade de chave de API.",
+        "privacyNote": "Seus dados ficam no dispositivo. A qualidade pode diferir da IA na nuvem. Android: apenas em primeiro plano."
+      }
     },
     "visualSettings": {
       "title": "Interface",

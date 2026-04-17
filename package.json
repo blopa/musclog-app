@@ -90,6 +90,7 @@
     "dotenv": "17.4.1",
     "embla-carousel-react": "8.6.0",
     "expo": "~55.0.15",
+    "expo-ai-kit": "^0.3.6",
     "expo-asset": "~55.0.14",
     "expo-auth-session": "~55.0.14",
     "expo-background-task": "~55.0.16",
