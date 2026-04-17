@@ -67,7 +67,7 @@
     "@babel/plugin-transform-private-property-in-object": "7.28.6",
     "@ericblade/quagga2": "^1.12.1",
     "@expo/vector-icons": "15.1.1",
-    "@google/generative-ai": "0.24.1",
+    "@google/genai": "1.50.1",
     "@gutenye/ocr-react-native": "^1.4.8",
     "@kingstinct/react-native-healthkit": "^13.4.0",
     "@nozbe/watermelondb": "0.28.0",

@@ -1,4 +1,4 @@
-import { Content, Part } from '@google/generative-ai';
+import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
 import { NutritionService, SettingsService } from '@/database/services';
@@ -283,10 +283,7 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
-  if (typeof response?.text === 'function') {
-    return response.text() as string;
-  }
-  return response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  return response?.text ?? response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
@@ -373,7 +370,7 @@ async function sendViaGemini(
 
   const contents = buildGeminiContents(history, userMessage);
   const result = await genModel.generateContent({ contents });
-  const raw = extractRawText(result.response);
+  const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
 
@@ -457,7 +454,7 @@ async function generateText(
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
@@ -496,7 +493,7 @@ async function generateTextWithHistory(
     );
     const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
@@ -559,7 +556,7 @@ async function generateStructured<T>(
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
@@ -632,13 +629,18 @@ async function generateWithImageStructured<T>(
       {
         parts: [
           { text: userText } as Part,
-          { inlineData: { mimeType, data: base64Image } } as Part,
+          {
+            inlineData: {
+              data: base64Image,
+              mimeType: mimeType,
+            },
+          } as Part,
         ],
         role: 'user',
       },
     ];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
