@@ -301,6 +301,32 @@ export default function DebugTestScreen() {
 
   // On-device AI test
   const [onDeviceAiStatus, setOnDeviceAiStatus] = useState<string>('');
+  const [onDeviceModels, setOnDeviceModels] = useState<string>('');
+  
+  const getOnDeviceModels = async () => {
+    setOnDeviceModels('Fetching models...');
+    try {
+      const builtInModels = await getBuiltInModels();
+      const { getCompatibleDownloadableModels } = await import('@/utils/onDeviceAi');
+      const downloadableModels = await getCompatibleDownloadableModels();
+      
+      const modelsInfo = {
+        builtIn: builtInModels,
+        downloadable: downloadableModels.map(m => ({
+          id: m.id,
+          name: m.name,
+          meetsRequirements: m.meetsRequirements
+        }))
+      };
+      
+      setOnDeviceModels(JSON.stringify(modelsInfo, null, 2));
+      console.log('[OnDeviceAI] All models:', modelsInfo);
+    } catch (error) {
+      console.error('[OnDeviceAI] Error fetching models:', error);
+      setOnDeviceModels(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+  
   const testOnDeviceAi = async () => {
     setOnDeviceAiStatus('Step 1/3: isAvailable()...');
     try {
@@ -632,15 +658,31 @@ export default function DebugTestScreen() {
             <Text className="mb-2 text-sm text-text-secondary">
               Checks availability then sends "Hello there!" and shows the raw response.
             </Text>
-            <Button
-              onPress={testOnDeviceAi}
-              label="Test On-Device AI"
-              size="sm"
-              variant="secondary"
-            />
+            <View className="gap-2">
+              <Button
+                onPress={testOnDeviceAi}
+                label="Test On-Device AI"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={getOnDeviceModels}
+                label="Get All On-Device Models"
+                size="sm"
+                variant="accent"
+              />
+            </View>
             {onDeviceAiStatus ? (
               <View className="rounded-lg border border-border-light bg-bg-primary p-3">
                 <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
+              </View>
+            ) : null}
+            {onDeviceModels ? (
+              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                  Available Models
+                </Text>
+                <Text className="text-xs text-text-primary font-mono">{onDeviceModels}</Text>
               </View>
             ) : null}
           </View>
