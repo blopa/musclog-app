@@ -210,6 +210,12 @@ export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
  */
 export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
 
+/**
+ * Setting type for preferring on-device AI when available.
+ * value: 'true' | 'false'.
+ */
+export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'

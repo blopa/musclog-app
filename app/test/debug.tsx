@@ -21,6 +21,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+import { isAvailable, getBuiltInModels } from 'expo-ai-kit';
+import { isOnDeviceAiAvailable, sendOnDeviceMessage } from '@/utils/onDeviceAi';
 import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
@@ -297,6 +299,57 @@ export default function DebugTestScreen() {
     console.log('Unread count cleared');
   };
 
+  // On-device AI test
+  const [onDeviceAiStatus, setOnDeviceAiStatus] = useState<string>('');
+  const testOnDeviceAi = async () => {
+    setOnDeviceAiStatus('Step 1/3: isAvailable()...');
+    try {
+      const basicAvailable = await isAvailable();
+      console.log('[OnDeviceAI] isAvailable() =', basicAvailable);
+
+      const builtInModels = await getBuiltInModels();
+      console.log('[OnDeviceAI] getBuiltInModels() =', JSON.stringify(builtInModels));
+
+      if (!basicAvailable) {
+        setOnDeviceAiStatus('isAvailable()=false — device not on supported list or API<26.');
+        return;
+      }
+
+      setOnDeviceAiStatus(
+        `Step 2/3: isAvailable()=true, builtInModels=${JSON.stringify(builtInModels)}\n\nProbing inference (8s timeout)...`
+      );
+
+      const messages = [{ role: 'user' as const, content: 'Hi' }];
+      const { sendMessage } = await import('expo-ai-kit');
+      const probe = await Promise.race<{ text: string }>([
+        sendMessage(messages),
+        new Promise<{ text: string }>((resolve) => setTimeout(() => resolve({ text: '' }), 8000)),
+      ]);
+      console.log('[OnDeviceAI] probe =', JSON.stringify(probe));
+
+      if (!probe.text) {
+        setOnDeviceAiStatus(
+          `isAvailable()=true BUT inference returned "". ` +
+            `Gemini Nano model is likely DOWNLOADABLE or DOWNLOADING — ` +
+            `not yet ready.\n\nFix: wait for AICore to finish background download ` +
+            `(can take hours after first boot / factory reset), or use Chrome/Assistant ` +
+            `on the device to trigger the download.\n\nModels: ${JSON.stringify(builtInModels)}`
+        );
+        return;
+      }
+
+      setOnDeviceAiStatus(`Step 3/3: Sending full message...\n\nProbe: "${probe.text}"`);
+      const full = await sendOnDeviceMessage([
+        { role: 'user', content: 'Hello there! Reply with just one short sentence.' },
+      ]);
+      console.log('[OnDeviceAI] full response =', JSON.stringify(full));
+      setOnDeviceAiStatus(full ? `✓ Working!\n\nResponse: "${full}"` : 'Empty full response');
+    } catch (e) {
+      console.error('[OnDeviceAI] Error:', e);
+      setOnDeviceAiStatus(`Error: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  };
+
   // Notification Testing Functions
   const [notificationStatus, setNotificationStatus] = useState<string>('');
   const [testWorkoutStartTime, setTestWorkoutStartTime] = useState<number | null>(null);
@@ -571,6 +624,25 @@ export default function DebugTestScreen() {
               size="sm"
               variant="secondary"
             />
+          </View>
+
+          {/* On-Device AI Test */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-bold text-text-primary">On-Device AI Test</Text>
+            <Text className="mb-2 text-sm text-text-secondary">
+              Checks availability then sends "Hello there!" and shows the raw response.
+            </Text>
+            <Button
+              onPress={testOnDeviceAi}
+              label="Test On-Device AI"
+              size="sm"
+              variant="secondary"
+            />
+            {onDeviceAiStatus ? (
+              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
+              </View>
+            ) : null}
           </View>
 
           {/* Unread Messages Debug */}

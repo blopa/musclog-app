@@ -6,6 +6,7 @@ import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
 import { handleError } from './handleError';
+import { sendOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -70,7 +71,7 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
-export type CoachAIProvider = 'gemini' | 'openai';
+export type CoachAIProvider = 'gemini' | 'openai' | 'on-device';
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
@@ -430,6 +431,37 @@ async function sendViaOpenAI(
   }
 }
 
+async function sendViaOnDevice(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<CoachResponse> {
+  try {
+    const systemPrompt = await getSystemPrompt(config.language, context);
+    const normalized = normalizeHistory(history);
+    const messages = [
+      ...normalized.map((e) => ({
+        role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: e.content,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ];
+
+    const raw = await sendOnDeviceMessage(messages, systemPrompt);
+    return {
+      msg4User: raw || i18n.t('errors.aiProcessingError'),
+      sumMsg: raw?.slice(0, 120) ?? '',
+    };
+  } catch (error) {
+    handleError(error, 'coachAI.sendViaOnDevice');
+    return {
+      msg4User: i18n.t('errors.aiProcessingError'),
+      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+    };
+  }
+}
+
 // --- Helpers for insight/parsing/vision ---
 
 const INSIGHTS_USER_MESSAGE = 'Based on the data above, provide your analysis and insights.';
@@ -737,6 +769,10 @@ export async function sendCoachMessage(
 ): Promise<CoachResponse> {
   // Wrap user message with delimiters to prevent prompt injection attacks
   const sanitizedMessage = wrapUserContent(userMessage);
+
+  if (config.provider === 'on-device') {
+    return sendViaOnDevice(config, history, sanitizedMessage, context);
+  }
 
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);

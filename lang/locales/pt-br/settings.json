@@ -211,7 +211,23 @@
         "sectionTitle": "IA NO DISPOSITIVO",
         "toggle": "Usar IA no Dispositivo",
         "toggleSubtitle": "Processa pedidos de IA localmente. Sem necessidade de chave de API.",
-        "privacyNote": "Seus dados ficam no dispositivo. A qualidade pode diferir da IA na nuvem. Android: apenas em primeiro plano."
+        "toggleSubtitleNotReady": "Modelo não pronto — siga os passos abaixo.",
+        "privacyNote": "Seus dados ficam no dispositivo. A qualidade pode diferir da IA na nuvem. Android: apenas em primeiro plano.",
+        "builtInNotReady": "Modelo integrado não está pronto",
+        "builtInNotReadySubtitle": "Seu dispositivo suporta o Gemini Nano, mas você precisa se inscrever no programa AICore Developer Preview primeiro. Siga estes passos:",
+        "builtInSteps": [
+          "Participe do grupo Google \"aicore-experimental\" (toque no botão abaixo)",
+          "Inscreva-se como testador beta do app \"Android AICore\" na Play Store (segundo botão abaixo)",
+          "Abra a Play Store, atualize o app AICore e reinicie o dispositivo"
+        ],
+        "builtInDownloadNote": "Após a inscrição, o modelo Gemini Nano (~1 GB) é baixado automaticamente em segundo plano. Pode levar 15–30 minutos via Wi-Fi.",
+        "openEnrollment": "Participar do AICore Developer Preview",
+        "openAiCorePlayStore": "Atualizar AICore na Play Store",
+        "downloadRequired": "Ou baixe um modelo local",
+        "downloadRequiredSubtitle": "Como alternativa, baixe um modelo independente que não depende do AICore.",
+        "download": "Baixar",
+        "downloaded": "Pronto",
+        "downloading": "Baixando… {{percent}}%"
       }
     },
     "visualSettings": {

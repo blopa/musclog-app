@@ -62,6 +62,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsRestTimer',
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
+      'useOnDeviceAi',
       'sendFoundationFoodsToLlm',
       'units',
       'foodSearchSource',
@@ -214,6 +215,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
+  const handleUseOnDeviceAiChange = createSettingHandler(
+    'useOnDeviceAi',
+    SettingsService.setUseOnDeviceAi
+  );
   const handleSendFoundationFoodsToLlmChange = createSettingHandler(
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
@@ -324,6 +329,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'useOcrBeforeAi':
             await SettingsService.setUseOcrBeforeAi(value as boolean);
             break;
+          case 'useOnDeviceAi':
+            await SettingsService.setUseOnDeviceAi(value as boolean);
+            break;
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
             break;
@@ -409,6 +417,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.notificationsWorkoutDuration as boolean) ??
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
+    useOnDeviceAi: (localSettings.useOnDeviceAi as boolean) ?? actualSettings.useOnDeviceAi,
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
@@ -458,6 +467,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
+    handleUseOnDeviceAiChange,
     handleSendFoundationFoodsToLlmChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,

@@ -3,13 +3,15 @@ import {
   Bot,
   ChevronDown,
   ChevronRight,
+  Cpu,
   Dumbbell,
+  ExternalLink,
   ScanText,
   Settings2,
 } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
@@ -20,9 +22,30 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import {
+  type DownloadableModel,
+  downloadOnDeviceModel,
+  getCompatibleDownloadableModels,
+  isOnDeviceAiAvailable,
+  isOnDeviceAiCapable,
+} from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { FullScreenModal } from './FullScreenModal';
+
+const AICORE_ENROLLMENT_URL = 'https://developers.google.com/ml-kit/genai/aicore-dev-preview';
+const AICORE_PLAY_STORE_URL = 'market://details?id=com.google.android.aicore';
+const AICORE_PLAY_STORE_WEB_URL =
+  'https://play.google.com/store/apps/details?id=com.google.android.aicore';
+
+async function openAiCoreEnrollment() {
+  await Linking.openURL(AICORE_ENROLLMENT_URL);
+}
+
+async function openAiCorePlayStore() {
+  const canOpen = await Linking.canOpenURL(AICORE_PLAY_STORE_URL);
+  await Linking.openURL(canOpen ? AICORE_PLAY_STORE_URL : AICORE_PLAY_STORE_WEB_URL);
+}
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -210,6 +233,13 @@ export function AISettingsModal({
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
 
+  const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
+  const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
+  const [downloadableModels, setDownloadableModels] = useState<DownloadableModel[]>([]);
+  const [downloadingModelId, setDownloadingModelId] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
   // Use debounced settings for instant UI updates
   const {
     enableGoogleGemini: debouncedEnableGoogleGemini,
@@ -217,17 +247,43 @@ export function AISettingsModal({
     dailyNutritionInsights: debouncedDailyNutritionInsights,
     workoutInsights: debouncedWorkoutInsights,
     useOcrBeforeAi: debouncedUseOcrBeforeAi,
+    useOnDeviceAi: debouncedUseOnDeviceAi,
     sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleUseOcrBeforeAiChange,
+    handleUseOnDeviceAiChange,
     handleSendFoundationFoodsToLlmChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+
+  // Check on-device AI capability + model state when modal opens
+  useEffect(() => {
+    if (!visible || Platform.OS === 'web') {
+      return;
+    }
+
+    isOnDeviceAiCapable()
+      .then((capable) => {
+        setIsOnDeviceCapable(capable);
+        if (!capable) {
+          return;
+        }
+        // Check if built-in model is actually ready (probe)
+        isOnDeviceAiAvailable()
+          .then(setIsOnDeviceReady)
+          .catch(() => setIsOnDeviceReady(false));
+        // Load downloadable models for this device
+        getCompatibleDownloadableModels()
+          .then(setDownloadableModels)
+          .catch(() => {});
+      })
+      .catch(() => setIsOnDeviceCapable(false));
+  }, [visible]);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -417,6 +473,270 @@ export function AISettingsModal({
           onModelPress={() => setOpenAiModelMenuVisible(true)}
           modelFallbackText={t('settings.aiSettings.selectModel')}
         />
+
+        {/* On-Device AI Section */}
+        {isOnDeviceCapable ? (
+          <View className="gap-3">
+            <Text
+              className="px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.accent.primary }}
+            >
+              {t('settings.aiSettings.onDeviceAi.sectionTitle')}
+            </Text>
+
+            {/* Toggle — only enabled when model is ready */}
+            <ToggleInput
+              items={[
+                {
+                  key: 'use-on-device-ai',
+                  label: t('settings.aiSettings.onDeviceAi.toggle'),
+                  subtitle: isOnDeviceReady
+                    ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
+                    : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
+                  value: debouncedUseOnDeviceAi && isOnDeviceReady,
+                  onValueChange: isOnDeviceReady ? handleUseOnDeviceAiChange : () => {},
+                  icon: (
+                    <View
+                      style={{
+                        width: theme.size['8'],
+                        height: theme.size['8'],
+                        borderRadius: theme.borderRadius.full / 2,
+                        backgroundColor: theme.colors.status.success20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Cpu size={theme.iconSize.md} color={theme.colors.status.success} />
+                    </View>
+                  ),
+                },
+              ]}
+            />
+
+            {/* "Not ready" instructions card */}
+            {!isOnDeviceReady ? (
+              <View
+                style={{
+                  backgroundColor: theme.colors.background.card,
+                  borderRadius: theme.borderRadius.lg,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.border.light,
+                  overflow: 'hidden',
+                  padding: theme.spacing.padding.base,
+                  gap: theme.spacing.padding.sm,
+                }}
+              >
+                <Text className="text-sm font-semibold text-text-primary">
+                  {t('settings.aiSettings.onDeviceAi.builtInNotReady')}
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {t('settings.aiSettings.onDeviceAi.builtInNotReadySubtitle')}
+                </Text>
+
+                {/* Numbered steps */}
+                {(
+                  t('settings.aiSettings.onDeviceAi.builtInSteps', {
+                    returnObjects: true,
+                  }) as string[]
+                ).map((step, i) => (
+                  <View key={i} className="flex-row items-start gap-2">
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: theme.colors.accent.primary20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: 1,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          fontWeight: 'bold',
+                          color: theme.colors.accent.primary,
+                        }}
+                      >
+                        {i + 1}
+                      </Text>
+                    </View>
+                    <Text className="flex-1 text-xs text-text-secondary">{step}</Text>
+                  </View>
+                ))}
+
+                <Text className="text-xs" style={{ color: theme.colors.text.tertiary }}>
+                  {t('settings.aiSettings.onDeviceAi.builtInDownloadNote')}
+                </Text>
+
+                <View className="mt-1 gap-2">
+                  <Pressable
+                    onPress={openAiCoreEnrollment}
+                    className="flex-row items-center justify-center gap-2 active:opacity-70"
+                    style={{
+                      backgroundColor: theme.colors.accent.primary,
+                      padding: theme.spacing.padding.sm,
+                      borderRadius: theme.borderRadius.md,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: theme.colors.text.black,
+                        fontSize: theme.typography.fontSize.sm,
+                        fontWeight: '600',
+                      }}
+                    >
+                      {t('settings.aiSettings.onDeviceAi.openEnrollment')}
+                    </Text>
+                    <ExternalLink size={theme.iconSize.sm} color={theme.colors.text.black} />
+                  </Pressable>
+                  <Pressable
+                    onPress={openAiCorePlayStore}
+                    className="flex-row items-center justify-center gap-2 active:opacity-70"
+                    style={{
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.accent.primary,
+                      padding: theme.spacing.padding.sm,
+                      borderRadius: theme.borderRadius.md,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: theme.colors.accent.primary,
+                        fontSize: theme.typography.fontSize.sm,
+                        fontWeight: '600',
+                      }}
+                    >
+                      {t('settings.aiSettings.onDeviceAi.openAiCorePlayStore')}
+                    </Text>
+                    <ExternalLink size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                  </Pressable>
+                </View>
+              </View>
+            ) : null}
+
+            {/* Download section — shown when model isn't ready yet */}
+            {!isOnDeviceReady && downloadableModels.length > 0 ? (
+              <View
+                style={{
+                  backgroundColor: theme.colors.background.card,
+                  borderRadius: theme.borderRadius.lg,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.border.light,
+                  overflow: 'hidden',
+                  padding: theme.spacing.padding.base,
+                  gap: theme.spacing.padding.sm,
+                }}
+              >
+                <Text className="text-sm font-semibold text-text-primary">
+                  {t('settings.aiSettings.onDeviceAi.downloadRequired')}
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {t('settings.aiSettings.onDeviceAi.downloadRequiredSubtitle')}
+                </Text>
+
+                {downloadableModels.map((model) => {
+                  const isDownloading = downloadingModelId === model.id;
+                  const isDownloaded = model.status === 'ready' || model.status === 'loading';
+                  const sizeMb = Math.round(model.sizeBytes / 1_000_000);
+
+                  const handleDownload = async () => {
+                    setDownloadError(null);
+                    setDownloadingModelId(model.id);
+                    setDownloadProgress(0);
+                    try {
+                      await downloadOnDeviceModel(model.id, (p) => setDownloadProgress(p));
+                      setIsOnDeviceReady(true);
+                      setDownloadingModelId(null);
+                    } catch (e) {
+                      setDownloadError(e instanceof Error ? e.message : String(e));
+                      setDownloadingModelId(null);
+                    }
+                  };
+
+                  return (
+                    <View
+                      key={model.id}
+                      style={{
+                        gap: theme.spacing.padding.sm,
+                        paddingTop: theme.spacing.padding.sm,
+                        borderTopWidth: theme.borderWidth.thin,
+                        borderTopColor: theme.colors.border.light,
+                      }}
+                    >
+                      <View className="flex-row items-center justify-between">
+                        <View className="flex-1">
+                          <Text className="text-sm font-medium text-text-primary">
+                            {model.name}
+                          </Text>
+                          <Text className="text-xs text-text-tertiary">
+                            {model.parameterCount} ·{' '}
+                            {sizeMb >= 1000 ? `${(sizeMb / 1000).toFixed(1)} GB` : `${sizeMb} MB`}
+                          </Text>
+                        </View>
+                        {!isDownloading && !isDownloaded ? (
+                          <Button
+                            label={t('settings.aiSettings.onDeviceAi.download')}
+                            onPress={handleDownload}
+                            size="sm"
+                            variant="accent"
+                            disabled={downloadingModelId !== null}
+                          />
+                        ) : isDownloaded ? (
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{ color: theme.colors.status.success }}
+                          >
+                            {t('settings.aiSettings.onDeviceAi.downloaded')}
+                          </Text>
+                        ) : null}
+                      </View>
+
+                      {/* Progress bar */}
+                      {isDownloading ? (
+                        <View className="gap-1">
+                          <View
+                            style={{
+                              height: 4,
+                              backgroundColor: theme.colors.border.light,
+                              borderRadius: 2,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <View
+                              style={{
+                                height: '100%',
+                                width: `${Math.round(downloadProgress * 100)}%`,
+                                backgroundColor: theme.colors.accent.primary,
+                                borderRadius: 2,
+                              }}
+                            />
+                          </View>
+                          <Text className="text-xs text-text-tertiary">
+                            {t('settings.aiSettings.onDeviceAi.downloading', {
+                              percent: Math.round(downloadProgress * 100),
+                            })}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })}
+
+                {downloadError ? (
+                  <Text className="text-xs" style={{ color: theme.colors.status.error }}>
+                    {downloadError}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+
+            <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
+              {t('settings.aiSettings.onDeviceAi.privacyNote')}
+            </Text>
+          </View>
+        ) : null}
 
         {/* Insights & Alerts Section */}
         <View>

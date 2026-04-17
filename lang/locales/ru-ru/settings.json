@@ -211,7 +211,23 @@
         "sectionTitle": "ИИ НА УСТРОЙСТВЕ",
         "toggle": "Использовать ИИ на устройстве",
         "toggleSubtitle": "Обрабатывает запросы к ИИ локально. API-ключ не нужен.",
-        "privacyNote": "Данные остаются на устройстве. Качество может отличаться от облачного ИИ. Android: только на переднем плане."
+        "toggleSubtitleNotReady": "Модель не готова — следуйте шагам ниже.",
+        "privacyNote": "Данные остаются на устройстве. Качество может отличаться от облачного ИИ. Android: только на переднем плане.",
+        "builtInNotReady": "Встроенная модель не готова",
+        "builtInNotReadySubtitle": "Ваше устройство поддерживает Gemini Nano, но сначала необходимо зарегистрироваться в программе AICore Developer Preview. Выполните следующие шаги:",
+        "builtInSteps": [
+          "Вступите в группу Google «aicore-experimental» (нажмите кнопку ниже)",
+          "Зарегистрируйтесь как бета-тестер приложения «Android AICore» в Play Store (вторая кнопка ниже)",
+          "Откройте Play Store, обновите приложение AICore и перезагрузите устройство"
+        ],
+        "builtInDownloadNote": "После регистрации модель Gemini Nano (~1 ГБ) загрузится автоматически в фоновом режиме. Это может занять 15–30 минут по Wi-Fi.",
+        "openEnrollment": "Присоединиться к AICore Developer Preview",
+        "openAiCorePlayStore": "Обновить AICore в Play Store",
+        "downloadRequired": "Или загрузите локальную модель",
+        "downloadRequiredSubtitle": "Как вариант, загрузите автономную модель, не зависящую от AICore.",
+        "download": "Загрузить",
+        "downloaded": "Готово",
+        "downloading": "Загрузка… {{percent}}%"
       }
     },
     "visualSettings": {

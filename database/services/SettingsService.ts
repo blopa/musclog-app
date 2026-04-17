@@ -38,6 +38,7 @@ import {
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
+  USE_ON_DEVICE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -782,6 +783,14 @@ export class SettingsService {
   private static async setEncryptedStringSetting(type: string, value: string) {
     const encrypted = await encryptOptionalString(value);
     await SettingsService.setStringSetting(type, encrypted);
+  }
+
+  static async setUseOnDeviceAi(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, value);
+  }
+
+  static async getUseOnDeviceAi(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, false);
   }
 
   /**
