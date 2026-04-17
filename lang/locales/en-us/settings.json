@@ -213,6 +213,10 @@
         "toggleSubtitle": "Process AI requests locally. No API key needed.",
         "toggleSubtitleNotReady": "Model not ready — follow the steps below.",
         "privacyNote": "Your data stays on device. Response quality may differ from cloud AI. Android: foreground use only.",
+        "setupTitle": "Set Up On-Device AI",
+        "setupSubtitle": "Choose how to run AI locally on your device",
+        "optionBuiltIn": "Option 1 — Built-in model (Gemini Nano via AICore)",
+        "optionDownload": "Option 2 — Download a local model",
         "builtInNotReady": "Built-in model not ready",
         "builtInNotReadySubtitle": "Your device supports Gemini Nano, but you need to enroll in the AICore Developer Preview program first. Follow these steps:",
         "builtInSteps": [

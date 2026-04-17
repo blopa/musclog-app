@@ -213,6 +213,10 @@
         "toggleSubtitle": "Processa pedidos de IA localmente. Sem necessidade de chave de API.",
         "toggleSubtitleNotReady": "Modelo não pronto — siga os passos abaixo.",
         "privacyNote": "Seus dados ficam no dispositivo. A qualidade pode diferir da IA na nuvem. Android: apenas em primeiro plano.",
+        "setupTitle": "Configurar IA no Dispositivo",
+        "setupSubtitle": "Escolha como executar IA localmente no seu dispositivo",
+        "optionBuiltIn": "Opção 1 — Modelo integrado (Gemini Nano via AICore)",
+        "optionDownload": "Opção 2 — Baixar um modelo local",
         "builtInNotReady": "Modelo integrado não está pronto",
         "builtInNotReadySubtitle": "Seu dispositivo suporta o Gemini Nano, mas você precisa se inscrever no programa AICore Developer Preview primeiro. Siga estes passos:",
         "builtInSteps": [
