@@ -14,6 +14,7 @@
     "bump-any": "ncu -u",
     "clear-cache": "rm -rf node_modules/.cache /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",
     "bump-app-version": "node scripts/bump.js",
+    "report-modal-issue": "node scripts/report-modal-issues.js",
     "check-translations": "node scripts/check-translations.js",
     "check-locale-consistency": "node scripts/check-locale-consistency.js",
     "generate-lang": "node scripts/generateLangFile.js",

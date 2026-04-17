@@ -526,6 +526,12 @@ export default function SmartCameraModal({
   }, []);
 
   const handleCreateCustomFood = useCallback(() => {
+    // Close any sibling sub-modal that may be open before presenting the new one.
+    // On iOS, presenting a modal while a sibling modal is still active causes the
+    // new presentation to be silently dropped (UIViewController hierarchy bug).
+    setIsFoodNotFoundModalVisible(false);
+    setIsAddFoodModalVisible(false);
+    setIsFoodSearchModalVisible(false);
     setIsNewCustomFoodModalVisible(true);
   }, []);
 
@@ -534,6 +540,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleTrackCustomMeal = useCallback(() => {
+    setIsAddFoodModalVisible(false);
     setIsLogMealModalVisible(true);
   }, []);
 

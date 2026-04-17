@@ -203,7 +203,11 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.nutritionDisplay.sectionSubtitle')}
           </Text>
-          <PickerButton label={macroSummaryLabel()} onPress={() => setMacrosPopupVisible(true)} />
+          <PickerButton
+            icon={<BarChart3 size={20} />}
+            label={macroSummaryLabel()}
+            onPress={() => setMacrosPopupVisible(true)}
+          />
         </View>
       </View>
       <BottomPopUp

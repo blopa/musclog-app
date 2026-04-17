@@ -565,80 +565,76 @@ export default function PastWorkoutDetailModal({
   }
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={workout.name}
-        subtitle={formatDate(workout.date)}
-        headerRight={headerRight}
-        scrollViewRef={scrollViewRef}
-      >
-        <View className="flex-1 gap-5 p-4">
-          {saveError ? (
-            <View
-              className="rounded-xl px-4 py-3"
-              style={{ backgroundColor: theme.colors.status.errorSolid + '20' }}
-            >
-              <Text
-                className="text-sm font-medium"
-                style={{ color: theme.colors.status.errorSolid }}
-              >
-                {t('workoutDetail.saveError')}
-              </Text>
-            </View>
-          ) : null}
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={workout.name}
+      subtitle={formatDate(workout.date)}
+      headerRight={headerRight}
+      scrollViewRef={scrollViewRef}
+    >
+      <View className="flex-1 gap-5 p-4">
+        {saveError ? (
+          <View
+            className="rounded-xl px-4 py-3"
+            style={{ backgroundColor: theme.colors.status.errorSolid + '20' }}
+          >
+            <Text className="text-sm font-medium" style={{ color: theme.colors.status.errorSolid }}>
+              {t('workoutDetail.saveError')}
+            </Text>
+          </View>
+        ) : null}
 
-          <WorkoutSummaryCard
-            totalTime={workout.totalTime}
-            volume={workout.volume}
-            calories={workout.calories}
-            units={units}
-            weightUnitKey={weightUnitKey}
-            onEditTime={() => setIsEditMetadataVisible(true)}
+        <WorkoutSummaryCard
+          totalTime={workout.totalTime}
+          volume={workout.volume}
+          calories={workout.calories}
+          units={units}
+          weightUnitKey={weightUnitKey}
+          onEditTime={() => setIsEditMetadataVisible(true)}
+        />
+
+        {Platform.OS === 'android' && !externalId ? (
+          <Button
+            label={t('workoutDetail.syncToHealthConnect')}
+            icon={RefreshCw}
+            variant="outline"
+            width="full"
+            size="sm"
+            loading={isSavingToHC}
+            onPress={handleSaveToHealthConnect}
           />
+        ) : null}
 
-          {Platform.OS === 'android' && !externalId ? (
-            <Button
-              label={t('workoutDetail.syncToHealthConnect')}
-              icon={RefreshCw}
-              variant="outline"
-              width="full"
-              size="sm"
-              loading={isSavingToHC}
-              onPress={handleSaveToHealthConnect}
-            />
-          ) : null}
-
-          {workout.volumeTrend.data.length > 0 ? (
-            <VolumeTrendCard
-              percentage={workout.volumeTrend.percentage}
-              data={workout.volumeTrend.data}
-              labels={workout.volumeTrend.labels}
-              onInteractionStart={() =>
-                scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
-              }
-              onInteractionEnd={() =>
-                scrollViewRef.current?.setNativeProps({ scrollEnabled: true })
-              }
-            />
-          ) : null}
-
-          <ExercisesSection
-            exercises={workout.exercises}
-            onEdit={(exerciseId?: string) => {
-              if (!exerciseId || isSavingSets) {
-                return;
-              }
-
-              setEditingExerciseId(exerciseId);
-              setIsEditModalVisible(true);
-            }}
-            onClose={onClose}
+        {workout.volumeTrend.data.length > 0 ? (
+          <VolumeTrendCard
+            percentage={workout.volumeTrend.percentage}
+            data={workout.volumeTrend.data}
+            labels={workout.volumeTrend.labels}
+            onInteractionStart={() =>
+              scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
+            }
+            onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
           />
-        </View>
-      </FullScreenModal>
+        ) : null}
 
+        <ExercisesSection
+          exercises={workout.exercises}
+          onEdit={(exerciseId?: string) => {
+            if (!exerciseId || isSavingSets) {
+              return;
+            }
+
+            setEditingExerciseId(exerciseId);
+            setIsEditModalVisible(true);
+          }}
+          onClose={onClose}
+        />
+      </View>
+
+      {/* Sub-modals are rendered inside FullScreenModal so iOS presents them from
+            the active UIViewController rather than the blocked host controller.
+            See docs/modals-problem-on-ios.md for the fix pattern. */}
       <PastWorkoutBottomMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
@@ -761,6 +757,6 @@ export default function PastWorkoutDetailModal({
           shouldShowTimer={false}
         />
       ) : null}
-    </>
+    </FullScreenModal>
   );
 }
