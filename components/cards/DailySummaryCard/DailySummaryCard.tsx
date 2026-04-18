@@ -59,6 +59,7 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
+  // TODO: move this to a function that will receive the current language, the current window width and return the correct value
   const isNarrow = windowWidth < 450;
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
