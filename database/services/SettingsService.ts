@@ -8,6 +8,7 @@ import {
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
   type FoodSearchSource,
@@ -15,6 +16,9 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  LOCAL_LLM_API_KEY_SETTING_TYPE,
+  LOCAL_LLM_BASE_URL_SETTING_TYPE,
+  LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
@@ -211,6 +215,27 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the Local LLM API key setting (stored encrypted)
+   */
+  static async setLocalLlmApiKey(value: string) {
+    await SettingsService.setEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM model setting
+   */
+  static async setLocalLlmModel(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM base URL setting
+   */
+  static async setLocalLlmBaseUrl(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the enable Google Gemini setting
    */
   static async setEnableGoogleGemini(value: boolean) {
@@ -230,6 +255,18 @@ export class SettingsService {
       await SettingsService.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setEnableOpenAi:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upsert the enable Local LLM setting
+   */
+  static async setEnableLocalLlm(value: boolean) {
+    try {
+      await SettingsService.setBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, value);
+    } catch (error) {
+      console.error('[SettingsService] Error in setEnableLocalLlm:', error);
       throw error;
     }
   }
@@ -369,12 +406,28 @@ export class SettingsService {
     return SettingsService.getStringSetting(OPENAI_MODEL_SETTING_TYPE, '');
   }
 
+  static async getLocalLlmApiKey(): Promise<string> {
+    return SettingsService.getEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE);
+  }
+
+  static async getLocalLlmModel(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getLocalLlmBaseUrl(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, '');
+  }
+
   static async getEnableGoogleGemini(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true);
   }
 
   static async getEnableOpenAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, true);
+  }
+
+  static async getEnableLocalLlm(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, false);
   }
 
   static async getNotifications(): Promise<boolean> {
@@ -744,6 +797,7 @@ export class SettingsService {
     await Promise.all([
       SettingsService.migrateApiKey(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
       SettingsService.migrateApiKey(OPENAI_API_KEY_SETTING_TYPE),
+      SettingsService.migrateApiKey(LOCAL_LLM_API_KEY_SETTING_TYPE),
     ]);
   }
 

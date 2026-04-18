@@ -22,7 +22,15 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { googleGeminiApiKey, googleGeminiModel, openAiApiKey, openAiModel } = useSettings();
+  const {
+    googleGeminiApiKey,
+    googleGeminiModel,
+    openAiApiKey,
+    openAiModel,
+    localLlmApiKey,
+    localLlmModel,
+    localLlmBaseUrl,
+  } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
@@ -43,6 +51,18 @@ export default function SettingsScreen() {
 
   const handleOpenAiModelChange = async (value: string) => {
     await SettingsService.setOpenAiModel(value);
+  };
+
+  const handleLocalLlmApiKeyChange = async (value: string) => {
+    await SettingsService.setLocalLlmApiKey(value);
+  };
+
+  const handleLocalLlmModelChange = async (value: string) => {
+    await SettingsService.setLocalLlmModel(value);
+  };
+
+  const handleLocalLlmBaseUrlChange = async (value: string) => {
+    await SettingsService.setLocalLlmBaseUrl(value);
   };
 
   return (
@@ -206,6 +226,12 @@ export default function SettingsScreen() {
         onOpenAiApiKeyChange={handleOpenAiApiKeyChange}
         openAiModel={openAiModel}
         onOpenAiModelPress={handleOpenAiModelChange}
+        localLlmApiKey={localLlmApiKey}
+        onLocalLlmApiKeyChange={handleLocalLlmApiKeyChange}
+        localLlmModel={localLlmModel}
+        onLocalLlmModelChange={handleLocalLlmModelChange}
+        localLlmBaseUrl={localLlmBaseUrl}
+        onLocalLlmBaseUrlChange={handleLocalLlmBaseUrlChange}
       />
       <BasicSettingsModal
         visible={isBasicSettingsVisible}

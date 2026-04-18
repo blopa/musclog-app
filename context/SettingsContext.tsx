@@ -12,6 +12,7 @@ import {
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
   type FoodSearchSource,
@@ -19,6 +20,9 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  LOCAL_LLM_API_KEY_SETTING_TYPE,
+  LOCAL_LLM_BASE_URL_SETTING_TYPE,
+  LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
@@ -65,8 +69,12 @@ type SettingsState = {
   googleGeminiModel: string;
   openAiApiKey: string;
   openAiModel: string;
+  localLlmApiKey: string;
+  localLlmModel: string;
+  localLlmBaseUrl: string;
   enableGoogleGemini: boolean;
   enableOpenAi: boolean;
+  enableLocalLlm: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
   notifications: boolean;
@@ -108,8 +116,12 @@ const DEFAULT_STATE: SettingsState = {
   googleGeminiModel: GEMINI_MODELS.GEMINI_2_5_FLASH.value,
   openAiApiKey: '',
   openAiModel: 'gpt-4o',
+  localLlmApiKey: '',
+  localLlmModel: 'llama3',
+  localLlmBaseUrl: 'http://localhost:11434/v1',
   enableGoogleGemini: true,
   enableOpenAi: true,
+  enableLocalLlm: false,
   dailyNutritionInsights: true,
   workoutInsights: false,
   notifications: true,
@@ -207,8 +219,12 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     ),
     openAiApiKey: getString(map, OPENAI_API_KEY_SETTING_TYPE),
     openAiModel: getString(map, OPENAI_MODEL_SETTING_TYPE, 'gpt-4o'),
+    localLlmApiKey: getString(map, LOCAL_LLM_API_KEY_SETTING_TYPE),
+    localLlmModel: getString(map, LOCAL_LLM_MODEL_SETTING_TYPE, 'llama3'),
+    localLlmBaseUrl: getString(map, LOCAL_LLM_BASE_URL_SETTING_TYPE, 'http://localhost:11434/v1'),
     enableGoogleGemini: getBoolean(map, ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true),
     enableOpenAi: getBoolean(map, ENABLE_OPENAI_SETTING_TYPE, true),
+    enableLocalLlm: getBoolean(map, ENABLE_LOCAL_LLM_SETTING_TYPE, false),
     dailyNutritionInsights: getBoolean(map, DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true),
     workoutInsights: getBoolean(map, WORKOUT_INSIGHTS_SETTING_TYPE),
     notifications: getBoolean(map, NOTIFICATIONS_SETTING_TYPE, true),
@@ -249,8 +265,12 @@ export type SettingsContextType = UseSettingsResult & {
   googleGeminiModel: string;
   openAiApiKey: string;
   openAiModel: string;
+  localLlmApiKey: string;
+  localLlmModel: string;
+  localLlmBaseUrl: string;
   enableGoogleGemini: boolean;
   enableOpenAi: boolean;
+  enableLocalLlm: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
   notifications: boolean;
@@ -286,6 +306,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [decryptedApiKeys, setDecryptedApiKeys] = useState({
     googleGeminiApiKey: '',
     openAiApiKey: '',
+    localLlmApiKey: '',
   });
 
   useEffect(() => {
@@ -318,10 +339,18 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
 
     let cancelled = false;
-    Promise.all([SettingsService.getGoogleGeminiApiKey(), SettingsService.getOpenAiApiKey()])
-      .then(([gemini, openAi]) => {
+    Promise.all([
+      SettingsService.getGoogleGeminiApiKey(),
+      SettingsService.getOpenAiApiKey(),
+      SettingsService.getLocalLlmApiKey(),
+    ])
+      .then(([gemini, openAi, localLlm]) => {
         if (!cancelled) {
-          setDecryptedApiKeys({ googleGeminiApiKey: gemini, openAiApiKey: openAi });
+          setDecryptedApiKeys({
+            googleGeminiApiKey: gemini,
+            openAiApiKey: openAi,
+            localLlmApiKey: localLlm,
+          });
         }
       })
       .catch(() => {});
@@ -329,16 +358,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [state.googleGeminiApiKey, state.openAiApiKey, state.isLoading]);
+  }, [state.googleGeminiApiKey, state.openAiApiKey, state.localLlmApiKey, state.isLoading]);
 
   const isAiConfigured = useMemo(() => {
     return (
       state.useOnDeviceAi ||
+      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
     );
   }, [
     state.useOnDeviceAi,
+    state.enableLocalLlm,
+    state.localLlmBaseUrl,
     state.enableGoogleGemini,
     decryptedApiKeys.googleGeminiApiKey,
     state.enableOpenAi,
@@ -350,6 +382,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       ...state,
       googleGeminiApiKey: decryptedApiKeys.googleGeminiApiKey,
       openAiApiKey: decryptedApiKeys.openAiApiKey,
+      localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       isAiConfigured,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
