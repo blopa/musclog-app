@@ -2,6 +2,7 @@ import type { CaptureContext, EventHint, SeverityLevel } from '@sentry/core';
 import * as Sentry from '@sentry/react-native';
 
 import { SettingsService } from '@/database/services/SettingsService';
+import i18n from '@/lang/lang';
 import { initializeSentry } from '@/sentry-init';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -22,8 +23,8 @@ async function checkConsentAndInitialize(): Promise<boolean> {
     initializeSentry();
 
     // Show message to user about database issue
-    showSnackbar('error', 'errors.databaseError.title', {
-      subtitle: 'errors.databaseError.description',
+    showSnackbar('error', i18n.t('errors.databaseError.title'), {
+      subtitle: i18n.t('errors.databaseError.description'),
     });
 
     return true;
