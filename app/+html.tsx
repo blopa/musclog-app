@@ -29,26 +29,52 @@ function withExpoBaseUrl(path: string): string {
 }
 
 /**
- * Reads the language mirrored to localStorage by lang/lang.ts and patches the
- * landing panel text. Runs synchronously after the panel markup so there is no
- * flash of the wrong language. Falls back to en-US if the key is absent.
- *
- * The storage key ('musclog_lang') must match LANDING_LANGUAGE_STORAGE_KEY in
- * lang/lang.ts, which writes it on every i18n languageChanged event.
+ * Patches the landing panel text from localStorage before React boots.
+ * Serialized via .toString() so the logic lives as real code, not a string.
+ * Storage key must match LANDING_LANGUAGE_STORAGE_KEY in lang/lang.ts.
  */
-const LANDING_I18N_SCRIPT = `(function(){try{
-  var t={
-    'en-US':{tagline:'AI-powered fitness & nutrition tracking — free & open source.',f1:'Smart workout tracking',f2:'AI photo nutrition logging',f3:'Detailed progress charts',f4:'100% private & on-device',cta:'Try it live'},
-    'pt-BR':{tagline:'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',f1:'Rastreamento inteligente de treinos',f2:'Registro de nutrição por foto com IA',f3:'Gráficos detalhados de progresso',f4:'100% privado e no dispositivo',cta:'Experimente agora'},
-    'ru-RU':{tagline:'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',f1:'Умный учёт тренировок',f2:'Запись питания по фото с ИИ',f3:'Подробные графики прогресса',f4:'100% приватно и на устройстве',cta:'Попробуйте сейчас'}
-  };
-  var lang=localStorage.getItem('musclog_lang');
-  var s=(lang&&t[lang])||t['en-US'];
-  document.querySelectorAll('[data-landing-i18n]').forEach(function(el){
-    var k=el.getAttribute('data-landing-i18n');
-    if(k&&s[k])el.textContent=s[k];
-  });
-}catch(_){}})();`;
+function landingI18nPatcher() {
+  try {
+    let t = {
+      'en-US': {
+        cta: 'Try it live',
+        f1: 'Smart workout tracking',
+        f2: 'AI photo nutrition logging',
+        f3: 'Detailed progress charts',
+        f4: '100% private & on-device',
+        tagline: 'AI-powered fitness & nutrition tracking — free & open source.',
+      },
+      'pt-BR': {
+        cta: 'Experimente agora',
+        f1: 'Rastreamento inteligente de treinos',
+        f2: 'Registro de nutrição por foto com IA',
+        f3: 'Gráficos detalhados de progresso',
+        f4: '100% privado e no dispositivo',
+        tagline: 'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',
+      },
+      'ru-RU': {
+        cta: 'Попробуйте сейчас',
+        f1: 'Умный учёт тренировок',
+        f2: 'Запись питания по фото с ИИ',
+        f3: 'Подробные графики прогресса',
+        f4: '100% приватно и на устройстве',
+        tagline: 'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',
+      },
+    };
+
+    let lang = localStorage.getItem('musclog_lang');
+    let s = (lang && t[lang as keyof typeof t]) || t['en-US'];
+
+    document.querySelectorAll('[data-landing-i18n]').forEach(function (el) {
+      let k = el.getAttribute('data-landing-i18n') as keyof typeof s;
+      if (k && s[k]) {
+        el.textContent = s[k];
+      }
+    });
+  } catch (_) {}
+}
+
+const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})();`;
 
 // Web-only: configures the root HTML for every web page during static rendering.
 // Only runs in Node.js; has no access to the DOM or browser APIs.

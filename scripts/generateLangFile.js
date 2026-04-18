@@ -280,7 +280,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '// Mirror the active language to localStorage so the static landing panel',
       '// (+html.tsx) can pick it up before React boots.',
       "if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {",
-      '  i18n.on(\'languageChanged\', (lng) => {',
+      "  i18n.on('languageChanged', (lng) => {",
       '    try {',
       '      window.localStorage.setItem(LANDING_LANGUAGE_STORAGE_KEY, lng);',
       '    } catch (_) {',
