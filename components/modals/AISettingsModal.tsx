@@ -19,20 +19,12 @@ import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
-import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
-import {
-  type DownloadableModel,
-  getCompatibleDownloadableModels,
-  isOnDeviceAiAvailable,
-  isOnDeviceAiCapable,
-  tryRecoverStaleDownloadableModelStatus,
-} from '@/utils/onDeviceAi';
+import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { FullScreenModal } from './FullScreenModal';
-import { OnDeviceAiSetupModal } from './OnDeviceAiSetupModal';
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -222,8 +214,6 @@ export function AISettingsModal({
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
-  const [downloadableModels, setDownloadableModels] = useState<DownloadableModel[]>([]);
-  const [isSetupModalVisible, setIsSetupModalVisible] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -247,7 +237,7 @@ export function AISettingsModal({
   } = useDebouncedSettings(500);
 
   const reloadOnDeviceAiState = useCallback(async () => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS !== 'ios') {
       return;
     }
     try {
@@ -255,12 +245,8 @@ export function AISettingsModal({
       setIsOnDeviceCapable(capable);
       if (!capable) {
         setIsOnDeviceReady(false);
-        setDownloadableModels([]);
         return;
       }
-      await tryRecoverStaleDownloadableModelStatus();
-      const models = await getCompatibleDownloadableModels();
-      setDownloadableModels(models);
       const ready = await isOnDeviceAiAvailable();
       setIsOnDeviceReady(ready);
     } catch {
@@ -270,7 +256,7 @@ export function AISettingsModal({
   }, []);
 
   useEffect(() => {
-    if (!visible || Platform.OS === 'web') {
+    if (!visible || Platform.OS !== 'ios') {
       return;
     }
     void reloadOnDeviceAiState();
@@ -465,8 +451,8 @@ export function AISettingsModal({
           modelFallbackText={t('settings.aiSettings.selectModel')}
         />
 
-        {/* On-Device AI Section */}
-        {isOnDeviceCapable ? (
+        {/* Apple Intelligence Section (iOS only) */}
+        {Platform.OS === 'ios' && isOnDeviceCapable ? (
           <View className="gap-3">
             <Text
               className="px-5 text-xs font-bold uppercase tracking-wider"
@@ -480,24 +466,11 @@ export function AISettingsModal({
                 {
                   key: 'use-on-device-ai',
                   label: t('settings.aiSettings.onDeviceAi.toggle'),
-                  subtitle:
-                    debouncedUseOnDeviceAi && !isOnDeviceReady
-                      ? t('settings.aiSettings.onDeviceAi.toggleSubtitleWaiting')
-                      : isOnDeviceReady
-                        ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
-                        : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
+                  subtitle: isOnDeviceReady
+                    ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
+                    : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
                   value: debouncedUseOnDeviceAi,
-                  onValueChange: (value) => {
-                    if (value && !isOnDeviceReady) {
-                      const showSetup = Platform.OS === 'android' || downloadableModels.length > 0;
-                      if (showSetup) {
-                        setIsSetupModalVisible(true);
-                        return;
-                      }
-                      return;
-                    }
-                    handleUseOnDeviceAiChange(value);
-                  },
+                  onValueChange: handleUseOnDeviceAiChange,
                   icon: (
                     <View
                       style={{
@@ -521,32 +494,6 @@ export function AISettingsModal({
             </Text>
           </View>
         ) : null}
-
-        <OnDeviceAiSetupModal
-          visible={isSetupModalVisible}
-          onClose={() => {
-            setIsSetupModalVisible(false);
-            void reloadOnDeviceAiState();
-          }}
-          downloadableModels={downloadableModels}
-          onModelsUpdated={reloadOnDeviceAiState}
-          onDownloadedModelDeleted={() => {
-            handleUseOnDeviceAiChange(false);
-          }}
-          onModelReady={() => {
-            setIsSetupModalVisible(false);
-            void (async () => {
-              try {
-                await SettingsService.setUseOnDeviceAi(true);
-              } catch {
-                // DB write failed — debounced handler may still retry.
-              }
-              handleUseOnDeviceAiChange(true);
-              await flushAllPendingChanges();
-              await reloadOnDeviceAiState();
-            })();
-          }}
-        />
 
         {/* Insights & Alerts Section */}
         <View>

@@ -208,27 +208,11 @@
       "maxAiMemories": "Max AI Memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
       "onDeviceAi": {
-        "sectionTitle": "ON-DEVICE AI",
-        "toggle": "Use On-Device AI",
-        "toggleSubtitle": "Process AI requests locally. No API key needed.",
-        "toggleSubtitleNotReady": "Install a downloadable model, or on iOS use Apple Foundation Models when your device supports them.",
-        "toggleSubtitleWaiting": "On-device AI stays on. Reconnecting to your downloaded model after startup…",
-        "privacyNote": "Your data stays on device. Response quality may differ from cloud AI. Android: foreground use only.",
-        "setupTitle": "On-device model",
-        "setupSubtitle": "Downloadable models (expo-ai-kit)",
-        "setupIntro": "When a model is installed and ready, the app uses it for on-device AI. Large downloads are best on Wi-Fi.",
-        "emptyModels": "No downloadable models are available for this device (for example, if available RAM is below the model minimum).",
-        "download": "Download",
-        "downloaded": "Installed",
-        "loadingModel": "Starting…",
-        "preparingModel": "Preparing model…",
-        "downloading": "Downloading… {{percent}}%",
-        "downloadingActive": "Downloading…",
-        "cancelDownload": "Cancel download",
-        "deleteModel": "Delete model",
-        "deleteModelTitle": "Delete {{name}}?",
-        "deleteModelMessage": "This removes the model from your device. You can download it again later.",
-        "deleteModelConfirm": "Delete"
+        "sectionTitle": "APPLE INTELLIGENCE",
+        "toggle": "Use Apple Intelligence",
+        "toggleSubtitle": "Process AI requests on-device using Apple Foundation Models. No API key needed.",
+        "toggleSubtitleNotReady": "Apple Intelligence is not available on this device. Requires iPhone 15 Pro or later with iOS 26 and Apple Intelligence enabled.",
+        "privacyNote": "Your data stays on device and is never sent to external servers."
       }
     },
     "visualSettings": {

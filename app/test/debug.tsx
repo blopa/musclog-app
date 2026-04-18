@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
@@ -21,8 +21,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
-import { isAvailable, getBuiltInModels } from 'expo-ai-kit';
-import { isOnDeviceAiAvailable, sendOnDeviceMessage } from '@/utils/onDeviceAi';
+import { isOnDeviceAiAvailable, isOnDeviceAiCapable, sendOnDeviceMessage } from '@/utils/onDeviceAi';
 import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
@@ -299,79 +298,37 @@ export default function DebugTestScreen() {
     console.log('Unread count cleared');
   };
 
-  // On-device AI test
+  // On-device AI test (iOS / Apple Intelligence only)
   const [onDeviceAiStatus, setOnDeviceAiStatus] = useState<string>('');
-  const [onDeviceModels, setOnDeviceModels] = useState<string>('');
-
-  const getOnDeviceModels = async () => {
-    setOnDeviceModels('Fetching models...');
-    try {
-      const builtInModels = await getBuiltInModels();
-      const { getCompatibleDownloadableModels } = await import('@/utils/onDeviceAi');
-      const downloadableModels = await getCompatibleDownloadableModels();
-
-      const modelsInfo = {
-        builtIn: builtInModels,
-        downloadable: downloadableModels.map((m) => ({
-          id: m.id,
-          name: m.name,
-          meetsRequirements: m.meetsRequirements,
-        })),
-      };
-
-      setOnDeviceModels(JSON.stringify(modelsInfo, null, 2));
-      console.log('[OnDeviceAI] All models:', modelsInfo);
-    } catch (error) {
-      console.error('[OnDeviceAI] Error fetching models:', error);
-      setOnDeviceModels(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  };
 
   const testOnDeviceAi = async () => {
-    setOnDeviceAiStatus('Step 1/3: isAvailable()...');
+    setOnDeviceAiStatus('Step 1/3: isOnDeviceAiCapable()...');
     try {
-      const basicAvailable = await isAvailable();
-      console.log('[OnDeviceAI] isAvailable() =', basicAvailable);
+      const capable = await isOnDeviceAiCapable();
+      console.log('[AppleIntelligence] isOnDeviceAiCapable() =', capable);
 
-      const builtInModels = await getBuiltInModels();
-      console.log('[OnDeviceAI] getBuiltInModels() =', JSON.stringify(builtInModels));
-
-      if (!basicAvailable) {
-        setOnDeviceAiStatus('isAvailable()=false — device not on supported list or API<26.');
+      if (!capable) {
+        setOnDeviceAiStatus('Not capable — requires iPhone 15 Pro+ with iOS 26 and Apple Intelligence enabled.');
         return;
       }
 
-      setOnDeviceAiStatus(
-        `Step 2/3: isAvailable()=true, builtInModels=${JSON.stringify(builtInModels)}\n\nProbing inference (8s timeout)...`
-      );
+      setOnDeviceAiStatus('Step 2/3: isOnDeviceAiAvailable() (checks Foundation Models readiness)...');
+      const ready = await isOnDeviceAiAvailable();
+      console.log('[AppleIntelligence] isOnDeviceAiAvailable() =', ready);
 
-      const messages = [{ role: 'user' as const, content: 'Hi' }];
-      const { sendMessage } = await import('expo-ai-kit');
-      const probe = await Promise.race<{ text: string }>([
-        sendMessage(messages),
-        new Promise<{ text: string }>((resolve) => setTimeout(() => resolve({ text: '' }), 8000)),
-      ]);
-      console.log('[OnDeviceAI] probe =', JSON.stringify(probe));
-
-      if (!probe.text) {
-        setOnDeviceAiStatus(
-          `isAvailable()=true BUT inference returned "". ` +
-            `Gemini Nano model is likely DOWNLOADABLE or DOWNLOADING — ` +
-            `not yet ready.\n\nFix: wait for AICore to finish background download ` +
-            `(can take hours after first boot / factory reset), or use Chrome/Assistant ` +
-            `on the device to trigger the download.\n\nModels: ${JSON.stringify(builtInModels)}`
-        );
+      if (!ready) {
+        setOnDeviceAiStatus('Device is capable but Foundation Models are not ready. Enable Apple Intelligence in Settings.');
         return;
       }
 
-      setOnDeviceAiStatus(`Step 3/3: Sending full message...\n\nProbe: "${probe.text}"`);
-      const full = await sendOnDeviceMessage([
+      setOnDeviceAiStatus('Step 3/3: Sending test message...');
+      const response = await sendOnDeviceMessage([
         { role: 'user', content: 'Hello there! Reply with just one short sentence.' },
       ]);
-      console.log('[OnDeviceAI] full response =', JSON.stringify(full));
-      setOnDeviceAiStatus(full ? `✓ Working!\n\nResponse: "${full}"` : 'Empty full response');
+      console.log('[AppleIntelligence] response =', JSON.stringify(response));
+      setOnDeviceAiStatus(response ? `✓ Working!\n\nResponse: "${response}"` : 'Empty response');
     } catch (e) {
-      console.error('[OnDeviceAI] Error:', e);
+      console.error('[AppleIntelligence] Error:', e);
       setOnDeviceAiStatus(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
@@ -652,40 +609,26 @@ export default function DebugTestScreen() {
             />
           </View>
 
-          {/* On-Device AI Test */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">On-Device AI Test</Text>
-            <Text className="mb-2 text-sm text-text-secondary">
-              Checks availability then sends "Hello there!" and shows the raw response.
-            </Text>
-            <View className="gap-2">
+          {/* Apple Intelligence Test (iOS only) */}
+          {Platform.OS === 'ios' ? (
+            <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+              <Text className="mb-2 text-lg font-bold text-text-primary">Apple Intelligence Test</Text>
+              <Text className="mb-2 text-sm text-text-secondary">
+                Checks capability and readiness, then sends "Hello there!" and shows the response.
+              </Text>
               <Button
                 onPress={testOnDeviceAi}
-                label="Test On-Device AI"
+                label="Test Apple Intelligence"
                 size="sm"
                 variant="secondary"
               />
-              <Button
-                onPress={getOnDeviceModels}
-                label="Get All On-Device Models"
-                size="sm"
-                variant="accent"
-              />
+              {onDeviceAiStatus ? (
+                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                  <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
+                </View>
+              ) : null}
             </View>
-            {onDeviceAiStatus ? (
-              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
-              </View>
-            ) : null}
-            {onDeviceModels ? (
-              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
-                  Available Models
-                </Text>
-                <Text className="font-mono text-xs text-text-primary">{onDeviceModels}</Text>
-              </View>
-            ) : null}
-          </View>
+          ) : null}
 
           {/* Unread Messages Debug */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">

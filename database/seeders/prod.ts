@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
+import { Platform } from 'react-native';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
@@ -386,6 +387,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setEnableGoogleGemini(false);
     await SettingsService.setEnableOpenAi(false);
     console.log('Set default Gemini and OpenAI enabled to false');
+
+    if (Platform.OS === 'ios') {
+      await SettingsService.setUseOnDeviceAi(true);
+      console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
+    }
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
