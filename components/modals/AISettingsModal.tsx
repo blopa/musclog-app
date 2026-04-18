@@ -362,7 +362,7 @@ export function AISettingsModal({
             width: theme.size['8'],
             height: theme.size['8'],
             borderRadius: theme.borderRadius.full / 2,
-            backgroundColor: theme.colors.status.success10,
+            backgroundColor: theme.colors.status.success20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
