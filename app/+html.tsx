@@ -50,6 +50,124 @@ export default function Root({ children }: PropsWithChildren) {
         <ScrollViewStyleReset />
       </head>
       <body className="expo-web-body">
+        {/* Desktop-only landing panel — hidden on mobile via CSS */}
+        <div className="expo-web-landing">
+          <div className="expo-web-landing-brand">
+            <svg
+              className="expo-web-landing-logo"
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              aria-hidden
+              fill="currentColor"
+            >
+              <rect x="1" y="9.5" width="3.5" height="5" rx="1.2" />
+              <rect x="19.5" y="9.5" width="3.5" height="5" rx="1.2" />
+              <rect x="4.5" y="7.5" width="2.5" height="9" rx="1" />
+              <rect x="17" y="7.5" width="2.5" height="9" rx="1" />
+              <rect x="7" y="10.5" width="10" height="3" rx="0.8" />
+            </svg>
+            <span className="expo-web-landing-name">Musclog</span>
+          </div>
+          <p className="expo-web-landing-tagline">
+            AI-powered fitness &amp; nutrition
+            <br />
+            tracking — free &amp; open source.
+          </p>
+          <div className="expo-web-landing-features">
+            <div className="expo-web-landing-feature">
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <polyline points="23 12 19 12 16 20 10 4 7 12 1 12" />
+              </svg>
+              <span>Smart workout tracking</span>
+            </div>
+            <div className="expo-web-landing-feature">
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              <span>AI photo nutrition logging</span>
+            </div>
+            <div className="expo-web-landing-feature">
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              <span>Detailed progress charts</span>
+            </div>
+            <div className="expo-web-landing-feature">
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>100% private &amp; on-device</span>
+            </div>
+          </div>
+          <div className="expo-web-landing-cta">
+            <span>Try it live</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+          <div className="expo-web-landing-platforms">
+            <span>Android</span>
+            <span aria-hidden>·</span>
+            <span>iOS</span>
+            <span aria-hidden>·</span>
+            <span>Web</span>
+          </div>
+        </div>
         <div className="expo-web-root">
           <div className="expo-web-app-shell">{children}</div>
           {/* Desktop-only bezel overlay; see global.css (min-width: 1024px) */}
