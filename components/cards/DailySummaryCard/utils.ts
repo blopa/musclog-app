@@ -94,7 +94,7 @@ export function isNarrowLayout(
   // Base threshold for narrow layout
   const baseThreshold = 450;
 
-  // Different thresholds for different languages to account for text length variations
+  // TODO: move this as a constant on the lang.ts
   const languageMultipliers: Record<string, number> = {
     'de-DE': 1.1, // German text tends to be longer
     'pt-BR': 1.05, // Portuguese tends to be slightly longer
