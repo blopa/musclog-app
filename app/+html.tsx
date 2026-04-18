@@ -28,6 +28,28 @@ function withExpoBaseUrl(path: string): string {
   return `/${basePath}${normalized}`;
 }
 
+/**
+ * Reads the language mirrored to localStorage by lang/lang.ts and patches the
+ * landing panel text. Runs synchronously after the panel markup so there is no
+ * flash of the wrong language. Falls back to en-US if the key is absent.
+ *
+ * The storage key ('musclog_lang') must match LANDING_LANGUAGE_STORAGE_KEY in
+ * lang/lang.ts, which writes it on every i18n languageChanged event.
+ */
+const LANDING_I18N_SCRIPT = `(function(){try{
+  var t={
+    'en-US':{tagline:'AI-powered fitness & nutrition tracking — free & open source.',f1:'Smart workout tracking',f2:'AI photo nutrition logging',f3:'Detailed progress charts',f4:'100% private & on-device',cta:'Try it live'},
+    'pt-BR':{tagline:'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',f1:'Rastreamento inteligente de treinos',f2:'Registro de nutrição por foto com IA',f3:'Gráficos detalhados de progresso',f4:'100% privado e no dispositivo',cta:'Experimente agora'},
+    'ru-RU':{tagline:'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',f1:'Умный учёт тренировок',f2:'Запись питания по фото с ИИ',f3:'Подробные графики прогресса',f4:'100% приватно и на устройстве',cta:'Попробуйте сейчас'}
+  };
+  var lang=localStorage.getItem('musclog_lang');
+  var s=(lang&&t[lang])||t['en-US'];
+  document.querySelectorAll('[data-landing-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-landing-i18n');
+    if(k&&s[k])el.textContent=s[k];
+  });
+}catch(_){}})();`;
+
 // Web-only: configures the root HTML for every web page during static rendering.
 // Only runs in Node.js; has no access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
@@ -69,10 +91,8 @@ export default function Root({ children }: PropsWithChildren) {
             </svg>
             <span className="expo-web-landing-name">Musclog</span>
           </div>
-          <p className="expo-web-landing-tagline">
-            AI-powered fitness &amp; nutrition
-            <br />
-            tracking — free &amp; open source.
+          <p className="expo-web-landing-tagline" data-landing-i18n="tagline">
+            AI-powered fitness &amp; nutrition tracking — free &amp; open source.
           </p>
           <div className="expo-web-landing-features">
             <div className="expo-web-landing-feature">
@@ -89,7 +109,7 @@ export default function Root({ children }: PropsWithChildren) {
               >
                 <polyline points="23 12 19 12 16 20 10 4 7 12 1 12" />
               </svg>
-              <span>Smart workout tracking</span>
+              <span data-landing-i18n="f1">Smart workout tracking</span>
             </div>
             <div className="expo-web-landing-feature">
               <svg
@@ -106,7 +126,7 @@ export default function Root({ children }: PropsWithChildren) {
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
               </svg>
-              <span>AI photo nutrition logging</span>
+              <span data-landing-i18n="f2">AI photo nutrition logging</span>
             </div>
             <div className="expo-web-landing-feature">
               <svg
@@ -124,7 +144,7 @@ export default function Root({ children }: PropsWithChildren) {
                 <line x1="12" y1="20" x2="12" y2="4" />
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
-              <span>Detailed progress charts</span>
+              <span data-landing-i18n="f3">Detailed progress charts</span>
             </div>
             <div className="expo-web-landing-feature">
               <svg
@@ -140,11 +160,11 @@ export default function Root({ children }: PropsWithChildren) {
               >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span>100% private &amp; on-device</span>
+              <span data-landing-i18n="f4">100% private &amp; on-device</span>
             </div>
           </div>
           <div className="expo-web-landing-cta">
-            <span>Try it live</span>
+            <span data-landing-i18n="cta">Try it live</span>
             <svg
               width="14"
               height="14"
@@ -168,6 +188,8 @@ export default function Root({ children }: PropsWithChildren) {
             <span>Web</span>
           </div>
         </div>
+        {/* Patches landing panel text from localStorage before React boots */}
+        <script dangerouslySetInnerHTML={{ __html: LANDING_I18N_SCRIPT }} />
         <div className="expo-web-root">
           <div className="expo-web-app-shell">{children}</div>
           {/* Desktop-only bezel overlay; see global.css (min-width: 1024px) */}

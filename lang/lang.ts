@@ -487,4 +487,18 @@ export const languageLabels: Record<string, string> = {
   [RU_RU]: i18n.t('untranslated.ru-ru'),
 };
 
+export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
+
+// Mirror the active language to localStorage so the static landing panel
+// (+html.tsx) can pick it up before React boots.
+if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  i18n.on('languageChanged', (lng) => {
+    try {
+      window.localStorage.setItem(LANDING_LANGUAGE_STORAGE_KEY, lng);
+    } catch (_) {
+      // private/storage-full — ignore
+    }
+  });
+}
+
 export default i18n;
