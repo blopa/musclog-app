@@ -24,9 +24,11 @@ export function getGoalStatus(consumed: number, goal: number): GoalStatus {
   if (consumed < goal) {
     return 'not-reached';
   }
+
   if (consumed === goal) {
     return 'reached';
   }
+
   return 'exceeded';
 }
 
@@ -37,12 +39,15 @@ export function getMacroGoalStatus(value: number | undefined, goal: number): Goa
   if (value === undefined) {
     return 'not-reached';
   }
+
   if (value < goal) {
     return 'not-reached';
   }
+
   if (value === goal) {
     return 'reached';
   }
+
   return 'exceeded';
 }
 
