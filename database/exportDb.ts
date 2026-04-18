@@ -3,7 +3,7 @@ import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
-import { CURRENT_DATABASE_VERSION } from '@/constants/database';
+import { CURRENT_DATABASE_VERSION, DATABASE_NAME } from '@/constants/database';
 import {
   ASYNC_STORAGE_EXCLUDED_KEYS,
   RESTORE_ORDER,
@@ -12,8 +12,6 @@ import {
 import { encrypt } from '@/utils/encryption';
 
 import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
-
-const DATABASE_NAME = 'musclog';
 
 /**
  * Returns the directory where WatermelonDB's JSI adapter stores its database file.
