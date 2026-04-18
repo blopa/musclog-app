@@ -482,9 +482,9 @@ i18n.use(initReactI18next).init({
 });
 
 export const languageLabels: Record<string, string> = {
-  [EN_US]: i18n.t('untranslated.en-us'),
-  [PT_BR]: i18n.t('untranslated.pt-br'),
-  [RU_RU]: i18n.t('untranslated.ru-ru'),
+  [EN_US]: i18n.t('untranslated.en-us.name'),
+  [PT_BR]: i18n.t('untranslated.pt-br.name'),
+  [RU_RU]: i18n.t('untranslated.ru-ru.name'),
 };
 
 export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';

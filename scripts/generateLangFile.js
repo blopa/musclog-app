@@ -92,7 +92,9 @@ function writeUntranslatedJson(langDirs) {
     const prev = existing[dir];
     const raw =
       typeof prev === 'string' && prev.trim() !== '' ? prev : defaultUntranslatedLabel(dir);
-    untranslated[dir] = capitalizeLanguageLabel(raw);
+    untranslated[dir] = {
+      name: capitalizeLanguageLabel(raw),
+    };
   }
 
   const out = `${JSON.stringify({ untranslated }, null, 2)}\n`;
@@ -271,7 +273,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       'export const languageLabels: Record<string, string> = {',
       languages
-        .map((lang) => `  [${constantName(lang)}]: i18n.t('untranslated.${lang.dir}'),`)
+        .map((lang) => `  [${constantName(lang)}]: i18n.t('untranslated.${lang.dir}.name'),`)
         .join('\n'),
       '};',
       '',
