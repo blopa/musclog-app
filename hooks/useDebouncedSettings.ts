@@ -52,6 +52,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'anonymousBugReport',
       'enableGoogleGemini',
       'enableOpenAi',
+      'enableLocalLlm',
       'dailyNutritionInsights',
       'workoutInsights',
       'notifications',
@@ -170,6 +171,10 @@ export function useDebouncedSettings(debounceMs = 200) {
   const handleEnableOpenAiChange = createSettingHandler(
     'enableOpenAi',
     SettingsService.setEnableOpenAi
+  );
+  const handleEnableLocalLlmChange = createSettingHandler(
+    'enableLocalLlm',
+    SettingsService.setEnableLocalLlm
   );
   const handleDailyNutritionInsightsChange = createSettingHandler(
     'dailyNutritionInsights',
@@ -296,6 +301,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'enableOpenAi':
             await SettingsService.setEnableOpenAi(value as boolean);
             break;
+          case 'enableLocalLlm':
+            await SettingsService.setEnableLocalLlm(value as boolean);
+            break;
           case 'dailyNutritionInsights':
             await SettingsService.setDailyNutritionInsights(value as boolean);
             break;
@@ -395,6 +403,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     enableGoogleGemini:
       (localSettings.enableGoogleGemini as boolean) ?? actualSettings.enableGoogleGemini,
     enableOpenAi: (localSettings.enableOpenAi as boolean) ?? actualSettings.enableOpenAi,
+    enableLocalLlm: (localSettings.enableLocalLlm as boolean) ?? actualSettings.enableLocalLlm,
     dailyNutritionInsights:
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
@@ -456,6 +465,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleAnonymousBugReportChange,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleNotificationsChange,

@@ -9,8 +9,9 @@ export class AiService {
    * Resolves the AI configuration based on user settings.
    * Priority:
    * 1. On-device AI (when enabled and available)
-   * 2. Gemini API Key
-   * 3. OpenAI API Key
+   * 2. Local LLM
+   * 3. Gemini API Key
+   * 4. OpenAI API Key
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
@@ -19,6 +20,18 @@ export class AiService {
         return {
           provider: 'on-device',
           model: 'on-device',
+          language: await SettingsService.getLanguage(),
+        };
+      }
+
+      const enableLocalLlm = await SettingsService.getEnableLocalLlm();
+      const localLlmBaseUrl = (await SettingsService.getLocalLlmBaseUrl()).trim();
+      if (enableLocalLlm && localLlmBaseUrl) {
+        return {
+          provider: 'local',
+          apiKey: (await SettingsService.getLocalLlmApiKey()).trim() || 'ollama',
+          model: (await SettingsService.getLocalLlmModel()) || 'llama3',
+          baseUrl: localLlmBaseUrl,
           language: await SettingsService.getLanguage(),
         };
       }

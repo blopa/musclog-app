@@ -71,6 +71,30 @@ export const ENABLE_GOOGLE_GEMINI_SETTING_TYPE = 'enable_google_gemini';
 export const ENABLE_OPENAI_SETTING_TYPE = 'enable_openai';
 
 /**
+ * Setting type for enabling Local LLM (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const ENABLE_LOCAL_LLM_SETTING_TYPE = 'enable_local_llm';
+
+/**
+ * Setting type for Local LLM base URL (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_BASE_URL_SETTING_TYPE = 'local_llm_base_url';
+
+/**
+ * Setting type for Local LLM model (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_MODEL_SETTING_TYPE = 'local_llm_model';
+
+/**
+ * Setting type for Local LLM API key (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_API_KEY_SETTING_TYPE = 'local_llm_api_key';
+
+/**
  * Setting type for daily nutrition insights (stored in WatermelonDB settings table).
  * value: 'true' | 'false'.
  */
