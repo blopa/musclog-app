@@ -302,23 +302,23 @@ export default function DebugTestScreen() {
   // On-device AI test
   const [onDeviceAiStatus, setOnDeviceAiStatus] = useState<string>('');
   const [onDeviceModels, setOnDeviceModels] = useState<string>('');
-  
+
   const getOnDeviceModels = async () => {
     setOnDeviceModels('Fetching models...');
     try {
       const builtInModels = await getBuiltInModels();
       const { getCompatibleDownloadableModels } = await import('@/utils/onDeviceAi');
       const downloadableModels = await getCompatibleDownloadableModels();
-      
+
       const modelsInfo = {
         builtIn: builtInModels,
-        downloadable: downloadableModels.map(m => ({
+        downloadable: downloadableModels.map((m) => ({
           id: m.id,
           name: m.name,
-          meetsRequirements: m.meetsRequirements
-        }))
+          meetsRequirements: m.meetsRequirements,
+        })),
       };
-      
+
       setOnDeviceModels(JSON.stringify(modelsInfo, null, 2));
       console.log('[OnDeviceAI] All models:', modelsInfo);
     } catch (error) {
@@ -326,7 +326,7 @@ export default function DebugTestScreen() {
       setOnDeviceModels(`Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
-  
+
   const testOnDeviceAi = async () => {
     setOnDeviceAiStatus('Step 1/3: isAvailable()...');
     try {
@@ -682,7 +682,7 @@ export default function DebugTestScreen() {
                 <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
                   Available Models
                 </Text>
-                <Text className="text-xs text-text-primary font-mono">{onDeviceModels}</Text>
+                <Text className="font-mono text-xs text-text-primary">{onDeviceModels}</Text>
               </View>
             ) : null}
           </View>

@@ -8,7 +8,7 @@ import {
   ScanText,
   Settings2,
 } from 'lucide-react-native';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 
@@ -19,14 +19,15 @@ import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
   type DownloadableModel,
-  downloadOnDeviceModel,
   getCompatibleDownloadableModels,
   isOnDeviceAiAvailable,
   isOnDeviceAiCapable,
+  tryRecoverStaleDownloadableModelStatus,
 } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
@@ -245,29 +246,35 @@ export function AISettingsModal({
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
-  // Check on-device AI capability + model state when modal opens
+  const reloadOnDeviceAiState = useCallback(async () => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+    try {
+      const capable = await isOnDeviceAiCapable();
+      setIsOnDeviceCapable(capable);
+      if (!capable) {
+        setIsOnDeviceReady(false);
+        setDownloadableModels([]);
+        return;
+      }
+      await tryRecoverStaleDownloadableModelStatus();
+      const models = await getCompatibleDownloadableModels();
+      setDownloadableModels(models);
+      const ready = await isOnDeviceAiAvailable();
+      setIsOnDeviceReady(ready);
+    } catch {
+      setIsOnDeviceCapable(false);
+      setIsOnDeviceReady(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!visible || Platform.OS === 'web') {
       return;
     }
-
-    isOnDeviceAiCapable()
-      .then((capable) => {
-        setIsOnDeviceCapable(capable);
-        if (!capable) {
-          return;
-        }
-        // Check if built-in model is actually ready (probe)
-        isOnDeviceAiAvailable()
-          .then(setIsOnDeviceReady)
-          .catch(() => setIsOnDeviceReady(false));
-        // Load downloadable models for this device
-        getCompatibleDownloadableModels()
-          .then(setDownloadableModels)
-          .catch(() => {});
-      })
-      .catch(() => setIsOnDeviceCapable(false));
-  }, [visible]);
+    void reloadOnDeviceAiState();
+  }, [visible, reloadOnDeviceAiState]);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -473,16 +480,23 @@ export function AISettingsModal({
                 {
                   key: 'use-on-device-ai',
                   label: t('settings.aiSettings.onDeviceAi.toggle'),
-                  subtitle: isOnDeviceReady
-                    ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
-                    : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
-                  value: debouncedUseOnDeviceAi && isOnDeviceReady,
+                  subtitle:
+                    debouncedUseOnDeviceAi && !isOnDeviceReady
+                      ? t('settings.aiSettings.onDeviceAi.toggleSubtitleWaiting')
+                      : isOnDeviceReady
+                        ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
+                        : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
+                  value: debouncedUseOnDeviceAi,
                   onValueChange: (value) => {
-                    if (!isOnDeviceReady && value && Platform.OS === 'android') {
-                      setIsSetupModalVisible(true);
-                    } else {
-                      handleUseOnDeviceAiChange(value);
+                    if (value && !isOnDeviceReady) {
+                      const showSetup = Platform.OS === 'android' || downloadableModels.length > 0;
+                      if (showSetup) {
+                        setIsSetupModalVisible(true);
+                        return;
+                      }
+                      return;
                     }
+                    handleUseOnDeviceAiChange(value);
                   },
                   icon: (
                     <View
@@ -510,12 +524,27 @@ export function AISettingsModal({
 
         <OnDeviceAiSetupModal
           visible={isSetupModalVisible}
-          onClose={() => setIsSetupModalVisible(false)}
-          downloadableModels={downloadableModels}
-          onModelReady={() => {
-            setIsOnDeviceReady(true);
+          onClose={() => {
             setIsSetupModalVisible(false);
-            handleUseOnDeviceAiChange(true);
+            void reloadOnDeviceAiState();
+          }}
+          downloadableModels={downloadableModels}
+          onModelsUpdated={reloadOnDeviceAiState}
+          onDownloadedModelDeleted={() => {
+            handleUseOnDeviceAiChange(false);
+          }}
+          onModelReady={() => {
+            setIsSetupModalVisible(false);
+            void (async () => {
+              try {
+                await SettingsService.setUseOnDeviceAi(true);
+              } catch {
+                // DB write failed — debounced handler may still retry.
+              }
+              handleUseOnDeviceAiChange(true);
+              await flushAllPendingChanges();
+              await reloadOnDeviceAiState();
+            })();
           }}
         />
 
