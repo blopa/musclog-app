@@ -61,7 +61,26 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
-  const [isNarrowProtein, isNarrowCarbs, isNarrowFats, isNarrowFiber] = isNarrowLayout(i18n.resolvedLanguage ?? i18n.language, windowWidth);
+  const [isNarrowProtein, isNarrowCarbs, isNarrowFats, isNarrowFiber] = isNarrowLayout(
+    i18n.resolvedLanguage ?? i18n.language,
+    windowWidth,
+    macros
+      ? {
+          protein: macros.protein.value,
+          carbs: macros.carbs.value,
+          fats: macros.fats.value,
+          fiber: macros.fiber.value,
+        }
+      : undefined,
+    macros
+      ? {
+          protein: macros.protein.goal,
+          carbs: macros.carbs.goal,
+          fats: macros.fats.goal,
+          fiber: macros.fiber.goal,
+        }
+      : undefined
+  );
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';

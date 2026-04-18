@@ -81,29 +81,61 @@ export function calculateProgress(consumed: number, goal: number): number {
 }
 
 /**
- * Determines if the layout should be narrow for each label type based on language and window width
+ * Determines if the layout should be narrow for each label type based on language, window width, and consume/goal values
  * Returns array of booleans for: [protein, carbs, fats, fiber]
  */
-export function isNarrowLayout(language: string, windowWidth: number): boolean[] {
-  // TODO: also receive each consume label (CONSUME/GOALg) to decide if should be narrow or not
+export function isNarrowLayout(
+  language: string,
+  windowWidth: number,
+  consumeValues?: { protein?: number; carbs?: number; fats?: number; fiber?: number },
+  goalValues?: { protein?: number; carbs?: number; fats?: number; fiber?: number }
+): boolean[] {
+  // TODO: also take into account how many macros are enabled, if 2 or 3, we have more space, so use less narrow layout
   // Base threshold for narrow layout
   const baseThreshold = 450;
-  
+
   // Different thresholds for different languages to account for text length variations
   const languageMultipliers: Record<string, number> = {
-    'de': 1.1,    // German text tends to be longer
+    de: 1.1, // German text tends to be longer
     'pt-BR': 1.05, // Portuguese tends to be slightly longer
     'ru-RU': 0.95, // Russian tends to be more compact
   };
-  
+
   const multiplier = languageMultipliers[language] || 1;
-  const adjustedThreshold = baseThreshold * multiplier;
-  
+  let adjustedThreshold = baseThreshold * multiplier;
+
+  // Adjust threshold based on consume/goal value lengths
+  // Larger numbers take more space, so we should use narrow layout sooner
+  // But ensure minimum spacing even when values are 0
+  if (consumeValues && goalValues) {
+    const maxDigitCount = Math.max(
+      1, // Ensure minimum digit count for proper spacing even for '0'
+      consumeValues.protein ? consumeValues.protein.toString().length : 0,
+      goalValues.protein ? goalValues.protein.toString().length : 0,
+      consumeValues.carbs ? consumeValues.carbs.toString().length : 0,
+      goalValues.carbs ? goalValues.carbs.toString().length : 0,
+      consumeValues.fats ? consumeValues.fats.toString().length : 0,
+      goalValues.fats ? goalValues.fats.toString().length : 0,
+      consumeValues.fiber ? consumeValues.fiber.toString().length : 0,
+      goalValues.fiber ? goalValues.fiber.toString().length : 0
+    );
+
+    // Only reduce threshold for significantly larger numbers (4+ digits)
+    // This ensures adequate spacing for typical values (0-999)
+    if (maxDigitCount >= 4) {
+      adjustedThreshold *= 0.9; // Less aggressive reduction
+    }
+
+    if (maxDigitCount >= 5) {
+      adjustedThreshold *= 0.8; // Only for very large numbers (10000+)
+    }
+  }
+
   // Calculate narrow status for each label type
   // Protein and fats labels are typically shorter, carbs and fiber can be longer
   const isNarrow = windowWidth < adjustedThreshold;
-  const isVeryNarrow = windowWidth < (adjustedThreshold * 0.8);
-  
+  const isVeryNarrow = windowWidth < adjustedThreshold * 0.8;
+
   return [
     isNarrow, // protein
     isNarrow, // carbs
