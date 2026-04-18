@@ -1,5 +1,6 @@
 import { TFunction } from 'i18next';
 
+import { LANGUAGE_MULTIPLIERS } from '@/lang/lang';
 import type { Theme } from '@/theme';
 
 export type MacroValue = {
@@ -94,14 +95,7 @@ export function isNarrowLayout(
   // Base threshold for narrow layout
   const baseThreshold = 450;
 
-  // TODO: move this as a constant on the lang.ts
-  const languageMultipliers: Record<string, number> = {
-    'de-DE': 1.1, // German text tends to be longer
-    'pt-BR': 1.05, // Portuguese tends to be slightly longer
-    'ru-RU': 0.95, // Russian tends to be more compact
-  };
-
-  const multiplier = languageMultipliers[language] || 1;
+  const multiplier = LANGUAGE_MULTIPLIERS[language] || 1;
   let adjustedThreshold = baseThreshold * multiplier;
 
   // Adjust threshold based on number of enabled macros

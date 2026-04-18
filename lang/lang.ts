@@ -489,6 +489,13 @@ export const languageLabels: Record<string, string> = {
 
 export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
+// Language multipliers for UI layout calculations based on text length characteristics
+export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
+  'de-DE': 1.1, // German text tends to be longer
+  'pt-BR': 1.05, // Portuguese tends to be slightly longer
+  'ru-RU': 0.95, // Russian tends to be more compact
+};
+
 // Mirror the active language to localStorage so the static landing panel
 // (+html.tsx) can pick it up before React boots.
 if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
