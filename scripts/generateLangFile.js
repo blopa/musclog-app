@@ -121,6 +121,32 @@ function getDateFnsLocales(callback) {
   });
 }
 
+// Expansion factors relative to English, sourced from IBM Globalization Design Guide.
+// Keys are BCP 47 base language codes. English (en) is the baseline at 1.0.
+const IBM_EXPANSION_TABLE = {
+  en: 1.0,
+  ar: 0.8,
+  da: 1.05,
+  de: 1.3,
+  es: 1.25,
+  fi: 1.1,
+  fr: 1.28,
+  he: 0.8,
+  it: 1.18,
+  ja: 0.55,
+  ko: 0.65,
+  nl: 1.22,
+  no: 1.05,
+  pl: 1.2,
+  pt: 1.2,
+  ru: 0.95,
+  sv: 1.05,
+  th: 1.0,
+  tr: 1.2,
+  vi: 1.15,
+  zh: 0.55,
+};
+
 // Scan locales dir for language subdirectories, sorted (en-us first alphabetically)
 fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
   if (err) {
@@ -279,12 +305,20 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       "export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';",
       '',
-      // TODO: make this dynamic somehow, maybe i18next has a list of long languages?
-      '// Language multipliers for UI layout calculations based on text length characteristics',
+      '// Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.',
       'export const LANGUAGE_MULTIPLIERS: Record<string, number> = {',
-      "  'de-DE': 1.1, // German text tends to be longer",
-      "  'pt-BR': 1.05, // Portuguese tends to be slightly longer",
-      "  'ru-RU': 0.95, // Russian tends to be more compact",
+      languages
+        .map((lang) => {
+          const baseLang = lang.dir.split('-')[0];
+          const multiplier = IBM_EXPANSION_TABLE[baseLang];
+          if (multiplier === undefined || multiplier === 1.0) {
+            return null;
+          }
+
+          return `  '${dirToLanguageTag(lang.dir)}': ${multiplier},`;
+        })
+        .filter(Boolean)
+        .join('\n'),
       '};',
       '',
       '// Mirror the active language to localStorage so the static landing panel',

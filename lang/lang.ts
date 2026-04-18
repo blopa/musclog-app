@@ -489,11 +489,10 @@ export const languageLabels: Record<string, string> = {
 
 export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
-// Language multipliers for UI layout calculations based on text length characteristics
+// Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.
 export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
-  'de-DE': 1.1, // German text tends to be longer
-  'pt-BR': 1.05, // Portuguese tends to be slightly longer
-  'ru-RU': 0.95, // Russian tends to be more compact
+  'pt-BR': 1.2,
+  'ru-RU': 0.95,
 };
 
 // Mirror the active language to localStorage so the static landing panel
