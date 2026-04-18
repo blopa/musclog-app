@@ -10,13 +10,14 @@ import {
 } from 'lucide-react-native';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
+import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
@@ -69,7 +70,8 @@ function AIIntegrationCard({
   modelValue,
   onModelPress,
   modelFallbackText,
-}: AIIntegrationCardProps) {
+  extraInputs,
+}: AIIntegrationCardProps & { extraInputs?: ReactNode }) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -118,6 +120,8 @@ function AIIntegrationCard({
               borderBottomColor: theme.colors.border.light,
             }}
           >
+            {extraInputs}
+
             <SecretInput
               label={apiKeyLabel}
               value={apiKeyValue}
@@ -191,6 +195,13 @@ type AISettingsModalProps = {
   onGetOpenAiKeyPress?: () => void;
   openAiModel?: string;
   onOpenAiModelPress?: (model: string) => void;
+  // Local LLM
+  localLlmApiKey?: string;
+  onLocalLlmApiKeyChange?: (value: string) => void;
+  localLlmModel?: string;
+  onLocalLlmModelChange?: (value: string) => void;
+  localLlmBaseUrl?: string;
+  onLocalLlmBaseUrlChange?: (value: string) => void;
 };
 
 export function AISettingsModal({
@@ -205,6 +216,12 @@ export function AISettingsModal({
   onGetOpenAiKeyPress,
   openAiModel = 'GPT-4o',
   onOpenAiModelPress,
+  localLlmApiKey = '',
+  onLocalLlmApiKeyChange,
+  localLlmModel = 'llama3',
+  onLocalLlmModelChange,
+  localLlmBaseUrl = 'http://localhost:11434/v1',
+  onLocalLlmBaseUrlChange,
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -219,6 +236,7 @@ export function AISettingsModal({
   const {
     enableGoogleGemini: debouncedEnableGoogleGemini,
     enableOpenAi: debouncedEnableOpenAi,
+    enableLocalLlm: debouncedEnableLocalLlm,
     dailyNutritionInsights: debouncedDailyNutritionInsights,
     workoutInsights: debouncedWorkoutInsights,
     useOcrBeforeAi: debouncedUseOcrBeforeAi,
@@ -226,6 +244,7 @@ export function AISettingsModal({
     sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleUseOcrBeforeAiChange,
@@ -269,13 +288,20 @@ export function AISettingsModal({
     }
   }, [visible, flushAllPendingChanges]);
 
-  // Local state for API keys (to avoid saving on every keystroke)
+  // Local state for API keys & local LLM configs (to avoid saving on every keystroke)
   const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
   const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(openAiApiKey);
+  const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(localLlmApiKey);
+  const [localStateLlmModel, setLocalStateLlmModel] = useState(localLlmModel);
+  const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(localLlmBaseUrl);
 
   // Track if there are unsaved changes
   const hasGeminiKeyChanges = localGeminiApiKey !== googleGeminiApiKey;
   const hasOpenAiKeyChanges = localOpenAiApiKey !== openAiApiKey;
+  const hasLocalLlmChanges =
+    localStateLlmApiKey !== localLlmApiKey ||
+    localStateLlmModel !== localLlmModel ||
+    localStateLlmBaseUrl !== localLlmBaseUrl;
 
   // Save handlers
   const handleSaveGeminiApiKey = () => {
@@ -286,11 +312,20 @@ export function AISettingsModal({
     onOpenAiApiKeyChange?.(localOpenAiApiKey);
   };
 
+  const handleSaveLocalLlmConfig = () => {
+    onLocalLlmApiKeyChange?.(localStateLlmApiKey);
+    onLocalLlmModelChange?.(localStateLlmModel);
+    onLocalLlmBaseUrlChange?.(localStateLlmBaseUrl);
+  };
+
   // Sync local state when props change (e.g., when modal opens with saved values)
   useEffect(() => {
     setLocalGeminiApiKey(googleGeminiApiKey);
     setLocalOpenAiApiKey(openAiApiKey);
-  }, [googleGeminiApiKey, openAiApiKey]);
+    setLocalStateLlmApiKey(localLlmApiKey);
+    setLocalStateLlmModel(localLlmModel);
+    setLocalStateLlmBaseUrl(localLlmBaseUrl);
+  }, [googleGeminiApiKey, openAiApiKey, localLlmApiKey, localLlmModel, localLlmBaseUrl]);
 
   const geminiToggleItems = [
     {
@@ -310,6 +345,29 @@ export function AISettingsModal({
           }}
         >
           <Bot size={theme.iconSize.lg} color={theme.colors.status.info} />
+        </View>
+      ),
+    },
+  ];
+
+  const localLlmToggleItems = [
+    {
+      key: 'enable-local-llm',
+      label: t('settings.aiSettings.enableLocalLlm'),
+      value: debouncedEnableLocalLlm,
+      onValueChange: handleEnableLocalLlmChange,
+      icon: (
+        <View
+          style={{
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.status.success10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Bot size={theme.iconSize.md} color={theme.colors.status.success} />
         </View>
       ),
     },
@@ -449,6 +507,51 @@ export function AISettingsModal({
           modelValue={openAiModel}
           onModelPress={() => setOpenAiModelMenuVisible(true)}
           modelFallbackText={t('settings.aiSettings.selectModel')}
+        />
+
+        {/* Local LLM Integration Section */}
+        <AIIntegrationCard
+          sectionTitle={t('settings.aiSettings.localLlmIntegration')}
+          sectionTitleColor={theme.colors.accent.primary}
+          toggleItems={localLlmToggleItems}
+          enabled={debouncedEnableLocalLlm}
+          headerContent={
+            <Button
+              label={t('settings.aiSettings.localLlmHelp')}
+              onPress={() => {
+                Linking.openURL('https://ollama.com/blog/openai-compatibility').catch(() => {});
+              }}
+              size="sm"
+              width="full"
+              variant="outline"
+            />
+          }
+          apiKeyLabel={t('settings.aiSettings.localLlmApiKey')}
+          apiKeyValue={localStateLlmApiKey}
+          onApiKeyChange={setLocalStateLlmApiKey}
+          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+          apiKeyHelper={t('settings.aiSettings.localLlmApiKeyHelper')}
+          onSaveApiKey={handleSaveLocalLlmConfig}
+          hasUnsavedChanges={hasLocalLlmChanges}
+          modelLabel={t('settings.aiSettings.localLlmModel')}
+          modelValue={localStateLlmModel}
+          onModelPress={() => {}}
+          extraInputs={
+            <View className="mb-4 gap-4">
+              <TextInput
+                label={t('settings.aiSettings.localLlmBaseUrl')}
+                value={localStateLlmBaseUrl}
+                onChangeText={setLocalStateLlmBaseUrl}
+                placeholder="http://localhost:11434/v1"
+              />
+              <TextInput
+                label={t('settings.aiSettings.localLlmModel')}
+                value={localStateLlmModel}
+                onChangeText={setLocalStateLlmModel}
+                placeholder="llama3"
+              />
+            </View>
+          }
         />
 
         {/* Apple Intelligence Section (iOS only) */}

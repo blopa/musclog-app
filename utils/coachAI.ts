@@ -71,12 +71,13 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
-export type CoachAIProvider = 'gemini' | 'openai' | 'on-device';
+export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local';
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
+  baseUrl?: string;
   language?: string; // Re-introduced from old code
 };
 
@@ -381,7 +382,11 @@ async function sendViaOpenAI(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
@@ -490,7 +495,11 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -529,7 +538,11 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -599,7 +612,11 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -683,7 +700,11 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
@@ -776,6 +797,11 @@ export async function sendCoachMessage(
 
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);
+  }
+
+  // Local provider uses OpenAI-compatible API but with a custom base URL
+  if (config.provider === 'local') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
   }
 
   return sendViaOpenAI(config, history, sanitizedMessage, context);
