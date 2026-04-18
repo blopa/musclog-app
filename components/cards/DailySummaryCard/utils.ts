@@ -81,11 +81,35 @@ export function calculateProgress(consumed: number, goal: number): number {
 }
 
 /**
- * Determines if the layout should be narrow based on language and window width
+ * Determines if the layout should be narrow for each label type based on language and window width
+ * Returns array of booleans for: [protein, carbs, fats, fiber]
  */
-export function isNarrowLayout(language: string, windowWidth: number): boolean {
-  // TODO: improve this to return an array of true|false for each label
-  return windowWidth < 450;
+export function isNarrowLayout(language: string, windowWidth: number): boolean[] {
+  // TODO: also receive each consume label (CONSUME/GOALg) to decide if should be narrow or not
+  // Base threshold for narrow layout
+  const baseThreshold = 450;
+  
+  // Different thresholds for different languages to account for text length variations
+  const languageMultipliers: Record<string, number> = {
+    'de': 1.1,    // German text tends to be longer
+    'pt-BR': 1.05, // Portuguese tends to be slightly longer
+    'ru-RU': 0.95, // Russian tends to be more compact
+  };
+  
+  const multiplier = languageMultipliers[language] || 1;
+  const adjustedThreshold = baseThreshold * multiplier;
+  
+  // Calculate narrow status for each label type
+  // Protein and fats labels are typically shorter, carbs and fiber can be longer
+  const isNarrow = windowWidth < adjustedThreshold;
+  const isVeryNarrow = windowWidth < (adjustedThreshold * 0.8);
+  
+  return [
+    isNarrow, // protein
+    isNarrow, // carbs
+    isVeryNarrow, // fats
+    isVeryNarrow, // fiber (shorter threshold since fiber is less critical)
+  ];
 }
 
 /**

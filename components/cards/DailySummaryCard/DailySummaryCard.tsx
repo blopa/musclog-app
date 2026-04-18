@@ -61,7 +61,7 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
-  const isNarrow = isNarrowLayout(i18n.resolvedLanguage ?? i18n.language, windowWidth);
+  const [isNarrowProtein, isNarrowCarbs, isNarrowFats, isNarrowFiber] = isNarrowLayout(i18n.resolvedLanguage ?? i18n.language, windowWidth);
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
@@ -196,7 +196,7 @@ export function DailySummaryCard({
               ...(showProtein
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowProtein
                         ? t('dailySummaryCard.proteinShort')
                         : t('dailySummaryCard.protein'),
                       value: macros.protein.value,
@@ -209,7 +209,7 @@ export function DailySummaryCard({
               ...(showCarbs
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowCarbs
                         ? t('dailySummaryCard.carbsShort')
                         : t('dailySummaryCard.carbs'),
                       value: macros.carbs.value,
@@ -222,7 +222,7 @@ export function DailySummaryCard({
               ...(showFats
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowFats
                         ? t('dailySummaryCard.fatsShort')
                         : t('dailySummaryCard.fats'),
                       value: macros.fats.value,
@@ -235,7 +235,7 @@ export function DailySummaryCard({
               ...(showFiber && macros.fiber.goal > 0
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowFiber
                         ? t('dailySummaryCard.fiberShort')
                         : t('dailySummaryCard.fiber'),
                       value: macros.fiber.value,
