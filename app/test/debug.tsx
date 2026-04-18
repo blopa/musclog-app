@@ -21,7 +21,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
-import { isOnDeviceAiAvailable, isOnDeviceAiCapable, sendOnDeviceMessage } from '@/utils/onDeviceAi';
+import {
+  isOnDeviceAiAvailable,
+  isOnDeviceAiCapable,
+  sendOnDeviceMessage,
+} from '@/utils/onDeviceAi';
 import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
@@ -308,16 +312,22 @@ export default function DebugTestScreen() {
       console.log('[AppleIntelligence] isOnDeviceAiCapable() =', capable);
 
       if (!capable) {
-        setOnDeviceAiStatus('Not capable — requires iPhone 15 Pro+ with iOS 26 and Apple Intelligence enabled.');
+        setOnDeviceAiStatus(
+          'Not capable — requires iPhone 15 Pro+ with iOS 26 and Apple Intelligence enabled.'
+        );
         return;
       }
 
-      setOnDeviceAiStatus('Step 2/3: isOnDeviceAiAvailable() (checks Foundation Models readiness)...');
+      setOnDeviceAiStatus(
+        'Step 2/3: isOnDeviceAiAvailable() (checks Foundation Models readiness)...'
+      );
       const ready = await isOnDeviceAiAvailable();
       console.log('[AppleIntelligence] isOnDeviceAiAvailable() =', ready);
 
       if (!ready) {
-        setOnDeviceAiStatus('Device is capable but Foundation Models are not ready. Enable Apple Intelligence in Settings.');
+        setOnDeviceAiStatus(
+          'Device is capable but Foundation Models are not ready. Enable Apple Intelligence in Settings.'
+        );
         return;
       }
 
@@ -612,7 +622,9 @@ export default function DebugTestScreen() {
           {/* Apple Intelligence Test (iOS only) */}
           {Platform.OS === 'ios' ? (
             <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-              <Text className="mb-2 text-lg font-bold text-text-primary">Apple Intelligence Test</Text>
+              <Text className="mb-2 text-lg font-bold text-text-primary">
+                Apple Intelligence Test
+              </Text>
               <Text className="mb-2 text-sm text-text-secondary">
                 Checks capability and readiness, then sends "Hello there!" and shows the response.
               </Text>
