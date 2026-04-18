@@ -81,6 +81,14 @@ export function calculateProgress(consumed: number, goal: number): number {
 }
 
 /**
+ * Determines if the layout should be narrow based on language and window width
+ */
+export function isNarrowLayout(language: string, windowWidth: number): boolean {
+  // TODO: improve this to return an array of true|false for each label
+  return windowWidth < 450;
+}
+
+/**
  * Calculates all progress values and statuses for daily summary
  */
 export function calculateDailySummaryMetrics(

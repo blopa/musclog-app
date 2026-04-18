@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
@@ -11,6 +12,7 @@ import {
   calculateDailySummaryMetrics,
   getProgressBarColor,
   getStatusLabel,
+  isNarrowLayout,
   MacroValue,
 } from './utils';
 
@@ -59,8 +61,7 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
-  // TODO: move this to a function that will receive the current language, the current window width and return the correct value
-  const isNarrow = windowWidth < 450;
+  const isNarrow = isNarrowLayout(i18n.resolvedLanguage ?? i18n.language, windowWidth);
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
