@@ -61,6 +61,9 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
+  // Calculate enabled macros count (excluding alcohol since it's displayed separately)
+  const enabledMacrosCount = [showCarbs, showProtein, showFats, showFiber].filter(Boolean).length;
+
   const [isNarrowProtein, isNarrowCarbs, isNarrowFats, isNarrowFiber] = isNarrowLayout(
     i18n.resolvedLanguage ?? i18n.language,
     windowWidth,
@@ -79,7 +82,8 @@ export function DailySummaryCard({
           fats: macros.fats.goal,
           fiber: macros.fiber.goal,
         }
-      : undefined
+      : undefined,
+    enabledMacrosCount
   );
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =

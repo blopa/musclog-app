@@ -81,28 +81,38 @@ export function calculateProgress(consumed: number, goal: number): number {
 }
 
 /**
- * Determines if the layout should be narrow for each label type based on language, window width, and consume/goal values
+ * Determines if the layout should be narrow for each label type based on language, window width, consume/goal values, and enabled macros count
  * Returns array of booleans for: [protein, carbs, fats, fiber]
  */
 export function isNarrowLayout(
   language: string,
   windowWidth: number,
   consumeValues?: { protein?: number; carbs?: number; fats?: number; fiber?: number },
-  goalValues?: { protein?: number; carbs?: number; fats?: number; fiber?: number }
+  goalValues?: { protein?: number; carbs?: number; fats?: number; fiber?: number },
+  enabledMacrosCount?: number
 ): boolean[] {
-  // TODO: also take into account how many macros are enabled, if 2 or 3, we have more space, so use less narrow layout
   // Base threshold for narrow layout
   const baseThreshold = 450;
 
   // Different thresholds for different languages to account for text length variations
   const languageMultipliers: Record<string, number> = {
-    de: 1.1, // German text tends to be longer
+    'de-DE': 1.1, // German text tends to be longer
     'pt-BR': 1.05, // Portuguese tends to be slightly longer
     'ru-RU': 0.95, // Russian tends to be more compact
   };
 
   const multiplier = languageMultipliers[language] || 1;
   let adjustedThreshold = baseThreshold * multiplier;
+
+  // Adjust threshold based on number of enabled macros
+  // When fewer macros are shown (2-3), we have more space, so use less narrow layout
+  if (enabledMacrosCount !== undefined) {
+    if (enabledMacrosCount <= 2) {
+      adjustedThreshold *= 0.6; // 40% less threshold when only 1-2 macros shown
+    } else if (enabledMacrosCount === 3) {
+      adjustedThreshold *= 0.65; // 35% less threshold when 3 macros shown
+    }
+  }
 
   // Adjust threshold based on consume/goal value lengths
   // Larger numbers take more space, so we should use narrow layout sooner
