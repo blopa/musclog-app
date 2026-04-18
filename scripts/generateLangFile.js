@@ -279,7 +279,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       "export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';",
       '',
-      // TODO: make this dynamic somehow
+      // TODO: make this dynamic somehow, maybe i18next has a list of long languages?
       '// Language multipliers for UI layout calculations based on text length characteristics',
       'export const LANGUAGE_MULTIPLIERS: Record<string, number> = {',
       "  'de-DE': 1.1, // German text tends to be longer",
