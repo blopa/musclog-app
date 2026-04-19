@@ -70,6 +70,12 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+
+  useEffect(() => {
+    // TODO: use await instead of .then
+    UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+  }, []);
 
   useEffect(() => {
     if (!workoutLogId) {
@@ -167,9 +173,6 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                 // Adjust current set based on lastSet
                 const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
                 const equipmentType = exercise?.equipmentType;
-                // TODO: get the most recent body weight from the user metrics
-                const bodyWeightKg = 70; // temp fix
-
                 const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
                 const oneRM = calculateAverage1RM(
                   lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
