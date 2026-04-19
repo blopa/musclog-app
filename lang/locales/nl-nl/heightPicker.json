@@ -1,10 +1,10 @@
 {
   "heightPicker": {
-    "cancel": "Cancel",
-    "confirmHeight": "Confirm Height",
-    "feet": "Feet",
-    "inches": "Inches",
-    "selectedHeight": "Selected Height",
-    "selectHeight": "Select Height"
+    "cancel": "Annuleren",
+    "confirmHeight": "Lengte bevestigen",
+    "feet": "Voet",
+    "inches": "Inch",
+    "selectedHeight": "Geselecteerde lengte",
+    "selectHeight": "Selecteer lengte"
   }
 }

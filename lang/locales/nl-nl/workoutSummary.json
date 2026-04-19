@@ -1,21 +1,21 @@
 {
   "workoutSummary": {
-    "totalTime": "Total Time",
+    "totalTime": "Totale tijd",
     "volume": "Volume",
-    "duration": "Duration",
-    "personalRecords": "Personal Records",
-    "newPRs": "New PRs",
-    "goHome": "Go Home",
-    "youCrushedIt": "You Crushed It!",
-    "feedbackSubmitted": "Workout feedback submitted successfully.",
-    "shareText": "I just crushed a workout!",
-    "shareSummary": "Share Summary",
-    "workoutCompleted": "Workout Completed!",
-    "viewDetails": "View Details",
-    "getFeedback": "Get AI Feedback",
-    "gettingFeedback": "Getting feedback...",
-    "completedMessage": "You have completed the {{workoutName}} workout",
-    "completedSummary": "Workout completed: {{workoutName}}",
-    "caloriesBurned": "Calories Burned"
+    "duration": "Duur",
+    "personalRecords": "Persoonlijke records",
+    "newPRs": "Nieuwe PR's",
+    "goHome": "Naar Home",
+    "youCrushedIt": "Je hebt het geweldig gedaan!",
+    "feedbackSubmitted": "Workout-feedback succesvol ingediend.",
+    "shareText": "Ik heb net een workout geknald!",
+    "shareSummary": "Samenvatting delen",
+    "workoutCompleted": "Workout voltooid!",
+    "viewDetails": "Details bekijken",
+    "getFeedback": "AI-feedback ophalen",
+    "gettingFeedback": "Feedback ophalen...",
+    "completedMessage": "Je hebt de {{workoutName}} workout voltooid",
+    "completedSummary": "Workout voltooid: {{workoutName}}",
+    "caloriesBurned": "Verbrande calorieën"
   }
 }

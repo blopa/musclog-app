@@ -1,17 +1,17 @@
 {
   "timePicker": {
     "am": "AM",
-    "cancel": "Cancel",
-    "clearSelection": "Clear Selection",
-    "confirm": "Set Time",
-    "confirmTime": "Confirm Time",
-    "hours": "Hours",
-    "midnight": "Midnight",
-    "minutes": "Minutes",
-    "noon": "Noon",
-    "now": "Now",
+    "cancel": "Annuleren",
+    "clearSelection": "Selectie wissen",
+    "confirm": "Tijd instellen",
+    "confirmTime": "Tijd bevestigen",
+    "hours": "Uur",
+    "midnight": "Middernacht",
+    "minutes": "Minuten",
+    "noon": "Middag",
+    "now": "Nu",
     "pm": "PM",
-    "selectedStartTime": "Selected Start Time",
-    "selectTime": "Select Time"
+    "selectedStartTime": "Geselecteerde starttijd",
+    "selectTime": "Selecteer tijd"
   }
 }

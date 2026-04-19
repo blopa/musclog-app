@@ -1,16 +1,16 @@
 {
   "sessionFeedback": {
-    "title": "Session Feedback",
-    "subtitle": "Rate your performance",
-    "difficulty": "Difficulty",
-    "exhaustion": "Exhaustion",
-    "enjoyment": "Enjoyment",
-    "easy": "Easy",
-    "extreme": "Extreme",
-    "fresh": "Fresh",
-    "drained": "Drained",
-    "disliked": "Disliked",
-    "loved": "Loved",
-    "submit": "SUBMIT FEEDBACK"
+    "title": "Sessie-feedback",
+    "subtitle": "Beoordeel je prestatie",
+    "difficulty": "Moeilijkheidsgraad",
+    "exhaustion": "Uitputting",
+    "enjoyment": "Plezier",
+    "easy": "Makkelijk",
+    "extreme": "Extreem",
+    "fresh": "Fit",
+    "drained": "Uitgeput",
+    "disliked": "Niet leuk",
+    "loved": "Geweldig",
+    "submit": "FEEDBACK VERZENDEN"
   }
 }

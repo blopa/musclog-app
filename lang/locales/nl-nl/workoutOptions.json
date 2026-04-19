@@ -1,15 +1,15 @@
 {
   "workoutOptions": {
-    "title": "Workout Options",
-    "cancelWorkout": "Cancel Workout",
-    "cancelWorkoutDesc": "Discard this workout and return to workouts list",
-    "finishWorkout": "Finish Workout",
-    "finishWorkoutDesc": "Complete this workout and view summary",
-    "previewWorkout": "Preview Full Workout",
-    "previewWorkoutDesc": "See all exercises in this plan",
-    "workoutSettings": "Workout Settings",
-    "workoutSettingsDesc": "Timers, audio, and preferences",
-    "endWorkout": "End Workout",
-    "endWorkoutDesc": "Finish and save progress"
+    "title": "Workout-opties",
+    "cancelWorkout": "Workout annuleren",
+    "cancelWorkoutDesc": "Gooi deze workout weg en ga terug naar de workoutlijst",
+    "finishWorkout": "Workout beëindigen",
+    "finishWorkoutDesc": "Voltooi deze workout en bekijk de samenvatting",
+    "previewWorkout": "Volledige workout bekijken",
+    "previewWorkoutDesc": "Bekijk alle oefeningen in dit plan",
+    "workoutSettings": "Workout-instellingen",
+    "workoutSettingsDesc": "Timers, audio en voorkeuren",
+    "endWorkout": "Workout beëindigen",
+    "endWorkoutDesc": "Voortgang beëindigen en opslaan"
   }
 }

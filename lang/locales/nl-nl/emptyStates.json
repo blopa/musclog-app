@@ -1,23 +1,23 @@
 {
   "emptyStates": {
     "workouts": {
-      "title": "No Workouts Yet",
-      "description": "Your fitness journey starts with your first rep. Plan your routine and track your progress here.",
-      "buttonLabel": "Create Your First Workout"
+      "title": "Nog geen workouts",
+      "description": "Je fitnessreis begint bij je eerste herhaling. Plan je routine en houd je voortgang hier bij.",
+      "buttonLabel": "Maak je eerste workout"
     },
     "foods": {
-      "title": "No Food Logged",
-      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
-      "buttonLabel": "Log Your Meal"
+      "title": "Geen eten gelogd",
+      "description": "Log je maaltijden om op de hoogte te blijven van je voedingsdoelen. Je lichaam zal je dankbaar zijn.",
+      "buttonLabel": "Log je maaltijd"
     },
     "workout": {
-      "title": "No workouts yet",
-      "description": "Ready for your first session?",
+      "title": "Nog geen workouts",
+      "description": "Klaar voor je eerste sessie?",
       "button": "Plan"
     },
     "food": {
-      "title": "Nothing logged today",
-      "description": "Fuel your body!",
+      "title": "Niets gelogd vandaag",
+      "description": "Voed je lichaam!",
       "button": "Log"
     }
   }

@@ -1,18 +1,18 @@
 {
   "replaceExercise": {
-    "title": "Replace Exercise",
-    "cancel": "Cancel",
-    "replace": "Replace",
-    "searchPlaceholder": "Search exercises...",
+    "title": "Oefening vervangen",
+    "cancel": "Annuleren",
+    "replace": "Vervangen",
+    "searchPlaceholder": "Oefeningen zoeken...",
     "muscleGroups": {
-      "all": "All",
-      "chest": "Chest",
-      "shoulders": "Shoulders",
+      "all": "Alle",
+      "chest": "Borst",
+      "shoulders": "Schouders",
       "triceps": "Triceps"
     },
-    "selectExercise": "Select Exercise",
-    "loadMore": "Load More",
-    "loadingMore": "Loading…",
-    "noExercisesMatch": "No exercises match"
+    "selectExercise": "Oefening selecteren",
+    "loadMore": "Meer laden",
+    "loadingMore": "Laden…",
+    "noExercisesMatch": "Geen overeenkomende oefeningen"
   }
 }

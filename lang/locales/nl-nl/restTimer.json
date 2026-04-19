@@ -1,14 +1,14 @@
 {
   "restTimer": {
-    "resting": "Resting...",
+    "resting": "Rusten...",
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
-    "skipRest": "SKIP REST",
-    "done": "Done",
-    "reps": "reps",
-    "repsWithCount": "{{count}} reps",
-    "upNext": "UP NEXT",
-    "missingWorkoutData": "Missing workout data",
-    "completedSetNotFound": "Completed set not found"
+    "skipRest": "RUST OVERSLAAN",
+    "done": "Klaar",
+    "reps": "herh",
+    "repsWithCount": "{{count}} herh",
+    "upNext": "VOLGENDE",
+    "missingWorkoutData": "Workoutgegevens ontbreken",
+    "completedSetNotFound": "Voltooide set niet gevonden"
   }
 }

@@ -1,8 +1,8 @@
 {
   "endWorkout": {
-    "title": "End Workout",
-    "confirmation": "Are you sure you want to finish the current workout session?",
-    "finishAndSave": "Finish and Save",
-    "finishAndDiscard": "Finish and Discard"
+    "title": "Workout beëindigen",
+    "confirmation": "Weet je zeker dat je de huidige workoutsessie wilt beëindigen?",
+    "finishAndSave": "Beëindigen en opslaan",
+    "finishAndDiscard": "Beëindigen en weggooien"
   }
 }

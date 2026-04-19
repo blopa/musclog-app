@@ -1,21 +1,21 @@
 {
   "dailySummaryCard": {
     "alcohol": "Alcohol",
-    "alcoholLabel": "You've also consumed:",
-    "carbs": "Carbs",
-    "fiber": "Fiber",
-    "fiberShort": "FI",
-    "carbsShort": "C",
-    "dailySummary": "Day Summary",
-    "fats": "Fats",
-    "fatsShort": "F",
+    "alcoholLabel": "Je hebt ook geconsumeerd:",
+    "carbs": "Koolhydraten",
+    "fiber": "Vezels",
+    "fiberShort": "V",
+    "carbsShort": "K",
+    "dailySummary": "Dagsamenvatting",
+    "fats": "Vetten",
+    "fatsShort": "V",
     "kcal": "Kcal",
-    "over": "Over",
-    "protein": "Protein",
-    "proteinShort": "P",
-    "remaining": "Remaining",
-    "setGoals": "Set Goals",
-    "setGoalsToTrack": "Set Goals To Track",
-    "today": "Today"
+    "over": "Te veel",
+    "protein": "Eiwit",
+    "proteinShort": "E",
+    "remaining": "Resterend",
+    "setGoals": "Doelen instellen",
+    "setGoalsToTrack": "Stel doelen in om bij te houden",
+    "today": "Vandaag"
   }
 }

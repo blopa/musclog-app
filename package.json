@@ -123,7 +123,7 @@
     "expo-sqlite": "~55.0.15",
     "expo-updates": "~55.0.20",
     "expo-web-browser": "~55.0.14",
-    "glob": "13.0.6",
+    "glob": "^13.0.6",
     "html-to-image": "^1.11.13",
     "i18next": "25.10.10",
     "ics": "3.11.0",
