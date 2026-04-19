@@ -10,21 +10,25 @@ import { type PropsWithChildren } from 'react';
  * `assets/phone-wrapper.png` into `public/musclog-app/images/` (gitignored).
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
+const GOOGLE_PLAY_QR_CODE = '/images/google-play-qr.png';
 
 /** Prefix URLs when `experiments.baseUrl` is set (e.g. `/musclog-app`). */
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
     return path;
   }
+
   const base = process.env.EXPO_BASE_URL;
   if (base == null || base === '') {
     return path;
   }
+
   const basePath = String(base).replace(/^\/+|\/+$/g, '');
   const normalized = path.startsWith('/') ? path : `/${path}`;
   if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
     return normalized;
   }
+
   return `/${basePath}${normalized}`;
 }
 
@@ -224,7 +228,7 @@ export default function Root({ children }: PropsWithChildren) {
               Download the App
             </span>
             <img
-              src="/images/google-play-qrcode.png"
+              src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
               alt="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"
               draggable={false}
