@@ -38,9 +38,15 @@ const safetySettings = [
   },
 ];
 
-const getGenerativeAI = async ({ apiKey }: { apiKey?: string }): Promise<GoogleGenAI> => {
+const getGenerativeAI = async ({
+  apiKey,
+  httpOptions,
+}: {
+  apiKey?: string;
+  httpOptions?: { baseUrl?: string; headers?: Record<string, string> };
+}): Promise<GoogleGenAI> => {
   if (apiKey) {
-    return new GoogleGenAI({ apiKey });
+    return new GoogleGenAI({ apiKey, httpOptions });
   }
 
   return {
@@ -72,18 +78,20 @@ const getGenerativeAI = async ({ apiKey }: { apiKey?: string }): Promise<GoogleG
 export const configureBasicGenAI = async (
   {
     apiKey,
+    httpOptions,
     model,
     generationConfig,
     tools,
   }: {
     apiKey?: string;
+    httpOptions?: { baseUrl?: string; headers?: Record<string, string> };
     model?: string;
     generationConfig?: Record<string, unknown>;
     tools?: any[];
   },
   systemParts?: Part[]
 ) => {
-  const genAI = await getGenerativeAI({ apiKey });
+  const genAI = await getGenerativeAI({ apiKey, httpOptions });
   const modelName = model || (await getModel());
 
   return {

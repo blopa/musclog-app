@@ -43,6 +43,13 @@ export class AiCreditsError extends Error {
   }
 }
 
+export class GatewayRateLimitError extends AiCreditsError {
+  constructor(message: string) {
+    super(message);
+    this.name = 'GatewayRateLimitError';
+  }
+}
+
 export function isAiCreditsError(error: any): boolean {
   if (error instanceof AiCreditsError) {
     return true;
@@ -71,15 +78,31 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
-export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local';
+export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local' | 'gateway';
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
   baseUrl?: string;
-  language?: string; // Re-introduced from old code
+  language?: string;
+  gatewayAuthHeader?: string;
+  gatewayUserId?: string;
 };
+
+function buildOpenAIClient(config: CoachAIConfig): OpenAI {
+  return new OpenAI({
+    apiKey: config.apiKey ?? 'unused',
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+    defaultHeaders: config.gatewayAuthHeader
+      ? {
+          'cf-aig-authorization': config.gatewayAuthHeader,
+          ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
+        }
+      : undefined,
+  });
+}
 
 export type ChatHistoryEntry = {
   role: 'user' | 'coach';
@@ -382,11 +405,7 @@ async function sendViaOpenAI(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseUrl,
-    dangerouslyAllowBrowser: true,
-  });
+  const client = buildOpenAIClient(config);
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
@@ -425,7 +444,9 @@ async function sendViaOpenAI(
     handleError(error, 'coachAI.sendViaOpenAI');
 
     if (isAiCreditsError(error)) {
-      throw new AiCreditsError(i18n.t('errors.aiCreditsError'));
+      throw config.provider === 'gateway'
+        ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
+        : new AiCreditsError(i18n.t('errors.aiCreditsError'));
     }
 
     // Return a user-friendly error message without exposing internal details
@@ -495,11 +516,7 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseUrl,
-    dangerouslyAllowBrowser: true,
-  });
+  const client = buildOpenAIClient(config);
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -538,11 +555,7 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseUrl,
-    dangerouslyAllowBrowser: true,
-  });
+  const client = buildOpenAIClient(config);
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -612,11 +625,7 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseUrl,
-    dangerouslyAllowBrowser: true,
-  });
+  const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -700,11 +709,7 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseUrl,
-    dangerouslyAllowBrowser: true,
-  });
+  const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
@@ -801,6 +806,11 @@ export async function sendCoachMessage(
 
   // Local provider uses OpenAI-compatible API but with a custom base URL
   if (config.provider === 'local') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
+  }
+
+  // Gateway uses OpenAI-compatible protocol via Cloudflare AI Gateway
+  if (config.provider === 'gateway') {
     return sendViaOpenAI(config, history, sanitizedMessage, context);
   }
 

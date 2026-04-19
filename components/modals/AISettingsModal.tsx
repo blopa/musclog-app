@@ -241,6 +241,7 @@ export function AISettingsModal({
     workoutInsights: debouncedWorkoutInsights,
     useOcrBeforeAi: debouncedUseOcrBeforeAi,
     useOnDeviceAi: debouncedUseOnDeviceAi,
+    useMusclogFreeTier: debouncedUseMusclogFreeTier,
     sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
@@ -249,6 +250,7 @@ export function AISettingsModal({
     handleWorkoutInsightsChange,
     handleUseOcrBeforeAiChange,
     handleUseOnDeviceAiChange,
+    handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
@@ -462,141 +464,175 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
-        {/* Google Gemini Integration Section */}
-        <AIIntegrationCard
-          sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
-          sectionTitleColor={theme.colors.accent.primary}
-          toggleItems={geminiToggleItems}
-          enabled={debouncedEnableGoogleGemini}
-          apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
-          apiKeyValue={localGeminiApiKey}
-          onApiKeyChange={setLocalGeminiApiKey}
-          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-          apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
-          onSaveApiKey={handleSaveGeminiApiKey}
-          hasUnsavedChanges={hasGeminiKeyChanges}
-          modelLabel={t('settings.aiSettings.geminiModel')}
-          modelValue={geminiModel}
-          onModelPress={() => setGeminiModelMenuVisible(true)}
-        />
-
-        {/* OpenAI Integration Section */}
-        <AIIntegrationCard
-          sectionTitle={t('settings.aiSettings.openAiIntegration')}
-          sectionTitleColor={theme.colors.accent.primary}
-          toggleItems={openAiToggleItems}
-          enabled={debouncedEnableOpenAi}
-          headerContent={
-            onGetOpenAiKeyPress ? (
-              <Button
-                label={t('settings.aiSettings.getOpenAiKey')}
-                onPress={onGetOpenAiKeyPress}
-                size="sm"
-                width="full"
-                variant="outline"
-              />
-            ) : undefined
-          }
-          apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
-          apiKeyValue={localOpenAiApiKey}
-          onApiKeyChange={setLocalOpenAiApiKey}
-          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-          onSaveApiKey={handleSaveOpenAiApiKey}
-          hasUnsavedChanges={hasOpenAiKeyChanges}
-          modelLabel={t('settings.aiSettings.openAiModel')}
-          modelValue={openAiModel}
-          onModelPress={() => setOpenAiModelMenuVisible(true)}
-          modelFallbackText={t('settings.aiSettings.selectModel')}
-        />
-
-        {/* Local LLM Integration Section */}
-        <AIIntegrationCard
-          sectionTitle={t('settings.aiSettings.localLlmIntegration')}
-          sectionTitleColor={theme.colors.accent.primary}
-          toggleItems={localLlmToggleItems}
-          enabled={debouncedEnableLocalLlm}
-          headerContent={
-            <Button
-              label={t('settings.aiSettings.localLlmHelp')}
-              onPress={() => {
-                Linking.openURL('https://ollama.com/blog/openai-compatibility').catch(() => {});
-              }}
-              size="sm"
-              width="full"
-              variant="outline"
-            />
-          }
-          apiKeyLabel={t('settings.aiSettings.localLlmApiKey')}
-          apiKeyValue={localStateLlmApiKey}
-          onApiKeyChange={setLocalStateLlmApiKey}
-          apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
-          apiKeyHelper={t('settings.aiSettings.localLlmApiKeyHelper')}
-          onSaveApiKey={handleSaveLocalLlmConfig}
-          hasUnsavedChanges={hasLocalLlmChanges}
-          modelLabel={t('settings.aiSettings.localLlmModel')}
-          modelValue={localStateLlmModel}
-          onModelPress={() => {}}
-          extraInputs={
-            <View className="mb-4 gap-4">
-              <TextInput
-                label={t('settings.aiSettings.localLlmBaseUrl')}
-                value={localStateLlmBaseUrl}
-                onChangeText={setLocalStateLlmBaseUrl}
-                placeholder="http://localhost:11434/v1"
-              />
-              <TextInput
-                label={t('settings.aiSettings.localLlmModel')}
-                value={localStateLlmModel}
-                onChangeText={setLocalStateLlmModel}
-                placeholder="llama3"
-              />
-            </View>
-          }
-        />
-
-        {/* Apple Intelligence Section (iOS only) */}
-        {Platform.OS === 'ios' && isOnDeviceCapable ? (
-          <View className="gap-3">
-            <Text
-              className="px-5 text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.accent.primary }}
-            >
-              {t('settings.aiSettings.onDeviceAi.sectionTitle')}
-            </Text>
-
-            <ToggleInput
-              items={[
-                {
-                  key: 'use-on-device-ai',
-                  label: t('settings.aiSettings.onDeviceAi.toggle'),
-                  subtitle: isOnDeviceReady
-                    ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
-                    : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
-                  value: debouncedUseOnDeviceAi,
-                  onValueChange: handleUseOnDeviceAiChange,
-                  icon: (
-                    <View
-                      style={{
-                        width: theme.size['8'],
-                        height: theme.size['8'],
-                        borderRadius: theme.borderRadius.full / 2,
-                        backgroundColor: theme.colors.status.success20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Cpu size={theme.iconSize.md} color={theme.colors.status.success} />
-                    </View>
-                  ),
-                },
-              ]}
-            />
-
+        {/* Musclog Free Tier Section */}
+        <View className="gap-3">
+          <Text
+            className="px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.accent.primary }}
+          >
+            {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
+          </Text>
+          <ToggleInput
+            items={[
+              {
+                key: 'use-musclog-free-tier',
+                label: t('settings.aiSettings.musclogFreeTier.toggle'),
+                subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
+                value: debouncedUseMusclogFreeTier,
+                onValueChange: handleUseMusclogFreeTierChange,
+              },
+            ]}
+          />
+          {debouncedUseMusclogFreeTier ? (
             <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
-              {t('settings.aiSettings.onDeviceAi.privacyNote')}
+              {t('settings.aiSettings.musclogFreeTier.activeNote')}
             </Text>
+          ) : null}
+        </View>
+
+        {/* Provider sections (dimmed when free tier is active) */}
+        <View
+          style={{ opacity: debouncedUseMusclogFreeTier ? 0.4 : 1 }}
+          pointerEvents={debouncedUseMusclogFreeTier ? 'none' : 'auto'}
+        >
+          <View className="gap-6">
+            {/* Google Gemini Integration Section */}
+            <AIIntegrationCard
+              sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
+              sectionTitleColor={theme.colors.accent.primary}
+              toggleItems={geminiToggleItems}
+              enabled={debouncedEnableGoogleGemini}
+              apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
+              apiKeyValue={localGeminiApiKey}
+              onApiKeyChange={setLocalGeminiApiKey}
+              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+              apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
+              onSaveApiKey={handleSaveGeminiApiKey}
+              hasUnsavedChanges={hasGeminiKeyChanges}
+              modelLabel={t('settings.aiSettings.geminiModel')}
+              modelValue={geminiModel}
+              onModelPress={() => setGeminiModelMenuVisible(true)}
+            />
+
+            {/* OpenAI Integration Section */}
+            <AIIntegrationCard
+              sectionTitle={t('settings.aiSettings.openAiIntegration')}
+              sectionTitleColor={theme.colors.accent.primary}
+              toggleItems={openAiToggleItems}
+              enabled={debouncedEnableOpenAi}
+              headerContent={
+                onGetOpenAiKeyPress ? (
+                  <Button
+                    label={t('settings.aiSettings.getOpenAiKey')}
+                    onPress={onGetOpenAiKeyPress}
+                    size="sm"
+                    width="full"
+                    variant="outline"
+                  />
+                ) : undefined
+              }
+              apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
+              apiKeyValue={localOpenAiApiKey}
+              onApiKeyChange={setLocalOpenAiApiKey}
+              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+              onSaveApiKey={handleSaveOpenAiApiKey}
+              hasUnsavedChanges={hasOpenAiKeyChanges}
+              modelLabel={t('settings.aiSettings.openAiModel')}
+              modelValue={openAiModel}
+              onModelPress={() => setOpenAiModelMenuVisible(true)}
+              modelFallbackText={t('settings.aiSettings.selectModel')}
+            />
+
+            {/* Local LLM Integration Section */}
+            <AIIntegrationCard
+              sectionTitle={t('settings.aiSettings.localLlmIntegration')}
+              sectionTitleColor={theme.colors.accent.primary}
+              toggleItems={localLlmToggleItems}
+              enabled={debouncedEnableLocalLlm}
+              headerContent={
+                <Button
+                  label={t('settings.aiSettings.localLlmHelp')}
+                  onPress={() => {
+                    Linking.openURL('https://ollama.com/blog/openai-compatibility').catch(() => {});
+                  }}
+                  size="sm"
+                  width="full"
+                  variant="outline"
+                />
+              }
+              apiKeyLabel={t('settings.aiSettings.localLlmApiKey')}
+              apiKeyValue={localStateLlmApiKey}
+              onApiKeyChange={setLocalStateLlmApiKey}
+              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+              apiKeyHelper={t('settings.aiSettings.localLlmApiKeyHelper')}
+              onSaveApiKey={handleSaveLocalLlmConfig}
+              hasUnsavedChanges={hasLocalLlmChanges}
+              modelLabel={t('settings.aiSettings.localLlmModel')}
+              modelValue={localStateLlmModel}
+              onModelPress={() => {}}
+              extraInputs={
+                <View className="mb-4 gap-4">
+                  <TextInput
+                    label={t('settings.aiSettings.localLlmBaseUrl')}
+                    value={localStateLlmBaseUrl}
+                    onChangeText={setLocalStateLlmBaseUrl}
+                    placeholder="http://localhost:11434/v1"
+                  />
+                  <TextInput
+                    label={t('settings.aiSettings.localLlmModel')}
+                    value={localStateLlmModel}
+                    onChangeText={setLocalStateLlmModel}
+                    placeholder="llama3"
+                  />
+                </View>
+              }
+            />
+
+            {/* Apple Intelligence Section (iOS only) */}
+            {Platform.OS === 'ios' && isOnDeviceCapable ? (
+              <View className="gap-3">
+                <Text
+                  className="px-5 text-xs font-bold uppercase tracking-wider"
+                  style={{ color: theme.colors.accent.primary }}
+                >
+                  {t('settings.aiSettings.onDeviceAi.sectionTitle')}
+                </Text>
+
+                <ToggleInput
+                  items={[
+                    {
+                      key: 'use-on-device-ai',
+                      label: t('settings.aiSettings.onDeviceAi.toggle'),
+                      subtitle: isOnDeviceReady
+                        ? t('settings.aiSettings.onDeviceAi.toggleSubtitle')
+                        : t('settings.aiSettings.onDeviceAi.toggleSubtitleNotReady'),
+                      value: debouncedUseOnDeviceAi,
+                      onValueChange: handleUseOnDeviceAiChange,
+                      icon: (
+                        <View
+                          style={{
+                            width: theme.size['8'],
+                            height: theme.size['8'],
+                            borderRadius: theme.borderRadius.full / 2,
+                            backgroundColor: theme.colors.status.success20,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Cpu size={theme.iconSize.md} color={theme.colors.status.success} />
+                        </View>
+                      ),
+                    },
+                  ]}
+                />
+
+                <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
+                  {t('settings.aiSettings.onDeviceAi.privacyNote')}
+                </Text>
+              </View>
+            ) : null}
           </View>
-        ) : null}
+        </View>
 
         {/* Insights & Alerts Section */}
         <View>

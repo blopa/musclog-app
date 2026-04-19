@@ -227,6 +227,12 @@
         "toggleSubtitle": "Process AI requests on-device using Apple Foundation Models. No API key needed.",
         "toggleSubtitleNotReady": "Apple Intelligence is not available on this device. Requires iPhone 15 Pro or later with iOS 26 and Apple Intelligence enabled.",
         "privacyNote": "Your data stays on device and is never sent to external servers."
+      },
+      "musclogFreeTier": {
+        "sectionTitle": "MUSCLOG FREE TIER",
+        "toggle": "Use Musclog Free Tier LLM",
+        "toggleSubtitle": "Access AI features without an API key. Subject to a daily request limit.",
+        "activeNote": "Free tier is active. Your own API keys are not used."
       }
     },
     "visualSettings": {

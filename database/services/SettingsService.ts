@@ -21,6 +21,7 @@ import {
   LOCAL_LLM_BASE_URL_SETTING_TYPE,
   LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
+  MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -44,6 +45,7 @@ import {
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
@@ -873,6 +875,22 @@ export class SettingsService {
 
   static async getUseOnDeviceAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, false);
+  }
+
+  static async setUseMusclogFreeTier(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_MUSCLOG_FREE_TIER_SETTING_TYPE, value);
+  }
+
+  static async getUseMusclogFreeTier(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false);
+  }
+
+  static async setMusclogGatewayAnonymousId(id: string) {
+    await SettingsService.setStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, id);
+  }
+
+  static async getMusclogGatewayAnonymousId(): Promise<string> {
+    return SettingsService.getStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, '');
   }
 
   /**
