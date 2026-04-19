@@ -49,7 +49,7 @@ import {
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
