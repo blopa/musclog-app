@@ -167,7 +167,8 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                 // Adjust current set based on lastSet
                 const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
                 const equipmentType = exercise?.equipmentType;
-                const bodyWeightKg = 70; // fallback
+                // TODO: get the most recent body weight from the user metrics
+                const bodyWeightKg = 70; // temp fix
 
                 const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
                 const oneRM = calculateAverage1RM(
