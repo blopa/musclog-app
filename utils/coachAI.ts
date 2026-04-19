@@ -91,6 +91,14 @@ export type CoachAIConfig = {
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
+  // In web dev mode, route gateway requests through a CORS proxy so the browser
+  // can reach Cloudflare AI Gateway (which blocks browser preflight requests).
+  const devWebProxyFetch =
+    __DEV__ && config.provider === 'gateway'
+      ? (url: RequestInfo | URL, init?: RequestInit) =>
+          fetch(`https://corsproxy.io/?url=${encodeURIComponent(url.toString())}`, init)
+      : undefined;
+
   return new OpenAI({
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
@@ -101,6 +109,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
           ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
         }
       : undefined,
+    fetch: devWebProxyFetch,
   });
 }
 
