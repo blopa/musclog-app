@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
-import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { BodyCompProteinChart } from '@/components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '@/components/progress/BodyMetricsCharts';
 import { MacroMuscleChart } from '@/components/progress/MacroMuscleChart';
@@ -412,7 +412,7 @@ function ProgressScreenContent({
         title={t('progress.quickActions')}
         items={menuItems}
       />
-      <AdvancedSettingsModal
+      <DataSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setAdvancedSettingsVisible(false)}
       />

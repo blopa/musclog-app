@@ -8,9 +8,9 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { MasterLayout } from '@/components/MasterLayout';
-import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -237,7 +237,7 @@ export default function SettingsScreen() {
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
       />
-      <AdvancedSettingsModal
+      <DataSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setAdvancedSettingsVisible(false)}
       />

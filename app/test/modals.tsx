@@ -8,7 +8,7 @@ import { AddFoodItemToMealModal } from '@/components/modals/AddFoodItemToMealMod
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
-import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
@@ -1657,12 +1657,9 @@ export default function ModalsTestScreen() {
         onBarcodeScanned={(data) => console.log('Barcode scanned:', data)}
       />
 
-      <AdvancedSettingsModal
+      <DataSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setIsAdvancedSettingsVisible(false)}
-        onExportPress={() => console.log('Export pressed')}
-        onImportPress={() => console.log('Import pressed')}
-        onAccountDeletionPress={() => console.log('Account deletion requested')}
       />
 
       <NutritionGoalsModal

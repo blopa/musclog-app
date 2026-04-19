@@ -53,23 +53,15 @@ import {
 import { FullScreenModal } from './FullScreenModal';
 import { LocalBackupsModal } from './LocalBackupsModal';
 
-type AdvancedSettingsModalProps = {
+type AdvancedDataModalProps = {
   visible: boolean;
   onClose: () => void;
-  // Data Portability
-  onExportPress?: () => void;
-  onImportPress?: () => void;
-  // Danger Zone
-  onAccountDeletionPress?: () => void;
 };
 
-export function AdvancedSettingsModal({
+export function DataSettingsModal({
   visible,
   onClose,
-  onExportPress,
-  onImportPress,
-  onAccountDeletionPress,
-}: AdvancedSettingsModalProps) {
+}: AdvancedDataModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
@@ -321,27 +313,6 @@ export function AdvancedSettingsModal({
   ];
 
   const chartTooltipPositionItems = [
-    {
-      key: 'progression-mode-weight-first',
-      label: t('settings.advancedSettings.progressionModeWeightFirst'),
-      subtitle: t('settings.advancedSettings.progressionModeWeightFirstSubtitle'),
-      icon: (
-        <View
-          style={{
-            width: theme.size['10'],
-            height: theme.size['10'],
-            borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.accent.primary20,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />
-        </View>
-      ),
-      value: debouncedProgressionMode === 'weight_first',
-      onValueChange: (v: boolean) => handleProgressionModeChange(v ? 'weight_first' : 'reps_first'),
-    },
     {
       key: 'chart-tooltip-left',
       label: t('settings.advancedSettings.chartTooltipLeft'),
