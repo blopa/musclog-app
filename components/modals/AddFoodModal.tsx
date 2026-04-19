@@ -31,6 +31,8 @@ type AddFoodModalProps = {
   onQuickTrackMealPress?: () => void;
   isAiEnabled?: boolean;
   showTrackByMealType?: boolean;
+  hasSavedMeals?: boolean;
+  onTrackFromSavedPress?: () => void;
 };
 
 export function AddFoodModal({
@@ -45,6 +47,8 @@ export function AddFoodModal({
   onQuickTrackMealPress,
   isAiEnabled = true,
   showTrackByMealType = true,
+  hasSavedMeals = false,
+  onTrackFromSavedPress,
 }: AddFoodModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -200,6 +204,18 @@ export function AddFoodModal({
                   onClose();
                 }}
               />
+              {hasSavedMeals ? (
+                <TrackingMethodButton
+                  icon={Clock}
+                  title={t('food.addFoodModal.trackFromSaved')}
+                  description={t('food.addFoodModal.trackFromSavedDescription')}
+                  iconBgColor={theme.colors.status.emerald10}
+                  onPress={() => {
+                    onTrackFromSavedPress?.();
+                    onClose();
+                  }}
+                />
+              ) : null}
               <View className="flex-row items-stretch gap-3 pt-1">
                 <Button
                   label={t('food.addFoodModal.createCustomFood')}

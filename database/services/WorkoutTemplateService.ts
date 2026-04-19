@@ -23,6 +23,7 @@ import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
+import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 
@@ -636,29 +637,25 @@ export class WorkoutTemplateService {
     // Calculate suggested weight: userWeight × loadMultiplier × experienceFactor × ageFactor
     // The loadMultiplier represents the typical bodyweight multiplier for the exercise at intermediate level
     // We then adjust based on experience and age
-    let suggestedWeightKg = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
+    const suggestedWeightKg = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
-    // Get user's preferred weight unit from settings
-    const unitsSetting = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    return await this.roundWeight(suggestedWeightKg);
+  }
 
-    const units = unitsSetting.length > 0 && unitsSetting[0].value === '1' ? 'imperial' : 'metric';
+  /**
+   * Round weight to nearest integer in the user's preferred unit.
+   */
+  private static async roundWeight(weightKg: number): Promise<number> {
+    const units = await SettingsService.getUnits();
     const weightUnit = getWeightUnit(units);
 
-    // If user prefers pounds, convert to lbs, round to nearest integer, then convert back to kg
-    // This ensures the weight appears as a clean integer in the user's preferred unit
     if (weightUnit === 'lbs') {
-      const suggestedWeightLbs = convert(suggestedWeightKg, 'kg').to('lb');
-      const roundedWeightLbs = Math.round(suggestedWeightLbs);
-      suggestedWeightKg = convert(roundedWeightLbs, 'lb').to('kg');
+      const weightLbs = convert(weightKg, 'kg').to('lb');
+      const roundedWeightLbs = Math.round(weightLbs);
+      return convert(roundedWeightLbs, 'lb').to('kg') as number;
     } else {
-      // For metric (kg), just round to nearest integer
-      suggestedWeightKg = Math.round(suggestedWeightKg);
+      return Math.round(weightKg);
     }
-
-    return suggestedWeightKg;
   }
 
   /**
@@ -681,7 +678,7 @@ export class WorkoutTemplateService {
       return { weightKg: 0, reps: defaultReps };
     }
 
-    // 1. Try to get from history
+    // 1. Try to get from history with Smart Double Progression
     try {
       const logExercises = await database
         .get<WorkoutLogExercise>('workout_log_exercises')
@@ -700,15 +697,52 @@ export class WorkoutTemplateService {
             Q.where('log_exercise_id', logExercises[0].id),
             Q.where('deleted_at', Q.eq(null)),
             Q.where('difficulty_level', Q.gt(0)),
-            Q.sortBy('set_order', Q.desc),
-            Q.take(1)
+            Q.sortBy('set_order', Q.asc)
           )
           .fetch();
 
         if (lastSets.length > 0) {
+          const mode = await SettingsService.getProgressionMode();
+          const units = await SettingsService.getUnits();
+          const weightUnit = getWeightUnit(units);
+
+          const avgRir =
+            lastSets.reduce((sum, s) => sum + (s.repsInReserve ?? 0), 0) / lastSets.length;
+          const lastWeight = lastSets[0].weight;
+          const lastReps = lastSets[0].reps;
+
+          // Increment: 2.5kg or 5lbs
+          let incrementKg = 2.5;
+          if (weightUnit === 'lbs') {
+            incrementKg = convert(5, 'lb').to('kg') as number;
+          }
+
+          if (avgRir >= 3) {
+            if (mode === 'weight_first') {
+              const newWeight = await this.roundWeight(lastWeight + incrementKg);
+              return { weightKg: newWeight, reps: lastReps };
+            } else {
+              // reps_first
+              const isCompound = exercise.mechanicType === 'compound';
+              const baseReps = isCompound ? defaultReps : defaultRepsIsolation;
+              const maxReps = baseReps + 2;
+              const minReps = baseReps - 2;
+
+              if (lastReps < maxReps) {
+                return { weightKg: lastWeight, reps: lastReps + 1 };
+              } else {
+                const newWeight = await this.roundWeight(lastWeight + incrementKg);
+                return { weightKg: newWeight, reps: minReps };
+              }
+            }
+          } else if (avgRir === 0) {
+            const newWeight = await this.roundWeight(Math.max(0, lastWeight - incrementKg));
+            return { weightKg: newWeight, reps: lastReps };
+          }
+
           return {
-            weightKg: lastSets[0].weight,
-            reps: lastSets[0].reps,
+            weightKg: lastWeight,
+            reps: lastReps,
           };
         }
       }

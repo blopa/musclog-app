@@ -1,4 +1,4 @@
-import { Content, Part } from '@google/generative-ai';
+import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
 import { NutritionService, SettingsService } from '@/database/services';
@@ -6,6 +6,7 @@ import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
 import { handleError } from './handleError';
+import { sendOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -70,12 +71,13 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
-export type CoachAIProvider = 'gemini' | 'openai';
+export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local';
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
+  baseUrl?: string;
   language?: string; // Re-introduced from old code
 };
 
@@ -283,10 +285,7 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
-  if (typeof response?.text === 'function') {
-    return response.text() as string;
-  }
-  return response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  return response?.text ?? response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
@@ -373,7 +372,7 @@ async function sendViaGemini(
 
   const contents = buildGeminiContents(history, userMessage);
   const result = await genModel.generateContent({ contents });
-  const raw = extractRawText(result.response);
+  const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
 
@@ -383,7 +382,11 @@ async function sendViaOpenAI(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language, context);
 
@@ -433,6 +436,37 @@ async function sendViaOpenAI(
   }
 }
 
+async function sendViaOnDevice(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<CoachResponse> {
+  try {
+    const systemPrompt = await getSystemPrompt(config.language, context);
+    const normalized = normalizeHistory(history);
+    const messages = [
+      ...normalized.map((e) => ({
+        role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: e.content,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ];
+
+    const raw = await sendOnDeviceMessage(messages, systemPrompt);
+    return {
+      msg4User: raw || i18n.t('errors.aiProcessingError'),
+      sumMsg: raw?.slice(0, 120) ?? '',
+    };
+  } catch (error) {
+    handleError(error, 'coachAI.sendViaOnDevice');
+    return {
+      msg4User: i18n.t('errors.aiProcessingError'),
+      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+    };
+  }
+}
+
 // --- Helpers for insight/parsing/vision ---
 
 const INSIGHTS_USER_MESSAGE = 'Based on the data above, provide your analysis and insights.';
@@ -457,11 +491,15 @@ async function generateText(
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -496,11 +534,15 @@ async function generateTextWithHistory(
     );
     const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -559,7 +601,7 @@ async function generateStructured<T>(
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
@@ -570,7 +612,11 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -632,13 +678,18 @@ async function generateWithImageStructured<T>(
       {
         parts: [
           { text: userText } as Part,
-          { inlineData: { mimeType, data: base64Image } } as Part,
+          {
+            inlineData: {
+              data: base64Image,
+              mimeType: mimeType,
+            },
+          } as Part,
         ],
         role: 'user',
       },
     ];
     const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
@@ -649,7 +700,11 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = new OpenAI({
+    apiKey: config.apiKey,
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+  });
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
@@ -736,8 +791,17 @@ export async function sendCoachMessage(
   // Wrap user message with delimiters to prevent prompt injection attacks
   const sanitizedMessage = wrapUserContent(userMessage);
 
+  if (config.provider === 'on-device') {
+    return sendViaOnDevice(config, history, sanitizedMessage, context);
+  }
+
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);
+  }
+
+  // Local provider uses OpenAI-compatible API but with a custom base URL
+  if (config.provider === 'local') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
   }
 
   return sendViaOpenAI(config, history, sanitizedMessage, context);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { ThemeOption } from '@/constants/settings';
+import type { ProgressionMode, ThemeOption } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 
 import { useSettings } from './useSettings';
@@ -52,6 +52,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'anonymousBugReport',
       'enableGoogleGemini',
       'enableOpenAi',
+      'enableLocalLlm',
       'dailyNutritionInsights',
       'workoutInsights',
       'notifications',
@@ -62,6 +63,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsRestTimer',
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
+      'useOnDeviceAi',
       'sendFoundationFoodsToLlm',
       'units',
       'foodSearchSource',
@@ -74,6 +76,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       'showWeightPrediction',
       'requireExportEncryption',
       'intuitiveEatingMode',
+      'progressionMode',
+      'advancedDataManagement',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -170,6 +174,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'enableOpenAi',
     SettingsService.setEnableOpenAi
   );
+  const handleEnableLocalLlmChange = createSettingHandler(
+    'enableLocalLlm',
+    SettingsService.setEnableLocalLlm
+  );
   const handleDailyNutritionInsightsChange = createSettingHandler(
     'dailyNutritionInsights',
     SettingsService.setDailyNutritionInsights
@@ -214,6 +222,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
+  const handleUseOnDeviceAiChange = createSettingHandler(
+    'useOnDeviceAi',
+    SettingsService.setUseOnDeviceAi
+  );
   const handleSendFoundationFoodsToLlmChange = createSettingHandler(
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
@@ -257,6 +269,14 @@ export function useDebouncedSettings(debounceMs = 200) {
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
   );
+  const handleProgressionModeChange = createSettingHandler<ProgressionMode>(
+    'progressionMode',
+    SettingsService.setProgressionMode
+  );
+  const handleAdvancedDataManagementChange = createSettingHandler<boolean>(
+    'advancedDataManagement',
+    SettingsService.setAdvancedDataManagement
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -291,6 +311,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'enableOpenAi':
             await SettingsService.setEnableOpenAi(value as boolean);
             break;
+          case 'enableLocalLlm':
+            await SettingsService.setEnableLocalLlm(value as boolean);
+            break;
           case 'dailyNutritionInsights':
             await SettingsService.setDailyNutritionInsights(value as boolean);
             break;
@@ -323,6 +346,9 @@ export function useDebouncedSettings(debounceMs = 200) {
             break;
           case 'useOcrBeforeAi':
             await SettingsService.setUseOcrBeforeAi(value as boolean);
+            break;
+          case 'useOnDeviceAi':
+            await SettingsService.setUseOnDeviceAi(value as boolean);
             break;
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
@@ -359,6 +385,12 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
             break;
+          case 'progressionMode':
+            await SettingsService.setProgressionMode(value as ProgressionMode);
+            break;
+          case 'advancedDataManagement':
+            await SettingsService.setAdvancedDataManagement(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -387,6 +419,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     enableGoogleGemini:
       (localSettings.enableGoogleGemini as boolean) ?? actualSettings.enableGoogleGemini,
     enableOpenAi: (localSettings.enableOpenAi as boolean) ?? actualSettings.enableOpenAi,
+    enableLocalLlm: (localSettings.enableLocalLlm as boolean) ?? actualSettings.enableLocalLlm,
     dailyNutritionInsights:
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
@@ -409,6 +442,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.notificationsWorkoutDuration as boolean) ??
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
+    useOnDeviceAi: (localSettings.useOnDeviceAi as boolean) ?? actualSettings.useOnDeviceAi,
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
@@ -432,6 +466,10 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
+    progressionMode:
+      (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
+    advancedDataManagement:
+      (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -447,6 +485,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleAnonymousBugReportChange,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleNotificationsChange,
@@ -458,6 +497,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
+    handleUseOnDeviceAiChange,
     handleSendFoundationFoodsToLlmChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
@@ -469,6 +509,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,
     handleIntuitiveEatingModeChange,
+    handleProgressionModeChange,
+    handleAdvancedDataManagementChange,
 
     // Utilities
     flushAllPendingChanges,

@@ -71,6 +71,30 @@ export const ENABLE_GOOGLE_GEMINI_SETTING_TYPE = 'enable_google_gemini';
 export const ENABLE_OPENAI_SETTING_TYPE = 'enable_openai';
 
 /**
+ * Setting type for enabling Local LLM (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const ENABLE_LOCAL_LLM_SETTING_TYPE = 'enable_local_llm';
+
+/**
+ * Setting type for Local LLM base URL (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_BASE_URL_SETTING_TYPE = 'local_llm_base_url';
+
+/**
+ * Setting type for Local LLM model (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_MODEL_SETTING_TYPE = 'local_llm_model';
+
+/**
+ * Setting type for Local LLM API key (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_API_KEY_SETTING_TYPE = 'local_llm_api_key';
+
+/**
  * Setting type for daily nutrition insights (stored in WatermelonDB settings table).
  * value: 'true' | 'false'.
  */
@@ -203,12 +227,31 @@ export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption
 export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
 
 /**
+ * Setting type for smart double progression preference.
+ * value: 'reps_first' | 'weight_first'.
+ */
+export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
+
+/**
+ * Setting type for enabling advanced data management.
+ * Gated behind a confirmation + biometric auth to prevent accidental data loss.
+ * value: 'true' | 'false'.
+ */
+export const ADVANCED_DATA_MANAGEMENT_SETTING_TYPE = 'advanced_data_management';
+
+/**
  * Setting type for which macros to display in the nutrition summary.
  * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
  * '1' = visible, '0' = hidden. Default: '11111' (all visible).
  * Example: '10100' = only carbs and fats visible.
  */
 export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
+
+/**
+ * Setting type for preferring on-device AI when available.
+ * value: 'true' | 'false'.
+ */
+export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
 export type NavItemKey =
   | 'workouts'
@@ -222,6 +265,7 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
+export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
@@ -243,6 +287,7 @@ export type UseSettingsResult = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
 };

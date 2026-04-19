@@ -12,6 +12,8 @@ export { default as MenstrualCycle } from './MenstrualCycle';
 export { default as NutritionCheckin } from './NutritionCheckin';
 export { default as NutritionGoal } from './NutritionGoal';
 export { default as NutritionLog } from './NutritionLog';
+export { default as SavedForLaterGroup } from './SavedForLaterGroup';
+export { default as SavedForLaterItem } from './SavedForLaterItem';
 export { default as Schedule } from './Schedule';
 export { default as Setting } from './Setting';
 export { default as User } from './User';

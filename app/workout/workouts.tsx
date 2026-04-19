@@ -738,8 +738,10 @@ export default function WorkoutsScreen() {
           setIsDiscardingInterrupted(true);
           try {
             await clearActiveWorkoutLogId();
-            const log = await database.get('workout_logs').find(interruptedWorkoutLog.id);
-            await log.markAsDeleted();
+            await database.write(async () => {
+              const log = await database.get('workout_logs').find(interruptedWorkoutLog.id);
+              await log.markAsDeleted();
+            });
             setInterruptedWorkoutLog(null);
           } catch (err) {
             console.error('Error discarding interrupted workout:', err);
@@ -819,8 +821,10 @@ export default function WorkoutsScreen() {
             try {
               // Clear active workout and delete the workout log
               await clearActiveWorkoutLogId();
-              const log = await database.get('workout_logs').find(selectedWorkoutLogId);
-              await log.markAsDeleted();
+              await database.write(async () => {
+                const log = await database.get('workout_logs').find(selectedWorkoutLogId);
+                await log.markAsDeleted();
+              });
             } catch (err) {
               console.error('Error canceling workout:', err);
               handleError(err, 'workouts.cancelWorkout');

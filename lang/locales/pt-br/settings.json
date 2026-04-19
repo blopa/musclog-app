@@ -126,6 +126,13 @@
       "charts": "GRÁFICOS",
       "chartTooltipLeft": "Tooltip à Esquerda",
       "chartTooltipLeftSubtitle": "Mostrar tooltips de dados do gráfico no canto superior esquerdo em vez do superior direito",
+      "workouts": "TREINOS",
+      "progressionModeWeightFirst": "Priorizar Progressão de Peso",
+      "progressionModeWeightFirstSubtitle": "Aumentar o peso diretamente quando o RIR está alto, em vez de adicionar repetições",
+      "enableAdvancedDataManagement": "Habilitar Gerenciamento Avançado de Dados",
+      "enableAdvancedDataManagementSubtitle": "Desbloqueia acesso direto aos dados do app — somente para usuários avançados",
+      "enableAdvancedDataManagementConfirmTitle": "Somente para Usuários Avançados",
+      "enableAdvancedDataManagementConfirmMessage": "Isso é apenas para usuários avançados. Mexer nos dados aqui pode corromper seu app de forma irreparável — use apenas se souber o que está fazendo.",
       "dataManagement": "GERENCIAMENTO DE DADOS",
       "manageFoodData": "Gerenciar Dados de Alimentos",
       "manageFoodDataSubtitle": "Visualizar, editar ou excluir suas entradas de alimentos personalizados",
@@ -173,6 +180,13 @@
       "workoutInsights": "Insights de Treino",
       "workoutInsightsSubtitle": "Análise pós-treino",
       "enableOpenAi": "Ativar OpenAI",
+      "localLlmIntegration": "INTEGRAÇÃO LLM LOCAL",
+      "enableLocalLlm": "Ativar LLM Local",
+      "localLlmBaseUrl": "URL Base do LLM Local",
+      "localLlmModel": "Modelo do LLM Local",
+      "localLlmApiKey": "Chave de API do LLM Local (Opcional)",
+      "localLlmApiKeyHelper": "A maioria dos LLMs locais não exige uma chave de API, mas você pode definir uma se necessário.",
+      "localLlmHelp": "Precisa de ajuda? Confira o guia oficial",
       "geminiModel": "Modelo Gemini",
       "openAiModel": "Modelo OpenAI",
       "selectModel": "Selecionar um modelo",
@@ -206,7 +220,14 @@
       "promptContextExercise": "Exercício",
       "memorySettings": "CONFIGURAÇÕES DE MEMÓRIA",
       "maxAiMemories": "Máximo de Memórias de IA",
-      "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas"
+      "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas",
+      "onDeviceAi": {
+        "sectionTitle": "APPLE INTELLIGENCE",
+        "toggle": "Usar Apple Intelligence",
+        "toggleSubtitle": "Processa pedidos de IA no dispositivo usando os Foundation Models da Apple. Sem necessidade de chave de API.",
+        "toggleSubtitleNotReady": "Apple Intelligence não está disponível neste dispositivo. Requer iPhone 15 Pro ou superior com iOS 26 e Apple Intelligence ativado.",
+        "privacyNote": "Seus dados ficam no dispositivo e nunca são enviados para servidores externos."
+      }
     },
     "visualSettings": {
       "title": "Interface",
@@ -266,6 +287,10 @@
     },
     "notifications": "Notificações",
     "termsOfService": "Termos de Serviço",
-    "privacyPolicy": "Política de Privacidade"
+    "privacyPolicy": "Política de Privacidade",
+    "appBehaviorSettings": {
+      "title": "Preferências do App",
+      "subtitle": "Preferências de treino, nutrição e gráficos"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
@@ -8,6 +9,7 @@ import {
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
   type FoodSearchSource,
@@ -15,6 +17,9 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  LOCAL_LLM_API_KEY_SETTING_TYPE,
+  LOCAL_LLM_BASE_URL_SETTING_TYPE,
+  LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
@@ -30,6 +35,8 @@ import {
   NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -38,10 +45,11 @@ import {
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
+  USE_ON_DEVICE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
@@ -210,6 +218,27 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the Local LLM API key setting (stored encrypted)
+   */
+  static async setLocalLlmApiKey(value: string) {
+    await SettingsService.setEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM model setting
+   */
+  static async setLocalLlmModel(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM base URL setting
+   */
+  static async setLocalLlmBaseUrl(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the enable Google Gemini setting
    */
   static async setEnableGoogleGemini(value: boolean) {
@@ -229,6 +258,18 @@ export class SettingsService {
       await SettingsService.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setEnableOpenAi:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upsert the enable Local LLM setting
+   */
+  static async setEnableLocalLlm(value: boolean) {
+    try {
+      await SettingsService.setBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, value);
+    } catch (error) {
+      console.error('[SettingsService] Error in setEnableLocalLlm:', error);
       throw error;
     }
   }
@@ -368,12 +409,28 @@ export class SettingsService {
     return SettingsService.getStringSetting(OPENAI_MODEL_SETTING_TYPE, '');
   }
 
+  static async getLocalLlmApiKey(): Promise<string> {
+    return SettingsService.getEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE);
+  }
+
+  static async getLocalLlmModel(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getLocalLlmBaseUrl(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, '');
+  }
+
   static async getEnableGoogleGemini(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true);
   }
 
   static async getEnableOpenAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, true);
+  }
+
+  static async getEnableLocalLlm(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, false);
   }
 
   static async getNotifications(): Promise<boolean> {
@@ -506,6 +563,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the advanced data management setting
+   */
+  static async setAdvancedDataManagement(value: boolean) {
+    await SettingsService.setBooleanSetting(ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the intuitive eating mode setting
    */
   static async setIntuitiveEatingMode(value: boolean) {
@@ -517,6 +581,24 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the progression mode setting ('reps_first' | 'weight_first').
+   * Defaults to 'reps_first'.
+   */
+  static async getProgressionMode(): Promise<ProgressionMode> {
+    return (await SettingsService.getStringSetting(
+      PROGRESSION_MODE_SETTING_TYPE,
+      'reps_first'
+    )) as ProgressionMode;
+  }
+
+  /**
+   * Upsert the progression mode setting ('reps_first' | 'weight_first')
+   */
+  static async setProgressionMode(mode: ProgressionMode) {
+    await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
   }
 
   /**
@@ -743,6 +825,7 @@ export class SettingsService {
     await Promise.all([
       SettingsService.migrateApiKey(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
       SettingsService.migrateApiKey(OPENAI_API_KEY_SETTING_TYPE),
+      SettingsService.migrateApiKey(LOCAL_LLM_API_KEY_SETTING_TYPE),
     ]);
   }
 
@@ -782,6 +865,14 @@ export class SettingsService {
   private static async setEncryptedStringSetting(type: string, value: string) {
     const encrypted = await encryptOptionalString(value);
     await SettingsService.setStringSetting(type, encrypted);
+  }
+
+  static async setUseOnDeviceAi(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, value);
+  }
+
+  static async getUseOnDeviceAi(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, false);
   }
 
   /**

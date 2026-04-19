@@ -126,6 +126,13 @@
       "charts": "ГРАФИКИ",
       "chartTooltipLeft": "Подсказки слева",
       "chartTooltipLeftSubtitle": "Показывать подсказки графиков в левом верхнем углу вместо правого",
+      "workouts": "ТРЕНИРОВКИ",
+      "progressionModeWeightFirst": "Приоритет прогрессии веса",
+      "progressionModeWeightFirstSubtitle": "Увеличивать вес напрямую при высоком RIR, вместо добавления повторений",
+      "enableAdvancedDataManagement": "Включить расширенное управление данными",
+      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения — только для опытных пользователей",
+      "enableAdvancedDataManagementConfirmTitle": "Только для опытных пользователей",
+      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение — используйте только если знаете, что делаете.",
       "dataManagement": "УПРАВЛЕНИЕ ДАННЫМИ",
       "manageFoodData": "Управление данными продуктов",
       "manageFoodDataSubtitle": "Просматривайте, редактируйте или удаляйте пользовательские записи о продуктах",
@@ -173,6 +180,13 @@
       "workoutInsights": "Аналитика тренировок",
       "workoutInsightsSubtitle": "Анализ после тренировки",
       "enableOpenAi": "Включить OpenAI",
+      "localLlmIntegration": "ИНТЕГРАЦИЯ ЛОКАЛЬНОГО LLM",
+      "enableLocalLlm": "Включить локальный LLM",
+      "localLlmBaseUrl": "Базовый URL локального LLM",
+      "localLlmModel": "Модель локального LLM",
+      "localLlmApiKey": "API-ключ локального LLM (необязательно)",
+      "localLlmApiKeyHelper": "Большинство локальных LLM не требуют API-ключа, но вы можете задать его при необходимости.",
+      "localLlmHelp": "Нужна помощь? Посмотрите официальное руководство",
       "geminiModel": "Модель Gemini",
       "openAiModel": "Модель OpenAI",
       "selectModel": "Выбрать модель",
@@ -206,7 +220,14 @@
       "promptContextExercise": "Тренировка",
       "memorySettings": "НАСТРОЙКИ ПАМЯТИ",
       "maxAiMemories": "Макс. воспоминаний ИИ",
-      "maxAiMemoriesSubtitle": "Количество предыдущих сообщений для запоминания в разговорах"
+      "maxAiMemoriesSubtitle": "Количество предыдущих сообщений для запоминания в разговорах",
+      "onDeviceAi": {
+        "sectionTitle": "APPLE INTELLIGENCE",
+        "toggle": "Использовать Apple Intelligence",
+        "toggleSubtitle": "Обрабатывает запросы к ИИ на устройстве с помощью Apple Foundation Models. API-ключ не нужен.",
+        "toggleSubtitleNotReady": "Apple Intelligence недоступна на этом устройстве. Требуется iPhone 15 Pro или новее с iOS 26 и включённой Apple Intelligence.",
+        "privacyNote": "Ваши данные остаются на устройстве и никогда не отправляются на внешние серверы."
+      }
     },
     "visualSettings": {
       "title": "Интерфейс",
@@ -266,6 +287,10 @@
     },
     "notifications": "Уведомления",
     "termsOfService": "Условия использования",
-    "privacyPolicy": "Политика конфиденциальности"
+    "privacyPolicy": "Политика конфиденциальности",
+    "appBehaviorSettings": {
+      "title": "Настройки приложения",
+      "subtitle": "Тренировки, питание и настройки графиков"
+    }
   }
 }

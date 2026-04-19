@@ -126,6 +126,13 @@
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",
+      "workouts": "WORKOUTS",
+      "progressionModeWeightFirst": "Prioritize Weight Progression",
+      "progressionModeWeightFirstSubtitle": "Increase weight directly when RIR is high, rather than adding reps",
+      "enableAdvancedDataManagement": "Enable Advanced Data Management",
+      "enableAdvancedDataManagementSubtitle": "Unlock raw access to your app data — for advanced users only",
+      "enableAdvancedDataManagementConfirmTitle": "Advanced Users Only",
+      "enableAdvancedDataManagementConfirmMessage": "This is only for advanced users. Playing around with the data here can crash your app beyond repair — only use it if you know what you're doing.",
       "dataManagement": "DATA MANAGEMENT",
       "manageFoodData": "Manage Food Data",
       "manageFoodDataSubtitle": "View, edit, or delete your custom food entries",
@@ -173,6 +180,13 @@
       "workoutInsights": "Workout Insights",
       "workoutInsightsSubtitle": "Post-workout analysis",
       "enableOpenAi": "Enable OpenAI",
+      "localLlmIntegration": "LOCAL LLM INTEGRATION",
+      "enableLocalLlm": "Enable Local LLM",
+      "localLlmBaseUrl": "Local LLM Base URL",
+      "localLlmModel": "Local LLM Model",
+      "localLlmApiKey": "Local LLM API Key (Optional)",
+      "localLlmApiKeyHelper": "Most local LLMs don't require an API key, but you can set one if needed.",
+      "localLlmHelp": "Need help? Check the official guide",
       "geminiModel": "Gemini Model",
       "openAiModel": "OpenAI Model",
       "selectModel": "Select a model",
@@ -206,7 +220,14 @@
       "promptContextExercise": "Exercise",
       "memorySettings": "MEMORY SETTINGS",
       "maxAiMemories": "Max AI Memories",
-      "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations"
+      "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
+      "onDeviceAi": {
+        "sectionTitle": "APPLE INTELLIGENCE",
+        "toggle": "Use Apple Intelligence",
+        "toggleSubtitle": "Process AI requests on-device using Apple Foundation Models. No API key needed.",
+        "toggleSubtitleNotReady": "Apple Intelligence is not available on this device. Requires iPhone 15 Pro or later with iOS 26 and Apple Intelligence enabled.",
+        "privacyNote": "Your data stays on device and is never sent to external servers."
+      }
     },
     "visualSettings": {
       "title": "Interface",
@@ -266,6 +287,10 @@
     },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "appBehaviorSettings": {
+      "title": "App Preferences",
+      "subtitle": "Workout, nutrition & chart preferences"
+    }
   }
 }

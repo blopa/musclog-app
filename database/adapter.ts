@@ -3,6 +3,8 @@ import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
+import { DATABASE_NAME } from '@/constants/database';
+
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
@@ -18,7 +20,7 @@ function wdbDir(): string {
 // can pass accurate fromVersion/toVersion to the pre-migration backup.
 function readCurrentDbVersion(): number | null {
   try {
-    const db = openDatabaseSync('musclog.db', undefined, wdbDir());
+    const db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
     const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
     db.closeSync();
     return result?.user_version ?? null;
@@ -39,7 +41,7 @@ const currentDbVersion = readCurrentDbVersion();
 export default new SQLiteAdapter({
   schema,
   migrations,
-  dbName: 'musclog',
+  dbName: DATABASE_NAME,
   jsi: true,
   migrationEvents: {
     onStart: () => {

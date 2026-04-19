@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
@@ -11,6 +12,7 @@ import {
   calculateDailySummaryMetrics,
   getProgressBarColor,
   getStatusLabel,
+  isNarrowLayout,
   MacroValue,
 } from './utils';
 
@@ -59,7 +61,30 @@ export function DailySummaryCard({
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
-  const isNarrow = windowWidth < 380;
+  // Calculate enabled macros count (excluding alcohol since it's displayed separately)
+  const enabledMacrosCount = [showCarbs, showProtein, showFats, showFiber].filter(Boolean).length;
+
+  const [isNarrowProtein, isNarrowCarbs, isNarrowFats, isNarrowFiber] = isNarrowLayout(
+    i18n.resolvedLanguage ?? i18n.language,
+    windowWidth,
+    macros
+      ? {
+          protein: macros.protein.value,
+          carbs: macros.carbs.value,
+          fats: macros.fats.value,
+          fiber: macros.fiber.value,
+        }
+      : undefined,
+    macros
+      ? {
+          protein: macros.protein.goal,
+          carbs: macros.carbs.goal,
+          fats: macros.fats.goal,
+          fiber: macros.fiber.goal,
+        }
+      : undefined,
+    enabledMacrosCount
+  );
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
@@ -194,7 +219,7 @@ export function DailySummaryCard({
               ...(showProtein
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowProtein
                         ? t('dailySummaryCard.proteinShort')
                         : t('dailySummaryCard.protein'),
                       value: macros.protein.value,
@@ -207,7 +232,7 @@ export function DailySummaryCard({
               ...(showCarbs
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowCarbs
                         ? t('dailySummaryCard.carbsShort')
                         : t('dailySummaryCard.carbs'),
                       value: macros.carbs.value,
@@ -220,7 +245,7 @@ export function DailySummaryCard({
               ...(showFats
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowFats
                         ? t('dailySummaryCard.fatsShort')
                         : t('dailySummaryCard.fats'),
                       value: macros.fats.value,
@@ -233,7 +258,7 @@ export function DailySummaryCard({
               ...(showFiber && macros.fiber.goal > 0
                 ? [
                     {
-                      label: isNarrow
+                      label: isNarrowFiber
                         ? t('dailySummaryCard.fiberShort')
                         : t('dailySummaryCard.fiber'),
                       value: macros.fiber.value,

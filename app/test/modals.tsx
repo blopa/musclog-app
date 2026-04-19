@@ -9,6 +9,7 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
@@ -76,6 +77,7 @@ import { PortionSizesPickerModal } from '@/components/modals/PortionSizesPickerM
 import { RecentNutritionHistoryModal } from '@/components/modals/RecentNutritionHistoryModal';
 import { ReplaceExerciseModal } from '@/components/modals/ReplaceExerciseModal';
 import { RetrospectiveNutritionModal } from '@/components/modals/RetrospectiveNutritionModal';
+import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
 import { SelectModal } from '@/components/modals/SelectModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
@@ -123,8 +125,10 @@ export default function ModalsTestScreen() {
 
   // User Menu Modal
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
-  // Advanced Settings Modal
-  const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
+  // Data Settings Modal
+  const [isDataSettingsVisible, setIsDataSettingsVisible] = useState(false);
+  // App Behavior Settings Modal
+  const [isAppBehaviorSettingsVisible, setIsAppBehaviorSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
   const [isAiNotConfiguredVisible, setIsAiNotConfiguredVisible] = useState(false);
@@ -339,6 +343,9 @@ export default function ModalsTestScreen() {
   // Add Exercise To Session Modal
   const [isAddExerciseToSessionVisible, setIsAddExerciseToSessionVisible] = useState(false);
 
+  // Saved For Later Modal
+  const [isSavedForLaterVisible, setIsSavedForLaterVisible] = useState(false);
+
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
   };
@@ -429,10 +436,16 @@ export default function ModalsTestScreen() {
               Export, import, privacy, and danger zone.
             </Text>
             <Button
-              label="Open Advanced Settings Modal"
+              label="Open Data Settings Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsAdvancedSettingsVisible(true)}
+              onPress={() => setIsDataSettingsVisible(true)}
+            />
+            <Button
+              label="Open App Preferences Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAppBehaviorSettingsVisible(true)}
             />
           </View>
 
@@ -1624,6 +1637,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Saved For Later Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Saved For Later Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing saved for later meals.
+            </Text>
+            <Button
+              label="Open Saved For Later Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsSavedForLaterVisible(true)}
+            />
+          </View>
+
           {/* Add Exercise To Session Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -1657,12 +1684,14 @@ export default function ModalsTestScreen() {
         onBarcodeScanned={(data) => console.log('Barcode scanned:', data)}
       />
 
+      <DataSettingsModal
+        visible={isDataSettingsVisible}
+        onClose={() => setIsDataSettingsVisible(false)}
+      />
+
       <AdvancedSettingsModal
-        visible={isAdvancedSettingsVisible}
-        onClose={() => setIsAdvancedSettingsVisible(false)}
-        onExportPress={() => console.log('Export pressed')}
-        onImportPress={() => console.log('Import pressed')}
-        onAccountDeletionPress={() => console.log('Account deletion requested')}
+        visible={isAppBehaviorSettingsVisible}
+        onClose={() => setIsAppBehaviorSettingsVisible(false)}
       />
 
       <NutritionGoalsModal
@@ -2390,6 +2419,11 @@ export default function ModalsTestScreen() {
         visible={isAddExerciseToSessionVisible}
         onClose={() => setIsAddExerciseToSessionVisible(false)}
         workoutLogId="test-workout-log-id"
+      />
+
+      <SavedForLaterModal
+        visible={isSavedForLaterVisible}
+        onClose={() => setIsSavedForLaterVisible(false)}
       />
     </SafeAreaView>
   );

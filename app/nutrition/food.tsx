@@ -6,6 +6,7 @@ import {
   Edit,
   GitMerge,
   ListPlus,
+  Save,
   Scale,
   ScanLine,
   Scissors,
@@ -13,7 +14,7 @@ import {
   Trash2,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
@@ -35,6 +36,7 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
+import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
@@ -48,6 +50,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import {
   ChatService,
   NutritionService,
+  SavedForLaterService,
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
@@ -56,7 +59,11 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
-import { localCalendarDayDate, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';
+import {
+  formatLocalCalendarDayIso,
+  localCalendarDayDate,
+  localCalendarDayDateFromDayKeyMs,
+} from '@/utils/calendarDate';
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
@@ -171,6 +178,9 @@ export default function FoodScreen() {
   const [isMealGroupMenuVisible, setIsMealGroupMenuVisible] = useState(false);
   const [isDeleteMealGroupVisible, setIsDeleteMealGroupVisible] = useState(false);
   const [isDeleteMealGroupLoading, setIsDeleteMealGroupLoading] = useState(false);
+  const [isSavedForLaterModalVisible, setIsSavedForLaterModalVisible] = useState(false);
+  const [hasSavedForLaterItems, setHasSavedForLaterItems] = useState(false);
+  const [isSaveForLaterLoading, setIsSaveForLaterLoading] = useState(false);
 
   // Meal Group action states
   const [isMealGroupScaleModalVisible, setIsMealGroupScaleModalVisible] = useState(false);
@@ -219,6 +229,19 @@ export default function FoodScreen() {
 
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
+
+  const checkSavedMeals = useCallback(async () => {
+    try {
+      const hasGroups = await SavedForLaterService.hasAnyGroups();
+      setHasSavedForLaterItems(hasGroups);
+    } catch (error) {
+      console.error('Error checking saved meals:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkSavedMeals();
+  }, [checkSavedMeals]);
 
   useEffect(() => {
     let cancelled = false;
@@ -524,6 +547,34 @@ export default function FoodScreen() {
     setIsMealGroupInsightsVisible(true);
   };
 
+  const handleSaveMealForLater = async (logs: NutritionLog[], mealType: MealType) => {
+    setIsSaveForLaterLoading(true);
+    try {
+      const dateStr = formatLocalCalendarDayIso(new Date(selectedDate));
+      const defaultName = t('food.mealGroup.savedMealDefaultName', {
+        date: dateStr,
+        mealType: t(`food.meals.${mealType as any}`),
+      });
+
+      await SavedForLaterService.saveGroupForLater(
+        logs,
+        defaultName,
+        mealType,
+        selectedDate.getTime()
+      );
+
+      showSnackbar('success', t('food.mealGroup.saveForLaterSuccess'));
+      await refresh();
+      await checkSavedMeals();
+    } catch (error) {
+      handleError(error, 'food.handleSaveMealForLater', {
+        snackbarMessage: t('food.mealGroup.saveForLaterError'),
+      });
+    } finally {
+      setIsSaveForLaterLoading(false);
+    }
+  };
+
   const handleSubmitMealGroupInsights = async (userRemarks: string) => {
     if (!selectedMealGroup) {
       return;
@@ -736,6 +787,21 @@ export default function FoodScreen() {
       description: t('food.actions.splitDesc'),
       onPress: handleSplitFood,
     },
+    {
+      icon: Save,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.mealGroup.saveForLater'),
+      description: t('food.mealGroup.saveForLaterDesc'),
+      onPress: async () => {
+        setIsFoodMenuVisible(false);
+        if (selectedFoodItem) {
+          await handleSaveMealForLater([selectedFoodItem.log], selectedFoodItem.log.type);
+          setSelectedFoodItem(null);
+        }
+      },
+    },
+    // delete should always be the last one
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
@@ -1169,6 +1235,25 @@ export default function FoodScreen() {
       description: t('food.actions.splitMealDesc'),
       onPress: handleSplitMeal,
     },
+    {
+      icon: Save,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.mealGroup.saveForLater'),
+      description: t('food.mealGroup.saveForLaterDesc'),
+      onPress: async () => {
+        setIsMealMenuVisible(false);
+        if (selectedMealForMenu) {
+          const mealFoods = mealsByType[selectedMealForMenu] || [];
+          await handleSaveMealForLater(
+            mealFoods.map((e) => e.log),
+            selectedMealForMenu
+          );
+          setSelectedMealForMenu(null);
+        }
+      },
+    },
+    // delete should always be the last one
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
@@ -1629,6 +1714,10 @@ export default function FoodScreen() {
         isAiEnabled={isAiConfigured}
         visible={isAddFoodModalVisible}
         showTrackByMealType={!addFoodModalPreselectedMealType}
+        hasSavedMeals={hasSavedForLaterItems}
+        onTrackFromSavedPress={() => {
+          setIsSavedForLaterModalVisible(true);
+        }}
         onClose={() => setIsAddFoodModalVisible(false)}
         onMealTypeSelect={(mealType) => {
           setSelectedMealType(mealType);
@@ -1909,6 +1998,17 @@ export default function FoodScreen() {
       />
 
       {/* Food Details Modal (edit/duplicate mode) */}
+      <SavedForLaterModal
+        visible={isSavedForLaterModalVisible}
+        onClose={() => setIsSavedForLaterModalVisible(false)}
+        onTracked={async () => {
+          await refresh();
+          await checkSavedMeals();
+        }}
+        initialMealType={selectedMealType}
+        initialDate={selectedDate}
+      />
+
       <FoodMealDetailsModal
         visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
         onClose={() => {
@@ -2017,6 +2117,23 @@ export default function FoodScreen() {
             onPress: () => {
               setIsMealGroupMenuVisible(false);
               setIsDeleteMealGroupVisible(true);
+            },
+          },
+          {
+            icon: Save,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.mealGroup.saveForLater'),
+            description: t('food.mealGroup.saveForLaterDesc'),
+            onPress: async () => {
+              setIsMealGroupMenuVisible(false);
+              if (selectedMealGroup) {
+                await handleSaveMealForLater(
+                  selectedMealGroup.entries.map((e) => e.log),
+                  selectedMealGroup.entries[0]?.log.type || 'other'
+                );
+                setSelectedMealGroup(null);
+              }
             },
           },
         ]}

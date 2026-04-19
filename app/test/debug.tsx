@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
@@ -21,6 +21,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+import {
+  isOnDeviceAiAvailable,
+  isOnDeviceAiCapable,
+  sendOnDeviceMessage,
+} from '@/utils/onDeviceAi';
 import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
@@ -295,6 +300,47 @@ export default function DebugTestScreen() {
     await clearUnreadCount();
     setUnreadInput('');
     console.log('Unread count cleared');
+  };
+
+  // On-device AI test (iOS / Apple Intelligence only)
+  const [onDeviceAiStatus, setOnDeviceAiStatus] = useState<string>('');
+
+  const testOnDeviceAi = async () => {
+    setOnDeviceAiStatus('Step 1/3: isOnDeviceAiCapable()...');
+    try {
+      const capable = await isOnDeviceAiCapable();
+      console.log('[AppleIntelligence] isOnDeviceAiCapable() =', capable);
+
+      if (!capable) {
+        setOnDeviceAiStatus(
+          'Not capable — requires iPhone 15 Pro+ with iOS 26 and Apple Intelligence enabled.'
+        );
+        return;
+      }
+
+      setOnDeviceAiStatus(
+        'Step 2/3: isOnDeviceAiAvailable() (checks Foundation Models readiness)...'
+      );
+      const ready = await isOnDeviceAiAvailable();
+      console.log('[AppleIntelligence] isOnDeviceAiAvailable() =', ready);
+
+      if (!ready) {
+        setOnDeviceAiStatus(
+          'Device is capable but Foundation Models are not ready. Enable Apple Intelligence in Settings.'
+        );
+        return;
+      }
+
+      setOnDeviceAiStatus('Step 3/3: Sending test message...');
+      const response = await sendOnDeviceMessage([
+        { role: 'user', content: 'Hello there! Reply with just one short sentence.' },
+      ]);
+      console.log('[AppleIntelligence] response =', JSON.stringify(response));
+      setOnDeviceAiStatus(response ? `✓ Working!\n\nResponse: "${response}"` : 'Empty response');
+    } catch (e) {
+      console.error('[AppleIntelligence] Error:', e);
+      setOnDeviceAiStatus(`Error: ${e instanceof Error ? e.message : String(e)}`);
+    }
   };
 
   // Notification Testing Functions
@@ -572,6 +618,29 @@ export default function DebugTestScreen() {
               variant="secondary"
             />
           </View>
+
+          {/* Apple Intelligence Test (iOS only) */}
+          {Platform.OS === 'ios' ? (
+            <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+              <Text className="mb-2 text-lg font-bold text-text-primary">
+                Apple Intelligence Test
+              </Text>
+              <Text className="mb-2 text-sm text-text-secondary">
+                Checks capability and readiness, then sends "Hello there!" and shows the response.
+              </Text>
+              <Button
+                onPress={testOnDeviceAi}
+                label="Test Apple Intelligence"
+                size="sm"
+                variant="secondary"
+              />
+              {onDeviceAiStatus ? (
+                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                  <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
 
           {/* Unread Messages Debug */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">

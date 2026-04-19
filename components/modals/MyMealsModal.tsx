@@ -352,11 +352,16 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       return;
     }
 
+    // Close the options menu before opening the details modal so iOS does not
+    // try to present two sibling modals from the same UIViewController.
+    setMenuMealId(null);
     setSelectedMealForLogging(meal);
     setLogMealModalVisible(true);
   };
 
   const handleEditMeal = (mealId: string) => {
+    // Close the options menu before opening the edit modal (iOS hierarchy fix).
+    setMenuMealId(null);
     setEditMealId(mealId);
   };
 

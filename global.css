@@ -68,6 +68,11 @@ body {
 	width: 100%;
 }
 
+/* Desktop landing panel — hidden on mobile */
+.expo-web-landing {
+	display: none;
+}
+
 /*
  * Desktop-only: dot grid + centered phone frame. Uses min-width (not UA) so Chrome
  * device emulation (~430px) stays full-bleed like a real phone.
@@ -75,6 +80,7 @@ body {
  */
 @media (min-width: 1024px) {
 	.expo-web-body {
+		gap: 52px;
 		align-items: center;
 		background-color: #0a0a0a;
 		background-image: radial-gradient(
@@ -124,5 +130,126 @@ body {
 		max-height: none;
 		/* Higher pixel density - fit more content in same space */
 		zoom: 0.85;
+	}
+
+	.expo-web-landing {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 28px;
+		width: 268px;
+		flex-shrink: 0;
+		padding: 60px 0;
+		animation: expo-landing-in 0.5s ease both;
+	}
+
+	@keyframes expo-landing-in {
+		from { opacity: 0; transform: translateX(-18px); }
+		to   { opacity: 1; transform: none; }
+	}
+
+	.expo-web-landing-brand {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: #34d399;
+	}
+
+	.expo-web-landing-name {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 30px;
+		font-weight: 700;
+		letter-spacing: -0.5px;
+		color: #fff;
+	}
+
+	.expo-web-landing-tagline {
+		margin: 0;
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 14.5px;
+		line-height: 1.65;
+		color: rgba(255, 255, 255, 0.45);
+	}
+
+	.expo-web-landing-features {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.expo-web-landing-feature {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 13.5px;
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	.expo-web-landing-feature svg {
+		color: #34d399;
+		flex-shrink: 0;
+	}
+
+	.expo-web-landing-cta {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.32);
+		font-style: italic;
+		animation: expo-landing-cta-nudge 2.8s ease-in-out infinite;
+	}
+
+	@keyframes expo-landing-cta-nudge {
+		0%, 100% { opacity: 0.4; transform: translateX(0); }
+		50%       { opacity: 0.65; transform: translateX(5px); }
+	}
+
+	.expo-web-landing-platforms {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 12px;
+		letter-spacing: 0.4px;
+		color: rgba(255, 255, 255, 0.22);
+	}
+
+	.expo-web-landing-qrcode {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+		margin-top: 28px;
+		padding: 20px;
+		border-radius: 16px;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.expo-web-landing-qrcode-title {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 14px;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.6);
+		text-align: center;
+		letter-spacing: 0.2px;
+	}
+
+	.expo-web-landing-qrcode-image {
+		width: 120px;
+		height: 120px;
+		border-radius: 12px;
+		background: white;
+		padding: 12px;
+	}
+
+	.expo-web-landing-qrcode-text {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.5);
+		text-align: center;
 	}
 }

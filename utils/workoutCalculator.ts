@@ -286,3 +286,53 @@ export function calculateEstimated1RMForSet(
   const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
   return calculateAverage1RM(weight + added, reps, repsInReserve ?? 0);
 }
+
+/**
+ * Calculates adjusted weight or reps for a target RIR based on 1RM.
+ */
+export function calculateWeightForTargetRIR(
+  oneRM: number,
+  targetReps: number,
+  targetRIR: number
+): number {
+  // All supported 1RM formulas are linear: 1RM = Weight * Multiplier(Reps, RIR)
+  // Therefore: Weight = 1RM / Multiplier(Reps, RIR)
+  // We can get the multiplier by calling calculateAverage1RM with Weight = 1.
+  const multiplier = calculateAverage1RM(1, targetReps, targetRIR);
+  if (multiplier === 0) {
+    return 0;
+  }
+  return oneRM / multiplier;
+}
+
+/**
+ * Given a known 1RM and a target weight, calculates the number of reps that
+ * would match the 1RM at the given RIR. Inverse of calculateWeightForTargetRIR.
+ * Uses binary search because the averaged 1RM formulas have no closed-form inverse.
+ * https://pubmed.ncbi.nlm.nih.gov/26049792/
+ */
+export function calculateRepsForTargetRIR(
+  oneRM: number,
+  targetWeight: number,
+  targetRIR: number
+): number {
+  if (targetWeight <= 0 || oneRM <= 0 || targetWeight >= oneRM) {
+    return 1;
+  }
+
+  // Find the smallest adjustedReps (= reps + RIR) where the implied 1RM >= oneRM.
+  // calculateAverage1RM is monotonically increasing in adjustedReps.
+  let lo = 1;
+  let hi = 50;
+
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (calculateAverage1RM(targetWeight, mid, 0) < oneRM) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  return Math.max(1, lo - targetRIR);
+}

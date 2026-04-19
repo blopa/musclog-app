@@ -1,4 +1,4 @@
-import { FunctionDeclaration } from '@google/generative-ai';
+import { FunctionDeclaration } from '@google/genai';
 import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 

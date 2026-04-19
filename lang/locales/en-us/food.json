@@ -231,7 +231,9 @@
       "createCustomFood": "Create Custom Food",
       "trackCustomMeal": "Track Custom Meal",
       "quickTrackMeal": "Quick Track Meal",
-      "quickTrackMealDescription": "Build a meal, track it now. Optionally save to My Meals."
+      "quickTrackMealDescription": "Build a meal, track it now. Optionally save to My Meals.",
+      "trackFromSaved": "Track from Saved for Later",
+      "trackFromSavedDescription": "Pick a meal you saved earlier"
     },
     "quickTrackMeal": {
       "title": "Quick Track Meal",
@@ -434,7 +436,26 @@
       "mealOptions": "Meal Options",
       "deleteGroup": "Delete meal",
       "deleteGroupDesc": "Remove all items in this meal",
-      "deleteGroupWarning": "This will permanently delete all food items in this meal. This action cannot be undone."
+      "deleteGroupWarning": "This will permanently delete all food items in this meal. This action cannot be undone.",
+      "saveForLater": "Save for later",
+      "saveForLaterDesc": "Remove from log and save to temporary meals",
+      "saveForLaterSuccess": "Meal saved for later",
+      "saveForLaterError": "Failed to save meal for later",
+      "savedMealDefaultName": "Saved Meal from {{date}} - {{mealType}}",
+      "savedForLaterModal": {
+        "title": "Saved for Later",
+        "subtitle": "Your temporary meals",
+        "noSavedMeals": "No saved meals yet",
+        "noSavedMealsDesc": "Meals you save for later will appear here",
+        "trackThisMeal": "Track this meal",
+        "trackThisMealDesc": "Add this meal back to your daily log",
+        "deleteMeal": "Delete",
+        "deleteMealDesc": "Permanently remove this saved meal",
+        "trackSuccess": "Meal tracked successfully",
+        "trackError": "Failed to track meal",
+        "deleteSuccess": "Saved meal deleted",
+        "deleteError": "Failed to delete saved meal"
+      }
     }
   }
 }

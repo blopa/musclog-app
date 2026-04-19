@@ -482,9 +482,29 @@ i18n.use(initReactI18next).init({
 });
 
 export const languageLabels: Record<string, string> = {
-  [EN_US]: i18n.t('untranslated.en-us'),
-  [PT_BR]: i18n.t('untranslated.pt-br'),
-  [RU_RU]: i18n.t('untranslated.ru-ru'),
+  [EN_US]: i18n.t('untranslated.en-us.name'),
+  [PT_BR]: i18n.t('untranslated.pt-br.name'),
+  [RU_RU]: i18n.t('untranslated.ru-ru.name'),
 };
+
+export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
+
+// Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.
+export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
+  'pt-BR': 1.2,
+  'ru-RU': 0.95,
+};
+
+// Mirror the active language to localStorage so the static landing panel
+// (+html.tsx) can pick it up before React boots.
+if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  i18n.on('languageChanged', (lng) => {
+    try {
+      window.localStorage.setItem(LANDING_LANGUAGE_STORAGE_KEY, lng);
+    } catch (_) {
+      // private/storage-full — ignore
+    }
+  });
+}
 
 export default i18n;
