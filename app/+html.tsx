@@ -220,14 +220,18 @@ export default function Root({ children }: PropsWithChildren) {
             <span>Web</span>
           </div>
           <div className="expo-web-landing-qrcode">
-            <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">Download the App</span>
+            <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">
+              Download the App
+            </span>
             <img
               src="/google_play_qrcode.png"
               alt="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"
               draggable={false}
             />
-            <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">Scan to download for Android</span>
+            <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">
+              Scan to download for Android
+            </span>
           </div>
         </div>
         {/* Patches landing panel text from localStorage before React boots */}

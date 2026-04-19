@@ -125,6 +125,18 @@ export default function HomeScreen() {
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
 
+  // Get time-based greeting
+  const getTimeBasedGreeting = useCallback(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      return t('home.greeting.goodMorning');
+    } else if (hour < 18) {
+      return t('home.greeting.goodAfternoon');
+    } else {
+      return t('home.greeting.goodEvening');
+    }
+  }, [t]);
+
   // Use reactive hook for recent workouts - only load when visible
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
     initialLimit: 2,
@@ -351,10 +363,7 @@ export default function HomeScreen() {
                     </View>
                   </View>
                   <View>
-                    <Text className="text-sm text-text-secondary">
-                      {/*TODO: add more greetings based on time of day*/}
-                      {t('home.greeting.goodEvening')}
-                    </Text>
+                    <Text className="text-sm text-text-secondary">{getTimeBasedGreeting()}</Text>
                     <Text className="text-xl font-bold text-text-primary">
                       {dbUser?.fullName || 'Guest'}
                     </Text>
