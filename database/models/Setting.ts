@@ -18,6 +18,8 @@ export type SettingType =
   | 'health_connect_sync_in_progress'
   | 'use_ocr_before_ai'
   | 'use_on_device_ai'
+  | 'use_musclog_free_tier'
+  | 'musclog_gateway_anonymous_id'
   | 'chart_tooltip_position'
   | 'nutrition_display'
   | 'other';

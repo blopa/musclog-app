@@ -50,6 +50,7 @@ import {
   type ThemeOption,
   type Units,
   UNITS_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   type UseSettingsResult,
@@ -89,6 +90,7 @@ type SettingsState = {
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
   useOnDeviceAi: boolean;
+  useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
@@ -138,6 +140,7 @@ const DEFAULT_STATE: SettingsState = {
   notificationsWorkoutDuration: false,
   useOcrBeforeAi: false,
   useOnDeviceAi: false,
+  useMusclogFreeTier: false,
   sendFoundationFoodsToLlm: true,
   navSlot1: 'workouts',
   navSlot2: 'food',
@@ -246,6 +249,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     notificationsWorkoutDuration: getBoolean(map, NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE),
     useOcrBeforeAi: getBoolean(map, USE_OCR_BEFORE_AI_SETTING_TYPE),
     useOnDeviceAi: getBoolean(map, USE_ON_DEVICE_AI_SETTING_TYPE, false),
+    useMusclogFreeTier: getBoolean(map, USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false),
     sendFoundationFoodsToLlm: getBoolean(map, SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true),
     navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
@@ -294,6 +298,7 @@ export type SettingsContextType = UseSettingsResult & {
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
   useOnDeviceAi: boolean;
+  useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
   navSlot1: NavItemKey;
@@ -376,12 +381,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const isAiConfigured = useMemo(() => {
     return (
+      state.useMusclogFreeTier ||
       state.useOnDeviceAi ||
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
     );
   }, [
+    state.useMusclogFreeTier,
     state.useOnDeviceAi,
     state.enableLocalLlm,
     state.localLlmBaseUrl,

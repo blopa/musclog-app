@@ -37,7 +37,7 @@
     "type": "compound",
     "description": "A full-body exercise that involves lifting a barbell from the ground to a standing position.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Pec Fly Machine",
@@ -365,7 +365,7 @@
     "type": "compound",
     "description": "A deadlift variation with a wide stance that targets the inner thighs and glutes.",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.5
+    "loadMultiplier": 1.8
   },
   {
     "name": "Hip Abduction Machine",

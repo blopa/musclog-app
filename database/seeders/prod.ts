@@ -388,6 +388,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setEnableOpenAi(false);
     console.log('Set default Gemini and OpenAI enabled to false');
 
+    await SettingsService.setUseMusclogFreeTier(false);
+    console.log('Set default Musclog free tier to false');
+
     if (Platform.OS === 'ios') {
       await SettingsService.setUseOnDeviceAi(true);
       console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');

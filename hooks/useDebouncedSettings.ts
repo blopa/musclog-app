@@ -64,6 +64,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
       'useOnDeviceAi',
+      'useMusclogFreeTier',
       'sendFoundationFoodsToLlm',
       'units',
       'foodSearchSource',
@@ -226,6 +227,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOnDeviceAi',
     SettingsService.setUseOnDeviceAi
   );
+  const handleUseMusclogFreeTierChange = createSettingHandler(
+    'useMusclogFreeTier',
+    SettingsService.setUseMusclogFreeTier
+  );
   const handleSendFoundationFoodsToLlmChange = createSettingHandler(
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
@@ -350,6 +355,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'useOnDeviceAi':
             await SettingsService.setUseOnDeviceAi(value as boolean);
             break;
+          case 'useMusclogFreeTier':
+            await SettingsService.setUseMusclogFreeTier(value as boolean);
+            break;
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
             break;
@@ -443,6 +451,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     useOnDeviceAi: (localSettings.useOnDeviceAi as boolean) ?? actualSettings.useOnDeviceAi,
+    useMusclogFreeTier:
+      (localSettings.useMusclogFreeTier as boolean) ?? actualSettings.useMusclogFreeTier,
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
@@ -498,6 +508,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
     handleUseOnDeviceAiChange,
+    handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
