@@ -1,14 +1,14 @@
 import { schemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
 
-import migrationV2 from '@/database/migrations/2026/migration-v2';
-import migrationV3 from '@/database/migrations/2026/migration-v3';
-import migrationV4 from '@/database/migrations/2026/migration-v4';
-import migrationV5 from '@/database/migrations/2026/migration-v5';
-import migrationV6 from '@/database/migrations/2026/migration-v6';
-import migrationV7 from '@/database/migrations/2026/migration-v7';
-import migrationV8 from '@/database/migrations/2026/migration-v8';
-import migrationV9 from '@/database/migrations/2026/migration-v9';
-import migrationV10 from '@/database/migrations/2026/migration-v10';
+import migrationV2 from '@/database/migrations/2026/04/migration-v2';
+import migrationV3 from '@/database/migrations/2026/04/migration-v3';
+import migrationV4 from '@/database/migrations/2026/04/migration-v4';
+import migrationV5 from '@/database/migrations/2026/04/migration-v5';
+import migrationV6 from '@/database/migrations/2026/04/migration-v6';
+import migrationV7 from '@/database/migrations/2026/04/migration-v7';
+import migrationV8 from '@/database/migrations/2026/04/migration-v8';
+import migrationV9 from '@/database/migrations/2026/04/migration-v9';
+import migrationV10 from '@/database/migrations/2026/04/migration-v10';
 
 export const migrations = schemaMigrations({
   migrations: [
