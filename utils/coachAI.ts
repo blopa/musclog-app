@@ -92,13 +92,28 @@ export type CoachAIConfig = {
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
-  // In web dev mode, route gateway requests through a CORS proxy so the browser
-  // can reach Cloudflare AI Gateway (which blocks browser preflight requests).
-  const devWebProxyFetch =
-    __DEV__ && config.provider === 'gateway'
-      ? (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
-      : undefined;
+  const usingByok = !!config.gatewayByokAlias;
+
+  // When BYOK is active, strip the Authorization header the SDK always adds —
+  // Cloudflare must not see it or it forwards it to the provider instead of
+  // injecting the stored BYOK key.
+  // In web dev mode, also route through a local CORS proxy so the browser can
+  // reach Cloudflare (which doesn't return CORS headers for preflight).
+  const customFetch = usingByok || (__DEV__ && config.provider === 'gateway')
+    ? (url: RequestInfo | URL, init?: RequestInit) => {
+        const headers = new Headers(init?.headers);
+        if (usingByok) {
+          headers.delete('authorization');
+        }
+
+        const patchedInit = { ...init, headers };
+        if (__DEV__ && config.provider === 'gateway') {
+          return fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, patchedInit);
+        }
+
+        return fetch(url, patchedInit);
+      }
+    : undefined;
 
   return new OpenAI({
     apiKey: config.apiKey ?? 'unused',
@@ -111,7 +126,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
           ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
         }
       : undefined,
-    fetch: devWebProxyFetch,
+    fetch: customFetch,
   });
 }
 
