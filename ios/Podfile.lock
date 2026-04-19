@@ -33,6 +33,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoAiKit (0.3.6):
+    - ExpoModulesCore
   - ExpoAsset (55.0.15):
     - ExpoModulesCore
   - ExpoBackgroundTask (55.0.16):
@@ -2750,6 +2752,7 @@ DEPENDENCIES:
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
   - Expo (from `../node_modules/expo`)
+  - ExpoAiKit (from `../node_modules/expo-ai-kit/ios`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoBackgroundTask (from `../node_modules/expo-background-task/ios`)
   - ExpoBlur (from `../node_modules/expo-blur/ios`)
@@ -2934,6 +2937,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-manifests/ios"
   Expo:
     :path: "../node_modules/expo"
+  ExpoAiKit:
+    :path: "../node_modules/expo-ai-kit/ios"
   ExpoAsset:
     :path: "../node_modules/expo-asset/ios"
   ExpoBackgroundTask:
@@ -3213,6 +3218,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: a4e214e6a66372e662ef38adf2afca773bbd0c18
   Expo: a43f44ff1e3a1c73fcabba766e13a38dea22236a
+  ExpoAiKit: 90395ca7005603daabffde46f449189fe482df76
   ExpoAsset: dc4f25f84886120f82b23233bba563ea7afa88f5
   ExpoBackgroundTask: 611cfb3fdd1a3389f99dcb290ec76178d2912d9f
   ExpoBlur: 7a86e84e7728108fa6908d7103fa527705a3dbbf
