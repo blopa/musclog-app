@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
@@ -559,6 +560,13 @@ export class SettingsService {
    */
   static async getAlwaysAllowFoodEditing(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the advanced data management setting
+   */
+  static async setAdvancedDataManagement(value: boolean) {
+    await SettingsService.setBooleanSetting(ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, value);
   }
 
   /**

@@ -233,6 +233,13 @@ export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
 export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
 
 /**
+ * Setting type for enabling advanced data management.
+ * Gated behind a confirmation + biometric auth to prevent accidental data loss.
+ * value: 'true' | 'false'.
+ */
+export const ADVANCED_DATA_MANAGEMENT_SETTING_TYPE = 'advanced_data_management';
+
+/**
  * Setting type for which macros to display in the nutrition summary.
  * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
  * '1' = visible, '0' = hidden. Default: '11111' (all visible).
