@@ -283,6 +283,10 @@
     },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "appBehaviorSettings": {
+      "title": "App Preferences",
+      "subtitle": "Workout, nutrition & chart preferences"
+    }
   }
 }

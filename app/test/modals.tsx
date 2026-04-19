@@ -8,6 +8,7 @@ import { AddFoodItemToMealModal } from '@/components/modals/AddFoodItemToMealMod
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
+import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
@@ -123,8 +124,10 @@ export default function ModalsTestScreen() {
 
   // User Menu Modal
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
-  // Advanced Settings Modal
-  const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
+  // Data Settings Modal
+  const [isDataSettingsVisible, setIsDataSettingsVisible] = useState(false);
+  // App Behavior Settings Modal
+  const [isAppBehaviorSettingsVisible, setIsAppBehaviorSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
   const [isAiNotConfiguredVisible, setIsAiNotConfiguredVisible] = useState(false);
@@ -429,10 +432,16 @@ export default function ModalsTestScreen() {
               Export, import, privacy, and danger zone.
             </Text>
             <Button
-              label="Open Advanced Settings Modal"
+              label="Open Data Settings Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsAdvancedSettingsVisible(true)}
+              onPress={() => setIsDataSettingsVisible(true)}
+            />
+            <Button
+              label="Open App Preferences Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAppBehaviorSettingsVisible(true)}
             />
           </View>
 
@@ -1658,8 +1667,13 @@ export default function ModalsTestScreen() {
       />
 
       <DataSettingsModal
-        visible={isAdvancedSettingsVisible}
-        onClose={() => setIsAdvancedSettingsVisible(false)}
+        visible={isDataSettingsVisible}
+        onClose={() => setIsDataSettingsVisible(false)}
+      />
+
+      <AdvancedSettingsModal
+        visible={isAppBehaviorSettingsVisible}
+        onClose={() => setIsAppBehaviorSettingsVisible(false)}
       />
 
       <NutritionGoalsModal

@@ -280,6 +280,10 @@
     },
     "notifications": "Notificações",
     "termsOfService": "Termos de Serviço",
-    "privacyPolicy": "Política de Privacidade"
+    "privacyPolicy": "Política de Privacidade",
+    "appBehaviorSettings": {
+      "title": "Preferências do App",
+      "subtitle": "Preferências de treino, nutrição e gráficos"
+    }
   }
 }
