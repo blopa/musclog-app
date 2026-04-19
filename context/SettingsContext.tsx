@@ -36,6 +36,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -100,6 +102,7 @@ type SettingsState = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   nutritionDisplay: string;
   isLoading: boolean;
 };
@@ -146,6 +149,7 @@ const DEFAULT_STATE: SettingsState = {
   showWeightPrediction: true,
   requireExportEncryption: true,
   intuitiveEatingMode: false,
+  progressionMode: 'reps_first',
   nutritionDisplay: '11111',
   isLoading: true,
 };
@@ -202,6 +206,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
   const maxAiMemories = getNumber(map, MAX_AI_MEMORIES_SETTING_TYPE, 50);
+  const rawProgressionMode = getString(map, PROGRESSION_MODE_SETTING_TYPE);
+  const progressionMode: ProgressionMode =
+    rawProgressionMode === 'weight_first' ? 'weight_first' : 'reps_first';
 
   return {
     language,
@@ -250,6 +257,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
+    progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     isLoading: false,
   };
@@ -296,6 +304,7 @@ export type SettingsContextType = UseSettingsResult & {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   nutritionDisplay: string;
 };
 

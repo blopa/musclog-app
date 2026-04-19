@@ -286,3 +286,16 @@ export function calculateEstimated1RMForSet(
   const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
   return calculateAverage1RM(weight + added, reps, repsInReserve ?? 0);
 }
+
+/**
+ * Calculates adjusted weight or reps for a target RIR based on 1RM.
+ */
+export function calculateWeightForTargetRIR(
+  oneRM: number,
+  targetReps: number,
+  targetRIR: number
+): number {
+  // We want: 1RM = Weight * (1 + (Reps + RIR) / 30)  [Epley approx]
+  // Weight = 1RM / (1 + (Reps + RIR) / 30)
+  return oneRM / (1 + (targetReps + targetRIR) / 30);
+}

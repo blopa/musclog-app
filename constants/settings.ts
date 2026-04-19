@@ -227,6 +227,12 @@ export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption
 export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
 
 /**
+ * Setting type for smart double progression preference.
+ * value: 'reps_first' | 'weight_first'.
+ */
+export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
+
+/**
  * Setting type for which macros to display in the nutrition summary.
  * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
  * '1' = visible, '0' = hidden. Default: '11111' (all visible).
@@ -252,6 +258,7 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
+export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
@@ -273,6 +280,7 @@ export type UseSettingsResult = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
 };

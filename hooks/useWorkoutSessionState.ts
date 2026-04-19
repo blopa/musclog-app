@@ -8,7 +8,8 @@ import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { WorkoutService } from '@/database/services';
+import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import { calculateAverage1RM, calculateWeightForTargetRIR } from '@/utils/workoutCalculator';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -45,6 +46,7 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
+  isAutoAdjusted?: boolean;
 };
 
 /**
@@ -148,7 +150,50 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             notes: le.notes,
           }));
 
-          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
+          let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
+
+          // Intra-session RIR adjustment
+          const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
+          if (current) {
+            const effectiveOrder = getEffectiveOrder(enrichedSets);
+            const currentIdx = effectiveOrder.findIndex((s) => s.id === current.id);
+            if (currentIdx > 0) {
+              const lastSet = effectiveOrder[currentIdx - 1];
+              if (
+                (lastSet.difficultyLevel ?? 0) > 0 &&
+                !(lastSet.isSkipped ?? false) &&
+                lastSet.exerciseId === current.exerciseId
+              ) {
+                // Adjust current set based on lastSet
+                const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
+                const equipmentType = exercise?.equipmentType;
+                const bodyWeightKg = 70; // fallback
+
+                const oneRM = calculateAverage1RM(
+                  lastSet.weight + (equipmentType === 'Bodyweight' ? bodyWeightKg : 0),
+                  lastSet.reps,
+                  lastSet.repsInReserve ?? 0
+                );
+
+                // For simplicity, we aim for the same RIR as originally planned if available, or target a moderate RIR (e.g. 2)
+                const targetRIR = current.repsInReserve ?? 2;
+                const adjustedWeight = calculateWeightForTargetRIR(
+                  oneRM,
+                  current.reps,
+                  targetRIR
+                );
+
+                // Round to clean value
+                const roundedWeight = Math.round(adjustedWeight);
+
+                if (Math.abs(roundedWeight - current.weight) >= 1) {
+                  current.weight = roundedWeight;
+                  current.isAutoAdjusted = true;
+                }
+              }
+            }
+          }
+
           const totalSets = enrichedSets.length;
           const completedSets = enrichedSets.filter(
             (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)

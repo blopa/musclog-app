@@ -32,6 +32,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -571,6 +573,24 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the progression mode setting ('reps_first' | 'weight_first').
+   * Defaults to 'reps_first'.
+   */
+  static async getProgressionMode(): Promise<ProgressionMode> {
+    return (await SettingsService.getStringSetting(
+      PROGRESSION_MODE_SETTING_TYPE,
+      'reps_first'
+    )) as ProgressionMode;
+  }
+
+  /**
+   * Upsert the progression mode setting ('reps_first' | 'weight_first')
+   */
+  static async setProgressionMode(mode: ProgressionMode) {
+    await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
   }
 
   /**

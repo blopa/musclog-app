@@ -90,6 +90,8 @@ export function AdvancedSettingsModal({
     handleRequireExportEncryptionChange,
     intuitiveEatingMode: debouncedIntuitiveEatingMode,
     handleIntuitiveEatingModeChange,
+    progressionMode: debouncedProgressionMode,
+    handleProgressionModeChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -320,6 +322,27 @@ export function AdvancedSettingsModal({
 
   const chartTooltipPositionItems = [
     {
+      key: 'progression-mode-weight-first',
+      label: t('settings.advancedSettings.progressionModeWeightFirst'),
+      subtitle: t('settings.advancedSettings.progressionModeWeightFirstSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.accent.primary20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />
+        </View>
+      ),
+      value: debouncedProgressionMode === 'weight_first',
+      onValueChange: (v: boolean) => handleProgressionModeChange(v ? 'weight_first' : 'reps_first'),
+    },
+    {
       key: 'chart-tooltip-left',
       label: t('settings.advancedSettings.chartTooltipLeft'),
       subtitle: t('settings.advancedSettings.chartTooltipLeftSubtitle'),
@@ -438,6 +461,17 @@ export function AdvancedSettingsModal({
           <ToggleInput items={bugReportItems} />
           <View className="mt-4" />
           <ToggleInput items={dailyMoodPromptItems} />
+        </View>
+
+        {/* Workouts Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.advancedSettings.workouts')}
+          </Text>
+          <ToggleInput items={[progressionModeItem]} />
         </View>
 
         {/* Charts Section */}

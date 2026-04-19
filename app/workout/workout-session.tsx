@@ -957,6 +957,7 @@ export default function WorkoutSessionScreen() {
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
+              isAdjusted={currentSetData.set.isAutoAdjusted}
             />
             <WorkoutStatCard
               title={t('workoutSession.reps')}
