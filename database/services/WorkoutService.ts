@@ -30,6 +30,7 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
+  isAutoAdjusted?: boolean;
 };
 
 export class WorkoutService {

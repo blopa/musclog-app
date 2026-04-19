@@ -153,42 +153,43 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
 
           // Intra-session RIR adjustment
-          const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
-          if (current) {
+          const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
+          if (currentActive) {
             const effectiveOrder = getEffectiveOrder(enrichedSets);
-            const currentIdx = effectiveOrder.findIndex((s) => s.id === current.id);
+            const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
             if (currentIdx > 0) {
               const lastSet = effectiveOrder[currentIdx - 1];
               if (
                 (lastSet.difficultyLevel ?? 0) > 0 &&
                 !(lastSet.isSkipped ?? false) &&
-                lastSet.exerciseId === current.exerciseId
+                lastSet.exerciseId === currentActive.exerciseId
               ) {
                 // Adjust current set based on lastSet
                 const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
                 const equipmentType = exercise?.equipmentType;
                 const bodyWeightKg = 70; // fallback
 
+                const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
                 const oneRM = calculateAverage1RM(
-                  lastSet.weight + (equipmentType === 'Bodyweight' ? bodyWeightKg : 0),
+                  lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
                   lastSet.reps,
                   lastSet.repsInReserve ?? 0
                 );
 
                 // For simplicity, we aim for the same RIR as originally planned if available, or target a moderate RIR (e.g. 2)
-                const targetRIR = current.repsInReserve ?? 2;
+                const targetRIR = currentActive.repsInReserve ?? 2;
                 const adjustedWeight = calculateWeightForTargetRIR(
                   oneRM,
-                  current.reps,
+                  currentActive.reps,
                   targetRIR
                 );
 
                 // Round to clean value
                 const roundedWeight = Math.round(adjustedWeight);
 
-                if (Math.abs(roundedWeight - current.weight) >= 1) {
-                  current.weight = roundedWeight;
-                  current.isAutoAdjusted = true;
+                if (Math.abs(roundedWeight - currentActive.weight) >= 1) {
+                  currentActive.weight = roundedWeight;
+                  currentActive.isAutoAdjusted = true;
                 }
               }
             }
@@ -199,7 +200,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
           ).length;
           const isComplete = totalSets > 0 && completedSets === totalSets;
-          const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
+          const current = currentActive;
           const next = current
             ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0)
             : null;

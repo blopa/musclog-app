@@ -471,7 +471,32 @@ export function AdvancedSettingsModal({
           >
             {t('settings.advancedSettings.workouts')}
           </Text>
-          <ToggleInput items={[progressionModeItem]} />
+          <ToggleInput
+            items={[
+              {
+                key: 'progression-mode-weight-first',
+                label: t('settings.advancedSettings.progressionModeWeightFirst'),
+                subtitle: t('settings.advancedSettings.progressionModeWeightFirstSubtitle'),
+                icon: (
+                  <View
+                    style={{
+                      width: theme.size['10'],
+                      height: theme.size['10'],
+                      borderRadius: theme.borderRadius.sm,
+                      backgroundColor: theme.colors.accent.primary20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />
+                  </View>
+                ),
+                value: debouncedProgressionMode === 'weight_first',
+                onValueChange: (v: boolean) =>
+                  handleProgressionModeChange(v ? 'weight_first' : 'reps_first'),
+              },
+            ]}
+          />
         </View>
 
         {/* Charts Section */}
