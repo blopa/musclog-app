@@ -10,7 +10,7 @@ import { type PropsWithChildren } from 'react';
  * `assets/phone-wrapper.png` into `public/musclog-app/images/` (gitignored).
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
-const GOOGLE_PLAY_QR_CODE = '/images/google-play-qr.png';
+const GOOGLE_PLAY_QR_CODE = '/images/google-play-qrcode.png';
 
 /** Prefix URLs when `experiments.baseUrl` is set (e.g. `/musclog-app`). */
 function withExpoBaseUrl(path: string): string {
