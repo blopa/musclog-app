@@ -22,6 +22,8 @@ import MenstrualCycle from './models/MenstrualCycle';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
+import SavedForLaterGroup from './models/SavedForLaterGroup';
+import SavedForLaterItem from './models/SavedForLaterItem';
 import Schedule from './models/Schedule';
 import Setting from './models/Setting';
 import User from './models/User';
@@ -63,6 +65,8 @@ export const database = new Database({
     Meal,
     MealFood,
     NutritionLog,
+    SavedForLaterGroup,
+    SavedForLaterItem,
     ChatMessage,
   ],
 });

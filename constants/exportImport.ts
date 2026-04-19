@@ -47,6 +47,10 @@ export const RESTORE_ORDER: string[] = [
 
   // AI custom prompts (independent)
   'ai_custom_prompts',
+
+  // Saved for later (independent)
+  'saved_for_later_groups',
+  'saved_for_later_items',
 ];
 
 export const SETTINGS_EXCLUDED_TYPES = [
