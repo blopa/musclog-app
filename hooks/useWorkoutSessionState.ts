@@ -73,8 +73,12 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
 
   useEffect(() => {
-    // TODO: use await instead of .then
-    UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+    const loadBodyWeight = async () => {
+      const weight = await UserMetricService.getUserBodyWeightKgForVolume();
+      setBodyWeightKg(weight);
+    };
+
+    loadBodyWeight();
   }, []);
 
   useEffect(() => {
