@@ -1,0 +1,18 @@
+{
+  "replaceExercise": {
+    "title": "Replace Exercise",
+    "cancel": "Cancel",
+    "replace": "Replace",
+    "searchPlaceholder": "Search exercises...",
+    "muscleGroups": {
+      "all": "All",
+      "chest": "Chest",
+      "shoulders": "Shoulders",
+      "triceps": "Triceps"
+    },
+    "selectExercise": "Select Exercise",
+    "loadMore": "Load More",
+    "loadingMore": "Loading…",
+    "noExercisesMatch": "No exercises match"
+  }
+}
