@@ -216,4 +216,40 @@ body {
 		letter-spacing: 0.4px;
 		color: rgba(255, 255, 255, 0.22);
 	}
+
+	.expo-web-landing-qrcode {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+		margin-top: 28px;
+		padding: 20px;
+		border-radius: 16px;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.expo-web-landing-qrcode-title {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 14px;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.6);
+		text-align: center;
+		letter-spacing: 0.2px;
+	}
+
+	.expo-web-landing-qrcode-image {
+		width: 120px;
+		height: 120px;
+		border-radius: 12px;
+		background: white;
+		padding: 12px;
+	}
+
+	.expo-web-landing-qrcode-text {
+		font-family: system-ui, -apple-system, sans-serif;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.5);
+		text-align: center;
+	}
 }

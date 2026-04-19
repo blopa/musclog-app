@@ -352,6 +352,7 @@ export default function HomeScreen() {
                   </View>
                   <View>
                     <Text className="text-sm text-text-secondary">
+                      {/*TODO: add more greetings based on time of day*/}
                       {t('home.greeting.goodEvening')}
                     </Text>
                     <Text className="text-xl font-bold text-text-primary">

@@ -43,6 +43,8 @@ function landingI18nPatcher() {
         f3: 'Detailed progress charts',
         f4: '100% private & on-device',
         tagline: 'AI-powered fitness & nutrition tracking — free & open source.',
+        qrcode_title: 'Download the App',
+        qrcode_text: 'Scan to download for Android',
       },
       'pt-BR': {
         cta: 'Experimente agora',
@@ -51,6 +53,8 @@ function landingI18nPatcher() {
         f3: 'Gráficos detalhados de progresso',
         f4: '100% privado e no dispositivo',
         tagline: 'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',
+        qrcode_title: 'Baixe o App',
+        qrcode_text: 'Escaneie para baixar no Android',
       },
       'ru-RU': {
         cta: 'Попробуйте сейчас',
@@ -59,6 +63,8 @@ function landingI18nPatcher() {
         f3: 'Подробные графики прогресса',
         f4: '100% приватно и на устройстве',
         tagline: 'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',
+        qrcode_title: 'Скачать приложение',
+        qrcode_text: 'Сканируйте для загрузки на Android',
       },
     };
 
@@ -212,6 +218,16 @@ export default function Root({ children }: PropsWithChildren) {
             <span>iOS</span>
             <span aria-hidden>·</span>
             <span>Web</span>
+          </div>
+          <div className="expo-web-landing-qrcode">
+            <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">Download the App</span>
+            <img
+              src="/google_play_qrcode.png"
+              alt="Google Play Store QR Code"
+              className="expo-web-landing-qrcode-image"
+              draggable={false}
+            />
+            <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">Scan to download for Android</span>
           </div>
         </div>
         {/* Patches landing panel text from localStorage before React boots */}
