@@ -17,12 +17,10 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 
-// TODO: instead, load all exercises*.json from data dir
-const EXERCISE_DATA_FILES = [
-  path.join(ROOT, 'data/exercisesEnUS.json'),
-  path.join(ROOT, 'data/exercisesPtBr.json'),
-  path.join(ROOT, 'data/exercisesRuRu.json'),
-];
+const EXERCISE_DATA_FILES = fs
+  .readdirSync(path.join(ROOT, 'data'))
+  .filter((f) => /^exercises.*\.json$/i.test(f))
+  .map((f) => path.join(ROOT, 'data', f));
 
 const EXERCISES_LOCALE_FILE = path.join(ROOT, 'lang/locales/en-us/exercises.json');
 

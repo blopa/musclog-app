@@ -7,7 +7,7 @@ import Exercise, {
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
-import i18n, { EN_US, EXERCISES_JSON, PT_BR } from '@/lang/lang';
+import i18n, { EN_US, EXERCISES_JSON } from '@/lang/lang';
 import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 const exercisesLocale = (
@@ -539,13 +539,14 @@ export class ExerciseService {
    * Safe to call repeatedly — already-correct exercises are left untouched.
    */
   static async backfillExerciseOrderIndex(): Promise<void> {
-    // TODO: instead of manually using en_us and pt_br, uses all languages in the EXERCISES_JSON
-    const enUsNameToIndex = new Map(
-      EXERCISES_JSON[EN_US].map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
-    );
-
-    const ptBrNameToIndex = new Map(
-      EXERCISES_JSON[PT_BR].map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
+    const nameToIndexMaps = (Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]).map(
+      (lang) =>
+        new Map(
+          EXERCISES_JSON[lang].map((ex, index) => [
+            (ex as ExerciseJsonData).name.toLowerCase(),
+            index,
+          ])
+        )
     );
 
     // Find app exercises without order_index (null/undefined)
@@ -563,10 +564,12 @@ export class ExerciseService {
       }
 
       const exerciseName = (exercise.name ?? '').toLowerCase();
-      // Try enUS first, then ptBR
-      let jsonIndex = enUsNameToIndex.get(exerciseName);
-      if (jsonIndex === undefined) {
-        jsonIndex = ptBrNameToIndex.get(exerciseName);
+      let jsonIndex: number | undefined;
+      for (const map of nameToIndexMaps) {
+        jsonIndex = map.get(exerciseName);
+        if (jsonIndex !== undefined) {
+          break;
+        }
       }
 
       if (jsonIndex !== undefined) {
@@ -709,7 +712,9 @@ export class ExerciseService {
     // Prepare records — prepareCreate assigns IDs and is usable after batch()
     const prepared = missing.map((data) => {
       const jsonIndex = exercisesJson.indexOf(data);
-      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type as ExerciseJsonData['type']);
+      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
+        data.type as ExerciseJsonData['type']
+      );
       const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
 
       return database.get<Exercise>('exercises').prepareCreate((exercise) => {
