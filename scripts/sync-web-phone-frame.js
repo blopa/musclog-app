@@ -2,26 +2,39 @@
 /* eslint-disable no-undef */
 
 /**
- * Copies assets/phone-wrapper.png → public/musclog-app/images/phone-wrapper.png
- * so dev and export serve it at /musclog-app/images/... (matches experiments.baseUrl).
+ * Copies assets/phone-wrapper.png and assets/google-play-qrcode.png
+ * → public/musclog-app/images/ so dev and export serve them at /musclog-app/images/...
+ * (matches experiments.baseUrl).
  * The public/musclog-app folder is gitignored; run via prestart or before web/export.
  */
 const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const src = path.join(root, 'assets', 'phone-wrapper.png');
 const destDir = path.join(root, 'public', 'musclog-app', 'images');
-const dest = path.join(destDir, 'phone-wrapper.png');
+
+const filesToSync = [
+  {
+    src: path.join(root, 'assets', 'phone-wrapper.png'),
+    dest: path.join(destDir, 'phone-wrapper.png'),
+  },
+  {
+    src: path.join(root, 'assets', 'google-play-qrcode.png'),
+    dest: path.join(destDir, 'google-play-qrcode.png'),
+  },
+];
 
 function main() {
-  if (!fs.existsSync(src)) {
-    console.warn('[sync-web-phone-frame] Skip: source not found:', src);
-    process.exit(0);
-  }
   fs.mkdirSync(destDir, { recursive: true });
-  fs.copyFileSync(src, dest);
-  console.log('[sync-web-phone-frame]', path.relative(root, dest));
+
+  filesToSync.forEach(({ src, dest }) => {
+    if (!fs.existsSync(src)) {
+      console.warn('[sync-web-phone-frame] Skip: source not found:', src);
+      return;
+    }
+    fs.copyFileSync(src, dest);
+    console.log('[sync-web-phone-frame]', path.relative(root, dest));
+  });
 }
 
 main();
