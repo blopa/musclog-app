@@ -1,4 +1,4 @@
-import { Wand2 } from 'lucide-react-native';
+import { Calculator } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -34,7 +34,7 @@ export function WorkoutStatCard({ title, value, unit, onPress, isAdjusted }: Wor
           {unit ? <Text className="mt-0.5 text-sm text-text-secondary">{unit}</Text> : null}
           {isAdjusted ? (
             <View className="ml-1 mt-0.5">
-              <Wand2 size={theme.iconSize.xs} color={theme.colors.accent.primary} />
+              <Calculator size={theme.iconSize.xs} color={theme.colors.accent.primary} />
             </View>
           ) : null}
         </View>
