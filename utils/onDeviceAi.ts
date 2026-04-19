@@ -1,4 +1,4 @@
-import { isAvailable, isPromptInferenceReady, sendMessage } from 'expo-ai-kit';
+import { isAvailable, sendMessage } from 'expo-ai-kit';
 import { Platform } from 'react-native';
 
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
@@ -11,6 +11,7 @@ export async function isOnDeviceAiCapable(): Promise<boolean> {
   if (Platform.OS !== 'ios') {
     return false;
   }
+
   try {
     return await isAvailable();
   } catch {
@@ -26,12 +27,9 @@ export async function isOnDeviceAiAvailable(): Promise<boolean> {
   if (Platform.OS !== 'ios') {
     return false;
   }
+
   try {
-    const capable = await isAvailable();
-    if (!capable) {
-      return false;
-    }
-    return await isPromptInferenceReady();
+    return await isAvailable();
   } catch {
     return false;
   }
