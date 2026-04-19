@@ -231,7 +231,9 @@
       "createCustomFood": "Criar Alimento Personalizado",
       "trackCustomMeal": "Registrar Refeição Personalizada",
       "quickTrackMeal": "Registrar Refeição Rápida",
-      "quickTrackMealDescription": "Monte uma refeição, registre agora. Opcionalmente salve em Minhas Refeições."
+      "quickTrackMealDescription": "Monte uma refeição, registre agora. Opcionalmente salve em Minhas Refeições.",
+      "trackFromSaved": "Registrar de Salvas para Depois",
+      "trackFromSavedDescription": "Escolha uma refeição salva anteriormente"
     },
     "quickTrackMeal": {
       "title": "Registrar Refeição Rápida",
@@ -434,7 +436,26 @@
       "mealOptions": "Opções da Refeição",
       "deleteGroup": "Excluir refeição",
       "deleteGroupDesc": "Remover todos os itens desta refeição",
-      "deleteGroupWarning": "Isso excluirá permanentemente todos os alimentos desta refeição. Esta ação não pode ser desfeita."
+      "deleteGroupWarning": "Isso excluirá permanentemente todos os alimentos desta refeição. Esta ação não pode ser desfeita.",
+      "saveForLater": "Salvar para depois",
+      "saveForLaterDesc": "Remover do registro e salvar em refeições temporárias",
+      "saveForLaterSuccess": "Refeição salva para depois",
+      "saveForLaterError": "Falha ao salvar refeição para depois",
+      "savedMealDefaultName": "Refeição salva de {{date}} - {{mealType}}",
+      "savedForLaterModal": {
+        "title": "Salvas para Depois",
+        "subtitle": "Suas refeições temporárias",
+        "noSavedMeals": "Nenhuma refeição salva ainda",
+        "noSavedMealsDesc": "As refeições que você salvar para depois aparecerão aqui",
+        "trackThisMeal": "Registrar esta refeição",
+        "trackThisMealDesc": "Adicionar esta refeição de volta ao seu registro diário",
+        "deleteMeal": "Excluir",
+        "deleteMealDesc": "Remover permanentemente esta refeição salva",
+        "trackSuccess": "Refeição registrada com sucesso",
+        "trackError": "Falha ao registrar refeição",
+        "deleteSuccess": "Refeição salva excluída",
+        "deleteError": "Falha ao excluir refeição salva"
+      }
     }
   }
 }
