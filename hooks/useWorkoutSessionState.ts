@@ -3,13 +3,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
+import { ProgressionMode } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
-import { calculateAverage1RM, calculateWeightForTargetRIR } from '@/utils/workoutCalculator';
+import {
+  calculateAverage1RM,
+  calculateRepsForTargetRIR,
+  calculateWeightForTargetRIR,
+} from '@/utils/workoutCalculator';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -71,6 +76,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
 
   useEffect(() => {
     const loadBodyWeight = async () => {
@@ -78,7 +84,13 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       setBodyWeightKg(weight);
     };
 
+    const loadProgressionMode = async () => {
+      const mode = await SettingsService.getProgressionMode();
+      setProgressionMode(mode);
+    };
+
     loadBodyWeight();
+    loadProgressionMode();
   }, []);
 
   useEffect(() => {
@@ -184,20 +196,34 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                   lastSet.repsInReserve ?? 0
                 );
 
-                // For simplicity, we aim for the same RIR as originally planned if available, or target a moderate RIR (e.g. 2)
                 const targetRIR = currentActive.repsInReserve ?? 2;
-                const adjustedWeight = calculateWeightForTargetRIR(
-                  oneRM,
-                  currentActive.reps,
-                  targetRIR
-                );
 
-                // Round to clean value
-                const roundedWeight = Math.round(adjustedWeight);
+                if (progressionMode === 'weight_first') {
+                  const adjustedWeight = calculateWeightForTargetRIR(
+                    oneRM,
+                    currentActive.reps,
+                    targetRIR
+                  );
 
-                if (Math.abs(roundedWeight - currentActive.weight) >= 1) {
-                  currentActive.weight = roundedWeight;
-                  currentActive.isAutoAdjusted = true;
+                  const roundedWeight = Math.round(adjustedWeight);
+                  if (Math.abs(roundedWeight - (currentActive.weight ?? 0)) >= 1) {
+                    currentActive.weight = roundedWeight;
+                    currentActive.isAutoAdjusted = true;
+                  }
+                } else {
+                  // reps_first: keep planned weight, adjust reps to match 1RM at target RIR
+                  const adjustedReps = calculateRepsForTargetRIR(
+                    oneRM,
+                    isBodyweight
+                      ? (currentActive.weight ?? 0) + bodyWeightKg
+                      : (currentActive.weight ?? 0),
+                    targetRIR
+                  );
+
+                  if (Math.abs(adjustedReps - (currentActive.reps ?? 0)) >= 1) {
+                    currentActive.reps = adjustedReps;
+                    currentActive.isAutoAdjusted = true;
+                  }
                 }
               }
             }
