@@ -97,7 +97,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
   const devWebProxyFetch =
     __DEV__ && config.provider === 'gateway'
       ? (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(`https://corsproxy.io/?url=${encodeURIComponent(url.toString())}`, init)
+          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
       : undefined;
 
   return new OpenAI({
