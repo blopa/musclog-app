@@ -25,8 +25,8 @@ export class SavedForLaterService {
     return await database.write(async () => {
       const now = Date.now();
 
-      // 1. Create the group
-      const group = await database.get<SavedForLaterGroup>('saved_for_later_groups').create((record) => {
+      // 1. Prepare the group
+      const group = database.get<SavedForLaterGroup>('saved_for_later_groups').prepareCreate((record) => {
         record.name = name;
         record.originalMealType = originalMealType;
         record.originalDate = originalDate;
