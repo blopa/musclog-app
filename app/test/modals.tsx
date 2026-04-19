@@ -77,6 +77,7 @@ import { PortionSizesPickerModal } from '@/components/modals/PortionSizesPickerM
 import { RecentNutritionHistoryModal } from '@/components/modals/RecentNutritionHistoryModal';
 import { ReplaceExerciseModal } from '@/components/modals/ReplaceExerciseModal';
 import { RetrospectiveNutritionModal } from '@/components/modals/RetrospectiveNutritionModal';
+import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
 import { SelectModal } from '@/components/modals/SelectModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
@@ -341,6 +342,9 @@ export default function ModalsTestScreen() {
 
   // Add Exercise To Session Modal
   const [isAddExerciseToSessionVisible, setIsAddExerciseToSessionVisible] = useState(false);
+
+  // Saved For Later Modal
+  const [isSavedForLaterVisible, setIsSavedForLaterVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1633,6 +1637,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Saved For Later Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Saved For Later Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing saved for later meals.
+            </Text>
+            <Button
+              label="Open Saved For Later Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsSavedForLaterVisible(true)}
+            />
+          </View>
+
           {/* Add Exercise To Session Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -2401,6 +2419,11 @@ export default function ModalsTestScreen() {
         visible={isAddExerciseToSessionVisible}
         onClose={() => setIsAddExerciseToSessionVisible(false)}
         workoutLogId="test-workout-log-id"
+      />
+
+      <SavedForLaterModal
+        visible={isSavedForLaterVisible}
+        onClose={() => setIsSavedForLaterVisible(false)}
       />
     </SafeAreaView>
   );
