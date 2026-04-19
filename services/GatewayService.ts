@@ -32,8 +32,8 @@ export class GatewayService {
       provider: 'gateway',
       model: MUSCLOG_GATEWAY_MODEL,
       baseUrl: MUSCLOG_GATEWAY_BASE_URL,
+      apiKey: MUSCLOG_GATEWAY_AUTH_TOKEN,
       language,
-      gatewayAuthHeader: MUSCLOG_GATEWAY_AUTH_TOKEN,
       gatewayByokAlias: MUSCLOG_GATEWAY_BYOK_ALIAS,
       gatewayUserId: anonymousId,
     };

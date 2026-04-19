@@ -86,47 +86,30 @@ export type CoachAIConfig = {
   model: string;
   baseUrl?: string;
   language?: string;
-  gatewayAuthHeader?: string;
   gatewayByokAlias?: string;
   gatewayUserId?: string;
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
-  const usingByok = !!config.gatewayByokAlias;
-
-  // When BYOK is active, strip the Authorization header the SDK always adds —
-  // Cloudflare must not see it or it forwards it to the provider instead of
-  // injecting the stored BYOK key.
-  // In web dev mode, also route through a local CORS proxy so the browser can
-  // reach Cloudflare (which doesn't return CORS headers for preflight).
-  const customFetch = usingByok || (__DEV__ && config.provider === 'gateway')
-    ? (url: RequestInfo | URL, init?: RequestInit) => {
-        const headers = new Headers(init?.headers);
-        if (usingByok) {
-          headers.delete('authorization');
-        }
-
-        const patchedInit = { ...init, headers };
-        if (__DEV__ && config.provider === 'gateway') {
-          return fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, patchedInit);
-        }
-
-        return fetch(url, patchedInit);
-      }
-    : undefined;
+  // In web dev mode, route gateway requests through a local CORS proxy —
+  // Cloudflare AI Gateway doesn't return CORS headers for browser preflights.
+  const devWebProxyFetch =
+    __DEV__ && config.provider === 'gateway'
+      ? (url: RequestInfo | URL, init?: RequestInit) =>
+          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
+      : undefined;
 
   return new OpenAI({
     apiKey: config.apiKey ?? 'unused',
     baseURL: config.baseUrl,
     dangerouslyAllowBrowser: true,
-    defaultHeaders: config.gatewayAuthHeader
+    defaultHeaders: config.gatewayByokAlias
       ? {
-          'cf-aig-authorization': config.gatewayAuthHeader,
-          'cf-aig-byok-alias': config.gatewayByokAlias ?? 'default',
+          'cf-aig-byok-alias': config.gatewayByokAlias,
           ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
         }
       : undefined,
-    fetch: customFetch,
+    fetch: devWebProxyFetch,
   });
 }
 

@@ -80,13 +80,8 @@ const server = http.createServer((req, res) => {
       }
     }
 
-    const usingByok = !!req.headers['cf-aig-byok-alias'];
-
-    // Forward all headers except hop-by-hop, host, and:
-    // - accept-encoding: so the upstream returns plaintext (readable in logs + avoids decompression)
-    // - authorization: when cf-aig-byok-alias is present, the OpenAI SDK sends
-    //   "Bearer unused" which Cloudflare uses instead of the stored BYOK key.
-    //   Strip it so Cloudflare injects the stored key itself.
+    // Forward all headers except hop-by-hop, host, and accept-encoding
+    // (drop accept-encoding so the upstream returns plaintext — readable in logs).
     const forwardHeaders = {};
     for (const [key, value] of Object.entries(req.headers)) {
       const lower = key.toLowerCase();
@@ -102,9 +97,6 @@ const server = http.createServer((req, res) => {
         continue;
       }
 
-      if (lower === 'authorization' && usingByok) {
-        continue;
-      }
       forwardHeaders[key] = value;
     }
     forwardHeaders['host'] = target.host;

@@ -1,5 +1,6 @@
 export const MUSCLOG_GATEWAY_BASE_URL = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_BASE_URL ?? '';
-export const MUSCLOG_GATEWAY_AUTH_TOKEN = `Bearer ${process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN ?? ''}`;
+// Raw token — the OpenAI SDK automatically wraps it as "Authorization: Bearer <token>"
+export const MUSCLOG_GATEWAY_AUTH_TOKEN = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN ?? '';
 export const MUSCLOG_GATEWAY_MODEL =
   process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL ?? 'google-ai-studio/gemini-2.5-flash';
 // Alias of the provider key stored in Cloudflare AI Gateway's BYOK dashboard.
