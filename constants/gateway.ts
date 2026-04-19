@@ -4,3 +4,6 @@ export const MUSCLOG_GATEWAY_MODEL = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_MOD
 // Alias of the provider key stored in Cloudflare AI Gateway's BYOK dashboard.
 // Cloudflare injects it server-side — no provider key is shipped in the app.
 export const MUSCLOG_GATEWAY_BYOK_ALIAS = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_BYOK_ALIAS ?? 'default';
+// Only used on web+__DEV__: public CORS proxies strip cf-aig-* headers so BYOK
+// never reaches Cloudflare. Pass the key directly for local testing only.
+export const MUSCLOG_GATEWAY_DEV_API_KEY = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_DEV_API_KEY ?? '';
