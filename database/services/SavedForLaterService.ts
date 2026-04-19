@@ -26,13 +26,15 @@ export class SavedForLaterService {
       const now = Date.now();
 
       // 1. Prepare the group
-      const group = database.get<SavedForLaterGroup>('saved_for_later_groups').prepareCreate((record) => {
-        record.name = name;
-        record.originalMealType = originalMealType;
-        record.originalDate = originalDate;
-        record.createdAt = now;
-        record.updatedAt = now;
-      });
+      const group = database
+        .get<SavedForLaterGroup>('saved_for_later_groups')
+        .prepareCreate((record) => {
+          record.name = name;
+          record.originalMealType = originalMealType;
+          record.originalDate = originalDate;
+          record.createdAt = now;
+          record.updatedAt = now;
+        });
 
       // 2. Create items for each log
       const itemsPrepared = logs.map((log) =>

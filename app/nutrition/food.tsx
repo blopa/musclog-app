@@ -788,14 +788,6 @@ export default function FoodScreen() {
       onPress: handleSplitFood,
     },
     {
-      icon: Trash2,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('food.actions.delete'),
-      description: t('food.actions.deleteDesc'),
-      onPress: handleDeleteFood,
-    },
-    {
       icon: Save,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
@@ -808,6 +800,15 @@ export default function FoodScreen() {
           setSelectedFoodItem(null);
         }
       },
+    },
+    // delete should always be the last one
+    {
+      icon: Trash2,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: t('food.actions.delete'),
+      description: t('food.actions.deleteDesc'),
+      onPress: handleDeleteFood,
     },
   ];
 
@@ -1235,14 +1236,6 @@ export default function FoodScreen() {
       onPress: handleSplitMeal,
     },
     {
-      icon: Trash2,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('food.actions.deleteAll'),
-      description: t('food.actions.deleteAllDesc'),
-      onPress: handleDeleteAllMeal,
-    },
-    {
       icon: Save,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
@@ -1259,6 +1252,15 @@ export default function FoodScreen() {
           setSelectedMealForMenu(null);
         }
       },
+    },
+    // delete should always be the last one
+    {
+      icon: Trash2,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: t('food.actions.deleteAll'),
+      description: t('food.actions.deleteAllDesc'),
+      onPress: handleDeleteAllMeal,
     },
   ];
 

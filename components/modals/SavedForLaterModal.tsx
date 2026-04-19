@@ -1,4 +1,4 @@
-import { MoreVertical, Trash2, Utensils } from 'lucide-react-native';
+import { Trash2, Utensils } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
@@ -7,6 +7,7 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
+import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
@@ -16,7 +17,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
-import { EmptyStateCard } from '../theme/EmptyStateCard';
 import { MoveCopyMealModal } from './MoveCopyMealModal';
 
 type SavedForLaterModalProps = {
@@ -102,7 +102,10 @@ export function SavedForLaterModal({
   };
 
   const handleConfirmDelete = async () => {
-    if (!selectedGroup) return;
+    if (!selectedGroup) {
+      return;
+    }
+
     setIsActionLoading(true);
     try {
       await SavedForLaterService.deleteGroup(selectedGroup.group.id);
@@ -117,7 +120,10 @@ export function SavedForLaterModal({
   };
 
   const handleConfirmTrack = async (targetDate: Date, targetMealType: any) => {
-    if (!selectedGroup) return;
+    if (!selectedGroup) {
+      return;
+    }
+
     setIsActionLoading(true);
     try {
       await SavedForLaterService.trackGroup(selectedGroup.group.id, targetDate, targetMealType);
@@ -142,34 +148,34 @@ export function SavedForLaterModal({
       <View className="mb-4">
         <GenericCard variant="card">
           <View className="flex-row items-center justify-between p-4">
-          <View className="flex-1 pr-4">
-            <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
-              {item.group.name}
-            </Text>
-            <Text className="text-xs text-text-secondary">
-              {originalDate} • {mealTypeLabel}
-            </Text>
-            <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
-              <Text className="text-sm font-semibold text-accent-primary">
-                {formatInteger(Math.round(item.nutrients.calories))} kcal
+            <View className="flex-1 pr-4">
+              <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
+                {item.group.name}
               </Text>
               <Text className="text-xs text-text-secondary">
-                {Math.round(item.nutrients.protein)}g P
+                {originalDate} • {mealTypeLabel}
               </Text>
-              <Text className="text-xs text-text-secondary">
-                {Math.round(item.nutrients.carbs)}g C
-              </Text>
-              <Text className="text-xs text-text-secondary">
-                {Math.round(item.nutrients.fat)}g F
-              </Text>
-            </View>
+              <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
+                <Text className="text-sm font-semibold text-accent-primary">
+                  {formatInteger(Math.round(item.nutrients.calories))} kcal
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {Math.round(item.nutrients.protein)}g P
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {Math.round(item.nutrients.carbs)}g C
+                </Text>
+                <Text className="text-xs text-text-secondary">
+                  {Math.round(item.nutrients.fat)}g F
+                </Text>
+              </View>
             </View>
             <MenuButton
-            onPress={() => {
-              setSelectedGroup(item);
-              setIsMenuVisible(true);
-            }}
-          />
+              onPress={() => {
+                setSelectedGroup(item);
+                setIsMenuVisible(true);
+              }}
+            />
           </View>
         </GenericCard>
       </View>
@@ -187,7 +193,12 @@ export function SavedForLaterModal({
         {isLoading ? (
           <View className="gap-4">
             {[1, 2, 3].map((i) => (
-              <SkeletonLoader key={i} width="100%" height={100} borderRadius={theme.borderRadius.lg} />
+              <SkeletonLoader
+                key={i}
+                width="100%"
+                height={100}
+                borderRadius={theme.borderRadius.lg}
+              />
             ))}
           </View>
         ) : groups.length === 0 ? (
