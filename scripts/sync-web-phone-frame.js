@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /* eslint-disable no-undef */
 
+// TODO: also sync google_play_qrcode.png
+
 /**
  * Copies assets/phone-wrapper.png → public/musclog-app/images/phone-wrapper.png
  * so dev and export serve it at /musclog-app/images/... (matches experiments.baseUrl).

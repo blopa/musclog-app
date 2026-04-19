@@ -224,7 +224,7 @@ export default function Root({ children }: PropsWithChildren) {
               Download the App
             </span>
             <img
-              src="/google_play_qrcode.png"
+              src="/images/google-play-qrcode.png"
               alt="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"
               draggable={false}
