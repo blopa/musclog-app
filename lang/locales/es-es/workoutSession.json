@@ -1,0 +1,38 @@
+{
+  "workoutSession": {
+    "totalTime": "TOTAL TIME",
+    "setOf": "SET {{current}} OF {{total}}",
+    "lastSetForExercise": "Last set for this exercise",
+    "weight": "WEIGHT",
+    "reps": "REPS",
+    "kg": "kg",
+    "lb": "lb",
+    "previousSetFormat": "{{weight}} {{unit}} × {{count}} {{repsLabel}}",
+    "partials": "PARTIALS",
+    "previous": "Previous",
+    "history": "History",
+    "skip": "SKIP",
+    "edit": "EDIT",
+    "replace": "REPLACE",
+    "completeSet": "COMPLETE SET",
+    "skipSet": {
+      "title": "Skip Set?",
+      "message": "Are you sure you want to skip this set?",
+      "cancel": "Cancel",
+      "confirm": "Yes, Skip"
+    },
+    "notFoundTitle": "Workout not found",
+    "notFoundDescription": "Unable to load workout session. Please try again.",
+    "goBack": "Go Back",
+    "bodyweight": "Bodyweight",
+    "hormonalInsight": "Hormonal Insight",
+    "ovulationInsight": "During ovulation, you may experience increased strength and performance.",
+    "menstrualInsight": "During menstruation, you may need to reduce intensity and focus on recovery.",
+    "phaseInsight": "Current phase: {{phase}}. Intensity multiplier: {{multiplier}}x",
+    "fuelingInsight": "Fueling Insight",
+    "lowFuelingMessage": "You've consumed only {{carbs}}g of carbs in the last {{hours}} hours. Glycogen stores might be low. For future sessions, aim for more carbs pre-workout. A quick snack now might still help your performance.",
+    "fullyFueledMessage": "You've consumed {{carbs}}g of carbs in the last {{hours}} hours. You are fully fueled and ready to crush it!",
+    "missingDataTitle": "Session Data Issue",
+    "viewOverview": "View Overview"
+  }
+}

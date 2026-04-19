@@ -1,0 +1,139 @@
+{
+  "onboarding": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "steps": {
+      "step1": {
+        "title": "Effortless Tracking",
+        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+      },
+      "step2": {
+        "title": "Smart Nutrition",
+        "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+      },
+      "step3": {
+        "title": "One App, Total Control",
+        "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
+      },
+      "step4": {
+        "title": "Let's Get Personal",
+        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+      }
+    },
+    "fitnessInfo": {
+      "physicalTitle": "Body Stats",
+      "goalsTitle": "Fitness Goals",
+      "maybeLater": "Maybe later",
+      "save": "Save",
+      "next": "Next",
+      "continue": "Continue",
+      "errorSaving": "Error Saving"
+    },
+    "personalInfo": {
+      "title": "Set Personal Information",
+      "errorSaving": "Error Saving",
+      "finish": "Finish",
+      "trackCycle": "Track Menstrual Cycle?",
+      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
+    },
+    "cycleSetup": {
+      "anchor": {
+        "title": "Last Period",
+        "description": "When did your last period start? This helps us calibrate your current phase."
+      },
+      "birthControl": {
+        "title": "Hormonal Birth Control",
+        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
+        "none": "None",
+        "noneDescription": "No hormonal contraception.",
+        "pill": "Pill",
+        "pillDescription": "Daily oral contraceptive pill.",
+        "iud": "IUD",
+        "iudDescription": "Intrauterine device (hormonal or copper).",
+        "implant": "Implant",
+        "implantDescription": "Subcutaneous hormonal implant.",
+        "other": "Other",
+        "otherDescription": "Another form of contraception."
+      },
+      "length": {
+        "title": "Cycle Length",
+        "description": "How long is your typical cycle and period duration?",
+        "cycleLength": "Average Cycle Length",
+        "periodDuration": "Average Period Duration",
+        "cycleLengthLabel": "Cycle Length",
+        "periodDurationLabel": "Period Duration"
+      },
+      "goal": {
+        "title": "Sync Goal",
+        "description": "What is your primary focus for hormonal syncing?",
+        "performance": "Optimize Performance",
+        "performanceDescription": "Peak strength and PR optimization.",
+        "symptoms": "Manage Symptoms",
+        "symptomsDescription": "Focus on comfort and recovery during shifts.",
+        "energy": "Predict Energy Lows",
+        "energyDescription": "Anticipate lows and adjust intensity accordingly."
+      }
+    },
+    "healthConnect": {
+      "connectYour": "Connect Your",
+      "health": "Health",
+      "description": "Sync your fitness data to Musclog for advanced progress tracking and personalized health insights.",
+      "categories": {
+        "nutrition": "Nutrition",
+        "weight": "Weight",
+        "sleep": "Sleep",
+        "bodyComposition": "Body Composition"
+      },
+      "allowHealthAccess": "Allow Health Access",
+      "connectedCount": "Connected {{granted}}/{{total}}",
+      "maybeLater": "Maybe later",
+      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
+      "initializing": "Initializing Health Connect...",
+      "syncing": "Syncing health data...",
+      "processing": "Processing...",
+      "continue": "Continue"
+    },
+    "landing": {
+      "getStarted": "Get Started",
+      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
+      "appName": "Musclog",
+      "tagline": "Lift, Log, Repeat",
+      "description": "Track your progress with data-driven insights and crush your fitness goals.",
+      "viewTerms": "View Terms",
+      "preparingApp": "Preparing the app for you...",
+      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
+      "migratingData": "Migrating your data...",
+      "migratingStep": "Migrating {{step}}...",
+      "migrationSteps": {
+        "preparing": "Preparing",
+        "downloading": "Downloading",
+        "processing": "Processing",
+        "finalizing": "Finalizing",
+        "fitness_goals": "nutrition goals",
+        "user_metrics": "body metrics",
+        "users": "profile",
+        "foods": "foods",
+        "nutrition_logs": "nutrition logs",
+        "exercises": "exercises",
+        "workouts": "workout templates",
+        "workout_logs": "workout history",
+        "workout_template_sets": "workout template sets",
+        "workout_log_sets": "workout log sets",
+        "validating": "data"
+      },
+      "importData": "Import Data"
+    },
+    "setGoals": {
+      "title": "Smart Goal",
+      "calculation": "Calculation",
+      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
+      "personalizedMacros": "Personalized Macros",
+      "dynamicAdjustments": "Dynamic Adjustments",
+      "calculateForMe": "Calculate for Me",
+      "setThemMyself": "I'll Set Them Myself",
+      "missingData": "Please complete your fitness details first so we can calculate your plan."
+    }
+  }
+}
