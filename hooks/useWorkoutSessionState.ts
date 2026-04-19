@@ -3,12 +3,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
+import { ProgressionMode } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { WorkoutService } from '@/database/services';
+import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import {
+  calculateAverage1RM,
+  calculateRepsForTargetRIR,
+  calculateWeightForTargetRIR,
+} from '@/utils/workoutCalculator';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -45,6 +51,7 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
+  isAutoAdjusted?: boolean;
 };
 
 /**
@@ -68,6 +75,23 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
+
+  useEffect(() => {
+    const loadBodyWeight = async () => {
+      const weight = await UserMetricService.getUserBodyWeightKgForVolume();
+      setBodyWeightKg(weight);
+    };
+
+    const loadProgressionMode = async () => {
+      const mode = await SettingsService.getProgressionMode();
+      setProgressionMode(mode);
+    };
+
+    loadBodyWeight();
+    loadProgressionMode();
+  }, []);
 
   useEffect(() => {
     if (!workoutLogId) {
@@ -148,13 +172,69 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             notes: le.notes,
           }));
 
-          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
+          let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
+
+          // Intra-session RIR adjustment
+          const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
+          if (currentActive) {
+            const effectiveOrder = getEffectiveOrder(enrichedSets);
+            const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
+            if (currentIdx > 0) {
+              const lastSet = effectiveOrder[currentIdx - 1];
+              if (
+                (lastSet.difficultyLevel ?? 0) > 0 &&
+                !(lastSet.isSkipped ?? false) &&
+                lastSet.exerciseId === currentActive.exerciseId
+              ) {
+                // Adjust current set based on lastSet
+                const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
+                const equipmentType = exercise?.equipmentType;
+                const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
+                const oneRM = calculateAverage1RM(
+                  lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
+                  lastSet.reps,
+                  lastSet.repsInReserve ?? 0
+                );
+
+                const targetRIR = currentActive.repsInReserve ?? 2;
+
+                if (progressionMode === 'weight_first') {
+                  const adjustedWeight = calculateWeightForTargetRIR(
+                    oneRM,
+                    currentActive.reps,
+                    targetRIR
+                  );
+
+                  const roundedWeight = Math.round(adjustedWeight);
+                  if (Math.abs(roundedWeight - (currentActive.weight ?? 0)) >= 1) {
+                    currentActive.weight = roundedWeight;
+                    currentActive.isAutoAdjusted = true;
+                  }
+                } else {
+                  // reps_first: keep planned weight, adjust reps to match 1RM at target RIR
+                  const adjustedReps = calculateRepsForTargetRIR(
+                    oneRM,
+                    isBodyweight
+                      ? (currentActive.weight ?? 0) + bodyWeightKg
+                      : (currentActive.weight ?? 0),
+                    targetRIR
+                  );
+
+                  if (Math.abs(adjustedReps - (currentActive.reps ?? 0)) >= 1) {
+                    currentActive.reps = adjustedReps;
+                    currentActive.isAutoAdjusted = true;
+                  }
+                }
+              }
+            }
+          }
+
           const totalSets = enrichedSets.length;
           const completedSets = enrichedSets.filter(
             (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
           ).length;
           const isComplete = totalSets > 0 && completedSets === totalSets;
-          const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
+          const current = currentActive;
           const next = current
             ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0)
             : null;

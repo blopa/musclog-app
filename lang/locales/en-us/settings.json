@@ -126,6 +126,13 @@
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",
+      "workouts": "WORKOUTS",
+      "progressionModeWeightFirst": "Prioritize Weight Progression",
+      "progressionModeWeightFirstSubtitle": "Increase weight directly when RIR is high, rather than adding reps",
+      "enableAdvancedDataManagement": "Enable Advanced Data Management",
+      "enableAdvancedDataManagementSubtitle": "Unlock raw access to your app data — for advanced users only",
+      "enableAdvancedDataManagementConfirmTitle": "Advanced Users Only",
+      "enableAdvancedDataManagementConfirmMessage": "This is only for advanced users. Playing around with the data here can crash your app beyond repair — only use it if you know what you're doing.",
       "dataManagement": "DATA MANAGEMENT",
       "manageFoodData": "Manage Food Data",
       "manageFoodDataSubtitle": "View, edit, or delete your custom food entries",
@@ -280,6 +287,10 @@
     },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "appBehaviorSettings": {
+      "title": "App Preferences",
+      "subtitle": "Workout, nutrition & chart preferences"
+    }
   }
 }

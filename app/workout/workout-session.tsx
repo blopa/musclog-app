@@ -420,7 +420,13 @@ export default function WorkoutSessionScreen() {
     return done === logSets.length;
   }, []);
 
-  const handleCompleteSet = async (rpe: number) => {
+  const handleCompleteSet = async (data: {
+    rpe: number;
+    weight: number;
+    reps: number;
+    partials: number;
+    repsInReserve: number;
+  }) => {
     if (!currentSetData || !workoutLog) {
       return;
     }
@@ -437,10 +443,11 @@ export default function WorkoutSessionScreen() {
       const completedSetOrder = currentSetData.set.setOrder ?? 0;
 
       await workoutLog.updateSet(currentSetData.set.id, {
-        difficultyLevel: rpe,
-        weight: displayToKg(weight, units),
-        reps,
-        partials,
+        difficultyLevel: data.rpe,
+        weight: displayToKg(data.weight, units),
+        reps: data.reps,
+        partials: data.partials,
+        repsInReserve: data.repsInReserve,
         restTimeAfter: restTime,
       });
 
@@ -957,6 +964,7 @@ export default function WorkoutSessionScreen() {
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
+              isAdjusted={currentSetData.set.isAutoAdjusted}
             />
             <WorkoutStatCard
               title={t('workoutSession.reps')}
@@ -1140,7 +1148,7 @@ export default function WorkoutSessionScreen() {
             repsInReserve={repsInReserve}
             initialRpe={8}
             onConfirm={(data) => {
-              handleCompleteSet(data.rpe);
+              handleCompleteSet(data);
             }}
             isSaving={isSaving}
             onEditSetDetails={(data) => {

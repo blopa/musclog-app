@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { ThemeOption } from '@/constants/settings';
+import type { ProgressionMode, ThemeOption } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 
 import { useSettings } from './useSettings';
@@ -76,6 +76,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       'showWeightPrediction',
       'requireExportEncryption',
       'intuitiveEatingMode',
+      'progressionMode',
+      'advancedDataManagement',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -267,6 +269,14 @@ export function useDebouncedSettings(debounceMs = 200) {
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
   );
+  const handleProgressionModeChange = createSettingHandler<ProgressionMode>(
+    'progressionMode',
+    SettingsService.setProgressionMode
+  );
+  const handleAdvancedDataManagementChange = createSettingHandler<boolean>(
+    'advancedDataManagement',
+    SettingsService.setAdvancedDataManagement
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -375,6 +385,12 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
             break;
+          case 'progressionMode':
+            await SettingsService.setProgressionMode(value as ProgressionMode);
+            break;
+          case 'advancedDataManagement':
+            await SettingsService.setAdvancedDataManagement(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -450,6 +466,10 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
+    progressionMode:
+      (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
+    advancedDataManagement:
+      (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -489,6 +509,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,
     handleIntuitiveEatingModeChange,
+    handleProgressionModeChange,
+    handleAdvancedDataManagementChange,
 
     // Utilities
     flushAllPendingChanges,

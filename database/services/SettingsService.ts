@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
@@ -34,6 +35,8 @@ import {
   NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -46,7 +49,7 @@ import {
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
@@ -560,6 +563,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the advanced data management setting
+   */
+  static async setAdvancedDataManagement(value: boolean) {
+    await SettingsService.setBooleanSetting(ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the intuitive eating mode setting
    */
   static async setIntuitiveEatingMode(value: boolean) {
@@ -571,6 +581,24 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the progression mode setting ('reps_first' | 'weight_first').
+   * Defaults to 'reps_first'.
+   */
+  static async getProgressionMode(): Promise<ProgressionMode> {
+    return (await SettingsService.getStringSetting(
+      PROGRESSION_MODE_SETTING_TYPE,
+      'reps_first'
+    )) as ProgressionMode;
+  }
+
+  /**
+   * Upsert the progression mode setting ('reps_first' | 'weight_first')
+   */
+  static async setProgressionMode(mode: ProgressionMode) {
+    await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
   }
 
   /**

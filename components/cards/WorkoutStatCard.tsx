@@ -1,5 +1,8 @@
+import { Calculator } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+
+import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './GenericCard';
 
@@ -8,10 +11,12 @@ type WorkoutStatCardProps = {
   value: string | number | React.ReactNode;
   unit?: string;
   onPress?: () => void;
+  isAdjusted?: boolean;
 };
 
-export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCardProps) {
+export function WorkoutStatCard({ title, value, unit, onPress, isAdjusted }: WorkoutStatCardProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
@@ -25,7 +30,14 @@ export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCard
           // React element (ActivityIndicator)
           <View className="h-10 items-center justify-center">{value}</View>
         )}
-        {unit ? <Text className="mt-0.5 text-sm text-text-secondary">{unit}</Text> : null}
+        <View className="flex-row items-center">
+          {unit ? <Text className="mt-0.5 text-sm text-text-secondary">{unit}</Text> : null}
+          {isAdjusted ? (
+            <View className="ml-1 mt-0.5">
+              <Calculator size={theme.iconSize.xs} color={theme.colors.accent.primary} />
+            </View>
+          ) : null}
+        </View>
       </View>
     </GenericCard>
   );

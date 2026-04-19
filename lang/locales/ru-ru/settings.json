@@ -126,6 +126,10 @@
       "charts": "ГРАФИКИ",
       "chartTooltipLeft": "Подсказки слева",
       "chartTooltipLeftSubtitle": "Показывать подсказки графиков в левом верхнем углу вместо правого",
+      "enableAdvancedDataManagement": "Включить расширенное управление данными",
+      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения — только для опытных пользователей",
+      "enableAdvancedDataManagementConfirmTitle": "Только для опытных пользователей",
+      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение — используйте только если знаете, что делаете.",
       "dataManagement": "УПРАВЛЕНИЕ ДАННЫМИ",
       "manageFoodData": "Управление данными продуктов",
       "manageFoodDataSubtitle": "Просматривайте, редактируйте или удаляйте пользовательские записи о продуктах",
@@ -273,6 +277,10 @@
     },
     "notifications": "Уведомления",
     "termsOfService": "Условия использования",
-    "privacyPolicy": "Политика конфиденциальности"
+    "privacyPolicy": "Политика конфиденциальности",
+    "appBehaviorSettings": {
+      "title": "Настройки приложения",
+      "subtitle": "Тренировки, питание и настройки графиков"
+    }
   }
 }

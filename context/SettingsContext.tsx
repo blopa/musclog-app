@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { GEMINI_MODELS } from '@/constants/ai';
 import { isStaticExport } from '@/constants/platform';
 import {
+  ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
@@ -38,6 +39,8 @@ import {
   NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
@@ -100,7 +103,9 @@ type SettingsState = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   nutritionDisplay: string;
+  advancedDataManagement: boolean;
   isLoading: boolean;
 };
 
@@ -146,7 +151,9 @@ const DEFAULT_STATE: SettingsState = {
   showWeightPrediction: true,
   requireExportEncryption: true,
   intuitiveEatingMode: false,
+  progressionMode: 'reps_first',
   nutritionDisplay: '11111',
+  advancedDataManagement: false,
   isLoading: true,
 };
 
@@ -202,6 +209,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
   const maxAiMemories = getNumber(map, MAX_AI_MEMORIES_SETTING_TYPE, 50);
+  const rawProgressionMode = getString(map, PROGRESSION_MODE_SETTING_TYPE);
+  const progressionMode: ProgressionMode =
+    rawProgressionMode === 'weight_first' ? 'weight_first' : 'reps_first';
 
   return {
     language,
@@ -250,7 +260,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
+    progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
+    advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -296,7 +308,9 @@ export type SettingsContextType = UseSettingsResult & {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
   nutritionDisplay: string;
+  advancedDataManagement: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

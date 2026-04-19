@@ -11,6 +11,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -33,7 +34,8 @@ export default function SettingsScreen() {
   } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
-  const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
+  const [isDataSettingsVisible, setDataSettingsVisible] = useState(false);
+  const [isAppBehaviorSettingsVisible, setAppBehaviorSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
 
@@ -160,7 +162,27 @@ export default function SettingsScreen() {
             }
             title={t('settings.advancedSettings.title')}
             subtitle={t('settings.advancedSettings.subtitle')}
-            onPress={() => setAdvancedSettingsVisible(true)}
+            onPress={() => setDataSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
+
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="tune"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.appBehaviorSettings.title')}
+            subtitle={t('settings.appBehaviorSettings.subtitle')}
+            onPress={() => setAppBehaviorSettingsVisible(true)}
             rightIcon={
               <MaterialIcons
                 name="chevron-right"
@@ -237,9 +259,13 @@ export default function SettingsScreen() {
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
       />
+      <DataSettingsModal
+        visible={isDataSettingsVisible}
+        onClose={() => setDataSettingsVisible(false)}
+      />
       <AdvancedSettingsModal
-        visible={isAdvancedSettingsVisible}
-        onClose={() => setAdvancedSettingsVisible(false)}
+        visible={isAppBehaviorSettingsVisible}
+        onClose={() => setAppBehaviorSettingsVisible(false)}
       />
       <VisualSettingsModal
         visible={isVisualSettingsVisible}

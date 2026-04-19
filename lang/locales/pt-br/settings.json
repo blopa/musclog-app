@@ -126,6 +126,10 @@
       "charts": "GRÁFICOS",
       "chartTooltipLeft": "Tooltip à Esquerda",
       "chartTooltipLeftSubtitle": "Mostrar tooltips de dados do gráfico no canto superior esquerdo em vez do superior direito",
+      "enableAdvancedDataManagement": "Habilitar Gerenciamento Avançado de Dados",
+      "enableAdvancedDataManagementSubtitle": "Desbloqueia acesso direto aos dados do app — somente para usuários avançados",
+      "enableAdvancedDataManagementConfirmTitle": "Somente para Usuários Avançados",
+      "enableAdvancedDataManagementConfirmMessage": "Isso é apenas para usuários avançados. Mexer nos dados aqui pode corromper seu app de forma irreparável — use apenas se souber o que está fazendo.",
       "dataManagement": "GERENCIAMENTO DE DADOS",
       "manageFoodData": "Gerenciar Dados de Alimentos",
       "manageFoodDataSubtitle": "Visualizar, editar ou excluir suas entradas de alimentos personalizados",
@@ -280,6 +284,10 @@
     },
     "notifications": "Notificações",
     "termsOfService": "Termos de Serviço",
-    "privacyPolicy": "Política de Privacidade"
+    "privacyPolicy": "Política de Privacidade",
+    "appBehaviorSettings": {
+      "title": "Preferências do App",
+      "subtitle": "Preferências de treino, nutrição e gráficos"
+    }
   }
 }
