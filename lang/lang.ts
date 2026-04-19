@@ -13,6 +13,12 @@ import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+// Exercise data
+import exercisesEnUs from '@/data/exercisesEnUS.json';
+import exercisesNlNl from '@/data/exercisesNlNl.json';
+import exercisesPtBr from '@/data/exercisesPtBr.json';
+import exercisesRuRu from '@/data/exercisesRuRu.json';
+
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
 import enUsAddMeal from './locales/en-us/addMeal.json';
@@ -304,6 +310,14 @@ export const EN_US = 'en-US';
 export const NL_NL = 'nl-NL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
+
+// Exercise exports
+export const EXERCISES_JSON = {
+  [EN_US]: exercisesEnUs,
+  [NL_NL]: exercisesNlNl,
+  [PT_BR]: exercisesPtBr,
+  [RU_RU]: exercisesRuRu,
+};
 
 const resources = {
   [EN_US]: {

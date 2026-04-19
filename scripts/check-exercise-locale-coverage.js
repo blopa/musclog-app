@@ -17,6 +17,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 
+// TODO: instead, load all exercises*.json from data dir
 const EXERCISE_DATA_FILES = [
   path.join(ROOT, 'data/exercisesEnUS.json'),
   path.join(ROOT, 'data/exercisesPtBr.json'),
