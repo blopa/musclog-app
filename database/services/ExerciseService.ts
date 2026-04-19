@@ -10,7 +10,10 @@ import Exercise, {
 import i18n, { EN_US, EXERCISES_JSON, PT_BR } from '@/lang/lang';
 import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
-const exercisesJson = EXERCISES_JSON[i18n.language || EN_US];
+const exercisesLocale = (
+  i18n.language in EXERCISES_JSON ? i18n.language : EN_US
+) as keyof typeof EXERCISES_JSON;
+const exercisesJson = EXERCISES_JSON[exercisesLocale];
 
 interface ExerciseJsonData {
   name: string;
@@ -454,7 +457,7 @@ export class ExerciseService {
         .map((exerciseData) => {
           const jsonIndex = exercisesJson.indexOf(exerciseData);
           const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
-            exerciseData.type
+            exerciseData.type as ExerciseJsonData['type']
           );
           const equipmentType = this.inferEquipmentFromName(exerciseData.name, defaultEquipment);
 
@@ -706,7 +709,7 @@ export class ExerciseService {
     // Prepare records — prepareCreate assigns IDs and is usable after batch()
     const prepared = missing.map((data) => {
       const jsonIndex = exercisesJson.indexOf(data);
-      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type);
+      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type as ExerciseJsonData['type']);
       const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
 
       return database.get<Exercise>('exercises').prepareCreate((exercise) => {
@@ -741,7 +744,7 @@ export class ExerciseService {
   static async syncExerciseMultipliers(): Promise<void> {
     // Map of name -> loadMultiplier from JSON
     const multiplierMap = new Map(
-      exercisesJson.map((ex) => [ex.name.toLowerCase(), ex.loadMultiplier])
+      exercisesJson.map((ex): [string, number] => [ex.name.toLowerCase(), ex.loadMultiplier ?? 1.0])
     );
 
     // Fetch all app exercises
