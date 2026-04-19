@@ -1,3 +1,3 @@
 export const MUSCLOG_GATEWAY_BASE_URL = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_BASE_URL ?? '';
 export const MUSCLOG_GATEWAY_AUTH_TOKEN = `Bearer ${process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_AUTH_TOKEN ?? ''}`;
-export const MUSCLOG_GATEWAY_MODEL = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL ?? 'gpt-4o-mini';
+export const MUSCLOG_GATEWAY_MODEL = process.env.EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL ?? 'google-ai-studio/gemini-2.5-flash';
