@@ -295,7 +295,12 @@ export function calculateWeightForTargetRIR(
   targetReps: number,
   targetRIR: number
 ): number {
-  // We want: 1RM = Weight * (1 + (Reps + RIR) / 30)  [Epley approx]
-  // Weight = 1RM / (1 + (Reps + RIR) / 30)
-  return oneRM / (1 + (targetReps + targetRIR) / 30);
+  // All supported 1RM formulas are linear: 1RM = Weight * Multiplier(Reps, RIR)
+  // Therefore: Weight = 1RM / Multiplier(Reps, RIR)
+  // We can get the multiplier by calling calculateAverage1RM with Weight = 1.
+  const multiplier = calculateAverage1RM(1, targetReps, targetRIR);
+  if (multiplier === 0) {
+    return 0;
+  }
+  return oneRM / multiplier;
 }
