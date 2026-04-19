@@ -3,6 +3,7 @@ import SHA256 from 'crypto-js/sha256';
 import {
   MUSCLOG_GATEWAY_AUTH_TOKEN,
   MUSCLOG_GATEWAY_BASE_URL,
+  MUSCLOG_GATEWAY_BYOK_ALIAS,
   MUSCLOG_GATEWAY_MODEL,
 } from '@/constants/gateway';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -33,6 +34,7 @@ export class GatewayService {
       baseUrl: MUSCLOG_GATEWAY_BASE_URL,
       language,
       gatewayAuthHeader: MUSCLOG_GATEWAY_AUTH_TOKEN,
+      gatewayByokAlias: MUSCLOG_GATEWAY_BYOK_ALIAS,
       gatewayUserId: anonymousId,
     };
   }

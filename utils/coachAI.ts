@@ -87,6 +87,7 @@ export type CoachAIConfig = {
   baseUrl?: string;
   language?: string;
   gatewayAuthHeader?: string;
+  gatewayByokAlias?: string;
   gatewayUserId?: string;
 };
 
@@ -106,6 +107,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
     defaultHeaders: config.gatewayAuthHeader
       ? {
           'cf-aig-authorization': config.gatewayAuthHeader,
+          'cf-aig-byok-alias': config.gatewayByokAlias ?? 'default',
           ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
         }
       : undefined,
