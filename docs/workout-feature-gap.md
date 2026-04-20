@@ -19,6 +19,8 @@ Comparing features from two well-regarded workout apps (researched from their ma
 - **1RM calculation** — seven formulas, RIR-aware, in `utils/workoutCalculator.ts`.
 - **Goal projection** — weighted linear regression predicts when a strength goal is reached (`utils/exerciseGoalProjection.ts`).
 - **Suggested starting weights** — `WorkoutTemplateService.getSuggestedWeightAndRepsForExercise` uses history and user profile.
+- **Smart double progression** — RIR-aware between-session algorithm in `getSuggestedWeightAndRepsForExercise`; Weight-First and Reps-First modes configurable in settings.
+- **Intra-session RIR adjustment** — after each set, remaining sets of the same exercise are recomputed using the RIR-adjusted 1RM; auto-adjusted sets flagged with `isAutoAdjusted` (`hooks/useWorkoutSessionState.ts`).
 - **Volume and progress charts** — `components/progress/WorkoutCharts.tsx`.
 - **Body metrics tracking** — weight, measurements.
 - **Mood tracking** — daily prompt, correlated with performance.
@@ -31,37 +33,7 @@ Comparing features from two well-regarded workout apps (researched from their ma
 
 ## Missing Features Worth Adding
 
-### 1. Smart Between-Session Progression (Double Progression)
-
-**What competitors do:** After each session, the app uses average RIR from the last session to decide whether to add reps, increase weight, or hold. Two configurable modes: **Weight-First** (increase load when possible, expand rep range only as fallback) and **Reps-First** (fill the rep range before bumping load). The next session's sets are pre-filled with exact targets. When no valid recommendation can be generated within the configured constraints, the app flags this explicitly rather than guessing.
-
-**What Musclog does:** Suggested weights for a new session come from history via `getSuggestedWeightAndRepsForExercise`, but there is no RIR-aware double-progression algorithm. Goal projection (`exerciseGoalProjection.ts`) predicts _when_ a goal is met but doesn't _prescribe_ next session's targets.
-
-**Why it's valuable:** This closes the loop between logging and planning — the app becomes prescriptive, not just descriptive. All the data is already there (RIR per set, previous session loads).
-
-**Where to build it:** Extend `WorkoutTemplateService.getSuggestedWeightAndRepsForExercise` to:
-
-1. Compute average RIR from the last session for this exercise.
-2. **Reps-First mode:** if avg RIR ≥ 3 and reps are below the top of the target range → add reps. If at the top of range → increase weight, reset reps.
-3. **Weight-First mode:** if avg RIR ≥ 3 → increase weight directly. If RIR 1–2 → hold. If RIR 0 → reduce.
-4. Persist the mode choice per exercise or globally in settings.
-5. Pre-fill session sets with the computed result and show the source ("based on last session").
-
----
-
-### 2. RIR-Based Intra-Session Weight Adjustment
-
-**What competitors do:** After you log a set with an RIR rating, the app recalculates target weight and/or reps for the _remaining sets of that exercise_ in real time. RIR 5+ → bumps weight for subsequent sets. RIR 0 → scales down before you burn out.
-
-**What Musclog does:** RIR is logged and used in 1RM calculations, but it has no effect on the current session's upcoming sets.
-
-**Why it's valuable:** Turns passive RIR data into active, session-level coaching. The math (`calculateAverage1RM` with RIR) is already in place; what's missing is the feedback loop.
-
-**Where to build it:** In `hooks/useWorkoutSessionState.ts` and `app/workout/workout-session.tsx`. After a set is saved, recompute target weight for remaining sets of the same exercise using the RIR-adjusted 1RM estimate. Show the new targets inline with a subtle indicator that they were auto-adjusted.
-
----
-
-### 3. Plate Calculator
+### 1. Plate Calculator
 
 **What competitors do:** During an active workout, a calculator takes a target total barbell weight, subtracts the bar, and tells you exactly which plates to load per side. Respects available plate denominations (from gym profile) and the bar weight. Flags when the exact weight can't be built with available plates rather than silently rounding. Configurable per exercise for non-standard bars (safety squat bar, EZ bar, etc.).
 
@@ -73,7 +45,7 @@ Comparing features from two well-regarded workout apps (researched from their ma
 
 ---
 
-### 4. Gym Profiles (Multi-Location Equipment Config)
+### 2. Gym Profiles (Multi-Location Equipment Config)
 
 **What competitors do:** Users create named profiles (home gym, commercial gym, travel gym) each specifying available bars, plate denominations, and machines. Smart Progression uses the active profile to know what weight increments are achievable. Different workout days in a program can use different profiles.
 
@@ -85,7 +57,7 @@ Comparing features from two well-regarded workout apps (researched from their ma
 
 ---
 
-### 5. Smart Warm-Up Suggestions
+### 3. Smart Warm-Up Suggestions
 
 **What competitors do:** Before working sets, the app auto-generates warm-up sets (labeled separately, excluded from volume totals) with calculated weights and rep counts based on the working set targets. Heavier working weights produce heavier, more graduated warm-up progressions. Can be toggled globally or per-session, and individual warm-up sets can be removed.
 
@@ -97,7 +69,7 @@ Comparing features from two well-regarded workout apps (researched from their ma
 
 ---
 
-### 6. Daily Readiness Score
+### 4. Daily Readiness Score
 
 **What competitors do:** A 0–100 composite score generated each morning from sleep quality, recent training load, and subjective feel. Low readiness → app suggests reducing set count (e.g., 4 → 3). User can override either way.
 
@@ -115,7 +87,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 7. Readiness-Based Volume Auto-Adjustment
+### 5. Readiness-Based Volume Auto-Adjustment
 
 **What competitors do:** If readiness is below a threshold, the session automatically trims sets. The user can add them back with one tap.
 
@@ -127,7 +99,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 8. Left/Right Asymmetrical Logging
+### 6. Left/Right Asymmetrical Logging
 
 **What competitors do:** For unilateral exercises (single-arm rows, Bulgarian split squats, etc.), users can log different weights and different reps for each side independently within the same set entry.
 
@@ -139,7 +111,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 9. Myoreps / Rest-Pause Cluster Sets
+### 7. Myoreps / Rest-Pause Cluster Sets
 
 **What competitors do:** A tracked set type (labeled separately from normal, failure, drop, and partial sets) that implements the rest-pause protocol: one near-failure set, then multiple mini-sets with very short rest at the same weight. All mini-sets are grouped as one entry with individual rep counts logged.
 
@@ -151,7 +123,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 10. Per-Cycle Program Periodization
+### 8. Per-Cycle Program Periodization
 
 **What competitors do:** Programs support per-week/cycle configuration — you can set different sets, rep ranges, and RIR targets for each cycle of the program. This enables linear periodization (ramp weight, constant reps), rep ladders, intensity blocks, and deload weeks all within a single program structure, without duplicating workouts manually.
 
@@ -163,7 +135,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 11. Body Map / Muscle Group Volume Visualization
+### 9. Body Map / Muscle Group Volume Visualization
 
 **What competitors do:** An anatomical body illustration where each muscle group is color-coded by training volume in the current week/cycle. Provides an immediate visual summary of training balance and neglected areas.
 
@@ -175,7 +147,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 12. Workout Sections
+### 10. Workout Sections
 
 **What competitors do:** A single workout can be divided into named sections (e.g., "Main Work," "Accessory Work," "Core"). Exercises are grouped under sections, giving the workout a clear structure when it contains many exercises.
 
@@ -187,7 +159,7 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ---
 
-### 13. Failure Sets as an Explicit Set Type
+### 11. Failure Sets as an Explicit Set Type
 
 **What competitors do:** "Failure set" is a distinct set type, separate from RIR 0. Logging to failure explicitly is tracked and can be programmed (e.g., "last set of block uses failure sets").
 
@@ -217,16 +189,14 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 
 ## Suggested Build Order
 
-1. **Smart double progression** — highest leverage, builds on existing RIR data and suggestion infrastructure, no new data collection needed.
-2. **Intra-session RIR adjustment** — high UX impact, math already exists, scope is contained to the session screen.
-3. **Plate calculator** — concrete everyday value for barbell users; self-contained UI.
-4. **Smart warm-up suggestions** — reduces pre-set friction; straightforward algorithm with clear volume-exclusion rules.
-5. **Left/right asymmetrical logging** — schema addition + UI; strong value for unilateral training.
-6. **Failure sets as an explicit type** — small schema change, high semantic value.
-7. **Myoreps** — niche but loyal audience; schema mirrors existing drop set pattern.
-8. **Workout sections** — adds structure to complex sessions; schema + UI change.
-9. **Daily readiness score** — requires combining existing data sources (mood + Health Connect sleep + training load).
-10. **Volume auto-adjustment** — depends on readiness score; natural follow-on.
-11. **Gym profiles** — foundational for accurate plate calculator and progression; more complex schema + settings UI.
-12. **Per-cycle periodization** — significant schema and UX work; high value for intermediate/advanced users.
-13. **Body map visualization** — SVG illustration work; compelling visual but not blocking progress.
+1. **Plate calculator** — concrete everyday value for barbell users; self-contained UI.
+3. **Smart warm-up suggestions** — reduces pre-set friction; straightforward algorithm with clear volume-exclusion rules.
+4. **Left/right asymmetrical logging** — schema addition + UI; strong value for unilateral training.
+5. **Failure sets as an explicit type** — small schema change, high semantic value.
+6. **Myoreps** — niche but loyal audience; schema mirrors existing drop set pattern.
+7. **Workout sections** — adds structure to complex sessions; schema + UI change.
+8. **Daily readiness score** — requires combining existing data sources (mood + Health Connect sleep + training load).
+9. **Volume auto-adjustment** — depends on readiness score; natural follow-on.
+10. **Gym profiles** — foundational for accurate plate calculator and progression; more complex schema + settings UI.
+11. **Per-cycle periodization** — significant schema and UX work; high value for intermediate/advanced users.
+12. **Body map visualization** — SVG illustration work; compelling visual but not blocking progress.
