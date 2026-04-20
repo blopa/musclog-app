@@ -1,24 +1,24 @@
 {
   "workoutLog": {
     "manageWorkoutLogData": {
-      "deleteLogWarning": "Weet je zeker dat je dit workout-logboek wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-      "title": "Workout-logboek beheren",
-      "searchPlaceholder": "Sessies zoeken...",
-      "noWorkoutLogs": "Nog geen workout-logboeken",
-      "noWorkoutLogsDesc": "Voltooi workouts om ze hier te zien",
-      "endOfHistory": "Einde van workout-geschiedenis",
-      "workoutLogOptions": "Workout-opties",
-      "editWorkoutLog": "Workout bewerken",
-      "editWorkoutLogDesc": "Workoutgegevens wijzigen",
-      "duplicateWorkoutLog": "Workout dupliceren",
-      "duplicateWorkoutLogDesc": "Maak een kopie van deze workout",
-      "deleteWorkoutLog": "Workout verwijderen",
-      "deleteWorkoutLogDesc": "Verwijder dit workout-logboek",
+      "deleteLogWarning": "¿Estás seguro de que quieres eliminar este registro de entrenamiento? Esta acción no se puede deshacer.",
+      "title": "Gestionar registros de entrenamiento",
+      "searchPlaceholder": "Buscar sesiones de entrenamiento...",
+      "noWorkoutLogs": "Aún no hay registros de entrenamiento",
+      "noWorkoutLogsDesc": "Completa entrenamientos para verlos aquí",
+      "endOfHistory": "Fin del historial de entrenamientos",
+      "workoutLogOptions": "Opciones de entrenamiento",
+      "editWorkoutLog": "Editar entrenamiento",
+      "editWorkoutLogDesc": "Modificar detalles del entrenamiento",
+      "duplicateWorkoutLog": "Duplicar entrenamiento",
+      "duplicateWorkoutLogDesc": "Crear una copia de este entrenamiento",
+      "deleteWorkoutLog": "Eliminar entrenamiento",
+      "deleteWorkoutLogDesc": "Eliminar este registro de entrenamiento",
       "detailFormat": "{{status}} • {{volume}}",
-      "statusCompleted": "Voltooid",
-      "statusInProgress": "In uitvoering",
+      "statusCompleted": "Completado",
+      "statusInProgress": "En curso",
       "volumeFormat": "{{volume}} {{unit}}",
-      "unknownWorkout": "Onbekende workout"
+      "unknownWorkout": "Entrenamiento desconocido"
     }
   }
 }

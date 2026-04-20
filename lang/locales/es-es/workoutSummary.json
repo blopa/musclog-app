@@ -1,21 +1,21 @@
 {
   "workoutSummary": {
-    "totalTime": "Totale tijd",
-    "volume": "Volume",
-    "duration": "Duur",
-    "personalRecords": "Persoonlijke records",
-    "newPRs": "Nieuwe PR's",
-    "goHome": "Naar Home",
-    "youCrushedIt": "Je hebt het geweldig gedaan!",
-    "feedbackSubmitted": "Workout-feedback succesvol ingediend.",
-    "shareText": "Ik heb net een workout geknald!",
-    "shareSummary": "Samenvatting delen",
-    "workoutCompleted": "Workout voltooid!",
-    "viewDetails": "Details bekijken",
-    "getFeedback": "AI-feedback ophalen",
-    "gettingFeedback": "Feedback ophalen...",
-    "completedMessage": "Je hebt de {{workoutName}} workout voltooid",
-    "completedSummary": "Workout voltooid: {{workoutName}}",
-    "caloriesBurned": "Verbrande calorieën"
+    "totalTime": "Tiempo total",
+    "volume": "Volumen",
+    "duration": "Duración",
+    "personalRecords": "Récords personales",
+    "newPRs": "Nuevos RPs",
+    "goHome": "Ir a Inicio",
+    "youCrushedIt": "¡Lo lograste!",
+    "feedbackSubmitted": "Comentarios del entrenamiento enviados con éxito.",
+    "shareText": "¡Acabo de machacar un entrenamiento!",
+    "shareSummary": "Compartir resumen",
+    "workoutCompleted": "¡Entrenamiento completado!",
+    "viewDetails": "Ver detalles",
+    "getFeedback": "Obtener comentarios IA",
+    "gettingFeedback": "Obteniendo comentarios...",
+    "completedMessage": "Has completado el entrenamiento {{workoutName}}",
+    "completedSummary": "Entrenamiento completado: {{workoutName}}",
+    "caloriesBurned": "Calorías quemadas"
   }
 }

@@ -1,65 +1,65 @@
 {
   "meals": {
-    "title": "Mijn maaltijden",
+    "title": "Mis comidas",
     "filters": {
-      "all": "Alle",
-      "highProtein": "Eiwitrijk",
-      "breakfast": "Ontbijt",
-      "lunch": "Lunch"
+      "all": "Todas",
+      "highProtein": "Alta en proteína",
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo"
     },
     "tags": {
-      "highProtein": "Eiwitrijk",
-      "ketoFriendly": "Keto-vriendelijk",
-      "vegetarian": "Vegetarisch",
-      "breakfast": "Ontbijt",
-      "lunch": "Lunch",
-      "dinner": "Diner",
-      "snack": "Snack"
+      "highProtein": "Alta en proteína",
+      "ketoFriendly": "Apto para Keto",
+      "vegetarian": "Vegetariano",
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo",
+      "dinner": "Cena",
+      "snack": "Merienda"
     },
     "chatMealCard": {
-      "mealCount_one": "{{count}} maaltijd",
-      "mealCount_other": "{{count}} maaltijden",
-      "view": "Bekijken",
-      "viewBreakfast": "Ontbijt bekijken",
-      "viewLunch": "Lunch bekijken",
-      "viewDinner": "Diner bekijken",
-      "viewSnack": "Snack bekijken",
-      "tracked": "Bijgehouden"
+      "mealCount_one": "{{count}} comida",
+      "mealCount_other": "{{count}} comidas",
+      "view": "Ver",
+      "viewBreakfast": "Ver desayuno",
+      "viewLunch": "Ver almuerzo",
+      "viewDinner": "Ver cena",
+      "viewSnack": "Ver merienda",
+      "tracked": "Registrado"
     },
-    "untitledMeal": "Naamloze maaltijd",
-    "searchPlaceholder": "Maaltijden zoeken...",
-    "loadingMeals": "Maaltijden laden...",
-    "noMealsFound": "Geen maaltijden gevonden",
-    "noMealsYet": "Nog geen maaltijden",
-    "noMealsMatch": "Geen maaltijden die overeenkomen met \"{{query}}\"",
-    "createFirstMeal": "Maak je eerste maaltijd om aan de slag te gaan",
-    "tryDifferentFilter": "Probeer een ander filter",
-    "loadingMore": "Meer laden...",
-    "loadMore": "Meer laden",
-    "customMeal": "Aangepaste maaltijd",
-    "createdByYou": "Door jou gemaakt",
-    "logMeal": "Maaltijd loggen",
-    "mealType": "Maaltijdtype",
+    "untitledMeal": "Comida sin título",
+    "searchPlaceholder": "Buscar comidas...",
+    "loadingMeals": "Cargando comidas...",
+    "noMealsFound": "No se encontraron comidas",
+    "noMealsYet": "Aún no hay comidas",
+    "noMealsMatch": "Ninguna comida coincide con \"{{query}}\"",
+    "createFirstMeal": "Crea tu primera comida para empezar",
+    "tryDifferentFilter": "Prueba con un filtro diferente",
+    "loadingMore": "Cargando más...",
+    "loadMore": "Cargar más",
+    "customMeal": "Comida personalizada",
+    "createdByYou": "Creado por ti",
+    "logMeal": "Registrar comida",
+    "mealType": "Tipo de comida",
     "history": {
-      "unknownMeal": "Onbekende maaltijd"
+      "unknownMeal": "Comida desconocida"
     },
     "deleteItem": {
-      "title": "Item verwijderen",
-      "message": "Weet je zeker dat je dit item wilt verwijderen?",
-      "cancel": "Annuleren",
-      "delete": "Verwijderen"
+      "title": "Eliminar elemento",
+      "message": "¿Estás seguro de que quieres eliminar este elemento?",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
     },
-    "unknownFood": "Onbekend",
+    "unknownFood": "Desconocido",
     "generateAI": {
-      "title": "Maaltijden genereren met AI",
-      "describeLabel": "BESCHRIJF JE VOORKEUREN",
-      "preferencesLabel": "Voorkeuren",
-      "placeholder": "bijv. Eiwitrijke maaltijden voor spieropbouw, ik heb voorkeur voor kip en rijst, vermijd zuivel...",
-      "applyLabel": "Maaltijden genereren",
-      "successMessage": "Maaltijd succesvol gemaakt!",
-      "errorMessage": "Kon geen maaltijden genereren. Probeer het opnieuw.",
-      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
-      "generating": "Maaltijden genereren..."
+      "title": "Generar comidas con IA",
+      "describeLabel": "DESCRIBE TUS PREFERENCIAS",
+      "preferencesLabel": "Preferencias",
+      "placeholder": "ej. Comidas ricas en proteínas para ganar músculo, prefiero pollo y arroz, evita los lácteos...",
+      "applyLabel": "Generar comidas",
+      "successMessage": "¡Comida creada con éxito!",
+      "errorMessage": "No se pudieron generar las comidas. Por favor, inténtalo de nuevo.",
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
+      "generating": "Generando comidas..."
     }
   }
 }

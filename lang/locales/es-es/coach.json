@@ -1,112 +1,112 @@
 {
   "coach": {
     "title": "Chat",
-    "you": "Jij",
+    "you": "Tú",
     "name": "Loggy",
-    "status": "Online",
-    "statusOffline": "Offline",
+    "status": "En línea",
+    "statusOffline": "Desconectado",
     "context": {
-      "general": "Algemeen",
+      "general": "General",
       "exercise": "Fitness",
-      "nutrition": "Voeding"
+      "nutrition": "Nutrición"
     },
-    "placeholder": "Typ een bericht...",
-    "todayAt": "Vandaag, {{time}}",
-    "imageSent": "Afbeelding verzonden",
+    "placeholder": "Escribe un mensaje...",
+    "todayAt": "Hoy a las {{time}}",
+    "imageSent": "Envió una imagen",
     "actions": {
-      "createWorkout": "Workout maken",
-      "analyzeProgress": "Voortgang analyseren",
-      "nutritionCheck": "Voedingscheck",
-      "trackMeal": "Maaltijd bijhouden",
-      "workoutGen": "Workout Gen.",
-      "mealPlan": "Maaltijdplan"
+      "createWorkout": "Crear entrenamiento",
+      "analyzeProgress": "Analizar progreso",
+      "nutritionCheck": "Control nutricional",
+      "trackMeal": "Registrar comida",
+      "workoutGen": "Gen. de entr.",
+      "mealPlan": "Plan de comidas"
     },
-    "workoutGenerationPrompt": "Ik kan je helpen bij het maken van een persoonlijk workoutplan! Vertel me over je doelen, beschikbare apparatuur en hoeveel dagen per week je wilt trainen.",
-    "mealPlanPrompt": "Ik kan je helpen bij het maken van een persoonlijk maaltijdplan voor 3 dagen! Vertel me over je voorkeuren, allergieën of specifieke voedingsmiddelen die je wilt toevoegen.",
-    "analyzeProgressPrompt": "Ik analyseer je recente workouts. Zijn er opmerkingen die je wilt delen voordat ik begin?",
-    "nutritionCheckPrompt": "Ik bekijk je voeding van de afgelopen 7 dagen. Zijn er opmerkingen die je wilt toevoegen voordat ik begin?",
-    "trackMealPrompt": "Vertel me wat je hebt gegeten (je kunt zelfs een foto sturen!), en ik zal de macro's schatten en het voor je bijhouden.",
-    "welcomeMessage": "Hello. Mijn naam is Loggy, ik ben je AI Fitness Coach. Ik ben hier om je te helpen je fitnessdoelen te bereiken, je voortgang bij te houden en gepersonaliseerde begeleiding te bieden. Voel je vrij om me alles te vragen over workouts, voeding of je fitnessreis!",
-    "welcomeMessageExercise": "Hallo! Ik ben Loggy. Ik ben hier om je te helpen met je training, of het nu gaat om het maken van een nieuw workoutplan, het controleren van je vorm of het analyseren van je voortgang. Wat staat er vandaag op je trainingsschema?",
-    "welcomeMessageNutrition": "Hoi! Ik ben Loggy. Ik kan je helpen om op de hoogte te blijven van je voeding door je maaltijden bij te houden, macro's te schatten en voedingsinzichten te geven. Vertel me over je recente maaltijden of stel me voedingsvragen!",
+    "workoutGenerationPrompt": "¡Puedo ayudarte a crear un plan de entrenamiento personalizado! Cuéntame sobre tus objetivos, equipo disponible y cuántos días a la semana te gustaría entrenar.",
+    "mealPlanPrompt": "¡Puedo ayudarte a crear un plan de comidas personalizado para 3 días! Cuéntame tus preferencias, alergias o cualquier alimento específico que te gustaría incluir.",
+    "analyzeProgressPrompt": "Analizaré tus entrenamientos recientes. ¿Algún comentario que quieras decirme antes de que lo haga?",
+    "nutritionCheckPrompt": "Revisaré tu nutrición de los últimos 7 días. ¿Algún comentario que quieras añadir antes de que lo haga?",
+    "trackMealPrompt": "Dime qué has comido (¡incluso puedes enviar una foto!) y estimaré los macros y lo registraré por ti.",
+    "welcomeMessage": "Hola. Mi nombre es Loggy, soy tu entrenador personal de IA. Estoy aquí para ayudarte a lograr tus objetivos de fitness, seguir tu progreso y brindarte orientación personalizada. ¡No dudes en preguntarme cualquier cosa sobre entrenamientos, nutrición o tu viaje de fitness!",
+    "welcomeMessageExercise": "¡Hola! Soy Loggy. Estoy aquí para ayudarte con tu entrenamiento, ya sea creando un nuevo plan de ejercicios, revisando tu técnica o analizando tu progreso. ¿Qué hay en tu horario de entrenamiento hoy?",
+    "welcomeMessageNutrition": "¡Hola! Soy Loggy. Puedo ayudarte a mantenerte al tanto de tu nutrición registrando tus comidas, estimando macros y brindándote información dietética. ¡Háblame de tus comidas recientes o hazme cualquier pregunta sobre nutrición!",
     "insights": {
-      "noNutritionLogs": "Ik kan geen voedingsinzichten geven omdat je de afgelopen 7 dagen geen maaltijden hebt bijgehouden. Begin met het loggen van je eten om persoonlijke feedback te krijgen!",
-      "noWorkoutLogs": "Ik kan geen workout-inzichten geven omdat je de afgelopen 7 dagen geen workouts hebt voltooid. Kom in beweging en ik sta klaar om je training te analyseren!"
+      "noNutritionLogs": "No puedo brindarte información nutricional porque no has registrado ninguna comida en los últimos 7 días. ¡Comienza a registrar tus alimentos para obtener comentarios de nutrición personalizados!",
+      "noWorkoutLogs": "No puedo brindarte información sobre tus entrenamientos porque no has completado ninguno en los últimos 7 días. ¡Ponte en movimiento y estaré listo para analizar tu entrenamiento!"
     },
     "errors": {
-      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen.",
-      "workoutGenerationFailed": "Sorry, ik kon geen workoutplan genereren. Probeer het opnieuw.",
-      "mealPlanGenerationFailed": "Sorry, ik kon geen maaltijdplan genereren. Probeer het opnieuw.",
-      "generalError": "Sorry, er is iets misgegaan. Probeer het opnieuw.",
-      "progressInsightFailed": "Kon voortgang niet analyseren. Probeer het later opnieuw.",
-      "nutritionInsightFailed": "Kon voeding niet controleren. Probeer het later opnieuw.",
-      "trackMealFailed": "Ik kon de macro's voor die maaltijd niet schatten. Kun je het in meer detail beschrijven?",
-      "filePickFailed": "Bestand kiezen mislukt. Probeer het opnieuw.",
-      "creditsExhausted": "Het lijkt erop dat je AI-tegoed op is. Controleer je API-sleutel of facturering bij de Instellingen.",
-      "rateLimited": "Wacht een moment voordat je nog een bericht stuurt."
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
+      "workoutGenerationFailed": "Lo siento, no pude generar un plan de entrenamiento. Por favor, inténtalo de nuevo.",
+      "mealPlanGenerationFailed": "Lo siento, no pude generar un plan de comidas. Por favor, inténtalo de nuevo.",
+      "generalError": "Lo siento, algo salió mal. Por favor, inténtalo de nuevo.",
+      "progressInsightFailed": "No se pudo analizar el progreso. Inténtalo de nuevo más tarde.",
+      "nutritionInsightFailed": "No se pudo comprobar la nutrición. Inténtalo de nuevo más tarde.",
+      "trackMealFailed": "No pude estimar los macros para esa comida. ¿Podrías describirla con más detalle?",
+      "filePickFailed": "Error al elegir el archivo. Por favor, inténtalo de nuevo.",
+      "creditsExhausted": "Parece que tus créditos de IA se han agotado. Por favor, comprueba tu clave API o facturación en Ajustes.",
+      "rateLimited": "Por favor, espera un momento antes de enviar otro mensaje."
     },
-    "goToSettings": "Ga naar Instellingen",
+    "goToSettings": "Ir a Ajustes",
     "success": {
-      "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}}",
-      "mealPlanGenerated": "Ik heb een maaltijdplan van 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}}",
-      "trackMealSuccess": "Ik heb {{count}} ingrediënten bijgehouden voor je maaltijd: {{ingredients}}. Totaal: {{calories}} kcal.",
-      "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}} kcal). Tik op een maaltijd om deze te bekijken en te loggen!",
-      "historyCleared": "Chatgeschiedenis gewist."
+      "workoutPlanGenerated": "¡He creado {{count}} entrenamientos para ti! 💪 {{description}}",
+      "mealPlanGenerated": "¡He creado un plan de comidas de 3 días con {{count}} comidas para ti! 🥗 {{description}}",
+      "trackMealSuccess": "He registrado {{count}} ingredientes para tu comida: {{ingredients}}. Total: {{calories}} kcal.",
+      "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). ¡Toca una comida para revisarla y registrarla!",
+      "historyCleared": "Historial de chat borrado."
     },
     "aiInstructions": {
-      "parseWorkouts": "Parse de workouts en geef de gestructureerde lijst terug.",
-      "parseNutrition": "Parse de voedingsgegevens en geef de gestructureerde lijst terug.",
-      "parseRetrospectiveNutrition": "Parse de maaltijden en geef de gestructureerde lijst terug.",
-      "generateWorkoutPlanWithHistory": "Genereer een workoutplan op basis van dit gesprek.",
-      "generateWorkoutPlanDefault": "Genereer een eenvoudig wekelijks workoutplan (bijv. 3-daagse split)."
+      "parseWorkouts": "Analiza los entrenamientos y devuelve la lista estructurada.",
+      "parseNutrition": "Analiza los datos de nutrición y devuelve la lista estructurada.",
+      "parseRetrospectiveNutrition": "Analiza las comidas y devuelve la lista estructurada.",
+      "generateWorkoutPlanWithHistory": "Genera un plan de entrenamiento basado en esta conversación.",
+      "generateWorkoutPlanDefault": "Genera un plan de entrenamiento semanal básico (por ejemplo, rutina dividida de 3 días)."
     },
     "chatMessages": {
-      "title": "Chatberichten",
-      "searchPlaceholder": "Berichten zoeken...",
-      "noMessages": "Nog geen berichten",
-      "noMessagesDesc": "Start een gesprek met Loggy",
-      "endOfHistory": "Alle berichten geladen",
-      "messageOptions": "Berichtopties",
-      "editMessage": "Bericht bewerken",
-      "editMessageDesc": "Wijzig de berichttekst",
-      "deleteMessage": "Bericht verwijderen",
-      "deleteMessageDesc": "Verwijder dit bericht definitief",
-      "createMessage": "Bericht maken",
-      "createMessageDesc": "Voeg een nieuw bericht toe aan de geschiedenis",
-      "createMessageFailed": "Bericht maken mislukt",
-      "sender": "Afzender",
-      "senderUser": "Gebruiker",
-      "senderCoach": "Coach"
+      "title": "Mensajes de chat",
+      "searchPlaceholder": "Buscar mensajes...",
+      "noMessages": "Aún no hay mensajes",
+      "noMessagesDesc": "Inicia una conversación con Loggy",
+      "endOfHistory": "Todos los mensajes cargados",
+      "messageOptions": "Opciones de mensaje",
+      "editMessage": "Editar mensaje",
+      "editMessageDesc": "Cambiar el texto del mensaje",
+      "deleteMessage": "Eliminar mensaje",
+      "deleteMessageDesc": "Eliminar permanentemente este mensaje",
+      "createMessage": "Crear mensaje",
+      "createMessageDesc": "Añadir un nuevo mensaje al historial" ,
+      "createMessageFailed": "Error al crear el mensaje",
+      "sender": "Remitente",
+      "senderUser": "Usuario",
+      "senderCoach": "Entrenador"
     },
     "menu": {
-      "title": "Chatopties",
-      "clearHistory": "Chatgeschiedenis wissen",
-      "clearHistoryDesc": "Verwijder alle berichten in deze gesprekcontext.",
-      "shareHistory": "Chatgeschiedenis delen",
-      "shareHistoryDesc": "Exporteer dit hele gesprek als platte tekst."
+      "title": "Opciones de chat",
+      "clearHistory": "Borrar historial de chat",
+      "clearHistoryDesc": "Eliminar todos los mensajes en este contexto de conversación.",
+      "shareHistory": "Compartir historial de chat",
+      "shareHistoryDesc": "Exportar toda esta conversación como texto plano."
     },
     "confirmClear": {
-      "title": "Chatgeschiedenis wissen?",
-      "message": "Dit verwijdert permanent alle berichten in deze gesprekcontext. Dit kan niet ongedaan worden gemaakt."
+      "title": "¿Borrar historial de chat?",
+      "message": "Esto eliminará permanentemente todos los mensajes en este contexto de conversación. Esto no se puede deshacer."
     },
     "share": {
-      "title": "Chat met Loggy",
-      "noMessages": "Er is nog geen chatgeschiedenis om te delen.",
-      "failed": "Delen van chatgeschiedenis mislukt. Probeer het opnieuw.",
+      "title": "Chat con Loggy",
+      "noMessages": "Aún no hay historial de chat para compartir.",
+      "failed": "Error al compartir el historial de chat. Por favor, inténtalo de nuevo.",
       "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
-    "disclaimer": "AI kan fouten maken. Controleer belangrijke informatie.",
+    "disclaimer": "La IA puede cometer errores. Por favor, verifica la información importante.",
     "message": {
-      "menuTitle": "Berichtacties",
-      "copy": "Kopiëren",
-      "copyDesc": "Kopieer berichttekst naar klembord",
-      "share": "Delen",
-      "shareDesc": "Deel dit bericht",
-      "delete": "Verwijderen",
-      "deleteDesc": "Verwijder dit bericht uit het gesprek",
-      "copied": "Bericht gekopieerd naar klembord",
-      "deleted": "Bericht verwijderd"
+      "menuTitle": "Acciones del mensaje",
+      "copy": "Copiar",
+      "copyDesc": "Copiar el texto del mensaje al portapapeles",
+      "share": "Compartir",
+      "shareDesc": "Compartir este mensaje",
+      "delete": "Eliminar",
+      "deleteDesc": "Eliminar este mensaje de la conversación",
+      "copied": "Mensaje copiado al portapapeles",
+      "deleted": "Mensaje eliminado"
     },
-    "sendViaOpenAI": "Verzenden via OpenAI"
+    "sendViaOpenAI": "Enviar por OpenAI"
   }
 }

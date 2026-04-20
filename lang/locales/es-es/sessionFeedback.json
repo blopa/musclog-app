@@ -1,16 +1,16 @@
 {
   "sessionFeedback": {
-    "title": "Sessie-feedback",
-    "subtitle": "Beoordeel je prestatie",
-    "difficulty": "Moeilijkheidsgraad",
-    "exhaustion": "Uitputting",
-    "enjoyment": "Plezier",
-    "easy": "Makkelijk",
-    "extreme": "Extreem",
-    "fresh": "Fit",
-    "drained": "Uitgeput",
-    "disliked": "Niet leuk",
-    "loved": "Geweldig",
-    "submit": "FEEDBACK VERZENDEN"
+    "title": "Comentarios de la sesión",
+    "subtitle": "Califica tu rendimiento",
+    "difficulty": "Dificultad",
+    "exhaustion": "Agotamiento",
+    "enjoyment": "Disfrute",
+    "easy": "Fácil",
+    "extreme": "Extrema",
+    "fresh": "Fresco",
+    "drained": "Agotado",
+    "disliked": "No me gustó",
+    "loved": "Me encantó",
+    "submit": "ENVIAR COMENTARIOS"
   }
 }

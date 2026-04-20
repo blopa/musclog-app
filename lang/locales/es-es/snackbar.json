@@ -1,25 +1,25 @@
 {
   "snackbar": {
-    "view": "BEKIJKEN",
-    "retry": "OPNIEUW",
+    "view": "VER",
+    "retry": "REINTENTAR",
     "ok": "OK",
-    "syncedRecords_one": "{{count}} gezondheidsrecord gesynchroniseerd.",
-    "syncedRecords_other": "{{count}} gezondheidsrecords gesynchroniseerd.",
-    "noNewData": "Geen nieuwe gegevens om te synchroniseren.",
-    "failedToEnableSync": "Inschakelen van Health Connect-sync mislukt.",
-    "failedToDisableSync": "Uitschakelen van Health Connect-sync mislukt.",
-    "syncDisabledMessage": "Health Connect-sync is uitgeschakeld.",
+    "syncedRecords_one": "Se sincronizó {{count}} registro de salud.",
+    "syncedRecords_other": "Se sincronizaron {{count}} registros de salud.",
+    "noNewData": "No hay datos nuevos para sincronizar.",
+    "failedToEnableSync": "Error al activar la sincronización de Health Connect.",
+    "failedToDisableSync": "Error al desactivar la sincronización de Health Connect.",
+    "syncDisabledMessage": "La sincronización de Health Connect ha sido desactivada.",
     "healthConnect": {
-      "noPermissionsGranted": "Geen Health Connect-machtigingen verleend",
-      "sdkNotAvailable": "Health Connect is niet beschikbaar op dit apparaat. Installeer het via de Play Store.",
-      "permissionDenied": "Health Connect-machtigingen zijn geweigerd. Verleen machtigingen om gezondheidsgegevens te synchroniseren.",
-      "permissionRevoked": "Health Connect-machtigingen zijn ingetrokken. Schakel ze opnieuw in bij de instellingen.",
-      "offline": "Geen internetverbinding. Gezondheidsgegevens worden gesynchroniseerd zodra je weer online bent.",
-      "syncConflict": "Conflict in gezondheidsgegevens gedetecteerd. De meest recente gegevens worden gebruikt.",
-      "invalidValueRange": "Ongeldige waarde voor gezondheidsgegevens. Controleer je invoer.",
-      "rateLimitExceeded": "Te veel verzoeken. Wacht even en probeer het opnieuw.",
-      "syncInProgress": "Synchronisatie is al bezig. Wacht tot deze is voltooid.",
-      "unknownError": "Er is een fout opgetreden bij het synchroniseren van gezondheidsgegevens. Probeer het opnieuw."
+      "noPermissionsGranted": "No se concedieron permisos de Health Connect",
+      "sdkNotAvailable": "Health Connect no está disponible en este dispositivo. Por favor, instálalo desde la Play Store.",
+      "permissionDenied": "Se denegaron los permisos de Health Connect. Por favor, concédelos para sincronizar tus datos de salud.",
+      "permissionRevoked": "Los permisos de Health Connect fueron revocados. Por favor, actívalos de nuevo en ajustes.",
+      "offline": "Sin conexión a internet. Los datos de salud se sincronizarán cuando vuelvas a estar en línea.",
+      "syncConflict": "Conflicto de datos de salud detectado. Usando los datos más recientes.",
+      "invalidValueRange": "Valor de datos de salud inválido. Por favor, comprueba tu entrada.",
+      "rateLimitExceeded": "Demasiadas peticiones. Por favor, espera un momento e inténtalo de nuevo.",
+      "syncInProgress": "Sincronización ya en curso. Por favor, espera a que termine.",
+      "unknownError": "Ocurrió un error al sincronizar los datos de salud. Por favor, inténtalo de nuevo."
     }
   }
 }

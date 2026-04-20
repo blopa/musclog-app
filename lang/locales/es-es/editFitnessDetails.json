@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Fitnessgegevens bewerken",
-    "units": "Eenheden",
-    "imperial": "Imperiaal",
-    "metric": "Metrisch",
-    "bodyStats": "Lichaamsgegevens",
-    "gender": "Geslacht",
-    "male": "Man",
-    "female": "Vrouw",
-    "other": "Anders",
-    "currentWeight": "Huidig gewicht",
-    "height": "Lengte",
-    "fatPercentage": "Vetpercentage",
-    "fatPercentageNotSet": "Niet ingesteld — tik om in te voeren",
-    "goalsStrategy": "Doelen & Strategie",
-    "fitnessGoal": "Fitnessdoel",
-    "eatingPhase": "Eetfase",
-    "cut": "Droogtrainen",
-    "maintain": "Onderhoud",
-    "bulk": "Bulken",
-    "lifestyleContext": "Levensstijl",
-    "activityLevel": "Activiteitsniveau",
-    "liftingExperience": "Trainingservaring",
-    "saveChanges": "Wijzigingen opslaan",
-    "selectGoal": "Selecteer fitnessdoel",
-    "selectGoalSubtitle": "Kies het doel dat het beste bij je training past",
-    "selectActivity": "Selecteer activiteitsniveau",
-    "selectActivitySubtitle": "Kies op basis van je hele dag, niet alleen je workouts",
+    "title": "Editar detalles de fitness",
+    "units": "Unidades",
+    "imperial": "Imperial",
+    "metric": "Métrico",
+    "bodyStats": "Estadísticas corporales",
+    "gender": "Género",
+    "male": "Hombre",
+    "female": "Mujer",
+    "other": "Otro",
+    "currentWeight": "Peso actual",
+    "height": "Altura",
+    "fatPercentage": "Porcentaje de grasa corporal",
+    "fatPercentageNotSet": "No establecido — toca para introducir",
+    "goalsStrategy": "Objetivos y estrategia",
+    "fitnessGoal": "Objetivo de fitness",
+    "eatingPhase": "Fase de alimentación",
+    "cut": "Definición",
+    "maintain": "Mantenimiento",
+    "bulk": "Volumen",
+    "lifestyleContext": "Contexto de estilo de vida",
+    "activityLevel": "Nivel de actividad",
+    "liftingExperience": "Experiencia en pesas",
+    "saveChanges": "Guardar cambios",
+    "selectGoal": "Seleccionar objetivo de fitness",
+    "selectGoalSubtitle": "Elige el objetivo que mejor se adapte a tu entrenamiento",
+    "selectActivity": "Seleccionar nivel de actividad",
+    "selectActivitySubtitle": "Elige basándote en todo tu día, no solo en los entrenamientos",
     "activityLevelLabels": {
-      "sedentary": "Inactief",
-      "light": "Licht actief",
-      "moderate": "Gemiddeld actief",
-      "active": "Actief",
-      "superActive": "Zeer actief"
+      "sedentary": "Sedentario",
+      "light": "Ligero",
+      "moderate": "Moderado",
+      "active": "Activo",
+      "superActive": "Súper activo"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Zittend werk, minder dan 5.000 stappen per dag, geen regelmatige lichaamsbeweging",
-      "light": "Zittend werk. Sportschool of lichte inspanning 2–4×/week, maar verder weinig beweging. De meeste kantoormedewerkers vallen hieronder",
-      "moderate": "Veel op de been (docent, winkel, zorg) EN 3–5×/week sporten, of 7.500–10.000+ stappen per dag",
-      "active": "Fysiek veeleisend werk (bouw, zorg) of dagelijkse intensieve training met veel beweging gedurende de dag",
-      "superActive": "Zwaar fysiek werk (constructie, landbouw, leger) plus regelmatige training — de hele dag zwaar in beweging"
+      "sedentary": "Trabajo de escritorio o sentado, menos de 5,000 pasos al día, sin ejercicio regular",
+      "light": "Trabajo de escritorio o mayormente sentado. Gimnasio o ejercicio ligero 2–4 veces/semana pero poco movimiento por lo demás. La mayoría de los oficinistas que hacen ejercicio entran aquí",
+      "moderate": "De pie gran parte del día (profesor, comercio, enfermería) Y ejercicio 3–5 veces/semana, o 7,500–10,000+ pasos al día",
+      "active": "Trabajo físicamente exigente (oficios, atención médica) o entrenamiento diario intenso con mucho movimiento todo el día",
+      "superActive": "Trabajo físico duro (construcción, agricultura, militar) más entrenamiento regular — movimiento intenso la mayor parte del día"
     },
-    "weightGoal": "Jouw doel",
+    "weightGoal": "Tu objetivo",
     "weightGoalLabels": {
-      "lose": "Afvallen",
-      "maintain": "Gewicht behouden",
-      "gain": "Spieren opbouwen"
+      "lose": "Perder peso",
+      "maintain": "Mantener",
+      "gain": "Ganar músculo"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrofie (spieropbouw)",
-      "strength": "Kracht (zwaarder tillen)",
-      "endurance": "Uithoudingsvermogen",
-      "weightLoss": "Gewichtsverlies (vet verbranden)",
-      "general": "Algemene fitness"
+      "hypertrophy": "Hipertrofia (Ganar músculo)",
+      "strength": "Fuerza (Levantar más pesado)",
+      "endurance": "Resistencia (Estamina)",
+      "weightLoss": "Pérdida de peso (Quemar grasa)",
+      "general": "Fitness general"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus op spiergrootte en definitie",
-      "strength": "Focus op maximale kracht en power",
-      "endurance": "Focus op cardiovasculaire conditie",
-      "weightLoss": "Focus op vetverlies en strakker worden",
-      "general": "Behoud van algemene gezondheid en welzijn"
+      "hypertrophy": "Enfoque en tamaño y definición muscular",
+      "strength": "Enfoque en fuerza y potencia máximas",
+      "endurance": "Enfoque en condición cardiovascular",
+      "weightLoss": "Enfoque en pérdida de grasa y tonificación",
+      "general": "Mantener la salud y el bienestar general"
     },
     "experienceLabels": {
-      "beginner": "Beginner",
-      "intermediate": "Gevorderd",
-      "advanced": "Expert"
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
     },
     "experienceDescriptions": {
-      "beginner": "Nieuw met consequente training. Nog bezig met het leren van bewegingen en maakt wekelijks snel krachtwinst",
-      "intermediate": "Vertrouwd met de belangrijkste oefeningen. Traint 1–3 jaar consequent, vooruitgang komt eerder maandelijks dan wekelijks",
-      "advanced": "3+ jaar gestructureerde, consequente training. Vooruitgang is traag en zwaarbevochten — dicht bij je krachtpotentieel"
+      "beginner": "Nuevo en el entrenamiento constante. Aún aprendiendo movimientos y ganando fuerza rápidamente semana a semana",
+      "intermediate": "Cómodo con los levantamientos principales. Entrenando constantemente por 1–3 años, el progreso llega mensualmente en lugar de semanalmente",
+      "advanced": "Más de 3 años de entrenamiento estructurado y constante. El progreso es lento y se gana con esfuerzo — cerca de tu potencial de fuerza"
     }
   }
 }

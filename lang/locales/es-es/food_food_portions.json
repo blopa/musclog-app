@@ -1,10 +1,10 @@
 {
-  "food_food_portions": "Item Porties",
-  "createPortion": "Portie maken",
-  "createFoodPortion": "Item-portie maken",
-  "portionName": "Portienaam",
-  "portionNamePlaceholder": "bijv. Kopje, Sneetje, Stuk",
-  "weightGrams": "Gewicht (gram)",
-  "selectIcon": "Icoon selecteren",
-  "chooseIcon": "Icoon kiezen"
+  "food_food_portions": "Porciones de alimentos",
+  "createPortion": "Crear porción",
+  "createFoodPortion": "Crear porción de alimento",
+  "portionName": "Nombre de la porción",
+  "portionNamePlaceholder": "ej., Taza, Rebanada, Pieza",
+  "weightGrams": "Peso (gramos)",
+  "selectIcon": "Seleccionar icono",
+  "chooseIcon": "Elegir icono"
 }

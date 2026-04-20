@@ -1,72 +1,72 @@
 {
   "notifications": {
     "header": {
-      "title": "Meldingen",
-      "clearAll": "ALLES WISSEN"
+      "title": "Notificaciones",
+      "clearAll": "BORRAR TODO"
     },
     "sections": {
-      "today": "VANDAAG",
-      "yesterday": "GISTEREN",
-      "earlier": "EERDER"
+      "today": "HOY",
+      "yesterday": "AYER",
+      "earlier": "ANTES"
     },
     "channels": {
-      "default": "Standaard",
-      "activeWorkout": "Actieve Workout"
+      "default": "Predeterminado",
+      "activeWorkout": "Entrenamiento activo"
     },
-    "startNow": "Nu starten",
+    "startNow": "Empezar ahora",
     "types": {
       "aiInsight": {
-        "title": "AI-inzicht",
-        "description": "Op basis van je recente trainingen, probeer vandaag je eiwitinname met 15g te verhogen voor optimaal herstel."
+        "title": "Información de IA",
+        "description": "Basado en tus levantamientos recientes, intenta aumentar tu ingesta de proteínas en 15g hoy para una recuperación óptima."
       },
       "workoutReminder": {
-        "title": "Workout-herinnering",
-        "description": "Klaar voor {{workoutName}}? Gepland voor {{time}} vandaag."
+        "title": "Recordatorio de entrenamiento",
+        "description": "¿Listo para {{workoutName}}? Programado para hoy a las {{time}}."
       },
       "workoutCompleted": {
-        "title": "Workout voltooid!",
-        "description": "Goed gedaan met het voltooien van {{workoutName}}. Je hebt {{calories}} kcal verbrand."
+        "title": "¡Entrenamiento completado!",
+        "description": "Buen trabajo machacando {{workoutName}}. Quemaste {{calories}} kcal."
       },
       "kudosReceived": {
-        "title": "Kudo's ontvangen",
-        "description": "{{name}} en {{count}} anderen vonden je recente mijlpaal leuk: \"{{milestone}}\""
+        "title": "Elogio recibido",
+        "description": "A {{name}} y a {{count}} personas más les gustó tu reciente hito: \"{{milestone}}\""
       },
       "weeklyReport": {
-        "title": "Wekelijks rapport staat klaar",
-        "description": "Je voortgangsrapport van vorige week is beschikbaar. Bekijk je statistieken."
+        "title": "Informe semanal listo",
+        "description": "Tu informe de progreso de la semana pasada está disponible. Revisa tus estadísticas."
       },
       "activeWorkout": {
-        "title": "Workout: {{workoutName}}",
+        "title": "Entrenamiento: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}"
       },
       "workoutReminderMorning": {
-        "title": "Workout-herinnering",
-        "body": "Klaar om vandaag je {{workoutName}} workout te knallen??"
+        "title": "Recordatorio de entrenamiento",
+        "body": "¿Listo para machacar hoy tu entrenamiento {{workoutName}}?"
       },
       "nutritionOverview": {
-        "title": "Dagelijks voedingsoverzicht",
-        "body": "Bekijk hoe je voeding vandaag overeenkwam met je doelen!"
+        "title": "Resumen nutricional diario",
+        "body": "¡Mira cómo se alineó tu nutrición con tus objetivos hoy!"
       },
       "nutritionCheckin": {
-        "title": "Wekelijkse voortgangscontrole",
-        "body": "Het is tijd voor je wekelijkse voedingscheck! Laten we kijken hoe je het hebt gedaan."
+        "title": "Control de progreso semanal",
+        "body": "¡Es hora de tu control nutricional semanal! Veamos cómo te ha ido."
       },
       "periodPrediction": {
-        "title": "Menstruatievoorspelling",
-        "body": "Je menstruatie begint naar verwachting over 2 dagen. Wees voorbereid!"
+        "title": "Predicción del periodo",
+        "body": "Se predice que tu periodo empezará en 2 días. ¡Prepárate!"
       },
       "fertileWindow": {
-        "title": "Vruchtbare periode",
-        "body": "Je vruchtbare periode begint! Handig voor het bijhouden van je energieniveaus."
+        "title": "Ventana fértil",
+        "body": "¡Tu ventana fértil está empezando! Útil para seguir tus niveles de energía."
       },
       "restTimerAlert": {
-        "title": "Rust voorbij - weer aan de slag!",
-        "body": "Je rustperiode is voorbij. Tijd voor de volgende set!"
+        "title": "Descanso terminado - ¡Vuelve al trabajo!",
+        "body": "Tu periodo de descanso ha terminado. ¡Es hora de machacar la siguiente serie!"
       },
       "workoutDurationWarning": {
-        "title": "Nog steeds aan het trainen?",
-        "body": "Je sessie is al 5 uur bezig. Vergeet niet om deze te beëindigen in Musclog!"
+        "title": "¿Sigues entrenando?",
+        "body": "Tu sesión lleva en curso 5 horas. ¡No olvides terminarla en Musclog!"
       }
     }
   }

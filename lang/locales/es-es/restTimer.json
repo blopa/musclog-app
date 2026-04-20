@@ -1,14 +1,14 @@
 {
   "restTimer": {
-    "resting": "Rusten...",
+    "resting": "Descansando...",
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
-    "skipRest": "RUST OVERSLAAN",
-    "done": "Klaar",
-    "reps": "herh",
-    "repsWithCount": "{{count}} herh",
-    "upNext": "VOLGENDE",
-    "missingWorkoutData": "Workoutgegevens ontbreken",
-    "completedSetNotFound": "Voltooide set niet gevonden"
+    "skipRest": "OMITIR DESCANSO",
+    "done": "Hecho",
+    "reps": "reps",
+    "repsWithCount": "{{count}} reps",
+    "upNext": "A CONTINUACIÓN",
+    "missingWorkoutData": "Faltan datos del entrenamiento",
+    "completedSetNotFound": "Serie completada no encontrada"
   }
 }

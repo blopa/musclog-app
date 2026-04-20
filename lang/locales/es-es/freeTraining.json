@@ -1,31 +1,31 @@
 {
   "freeTraining": {
-    "workoutName": "Vrije training",
-    "blankWorkout": "Lege workout",
-    "title": "Vrije training",
-    "titleSession": "Sessie",
-    "subtitle": "Stel je workout samen terwijl je traint. Geen sjablonen, alleen voortgang.",
-    "addFirstExercise": "EERSTE OEFENING TOEVOEGEN",
-    "tip": "Tip: Je kunt op elk moment meer oefeningen toevoegen.",
-    "startFreeTraining": "Vrije training starten",
-    "startFreeTrainingSubtitle": "Stel je workout samen terwijl je traint. Geen sjablonen, alleen voortgang.",
-    "duration": "DUUR",
-    "calories": "CALORIEËN",
-    "volume": "VOLUME",
-    "inProgress": "In uitvoering",
+    "workoutName": "Entrenamiento libre",
+    "blankWorkout": "Entrenamiento en blanco",
+    "title": "Entrenamiento libre",
+    "titleSession": "Sesión",
+    "subtitle": "Crea tu entrenamiento sobre la marcha. Sin plantillas, solo progreso.",
+    "addFirstExercise": "AÑADIR PRIMER EJERCICIO",
+    "tip": "Consejo: Puedes añadir más ejercicios en cualquier momento.",
+    "startFreeTraining": "Empezar entrenamiento libre",
+    "startFreeTrainingSubtitle": "Crea tu entrenamiento sobre la marcha. Sin plantillas, solo progreso.",
+    "duration": "DURACIÓN",
+    "calories": "CALORÍAS",
+    "volume": "VOLUMEN",
+    "inProgress": "En curso",
     "addExercise": {
-      "title": "Oefening toevoegen",
-      "numberOfSets": "AANTAL SETS",
-      "addToWorkout": "TOEVOEGEN AAN WORKOUT",
-      "menuDescription": "Voeg oefeningen en sets toe aan deze sessie"
+      "title": "Añadir ejercicio",
+      "numberOfSets": "NÚMERO DE SERIES",
+      "addToWorkout": "AÑADIR AL ENTRENAMIENTO",
+      "menuDescription": "Añadir ejercicios y series a esta sesión"
     },
     "exerciseComplete": {
-      "title": "Goed werk!",
-      "subtitle": "Oefening voltooid. Klaar voor meer?",
-      "setsCompleted": "{{count}} sets voltooid",
-      "totalVolume": "TOTAAL VOLUME",
-      "addNextExercise": "Volgende oefening toevoegen",
-      "finishWorkout": "Workout beëindigen"
+      "title": "¡Buen trabajo!",
+      "subtitle": "Ejercicio completado. ¿Listo para más?",
+      "setsCompleted": "{{count}} series completadas",
+      "totalVolume": "VOLUMEN TOTAL",
+      "addNextExercise": "Añadir siguiente ejercicio",
+      "finishWorkout": "Finalizar entrenamiento"
     }
   }
 }

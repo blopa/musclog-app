@@ -1,15 +1,15 @@
 {
   "datePicker": {
-    "cancel": "Annuleren",
-    "confirm": "Bevestigen",
-    "month": "Maand",
-    "nextMonday": "Volgende maandag",
-    "selectDate": "Selecteer datum",
-    "selectMonthYear": "Selecteer maand en jaar",
-    "today": "Vandaag",
-    "tomorrow": "Morgen",
-    "year": "Jaar",
-    "xYearsAgo": "{{count}} jaar geleden",
-    "yesterday": "Gisteren"
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "month": "Mes",
+    "nextMonday": "Próximo lunes",
+    "selectDate": "Seleccionar fecha",
+    "selectMonthYear": "Seleccionar mes y año",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "year": "Año",
+    "xYearsAgo": "hace {{count}} años",
+    "yesterday": "Ayer"
   }
 }

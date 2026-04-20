@@ -1,139 +1,139 @@
 {
   "onboarding": {
-    "skip": "Overslaan",
-    "back": "Terug",
-    "next": "Volgende",
-    "getStarted": "Aan de slag",
+    "skip": "Omitir",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "getStarted": "Empezar",
     "steps": {
       "step1": {
-        "title": "Moeiteloos bijhouden",
-        "description": "Weg met het notitieboekje. Log je sets, herhalingen en gewichten in seconden en visualiseer je krachttoename over de tijd."
+        "title": "Registro sin esfuerzo",
+        "description": "Olvida el cuaderno. Registra tus series, reps y pesos en segundos y visualiza tus ganancias de fuerza con el tiempo."
       },
       "step2": {
-        "title": "Slimme voeding",
-        "description": "Log maaltijden in seconden met AI-scanning of onze enorme database. Begrijpen wat je eet is de sleutel tot topprestaties."
+        "title": "Nutrición inteligente",
+        "description": "Registra comidas en segundos con el escaneo de IA o nuestra enorme base de datos. Entender tu combustible es la clave para el máximo rendimiento."
       },
       "step3": {
-        "title": "Eén app, totale controle",
-        "description": "Verbind de punten tussen je dieet en je trainingen. Zie precies hoe je voeding je krachttoename stimuleert met gecombineerde voortgangsgrafieken."
+        "title": "Una App, control total",
+        "description": "Conecta los puntos entre tu dieta y tus levantamientos. Mira exactamente cómo tu nutrición impulsa tus ganancias de fuerza con gráficos de progreso unificados."
       },
       "step4": {
-        "title": "Laten we het persoonlijk maken",
-        "description": "Om je reis op maat te maken en je winst met precisie bij te houden, willen we graag wat meer weten over je fitnessverleden."
+        "title": "Hagámoslo personal",
+        "description": "Para adaptar tu viaje y seguir tus ganancias con precisión, nos encantaría saber un poco más sobre tu historial de fitness."
       }
     },
     "fitnessInfo": {
-      "physicalTitle": "Lichaamsgegevens",
-      "goalsTitle": "Fitnessdoelen",
-      "maybeLater": "Misschien later",
-      "save": "Opslaan",
-      "next": "Volgende",
-      "continue": "Doorgaan",
-      "errorSaving": "Fout bij opslaan"
+      "physicalTitle": "Estadísticas corporales",
+      "goalsTitle": "Objetivos de fitness",
+      "maybeLater": "Quizás más tarde",
+      "save": "Guardar",
+      "next": "Siguiente",
+      "continue": "Continuar",
+      "errorSaving": "Error al guardar"
     },
     "personalInfo": {
-      "title": "Persoonlijke informatie instellen",
-      "errorSaving": "Fout bij opslaan",
-      "finish": "Voltooien",
-      "trackCycle": "Menstruatiecyclus bijhouden?",
-      "trackCycleDescription": "Synchroniseer je prestaties en voeding met je hormonale fasen."
+      "title": "Establecer información personal",
+      "errorSaving": "Error al guardar",
+      "finish": "Finalizar",
+      "trackCycle": "¿Seguir ciclo menstrual?",
+      "trackCycleDescription": "Sincroniza tu rendimiento y nutrición con tus fases hormonales."
     },
     "cycleSetup": {
       "anchor": {
-        "title": "Laatste menstruatie",
-        "description": "Wanneer begon je laatste menstruatie? Dit helpt ons je huidige fase te bepalen."
+        "title": "Último periodo",
+        "description": "¿Cuándo empezó tu último periodo? Esto nos ayuda a calibrar tu fase actual."
       },
       "birthControl": {
-        "title": "Hormonale anticonceptie",
-        "description": "Gebruik je momenteel hormonale anticonceptie? Dit beïnvloedt de voorspelling van je hormonale fasen.",
-        "none": "Geen",
-        "noneDescription": "Geen hormonale anticonceptie.",
-        "pill": "De pil",
-        "pillDescription": "Dagelijkse orale anticonceptiepil.",
-        "iud": "Spiraaltje",
-        "iudDescription": "Intra-uterien apparaat (hormonaal of koper).",
-        "implant": "Implantaat",
-        "implantDescription": "Subcutaan hormonaal implantaat.",
-        "other": "Anders",
-        "otherDescription": "Een andere vorm van anticonceptie."
+        "title": "Anticonceptivo hormonal",
+        "description": "¿Estás usando actualmente algún anticonceptivo hormonal? Esto afecta las predicciones de las fases hormonales.",
+        "none": "Ninguno",
+        "noneDescription": "Sin anticoncepción hormonal.",
+        "pill": "Pastilla",
+        "pillDescription": "Pastilla anticonceptiva oral diaria.",
+        "iud": "DIU",
+        "iudDescription": "Dispositivo intrauterino (hormonal o de cobre).",
+        "implant": "Implante",
+        "implantDescription": "Implante hormonal subcutáneo.",
+        "other": "Otro",
+        "otherDescription": "Otra forma de anticoncepción."
       },
       "length": {
-        "title": "Cyclusduur",
-        "description": "Hoe lang is je typische cyclus en menstruatieduur?",
-        "cycleLength": "Gemiddelde cyclusduur",
-        "periodDuration": "Gemiddelde menstruatieduur",
-        "cycleLengthLabel": "Cyclusduur",
-        "periodDurationLabel": "Menstruatieduur"
+        "title": "Duración del ciclo",
+        "description": "¿Cuál es tu duración típica de ciclo y de periodo?",
+        "cycleLength": "Duración promedio del ciclo",
+        "periodDuration": "Duración promedio del periodo",
+        "cycleLengthLabel": "Duración del ciclo",
+        "periodDurationLabel": "Duración del periodo"
       },
       "goal": {
-        "title": "Sync-doel",
-        "description": "Wat is je primaire focus voor hormonale synchronisatie?",
-        "performance": "Prestaties optimaliseren",
-        "performanceDescription": "Maximale kracht en PR-optimalisatie.",
-        "symptoms": "Symptomen beheersen",
-        "symptomsDescription": "Focus op comfort en herstel tijdens veranderingen.",
-        "energy": "Energiedips voorspellen",
-        "energyDescription": "Anticipeer op dips en pas de intensiteit aan."
+        "title": "Objetivo de sincronización",
+        "description": "¿Cuál es tu enfoque principal para la sincronización hormonal?",
+        "performance": "Optimizar rendimiento",
+        "performanceDescription": "Optimización de fuerza máxima y récords personales.",
+        "symptoms": "Gestionar síntomas",
+        "symptomsDescription": "Enfoque en la comodidad y recuperación durante los cambios.",
+        "energy": "Predecir bajones de energía",
+        "energyDescription": "Anticipar bajones y ajustar la intensidad en consecuencia."
       }
     },
     "healthConnect": {
-      "connectYour": "Verbind je",
-      "health": "Gezondheid",
-      "description": "Synchroniseer je fitnessgegevens met Musclog voor geavanceerde voortgangsbewaking en persoonlijke gezondheidsinzichten.",
+      "connectYour": "Conecta tu",
+      "health": "Salud",
+      "description": "Sincroniza tus datos de fitness con Musclog para un seguimiento avanzado del progreso e información de salud personalizada.",
       "categories": {
-        "nutrition": "Voeding",
-        "weight": "Gewicht",
-        "sleep": "Slaap",
-        "bodyComposition": "Lichaamssamenstelling"
+        "nutrition": "Nutrición",
+        "weight": "Peso",
+        "sleep": "Sueño",
+        "bodyComposition": "Composición corporal"
       },
-      "allowHealthAccess": "Gezondheidstoegang toestaan",
-      "connectedCount": "Verbonden {{granted}}/{{total}}",
-      "maybeLater": "Misschien later",
-      "privacyStatement": "Musclog hecht veel waarde aan je privacy. Je gegevens worden versleuteld en alleen gebruikt voor je persoonlijke analyses.",
-      "initializing": "Health Connect initialiseren...",
-      "syncing": "Gezondheidsgegevens synchroniseren...",
-      "processing": "Verwerken...",
-      "continue": "Doorgaan"
+      "allowHealthAccess": "Permitir acceso a Salud",
+      "connectedCount": "Conectado {{granted}}/{{total}}",
+      "maybeLater": "Quizás más tarde",
+      "privacyStatement": "Musclog valora tu privacidad. Tus datos están cifrados y se usan solo para tus análisis personales.",
+      "initializing": "Inicializando Health Connect...",
+      "syncing": "Sincronizando datos de salud...",
+      "processing": "Procesando...",
+      "continue": "Continuar"
     },
     "landing": {
-      "getStarted": "Aan de slag",
-      "termsAndPrivacy": "Door door te gaan, ga je akkoord met onze Voorwaarden & Privacybeleid.",
+      "getStarted": "Empezar",
+      "termsAndPrivacy": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
       "appName": "Musclog",
-      "tagline": "Lift, Log, Repeat",
-      "description": "Houd je voortgang bij met data-gedreven inzichten en behaal je fitnessdoelen.",
-      "viewTerms": "Voorwaarden bekijken",
-      "preparingApp": "De app voorbereiden...",
-      "migratingPreamble": "Upgraden van de vorige Musclog — we zetten je gegevens over.",
-      "migratingData": "Gegevens migreren...",
-      "migratingStep": "Migreren van {{step}}...",
+      "tagline": "Levanta, registra, repite",
+      "description": "Sigue tu progreso con información basada en datos y machaca tus objetivos de fitness.",
+      "viewTerms": "Ver Términos",
+      "preparingApp": "Preparando la aplicación para ti...",
+      "migratingPreamble": "Actualizando desde el Musclog anterior — estamos trayendo tus datos.",
+      "migratingData": "Migrando tus datos...",
+      "migratingStep": "Migrando {{step}}...",
       "migrationSteps": {
-        "preparing": "Voorbereiden",
-        "downloading": "Downloaden",
-        "processing": "Verwerken",
-        "finalizing": "Afronden",
-        "fitness_goals": "voedingsdoelen",
-        "user_metrics": "lichaamsgegevens",
-        "users": "profiel",
-        "foods": "voedingsmiddelen",
-        "nutrition_logs": "voedingslogboeken",
-        "exercises": "oefeningen",
-        "workouts": "workout-sjablonen",
-        "workout_logs": "workout-geschiedenis",
-        "workout_template_sets": "workout-sjabloonsets",
-        "workout_log_sets": "workout-logsets",
-        "validating": "gegevens"
+        "preparing": "Preparando",
+        "downloading": "Descargando",
+        "processing": "Procesando",
+        "finalizing": "Finalizando",
+        "fitness_goals": "objetivos de nutrición",
+        "user_metrics": "métricas corporales",
+        "users": "perfil",
+        "foods": "alimentos",
+        "nutrition_logs": "registros de nutrición",
+        "exercises": "ejercicios",
+        "workouts": "plantillas de entrenamiento",
+        "workout_logs": "historial de entrenamientos",
+        "workout_template_sets": "series de plantillas",
+        "workout_log_sets": "series de registros",
+        "validating": "datos"
       },
-      "importData": "Gegevens importeren"
+      "importData": "Importar datos"
     },
     "setGoals": {
-      "title": "Smart Goal",
-      "calculation": "Berekening",
-      "description": "We gebruiken de Mifflin–St Jeor en Katch–McArdle vergelijkingen om je metabolisme te schatten, en daarna je activiteitsniveau en doelen om je calorie- en macrodoelen te bepalen.",
-      "personalizedMacros": "Gepersonaliseerde macro's",
-      "dynamicAdjustments": "Dynamische aanpassingen",
-      "calculateForMe": "Bereken het voor mij",
-      "setThemMyself": "Ik stel ze zelf in",
-      "missingData": "Vul eerst je fitnessgegevens in zodat we je plan kunnen berekenen."
+      "title": "Objetivo inteligente",
+      "calculation": "Cálculo",
+      "description": "Usamos las ecuaciones de Mifflin–St Jeor y Katch–McArdle para estimar tu metabolismo, luego tu nivel de actividad y objetivos para establecer tus metas de calorías y macros.",
+      "personalizedMacros": "Macros personalizados",
+      "dynamicAdjustments": "Ajustes dinámicos",
+      "calculateForMe": "Calcular por mí",
+      "setThemMyself": "Los estableceré yo mismo",
+      "missingData": "Por favor, completa primero tus detalles de fitness para que podamos calcular tu plan."
     }
   }
 }

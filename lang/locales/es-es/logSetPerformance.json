@@ -1,11 +1,11 @@
 {
   "logSetPerformance": {
-    "title": "Set-prestatie loggen",
-    "difficulty": "MOEILIJKHEIDSGRAAD (RPE)",
-    "easy": "MAKKELIJK",
-    "moderate": "GEMIDDELD",
-    "failure": "TOT FALEN",
-    "cancel": "ANNULEREN",
-    "logSet": "SET LOGGEN"
+    "title": "Registrar rendimiento de la serie",
+    "difficulty": "DIFICULTAD (RPE)",
+    "easy": "FÁCIL",
+    "moderate": "MODERADA",
+    "failure": "FALLO",
+    "cancel": "CANCELAR",
+    "logSet": "REGISTRAR SERIE"
   }
 }

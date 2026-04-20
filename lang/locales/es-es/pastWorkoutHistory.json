@@ -1,26 +1,26 @@
 {
   "pastWorkoutHistory": {
-    "title": "Workout-geschiedenis",
-    "searchPlaceholder": "Sessies zoeken...",
-    "noWorkoutsFound": "Geen workouts gevonden die overeenkomen met je zoekopdracht.",
-    "noWorkoutHistory": "Nog geen workout-geschiedenis.",
-    "loadMore": "Meer laden",
-    "loadingMore": "Laden...",
+    "title": "Historial de entrenamientos",
+    "searchPlaceholder": "Buscar sesiones...",
+    "noWorkoutsFound": "No se encontraron entrenamientos que coincidan con tu búsqueda.",
+    "noWorkoutHistory": "Aún no hay historial de entrenamientos.",
+    "loadMore": "Cargar más",
+    "loadingMore": "Cargando...",
     "stats": {
-      "duration": "Duur",
-      "volume": "Volume",
-      "calories": "Calorieën"
+      "duration": "Duración",
+      "volume": "Volumen",
+      "calories": "Calorías"
     },
     "prBadge": {
-      "singular": "{{count}} PR",
-      "plural": "{{count}} PR's"
+      "singular": "{{count}} RP",
+      "plural": "{{count}} RPs"
     },
     "filters": {
-      "title": "Workouts filteren",
-      "workoutType": "WORKOUTTYPE",
-      "minDuration": "MIN. DUUR",
-      "reset": "Reset",
-      "applyFilters": "Filters toepassen",
+      "title": "Filtrar entrenamientos",
+      "workoutType": "TIPO DE ENTRENAMIENTO",
+      "minDuration": "DURACIÓN MÍN.",
+      "reset": "Restablecer",
+      "applyFilters": "Aplicar filtros",
       "durationFormats": {
         "zero": "0m",
         "minutes": "{{minutes}}m",
@@ -28,27 +28,27 @@
         "max": "120m+"
       },
       "workoutTypes": {
-        "all": "Alle types",
-        "strength": "Kracht",
+        "all": "Todos los tipos",
+        "strength": "Fuerza",
         "cardio": "Cardio",
         "hiit": "HIIT",
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATUMBEREIK",
-        "30days": "Laatste 30 dagen",
-        "90days": "Laatste 90 dagen",
-        "custom": "Aangepast"
+        "title": "RANGO DE FECHAS",
+        "30days": "Últimos 30 días",
+        "90days": "Últimos 90 días",
+        "custom": "Personalizado"
       },
       "muscleGroups": {
-        "title": "SPIERGROEP (MEERVOUDIGE SELECTIE)",
-        "chest": "Borst",
-        "back": "Rug",
-        "legs": "Benen",
-        "shoulders": "Schouders",
-        "arms": "Armen",
+        "title": "GRUPO MUSCULAR (MULTI-SELECCIÓN)",
+        "chest": "Pecho",
+        "back": "Espalda",
+        "legs": "Piernas",
+        "shoulders": "Hombros",
+        "arms": "Brazos",
         "core": "Core",
-        "fullBody": "Hele lichaam"
+        "fullBody": "Cuerpo completo"
       }
     }
   }

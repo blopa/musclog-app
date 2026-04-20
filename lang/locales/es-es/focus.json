@@ -1,10 +1,10 @@
 {
   "focus": {
-    "currentPhase": "Huidige fase",
-    "day": "Dag",
-    "physiologicalInsights": "Fysiologische inzichten",
-    "estrogen": "Oestrogeen",
-    "metabolism": "Metabolisme",
-    "energyLevel": "Energieniveau"
+    "currentPhase": "Fase actual",
+    "day": "Día",
+    "physiologicalInsights": "Información fisiológica",
+    "estrogen": "Estrógeno",
+    "metabolism": "Metabolismo",
+    "energyLevel": "Nivel de energía"
   }
 }

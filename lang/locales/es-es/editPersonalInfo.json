@@ -1,18 +1,18 @@
 {
   "editPersonalInfo": {
-    "title": "Persoonlijke info bewerken",
-    "fullName": "Volledige naam",
-    "fullNamePlaceholder": "bijv. Alex de Vries",
-    "emailAddress": "E-mailadres",
-    "emailPlaceholder": "bijv. alex@voorbeeld.nl",
-    "dateOfBirth": "Geboortedatum",
-    "dateOfBirthPlaceholder": "DD-MM-JJJJ",
-    "gender": "Geslacht",
-    "male": "Man",
-    "female": "Vrouw",
-    "other": "Anders",
-    "chooseAvatar": "Avatar kiezen",
-    "chooseColor": "Kleur kiezen",
-    "saveChanges": "Wijzigingen opslaan"
+    "title": "Editar información personal",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "ej. Alex Johnson",
+    "emailAddress": "Correo electrónico",
+    "emailPlaceholder": "ej. alex@example.com",
+    "dateOfBirth": "Fecha de nacimiento",
+    "dateOfBirthPlaceholder": "MM/DD/AAAA",
+    "gender": "Género",
+    "male": "Hombre",
+    "female": "Mujer",
+    "other": "Otro",
+    "chooseAvatar": "Elegir avatar",
+    "chooseColor": "Elegir color",
+    "saveChanges": "Guardar cambios"
   }
 }

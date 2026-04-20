@@ -5,6 +5,7 @@ import 'intl-pluralrules';
 
 import {
   enUS as localeEnUS,
+  es as localeEs,
   nl as localeNl,
   ptBR as localePtBR,
   ru as localeRu,
@@ -15,6 +16,7 @@ import { initReactI18next } from 'react-i18next';
 
 // Exercise data
 import exercisesEnUs from '@/data/exercisesEnUS.json';
+import exercisesEsEs from '@/data/exercisesEsEs.json';
 import exercisesNlNl from '@/data/exercisesNlNl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
@@ -90,6 +92,77 @@ import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
+// es-es
+import esEsAccessToken from './locales/es-es/access_token.json';
+import esEsAddMeal from './locales/es-es/addMeal.json';
+import esEsAi from './locales/es-es/ai.json';
+import esEsBodyFat from './locales/es-es/body_fat.json';
+import esEsBodyMetrics from './locales/es-es/bodyMetrics.json';
+import esEsCamera from './locales/es-es/camera.json';
+import esEsCoach from './locales/es-es/coach.json';
+import esEsCommon from './locales/es-es/common.json';
+import esEsCreateWorkout from './locales/es-es/createWorkout.json';
+import esEsCurrentGoalsCard from './locales/es-es/currentGoalsCard.json';
+import esEsCycle from './locales/es-es/cycle.json';
+import esEsDailySummaryCard from './locales/es-es/dailySummaryCard.json';
+import esEsDatePicker from './locales/es-es/datePicker.json';
+import esEsEatingPhaseBadge from './locales/es-es/eatingPhaseBadge.json';
+import esEsEditFitnessDetails from './locales/es-es/editFitnessDetails.json';
+import esEsEditPersonalInfo from './locales/es-es/editPersonalInfo.json';
+import esEsEditScreenInfo from './locales/es-es/editScreenInfo.json';
+import esEsEditSetDetails from './locales/es-es/editSetDetails.json';
+import esEsEmptyStates from './locales/es-es/emptyStates.json';
+import esEsEndWorkout from './locales/es-es/endWorkout.json';
+import esEsErrors from './locales/es-es/errors.json';
+import esEsExerciseGoals from './locales/es-es/exerciseGoals.json';
+import esEsExercises from './locales/es-es/exercises.json';
+import esEsExerciseTransition from './locales/es-es/exerciseTransition.json';
+import esEsExpiresIn from './locales/es-es/expires_in.json';
+import esEsFocus from './locales/es-es/focus.json';
+import esEsFood from './locales/es-es/food.json';
+import esEsFoodFoodPortions from './locales/es-es/food_food_portions.json';
+import esEsFoodSearch from './locales/es-es/foodSearch.json';
+import esEsFreeTraining from './locales/es-es/freeTraining.json';
+import esEsGoalHistoryCard from './locales/es-es/goalHistoryCard.json';
+import esEsGoalsManagement from './locales/es-es/goalsManagement.json';
+import esEsHealthConnect from './locales/es-es/healthConnect.json';
+import esEsHeightPicker from './locales/es-es/heightPicker.json';
+import esEsHome from './locales/es-es/home.json';
+import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
+import esEsMealFoods from './locales/es-es/meal_foods.json';
+import esEsMeals from './locales/es-es/meals.json';
+import esEsNotifications from './locales/es-es/notifications.json';
+import esEsNutrition from './locales/es-es/nutrition.json';
+import esEsNutritionLogs from './locales/es-es/nutrition_logs.json';
+import esEsNutritionGoals from './locales/es-es/nutritionGoals.json';
+import esEsOnboarding from './locales/es-es/onboarding.json';
+import esEsOptionsSelector from './locales/es-es/optionsSelector.json';
+import esEsPastWorkoutHistory from './locales/es-es/pastWorkoutHistory.json';
+import esEsPortionSizes from './locales/es-es/portionSizes.json';
+import esEsProfile from './locales/es-es/profile.json';
+import esEsProgress from './locales/es-es/progress.json';
+import esEsReplaceExercise from './locales/es-es/replaceExercise.json';
+import esEsRestOver from './locales/es-es/restOver.json';
+import esEsRestTimer from './locales/es-es/restTimer.json';
+import esEsSessionFeedback from './locales/es-es/sessionFeedback.json';
+import esEsSettings from './locales/es-es/settings.json';
+import esEsSnackbar from './locales/es-es/snackbar.json';
+import esEsStartWorkout from './locales/es-es/startWorkout.json';
+import esEsTimePicker from './locales/es-es/timePicker.json';
+import esEsTokenType from './locales/es-es/token_type.json';
+import esEsUserMenu from './locales/es-es/userMenu.json';
+import esEsWorkout from './locales/es-es/workout.json';
+import esEsWorkoutLogSets from './locales/es-es/workout_log_sets.json';
+import esEsWorkoutLogs from './locales/es-es/workout_logs.json';
+import esEsWorkoutTemplateSets from './locales/es-es/workout_template_sets.json';
+import esEsWorkoutDetail from './locales/es-es/workoutDetail.json';
+import esEsWorkoutDetails from './locales/es-es/workoutDetails.json';
+import esEsWorkoutHistory from './locales/es-es/workoutHistory.json';
+import esEsWorkoutLog from './locales/es-es/workoutLog.json';
+import esEsWorkoutOptions from './locales/es-es/workoutOptions.json';
+import esEsWorkouts from './locales/es-es/workouts.json';
+import esEsWorkoutSession from './locales/es-es/workoutSession.json';
+import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
@@ -307,6 +380,7 @@ import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 import untranslated from './locales/untranslated.json';
 
 export const EN_US = 'en-US';
+export const ES_ES = 'es-ES';
 export const NL_NL = 'nl-NL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
@@ -314,6 +388,7 @@ export const RU_RU = 'ru-RU';
 // Exercise exports
 export const EXERCISES_JSON = {
   [EN_US]: exercisesEnUs,
+  [ES_ES]: exercisesEsEs,
   [NL_NL]: exercisesNlNl,
   [PT_BR]: exercisesPtBr,
   [RU_RU]: exercisesRuRu,
@@ -393,6 +468,81 @@ const resources = {
       ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
       ...enUsWorkouts,
+    },
+  },
+  [ES_ES]: {
+    translation: {
+      ...untranslated,
+      ...esEsAccessToken,
+      ...esEsAddMeal,
+      ...esEsAi,
+      ...esEsBodyMetrics,
+      ...esEsBodyFat,
+      ...esEsCamera,
+      ...esEsCoach,
+      ...esEsCommon,
+      ...esEsCreateWorkout,
+      ...esEsCurrentGoalsCard,
+      ...esEsCycle,
+      ...esEsDailySummaryCard,
+      ...esEsDatePicker,
+      ...esEsEatingPhaseBadge,
+      ...esEsEditFitnessDetails,
+      ...esEsEditPersonalInfo,
+      ...esEsEditScreenInfo,
+      ...esEsEditSetDetails,
+      ...esEsEmptyStates,
+      ...esEsEndWorkout,
+      ...esEsErrors,
+      ...esEsExerciseGoals,
+      ...esEsExerciseTransition,
+      ...esEsExercises,
+      ...esEsExpiresIn,
+      ...esEsFocus,
+      ...esEsFood,
+      ...esEsFoodSearch,
+      ...esEsFoodFoodPortions,
+      ...esEsFreeTraining,
+      ...esEsGoalHistoryCard,
+      ...esEsGoalsManagement,
+      ...esEsHealthConnect,
+      ...esEsHeightPicker,
+      ...esEsHome,
+      ...esEsLogSetPerformance,
+      ...esEsMealFoods,
+      ...esEsMeals,
+      ...esEsNotifications,
+      ...esEsNutrition,
+      ...esEsNutritionGoals,
+      ...esEsNutritionLogs,
+      ...esEsOnboarding,
+      ...esEsOptionsSelector,
+      ...esEsPastWorkoutHistory,
+      ...esEsPortionSizes,
+      ...esEsProfile,
+      ...esEsProgress,
+      ...esEsReplaceExercise,
+      ...esEsRestOver,
+      ...esEsRestTimer,
+      ...esEsSessionFeedback,
+      ...esEsSettings,
+      ...esEsSnackbar,
+      ...esEsStartWorkout,
+      ...esEsTimePicker,
+      ...esEsTokenType,
+      ...esEsUserMenu,
+      ...esEsWorkout,
+      ...esEsWorkoutDetail,
+      ...esEsWorkoutDetails,
+      ...esEsWorkoutHistory,
+      ...esEsWorkoutLog,
+      ...esEsWorkoutOptions,
+      ...esEsWorkoutSession,
+      ...esEsWorkoutSummary,
+      ...esEsWorkoutLogSets,
+      ...esEsWorkoutLogs,
+      ...esEsWorkoutTemplateSets,
+      ...esEsWorkouts,
     },
   },
   [NL_NL]: {
@@ -626,6 +776,7 @@ export type LanguageKeys = keyof typeof resources;
 
 export const LOCALE_MAP = {
   [EN_US]: localeEnUS,
+  [ES_ES]: localeEs,
   [NL_NL]: localeNl,
   [PT_BR]: localePtBR,
   [RU_RU]: localeRu,
@@ -650,6 +801,7 @@ i18n.use(initReactI18next).init({
 
 export const languageLabels: Record<string, string> = {
   [EN_US]: i18n.t('untranslated.en-us.name'),
+  [ES_ES]: i18n.t('untranslated.es-es.name'),
   [NL_NL]: i18n.t('untranslated.nl-nl.name'),
   [PT_BR]: i18n.t('untranslated.pt-br.name'),
   [RU_RU]: i18n.t('untranslated.ru-ru.name'),
@@ -659,6 +811,7 @@ export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 // Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.
 export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
+  'es-ES': 1.25,
   'nl-NL': 1.22,
   'pt-BR': 1.2,
   'ru-RU': 0.95,

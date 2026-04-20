@@ -1,31 +1,31 @@
 {
   "nutritionGoals": {
-    "title": "Voedings- & lichaamsdoelen instellen",
-    "subtitle": "Stel je doelen in voor voeding en lichaamssamenstelling.",
-    "dailyMacroTargets": "Dagelijkse macrodoelen",
-    "totalDailyCalories": "Totaal dagelijkse calorieën",
-    "targetBodyMetrics": "Lichaamsdoelen",
-    "macrosDistribution": "Macro-verdeling",
-    "balance": "Balans",
-    "optimal": "Optimaal",
-    "protein": "Eiwit",
-    "carbohydrates": "Koolhydraten",
-    "fats": "Vetten",
-    "targetWeight": "Streefgewicht",
-    "targetBodyFat": "Streefvetpercentage",
-    "targetBMI": "Streef-BMI",
-    "targetFFMI": "Streef-FFMI",
-    "targetDate": "Streefdatum",
-    "targetDateNotSet": "Niet ingesteld",
-    "targetDateSublabel": "Wanneer je je doelen wilt bereiken",
-    "targetDateClear": "Wissen",
-    "editTitle": "Doel bewerken",
-    "updateGoal": "Doel bijwerken",
-    "goalStartDate": "Startdatum doel",
-    "goalStartDateSublabel": "Wanneer deze doelperiode is begonnen",
-    "goalStartDateToday": "Vandaag",
-    "saveGoals": "Doelen opslaan",
-    "settingsNote": "Je kunt deze waarden op elk moment wijzigen in de Instellingen.",
+    "title": "Establecer objetivos de nutrición y cuerpo",
+    "subtitle": "Define tus objetivos de nutrición y composición corporal.",
+    "dailyMacroTargets": "Objetivos diarios de macros",
+    "totalDailyCalories": "Total de calorías diarias",
+    "targetBodyMetrics": "Métricas corporales objetivo",
+    "macrosDistribution": "Distribución de macros",
+    "balance": "Equilibrio",
+    "optimal": "Óptimo",
+    "protein": "Proteínas",
+    "carbohydrates": "Carbohidratos",
+    "fats": "Grasas",
+    "targetWeight": "Peso objetivo",
+    "targetBodyFat": "Grasa corporal objetivo",
+    "targetBMI": "IMC objetivo",
+    "targetFFMI": "FFMI objetivo",
+    "targetDate": "Fecha objetivo",
+    "targetDateNotSet": "No establecida",
+    "targetDateSublabel": "Cuándo quieres alcanzar tus objetivos corporales",
+    "targetDateClear": "Limpiar",
+    "editTitle": "Editar objetivo",
+    "updateGoal": "Actualizar objetivo",
+    "goalStartDate": "Fecha de inicio del objetivo",
+    "goalStartDateSublabel": "Cuándo empezó este periodo del objetivo",
+    "goalStartDateToday": "Hoy",
+    "saveGoals": "Guardar objetivos",
+    "settingsNote": "Puedes cambiar estos valores en cualquier momento en Ajustes.",
     "kcalPerGram": {
       "protein": "4 kcal/g",
       "carbs": "4 kcal/g",
@@ -33,93 +33,93 @@
       "fiber": "2 kcal/g"
     },
     "sublabels": {
-      "targetWeight": "Streefgewicht in {{unit}}",
-      "targetBodyFat": "% percentage",
-      "targetBMI": "Body Mass Index",
-      "targetFFMI": "Fat-Free Mass Index"
+      "targetWeight": "Peso objetivo en {{unit}}",
+      "targetBodyFat": "porcentaje %",
+      "targetBMI": "Índice de masa corporal",
+      "targetFFMI": "Índice de masa libre de grasa"
     },
-    "acceptAndContinue": "Accepteren en doorgaan",
-    "adjustGoalsManually": "Doelen handmatig aanpassen",
-    "continue": "Doorgaan",
+    "acceptAndContinue": "Aceptar y continuar",
+    "adjustGoalsManually": "Ajustar objetivos manualmente",
+    "continue": "Continuar",
     "results": {
-      "aiCalculationComplete": "Berekening voltooid",
-      "your": "Jouw",
-      "nutritionPlan": "Voedingsplan",
-      "aiDescription": "Op basis van je lichaamsgegevens en activiteitsniveau hebben onze berekeningen je dagelijkse doelen geoptimaliseerd.",
-      "manualDescription": "Dit zijn de voedingsdoelen die je hebt ingesteld. Je kunt doorgaan of teruggaan om ze aan te passen.",
-      "manualPlanBadge": "Jouw aangepaste plan",
-      "macroSplit": "Macro-verdeling",
-      "manualTipsTitle": "Je bent helemaal klaar",
-      "manualTipsDescription": "Begin met het loggen van maaltijden om je voortgang bij te houden. Je kunt deze doelen op elk moment wijzigen in de Instellingen.",
-      "dailyCalorieTarget": "Dagelijks caloriedoel",
+      "aiCalculationComplete": "Cálculo completado",
+      "your": "Tu",
+      "nutritionPlan": "Plan nutricional",
+      "aiDescription": "Basado en tus métricas corporales y niveles de actividad, nuestros cálculos han optimizado tus objetivos diarios.",
+      "manualDescription": "Aquí están los objetivos nutricionales que estableciste. Puedes continuar o volver para ajustarlos.",
+      "manualPlanBadge": "Tu plan personalizado",
+      "macroSplit": "Reparto de macros",
+      "manualTipsTitle": "Todo listo",
+      "manualTipsDescription": "Empieza a registrar comidas para seguir tu progreso. Puedes cambiar estos objetivos en cualquier momento en Ajustes.",
+      "dailyCalorieTarget": "Objetivo diario de calorías",
       "kcal": "KCAL",
-      "protein": "Eiwit",
-      "carbs": "Koolh",
-      "fats": "Vetten",
-      "estimatedWeightLoss": "Geschat gewichtsverlies",
-      "estimatedWeightGain": "Geschatte gewichtstoename",
-      "estimatedMaintenance": "Geschat onderhoud",
-      "projectionTitle": "{{days}}-daagse projectie",
-      "projectionDescription": "Door deze doelen te volgen, wordt er voorspeld dat je {{value}} {{unit}} zult bereiken over {{days}} dagen.",
-      "projectionMaintenanceTitle": "Gewicht behouden",
-      "projectionMaintenanceMuscleGain": "Met consequente training en voeding is een natuurlijke spiergroei in {{days}} dagen doorgaans {{range}} {{unit}}, afhankelijk van genetica en ervaring.",
-      "calorieRange": "Bereik: {{range}} kcal",
-      "bodyFatUncertaintyNote": "Bereik houdt rekening met variatie in vetpercentagemeting (±4%)",
-      "dailyDeficit": "Dagelijks tekort: {{kcal}} kcal",
-      "dailySurplus": "Dagelijks overschot: {{kcal}} kcal",
-      "projectionFat": "Vet: {{value}} {{unit}}",
-      "projectionLean": "Vetvrije massa: {{value}} {{unit}}",
-      "leanMassClarification": "Vetvrije massa omvat water, glycogeen en ander niet-vetweefsel — niet alleen spieren.",
-      "formulasBasedOn": "Gebaseerd op het Hall/Forbes lichaamssamenstellingsmodel & metaboliseerbare energie (Int J Obes 2008; Br J Nutr 2007).",
-      "macroSourcesNote": "Macrodoelen gebaseerd op IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), en Helms et al. (2014).",
+      "protein": "Proteínas",
+      "carbs": "Carbos",
+      "fats": "Grasas",
+      "estimatedWeightLoss": "Pérdida de peso estimada",
+      "estimatedWeightGain": "Ganancia de peso estimada",
+      "estimatedMaintenance": "Mantenimiento estimado",
+      "projectionTitle": "Proyección a {{days}} días",
+      "projectionDescription": "Siguiendo estos objetivos, se proyecta que alcances {{value}} {{unit}} en {{days}} días.",
+      "projectionMaintenanceTitle": "Manteniendo el peso",
+      "projectionMaintenanceMuscleGain": "Con entrenamiento y nutrición constantes, la ganancia muscular natural en {{days}} días suele ser de {{range}} {{unit}}, dependiendo de la genética y la experiencia.",
+      "calorieRange": "Rango: {{range}} kcal",
+      "bodyFatUncertaintyNote": "El rango tiene en cuenta la variación en la medición de grasa corporal (±4%)",
+      "dailyDeficit": "Déficit diario: {{kcal}} kcal",
+      "dailySurplus": "Superávit diario: {{kcal}} kcal",
+      "projectionFat": "Grasa: {{value}} {{unit}}",
+      "projectionLean": "Magra: {{value}} {{unit}}",
+      "leanMassClarification": "La masa magra incluye agua, glucógeno y otros tejidos no grasos, no solo músculo.",
+      "formulasBasedOn": "Basado en el modelo de composición corporal de Hall/Forbes y energía metabolizable (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Objetivos de macros basados en IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), y Helms et al. (2014).",
       "goalLabels": {
-        "weight_loss": "Gewichtsverlies",
-        "muscle_gain": "Spieropbouw",
-        "maintenance": "Onderhoud",
-        "moderateWeightLoss": "Gematigde gewichtsverliesstrategie",
-        "enduranceTraining": "Duurtraining",
-        "generalFitness": "Algemene fitness",
-        "leanBulk": "Lean Bulk-strategie",
-        "strengthSurplus": "Kracht-overschotstrategie"
+        "weight_loss": "Pérdida de peso",
+        "muscle_gain": "Ganancia muscular",
+        "maintenance": "Mantenimiento",
+        "moderateWeightLoss": "Estrategia de pérdida de peso moderada",
+        "enduranceTraining": "Entrenamiento de resistencia",
+        "generalFitness": "Fitness general",
+        "leanBulk": "Estrategia de volumen limpio",
+        "strengthSurplus": "Estrategia de superávit de fuerza"
       }
     },
-    "errorSaving": "Fout bij opslaan",
+    "errorSaving": "Error al guardar",
     "dietTypes": {
       "keto": {
         "title": "Keto",
-        "subtitle": "Koolhydraatarm"
+        "subtitle": "Bajo en carbos"
       },
       "lowCarb": {
-        "title": "Low Carb",
-        "subtitle": "Vet-geadapteerd"
+        "title": "Bajo en carbos",
+        "subtitle": "Adaptado a las grasas"
       },
       "highProteinMuscle": {
-        "title": "Eiwitrijk",
-        "subtitle": "Spieropbouw"
+        "title": "Alto en proteínas",
+        "subtitle": "Ganancia muscular"
       },
       "highProteinFatLoss": {
-        "title": "Eiwitrijk",
-        "subtitle": "Vetverlies"
+        "title": "Alto en proteínas",
+        "subtitle": "Pérdida de grasa"
       },
       "highCarb": {
-        "title": "High Carb",
-        "subtitle": "Focus op energie"
+        "title": "Alto en carbos",
+        "subtitle": "Enfoque en energía"
       },
       "balanced": {
-        "title": "Gebalanceerd",
-        "subtitle": "Optimaal"
+        "title": "Equilibrado",
+        "subtitle": "Óptimo"
       },
       "moderateFat": {
-        "title": "Gematigd vet",
-        "subtitle": "Aanhoudende energie"
+        "title": "Grasa moderada",
+        "subtitle": "Energía sostenida"
       },
       "lowFat": {
-        "title": "Vetarm",
-        "subtitle": "Slank dieet"
+        "title": "Bajo en grasa",
+        "subtitle": "Dieta magra"
       },
       "custom": {
-        "title": "Aangepast",
-        "subtitle": "Jouw plan"
+        "title": "Personalizado",
+        "subtitle": "Tu plan"
       }
     }
   }
