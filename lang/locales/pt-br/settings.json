@@ -227,6 +227,12 @@
         "toggleSubtitle": "Processa pedidos de IA no dispositivo usando os Foundation Models da Apple. Sem necessidade de chave de API.",
         "toggleSubtitleNotReady": "Apple Intelligence não está disponível neste dispositivo. Requer iPhone 15 Pro ou superior com iOS 26 e Apple Intelligence ativado.",
         "privacyNote": "Seus dados ficam no dispositivo e nunca são enviados para servidores externos."
+      },
+      "musclogFreeTier": {
+        "sectionTitle": "NÍVEL GRATUITO DO MUSCLOG",
+        "toggle": "Usar LLM Gratuito do Musclog",
+        "toggleSubtitle": "Acesse recursos de IA sem uma chave de API. Sujeito a um limite diário de solicitações.",
+        "activeNote": "Nível gratuito ativo. Suas próprias chaves de API não são usadas."
       }
     },
     "visualSettings": {
