@@ -44,9 +44,13 @@ const withIosSimulatorBuildFix = (config) => {
         const fixCode = `
     ### EXPO SIMULATOR BUILD FIX ###
     # Fix for Xcode 15/16: Remove EXCLUDED_ARCHS for simulators
+    # Also raise pod deployment targets to silence version mismatch warnings
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings.delete('EXCLUDED_ARCHS[sdk=iphonesimulator*]')
+        if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 16.0
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+        end
       end
     end
 

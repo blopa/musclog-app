@@ -253,6 +253,9 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
  */
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
+export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
+export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'

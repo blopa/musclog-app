@@ -3,10 +3,21 @@
 
 import 'intl-pluralrules';
 
-import { enUS as localeEnUS, ptBR as localePtBR, ru as localeRu } from 'date-fns/locale';
+import {
+  enUS as localeEnUS,
+  nl as localeNl,
+  ptBR as localePtBR,
+  ru as localeRu,
+} from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+
+// Exercise data
+import exercisesEnUs from '@/data/exercisesEnUS.json';
+import exercisesNlNl from '@/data/exercisesNlNl.json';
+import exercisesPtBr from '@/data/exercisesPtBr.json';
+import exercisesRuRu from '@/data/exercisesRuRu.json';
 
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
@@ -79,6 +90,77 @@ import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
+// nl-nl
+import nlNlAccessToken from './locales/nl-nl/access_token.json';
+import nlNlAddMeal from './locales/nl-nl/addMeal.json';
+import nlNlAi from './locales/nl-nl/ai.json';
+import nlNlBodyFat from './locales/nl-nl/body_fat.json';
+import nlNlBodyMetrics from './locales/nl-nl/bodyMetrics.json';
+import nlNlCamera from './locales/nl-nl/camera.json';
+import nlNlCoach from './locales/nl-nl/coach.json';
+import nlNlCommon from './locales/nl-nl/common.json';
+import nlNlCreateWorkout from './locales/nl-nl/createWorkout.json';
+import nlNlCurrentGoalsCard from './locales/nl-nl/currentGoalsCard.json';
+import nlNlCycle from './locales/nl-nl/cycle.json';
+import nlNlDailySummaryCard from './locales/nl-nl/dailySummaryCard.json';
+import nlNlDatePicker from './locales/nl-nl/datePicker.json';
+import nlNlEatingPhaseBadge from './locales/nl-nl/eatingPhaseBadge.json';
+import nlNlEditFitnessDetails from './locales/nl-nl/editFitnessDetails.json';
+import nlNlEditPersonalInfo from './locales/nl-nl/editPersonalInfo.json';
+import nlNlEditScreenInfo from './locales/nl-nl/editScreenInfo.json';
+import nlNlEditSetDetails from './locales/nl-nl/editSetDetails.json';
+import nlNlEmptyStates from './locales/nl-nl/emptyStates.json';
+import nlNlEndWorkout from './locales/nl-nl/endWorkout.json';
+import nlNlErrors from './locales/nl-nl/errors.json';
+import nlNlExerciseGoals from './locales/nl-nl/exerciseGoals.json';
+import nlNlExercises from './locales/nl-nl/exercises.json';
+import nlNlExerciseTransition from './locales/nl-nl/exerciseTransition.json';
+import nlNlExpiresIn from './locales/nl-nl/expires_in.json';
+import nlNlFocus from './locales/nl-nl/focus.json';
+import nlNlFood from './locales/nl-nl/food.json';
+import nlNlFoodFoodPortions from './locales/nl-nl/food_food_portions.json';
+import nlNlFoodSearch from './locales/nl-nl/foodSearch.json';
+import nlNlFreeTraining from './locales/nl-nl/freeTraining.json';
+import nlNlGoalHistoryCard from './locales/nl-nl/goalHistoryCard.json';
+import nlNlGoalsManagement from './locales/nl-nl/goalsManagement.json';
+import nlNlHealthConnect from './locales/nl-nl/healthConnect.json';
+import nlNlHeightPicker from './locales/nl-nl/heightPicker.json';
+import nlNlHome from './locales/nl-nl/home.json';
+import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
+import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
+import nlNlMeals from './locales/nl-nl/meals.json';
+import nlNlNotifications from './locales/nl-nl/notifications.json';
+import nlNlNutrition from './locales/nl-nl/nutrition.json';
+import nlNlNutritionLogs from './locales/nl-nl/nutrition_logs.json';
+import nlNlNutritionGoals from './locales/nl-nl/nutritionGoals.json';
+import nlNlOnboarding from './locales/nl-nl/onboarding.json';
+import nlNlOptionsSelector from './locales/nl-nl/optionsSelector.json';
+import nlNlPastWorkoutHistory from './locales/nl-nl/pastWorkoutHistory.json';
+import nlNlPortionSizes from './locales/nl-nl/portionSizes.json';
+import nlNlProfile from './locales/nl-nl/profile.json';
+import nlNlProgress from './locales/nl-nl/progress.json';
+import nlNlReplaceExercise from './locales/nl-nl/replaceExercise.json';
+import nlNlRestOver from './locales/nl-nl/restOver.json';
+import nlNlRestTimer from './locales/nl-nl/restTimer.json';
+import nlNlSessionFeedback from './locales/nl-nl/sessionFeedback.json';
+import nlNlSettings from './locales/nl-nl/settings.json';
+import nlNlSnackbar from './locales/nl-nl/snackbar.json';
+import nlNlStartWorkout from './locales/nl-nl/startWorkout.json';
+import nlNlTimePicker from './locales/nl-nl/timePicker.json';
+import nlNlTokenType from './locales/nl-nl/token_type.json';
+import nlNlUserMenu from './locales/nl-nl/userMenu.json';
+import nlNlWorkout from './locales/nl-nl/workout.json';
+import nlNlWorkoutLogSets from './locales/nl-nl/workout_log_sets.json';
+import nlNlWorkoutLogs from './locales/nl-nl/workout_logs.json';
+import nlNlWorkoutTemplateSets from './locales/nl-nl/workout_template_sets.json';
+import nlNlWorkoutDetail from './locales/nl-nl/workoutDetail.json';
+import nlNlWorkoutDetails from './locales/nl-nl/workoutDetails.json';
+import nlNlWorkoutHistory from './locales/nl-nl/workoutHistory.json';
+import nlNlWorkoutLog from './locales/nl-nl/workoutLog.json';
+import nlNlWorkoutOptions from './locales/nl-nl/workoutOptions.json';
+import nlNlWorkouts from './locales/nl-nl/workouts.json';
+import nlNlWorkoutSession from './locales/nl-nl/workoutSession.json';
+import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -225,8 +307,17 @@ import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 import untranslated from './locales/untranslated.json';
 
 export const EN_US = 'en-US';
+export const NL_NL = 'nl-NL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
+
+// Exercise exports
+export const EXERCISES_JSON = {
+  [EN_US]: exercisesEnUs,
+  [NL_NL]: exercisesNlNl,
+  [PT_BR]: exercisesPtBr,
+  [RU_RU]: exercisesRuRu,
+};
 
 const resources = {
   [EN_US]: {
@@ -302,6 +393,81 @@ const resources = {
       ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
       ...enUsWorkouts,
+    },
+  },
+  [NL_NL]: {
+    translation: {
+      ...untranslated,
+      ...nlNlAccessToken,
+      ...nlNlAddMeal,
+      ...nlNlAi,
+      ...nlNlBodyMetrics,
+      ...nlNlBodyFat,
+      ...nlNlCamera,
+      ...nlNlCoach,
+      ...nlNlCommon,
+      ...nlNlCreateWorkout,
+      ...nlNlCurrentGoalsCard,
+      ...nlNlCycle,
+      ...nlNlDailySummaryCard,
+      ...nlNlDatePicker,
+      ...nlNlEatingPhaseBadge,
+      ...nlNlEditFitnessDetails,
+      ...nlNlEditPersonalInfo,
+      ...nlNlEditScreenInfo,
+      ...nlNlEditSetDetails,
+      ...nlNlEmptyStates,
+      ...nlNlEndWorkout,
+      ...nlNlErrors,
+      ...nlNlExerciseGoals,
+      ...nlNlExerciseTransition,
+      ...nlNlExercises,
+      ...nlNlExpiresIn,
+      ...nlNlFocus,
+      ...nlNlFood,
+      ...nlNlFoodSearch,
+      ...nlNlFoodFoodPortions,
+      ...nlNlFreeTraining,
+      ...nlNlGoalHistoryCard,
+      ...nlNlGoalsManagement,
+      ...nlNlHealthConnect,
+      ...nlNlHeightPicker,
+      ...nlNlHome,
+      ...nlNlLogSetPerformance,
+      ...nlNlMealFoods,
+      ...nlNlMeals,
+      ...nlNlNotifications,
+      ...nlNlNutrition,
+      ...nlNlNutritionGoals,
+      ...nlNlNutritionLogs,
+      ...nlNlOnboarding,
+      ...nlNlOptionsSelector,
+      ...nlNlPastWorkoutHistory,
+      ...nlNlPortionSizes,
+      ...nlNlProfile,
+      ...nlNlProgress,
+      ...nlNlReplaceExercise,
+      ...nlNlRestOver,
+      ...nlNlRestTimer,
+      ...nlNlSessionFeedback,
+      ...nlNlSettings,
+      ...nlNlSnackbar,
+      ...nlNlStartWorkout,
+      ...nlNlTimePicker,
+      ...nlNlTokenType,
+      ...nlNlUserMenu,
+      ...nlNlWorkout,
+      ...nlNlWorkoutDetail,
+      ...nlNlWorkoutDetails,
+      ...nlNlWorkoutHistory,
+      ...nlNlWorkoutLog,
+      ...nlNlWorkoutOptions,
+      ...nlNlWorkoutSession,
+      ...nlNlWorkoutSummary,
+      ...nlNlWorkoutLogSets,
+      ...nlNlWorkoutLogs,
+      ...nlNlWorkoutTemplateSets,
+      ...nlNlWorkouts,
     },
   },
   [PT_BR]: {
@@ -460,6 +626,7 @@ export type LanguageKeys = keyof typeof resources;
 
 export const LOCALE_MAP = {
   [EN_US]: localeEnUS,
+  [NL_NL]: localeNl,
   [PT_BR]: localePtBR,
   [RU_RU]: localeRu,
 };
@@ -483,6 +650,7 @@ i18n.use(initReactI18next).init({
 
 export const languageLabels: Record<string, string> = {
   [EN_US]: i18n.t('untranslated.en-us.name'),
+  [NL_NL]: i18n.t('untranslated.nl-nl.name'),
   [PT_BR]: i18n.t('untranslated.pt-br.name'),
   [RU_RU]: i18n.t('untranslated.ru-ru.name'),
 };
@@ -491,6 +659,7 @@ export const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 // Language multipliers for UI layout calculations based on IBM Globalization Design Guide expansion factors.
 export const LANGUAGE_MULTIPLIERS: Record<string, number> = {
+  'nl-NL': 1.22,
   'pt-BR': 1.2,
   'ru-RU': 0.95,
 };

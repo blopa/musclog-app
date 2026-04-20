@@ -1,0 +1,11 @@
+{
+  "logSetPerformance": {
+    "title": "Set-prestatie loggen",
+    "difficulty": "MOEILIJKHEIDSGRAAD (RPE)",
+    "easy": "MAKKELIJK",
+    "moderate": "GEMIDDELD",
+    "failure": "TOT FALEN",
+    "cancel": "ANNULEREN",
+    "logSet": "SET LOGGEN"
+  }
+}

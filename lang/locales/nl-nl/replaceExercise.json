@@ -1,0 +1,18 @@
+{
+  "replaceExercise": {
+    "title": "Oefening vervangen",
+    "cancel": "Annuleren",
+    "replace": "Vervangen",
+    "searchPlaceholder": "Oefeningen zoeken...",
+    "muscleGroups": {
+      "all": "Alle",
+      "chest": "Borst",
+      "shoulders": "Schouders",
+      "triceps": "Triceps"
+    },
+    "selectExercise": "Oefening selecteren",
+    "loadMore": "Meer laden",
+    "loadingMore": "Laden…",
+    "noExercisesMatch": "Geen overeenkomende oefeningen"
+  }
+}

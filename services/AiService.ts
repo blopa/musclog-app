@@ -1,5 +1,8 @@
+import { Platform } from 'react-native';
+
 import { GEMINI_MODELS } from '@/constants/ai';
 import { SettingsService } from '@/database/services';
+import { GatewayService } from '@/services/GatewayService';
 import type { CoachAIConfig } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
@@ -8,6 +11,7 @@ export class AiService {
   /**
    * Resolves the AI configuration based on user settings.
    * Priority:
+   * 0. Musclog Free Tier Gateway (overrides all other providers when enabled)
    * 1. On-device AI (when enabled and available)
    * 2. Local LLM
    * 3. Gemini API Key
@@ -15,6 +19,14 @@ export class AiService {
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
+      // On web production builds, CORS blocks browser→Cloudflare direct calls.
+      // In __DEV__ the client uses a CORS proxy (see buildOpenAIClient).
+      const useGateway = await SettingsService.getUseMusclogFreeTier();
+      if (useGateway && (Platform.OS !== 'web' || __DEV__)) {
+        const language = await SettingsService.getLanguage();
+        return GatewayService.buildGatewayConfig(language);
+      }
+
       const useOnDeviceAi = await SettingsService.getUseOnDeviceAi();
       if (useOnDeviceAi && (await isOnDeviceAiAvailable())) {
         return {

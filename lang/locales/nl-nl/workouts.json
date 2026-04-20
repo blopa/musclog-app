@@ -1,0 +1,175 @@
+{
+  "workouts": {
+    "title": "Mijn workouts",
+    "filters": {
+      "all": "Alle",
+      "strength": "Kracht",
+      "cardio": "Cardio",
+      "flexibility": "Flexibiliteit",
+      "archived": "Gearchiveerd"
+    },
+    "archive": "Archiveren",
+    "archiveSuccess": "Workout succesvol gearchiveerd",
+    "archiveError": "Archiveren van workout mislukt",
+    "duplicateSuccess": "Workout succesvol gedupliceerd",
+    "duplicateError": "Dupliceren van workout mislukt",
+    "delete": "Verwijderen",
+    "deleteSuccess": "Workout succesvol verwijderd",
+    "deleteError": "Verwijderen van workout mislukt",
+    "deleteConfirmation": {
+      "title": "Workout verwijderen",
+      "message": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    },
+    "searchPlaceholder": "Workouts zoeken...",
+    "noSearchResults": "Geen workouts gevonden",
+    "noSearchResultsDescription": "Geen workouts gevonden voor \"{{query}}\"",
+    "noSearchResultsButtonLabel": "Zoekopdracht wissen",
+    "exercises": "Oefeningen",
+    "addExercise": {
+      "title": "Oefening toevoegen",
+      "targetMuscle": "Doelspier",
+      "searchPlaceholder": "Zoek {{muscle}} oefeningen...",
+      "createSet": "Set maken",
+      "bodyweight": "Lichaamsgewicht",
+      "sets": "Sets",
+      "reps": "Herh",
+      "weight": "Gewicht",
+      "addToWorkout": "Toevoegen aan workout",
+      "restTime": "Rusttijd",
+      "seconds": "sec",
+      "dropSet": "Dropset",
+      "notes": "Notities",
+      "notesPlaceholder": "Apparaatinstellingen, greepvariaties, enz.",
+      "muscleGroups": {
+        "all": "Alle",
+        "chest": "Borst",
+        "back": "Rug",
+        "legs": "Benen",
+        "arms": "Armen"
+      },
+      "searchPlaceholderAll": "Oefeningen zoeken...",
+      "noExercisesFound": "Geen oefeningen gevonden voor \"{{query}}\"",
+      "noExercisesAvailable": "Geen oefeningen beschikbaar voor {{muscle}}",
+      "exerciseDescription": "{{sets}} sets × {{reps}} herh",
+      "exerciseDescriptionWithWeight": "{{sets}} sets × {{reps}} herh @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} sets × {{reps}} herh @"
+    },
+    "filterWorkouts": {
+      "title": "Workouts filteren",
+      "clear": "Wissen",
+      "clearFilters": "Filters wissen",
+      "applyFilters": "Filters toepassen",
+      "workoutType": "Workouttype",
+      "targetMuscles": "DOELSPIEREN",
+      "duration": "DUUR",
+      "upTo": "Tot {{duration}}",
+      "workoutTypes": {
+        "strength": "Kracht",
+        "strengthDescription": "Gewichten, Lichaamsgewicht",
+        "cardio": "Cardio",
+        "cardioDescription": "Hardlopen, Fietsen, HIIT",
+        "flexibility": "Flexibiliteit",
+        "flexibilityDescription": "Yoga, Stretching"
+      },
+      "muscleGroups": {
+        "fullBody": "Hele lichaam",
+        "chest": "Borst",
+        "back": "Rug",
+        "legs": "Benen",
+        "shoulders": "Schouders",
+        "arms": "Armen",
+        "core": "Core"
+      }
+    },
+    "createWorkoutOptions": {
+      "generateWithAi": "Genereren met AI",
+      "generateWithAiSubtitle": "Laat Musclog een gepersonaliseerde routine maken op basis van je doelen en apparatuur.",
+      "createFromEmptyTemplate": "Legen sjabloon maken",
+      "createFromEmptyTemplateSubtitle": "Ontwerp je eigen routine vanaf nul, oefening voor oefening.",
+      "browseTemplates": "Bladeren door sjablonen",
+      "browseTemplatesSubtitle": "Verken door experts gemaakte programma's en favorieten van de community."
+    },
+    "browseTemplatesModal": {
+      "title": "Sjablonen bladeren",
+      "searchPlaceholder": "Zoek expert-programma's...",
+      "templateName": "Sjabloon {{number}}",
+      "tabs": {
+        "all": "Alle",
+        "beginner": "Beginner",
+        "intermediate": "Gevorderd",
+        "advanced": "Expert",
+        "strength": "Kracht",
+        "hypertrophy": "Hypertrofie",
+        "cardio": "Cardio"
+      },
+      "stats": {
+        "duration": "Duur",
+        "exercises": "Oefeningen",
+        "exercisesQty": "{{count}} Oefening",
+        "exercisesQty_one": "{{count}} Oefening",
+        "exercisesQty_other": "{{count}} Oefeningen",
+        "sets": "Sets",
+        "setsQty": "{{count}} Set",
+        "setsQty_one": "{{count}} Set",
+        "setsQty_other": "{{count}} Sets"
+      }
+    },
+    "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "Weet je zeker dat je dit sjabloon wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "title": "Workout-sjablonen beheren",
+      "searchPlaceholder": "Sjablonen zoeken...",
+      "noTemplates": "Nog geen workout-sjablonen",
+      "noTemplatesDesc": "Maak workout-sjablonen om ze hier te zien",
+      "endOfHistory": "Einde van sjablonenlijst",
+      "templateOptions": "Sjabloon-opties",
+      "editTemplate": "Sjabloon bewerken",
+      "editTemplateDesc": "Sjabloonnaam en oefeningen wijzigen",
+      "duplicateTemplate": "Sjabloon dupliceren",
+      "duplicateTemplateDesc": "Maak een kopie van dit sjabloon",
+      "deleteTemplate": "Sjabloon verwijderen",
+      "deleteTemplateDesc": "Verwijder dit sjabloon permanent",
+      "noDescription": "Geen beschrijving",
+      "unknownTemplate": "Onbekend sjabloon"
+    },
+    "createTemplate": {
+      "title": "Workout-sjabloon maken",
+      "description": "Bouw een herbruikbare workout-routine"
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Workout maken",
+      "title": "Hoe wil je je routine opbouwen?",
+      "subtitle": "Selecteer hoe je vandaag je routine wilt samenstellen."
+    },
+    "createFromTemplate": {
+      "title": "Workouts maken van sjabloon",
+      "message": "Dit zal afzonderlijke workout-sjablonen maken voor elke dag in dit programma. Elke workout bevat de oefeningen, sets en herhalingen die voor die dag zijn opgegeven.",
+      "confirm": "Workouts maken",
+      "cancel": "Annuleren",
+      "successMessage": "Workouts succesvol gemaakt"
+    },
+    "aiGeneration": {
+      "comingSoon": "AI workout-generatie komt binnenkort!",
+      "title": "Genereren met AI",
+      "subtitle": "Vertel ons over je doelen en we bouwen een gepersonaliseerd workout-plan",
+      "preferencesLabel": "Je voorkeuren",
+      "preferencesPlaceholder": "Bijv. ik wil spieren opbouwen, ik kan 4 dagen per week trainen, ik heb toegang tot een volledige sportschool, ik ben een gevorderde lifter...",
+      "generateButton": "Plan genereren",
+      "successMessage": "Je workout-plan is klaar! {{count}} workout(s) toegevoegd.",
+      "errorMessage": "Kon geen plan genereren. Probeer het opnieuw.",
+      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."
+    },
+    "templateBrowser": {
+      "comingSoon": "Sjabloon-browser komt binnenkort!"
+    },
+    "interruptedSession": {
+      "description": "Je hebt een workout in uitvoering.",
+      "resume": "Hervatten",
+      "discard": "Weggooien",
+      "discardConfirmTitle": "Workout weggooien?",
+      "discardConfirmMessage": "Dit zal je workout in uitvoering en alle gelogde sets permanent verwijderen.",
+      "discardConfirm": "Weggooien",
+      "discardCancel": "Behouden"
+    },
+    "unnamed": "Naamloos"
+  }
+}

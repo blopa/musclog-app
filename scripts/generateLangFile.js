@@ -13,6 +13,7 @@ const localesDir = path.join(DIRNAME, '..', 'lang', 'locales');
 const untranslatedJsonPath = path.join(localesDir, 'untranslated.json');
 const outputFilePath = path.join(DIRNAME, '..', 'lang', 'lang.ts');
 const dateFnsLocalePath = path.join(DIRNAME, '..', 'node_modules', 'date-fns', 'locale.d.ts');
+const dataDir = path.join(DIRNAME, '..', 'data');
 
 // en-us → EN_US
 function dirToConstantName(dir) {
@@ -75,6 +76,17 @@ function capitalizeLanguageLabel(label) {
 }
 
 /** Keeps `untranslated.json` in sync with locale subdirs; preserves existing non-empty labels. */
+function getExerciseFiles() {
+  try {
+    return fs
+      .readdirSync(dataDir)
+      .filter((f) => f.startsWith('exercises') && f.endsWith('.json'))
+      .sort();
+  } catch {
+    return [];
+  }
+}
+
 function writeUntranslatedJson(langDirs) {
   let existing = {};
   try {
@@ -167,6 +179,9 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
   getDateFnsLocales((dateFnsLocales) => {
     writeUntranslatedJson(langDirs);
 
+    // Get exercise files
+    const exerciseFiles = getExerciseFiles();
+
     // For each language, collect its JSON files
     const languages = langDirs.map((dir) => {
       const dirPath = path.join(localesDir, dir);
@@ -224,6 +239,42 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       return `${prefix_blank}// ${lang.dir}\n${lines.join('\n')}`;
     });
 
+    // Exercise imports
+    const exerciseImports = exerciseFiles.map((file) => {
+      const baseName = path.basename(file, '.json');
+      // Convert exercisesEnUS -> exercisesEnUs (matching the pattern from dirToVarPrefix)
+      const varName = baseName.replace(
+        /exercises([A-Z][a-z]+)([A-Z][A-Za-z]*)/,
+        (match, lang, region) => {
+          return `exercises${lang}${region.charAt(0).toUpperCase() + region.slice(1).toLowerCase()}`;
+        }
+      );
+      return `import ${varName} from '../data/${file}';`;
+    });
+
+    // Exercise exports - create a single object with language keys
+    const exerciseExports = [`export const EXERCISES_JSON = {`];
+
+    exerciseFiles.forEach((file) => {
+      const baseName = path.basename(file, '.json');
+      // Convert exercisesEnUS -> EN_US to match language constants
+      const langKey = baseName
+        .replace('exercises', '')
+        .replace(/([A-Z][a-z]+)([A-Z][A-Za-z]*)/, (match, lang, region) => {
+          return `${lang.toUpperCase()}_${region.toUpperCase()}`;
+        });
+      // Convert exercisesEnUS -> exercisesEnUs for the variable name
+      const varName = baseName.replace(
+        /exercises([A-Z][a-z]+)([A-Z][A-Za-z]*)/,
+        (match, lang, region) => {
+          return `exercises${lang}${region.charAt(0).toUpperCase() + region.slice(1).toLowerCase()}`;
+        }
+      );
+      exerciseExports.push(`  [${langKey}]: ${varName},`);
+    });
+
+    exerciseExports.push('};');
+
     // Language constants
     const constantLines = languages.map(
       (lang) => `export const ${constantName(lang)} = '${dirToLanguageTag(lang.dir)}';`
@@ -268,7 +319,13 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       jsonImportBlocks.join('\n\n'),
       '',
+      '// Exercise data',
+      ...exerciseImports,
+      '',
       constantLines.join('\n'),
+      '',
+      '// Exercise exports',
+      ...exerciseExports,
       '',
       'const resources = {',
       resourceEntries.join('\n'),

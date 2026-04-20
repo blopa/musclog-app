@@ -227,6 +227,12 @@
         "toggleSubtitle": "Обрабатывает запросы к ИИ на устройстве с помощью Apple Foundation Models. API-ключ не нужен.",
         "toggleSubtitleNotReady": "Apple Intelligence недоступна на этом устройстве. Требуется iPhone 15 Pro или новее с iOS 26 и включённой Apple Intelligence.",
         "privacyNote": "Ваши данные остаются на устройстве и никогда не отправляются на внешние серверы."
+      },
+      "musclogFreeTier": {
+        "sectionTitle": "БЕСПЛАТНЫЙ ТАРИФ MUSCLOG",
+        "toggle": "Использовать бесплатный LLM Musclog",
+        "toggleSubtitle": "Доступ к функциям ИИ без API-ключа. Действует дневной лимит запросов.",
+        "activeNote": "Бесплатный тариф активен. Ваши собственные API-ключи не используются."
       }
     },
     "visualSettings": {
