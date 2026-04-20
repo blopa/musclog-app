@@ -4,7 +4,12 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
-import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
+import {
+  ExerciseService,
+  FoodPortionService,
+  MuscleService,
+  WorkoutService,
+} from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
@@ -114,6 +119,17 @@ export function Migrations() {
 
     ExerciseService.backfillExerciseOrderIndex().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
+    );
+  }, []);
+
+  // Seed muscles catalogue and backfill exercise-muscle links for installs upgrading to v11.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    MuscleService.backfillExerciseMuscles().catch((err) =>
+      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
     );
   }, []);
 

@@ -13,12 +13,14 @@ import AiCustomPrompt from './models/AiCustomPrompt';
 import ChatMessage from './models/ChatMessage';
 import Exercise from './models/Exercise';
 import ExerciseGoal from './models/ExerciseGoal';
+import ExerciseMuscle from './models/ExerciseMuscle';
 import Food from './models/Food';
 import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
 import MenstrualCycle from './models/MenstrualCycle';
+import Muscle from './models/Muscle';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
@@ -45,6 +47,7 @@ export const database = new Database({
     AiCustomPrompt,
     Exercise,
     ExerciseGoal,
+    ExerciseMuscle,
     UserMetric,
     UserMetricsNote,
     User,
@@ -64,6 +67,7 @@ export const database = new Database({
     FoodFoodPortion,
     Meal,
     MealFood,
+    Muscle,
     NutritionLog,
     SavedForLaterGroup,
     SavedForLaterItem,

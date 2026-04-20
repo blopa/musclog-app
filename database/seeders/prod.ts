@@ -17,6 +17,7 @@ import {
   type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
+  MuscleService,
   SettingsService,
 } from '@/database/services';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
@@ -281,7 +282,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Seeded ${createdPortions.length} common food portions`);
     }
 
-    // 2. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
+    // 2. Seed muscles catalogue
+    const muscleNameToId = await MuscleService.seedMuscles();
+    console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
+
+    // 3. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
     const existingExercises = await ExerciseService.getAllExercises();
 
     if (existingExercises.length > 0) {
@@ -291,7 +296,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Seeded ${createdExercises.length} common exercises`);
     }
 
-    // 3. Seed initial chat messages with welcome messages for each context using i18n
+    // 4. Link exercises to muscles
+    await MuscleService.backfillExerciseMuscles();
+    console.log('Exercise-muscle links ready');
+
+    // 5. Seed initial chat messages with welcome messages for each context using i18n
     const existingMessages = await ChatService.getAllMessages(1, 0);
 
     if (existingMessages.length === 0) {
@@ -315,7 +324,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
     }
 
-    // 4. Migrate data from the old database if it exists (e.g. app upgrade)
+    // 6. Migrate data from the old database if it exists (e.g. app upgrade)
     const migrationService = new MigrationService();
     if (await migrationService.checkOldDatabaseExists()) {
       const result = await migrationService.migrateAll({
@@ -348,7 +357,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
 
-    // 5. Seed USDA foundation foods from CSV
+    // 7. Seed USDA foundation foods from CSV
     await seedUSDAFoundationFoods();
 
     // Set the anonymousBugReport setting to true by default
