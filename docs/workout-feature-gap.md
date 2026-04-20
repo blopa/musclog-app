@@ -190,13 +190,13 @@ Score stored as a daily user metric. Surfaced before a session starts with a sug
 ## Suggested Build Order
 
 1. **Plate calculator** — concrete everyday value for barbell users; self-contained UI.
-3. **Smart warm-up suggestions** — reduces pre-set friction; straightforward algorithm with clear volume-exclusion rules.
-4. **Left/right asymmetrical logging** — schema addition + UI; strong value for unilateral training.
-5. **Failure sets as an explicit type** — small schema change, high semantic value.
-6. **Myoreps** — niche but loyal audience; schema mirrors existing drop set pattern.
-7. **Workout sections** — adds structure to complex sessions; schema + UI change.
-8. **Daily readiness score** — requires combining existing data sources (mood + Health Connect sleep + training load).
-9. **Volume auto-adjustment** — depends on readiness score; natural follow-on.
-10. **Gym profiles** — foundational for accurate plate calculator and progression; more complex schema + settings UI.
-11. **Per-cycle periodization** — significant schema and UX work; high value for intermediate/advanced users.
-12. **Body map visualization** — SVG illustration work; compelling visual but not blocking progress.
+2. **Smart warm-up suggestions** — reduces pre-set friction; straightforward algorithm with clear volume-exclusion rules.
+3. **Left/right asymmetrical logging** — schema addition + UI; strong value for unilateral training.
+4. **Failure sets as an explicit type** — small schema change, high semantic value.
+5. **Myoreps** — niche but loyal audience; schema mirrors existing drop set pattern.
+6. **Workout sections** — adds structure to complex sessions; schema + UI change.
+7. **Daily readiness score** — requires combining existing data sources (mood + Health Connect sleep + training load).
+8. **Volume auto-adjustment** — depends on readiness score; natural follow-on.
+9. **Gym profiles** — foundational for accurate plate calculator and progression; more complex schema + settings UI.
+10. **Per-cycle periodization** — significant schema and UX work; high value for intermediate/advanced users.
+11. **Body map visualization** — SVG illustration work; compelling visual but not blocking progress.

@@ -30,6 +30,10 @@
       "weightKg": "Вес (кг)",
       "weightLbs": "Вес (фунты)",
       "restSec": "Отдых (сек)"
-    }
+    },
+    "musclesWorked": "Задействованные мышцы",
+    "frontMuscles": "Передние",
+    "backMuscles": "Задние",
+    "noMuscleData": "Нет данных о мышцах"
   }
 }

@@ -30,6 +30,10 @@
       "weightKg": "Gewicht (kg)",
       "weightLbs": "Gewicht (lbs)",
       "restSec": "Rust (sec)"
-    }
+    },
+    "musclesWorked": "Getrainde spieren",
+    "frontMuscles": "Voor",
+    "backMuscles": "Achter",
+    "noMuscleData": "Geen spiergegevens beschikbaar"
   }
 }

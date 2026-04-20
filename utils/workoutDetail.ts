@@ -34,6 +34,7 @@ export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
  * Extends Exercise model fields with UI-specific properties.
  */
 export type WorkoutExercise = Pick<Exercise, 'id' | 'name'> & {
+  muscleGroup?: string | null;
   timeSpent: number;
   iconColor: string;
   iconBgColor: string;
@@ -260,6 +261,7 @@ export async function transformWorkoutToDetailData(
       return {
         id: exerciseId,
         name: exercise.name ?? '',
+        muscleGroup: exercise.muscleGroup ?? null,
         timeSpent,
         iconColor: iconData.iconBgColor,
         iconBgColor: iconData.iconBgOpacity,

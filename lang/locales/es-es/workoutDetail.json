@@ -26,6 +26,10 @@
     "rir": "RIR (Herhalingen in reserve)",
     "syncToHealthConnect": "Synchroniseren met Health Connect",
     "shareMessage": "Ik heb net een workout afgerond met een volume van {{volume}} {{unit}} en {{calories}} calorieën verbrand",
+    "musclesWorked": "Músculos Trabajados",
+    "frontMuscles": "Frente",
+    "backMuscles": "Espalda",
+    "noMuscleData": "Sin datos musculares disponibles",
     "inputs": {
       "weightKg": "Gewicht (kg)",
       "weightLbs": "Gewicht (lbs)",

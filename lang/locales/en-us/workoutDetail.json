@@ -30,6 +30,10 @@
       "weightKg": "Weight (kg)",
       "weightLbs": "Weight (lbs)",
       "restSec": "Rest (sec)"
-    }
+    },
+    "musclesWorked": "Muscles Worked",
+    "frontMuscles": "Front",
+    "backMuscles": "Back",
+    "noMuscleData": "No muscle data available"
   }
 }

@@ -1,4 +1,4 @@
-import { ExternalLink, ScrollText, Trophy } from 'lucide-react-native';
+import { ExternalLink, PersonStanding, ScrollText, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -11,6 +11,7 @@ type ChatWorkoutCompletedCardProps = {
   duration: string;
   personalRecords: number;
   onViewDetails?: () => void;
+  onViewMuscles?: () => void;
 };
 
 export function ChatWorkoutCompletedCard({
@@ -19,6 +20,7 @@ export function ChatWorkoutCompletedCard({
   duration,
   personalRecords,
   onViewDetails,
+  onViewMuscles,
 }: ChatWorkoutCompletedCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -103,23 +105,41 @@ export function ChatWorkoutCompletedCard({
         </View>
       </View>
 
-      {/* View Details Button */}
-      {onViewDetails ? (
-        <View className="px-4 pb-4">
-          <Pressable
-            onPress={onViewDetails}
-            className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
-            style={{
-              backgroundColor: theme.colors.background.primary,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-            }}
-          >
-            <Text className="text-sm font-bold text-text-primary">
-              {t('workoutSummary.viewDetails')}
-            </Text>
-            <ExternalLink size={14} color={theme.colors.text.primary} />
-          </Pressable>
+      {/* Buttons */}
+      {onViewDetails || onViewMuscles ? (
+        <View className="gap-2 px-4 pb-4">
+          {onViewDetails ? (
+            <Pressable
+              onPress={onViewDetails}
+              className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
+              style={{
+                backgroundColor: theme.colors.background.primary,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.border.light,
+              }}
+            >
+              <Text className="text-sm font-bold text-text-primary">
+                {t('workoutSummary.viewDetails')}
+              </Text>
+              <ExternalLink size={14} color={theme.colors.text.primary} />
+            </Pressable>
+          ) : null}
+          {onViewMuscles ? (
+            <Pressable
+              onPress={onViewMuscles}
+              className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
+              style={{
+                backgroundColor: theme.colors.accent.primary10,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.accent.primary + '33',
+              }}
+            >
+              <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
+                {t('workoutSummary.viewMuscles')}
+              </Text>
+              <PersonStanding size={14} color={theme.colors.accent.primary} />
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
     </View>
