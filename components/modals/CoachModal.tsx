@@ -719,19 +719,21 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     }
   }, [visible]);
 
-  // On Android, KeyboardAvoidingView doesn't work inside a Modal.
-  // We manually track the keyboard height and apply it as padding.
+  // KeyboardAvoidingView doesn't work reliably inside a Modal on either platform.
+  // We manually track the keyboard height and apply it as padding instead.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   useEffect(() => {
-    if (Platform.OS !== 'android') {
-      return;
-    }
-    const show = Keyboard.addListener('keyboardDidShow', (e) => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const show = Keyboard.addListener(showEvent, (e) => {
       setKeyboardHeight(e.endCoordinates.height);
     });
-    const hide = Keyboard.addListener('keyboardDidHide', () => {
+
+    const hide = Keyboard.addListener(hideEvent, () => {
       setKeyboardHeight(0);
     });
+
     return () => {
       show.remove();
       hide.remove();
