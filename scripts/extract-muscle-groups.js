@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Load the exercises data
-const exercisesPath = path.join(__dirname, 'data/exercisesEnUS.json');
+const exercisesPath = path.join(__dirname, '../data/exercisesEnUS.json');
 const exercises = JSON.parse(fs.readFileSync(exercisesPath, 'utf8'));
 
 // Sets to store unique muscle groups
