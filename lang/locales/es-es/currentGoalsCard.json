@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Dagelijks doel",
+    "kcal": "kcal",
+    "protein": "Eiwit",
+    "proteinShort": "E",
+    "carbs": "Koolhydraten",
+    "carbsShort": "K",
+    "fats": "Vetten",
+    "fatsShort": "V",
+    "targetWeight": "Streefgewicht",
+    "bodyFat": "Vetpercentage",
+    "ffmi": "FFMI",
+    "bmi": "BMI",
+    "g": "g",
+    "kg": "kg",
+    "lbs": "lbs",
+    "percent": "%"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "goalsManagement": {
+    "title": "Doelenbeheer",
+    "nutritionAndBodyTab": "Voeding & Lichaam",
+    "fitnessAndExerciseTab": "Fitness & Oefening",
+    "subtitle": "Houd je voortgang en geschiedenis bij.",
+    "currentGoals": "HUIDIGE DOELEN",
+    "active": "Actief",
+    "history": "DOELENGESCHIEDENIS",
+    "newGoal": "Nieuw doel",
+    "createGoalDesc": "Stel nieuwe voedingsdoelen en macro's in",
+    "createCheckin": "Controle maken",
+    "createCheckinDesc": "Voeg een nieuwe voedingscontrole toe",
+    "emptyStateMessage": "Maak een nieuw doel om aan de slag te gaan",
+    "editGoal": "Bewerken",
+    "deleteGoalAction": "Verwijderen",
+    "deleteGoal": "Doel verwijderen",
+    "deleteGoalMessage": "Dit doel wordt permanent verwijderd uit je geschiedenis.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Weet je zeker dat je dit doel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "title": "Voedingsdoelen",
+      "searchPlaceholder": "Zoek doelen...",
+      "noGoals": "Nog geen doelen",
+      "noGoalsDesc": "Stel voedingsdoelen in om ze hier te zien",
+      "endOfHistory": "Einde van doelengeschiedenis",
+      "goalOptions": "Doelopties",
+      "editGoal": "Doel bewerken",
+      "editGoalDesc": "Calorieën, macro's en doelen wijzigen",
+      "duplicateGoal": "Doel dupliceren",
+      "duplicateGoalDesc": "Maak een kopie om als nieuw doel te gebruiken",
+      "regenerateCheckins": "Controles regenereren",
+      "regenerateCheckinsDesc": "Verwijder en maak controles voor dit doel opnieuw aan",
+      "deleteGoal": "Doel verwijderen",
+      "deleteGoalDesc": "Verwijder dit doel uit de geschiedenis",
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Doel {{targetWeight}} {{unit}}",
+      "phaseCut": "Droogtrainen",
+      "phaseMaintain": "Onderhoud",
+      "phaseBulk": "Bulken"
+    },
+    "goalCreationMethod": {
+      "title": "Nieuw doel",
+      "subtitle": "Hoe wil je je nieuwe doel instellen?",
+      "guidedTitle": "Beantwoord een paar vragen",
+      "guidedDescription": "We begeleiden je stap-voor-stap naar de juiste calorie- en macrodoelen.",
+      "recommended": "Aanbevolen",
+      "manualTitle": "Handmatig instellen",
+      "manualDescription": "Voer je calorieën, macro's en doelen direct in.",
+      "autoCalculateTitle": "Bereken het voor mij",
+      "autoCalculateDescription": "Wij berekenen je doelen met de Mifflin-St Jeor formule op basis van je profiel."
+    },
+    "goalWizard": {
+      "title": "Stel je doel in",
+      "step": "Stap {{current}} van {{total}}",
+      "next": "Volgende",
+      "back": "Terug",
+      "createGoal": "Doel maken",
+      "goalType": {
+        "title": "Wat is je hoofddoel?",
+        "subtitle": "Dit helpt ons de juiste calorie- en macrodoelen voor je aan te bevelen.",
+        "lose": "Afvallen",
+        "loseDescription": "Lichaamsvet verminderen door een calorietekort.",
+        "maintain": "Gewicht behouden",
+        "maintainDescription": "Behoud je huidige gewicht en lichaamssamenstelling.",
+        "gain": "Aankomen",
+        "gainDescription": "Spieren en kracht opbouwen met een calorieoverschot."
+      },
+      "goalWeight": {
+        "titleMain": "Wat is je",
+        "titleAccent": "streefgewicht?",
+        "subtitle": "Stel het gewicht in dat je wilt bereiken. Je huidige gewicht wordt ter referentie getoond.",
+        "label": "Streefgewicht",
+        "currentWeightLabel": "Je huidige gewicht",
+        "tipLoseBF": "Streven naar 0,5–1% van je lichaamsgewicht per week is een duurzaam tempo dat helpt spiermassa te behouden tijdens het afvallen.",
+        "tipGain": "Een toename van 0,25–0,5 kg per week houdt vettoename minimaal terwijl er toch gestage spiergroei mogelijk is."
+      },
+      "targetDate": {
+        "title": "Wanneer wil je je doel bereiken?",
+        "subtitle": "Het instellen van een deadline helpt je om je voortgang over de tijd bij te houden.",
+        "label": "Streefdatum",
+        "notSet": "Geen specifieke datum",
+        "clear": "Datum wissen"
+      }
+    },
+    "manageCheckinData": {
+      "title": "Voedingscontroles",
+      "searchPlaceholder": "Zoek controles...",
+      "noCheckins": "Nog geen controles",
+      "noCheckinsDesc": "Controles worden aangemaakt wanneer je een AI-berekend voedingsdoel instelt",
+      "endOfHistory": "Alle controles geladen",
+      "checkinOptions": "Controle-opties",
+      "editCheckin": "Controle bewerken",
+      "editCheckinDesc": "Controledoelen wijzigen",
+      "deleteCheckin": "Controle verwijderen",
+      "deleteCheckinDesc": "Deze controle permanent verwijderen",
+      "subtitleFormat": "Doel {{targetWeight}} {{unit}} • {{targetBodyFat}}% vetpercentage",
+      "checkinDate": "Controledatum"
+    },
+    "exerciseGoals": "OEFENINGSDOELEN",
+    "exerciseGoalsTitle": "Kracht & Consistentie",
+    "exerciseGoalsSubtitle": "Houd 1RM-doelen en workoutfrequentie bij"
+  }
+}

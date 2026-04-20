@@ -1,0 +1,17 @@
+{
+  "timePicker": {
+    "am": "AM",
+    "cancel": "Annuleren",
+    "clearSelection": "Selectie wissen",
+    "confirm": "Tijd instellen",
+    "confirmTime": "Tijd bevestigen",
+    "hours": "Uur",
+    "midnight": "Middernacht",
+    "minutes": "Minuten",
+    "noon": "Middag",
+    "now": "Nu",
+    "pm": "PM",
+    "selectedStartTime": "Geselecteerde starttijd",
+    "selectTime": "Selecteer tijd"
+  }
+}

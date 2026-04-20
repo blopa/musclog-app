@@ -1,0 +1,35 @@
+{
+  "workoutDetail": {
+    "totalTime": "Totale tijd",
+    "volume": "Volume",
+    "calories": "Calorieën",
+    "volumeTrend": "Volumetrend",
+    "volumeTrendPercentage": "+{{percentage}}% t.o.v. gem.",
+    "exercisesCount": "Oefeningen ({{count}})",
+    "minsSpent": "{{minutes}} min getraind",
+    "saveError": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",
+    "set": "SET",
+    "weight": "GEWICHT",
+    "reps": "HERH",
+    "partial": "GEDEELTELIJK",
+    "editSetsTitle": "Sets bewerken",
+    "reorderTitle": "Oefeningvolgorde wijzigen",
+    "editTimeTitle": "Workouttijd bewerken",
+    "startTime": "Starttijd",
+    "endTime": "Eindtijd",
+    "startDate": "Startdatum",
+    "endDate": "Einddatum",
+    "totalTimeMinutes": "Totale tijd (minuten)",
+    "addSet": "Nieuwe set toevoegen",
+    "setLabel": "Set {{index}}",
+    "remove": "Verwijderen",
+    "rir": "RIR (Herhalingen in reserve)",
+    "syncToHealthConnect": "Synchroniseren met Health Connect",
+    "shareMessage": "Ik heb net een workout afgerond met een volume van {{volume}} {{unit}} en {{calories}} calorieën verbrand",
+    "inputs": {
+      "weightKg": "Gewicht (kg)",
+      "weightLbs": "Gewicht (lbs)",
+      "restSec": "Rust (sec)"
+    }
+  }
+}

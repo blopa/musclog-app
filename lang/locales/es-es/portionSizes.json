@@ -1,0 +1,11 @@
+{
+  "portionSizes": {
+    "addNew": "Nieuwe toevoegen",
+    "noResults": "Geen resultaten",
+    "searchPlaceholder": "Porties zoeken...",
+    "selectTitle": "Selecteer portiegrootte",
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",
+    "loadMore": "Meer laden",
+    "loadingMore": "Meer laden..."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "food_food_portions": "Item Porties",
+  "createPortion": "Portie maken",
+  "createFoodPortion": "Item-portie maken",
+  "portionName": "Portienaam",
+  "portionNamePlaceholder": "bijv. Kopje, Sneetje, Stuk",
+  "weightGrams": "Gewicht (gram)",
+  "selectIcon": "Icoon selecteren",
+  "chooseIcon": "Icoon kiezen"
+}

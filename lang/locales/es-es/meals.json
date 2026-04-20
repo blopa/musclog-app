@@ -1,0 +1,65 @@
+{
+  "meals": {
+    "title": "Mijn maaltijden",
+    "filters": {
+      "all": "Alle",
+      "highProtein": "Eiwitrijk",
+      "breakfast": "Ontbijt",
+      "lunch": "Lunch"
+    },
+    "tags": {
+      "highProtein": "Eiwitrijk",
+      "ketoFriendly": "Keto-vriendelijk",
+      "vegetarian": "Vegetarisch",
+      "breakfast": "Ontbijt",
+      "lunch": "Lunch",
+      "dinner": "Diner",
+      "snack": "Snack"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} maaltijd",
+      "mealCount_other": "{{count}} maaltijden",
+      "view": "Bekijken",
+      "viewBreakfast": "Ontbijt bekijken",
+      "viewLunch": "Lunch bekijken",
+      "viewDinner": "Diner bekijken",
+      "viewSnack": "Snack bekijken",
+      "tracked": "Bijgehouden"
+    },
+    "untitledMeal": "Naamloze maaltijd",
+    "searchPlaceholder": "Maaltijden zoeken...",
+    "loadingMeals": "Maaltijden laden...",
+    "noMealsFound": "Geen maaltijden gevonden",
+    "noMealsYet": "Nog geen maaltijden",
+    "noMealsMatch": "Geen maaltijden die overeenkomen met \"{{query}}\"",
+    "createFirstMeal": "Maak je eerste maaltijd om aan de slag te gaan",
+    "tryDifferentFilter": "Probeer een ander filter",
+    "loadingMore": "Meer laden...",
+    "loadMore": "Meer laden",
+    "customMeal": "Aangepaste maaltijd",
+    "createdByYou": "Door jou gemaakt",
+    "logMeal": "Maaltijd loggen",
+    "mealType": "Maaltijdtype",
+    "history": {
+      "unknownMeal": "Onbekende maaltijd"
+    },
+    "deleteItem": {
+      "title": "Item verwijderen",
+      "message": "Weet je zeker dat je dit item wilt verwijderen?",
+      "cancel": "Annuleren",
+      "delete": "Verwijderen"
+    },
+    "unknownFood": "Onbekend",
+    "generateAI": {
+      "title": "Maaltijden genereren met AI",
+      "describeLabel": "BESCHRIJF JE VOORKEUREN",
+      "preferencesLabel": "Voorkeuren",
+      "placeholder": "bijv. Eiwitrijke maaltijden voor spieropbouw, ik heb voorkeur voor kip en rijst, vermijd zuivel...",
+      "applyLabel": "Maaltijden genereren",
+      "successMessage": "Maaltijd succesvol gemaakt!",
+      "errorMessage": "Kon geen maaltijden genereren. Probeer het opnieuw.",
+      "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
+      "generating": "Maaltijden genereren..."
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "workoutSession": {
+    "totalTime": "TOTALE TIJD",
+    "setOf": "SET {{current}} VAN {{total}}",
+    "lastSetForExercise": "Laatste set voor deze oefening",
+    "weight": "GEWICHT",
+    "reps": "HERH",
+    "kg": "kg",
+    "lb": "lb",
+    "previousSetFormat": "{{weight}} {{unit}} × {{count}} {{repsLabel}}",
+    "partials": "GEDEELTELIJK",
+    "previous": "Vorige",
+    "history": "Geschiedenis",
+    "skip": "OVERSLAAN",
+    "edit": "BEWERKEN",
+    "replace": "VERVANGEN",
+    "completeSet": "SET VOLTOOIEN",
+    "skipSet": {
+      "title": "Set overslaan?",
+      "message": "Weet je zeker dat je deze set wilt overslaan?",
+      "cancel": "Annuleren",
+      "confirm": "Ja, overslaan"
+    },
+    "notFoundTitle": "Workout niet gevonden",
+    "notFoundDescription": "Kon workoutsessie niet laden. Probeer het opnieuw.",
+    "goBack": "Terug",
+    "bodyweight": "Lichaamsgewicht",
+    "hormonalInsight": "Hormonaal inzicht",
+    "ovulationInsight": "Tijdens de eisprong kun je meer kracht en betere prestaties ervaren.",
+    "menstrualInsight": "Tijdens de menstruatie moet je mogelijk de intensiteit verlagen en je richten op herstel.",
+    "phaseInsight": "Huidige fase: {{phase}}. Intensiteitsfactor: {{multiplier}}x",
+    "fuelingInsight": "Voedingsinzicht",
+    "lowFuelingMessage": "Je hebt de afgelopen {{hours}} uur slechts {{carbs}}g koolhydraten geconsumeerd. Glycogeenvoorraden kunnen laag zijn. Richt je voor toekomstige sessies op meer koolhydraten vóór de workout. Een snelle snack nu kan nog steeds helpen bij je prestaties.",
+    "fullyFueledMessage": "Je hebt de afgelopen {{hours}} uur {{carbs}}g koolhydraten geconsumeerd. Je bent volledig opgeladen en klaar om te knallen!",
+    "missingDataTitle": "Probleem met sessiegegevens",
+    "viewOverview": "Overzicht bekijken"
+  }
+}

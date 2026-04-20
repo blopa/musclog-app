@@ -1,0 +1,41 @@
+{
+  "createWorkout": {
+    "title": "Nieuwe workout maken",
+    "save": "Opslaan",
+    "workoutIcon": "Workout-icoon",
+    "essentials": "Basis",
+    "workoutTitle": "Titel",
+    "workoutTitlePlaceholder": "bijv. Leg Day Destruction",
+    "description": "Beschrijving",
+    "descriptionPlaceholder": "Focus op quads en kuiten...",
+    "workoutType": "Workouttype",
+    "types": {
+      "strength": "Kracht",
+      "cardio": "Cardio",
+      "flexibility": "Flexibiliteit",
+      "calisthenics": "Calisthenics",
+      "other": "Overig"
+    },
+    "intelligence": "Intelligentie",
+    "workoutInsight": {
+      "title": "Workout-inzichten",
+      "description": "Kies hoe Musclog inzichten voorbereidt voor je volgende sessie. AI past zich aan op basis van herstelgegevens wanneer ingeschakeld.",
+      "none": "Geen",
+      "algorithm": "Algoritme",
+      "ai": "AI"
+    },
+    "routine": "Routine",
+    "repeatOnDays": "Herhalen op dagen",
+    "weekly": "Wekelijks",
+    "exercises": "Oefeningen",
+    "exercisesInWorkout": "Oefeningen in de workout",
+    "addExerciseError": "Oefening toevoegen mislukt",
+    "editTitle": "Workout bewerken",
+    "loadError": "Laden mislukt",
+    "noExercisesPlaceholder": "Geen oefeningen",
+    "saveError": "Opslaan mislukt",
+    "validation": {
+      "titleRequiredMessage": "Voer een titel in voor de workout"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "nutrition": {
+    "analyze": "Analyseren",
+    "calories": "Calorieën",
+    "carbs": "Koolhydraten",
+    "characters": "Tekens",
+    "confirmAndSave": "Bevestigen & Opslaan",
+    "createCustom": "Handmatig toevoegen",
+    "createCustomDesc": "Handmatig voedingsgegevens toevoegen",
+    "dailyTotals": "Dagtotalen",
+    "dateLabel": "Datum",
+    "emptyData": "Plak of voer voedingsgegevens in.",
+    "emptyDescription": "Voer een maaltijdbeschrijving in.",
+    "entriesCount": "Items",
+    "example": "Voorbeeld",
+    "fat": "Vet",
+    "fiber": "Vezels",
+    "foodNotFound": "Item niet gevonden",
+    "foodNotFoundDescription": "We konden dit item niet vinden in onze database. Wat wil je doen?",
+    "import": "Importeren",
+    "importFormatInfo": "Plak of typ je maaltijdlogboek (bijv. van een notitie of app). AI zal het parsen en items voorstellen.",
+    "importInstructions": "Plak hieronder je voedingsgegevens. Ondersteund: vrije tekst, opsommingen of gestructureerde logboeken.",
+    "importNutrition": "Voeding importeren",
+    "logPastDay": "Een eerdere dag loggen",
+    "mealDescriptionPlaceholder": "bijv. Havermout met banaan, 2 eieren, koffie met melk",
+    "pasteNutritionDataPlaceholder": "Plak voedingsgegevens hier...",
+    "processing": "Verwerken...",
+    "processingData": "Voedingsgegevens succesvol geïmporteerd.",
+    "processingDescription": "Beschrijving succesvol verwerkt.",
+    "processingFailed": "Kon de gegevens niet verwerken. Controleer het formaat en probeer het opnieuw.",
+    "protein": "Eiwit",
+    "retrospectiveExample": "bijv. Ontbijt: havermout en banaan. Lunch: kipsalade. Diner: pasta met groenten.",
+    "retrospectiveInstructions": "Beschrijf in je eigen woorden wat je die dag hebt gegeten. AI zal porties en voedingsstoffen schatten.",
+    "review": "Controleren",
+    "searchAgain": "Opnieuw zoeken",
+    "searchAgainDesc": "Probeer een andere zoekterm",
+    "tryAICamera": "AI-camera proberen",
+    "tryAICameraDesc": "Scan je maaltijd voor directe herkenning",
+    "supportedFormats": "Ondersteunde formaten",
+    "checkin": {
+      "title": "Wekelijkse controle",
+      "noCheckinFound": "Geen openstaande controles gevonden.",
+      "currentStatus": "Huidige status",
+      "onTrack": "Op schema",
+      "ahead": "Vooruit",
+      "behind": "Achterop",
+      "noCheckinFoundDesc": "Je hebt geen controles gepland voor vandaag. Kom terug op je volgende geplande controledag!",
+      "headline": {
+        "onTrack": "Ziet er goed uit!",
+        "ahead": "Je gaat sneller!",
+        "behind": "Ruimte voor verbetering"
+      },
+      "subtext": {
+        "onTrack": "Je hebt deze week een constant tempo aangehouden. Blijf doorgaan richting je doelen.",
+        "ahead": "Je loopt voor op je gewichtsdoelen! Goed werk met je consistentie.",
+        "behind": "Je had wat schommelingen deze week, maar consistentie is de sleutel. Laten we de draad weer oppakken!"
+      },
+      "weightTrend": "Gewichtstrend",
+      "target": "Doel",
+      "targetShort": "Doel: {{value}}%",
+      "weeklyBreakdown": "Wekelijkse uitsplitsing",
+      "weekProgress": "Week {{current}} van {{total}}",
+      "summaryIntro": "Je mikte op {{target}} kcal/dag, maar het gemiddelde was",
+      "summaryOutro": "Ondanks het resultaat voltooide je",
+      "workoutsCount": "workouts",
+      "noWorkouts": "geen workouts",
+      "withHighIntensity": "met hoge intensiteit.",
+      "avgIntake": "Gem. inname",
+      "consistency": "Consistentie",
+      "rate": "percentage",
+      "avgBodyFat": "Gem. vetpercentage",
+      "activeMinutes": "Actieve minuten",
+      "vsLastWeek": "{{prefix}}{{value}}% vs vorige week",
+      "adherence": "Wekelijkse naleving",
+      "summary": "Je mikte op {{targetKcal}} kcal/dag, maar het gemiddelde was {{actualKcal}} kcal/dag. Je hebt {{workouts}} workouts voltooid.",
+      "weightComparison": "Gewicht: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Je hebt deze week minder dan 4 keer je gewicht gelogd. Gemiddelden kunnen minder nauwkeurig zijn.",
+      "keepMacros": "Behoud mijn huidige macro's",
+      "readjust": "Pas mijn plan aan",
+      "nextMilestones": "Volgende mijlpaal",
+      "history": "Geschiedenis",
+      "weekTitle": "Review Week {{number}}",
+      "prepareNow": "Nu voorbereiden",
+      "noMilestones": "Geen aankomende controles. Voltooi je voedingsdoel-instellingen om te beginnen.",
+      "noHistory": "Nog geen voltooide controles.",
+      "selectYear": "Filteren op jaar",
+      "notEnoughDataWarning": "Niet genoeg gegevens gelogd deze week. Resultaten kunnen onnauwkeurig zijn.",
+      "status": {
+        "pending": "In afwachting",
+        "ahead": "Vooruit",
+        "onTrack": "Op schema",
+        "behind": "Achterop",
+        "descriptions": {
+          "pending": "Controle nog niet voltooid",
+          "ahead": "Voortgang loopt voor op doel",
+          "onTrack": "Voortgang op schema",
+          "behind": "Voortgang loopt achter op doel"
+        }
+      }
+    },
+    "common": {
+      "kcal": "kcal"
+    },
+    "aiCamera": {
+      "estimated": "Geschat",
+      "modes": {
+        "mealPhoto": "AI Maaltijd"
+      }
+    },
+    "createMeal": {
+      "estimated": "Geschat",
+      "totalNutrition": "Totale voedingswaarde"
+    },
+    "macros": {
+      "protein": "Eiwit",
+      "carbs": "Koolhydraten",
+      "fat": "Vet"
+    },
+    "mealEstimation": {
+      "title": "Maaltijdschatting",
+      "identifiedItems": "Geïdentificeerde items",
+      "addItem": "Item toevoegen",
+      "confirmAndLog": "Maaltijd bevestigen & loggen",
+      "retake": "Opnieuw maken"
+    },
+    "index": {
+      "handleSaveCustomFood": "Aangepast item succesvol opgeslagen."
+    },
+    "manageFoodData": {
+      "title": "Voedingslogboek",
+      "searchPlaceholder": "Zoeken in logboek...",
+      "noLogs": "Nog geen items gelogd",
+      "noLogsDesc": "Begin met het bijhouden van je maaltijden om ze hier te zien",
+      "endOfHistory": "Einde van voedingslogboek",
+      "foodOptions": "Item-opties",
+      "editFoodEntry": "Item bewerken",
+      "editFoodEntryDesc": "Wijzig de itemgegevens",
+      "duplicateEntry": "Item dupliceren",
+      "duplicateEntryDesc": "Maak een kopie van dit item",
+      "deleteEntry": "Item verwijderen",
+      "deleteEntryDesc": "Verwijder dit item"
+    }
+  }
+}

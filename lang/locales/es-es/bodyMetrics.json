@@ -1,0 +1,132 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Lichaamsgegevens",
+      "newMetric": "Nieuwe meting"
+    },
+    "metrics": {
+      "weight": "Gewicht",
+      "bodyFat": "Vetpercentage",
+      "body_fat": "Vetpercentage",
+      "muscle_mass": "Spiermassa",
+      "lean_body_mass": "Vetvrije massa",
+      "basal_metabolic_rate": "Basaal metabolisme (BMR)",
+      "total_calories_burned": "Totaal verbrande calorieën",
+      "active_calories_burned": "Actief verbrande calorieën",
+      "bmi": "BMI",
+      "height": "Lengte",
+      "chest": "Borstomvang",
+      "waist": "Tailleomvang",
+      "hips": "Heupomvang",
+      "arms": "Armomvang",
+      "thighs": "Bovenbeuromvang",
+      "calves": "Kuitomvang",
+      "neck": "Nekomvang",
+      "shoulders": "Schouderomvang",
+      "mood": "Stemming",
+      "ffmi": "FFMI",
+      "nutrition": "Voeding",
+      "exercise": "Oefening",
+      "other": "Overig",
+      "descriptions": {
+        "weight": "Houd je lichaamsgewicht bij over de tijd",
+        "body_fat": "Percentage lichaamsvetmassa",
+        "muscle_mass": "Totale skeletspiermassa",
+        "lean_body_mass": "Lichaamsgewicht minus vetmassa",
+        "basal_metabolic_rate": "Verbrande calorieën in volledige rust",
+        "total_calories_burned": "Totaal dagelijks energieverbruik",
+        "active_calories_burned": "Calorieën verbrand door activiteit",
+        "bmi": "Body Mass Index gebaseerd op lengte en gewicht",
+        "height": "Je staande lengte",
+        "chest": "Meting van de borstomtrek",
+        "waist": "Meting van de tailleomtrek",
+        "hips": "Meting van de heupomtrek",
+        "arms": "Meting van de bovenarmomtrek",
+        "thighs": "Meting van de bovenbeuromtrek",
+        "calves": "Meting van de kuitomtrek",
+        "neck": "Meting van de nekomtrek",
+        "shoulders": "Meting van de schouderomtrek",
+        "mood": "Je algehele stemming en welzijn",
+        "ffmi": "Fat-Free Mass Index",
+        "nutrition": "Dagelijks voedingslogboek",
+        "exercise": "Logboek voor fysieke activiteit en oefening",
+        "other": "Andere lichaamsmetingen"
+      }
+    },
+    "current": {
+      "label": "HUIDIG"
+    },
+    "history": {
+      "title": "Geschiedenis",
+      "filter": "Filteren",
+      "loadMore": "Meer laden",
+      "loadingMore": "Laden...",
+      "notes": {
+        "baseline": "Nulmeting",
+        "noChange": "Geen wijziging",
+        "decreased": "Afgenomen",
+        "increased": "Toegenomen"
+      },
+      "filters": {
+        "title": "Geschiedenis filteren",
+        "sortOrder": {
+          "title": "SORTEERVOLGORDE",
+          "newestFirst": "Nieuwste eerst",
+          "oldestFirst": "Oudste eerst"
+        },
+        "trend": {
+          "title": "TREND",
+          "all": "Alle",
+          "increased": "Toegenomen",
+          "decreased": "Afgenomen",
+          "noChange": "Geen wijziging"
+        },
+        "reset": "Reset",
+        "apply": "Filters toepassen"
+      }
+    },
+    "dateFormats": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren"
+    },
+    "noDataAvailable": "Geen gegevens beschikbaar",
+    "noHistoryDataAvailable": "Geen geschiedenis beschikbaar",
+    "manageMetricData": {
+      "title": "Metingsgeschiedenis",
+      "searchPlaceholder": "Zoek op type meting...",
+      "noEntries": "Nog geen metingen",
+      "noEntriesDesc": "Voeg lichaamsmetingen toe om ze hier te zien",
+      "endOfHistory": "Einde van metingsgeschiedenis",
+      "metricOptions": "Metingsopties",
+      "editEntry": "Meting bewerken",
+      "editEntryDesc": "Wijzig waarde en datum",
+      "duplicateEntry": "Meting dupliceren",
+      "duplicateEntryDesc": "Maak een kopie met een nieuwe datum",
+      "deleteEntry": "Meting verwijderen",
+      "deleteEntryDesc": "Verwijder deze meting"
+    },
+    "addEntry": {
+      "title": "Meting toevoegen",
+      "enterType": "Type invoeren",
+      "description": "Leg een nieuwe lichaamsmeting vast",
+      "enterWeight": "Gewicht invoeren",
+      "enterBodyFat": "Vetpercentage invoeren",
+      "enterHeight": "Lengte invoeren",
+      "date": "Datum",
+      "time": "Tijd",
+      "moodQuestion": "Hoe voel je je vandaag?",
+      "moods": {
+        "0": "Slecht",
+        "1": "Matig",
+        "2": "Oké",
+        "3": "Goed",
+        "4": "Geweldig"
+      },
+      "saveEntry": "Meting opslaan",
+      "saveSuccess": "Meting succesvol opgeslagen",
+      "errorSaving": "Fout bij opslaan",
+      "note": "Notitie",
+      "notePlaceholder": "Voeg een notitie toe..."
+    }
+  }
+}

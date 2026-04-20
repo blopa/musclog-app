@@ -1,0 +1,15 @@
+{
+  "datePicker": {
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "month": "Maand",
+    "nextMonday": "Volgende maandag",
+    "selectDate": "Selecteer datum",
+    "selectMonthYear": "Selecteer maand en jaar",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "year": "Jaar",
+    "xYearsAgo": "{{count}} jaar geleden",
+    "yesterday": "Gisteren"
+  }
+}

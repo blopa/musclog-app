@@ -1,0 +1,81 @@
+{
+  "workout": {
+    "import": {
+      "characters": "Tekens",
+      "emptyData": "Plak of voer workoutgegevens in.",
+      "formatInfo": "Plak of typ je workoutlogboek (bijv. van een notitie of app). AI zal het parsen en sessies maken.",
+      "import": "Importeren",
+      "importWorkouts": "Workouts importeren",
+      "instructions": "Plak hieronder je workoutgegevens. Ondersteund: vrije tekst, opsommingen of gestructureerde logboeken.",
+      "pasteWorkoutDataPlaceholder": "Plak workoutgegevens hier...",
+      "processing": "Verwerken...",
+      "processingData": "Workouts succesvol geïmporteerd.",
+      "processingFailed": "Kon de gegevens niet verwerken. Controleer het formaat en probeer het opnieuw.",
+      "supportedFormats": "Ondersteunde formaten"
+    },
+    "sessionOverview": "Sessieoverzicht",
+    "startWorkout": "Workout starten",
+    "resumeSession": "Sessie hervatten",
+    "workout": "Workout",
+    "inProgress": "In uitvoering",
+    "type": {
+      "strength": "Kracht",
+      "cardio": "Cardio",
+      "flexibility": "Flexibiliteit",
+      "calisthenics": "Calisthenics",
+      "other": "Overig",
+      "free": "Vrij"
+    },
+    "exercises": "{{count}} oefeningen",
+    "workoutSequence": "Workoutvolgorde",
+    "skipped": "OVERGESLAGEN",
+    "startFromExercise": {
+      "title": "Starten vanaf oefening",
+      "message": "Wil je de workout starten vanaf {{exerciseName}}?",
+      "confirm": "Vanaf hier starten",
+      "cancel": "Annuleren"
+    },
+    "summary": {
+      "failedToLoad": "Laden mislukt",
+      "noWorkoutId": "Geen workout-ID",
+      "unableToLoad": "Niet in staat om te laden",
+      "feedbackReceived": "Workout-feedback succesvol ingediend.",
+      "failedToGetFeedback": "Kon geen feedback ophalen. Probeer het opnieuw."
+    },
+    "muscleGroups": {
+      "chest": "Borst",
+      "back": "Rug",
+      "legs": "Benen",
+      "shoulders": "Schouders",
+      "arms": "Armen",
+      "core": "Core",
+      "abdomen": "Buik",
+      "glutes": "Billen",
+      "fullBody": "Hele lichaam",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Onderarmen",
+      "abs": "Buikspieren",
+      "quads": "Quads",
+      "hamstrings": "Hamstrings",
+      "calves": "Kuiten",
+      "full_body": "Hele lichaam",
+      "cardio": "Cardio",
+      "other": "Overig"
+    },
+    "exerciseTypes": {
+      "compound": "Compound",
+      "isolation": "Isolatie",
+      "bodyweight": "Lichaamsgewicht",
+      "machine": "Machine",
+      "dumbbell": "Dumbbell",
+      "barbell": "Barbell",
+      "cable": "Kabel",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Weerstandsband",
+      "medicine_ball": "Medicijnbal",
+      "smith_machine": "Smith-machine",
+      "other": "Overig"
+    }
+  }
+}

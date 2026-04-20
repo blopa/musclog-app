@@ -1,0 +1,22 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Verbinding Time-out",
+      "description": "We konden de Musclog-servers niet bereiken. Controleer je internetverbinding.",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "failedToLoadData": "Gegevens laden mislukt",
+    "somethingWentWrong": "Er is iets misgegaan",
+    "genericDescription": "Er is een onverwachte fout opgetreden.",
+    "reload": "Herladen",
+    "aiCreditsError": "AI-servicequotum overschreden. Controleer je API-sleutel of probeer het later opnieuw.",
+    "aiProcessingError": "Sorry, ik had moeite om dat verzoek te verwerken. Probeer het over een moment opnieuw.",
+    "aiProcessingErrorTitle": "Fout bij verwerken verzoek",
+    "gatewayDailyLimitError": "Dagelijkse gratis AI-limiet bereikt. Probeer het morgen opnieuw of voeg je eigen API-sleutel toe bij de AI-instellingen.",
+    "gatewayDailyLimitErrorTitle": "Dagelijkse limiet bereikt",
+    "databaseError": {
+      "title": "Databasefout",
+      "description": "Er is een databasefout opgetreden. Foutrapportage is ingeschakeld om dit probleem te helpen oplossen."
+    }
+  }
+}

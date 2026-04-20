@@ -1,0 +1,18 @@
+{
+  "editPersonalInfo": {
+    "title": "Persoonlijke info bewerken",
+    "fullName": "Volledige naam",
+    "fullNamePlaceholder": "bijv. Alex de Vries",
+    "emailAddress": "E-mailadres",
+    "emailPlaceholder": "bijv. alex@voorbeeld.nl",
+    "dateOfBirth": "Geboortedatum",
+    "dateOfBirthPlaceholder": "DD-MM-JJJJ",
+    "gender": "Geslacht",
+    "male": "Man",
+    "female": "Vrouw",
+    "other": "Anders",
+    "chooseAvatar": "Avatar kiezen",
+    "chooseColor": "Kleur kiezen",
+    "saveChanges": "Wijzigingen opslaan"
+  }
+}

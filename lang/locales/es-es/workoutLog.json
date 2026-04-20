@@ -1,0 +1,24 @@
+{
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "deleteLogWarning": "Weet je zeker dat je dit workout-logboek wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "title": "Workout-logboek beheren",
+      "searchPlaceholder": "Sessies zoeken...",
+      "noWorkoutLogs": "Nog geen workout-logboeken",
+      "noWorkoutLogsDesc": "Voltooi workouts om ze hier te zien",
+      "endOfHistory": "Einde van workout-geschiedenis",
+      "workoutLogOptions": "Workout-opties",
+      "editWorkoutLog": "Workout bewerken",
+      "editWorkoutLogDesc": "Workoutgegevens wijzigen",
+      "duplicateWorkoutLog": "Workout dupliceren",
+      "duplicateWorkoutLogDesc": "Maak een kopie van deze workout",
+      "deleteWorkoutLog": "Workout verwijderen",
+      "deleteWorkoutLogDesc": "Verwijder dit workout-logboek",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Voltooid",
+      "statusInProgress": "In uitvoering",
+      "volumeFormat": "{{volume}} {{unit}}",
+      "unknownWorkout": "Onbekende workout"
+    }
+  }
+}
