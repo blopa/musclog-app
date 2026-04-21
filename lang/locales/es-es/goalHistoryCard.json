@@ -3,10 +3,10 @@
     "kcal": "KCAL",
     "proteinPrefix": "P",
     "carbsPrefix": "C",
-    "fatPrefix": "F",
+    "fatPrefix": "G",
     "g": "g",
     "kg": "kg",
     "lbs": "lbs",
-    "bf": "BF"
+    "bf": "GC"
   }
 }
