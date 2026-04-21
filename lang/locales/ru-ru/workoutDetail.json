@@ -1,5 +1,6 @@
 {
   "workoutDetail": {
+    "secondaryFocus": "Второстепенный фокус",
     "totalTime": "Общее время",
     "volume": "Объём",
     "calories": "Калории",

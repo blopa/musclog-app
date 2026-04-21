@@ -1,5 +1,6 @@
 {
   "workoutDetail": {
+    "secondaryFocus": "Secondary Focus",
     "totalTime": "Total Time",
     "volume": "Volume",
     "calories": "Calories",

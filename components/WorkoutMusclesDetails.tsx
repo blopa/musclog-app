@@ -68,6 +68,7 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
               areaToImprove={areaToImprove}
               size={260}
               className="mb-2"
+              secondaryLabel={t('workoutDetail.secondaryFocus')}
             />
             <View className="mb-4 items-center">
               <View className="bg-background-secondary rounded-full px-4 py-1.5">
