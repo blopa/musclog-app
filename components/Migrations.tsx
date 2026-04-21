@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
+import { waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseService,
   FoodPortionService,
@@ -131,9 +132,9 @@ export function Migrations() {
       return;
     }
 
-    MuscleService.backfillExerciseMuscles().catch((err) =>
-      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
-    );
+    waitForDbReady()
+      .then(() => MuscleService.backfillExerciseMuscles())
+      .catch((err) => console.warn('[MuscleService] backfillExerciseMuscles error:', err));
   }, []);
 
   // Web fallback for the v7 migration: replace file:// exercise image URIs with

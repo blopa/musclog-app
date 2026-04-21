@@ -13,7 +13,7 @@ import type { Units } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
+import { EnrichedWorkoutLogSet, MuscleService, WorkoutService } from '@/database/services';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -305,7 +305,7 @@ function SetsTable({ sets }: SetsTableProps) {
 type ExerciseCardProps = {
   exercise: WorkoutExercise;
   onEdit?: (exerciseId?: string) => void;
-  onInfo?: (muscleGroup: string | null | undefined) => void;
+  onInfo?: (exerciseId: string) => void;
   onClose?: () => void;
 };
 
@@ -347,7 +347,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
           <MenuButton
             size="md"
             color={theme.colors.text.tertiary}
-            onPress={() => onInfo?.(exercise.muscleGroup)}
+            onPress={() => onInfo?.(exercise.id)}
             icon={Info}
             className="h-10 w-10"
           />
@@ -373,7 +373,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
 type ExercisesSectionProps = {
   exercises: WorkoutExercise[];
   onEdit?: (exerciseId?: string) => void;
-  onInfo?: (muscleGroup: string | null | undefined) => void;
+  onInfo?: (exerciseId: string) => void;
   onClose?: () => void;
 };
 
@@ -452,7 +452,7 @@ export default function PastWorkoutDetailModal({
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
-  const [musclesModalGroups, setMusclesModalGroups] = useState<(string | null | undefined)[]>([]);
+  const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
     workoutLog: WorkoutLog;
     sets: EnrichedWorkoutLogSet[];
@@ -649,8 +649,14 @@ export default function PastWorkoutDetailModal({
             setEditingExerciseId(exerciseId);
             setIsEditModalVisible(true);
           }}
-          onInfo={(muscleGroup) => {
-            setMusclesModalGroups([muscleGroup]);
+          onInfo={async (exerciseId) => {
+            try {
+              const muscles = await MuscleService.getMusclesForExercise(exerciseId);
+              setMusclesModalGroups(muscles.map((m) => m.name));
+            } catch (err) {
+              console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
+              setMusclesModalGroups([]);
+            }
             setIsMusclesModalVisible(true);
           }}
           onClose={onClose}

@@ -55,7 +55,6 @@ export const MUSCLE_TO_SLUGS: Record<string, MuscleSlug[]> = {
   lateral_deltoid: ['deltoids'],
   lats: ['upper-back'],
   lower_traps: ['trapezius'],
-  pectineus: ['adductors'],
   pectoralis_major: ['chest'],
   posterior_deltoid: ['deltoids'],
   quadratus_lumborum: ['lower-back'],

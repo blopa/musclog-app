@@ -62,7 +62,7 @@ import {
 } from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
-import { ChatService, WorkoutService } from '@/database/services';
+import { ChatService, MuscleService, WorkoutService } from '@/database/services';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -901,9 +901,17 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const handleViewMuscles = useCallback(async (workoutLogId: string, workoutName: string) => {
     try {
       const { exercises } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-      const groups = exercises.map((e) => e.muscleGroup).filter(Boolean) as string[];
+      const exerciseIds = exercises.map((e) => e.id);
+      const musclesByExercise = await MuscleService.getMusclesForExercises(exerciseIds);
+      const muscleNames = [
+        ...new Set(
+          Array.from(musclesByExercise.values())
+            .flat()
+            .map((m) => m.name)
+        ),
+      ];
       setMusclesWorkoutName(workoutName);
-      setMusclesModalGroups(groups);
+      setMusclesModalGroups(muscleNames);
       setIsMusclesModalVisible(true);
     } catch (err) {
       console.error('Failed to load workout muscles:', err);
