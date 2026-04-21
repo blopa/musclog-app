@@ -1,31 +1,31 @@
 {
   "cycle": {
-    "title": "Focus van de dag",
-    "nextPeriod": "Volgende menstruatie",
-    "insightsAndLog": "Cyclus-inzichten & Logboek",
-    "dailyLog": "Dagelijks logboek",
-    "flowIntensity": "Hevigheid van menstruatie",
-    "symptomsTitle": "Symptomen",
-    "noLogsToday": "Geen symptomen gelogd voor vandaag.",
-    "logSymptoms": "Symptomen loggen",
-    "logDaily": "Dagelijks cyclus-logboek",
+    "title": "Enfoque del ciclo de hoy",
+    "nextPeriod": "Predicción del próximo periodo",
+    "insightsAndLog": "Información y registro del ciclo",
+    "dailyLog": "Registro diario",
+    "flowIntensity": "Intensidad del flujo",
+    "symptomsTitle": "Síntomas",
+    "noLogsToday": "No se han registrado síntomas para hoy.",
+    "logSymptoms": "Registrar síntomas",
+    "logDaily": "Registro diario del ciclo",
     "settings": {
-      "title": "Cyclus-instellingen",
-      "subtitle": "Bewerk je cyclusconfiguratie",
-      "save": "Wijzigingen opslaan"
+      "title": "Ajustes del ciclo",
+      "subtitle": "Edita la configuración de tu ciclo",
+      "save": "Guardar cambios"
     },
     "symptoms": {
-      "cramps": "Krampen",
-      "headache": "Hoofdpijn",
-      "bloating": "Opgeblazen gevoel",
-      "moodSwings": "Stemmingswisselingen",
-      "fatigue": "Vermoeidheid"
+      "cramps": "Calambres",
+      "headache": "Dolor de cabeza",
+      "bloating": "Hinchazón",
+      "moodSwings": "Cambios de humor",
+      "fatigue": "Fatiga"
     },
     "phase": {
-      "menstrual": "Menstruatie",
-      "follicular": "Folliculaire fase",
-      "ovulatory": "Ovulatie",
-      "luteal": "Luteale fase"
+      "menstrual": "Menstrual",
+      "follicular": "Folicular",
+      "ovulatory": "Ovulatoria",
+      "luteal": "Lútea"
     }
   }
 }

@@ -1,8 +1,8 @@
 {
   "eatingPhaseBadge": {
-    "cutting": "DROOGTRAINEN",
-    "maintenance": "ONDERHOUD",
-    "bulking": "BULKEN",
+    "cutting": "Definición",
+    "maintenance": "Mantenimiento",
+    "bulking": "Volumen",
     "lean-bulk": "LEAN BULK"
   }
 }

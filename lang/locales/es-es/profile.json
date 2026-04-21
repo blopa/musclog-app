@@ -1,46 +1,46 @@
 {
   "profile": {
     "header": {
-      "title": "Profiel"
+      "title": "Perfil"
     },
-    "goal": "Doel",
-    "currentStats": "Huidige gegevens",
-    "history": "Geschiedenis",
-    "management": "Beheer",
-    "loading": "Laden...",
+    "goal": "Objetivo",
+    "currentStats": "Current Stats",
+    "history": "Historial",
+    "management": "Management",
+    "loading": "Cargando...",
     "syncing": {
-      "healthKit": "Synchroniseren met HealthKit..."
+      "healthKit": "Syncing with HealthKit..."
     },
     "bmiStatus": {
-      "underweight": "Ondergewicht",
-      "normal": "Gezond gewicht",
-      "overweight": "Overgewicht",
-      "obese": "Obesitas"
+      "underweight": "Underweight",
+      "normal": "Normal weight",
+      "overweight": "Overweight",
+      "obese": "Obese"
     },
     "gender": {
-      "male": "Man",
-      "female": "Vrouw",
-      "other": "Anders"
+      "male": "Male",
+      "female": "Female",
+      "other": "Otro"
     },
     "managementItems": {
-      "editPersonal": "Persoonlijke info bewerken",
-      "editPersonalDesc": "Werk je naam, avatar en persoonlijke gegevens bij",
-      "editFitness": "Fitnessgegevens bewerken",
-      "editFitnessDesc": "Werk je fitnessdoelen en voorkeuren bij",
-      "appPreferences": "App-voorkeuren",
-      "appPreferencesDesc": "Pas app-instellingen en voorkeuren aan"
+      "editPersonal": "Editar Personal Info",
+      "editPersonalDesc": "Update Tu name, avatar, and personal details",
+      "editFitness": "Editar Fitness Details",
+      "editFitnessDesc": "Update Tu fitness goals and preferences",
+      "appPreferences": "App Preferences",
+      "appPreferencesDesc": "Customize app ajustes and preferences"
     },
     "stats": {
-      "weight": "Gewicht",
-      "height": "Lengte",
-      "bodyFat": "Vetpercentage",
-      "bmi": "BMI",
-      "age": "Leeftijd",
-      "gender": "Geslacht"
+      "weight": "Peso",
+      "height": "Altura",
+      "bodyFat": "Grasa corporal",
+      "bmi": "IMC",
+      "age": "Age",
+      "gender": "Gender"
     },
     "weightPrediction": {
-      "title": "Voorspeld gewicht",
-      "subtitle": "Geschat op basis van TDEE en je calorie-inname sinds laatste weging"
+      "title": "Predicted Weight",
+      "subtitle": "Estimated from TDEE and Tu calorie tracking since last weigh-in"
     }
   }
 }

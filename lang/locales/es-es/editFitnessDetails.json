@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Fitnessgegevens bewerken",
-    "units": "Eenheden",
-    "imperial": "Imperiaal",
-    "metric": "Metrisch",
-    "bodyStats": "Lichaamsgegevens",
-    "gender": "Geslacht",
-    "male": "Man",
-    "female": "Vrouw",
-    "other": "Anders",
-    "currentWeight": "Huidig gewicht",
-    "height": "Lengte",
-    "fatPercentage": "Vetpercentage",
-    "fatPercentageNotSet": "Niet ingesteld — tik om in te voeren",
-    "goalsStrategy": "Doelen & Strategie",
-    "fitnessGoal": "Fitnessdoel",
-    "eatingPhase": "Eetfase",
-    "cut": "Droogtrainen",
-    "maintain": "Onderhoud",
-    "bulk": "Bulken",
-    "lifestyleContext": "Levensstijl",
-    "activityLevel": "Activiteitsniveau",
-    "liftingExperience": "Trainingservaring",
-    "saveChanges": "Wijzigingen opslaan",
-    "selectGoal": "Selecteer fitnessdoel",
-    "selectGoalSubtitle": "Kies het doel dat het beste bij je training past",
-    "selectActivity": "Selecteer activiteitsniveau",
-    "selectActivitySubtitle": "Kies op basis van je hele dag, niet alleen je workouts",
+    "title": "Editar Fitness Details",
+    "units": "Unidades",
+    "imperial": "Imperial",
+    "metric": "Métrico",
+    "bodyStats": "Body Stats",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Otro",
+    "currentWeight": "Current Weight",
+    "height": "Altura",
+    "fatPercentage": "Body Fat Percentage",
+    "fatPercentageNotSet": "Not set — tap to enter",
+    "goalsStrategy": "Goals & Strategy",
+    "fitnessGoal": "Fitness objetivo",
+    "eatingPhase": "Fase de alimentación",
+    "cut": "Cut",
+    "maintain": "Maintain",
+    "bulk": "Bulk",
+    "lifestyleContext": "Lifestyle Context",
+    "activityLevel": "Nivel de actividad",
+    "liftingExperience": "Lifting Experience",
+    "saveChanges": "Guardar cambios",
+    "selectGoal": "Seleccionar Fitness objetivo",
+    "selectGoalSubtitle": "Choose the objetivo that best fits Tu training",
+    "selectActivity": "Seleccionar Activity Level",
+    "selectActivitySubtitle": "Pick based on Tu whole day, not just workouts",
     "activityLevelLabels": {
-      "sedentary": "Inactief",
-      "light": "Licht actief",
-      "moderate": "Gemiddeld actief",
-      "active": "Actief",
-      "superActive": "Zeer actief"
+      "sedentary": "Sedentary",
+      "light": "Light",
+      "moderate": "Moderate",
+      "active": "Activo",
+      "superActive": "Super Active"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Zittend werk, minder dan 5.000 stappen per dag, geen regelmatige lichaamsbeweging",
-      "light": "Zittend werk. Sportschool of lichte inspanning 2–4×/week, maar verder weinig beweging. De meeste kantoormedewerkers vallen hieronder",
-      "moderate": "Veel op de been (docent, winkel, zorg) EN 3–5×/week sporten, of 7.500–10.000+ stappen per dag",
-      "active": "Fysiek veeleisend werk (bouw, zorg) of dagelijkse intensieve training met veel beweging gedurende de dag",
-      "superActive": "Zwaar fysiek werk (constructie, landbouw, leger) plus regelmatige training — de hele dag zwaar in beweging"
+      "sedentary": "Desk or sit-down job, under 5,000 steps/day, no regular exercise",
+      "light": "Desk job or mostly sitting. Gym or light exercise 2–4×/week but low movement otherwise. Most office workers who exercise fall here",
+      "moderate": "On Tu feet a good part of the day (teacher, retail, nurse) AND exercise 3–5×/week, or 7,500–10,000+ steps/day",
+      "active": "Physically demanding job (trades, healthcare) or daily intense training with high movement all day",
+      "superActive": "Hard physical job (construction, farming, military) plus regular training — moving heavily most of the day"
     },
-    "weightGoal": "Jouw doel",
+    "weightGoal": "Tu objetivo",
     "weightGoalLabels": {
-      "lose": "Afvallen",
-      "maintain": "Gewicht behouden",
-      "gain": "Spieren opbouwen"
+      "lose": "Lose weight",
+      "maintain": "Maintain",
+      "gain": "Gain muscle"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrofie (spieropbouw)",
-      "strength": "Kracht (zwaarder tillen)",
-      "endurance": "Uithoudingsvermogen",
-      "weightLoss": "Gewichtsverlies (vet verbranden)",
-      "general": "Algemene fitness"
+      "hypertrophy": "Hypertrophy (Build Muscle)",
+      "strength": "Strength (Lift Heavier)",
+      "endurance": "Endurance (Stamina)",
+      "weightLoss": "Weight Loss (Burn Fat)",
+      "general": "General Fitness"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus op spiergrootte en definitie",
-      "strength": "Focus op maximale kracht en power",
-      "endurance": "Focus op cardiovasculaire conditie",
-      "weightLoss": "Focus op vetverlies en strakker worden",
-      "general": "Behoud van algemene gezondheid en welzijn"
+      "hypertrophy": "Focus on muscle size and definition",
+      "strength": "Focus on maximum strength and power",
+      "endurance": "Focus on cardiovascular fitness",
+      "weightLoss": "Focus on fat loss and toning",
+      "general": "Maintain overall health and wellness"
     },
     "experienceLabels": {
       "beginner": "Beginner",
-      "intermediate": "Gevorderd",
-      "advanced": "Expert"
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
     },
     "experienceDescriptions": {
-      "beginner": "Nieuw met consequente training. Nog bezig met het leren van bewegingen en maakt wekelijks snel krachtwinst",
-      "intermediate": "Vertrouwd met de belangrijkste oefeningen. Traint 1–3 jaar consequent, vooruitgang komt eerder maandelijks dan wekelijks",
-      "advanced": "3+ jaar gestructureerde, consequente training. Vooruitgang is traag en zwaarbevochten — dicht bij je krachtpotentieel"
+      "beginner": "Nuevo to consistent training. Still learning movements and gaining strength quickly week to week",
+      "intermediate": "Comfortable with main lifts. Training consistently for 1–3 years, progreso comes monthly rather than weekly",
+      "advanced": "3+ years of structured, consistent training. progreso is slow and hard-earned — near Tu strength potential"
     }
   }
 }

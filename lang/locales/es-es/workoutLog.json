@@ -1,24 +1,24 @@
 {
   "workoutLog": {
     "manageWorkoutLogData": {
-      "deleteLogWarning": "Weet je zeker dat je dit workout-logboek wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-      "title": "Workout-logboek beheren",
-      "searchPlaceholder": "Sessies zoeken...",
-      "noWorkoutLogs": "Nog geen workout-logboeken",
-      "noWorkoutLogsDesc": "Voltooi workouts om ze hier te zien",
-      "endOfHistory": "Einde van workout-geschiedenis",
-      "workoutLogOptions": "Workout-opties",
-      "editWorkoutLog": "Workout bewerken",
-      "editWorkoutLogDesc": "Workoutgegevens wijzigen",
-      "duplicateWorkoutLog": "Workout dupliceren",
-      "duplicateWorkoutLogDesc": "Maak een kopie van deze workout",
-      "deleteWorkoutLog": "Workout verwijderen",
-      "deleteWorkoutLogDesc": "Verwijder dit workout-logboek",
+      "deleteLogWarning": "Are you sure you want to Eliminar this entrenamiento log? This action cannot be undone.",
+      "title": "Gestionar entrenamiento Log datos",
+      "searchPlaceholder": "Buscar entrenamiento sessions...",
+      "noWorkoutLogs": "No entrenamiento logs yet",
+      "noWorkoutLogsDesc": "Complete workouts to see them here",
+      "endOfHistory": "End of entrenamiento historial",
+      "workoutLogOptions": "entrenamiento Options",
+      "editWorkoutLog": "Editar entrenamiento",
+      "editWorkoutLogDesc": "Modify entrenamiento details",
+      "duplicateWorkoutLog": "Duplicate entrenamiento",
+      "duplicateWorkoutLogDesc": "Crear a copy of this entrenamiento",
+      "deleteWorkoutLog": "Eliminar entrenamiento",
+      "deleteWorkoutLogDesc": "Remove this entrenamiento log",
       "detailFormat": "{{status}} • {{volume}}",
-      "statusCompleted": "Voltooid",
-      "statusInProgress": "In uitvoering",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In progreso",
       "volumeFormat": "{{volume}} {{unit}}",
-      "unknownWorkout": "Onbekende workout"
+      "unknownWorkout": "Unknown entrenamiento"
     }
   }
 }

@@ -1,41 +1,41 @@
 {
   "createWorkout": {
-    "title": "Nieuwe workout maken",
-    "save": "Opslaan",
-    "workoutIcon": "Workout-icoon",
-    "essentials": "Basis",
-    "workoutTitle": "Titel",
-    "workoutTitlePlaceholder": "bijv. Leg Day Destruction",
-    "description": "Beschrijving",
-    "descriptionPlaceholder": "Focus op quads en kuiten...",
-    "workoutType": "Workouttype",
+    "title": "Crear Nuevo entrenamiento",
+    "save": "Guardar",
+    "workoutIcon": "Icono del entrenamiento",
+    "essentials": "Esenciales",
+    "workoutTitle": "Título del entrenamiento",
+    "workoutTitlePlaceholder": "ej. Destrucción de piernas",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Enfoque en cuádriceps y gemelos...",
+    "workoutType": "Tipo de entrenamiento",
     "types": {
-      "strength": "Kracht",
+      "strength": "Fuerza",
       "cardio": "Cardio",
-      "flexibility": "Flexibiliteit",
-      "calisthenics": "Calisthenics",
-      "other": "Overig"
+      "flexibility": "Flexibilidad",
+      "calisthenics": "Calistenia",
+      "other": "Otro"
     },
-    "intelligence": "Intelligentie",
+    "intelligence": "Inteligencia",
     "workoutInsight": {
-      "title": "Workout-inzichten",
-      "description": "Kies hoe Musclog inzichten voorbereidt voor je volgende sessie. AI past zich aan op basis van herstelgegevens wanneer ingeschakeld.",
-      "none": "Geen",
-      "algorithm": "Algoritme",
-      "ai": "AI"
+      "title": "Información del entrenamiento",
+      "description": "Elige cómo Musclog prepara la información para tu próxima sesión. La IA se adapta basándose en los datos de recuperación cuando está habilitada.",
+      "none": "Ninguno",
+      "algorithm": "Algoritmo",
+      "ai": "IA"
     },
-    "routine": "Routine",
-    "repeatOnDays": "Herhalen op dagen",
-    "weekly": "Wekelijks",
-    "exercises": "Oefeningen",
-    "exercisesInWorkout": "Oefeningen in de workout",
-    "addExerciseError": "Oefening toevoegen mislukt",
-    "editTitle": "Workout bewerken",
-    "loadError": "Laden mislukt",
-    "noExercisesPlaceholder": "Geen oefeningen",
-    "saveError": "Opslaan mislukt",
+    "routine": "Rutina",
+    "repeatOnDays": "Repetir los días",
+    "weekly": "Semanal",
+    "exercises": "Ejercicios",
+    "exercisesInWorkout": "Ejercicios en el entrenamiento",
+    "addExerciseError": "Error al añadir ejercicio",
+    "editTitle": "Editar entrenamiento",
+    "loadError": "Error al cargar",
+    "noExercisesPlaceholder": "Sin ejercicios",
+    "saveError": "Error al guardar",
     "validation": {
-      "titleRequiredMessage": "Voer een titel in voor de workout"
+      "titleRequiredMessage": "Por favor, introduce un título para el entrenamiento"
     }
   }
 }

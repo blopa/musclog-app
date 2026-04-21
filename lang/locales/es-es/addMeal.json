@@ -1,11 +1,10 @@
 {
   "addMeal": {
-    "createMeal": "Maaltijd maken",
-    "createMealDesc": "Voeg een nieuwe maaltijd toe aan je dagboek",
-    "generateMealAI": "Maaltijd genereren met AI",
-    "generateMealAIDesc": "Laat AI een maaltijd voorstellen op basis van je voorkeuren",
-    "manageCategories": "Categorieën beheren",
-    "manageCategoriesDesc": "Organiseer je maaltijdcategorieën (ontbijt, lunch, enz.)",
-    "title": "Maaltijd toevoegen"
+    "createMeal": "Crear comida",
+    "generateMealAI": "Generar comida con IA",
+    "generateMealAIDesc": "Deja que la IA sugiera una comida basada en tus preferencias",
+    "manageCategories": "Gestionar categorías",
+    "manageCategoriesDesc": "Organiza tus categorías de comida (desayuno, almuerzo, etc.)",
+    "title": "Añadir comida"
   }
 }
