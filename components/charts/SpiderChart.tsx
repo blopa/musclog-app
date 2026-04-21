@@ -1,4 +1,4 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
@@ -21,6 +21,8 @@ export type SpiderChartProps = {
   centerScore?: number;
   /** Label below center score (e.g. "PTS") */
   centerScoreLabel?: string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
   /** Primary focus label (e.g. "Power Output") */
   primaryFocus?: string;
   /** Area to improve label (e.g. "Flexibility") */
@@ -66,13 +68,16 @@ export function SpiderChart({
   dataColor,
   dataFillOpacity = 0.15,
   centerScore,
-  centerScoreLabel = 'PTS',
+  centerScoreLabel,
+  primaryLabel,
+  secondaryLabel,
   primaryFocus,
   areaToImprove,
   gridLevels = 4,
   size = 300,
   className,
 }: SpiderChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const DEFAULT_DATA_COLOR = theme.colors.status.emeraldLight;
@@ -244,7 +249,7 @@ export function SpiderChart({
                   marginTop: 2,
                 }}
               >
-                {centerScoreLabel}
+                {centerScoreLabel || t('spiderChart.defaultScoreLabel')}
               </Text>
             </View>
           </View>
@@ -261,7 +266,14 @@ export function SpiderChart({
           }}
         >
           {primaryFocus != null ? (
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.md,
+              }}
+            >
               <View
                 style={{
                   width: 4,
@@ -273,16 +285,16 @@ export function SpiderChart({
               <View>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xxs ?? 10,
+                    fontSize: theme.typography.fontSize.xxs,
                     textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >
-                  Primary Focus
+                  {primaryLabel || t('spiderChart.primaryFocus')}
                 </Text>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xs ?? 12,
+                    fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                     color: textPrimary,
                   }}
@@ -293,7 +305,14 @@ export function SpiderChart({
             </View>
           ) : null}
           {areaToImprove != null ? (
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.base,
+              }}
+            >
               <View
                 style={{
                   width: 4,
@@ -305,16 +324,16 @@ export function SpiderChart({
               <View>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xxs ?? 10,
+                    fontSize: theme.typography.fontSize.xxs,
                     textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >
-                  Area to Improve
+                  {secondaryLabel || t('spiderChart.areaToImprove')}
                 </Text>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xs ?? 12,
+                    fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                     color: textPrimary,
                   }}
