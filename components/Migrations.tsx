@@ -127,14 +127,19 @@ export function Migrations() {
   // boot but is a cheap no-op once all exercises are linked. New installs also
   // hit this path, but seedProductionData already called backfillExerciseMuscles
   // during setup — the no-op exit path costs only two DB reads.
+  //
+  // No waitForDbReady() here: upgrading users never trigger unsafeResetDatabase,
+  // so there is no ErrorAdapter race. Consistent with syncAppExercises above.
+  // On a fresh install the rare ErrorAdapter error is caught and logged; the
+  // backfill already ran inside seedProductionData by that point anyway.
   useEffect(() => {
     if (isStaticExport) {
       return;
     }
 
-    waitForDbReady()
-      .then(() => MuscleService.backfillExerciseMuscles())
-      .catch((err) => console.warn('[MuscleService] backfillExerciseMuscles error:', err));
+    MuscleService.backfillExerciseMuscles().catch((err) =>
+      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
+    );
   }, []);
 
   // Web fallback for the v7 migration: replace file:// exercise image URIs with
