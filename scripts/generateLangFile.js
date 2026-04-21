@@ -80,7 +80,9 @@ function getExerciseFiles() {
   try {
     return fs
       .readdirSync(dataDir)
-      .filter((f) => f.startsWith('exercises') && f.endsWith('.json'))
+      .filter(
+        (f) => f.startsWith('exercises') && f.endsWith('.json') && f !== 'exercisesData.json'
+      )
       .sort();
   } catch {
     return [];
