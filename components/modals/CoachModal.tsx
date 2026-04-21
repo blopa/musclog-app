@@ -903,13 +903,21 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       const { exercises } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
       const exerciseIds = exercises.map((e) => e.id);
       const musclesByExercise = await MuscleService.getMusclesForExercises(exerciseIds);
-      const muscleNames = [
-        ...new Set(
-          Array.from(musclesByExercise.values())
-            .flat()
-            .map((m) => m.name)
-        ),
-      ];
+
+      let muscleNames: string[];
+      if (musclesByExercise.size > 0) {
+        muscleNames = [
+          ...new Set(
+            Array.from(musclesByExercise.values())
+              .flat()
+              .map((m) => m.name)
+          ),
+        ];
+      } else {
+        // Backfill may not have run yet — fall back to coarse muscle groups
+        muscleNames = [...new Set(exercises.map((e) => e.muscleGroup).filter(Boolean) as string[])];
+      }
+
       setMusclesWorkoutName(workoutName);
       setMusclesModalGroups(muscleNames);
       setIsMusclesModalVisible(true);

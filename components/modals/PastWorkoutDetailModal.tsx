@@ -652,7 +652,13 @@ export default function PastWorkoutDetailModal({
           onInfo={async (exerciseId) => {
             try {
               const muscles = await MuscleService.getMusclesForExercise(exerciseId);
-              setMusclesModalGroups(muscles.map((m) => m.name));
+              if (muscles.length > 0) {
+                setMusclesModalGroups(muscles.map((m) => m.name));
+              } else {
+                // Backfill may not have run yet — fall back to coarse muscle group
+                const ex = workout.exercises.find((e) => e.id === exerciseId);
+                setMusclesModalGroups(ex?.muscleGroup ? [ex.muscleGroup] : []);
+              }
             } catch (err) {
               console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
               setMusclesModalGroups([]);
