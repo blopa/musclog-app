@@ -32,6 +32,8 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
 
+import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
+
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -453,6 +455,34 @@ export default function PastWorkoutDetailModal({
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
   const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
+  const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!workout) {
+      return;
+    }
+
+    async function loadAllMuscles() {
+      const collected: string[] = [];
+      for (const exercise of workout!.exercises) {
+        try {
+          const muscles = await MuscleService.getMusclesForExercise(exercise.id);
+          if (muscles.length > 0) {
+            collected.push(...muscles.map((m) => m.name));
+          } else if (exercise.muscleGroup) {
+            collected.push(exercise.muscleGroup);
+          }
+        } catch {
+          if (exercise.muscleGroup) {
+            collected.push(exercise.muscleGroup);
+          }
+        }
+      }
+      setAllWorkoutMuscles([...new Set(collected)]);
+    }
+
+    loadAllMuscles();
+  }, [workout]);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
     workoutLog: WorkoutLog;
     sets: EnrichedWorkoutLogSet[];
@@ -637,6 +667,10 @@ export default function PastWorkoutDetailModal({
             }
             onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
           />
+        ) : null}
+
+        {allWorkoutMuscles.length > 0 ? (
+          <WorkoutMusclesDetails muscleGroups={allWorkoutMuscles} />
         ) : null}
 
         <ExercisesSection
