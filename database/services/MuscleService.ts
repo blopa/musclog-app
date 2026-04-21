@@ -1,15 +1,20 @@
 import { Q } from '@nozbe/watermelondb';
 
+import exercisesData from '@/data/exercisesData.json';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
 import i18n, { EXERCISES_JSON } from '@/lang/lang';
 
-interface ExerciseJsonData {
-  name: string;
-  muscleGroup: string;
+interface ExerciseDataEntry {
+  exerciseIndex: number;
   targetMuscles?: string[];
+}
+
+interface ExerciseLocaleEntry {
+  exerciseIndex: number;
+  name: string;
 }
 
 // Canonical muscle catalogue — single source of truth for seeding.
@@ -353,14 +358,20 @@ export class MuscleService {
    *   where the map is already in hand).
    */
   static async backfillExerciseMuscles(muscleNameToId?: Map<string, string>): Promise<void> {
-    // Build name->targetMuscles map from all language JSONs (EN is authoritative;
-    // other locales fill gaps for exercises that might only appear in one locale)
+    // Build exerciseIndex->targetMuscles from the shared data file
+    const indexToTargetMuscles = new Map<number, string[]>(
+      (exercisesData as ExerciseDataEntry[])
+        .filter((d) => d.targetMuscles?.length)
+        .map((d) => [d.exerciseIndex, d.targetMuscles!])
+    );
+
+    // Build name->targetMuscles across all locales using locale names + data file muscles
     const nameToTargetMuscles = new Map<string, string[]>();
     for (const lang of Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]) {
-      for (const ex of EXERCISES_JSON[lang]) {
-        const data = ex as ExerciseJsonData;
-        if (data.targetMuscles?.length) {
-          nameToTargetMuscles.set(data.name.toLowerCase(), data.targetMuscles);
+      for (const ex of EXERCISES_JSON[lang] as ExerciseLocaleEntry[]) {
+        const muscles = indexToTargetMuscles.get(ex.exerciseIndex);
+        if (muscles?.length) {
+          nameToTargetMuscles.set(ex.name.toLowerCase(), muscles);
         }
       }
     }

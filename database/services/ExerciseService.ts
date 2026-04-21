@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import exercisesData from '@/data/exercisesData.json';
 import { database } from '@/database';
 import Exercise, {
   type EquipmentType,
@@ -13,19 +14,42 @@ import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 import { MuscleService } from './MuscleService';
 
-const exercisesLocale = (
-  i18n.language in EXERCISES_JSON ? i18n.language : EN_US
-) as keyof typeof EXERCISES_JSON;
-const exercisesJson = EXERCISES_JSON[exercisesLocale];
-
 interface ExerciseJsonData {
   name: string;
+  description: string;
   muscleGroup: string;
   type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
-  description: string;
   targetMuscles?: string[];
   loadMultiplier?: number;
 }
+
+const exercisesDataMap = new Map(exercisesData.map((d) => [d.exerciseIndex, d]));
+
+function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): ExerciseJsonData[] {
+  const result: ExerciseJsonData[] = [];
+  for (const localeEntry of EXERCISES_JSON[locale]) {
+    const data = exercisesDataMap.get(localeEntry.exerciseIndex);
+    if (!data) {
+      continue;
+    }
+
+    result.push({
+      name: localeEntry.name,
+      description: localeEntry.description,
+      muscleGroup: data.muscleGroup,
+      type: data.type as ExerciseJsonData['type'],
+      targetMuscles: data.targetMuscles,
+      loadMultiplier: data.loadMultiplier,
+    });
+  }
+
+  return result;
+}
+
+const exercisesLocale = (
+  i18n.language in EXERCISES_JSON ? i18n.language : EN_US
+) as keyof typeof EXERCISES_JSON;
+const exercisesJson = buildMergedExercisesJson(exercisesLocale);
 
 export class ExerciseService {
   /**
@@ -550,12 +574,7 @@ export class ExerciseService {
   static async backfillExerciseOrderIndex(): Promise<void> {
     const nameToIndexMaps = (Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]).map(
       (lang) =>
-        new Map(
-          EXERCISES_JSON[lang].map((ex, index) => [
-            (ex as ExerciseJsonData).name.toLowerCase(),
-            index,
-          ])
-        )
+        new Map(buildMergedExercisesJson(lang).map((ex, index) => [ex.name.toLowerCase(), index]))
     );
 
     // Find app exercises without order_index (null/undefined)

@@ -1,1574 +1,917 @@
 [
   {
     "name": "Press de banca",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un ejercicio de pecho en el que presionas una barra hacia arriba mientras estás acostado en un banco.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 1
+    "exerciseIndex": 1
   },
   {
     "name": "Press de banca inclinado",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Una variación del press de banca realizada en un banco inclinado para trabajar la parte superior del pecho.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 2
   },
   {
     "name": "Press de banca declinado",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Una variación del press de banca realizada en un banco declinado para trabajar la parte inferior del pecho.",
-    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
-    "loadMultiplier": 1.1
+    "exerciseIndex": 3
   },
   {
     "name": "Press militar de hombros",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un ejercicio de hombros en el que presionas un peso por encima de la cabeza mientras estás de pie o sentado.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 4
   },
   {
     "name": "Peso muerto",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de cuerpo completo que consiste en levantar una barra desde el suelo hasta una posición de pie.",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
-    "loadMultiplier": 1.8
+    "exerciseIndex": 5
   },
   {
     "name": "Máquina de aperturas de pecho",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Un ejercicio en máquina que aísla los músculos del pecho imitando el movimiento de una apertura.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 6
   },
   {
     "name": "Máquina de extensión de piernas",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los cuádriceps extendiendo las piernas desde una posición sentada.",
-    "targetMuscles": ["quadriceps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 7
   },
   {
     "name": "Sentadilla",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que flexionas las rodillas y las caderas para bajar el cuerpo y luego vuelves a levantarte.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 8
   },
   {
     "name": "Sentadilla trasera con barra",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que flexionas las rodillas y las caderas para bajar el cuerpo, con una barra colocada en la parte superior de la espalda, y luego vuelves a levantarte.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 9
   },
   {
     "name": "Prensa de piernas",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina en el que empujas un peso lejos de ti usando las piernas.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 3.5
+    "exerciseIndex": 10
   },
   {
     "name": "Jalón al pecho",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja la parte superior de la espalda tirando de una barra hacia abajo hacia el pecho.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 11
   },
   {
     "name": "Dominada",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Un ejercicio para la parte superior del cuerpo en el que levantas el cuerpo hasta una barra usando los músculos de la espalda y los brazos.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 12
   },
   {
     "name": "Remo sentado",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los músculos de la espalda tirando de un manillar hacia el torso mientras estás sentado.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 13
   },
   {
     "name": "Curl de bíceps",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de brazo que trabaja los bíceps levantando un peso hacia el hombro.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 14
   },
   {
     "name": "Extensión de tríceps sobre la cabeza",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de brazo que trabaja los tríceps extendiendo el brazo por el codo.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 15
   },
   {
     "name": "Máquina de curl de piernas",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los isquiotibiales flexionando las piernas hacia los glúteos.",
-    "targetMuscles": ["hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 16
   },
   {
     "name": "Elevación lateral",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro en el que levantas pesas hacia los lados del cuerpo.",
-    "targetMuscles": ["lateral_deltoid"],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 17
   },
   {
     "name": "Elevación frontal",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro en el que levantas pesas hacia la parte delantera del cuerpo.",
-    "targetMuscles": ["anterior_deltoid"],
-    "loadMultiplier": 0.08
+    "exerciseIndex": 18
   },
   {
     "name": "Elevación de talones",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los músculos de la pantorrilla levantando los talones del suelo.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 19
   },
   {
     "name": "Curl martillo",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de brazo similar al curl de bíceps, pero con un agarre neutro.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.18
+    "exerciseIndex": 20
   },
   {
     "name": "Curl predicador",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una variación del curl de bíceps realizada en un banco predicador para aislar los bíceps.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 21
   },
   {
     "name": "Extensión de tríceps en polea alta",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de brazo que trabaja los tríceps empujando un accesorio de cable hacia abajo.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 22
   },
   {
     "name": "Máquina de press de pecho",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Un ejercicio en máquina que imita el press de banca.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 23
   },
   {
     "name": "Sentadilla en máquina Smith",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Una variación de sentadilla realizada en una máquina Smith para mayor estabilidad.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.3
+    "exerciseIndex": 24
   },
   {
     "name": "Remo en barra T",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de espalda en el que tiras de una barra en T hacia el torso.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 25
   },
   {
     "name": "Remo inclinado",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de espalda en el que te flexionas por la cintura y tiras de un peso hacia el torso.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 26
   },
   {
     "name": "Remo al mentón",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un ejercicio de hombro en el que tiras de un peso hacia arriba a lo largo de la parte delantera del cuerpo.",
-    "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 27
   },
   {
     "name": "Aperturas con mancuernas",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Un ejercicio de pecho en el que bajas y levantas mancuernas hacia los lados mientras estás acostado en un banco.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.15
+    "exerciseIndex": 28
   },
   {
     "name": "Press inclinado con mancuernas",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un ejercicio de pecho similar al press de banca inclinado pero usando mancuernas.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 29
   },
   {
     "name": "Press de hombros en máquina",
-    "muscleGroup": "shoulders",
-    "type": "machine",
     "description": "Un ejercicio de hombro realizado en una máquina que imita el press militar.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 30
   },
   {
     "name": "Aperturas invertidas en máquina",
-    "muscleGroup": "shoulders",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los deltoides posteriores imitando el movimiento de una apertura invertida.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 31
   },
   {
     "name": "Cruce de poleas",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Un ejercicio de pecho que trabaja la parte interna del pecho tirando de cables a través del cuerpo.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 32
   },
   {
     "name": "Elevación de talones sentado",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Un ejercicio de pantorrilla realizado mientras estás sentado, trabajando el músculo sóleo.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 33
   },
   {
     "name": "Elevación de talones de pie",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Un ejercicio de pantorrilla realizado de pie, trabajando el músculo gastrocnemio.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 34
   },
   {
     "name": "Peso muerto rumano",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de peso muerto que trabaja los isquiotibiales y los glúteos.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 1
+    "exerciseIndex": 35
   },
   {
     "name": "Puente de glúteo",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los glúteos levantando las caderas del suelo mientras estás acostado de espaldas.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 36
   },
   {
     "name": "Empuje de cadera",
-    "muscleGroup": "glutes",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los glúteos levantando las caderas del suelo con los hombros apoyados en un banco.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 37
   },
   {
     "name": "Curl de bíceps en polea",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de brazo que trabaja los bíceps flexionando un accesorio de cable.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 38
   },
   {
     "name": "Press de hombros con mancuernas",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un ejercicio de hombro en el que presionas mancuernas por encima de la cabeza.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 39
   },
   {
     "name": "Press de banca en máquina Smith",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Una variación del press de banca realizada en una máquina Smith para mayor estabilidad.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 1
+    "exerciseIndex": 40
   },
   {
     "name": "Sentadilla Hack",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Una variación de sentadilla realizada en una máquina de sentadilla hack para trabajar los cuádriceps.",
-    "targetMuscles": ["quadriceps", "glutes"],
-    "loadMultiplier": 1.5
+    "exerciseIndex": 41
   },
   {
     "name": "Zancada inversa",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que das un paso hacia atrás para realizar una zancada.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 42
   },
   {
     "name": "Step-up",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que subes a una plataforma elevada.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 43
   },
   {
     "name": "Balanceo con pesa rusa",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un ejercicio de cuerpo completo que consiste en balancear una pesa rusa entre las piernas y hasta la altura de los hombros.",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 44
   },
   {
     "name": "Sentadilla Goblet",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de sentadilla realizada mientras sostienes un peso frente al pecho.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 45
   },
   {
     "name": "Peso muerto sumo",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de peso muerto con una postura ancha que trabaja la parte interna de los muslos y los glúteos.",
-    "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.8
+    "exerciseIndex": 46
   },
   {
     "name": "Máquina de abducción de cadera",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja la parte externa de los muslos separando las piernas.",
-    "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 47
   },
   {
     "name": "Máquina de aducción de cadera",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja la parte interna de los muslos juntando las piernas.",
-    "targetMuscles": ["adductors", "pectoralis_major"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 48
   },
   {
     "name": "Face pull en polea",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro que trabaja los deltoides posteriores tirando de un accesorio de cable hacia la cara.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 49
   },
   {
     "name": "Aperturas inclinadas con mancuernas",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Un ejercicio de pecho realizado en un banco inclinado que trabaja la parte superior del pecho.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.15
+    "exerciseIndex": 50
   },
   {
     "name": "Fondos",
-    "muscleGroup": "arms",
-    "type": "bodyweight",
     "description": "Un ejercicio de pecho y tríceps en el que bajas y levantas el cuerpo usando barras paralelas.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0
+    "exerciseIndex": 51
   },
   {
     "name": "Flexiones",
-    "muscleGroup": "chest",
-    "type": "bodyweight",
     "description": "Un ejercicio de pecho, hombros y tríceps en el que empujas el cuerpo hacia arriba desde el suelo.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0
+    "exerciseIndex": 52
   },
   {
     "name": "Plancha",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de core en el que mantienes una posición de flexión durante un tiempo determinado.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
-    "loadMultiplier": 0
+    "exerciseIndex": 53
   },
   {
     "name": "Giro ruso",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de oblicuos en el que giras el torso de un lado a otro mientras sostienes un peso.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "rectus_abdominis",
-      "transverse_abdominis"
-    ],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 54
   },
   {
     "name": "Elevación de piernas colgado",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Un ejercicio abdominal en el que levantas las piernas mientras cuelgas de una barra.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 55
   },
   {
     "name": "Escaladores",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
     "description": "Un ejercicio de cuerpo completo en el que realizas un movimiento de carrera mientras estás en posición de plancha.",
-    "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 56
   },
   {
     "name": "Burpees",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
     "description": "Un ejercicio de cuerpo completo que incluye una sentadilla, un salto y una flexión.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "rectus_abdominis",
-      "triceps",
-      "shoulders"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 57
   },
   {
     "name": "Salto al cajón",
-    "muscleGroup": "legs",
-    "type": "plyometric",
     "description": "Un ejercicio pliométrico para la parte inferior del cuerpo en el que saltas sobre una plataforma elevada.",
-    "targetMuscles": ["quadriceps", "glutes", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 58
   },
   {
     "name": "Levantamiento turco",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un ejercicio de cuerpo completo que consiste en pasar de estar acostado a estar de pie mientras sostienes un peso por encima de la cabeza.",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 59
   },
   {
     "name": "Paseo del granjero",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un ejercicio en el que caminas mientras sostienes pesas pesadas en cada mano.",
-    "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 60
   },
   {
     "name": "Arrancada",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico en el que levantas una barra desde el suelo hasta por encima de la cabeza en un solo movimiento.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 61
   },
   {
     "name": "Dos tiempos",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico en el que levantas una barra desde el suelo hasta los hombros y luego por encima de la cabeza.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 62
   },
   {
     "name": "Cuerdas de batalla",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un ejercicio en el que creas ondas con cuerdas pesadas para desarrollar fuerza y resistencia.",
-    "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
-    "loadMultiplier": 0
+    "exerciseIndex": 63
   },
   {
     "name": "Máquina de abdominales",
-    "muscleGroup": "abdomen",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los músculos abdominales imitando el movimiento de un encogimiento.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 64
   },
   {
     "name": "Remo en máquina con apoyo en el pecho",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Un ejercicio de espalda realizado en una máquina en el que remas con el pecho apoyado en una almohadilla, trabajando los músculos de la parte superior y media de la espalda.",
-    "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 65
   },
   {
     "name": "Remo con barra",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de espalda en el que tiras de una barra hacia el torso mientras estás inclinado.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 66
   },
   {
     "name": "Press francés (Rompecráneos)",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de tríceps en el que bajas una barra hacia la frente y la extiendes de nuevo hacia arriba.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 67
   },
   {
     "name": "Sentadilla búlgara",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que realizas una sentadilla dividida con el pie trasero elevado en un banco.",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 68
   },
   {
     "name": "Press Pallof",
-    "muscleGroup": "core",
-    "type": "isolation",
     "description": "Un ejercicio de core que consiste en presionar un cable o banda de resistencia lejos del cuerpo para resistir la rotación.",
-    "targetMuscles": [
-      "rectus_abdominis",
-      "internal_obliques",
-      "external_obliques",
-      "transverse_abdominis"
-    ],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 69
   },
   {
     "name": "Elevación de rodillas colgado",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Un ejercicio abdominal en el que levantas las rodillas hacia el pecho mientras cuelgas de una barra.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 70
   },
   {
     "name": "Press Landmine",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un ejercicio de hombro en el que presionas una barra anclada en un extremo en un accesorio landmine.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 71
   },
   {
     "name": "Remo Landmine",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de espalda en el que tiras de una barra anclada en un extremo en un accesorio landmine hacia tu torso.",
-    "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 72
   },
   {
     "name": "Elevación de talones burro",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Un ejercicio de pantorrilla en el que levantas los talones mientras estás inclinado con peso en la parte baja de la espalda.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 73
   },
   {
     "name": "Saltar a la comba",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que consiste en saltar sobre una cuerda mientras pasa por debajo de tus pies y por encima de tu cabeza.",
-    "targetMuscles": ["calves", "glutes", "quadriceps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 74
   },
   {
     "name": "Correr",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que consiste en trotar o correr una distancia.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 75
   },
   {
     "name": "Ciclismo",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que consiste en montar en bicicleta, ya sea estática o en movimiento.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 76
   },
   {
     "name": "Máquina de remo",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que imita la acción de remar en un bote, usando una máquina.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 77
   },
   {
     "name": "Bicicleta elíptica",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular realizado en una máquina que imita el caminar o correr sin causar una presión excesiva en las articulaciones.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 78
   },
   {
     "name": "Entrenamiento de intervalos de alta intensidad (HIIT)",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Una forma de ejercicio cardiovascular que alterna períodos cortos de ejercicio anaeróbico intenso con períodos de recuperación menos intensos.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 79
   },
   {
     "name": "Máquina de escaleras",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular realizado en una máquina que imita el movimiento de subir escaleras.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 80
   },
   {
     "name": "Aeróbic",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Una forma de ejercicio cardiovascular que incluye actividades rítmicas, a menudo realizadas con música.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 81
   },
   {
     "name": "Cardio baile",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que involucra varios movimientos y rutinas de baile para elevar el ritmo cardíaco.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 82
   },
   {
     "name": "Shadow boxing",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Un ejercicio cardiovascular que consiste en lanzar puñetazos al aire para aumentar el ritmo cardíaco y mejorar la aptitud cardiovascular.",
-    "targetMuscles": [
-      "rectus_abdominis",
-      "external_obliques",
-      "anterior_deltoid",
-      "lateral_deltoid",
-      "biceps",
-      "triceps"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 83
   },
   {
     "name": "Jalón al pecho con agarre estrecho",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Una variación de jalón al pecho donde usas un agarre estrecho para trabajar los músculos internos de la espalda.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 84
   },
   {
     "name": "Jalón al pecho supinado",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Una variación de jalón al pecho donde usas un agarre supinado para trabajar los bíceps y la parte superior de la espalda.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 85
   },
   {
     "name": "Pullover en polea",
-    "muscleGroup": "back",
-    "type": "isolation",
     "description": "Un ejercicio de espalda en el que tiras de una barra de cable desde arriba de tu cabeza hacia tus caderas, enfocándote en los dorsales.",
-    "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 86
   },
   {
     "name": "Pullover con mancuerna",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un ejercicio versátil que trabaja el pecho y los dorsales bajando y levantando una mancuerna sobre tu cabeza mientras estás acostado en un banco.",
-    "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 87
   },
   {
     "name": "Press de banca con agarre invertido",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Una variación de press de banca donde usas un agarre invertido para enfatizar la parte superior del pecho y los tríceps.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 88
   },
   {
     "name": "Press de pecho en polea",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Un ejercicio de pecho en el que presionas un accesorio de cable hacia adelante, similar a un press de banca, pero con tensión constante.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 89
   },
   {
     "name": "Elevación frontal en polea",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro en el que levantas un accesorio de cable hacia adelante, trabajando los deltoides anteriores.",
-    "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0.08
+    "exerciseIndex": 90
   },
   {
     "name": "Elevación lateral en polea",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro en el que levantas un accesorio de cable hacia un lado, trabajando los deltoides laterales.",
-    "targetMuscles": ["lateral_deltoid", "traps"],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 91
   },
   {
     "name": "Remo con mancuerna a una mano",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un ejercicio de espalda en el que remas una mancuerna hacia tu torso mientras estás inclinado, enfocándote en cada lado individualmente.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 92
   },
   {
     "name": "Encogimientos con mancuernas",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio de hombro que trabaja el trapecio encogiendo los hombros mientras sostienes mancuernas.",
-    "targetMuscles": ["traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 93
   },
   {
     "name": "Curl de piernas acostado",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Un ejercicio en máquina que trabaja los isquiotibiales flexionando las piernas hacia los glúteos mientras estás acostado boca abajo.",
-    "targetMuscles": ["hamstrings", "calves"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 94
   },
   {
     "name": "Buenos días",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que te flexionas por las caderas para bajar el torso, trabajando los isquiotibiales y los glúteos.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 95
   },
   {
     "name": "Sentadilla Zercher",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de sentadilla en la que sostienes la barra en el hueco de los codos, enfatizando los cuádriceps y el núcleo.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
-    "loadMultiplier": 1
+    "exerciseIndex": 96
   },
   {
     "name": "Sentadilla Sissy",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Una variación de sentadilla enfocada en los cuádriceps realizada con un banco de sentadilla sissy o inclinándose hacia atrás sobre las puntas de los pies.",
-    "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 97
   },
   {
     "name": "Peso muerto Jefferson",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de peso muerto en la que te colocas a horcajadas sobre la barra, enfocándote en los cuádriceps, glúteos y el núcleo.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 98
   },
   {
     "name": "Sentadilla Cosaca",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo en el que realizas una zancada lateral profunda, trabajando la parte interna de los muslos y los glúteos.",
-    "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 99
   },
   {
     "name": "Dragon Flag",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de core avanzado en el que bajas y levantas tu cuerpo en línea recta mientras estás acostado en un banco.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 100
   },
   {
     "name": "Mantenimiento de cuerpo hueco",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de core en el que mantienes una posición hueca, con la zona lumbar presionada contra el suelo y los brazos y las piernas extendidos.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 101
   },
   {
     "name": "Encogimiento inverso",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Un ejercicio abdominal en el que flexionas las caderas hacia el pecho, enfocándote en los abdominales inferiores.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 102
   },
   {
     "name": "Despliegue con rueda abdominal",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de core que consiste en rodar una rueda abdominal lejos de tu cuerpo mientras mantienes un núcleo estable.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 103
   },
   {
     "name": "Flexión en pica",
-    "muscleGroup": "shoulders",
-    "type": "bodyweight",
     "description": "Un ejercicio de hombro en el que realizas una flexión en posición de pica, enfatizando los hombros.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 104
   },
   {
     "name": "Encogimiento en polea",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Un ejercicio abdominal en el que realizas un movimiento de encogimiento con un accesorio de cable para mayor resistencia.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 105
   },
   {
     "name": "Patada de tríceps con mancuerna",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un ejercicio de aislamiento de tríceps en el que te inclinas hacia adelante, mantienes el brazo fijo y extiendes el codo para mover la mancuerna hacia atrás.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 106
   },
   {
     "name": "Patada de tríceps con dos mancuernas",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una variación de patada de tríceps usando una mancuerna en cada brazo con el mismo patrón de extensión de codo inclinada.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 107
   },
   {
     "name": "Patada de tríceps con mancuerna sentado inclinado",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una patada de tríceps realizada sentado mientras te inclinas hacia adelante para apoyar el torso e aislar la extensión del codo.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 108
   },
   {
     "name": "Patada de tríceps con mancuerna en banco inclinado",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una patada de tríceps realizada boca abajo en un banco inclinado para apoyar el pecho y reducir el impulso.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 109
   },
   {
     "name": "Patada de tríceps en polea",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una patada de tríceps usando un cable bajo, manteniendo el brazo paralelo al suelo mientras te extiendes contra la línea de tracción.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28
+    "exerciseIndex": 110
   },
   {
     "name": "Patada de tríceps en polea alta",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un patrón de patada de tríceps con el cable colocado más alto para que el ángulo de tracción enfatice la cabeza larga de manera diferente.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.26
+    "exerciseIndex": 111
   },
   {
     "name": "Patada de glúteo en polea",
-    "muscleGroup": "glutes",
-    "type": "isolation",
     "description": "Un ejercicio de extensión de cadera en el que balanceas la pierna de trabajo hacia atrás contra un cable bajo sujeto al tobillo o una correa para el pie.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 112
   },
   {
     "name": "Máquina de patada de glúteo",
-    "muscleGroup": "glutes",
-    "type": "machine",
     "description": "Una patada de glúteo guiada por máquina que carga la extensión del glúteo a través de una palanca acolchada o plataforma.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.45
+    "exerciseIndex": 113
   },
   {
     "name": "Patada de glúteo con banda",
-    "muscleGroup": "glutes",
-    "type": "isolation",
     "description": "Una patada de glúteo realizada con una banda de resistencia anclada baja o enrollada alrededor de los pies para la extensión de la cadera.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.12
+    "exerciseIndex": 114
   },
   {
     "name": "Patada de glúteo en cuadrupedia con peso corporal",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Una patada de glúteo con el peso corporal desde manos y rodillas, extendiendo una cadera directamente hacia atrás con una contracción controlada en la parte superior.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 115
   },
   {
     "name": "Patada de glúteo de pie con peso corporal",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Una patada de cadera de pie extendiendo la pierna detrás del cuerpo sin equipo, a menudo con una ligera inclinación hacia adelante para mantener el equilibrio.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 116
   },
   {
     "name": "Curl de bíceps concentrado",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un curl de bíceps realizado sentado con el codo apoyado contra la parte interna del muslo, flexionando una mancuerna hacia el hombro en un arco estricto.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 117
   },
   {
     "name": "Press de banca con mancuernas",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un press horizontal acostado en un banco con mancuernas, permitiendo trayectorias de brazos independientes y un estiramiento profundo en la parte inferior.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 118
   },
   {
     "name": "Press de banca declinado con mancuernas",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un press de pecho con mancuernas realizado en un banco declinado para enfatizar la parte inferior del pecho mientras se presiona con una trayectoria de brazo de neutra a inclinada.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.32
+    "exerciseIndex": 119
   },
   {
     "name": "Press de banca con agarre cerrado",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un press de banca con un agarre más estrecho para desplazar más carga hacia los tríceps mientras se sigue entrenando el pecho y los hombros anteriores.",
-    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 120
   },
   {
     "name": "Press Arnold",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un press con mancuernas sentado o de pie que gira desde las palmas hacia adentro en la parte inferior hasta las palmas hacia adelante por encima de la cabeza, trabajando todas las cabezas del deltoides.",
-    "targetMuscles": [
-      "anterior_deltoid",
-      "lateral_deltoid",
-      "posterior_deltoid",
-      "triceps",
-      "upper_traps"
-    ],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 121
   },
   {
     "name": "Push Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un press por encima de la cabeza que utiliza una ligera flexión e impulso de las piernas para acelerar la barra, permitiendo cargas más pesadas que un press estricto.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
-    "loadMultiplier": 0.55
+    "exerciseIndex": 122
   },
   {
     "name": "Dominada supinada",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Una dominada con agarre supino que aumenta la participación de los bíceps y el braquial mientras entrena los dorsales y la parte superior de la espalda.",
-    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 123
   },
   {
     "name": "Jalón al pecho con brazos rectos",
-    "muscleGroup": "back",
-    "type": "isolation",
     "description": "Un movimiento de cable con los codos casi bloqueados, tirando de la barra hacia los muslos para aislar la participación del dorsal y la extensión del hombro.",
-    "targetMuscles": ["lats", "teres_major", "triceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 124
   },
   {
     "name": "Peso muerto rumano con mancuernas",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un patrón de peso muerto con bisagra de cadera sosteniendo mancuernas, enfatizando los isquiotibiales y los glúteos con menos carga en la zona lumbar que la versión con barra.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 125
   },
   {
     "name": "Peso muerto con barra hexagonal",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un peso muerto usando una barra trap (hex) con un agarre neutro y mangos más altos, lo que a menudo permite un torso más erguido y una mayor contribución de los cuádriceps.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
-    "loadMultiplier": 1.45
+    "exerciseIndex": 126
   },
   {
     "name": "Tirón desde rack",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un peso muerto parcial desde pines o bloques por debajo de la rodilla, sobrecargando la parte superior de la espalda, los trapecios y el agarre con un rango de pierna reducido.",
-    "targetMuscles": [
-      "traps",
-      "erector_spinae",
-      "rhomboids",
-      "lats",
-      "glutes",
-      "hamstrings",
-      "forearms"
-    ],
-    "loadMultiplier": 1.3
+    "exerciseIndex": 127
   },
   {
     "name": "Sentadilla frontal",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una sentadilla con la barra apoyada sobre los deltoides frontales, lo que exige un torso erguido y un fuerte énfasis en el núcleo y los cuádriceps.",
-    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 128
   },
   {
     "name": "Zancada caminando",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un patrón de zancada dinámico dando pasos hacia adelante alternativamente, entrenando la fuerza de una sola pierna, el equilibrio y la estabilidad de la cadera/rodilla bajo carga.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 129
   },
   {
     "name": "Zancada frontal",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una variación de sentadilla dividida dando un paso hacia adelante en una zancada profunda y regresando, cargando fuertemente la pierna delantera a través de la extensión de rodilla y cadera.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 130
   },
   {
     "name": "Sentadilla en la pared",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Un mantenimiento isométrico con la espalda contra una pared y los muslos paralelos al suelo, desarrollando resistencia en los cuádriceps y fortaleza mental.",
-    "targetMuscles": ["quadriceps", "glutes"],
-    "loadMultiplier": 0
+    "exerciseIndex": 131
   },
   {
     "name": "Sentadilla pistola",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Una sentadilla a una pierna a profundidad completa con la pierna que no trabaja extendida, lo que exige movilidad, equilibrio y fuerza unilateral en las piernas.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 132
   },
   {
     "name": "Curl de isquiotibiales nórdico",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Un ejercicio de isquiotibiales asistido por un compañero o anclaje bajando el cuerpo desde la posición de rodillas con las caderas extendidas, enfatizando la fuerza excéntrica.",
-    "targetMuscles": ["hamstrings", "glutes"],
-    "loadMultiplier": 0
+    "exerciseIndex": 133
   },
   {
     "name": "Elevación de glúteo e isquiotibiales",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Un movimiento en el desarrollador de glúteo-isquio que combina la extensión de cadera y la flexión de rodilla para cargar fuertemente los isquiotibiales, los glúteos y la zona lumbar.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 134
   },
   {
     "name": "Remo Pendlay",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un remo con barra inclinado donde cada repetición comienza desde una parada muerta en el suelo, priorizando la fuerza explosiva de tracción de la parte superior de la espalda.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 135
   },
   {
     "name": "Remo invertido",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Una tracción horizontal bajo una barra fija o anillas con el cuerpo recto, escalando la dificultad según la posición de los pies y la altura.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
-    "loadMultiplier": 0
+    "exerciseIndex": 136
   },
   {
     "name": "Curl con barra",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un curl de pie con un agarre supino al ancho de los hombros en una barra, permitiendo cargas más pesadas que la mayoría de las variaciones de curl con mancuernas.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.42
+    "exerciseIndex": 137
   },
   {
     "name": "Curl con barra EZ",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un curl con barra usando una barra EZ para reducir la tensión en la muñeca mientras se enfoca en los bíceps y el braquial.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 138
   },
   {
     "name": "Curl inclinado con mancuernas",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un curl realizado en un banco inclinado con los brazos colgando hacia atrás, estirando la cabeza larga de los bíceps a través de un amplio rango de movimiento.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.18
+    "exerciseIndex": 139
   },
   {
     "name": "Curl Zottman",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Un curl con mancuerna supinando al subir y rotando a agarre prono para una fase de descenso lenta para trabajar el braquiorradial y los extensores.",
-    "targetMuscles": ["biceps", "brachialis", "forearms"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 140
   },
   {
     "name": "Extensión de tríceps sobre la cabeza en polea",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Una extensión de tríceps con el cable guiado por encima de la cabeza, los codos fijos, extendiendo los antebrazos para alinearse con la línea alta de tracción.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28
+    "exerciseIndex": 141
   },
   {
     "name": "Flexión diamante",
-    "muscleGroup": "chest",
-    "type": "bodyweight",
     "description": "Una flexión con las manos juntas formando una forma de diamante, aumentando la demanda de los tríceps mientras se sigue entrenando el pecho y los hombros.",
-    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0
+    "exerciseIndex": 142
   },
   {
     "name": "Fondo en banco",
-    "muscleGroup": "arms",
-    "type": "bodyweight",
     "description": "Un fondo de tríceps realizado con las manos en un banco detrás de ti y los pies en el suelo o elevados, bajando las caderas flexionando los codos.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0
+    "exerciseIndex": 143
   },
   {
     "name": "Elevación de piernas acostado",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Un ejercicio abdominal acostado boca arriba o en un banco, levantando las piernas extendidas o dobladas hacia el techo con una flexión de cadera controlada.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 144
   },
   {
     "name": "Bicho muerto",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un ejercicio de core en decúbito supino alternando extensiones de brazos y piernas opuestos mientras se mantiene la zona lumbar presionada contra el suelo para el control de la anti-extensión.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 145
   },
   {
     "name": "Plancha lateral",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Un mantenimiento isométrico lateral apoyado en un antebrazo y el lado del pie, resistiendo la flexión lateral y desarrollando la resistencia de los oblicuos.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "transverse_abdominis",
-      "shoulders"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 146
   },
   {
     "name": "Leñador en polea",
-    "muscleGroup": "core",
-    "type": "compound",
     "description": "Un hachazo diagonal con cable de arriba a abajo o de abajo a arriba a través del cuerpo, entrenando la potencia rotacional y la fuerza de los oblicuos.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "rectus_abdominis",
-      "transverse_abdominis",
-      "shoulders"
-    ],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 147
   },
   {
     "name": "Aperturas para deltoides posteriores con mancuernas",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Una apertura en posición de bisagra con mancuernas, levantando los brazos hacia los lados con una ligera flexión de codo para trabajar los deltoides posteriores y los romboides.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.12
+    "exerciseIndex": 148
   },
   {
     "name": "Encogimientos con barra",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Un ejercicio pesado de trapecio superior elevando los hombros directamente hacia arriba contra una barra sostenida delante o detrás del cuerpo.",
-    "targetMuscles": ["traps", "forearms"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 149
   },
   {
     "name": "Cargada de fuerza",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico explosivo tirando de la barra desde el suelo hasta los hombros en un solo movimiento, entrenando las caderas, la espalda y la fuerza de recepción.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 150
   },
   {
     "name": "Cargada y press",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento compuesto que combina una cargada de fuerza a los hombros seguida de un press por encima de la cabeza, trabajando todo el cuerpo.",
-    "targetMuscles": [
-      "glutes",
-      "hamstrings",
-      "quadriceps",
-      "shoulders",
-      "traps",
-      "triceps",
-      "forearms"
-    ],
-    "loadMultiplier": 0.65
+    "exerciseIndex": 151
   },
   {
     "name": "Cargada colgante",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico que comienza con la barra a la altura de la cadera, tirando de ella explosivamente hacia los hombros en una posición de rack frontal.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 152
   },
   {
     "name": "Arrancada de fuerza",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico explosivo tirando de la barra desde el suelo hasta por encima de la cabeza en un solo movimiento, recibiéndola en una media sentadilla.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.55
+    "exerciseIndex": 153
   },
   {
     "name": "Arrancada colgante",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico que comienza con la barra a la altura de la cadera, tirando de ella explosivamente por encima de la cabeza en un solo movimiento.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 154
   },
   {
     "name": "Cargada con sentadilla",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Una cargada olímpica completa donde el levantador cae en una sentadilla profunda para recibir la barra en los hombros.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.75
+    "exerciseIndex": 155
   },
   {
     "name": "Arrancada con sentadilla",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Una arrancada completa donde el levantador cae en una sentadilla profunda para recibir la barra por encima de la cabeza.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 156
   },
   {
     "name": "Push Jerk",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento explosivo por encima de la cabeza que comienza desde los hombros, usando una flexión e impulso con una caída rápida debajo de la barra.",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 157
   },
   {
     "name": "Envión en tijera",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "El envión de competición olímpico donde el levantador cae en una posición de tijera para recibir la barra por encima de la cabeza.",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.75
+    "exerciseIndex": 158
   },
   {
     "name": "Thruster",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un movimiento compuesto que combina una sentadilla frontal con un press por encima de la cabeza en un solo movimiento continuo.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 159
   },
   {
     "name": "Sentadilla sobre la cabeza",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Una sentadilla realizada con la barra sostenida por encima de la cabeza, lo que exige una movilidad de hombros, estabilidad y fuerza del núcleo excepcionales.",
-    "targetMuscles": [
-      "quadriceps",
-      "glutes",
-      "hamstrings",
-      "shoulders",
-      "traps",
-      "erector_spinae",
-      "forearms"
-    ],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 160
   },
   {
     "name": "Equilibrio de arrancada",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento olímpico que comienza con la barra detrás del cuello, cayendo en una sentadilla mientras se presiona la barra por encima de la cabeza.",
-    "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 161
   },
   {
     "name": "Arrancada de fuerza (Muscle Snatch)",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Una variación de arrancada donde la barra se tira por encima de la cabeza sin caer debajo en una posición de sentadilla.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.45
+    "exerciseIndex": 162
   },
   {
     "name": "Tirón de cargada",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "El primer y segundo tirón de la cargada llevados a la extensión completa sin recibir la barra, enfocándose en la potencia explosiva.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
-    "loadMultiplier": 1.1
+    "exerciseIndex": 163
   },
   {
     "name": "Tirón de arrancada",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "El primer y segundo tirón de la arrancada llevados a la extensión completa sin recibir la barra, enfocándose en la triple extensión explosiva.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 164
   },
   {
     "name": "Tirón alto",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un tirón explosivo desde el suelo o posición de colgado, llevando la barra a la altura del pecho con los codos altos.",
-    "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 165
   },
   {
     "name": "Sentadilla con pausa",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una sentadilla trasera con una pausa deliberada en la parte inferior para eliminar el reflejo de estiramiento y desarrollar fuerza desde abajo.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 166
   },
   {
     "name": "Sentadilla sobre pines",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una sentadilla que comienza desde pines a varias alturas, eliminando la fase excéntrica para desarrollar fuerza concéntrica.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.0
+    "exerciseIndex": 167
   },
   {
     "name": "Sentadilla sobre cajón",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una sentadilla realizada sobre un cajón o banco, permitiendo al levantador sentarse hacia atrás y desarrollar la participación de la cadena posterior.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
-    "loadMultiplier": 0.95
+    "exerciseIndex": 168
   },
   {
     "name": "Sentadilla con barra de seguridad",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Una sentadilla realizada con una barra de sentadilla de seguridad para reducir el estrés en los hombros y enfatizar la fuerza de la parte superior de la espalda y los cuádriceps.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
-    "loadMultiplier": 1.0
+    "exerciseIndex": 169
   },
   {
     "name": "Press de banca con pausa",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un press de banca con una pausa en el pecho para eliminar el impulso y desarrollar una fuerza de empuje explosiva desde una parada muerta.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 170
   },
   {
     "name": "Press de suelo",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Un press de banca realizado acostado en el suelo con las piernas extendidas, limitando el rango de movimiento y enfatizando la fuerza de bloqueo.",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 171
   },
   {
     "name": "Peso muerto con déficit",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un peso muerto realizado de pie sobre una plataforma elevada para aumentar el rango de movimiento y el impulso de las piernas desde el suelo.",
-    "targetMuscles": [
-      "quadriceps",
-      "glutes",
-      "hamstrings",
-      "erector_spinae",
-      "traps",
-      "lats",
-      "forearms"
-    ],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 172
   },
   {
     "name": "Tirón sobre bloques",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un peso muerto desde bloques elevados o pines, reduciendo el rango de movimiento para sobrecargar la fase de bloqueo.",
-    "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
-    "loadMultiplier": 1.6
+    "exerciseIndex": 173
   },
   {
     "name": "Arrancada con pesa rusa a una mano",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento explosivo a una mano balanceando una pesa rusa desde entre las piernas hasta por encima de la cabeza en un movimiento fluido.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 174
   },
   {
     "name": "Cargada y press con pesa rusa",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un movimiento compuesto balanceando una pesa rusa hasta el hombro en posición de rack, luego presionándola por encima de la cabeza.",
-    "targetMuscles": [
-      "glutes",
-      "hamstrings",
-      "quadriceps",
-      "shoulders",
-      "triceps",
-      "traps",
-      "forearms"
-    ],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 175
   },
   {
     "name": "Arrancada con mancuerna",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Un levantamiento explosivo a una mano tirando de una mancuerna desde el suelo hasta por encima de la cabeza en un solo movimiento.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 176
   },
   {
     "name": "Press con mancuerna a una mano",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un press por encima de la cabeza realizado con una mancuerna, involucrando el núcleo para la estabilidad y la anti-rotación.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 177
   },
   {
     "name": "Step-up con mancuernas",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio para la parte inferior del cuerpo subiendo a una plataforma elevada mientras se sostienen mancuernas a los lados.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 178
   },
   {
     "name": "Peso muerto rumano a una pierna",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Un ejercicio de bisagra unilateral manteniendo el equilibrio sobre una pierna mientras se bajan las mancuernas hacia el suelo.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 179
   },
   {
     "name": "Remo renegado",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Un remo en posición de plancha con mancuernas, alternando los brazos mientras se mantiene la estabilidad del núcleo.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 180
   },
   {
     "name": "Thruster con mancuernas",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Una combinación de una sentadilla frontal con mancuernas con un press por encima de la cabeza en un solo movimiento continuo.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 181
   },
   {
     "name": "Paseo del camarero",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Un ejercicio de estabilidad del núcleo sosteniendo una mancuerna o pesa rusa por encima de la cabeza mientras se camina.",
-    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 182
   },
   {
     "name": "Paseo de la maleta",
-    "muscleGroup": "core",
-    "type": "compound",
     "description": "Un ejercicio de núcleo sosteniendo una mancuerna o pesa rusa a un lado mientras se camina, resistiendo la flexión lateral.",
-    "targetMuscles": [
-      "transverse_abdominis",
-      "external_obliques",
-      "internal_obliques",
-      "quadratus_lumborum",
-      "forearms"
-    ],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 183
   }
 ]
