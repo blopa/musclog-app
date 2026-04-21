@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -8,6 +9,7 @@ import { buildSlugIntensityMap, MuscleSlug } from '@/utils/muscleGroupMapping';
 
 type WorkoutMusclesDetailsProps = {
   muscleGroups: (string | null | undefined)[];
+  captureRef?: RefObject<View | null>;
 };
 
 const SPIDER_REGIONS: { key: string; slugs: MuscleSlug[] }[] = [
@@ -19,7 +21,7 @@ const SPIDER_REGIONS: { key: string; slugs: MuscleSlug[] }[] = [
   { key: 'legs', slugs: ['quadriceps', 'hamstring', 'gluteal', 'calves', 'adductors'] },
 ];
 
-export function WorkoutMusclesDetails({ muscleGroups }: WorkoutMusclesDetailsProps) {
+export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMusclesDetailsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -52,7 +54,7 @@ export function WorkoutMusclesDetails({ muscleGroups }: WorkoutMusclesDetailsPro
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <View className="p-4">
+      <View ref={captureRef} collapsable={false} className="p-4">
         {hasData ? (
           <>
             <Text className="mb-1 text-center text-[10px] font-bold uppercase tracking-widest text-text-tertiary">

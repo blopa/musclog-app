@@ -13,7 +13,6 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
   const { t } = useTranslation();
   const theme = useTheme();
   const intensityMap = buildSlugIntensityMap(muscleGroups);
-  console.log('THE MUSCS', muscleGroups);
 
   if (intensityMap.size === 0) {
     return (

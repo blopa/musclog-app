@@ -9,6 +9,7 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import type { Units } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
@@ -31,8 +32,6 @@ import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
-
-import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
@@ -409,8 +408,6 @@ type PastWorkoutDetailModalProps = {
   visible: boolean;
   onClose: () => void;
   workoutId?: string;
-  onEdit?: () => void;
-  onShare?: () => void;
   onDelete?: () => void;
 };
 
@@ -418,8 +415,6 @@ export default function PastWorkoutDetailModal({
   visible,
   onClose,
   workoutId,
-  onEdit,
-  onShare,
   onDelete,
 }: PastWorkoutDetailModalProps) {
   const theme = useTheme();
