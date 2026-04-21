@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
-import ExerciseMuscle from '@/database/models/ExerciseMuscle';
+import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
 import i18n, { EXERCISES_JSON } from '@/lang/lang';
 
@@ -12,58 +12,139 @@ interface ExerciseJsonData {
   targetMuscles?: string[];
 }
 
-// Canonical muscle catalogue — single source of truth for seeding
+// Canonical muscle catalogue — single source of truth for seeding.
+// displayNameKey must resolve via i18n.t(); all keys exist under exercises.muscleGroups.* in
+// every locale so no separate muscles.json file is needed.
 export const MUSCLE_SEED_DATA: { name: string; muscleGroup: string; displayNameKey: string }[] = [
   // Chest
-  { name: 'pectoralis_major', muscleGroup: 'chest', displayNameKey: 'muscles.pectoralis_major' },
-  { name: 'pectineus', muscleGroup: 'chest', displayNameKey: 'muscles.pectineus' },
-  { name: 'serratus_anterior', muscleGroup: 'chest', displayNameKey: 'muscles.serratus_anterior' },
+  {
+    name: 'pectoralis_major',
+    muscleGroup: 'chest',
+    displayNameKey: 'exercises.muscleGroups.pectoralis_major',
+  },
+  {
+    name: 'serratus_anterior',
+    muscleGroup: 'chest',
+    displayNameKey: 'exercises.muscleGroups.serratus_anterior',
+  },
   // Back
-  { name: 'lats', muscleGroup: 'back', displayNameKey: 'muscles.lats' },
-  { name: 'rhomboids', muscleGroup: 'back', displayNameKey: 'muscles.rhomboids' },
-  { name: 'traps', muscleGroup: 'back', displayNameKey: 'muscles.traps' },
-  { name: 'upper_traps', muscleGroup: 'back', displayNameKey: 'muscles.upper_traps' },
-  { name: 'lower_traps', muscleGroup: 'back', displayNameKey: 'muscles.lower_traps' },
-  { name: 'erector_spinae', muscleGroup: 'back', displayNameKey: 'muscles.erector_spinae' },
-  { name: 'teres_major', muscleGroup: 'back', displayNameKey: 'muscles.teres_major' },
-  { name: 'quadratus_lumborum', muscleGroup: 'back', displayNameKey: 'muscles.quadratus_lumborum' },
+  { name: 'lats', muscleGroup: 'back', displayNameKey: 'exercises.muscleGroups.lats' },
+  { name: 'rhomboids', muscleGroup: 'back', displayNameKey: 'exercises.muscleGroups.rhomboids' },
+  { name: 'traps', muscleGroup: 'back', displayNameKey: 'exercises.muscleGroups.traps' },
+  {
+    name: 'upper_traps',
+    muscleGroup: 'back',
+    displayNameKey: 'exercises.muscleGroups.upper_traps',
+  },
+  {
+    name: 'lower_traps',
+    muscleGroup: 'back',
+    displayNameKey: 'exercises.muscleGroups.lower_traps',
+  },
+  {
+    name: 'erector_spinae',
+    muscleGroup: 'back',
+    displayNameKey: 'exercises.muscleGroups.erector_spinae',
+  },
+  {
+    name: 'teres_major',
+    muscleGroup: 'back',
+    displayNameKey: 'exercises.muscleGroups.teres_major',
+  },
+  {
+    name: 'quadratus_lumborum',
+    muscleGroup: 'back',
+    displayNameKey: 'exercises.muscleGroups.quadratus_lumborum',
+  },
   // Shoulders
   {
     name: 'anterior_deltoid',
     muscleGroup: 'shoulders',
-    displayNameKey: 'muscles.anterior_deltoid',
+    displayNameKey: 'exercises.muscleGroups.anterior_deltoid',
   },
-  { name: 'lateral_deltoid', muscleGroup: 'shoulders', displayNameKey: 'muscles.lateral_deltoid' },
+  {
+    name: 'lateral_deltoid',
+    muscleGroup: 'shoulders',
+    displayNameKey: 'exercises.muscleGroups.lateral_deltoid',
+  },
   {
     name: 'posterior_deltoid',
     muscleGroup: 'shoulders',
-    displayNameKey: 'muscles.posterior_deltoid',
+    displayNameKey: 'exercises.muscleGroups.posterior_deltoid',
   },
-  { name: 'shoulders', muscleGroup: 'shoulders', displayNameKey: 'muscles.shoulders' },
+  {
+    name: 'shoulders',
+    muscleGroup: 'shoulders',
+    displayNameKey: 'exercises.muscleGroups.shoulders',
+  },
   // Arms
-  { name: 'biceps', muscleGroup: 'arms', displayNameKey: 'muscles.biceps' },
-  { name: 'brachialis', muscleGroup: 'arms', displayNameKey: 'muscles.brachialis' },
-  { name: 'triceps', muscleGroup: 'arms', displayNameKey: 'muscles.triceps' },
-  { name: 'forearms', muscleGroup: 'arms', displayNameKey: 'muscles.forearms' },
+  { name: 'biceps', muscleGroup: 'arms', displayNameKey: 'exercises.muscleGroups.biceps' },
+  {
+    name: 'brachialis',
+    muscleGroup: 'arms',
+    displayNameKey: 'exercises.muscleGroups.brachialis',
+  },
+  { name: 'triceps', muscleGroup: 'arms', displayNameKey: 'exercises.muscleGroups.triceps' },
+  { name: 'forearms', muscleGroup: 'arms', displayNameKey: 'exercises.muscleGroups.forearms' },
   // Core
-  { name: 'rectus_abdominis', muscleGroup: 'core', displayNameKey: 'muscles.rectus_abdominis' },
+  {
+    name: 'rectus_abdominis',
+    muscleGroup: 'core',
+    displayNameKey: 'exercises.muscleGroups.rectus_abdominis',
+  },
   {
     name: 'transverse_abdominis',
     muscleGroup: 'core',
-    displayNameKey: 'muscles.transverse_abdominis',
+    displayNameKey: 'exercises.muscleGroups.transverse_abdominis',
   },
-  { name: 'external_obliques', muscleGroup: 'core', displayNameKey: 'muscles.external_obliques' },
-  { name: 'internal_obliques', muscleGroup: 'core', displayNameKey: 'muscles.internal_obliques' },
+  {
+    name: 'external_obliques',
+    muscleGroup: 'core',
+    displayNameKey: 'exercises.muscleGroups.external_obliques',
+  },
+  {
+    name: 'internal_obliques',
+    muscleGroup: 'core',
+    displayNameKey: 'exercises.muscleGroups.internal_obliques',
+  },
   // Legs
-  { name: 'quadriceps', muscleGroup: 'legs', displayNameKey: 'muscles.quadriceps' },
-  { name: 'hamstrings', muscleGroup: 'legs', displayNameKey: 'muscles.hamstrings' },
-  { name: 'glutes', muscleGroup: 'legs', displayNameKey: 'muscles.glutes' },
-  { name: 'gluteus_medius', muscleGroup: 'legs', displayNameKey: 'muscles.gluteus_medius' },
-  { name: 'gluteus_minimus', muscleGroup: 'legs', displayNameKey: 'muscles.gluteus_minimus' },
-  { name: 'calves', muscleGroup: 'legs', displayNameKey: 'muscles.calves' },
-  { name: 'adductors', muscleGroup: 'legs', displayNameKey: 'muscles.adductors' },
-  { name: 'abductors', muscleGroup: 'legs', displayNameKey: 'muscles.abductors' },
-  { name: 'hip_flexors', muscleGroup: 'legs', displayNameKey: 'muscles.hip_flexors' },
+  {
+    name: 'quadriceps',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.quadriceps',
+  },
+  {
+    name: 'hamstrings',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.hamstrings',
+  },
+  { name: 'glutes', muscleGroup: 'legs', displayNameKey: 'exercises.muscleGroups.glutes' },
+  {
+    name: 'gluteus_medius',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.gluteus_medius',
+  },
+  {
+    name: 'gluteus_minimus',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.gluteus_minimus',
+  },
+  { name: 'calves', muscleGroup: 'legs', displayNameKey: 'exercises.muscleGroups.calves' },
+  {
+    name: 'adductors',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.adductors',
+  },
+  {
+    name: 'abductors',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.abductors',
+  },
+  {
+    name: 'hip_flexors',
+    muscleGroup: 'legs',
+    displayNameKey: 'exercises.muscleGroups.hip_flexors',
+  },
 ];
 
 export class MuscleService {
@@ -168,13 +249,13 @@ export class MuscleService {
 
   /**
    * Replace the full set of muscles linked to an exercise.
-   * Soft-deletes existing links then creates new ones — must be called
-   * inside an existing database.write() block.
+   * Soft-deletes removed links and creates new ones in a single batch.
+   * Safe to call from any context — manages its own write block.
    */
-  static async setMusclesForExerciseInWrite(
+  static async setMusclesForExercise(
     exerciseId: string,
     muscleIds: string[],
-    now: number
+    role: MuscleRole = 'primary'
   ): Promise<void> {
     const existing = await database
       .get<ExerciseMuscle>('exercise_muscles')
@@ -183,28 +264,35 @@ export class MuscleService {
 
     const existingMuscleIds = new Set(existing.map((l) => l.muscleId));
     const newMuscleIds = new Set(muscleIds);
+    const now = Date.now();
 
-    // Soft-delete links that are no longer wanted
-    for (const link of existing) {
-      if (!newMuscleIds.has(link.muscleId)) {
-        await link.update((l) => {
-          l.deletedAt = now;
-          l.updatedAt = now;
-        });
-      }
+    const toDelete = existing.filter((l) => !newMuscleIds.has(l.muscleId));
+    const toAdd = muscleIds.filter((id) => !existingMuscleIds.has(id));
+
+    if (toDelete.length === 0 && toAdd.length === 0) {
+      return;
     }
 
-    // Create links that don't exist yet
-    for (const muscleId of muscleIds) {
-      if (!existingMuscleIds.has(muscleId)) {
-        await database.get<ExerciseMuscle>('exercise_muscles').create((l) => {
-          l.exerciseId = exerciseId;
-          l.muscleId = muscleId;
-          l.createdAt = now;
-          l.updatedAt = now;
-        });
-      }
-    }
+    await database.write(async () => {
+      await database.batch(
+        ...toDelete.map((l) =>
+          l.prepareUpdate((link) => {
+            link.deletedAt = now;
+            link.updatedAt = now;
+          })
+        ),
+        ...toAdd.map((muscleId) =>
+          database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((l) => {
+            l.exerciseId = exerciseId;
+            l.muscleId = muscleId;
+            l.role = role;
+            l.createdAt = now;
+            l.updatedAt = now;
+            l.deletedAt = undefined;
+          })
+        )
+      );
+    });
   }
 
   /**
@@ -224,25 +312,31 @@ export class MuscleService {
 
     if (missing.length > 0) {
       const now = Date.now();
+
+      // prepareCreate assigns IDs synchronously so we can populate the map before the batch runs
+      const prepared = missing.map((data) => {
+        const displayName = i18n.exists(data.displayNameKey)
+          ? i18n.t(data.displayNameKey)
+          : data.name
+              .split('_')
+              .map((w) => w[0].toUpperCase() + w.slice(1))
+              .join(' ');
+
+        const record = database.get<Muscle>('muscles').prepareCreate((m) => {
+          m.name = data.name;
+          m.muscleGroup = data.muscleGroup;
+          m.displayName = displayName;
+          m.createdAt = now;
+          m.updatedAt = now;
+          m.deletedAt = undefined;
+        });
+
+        existingByName.set(data.name, record.id);
+        return record;
+      });
+
       await database.write(async () => {
-        for (const data of missing) {
-          const displayName = i18n.exists(data.displayNameKey)
-            ? i18n.t(data.displayNameKey)
-            : data.name
-                .split('_')
-                .map((w) => w[0].toUpperCase() + w.slice(1))
-                .join(' ');
-
-          const record = await database.get<Muscle>('muscles').create((m) => {
-            m.name = data.name;
-            m.muscleGroup = data.muscleGroup;
-            m.displayName = displayName;
-            m.createdAt = now;
-            m.updatedAt = now;
-          });
-
-          existingByName.set(data.name, record.id);
-        }
+        await database.batch(...prepared);
       });
     }
 
@@ -253,9 +347,14 @@ export class MuscleService {
    * Backfills exercise_muscles for all app exercises that currently have no
    * muscle links. Reads targetMuscles from the bundled JSON (all languages).
    * Safe to call repeatedly — exercises that already have links are skipped.
+   *
+   * @param muscleNameToId Optional pre-fetched map from seedMuscles(). When
+   *   provided, an extra seedMuscles() call is avoided (useful in the seeder
+   *   where the map is already in hand).
    */
-  static async backfillExerciseMuscles(): Promise<void> {
-    // Build name->targetMuscles map from all language JSONs
+  static async backfillExerciseMuscles(muscleNameToId?: Map<string, string>): Promise<void> {
+    // Build name->targetMuscles map from all language JSONs (EN is authoritative;
+    // other locales fill gaps for exercises that might only appear in one locale)
     const nameToTargetMuscles = new Map<string, string[]>();
     for (const lang of Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]) {
       for (const ex of EXERCISES_JSON[lang]) {
@@ -266,10 +365,12 @@ export class MuscleService {
       }
     }
 
-    // Ensure muscles are seeded
-    const muscleNameToId = await MuscleService.seedMuscles();
+    const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
-    // Find app exercises that have no muscle links yet
+    // Find app exercises that have no muscle links yet.
+    // NOTE: this fetches all non-deleted exercise_muscle rows to build the
+    // linked-exercise-id set. WatermelonDB does not support DISTINCT or COUNT
+    // queries, so a full scan is the only option without raw SQL.
     const appExercises = await database
       .get<Exercise>('exercises')
       .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
@@ -292,27 +393,33 @@ export class MuscleService {
 
     const now = Date.now();
 
-    await database.write(async () => {
-      for (const exercise of toProcess) {
-        const muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
-        if (!muscles?.length) {
-          continue;
-        }
+    // Collect all junction records up front so the write block is a single batch
+    const junctionRecords = toProcess.flatMap((exercise) => {
+      const muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
+      if (!muscles?.length) {
+        return [];
+      }
 
-        const muscleIds = muscles
-          .map((name) => muscleNameToId.get(name))
-          .filter((id): id is string => !!id);
-
-        for (const muscleId of muscleIds) {
-          await database.get<ExerciseMuscle>('exercise_muscles').create((l) => {
+      return muscles
+        .map((name) => nameToId.get(name))
+        .filter((id): id is string => !!id)
+        .map((muscleId) =>
+          database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((l) => {
             l.exerciseId = exercise.id;
             l.muscleId = muscleId;
+            l.role = 'primary';
             l.createdAt = now;
             l.updatedAt = now;
-          });
-        }
-      }
+            l.deletedAt = undefined;
+          })
+        );
     });
+
+    if (junctionRecords.length > 0) {
+      await database.write(async () => {
+        await database.batch(...junctionRecords);
+      });
+    }
 
     console.log(`[backfillExerciseMuscles] Linked muscles for ${toProcess.length} exercise(s)`);
   }

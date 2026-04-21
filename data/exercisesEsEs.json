@@ -4,7 +4,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A chest exercise where you press a barbell upwards while lying on a bench.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
@@ -12,7 +12,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A variation of the bench press performed on an inclined bench to target the upper chest.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.9
   },
   {
@@ -20,7 +20,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A variation of the bench press performed on a declined bench to target the lower chest.",
-    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
@@ -44,7 +44,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "A machine exercise that isolates the chest muscles by mimicking the motion of a fly.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
@@ -180,7 +180,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "A machine exercise that mimics the bench press.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -220,7 +220,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "A chest exercise where you lower and lift dumbbells out to the sides while lying on a bench.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -228,7 +228,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A chest exercise similar to the incline bench press but using dumbbells.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
@@ -252,7 +252,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "A chest exercise that targets the inner chest by pulling cables across the body.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
@@ -316,7 +316,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "A bench press variation performed on a Smith machine for added stability.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
   {
@@ -380,7 +380,7 @@
     "muscleGroup": "legs",
     "type": "machine",
     "description": "A machine exercise that targets the inner thighs by bringing the legs together.",
-    "targetMuscles": ["adductors", "pectineus"],
+    "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6
   },
   {
@@ -396,7 +396,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "A chest exercise performed on an incline bench that targets the upper chest.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -404,7 +404,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "A chest and triceps exercise where you lower and lift your body using parallel bars.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
@@ -412,7 +412,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "A chest, shoulders, and triceps exercise where you push your body up from the ground.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -581,7 +581,7 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "A shoulder exercise where you press a barbell anchored at one end in a landmine attachment.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
+    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
     "loadMultiplier": 0.5
   },
   {
@@ -985,7 +985,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A horizontal press lying on a bench with dumbbells, allowing independent arm paths and a deep stretch at the bottom.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
@@ -993,7 +993,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A dumbbell chest press performed on a decline bench to emphasize the lower chest while pressing with a neutral-to-angled arm path.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
@@ -1001,7 +1001,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A bench press with a narrower grip to shift more load onto the triceps while still training the chest and anterior shoulders.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -1191,7 +1191,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "A push-up with hands close forming a diamond shape, increasing triceps demand while still training the chest and shoulders.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -1199,7 +1199,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "A triceps dip performed with hands on a bench behind you and feet on the floor or elevated, lowering the hips by bending the elbows.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0
   },
   {
@@ -1442,7 +1442,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A bench press with a pause on the chest to eliminate momentum and build explosive pressing power from a dead stop.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
   {
@@ -1450,7 +1450,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "A bench press performed lying on the floor with legs extended, limiting range of motion and emphasizing lockout strength.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
   {

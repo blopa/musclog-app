@@ -292,12 +292,12 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     if (existingExercises.length > 0) {
       console.log(`Skipping exercise seeding: ${existingExercises.length} exercises already exist`);
     } else {
-      const createdExercises = await ExerciseService.createCommonExercises();
+      const createdExercises = await ExerciseService.createCommonExercises(muscleNameToId);
       console.log(`Seeded ${createdExercises.length} common exercises`);
     }
 
-    // 4. Link exercises to muscles
-    await MuscleService.backfillExerciseMuscles();
+    // 4. Link exercises to muscles (pass the already-fetched map to skip a redundant seedMuscles call)
+    await MuscleService.backfillExerciseMuscles(muscleNameToId);
     console.log('Exercise-muscle links ready');
 
     // 5. Seed initial chat messages with welcome messages for each context using i18n

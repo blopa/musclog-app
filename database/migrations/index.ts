@@ -59,7 +59,7 @@ export const migrations = schemaMigrations({
     migrationV9,
     // Version 10: Add saved_for_later_groups and saved_for_later_items tables
     migrationV10,
-    // Version 11: Add target_muscles_json to exercises for detailed per-muscle targeting
+    // Version 11: Add muscles catalogue and exercise_muscles junction table
     migrationV11,
   ],
 });

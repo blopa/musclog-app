@@ -522,6 +522,8 @@ export const schema = appSchema({
       columns: [
         { name: 'exercise_id', type: 'string', isIndexed: true },
         { name: 'muscle_id', type: 'string', isIndexed: true },
+        // 'primary' | 'secondary' — defaults to 'primary' until the JSON distinguishes them
+        { name: 'role', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

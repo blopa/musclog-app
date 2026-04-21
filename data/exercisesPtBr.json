@@ -4,7 +4,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Exercício para o peitoral onde você empurra uma barra para cima enquanto deita em um banco.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
@@ -12,7 +12,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Variação do supino realizada em um banco inclinado para trabalhar a parte superior do peitoral.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.9
   },
   {
@@ -20,7 +20,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Variação do supino realizada em um banco declinado para trabalhar a parte inferior do peitoral.",
-    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
@@ -44,7 +44,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Exercício de máquina que isola os músculos peitorais imitando o movimento de um crucifixo.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
@@ -180,7 +180,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Exercício de máquina que imita o supino.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -220,7 +220,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Exercício para o peitoral onde você abre e fecha halteres para os lados enquanto deita em um banco.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -228,7 +228,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Exercício para o peitoral semelhante ao supino inclinado, mas usando halteres.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
@@ -252,7 +252,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Exercício para o peitoral que trabalha a parte interna do peitoral puxando cabos cruzando o corpo.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
@@ -316,7 +316,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Variação do supino realizada no Smith para maior estabilidade.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
   {
@@ -380,7 +380,7 @@
     "muscleGroup": "legs",
     "type": "machine",
     "description": "Exercício de máquina que trabalha a parte interna das coxas aproximando as pernas.",
-    "targetMuscles": ["adductors", "pectineus"],
+    "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6
   },
   {
@@ -396,7 +396,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Exercício para o peitoral realizado em um banco inclinado que trabalha a parte superior do peitoral.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -404,7 +404,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Exercício para o peitoral e tríceps onde você abaixa e eleva o corpo usando barras paralelas.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
@@ -412,7 +412,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Exercício para o peitoral, ombros e tríceps onde você empurra o corpo para cima a partir do chão.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -581,7 +581,7 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "Exercício para ombros onde você empurra uma barra ancorada em uma extremidade no acessório landmine.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
+    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
     "loadMultiplier": 0.5
   },
   {
@@ -985,7 +985,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Supino horizontal deitado em um banco com halteres, permitindo trajetórias independentes dos braços e um alongamento profundo na posição mais baixa.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
@@ -993,7 +993,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Supino com halteres realizado em um banco declinado para enfatizar a parte inferior do peitoral com uma trajetória de braço neutra a angulada.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
@@ -1001,7 +1001,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Supino com pegada mais fechada para transferir mais carga para o tríceps enquanto ainda treina o peitoral e os deltoides anteriores.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -1191,7 +1191,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Flexão com as mãos próximas formando um losango, aumentando a demanda sobre o tríceps enquanto ainda treina o peitoral e os ombros.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -1199,7 +1199,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Tríceps realizado com as mãos em um banco atrás de você e os pés no chão ou elevados, abaixando os quadris ao dobrar os cotovelos.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0
   },
   {
@@ -1442,7 +1442,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Supino com pausa no peito para eliminar o momento e construir potência de pressão explosiva a partir de uma parada total.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
   {
@@ -1450,7 +1450,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Supino realizado deitado no chão com as pernas estendidas, limitando a amplitude de movimento e enfatizando a força de travamento.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
   {

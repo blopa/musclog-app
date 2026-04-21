@@ -4,7 +4,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Упражнение для груди, при котором вы жмёте штангу вверх, лёжа на скамье.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
@@ -12,7 +12,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Вариация жима лёжа, выполняемая на наклонной скамье для акцента на верхнюю часть груди.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.9
   },
   {
@@ -20,7 +20,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Вариация жима лёжа, выполняемая на скамье с отрицательным наклоном для акцента на нижнюю часть груди.",
-    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
@@ -44,7 +44,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Упражнение в тренажёре, изолирующее мышцы груди, имитируя движение сведения рук.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
@@ -180,7 +180,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Упражнение в тренажёре, имитирующее жим лёжа.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -220,7 +220,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Упражнение для груди, при котором вы опускаете и поднимаете гантели в стороны, лёжа на скамье.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -228,7 +228,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Упражнение для груди, похожее на жим на наклонной скамье, но с гантелями.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
@@ -252,7 +252,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Упражнение для груди, направленное на внутреннюю часть груди путём сведения тросов через тело.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
@@ -316,7 +316,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Вариация жима лёжа в тренажёре Смита для дополнительной стабильности.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
   {
@@ -380,7 +380,7 @@
     "muscleGroup": "legs",
     "type": "machine",
     "description": "Упражнение в тренажёре, направленное на внутреннюю поверхность бёдер путём сведения ног.",
-    "targetMuscles": ["adductors", "pectineus"],
+    "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6
   },
   {
@@ -396,7 +396,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Упражнение для груди, выполняемое на наклонной скамье, направленное на верхнюю часть груди.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -404,7 +404,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Упражнение для груди и трицепсов, при котором вы опускаете и поднимаете тело, используя параллельные брусья.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
@@ -412,7 +412,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Упражнение для груди, плеч и трицепсов, при котором вы отжимаетесь от пола.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -581,7 +581,7 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "Упражнение для плеч, при котором вы жмёте штангу, закреплённую одним концом в земле.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
+    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
     "loadMultiplier": 0.5
   },
   {
@@ -985,7 +985,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Горизонтальный жим лёжа с гантелями, позволяющий независимую траекторию рук и глубокое растяжение в нижней точке.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
@@ -993,7 +993,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Жим гантелей лёжа на скамье с отрицательным наклоном для акцента на нижнюю часть груди с нейтральной или угловой траекторией рук.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
@@ -1001,7 +1001,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Жим лёжа с более узким хватом для переноса большей нагрузки на трицепсы при сохранении работы груди и передних дельт.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -1191,7 +1191,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Отжимания с близко поставленными руками, образующими ромб, увеличивающие нагрузку на трицепсы при сохранении работы груди и плеч.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -1199,7 +1199,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Отжимания для трицепсов с руками на скамье сзади и ногами на полу или возвышении, опуская бёдра сгибанием локтей.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0
   },
   {
@@ -1442,7 +1442,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Жим лёжа с паузой на груди для устранения импульса и развития взрывной силы жима из мёртвой точки.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
   {
@@ -1450,7 +1450,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Жим лёжа, выполняемый лёжа на полу с вытянутыми ногами, ограничивающий диапазон движения и акцентирующий силу замка.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
   {

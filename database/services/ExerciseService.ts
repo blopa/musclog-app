@@ -440,12 +440,11 @@ export class ExerciseService {
    * Sets exercise.imageUrl to the GitHub raw-content cloud URL for the corresponding image.
    * Returns array of created exercises.
    */
-  static async createCommonExercises(): Promise<Exercise[]> {
+  static async createCommonExercises(muscleNameToId?: Map<string, string>): Promise<Exercise[]> {
     const exercises: Exercise[] = [];
     const now = Date.now();
 
-    // Seed muscles first so we have IDs available for junction records
-    const muscleNameToId = await MuscleService.seedMuscles();
+    const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
     await database.write(async () => {
       const existingExercises = await database.get<Exercise>('exercises').query().fetch();
@@ -483,7 +482,7 @@ export class ExerciseService {
       // Prepare junction records using IDs already assigned by prepareCreate above
       const junctionRecords = filteredData.flatMap((exerciseData, i) =>
         (exerciseData.targetMuscles ?? []).flatMap((muscleName) => {
-          const muscleId = muscleNameToId.get(muscleName);
+          const muscleId = nameToId.get(muscleName);
           if (!muscleId) {
             return [];
           }
@@ -491,8 +490,10 @@ export class ExerciseService {
             database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
               link.exerciseId = exercisesToCreate[i].id;
               link.muscleId = muscleId;
+              link.role = 'primary';
               link.createdAt = now;
               link.updatedAt = now;
+              link.deletedAt = undefined;
             }),
           ];
         })
@@ -754,8 +755,10 @@ export class ExerciseService {
           database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
             link.exerciseId = prepared[i].id;
             link.muscleId = muscleId;
+            link.role = 'primary';
             link.createdAt = now;
             link.updatedAt = now;
+            link.deletedAt = undefined;
           }),
         ];
       })

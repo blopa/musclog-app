@@ -122,7 +122,10 @@ export function Migrations() {
     );
   }, []);
 
-  // Seed muscles catalogue and backfill exercise-muscle links for installs upgrading to v11.
+  // Backfill exercise-muscle links for users upgrading to v11. Runs on every
+  // boot but is a cheap no-op once all exercises are linked. New installs also
+  // hit this path, but seedProductionData already called backfillExerciseMuscles
+  // during setup — the no-op exit path costs only two DB reads.
   useEffect(() => {
     if (isStaticExport) {
       return;

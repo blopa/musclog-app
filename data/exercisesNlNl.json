@@ -4,7 +4,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een borstoefening waarbij je een halterstang omhoog drukt terwijl je op een bankje ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
@@ -12,7 +12,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een variatie op het bankdrukken uitgevoerd op een schuin bankje om de bovenkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.9
   },
   {
@@ -20,7 +20,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een variatie op het bankdrukken uitgevoerd op een achteroverhellend bankje om de onderkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
@@ -44,7 +44,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Een machine-oefening die de borstspieren isoleert door de beweging van een fly na te bootsen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
@@ -180,7 +180,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Een machine-oefening die het bankdrukken nabootst.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -220,7 +220,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Een borstoefening waarbij je dumbbells zijwaarts laat zakken en weer optilt terwijl je op een bankje ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -228,7 +228,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een borstoefening vergelijkbaar met de incline bench press, maar dan met dumbbells.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
@@ -252,7 +252,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Een borstoefening voor de binnenkant van de borst waarbij je kabels voor je lichaam langs trekt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
@@ -316,7 +316,7 @@
     "muscleGroup": "chest",
     "type": "machine",
     "description": "Een variatie op het bankdrukken uitgevoerd op een Smith-machine voor extra stabiliteit.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
   {
@@ -380,7 +380,7 @@
     "muscleGroup": "legs",
     "type": "machine",
     "description": "Een machine-oefening voor de binnenkant van de dijen door de benen naar elkaar toe te duwen.",
-    "targetMuscles": ["adductors", "pectineus"],
+    "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6
   },
   {
@@ -396,7 +396,7 @@
     "muscleGroup": "chest",
     "type": "isolation",
     "description": "Een borstoefening op een schuin bankje om de bovenkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
@@ -404,7 +404,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en weer opduwt tussen parallelle stangen.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
@@ -412,7 +412,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Een oefening voor de borst, schouders en triceps waarbij je je lichaam van de grond omhoog duwt.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -581,7 +581,7 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "Een schouderoefening waarbij je een halterstang omhoog duwt die aan één kant in een landmine-steun staat.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
+    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
     "loadMultiplier": 0.5
   },
   {
@@ -985,7 +985,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een horizontale druk-oefening op een bankje met dumbbells, wat onafhankelijke bewegingsbanen van de armen en een diepe rek mogelijk maakt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
@@ -993,7 +993,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een dumbbell borstdruk-oefening op een achteroverhellend bankje om de onderkant van de borst te benadrukken.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
@@ -1001,7 +1001,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Een bankdruk-variant met een smallere grip om meer belasting naar de triceps te verschuiven.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
@@ -1191,7 +1191,7 @@
     "muscleGroup": "chest",
     "type": "bodyweight",
     "description": "Een push-up met de handen dicht bij elkaar in een diamantvorm voor meer nadruk op de triceps.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
@@ -1199,7 +1199,7 @@
     "muscleGroup": "arms",
     "type": "bodyweight",
     "description": "Een triceps-dip waarbij je met je handen op een bankje achter je steunt.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0
   },
   {
@@ -1442,7 +1442,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Bankdrukken met een pauze op de borst.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
   {
@@ -1450,7 +1450,7 @@
     "muscleGroup": "chest",
     "type": "compound",
     "description": "Bankdrukken terwijl je op de vloer ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
   {
