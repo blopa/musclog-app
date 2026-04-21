@@ -198,6 +198,18 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
 
                 const targetRIR = currentActive.repsInReserve ?? 2;
 
+                // Carry over weight from last set if it differs from current planned weight
+                // This respects manual adjustments made by the user in the previous set
+                const lastWeight = lastSet.weight ?? 0;
+                const currentPlannedWeight = currentActive.weight ?? 0;
+                if (
+                  lastWeight > 0 &&
+                  currentPlannedWeight > 0 &&
+                  Math.abs(lastWeight - currentPlannedWeight) >= 0.1
+                ) {
+                  currentActive.weight = lastWeight;
+                }
+
                 if (progressionMode === 'weight_first') {
                   const adjustedWeight = calculateWeightForTargetRIR(
                     oneRM,
@@ -211,7 +223,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                     currentActive.isAutoAdjusted = true;
                   }
                 } else {
-                  // reps_first: keep planned weight, adjust reps to match 1RM at target RIR
+                  // reps_first: keep (newly carried over) weight, adjust reps to match 1RM at target RIR
                   const adjustedReps = calculateRepsForTargetRIR(
                     oneRM,
                     isBodyweight
