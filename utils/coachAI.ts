@@ -80,6 +80,52 @@ export function isAiCreditsError(error: any): boolean {
 
 export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local' | 'gateway';
 
+export interface ProviderConfig {
+  maxCharBudget: number; // Maximum character budget for the total request context
+  promptComplexity: 'minimal' | 'standard';
+  enableContextInjection: boolean;
+  enableFoundationFoods: boolean;
+  enableMemories: boolean;
+}
+
+export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
+  'on-device': {
+    maxCharBudget: 2000, // Roughly 500 tokens
+    promptComplexity: 'minimal',
+    enableContextInjection: true,
+    enableFoundationFoods: false,
+    enableMemories: false,
+  },
+  gemini: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  openai: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  local: {
+    maxCharBudget: 8000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  gateway: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+};
+
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
@@ -314,6 +360,32 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
   return result;
 }
 
+/**
+ * Truncates chat history to fit within a character budget,
+ * keeping the most recent messages.
+ */
+function truncateHistoryByBudget(
+  history: ChatHistoryEntry[],
+  maxChars: number
+): ChatHistoryEntry[] {
+  let currentChars = 0;
+  const truncated: ChatHistoryEntry[] = [];
+
+  // Traverse backwards to keep the most recent, relevant context
+  for (let i = history.length - 1; i >= 0; i--) {
+    const msgLength = history[i].content.length;
+    // If adding this message exceeds budget, stop if we already have context.
+    // If it's the very first message (most recent) and it's too big, we keep it
+    // but the model might still fail; however, we prioritize having at least one message.
+    if (currentChars + msgLength > maxChars && truncated.length > 0) break;
+
+    truncated.unshift({ ...history[i] });
+    currentChars += msgLength;
+  }
+
+  return truncated;
+}
+
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
@@ -386,9 +458,17 @@ async function sendViaGemini(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const systemPrompt = await getSystemPrompt(config.language, context);
+  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.gemini;
+  const systemPrompt = await getChatMessagePromptContent(
+    config.language,
+    undefined,
+    context,
+    config.provider
+  );
   const systemParts: Part[] = [{ text: systemPrompt }];
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
+
+  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
 
   const genModel = await configureBasicGenAI(
     {
@@ -402,7 +482,7 @@ async function sendViaGemini(
     systemParts
   );
 
-  const contents = buildGeminiContents(history, userMessage);
+  const contents = buildGeminiContents(truncatedHistory, userMessage);
   const result = await genModel.generateContent({ contents });
   const raw = extractRawText(result);
   return parseCoachResponse(raw);
@@ -416,9 +496,17 @@ async function sendViaOpenAI(
 ): Promise<CoachResponse> {
   const client = buildOpenAIClient(config);
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
-  const systemPrompt = await getSystemPrompt(config.language, context);
+  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
 
-  const normalized = normalizeHistory(history);
+  const systemPrompt = await getChatMessagePromptContent(
+    config.language,
+    undefined,
+    context,
+    config.provider
+  );
+
+  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+  const normalized = normalizeHistory(truncatedHistory);
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     ...normalized.map((entry) => ({
@@ -473,8 +561,17 @@ async function sendViaOnDevice(
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
   try {
-    const systemPrompt = await getSystemPrompt(config.language, context);
-    const normalized = normalizeHistory(history);
+    const providerConfig = PROVIDER_CONFIGS['on-device'];
+    const systemPrompt = await getChatMessagePromptContent(
+      config.language,
+      undefined,
+      context,
+      'on-device'
+    );
+
+    const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+    const normalized = normalizeHistory(truncatedHistory);
+
     const messages = [
       ...normalized.map((e) => ({
         role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
@@ -764,7 +861,10 @@ export async function trackMeal(
 ): Promise<TrackMealResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
     const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
@@ -890,7 +990,10 @@ export async function generateMealPlan(
 ): Promise<GenerateMealPlanResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
     const systemPrompt = await getGenerateMealPlanPrompt(
       lang,
       macroTargets,
@@ -1107,7 +1210,10 @@ export async function estimateNutritionFromPhoto(
 ): Promise<TrackMealResponse | null> {
   try {
     const customPrompts = await getActiveCustomPrompts();
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
     const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
