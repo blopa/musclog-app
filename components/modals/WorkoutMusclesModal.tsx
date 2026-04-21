@@ -3,13 +3,13 @@ import { ScrollView, Text, View } from 'react-native';
 
 import BodyHighlighter from '@/components/BodyHighlighter';
 import { SpiderChart } from '@/components/charts/SpiderChart';
+import { useTheme } from '@/hooks/useTheme';
 import {
   buildSlugIntensityMap,
   MuscleSlug,
 } from '@/utils/muscleGroupMapping';
 
 import { FullScreenModal } from './FullScreenModal';
-import { useTheme } from '@/hooks/useTheme';
 
 type WorkoutMusclesModalProps = {
   visible: boolean;
@@ -77,7 +77,7 @@ export function WorkoutMusclesModal({
               <Text className="mb-1 text-center text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('workoutDetail.muscleBalance')}
               </Text>
-              <View pointerEvents="none" style={{ height: theme.spacing.padding.md }} />
+              <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
               <SpiderChart
                 axes={spiderAxes}
                 values={spiderValues}
