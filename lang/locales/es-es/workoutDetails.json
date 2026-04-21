@@ -1,15 +1,15 @@
 {
   "workoutDetails": {
-    "subtitle": "Deze workout beheren",
-    "preview": "Workout bekijken",
-    "previewDescription": "Volledige workoutgegevens bekijken",
-    "edit": "Workout bewerken",
-    "editDescription": "Oefeningen en sets wijzigen",
-    "duplicate": "Dupliceren",
-    "duplicateDescription": "Maak een kopie van deze workout",
-    "share": "Delen",
-    "shareDescription": "Workout delen met anderen",
-    "delete": "Verwijderen",
-    "deleteDescription": "Deze workout permanent verwijderen"
+    "subtitle": "Gestionar this entrenamiento",
+    "preview": "Preview entrenamiento",
+    "previewDescription": "Ver full entrenamiento details",
+    "edit": "Editar entrenamiento",
+    "editDescription": "Modify ejercicios and sets",
+    "duplicate": "Duplicate",
+    "duplicateDescription": "Crear a copy of this entrenamiento",
+    "share": "Compartir",
+    "shareDescription": "Share entrenamiento with others",
+    "delete": "Eliminar",
+    "deleteDescription": "Permanently remove this entrenamiento"
   }
 }

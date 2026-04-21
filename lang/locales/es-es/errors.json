@@ -1,22 +1,22 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Verbinding Time-out",
-      "description": "We konden de Musclog-servers niet bereiken. Controleer je internetverbinding.",
-      "tryAgain": "Opnieuw proberen"
+      "title": "Connection Timeout",
+      "description": "We couldn't reach the Musclog servers. Please check Tu internet connection.",
+      "tryAgain": "Reintentar"
     },
-    "failedToLoadData": "Gegevens laden mislukt",
-    "somethingWentWrong": "Er is iets misgegaan",
-    "genericDescription": "Er is een onverwachte fout opgetreden.",
-    "reload": "Herladen",
-    "aiCreditsError": "AI-servicequotum overschreden. Controleer je API-sleutel of probeer het later opnieuw.",
-    "aiProcessingError": "Sorry, ik had moeite om dat verzoek te verwerken. Probeer het over een moment opnieuw.",
-    "aiProcessingErrorTitle": "Fout bij verwerken verzoek",
-    "gatewayDailyLimitError": "Dagelijkse gratis AI-limiet bereikt. Probeer het morgen opnieuw of voeg je eigen API-sleutel toe bij de AI-instellingen.",
-    "gatewayDailyLimitErrorTitle": "Dagelijkse limiet bereikt",
+    "failedToLoadData": "falló to load datos",
+    "somethingWentWrong": "Something went wrong",
+    "genericDescription": "An unexpected error occurred.",
+    "reload": "Reload",
+    "aiCreditsError": "AI service quota exceeded. Please check Tu API key or try again later.",
+    "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
+    "aiProcessingErrorTitle": "error processing request",
+    "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or Añadir Tu own API key in AI ajustes.",
+    "gatewayDailyLimitErrorTitle": "Daily Limit Reached",
     "databaseError": {
-      "title": "Databasefout",
-      "description": "Er is een databasefout opgetreden. Foutrapportage is ingeschakeld om dit probleem te helpen oplossen."
+      "title": "Database error",
+      "description": "A database error occurred. error reporting has been enabled to help resolve this issue."
     }
   }
 }
