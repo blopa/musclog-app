@@ -34,6 +34,14 @@
     "musclesWorked": "Getrainde spieren",
     "frontMuscles": "Voor",
     "backMuscles": "Achter",
-    "noMuscleData": "Geen spiergegevens beschikbaar"
+    "noMuscleData": "Geen spiergegevens beschikbaar",
+    "muscleBalance": "Spierevenwicht",
+    "musclesTargeted": "{{count}} spieren getraind",
+    "region_chest": "Borst",
+    "region_back": "Rug",
+    "region_shoulders": "Schouders",
+    "region_arms": "Armen",
+    "region_core": "Core",
+    "region_legs": "Benen"
   }
 }
