@@ -22,13 +22,16 @@ Instead of message count truncation, we use `truncateHistoryByBudget` in `utils/
 ### 3. Tiered Prompt & Compressed Context Injection
 
 #### Minimal System Prompt
+
 On-device models use a highly compressed prompt defined in `utils/prompts.ts`. This prompt bypasses the heavy "Loggy PhD" persona in favor of a concise coach persona.
 
 #### Compressed User Stats
+
 Instead of detailed paragraphs, user stats are injected as a compressed tag:
 `[User: Male, 85kg, 15%BF, hypertrophy]`
 
 #### Minimal Workout Summaries
+
 Recent workouts are injected as one-line summaries instead of large JSON blocks:
 `User finished "Push Day" on 2024-05-20: 5400 kg volume, 6 exercises, 18 sets.`
 

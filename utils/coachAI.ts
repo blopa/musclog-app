@@ -13,6 +13,7 @@ import {
   getBaseSystemPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
+  getChatMessagePromptContent,
   getEstimateMacrosFunctions,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
@@ -90,7 +91,7 @@ export interface ProviderConfig {
 
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
-    maxCharBudget: 2000, // Roughly 500 tokens
+    maxCharBudget: 9000, // ~2250 tokens for history; system prompt + output get the remaining ~1800 tokens of the 4096 budget
     promptComplexity: 'minimal',
     enableContextInjection: true,
     enableFoundationFoods: false,
@@ -377,7 +378,9 @@ function truncateHistoryByBudget(
     // If adding this message exceeds budget, stop if we already have context.
     // If it's the very first message (most recent) and it's too big, we keep it
     // but the model might still fail; however, we prioritize having at least one message.
-    if (currentChars + msgLength > maxChars && truncated.length > 0) break;
+    if (currentChars + msgLength > maxChars && truncated.length > 0) {
+      break;
+    }
 
     truncated.unshift({ ...history[i] });
     currentChars += msgLength;
@@ -569,7 +572,10 @@ async function sendViaOnDevice(
       'on-device'
     );
 
-    const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+    const truncatedHistory = truncateHistoryByBudget(
+      history,
+      providerConfig.maxCharBudget - userMessage.length
+    );
     const normalized = normalizeHistory(truncatedHistory);
 
     const messages = [
@@ -859,6 +865,10 @@ export async function trackMeal(
   userMessage: string,
   base64Image?: string
 ): Promise<TrackMealResponse | null> {
+  if (config.provider === 'on-device') {
+    return null;
+  }
+
   try {
     const lang = config.language ?? 'en-US';
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
@@ -988,6 +998,10 @@ export async function generateMealPlan(
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<GenerateMealPlanResponse | null> {
+  if (config.provider === 'on-device') {
+    return null;
+  }
+
   try {
     const lang = config.language ?? 'en-US';
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
@@ -1208,6 +1222,10 @@ export async function estimateNutritionFromPhoto(
   base64Image: string,
   context?: MealPhotoContext | null
 ): Promise<TrackMealResponse | null> {
+  if (config.provider === 'on-device') {
+    return null;
+  }
+
   try {
     const customPrompts = await getActiveCustomPrompts();
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;

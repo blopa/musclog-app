@@ -216,13 +216,17 @@ export const getUserDetailsPrompt = async (
  * Compressed user stats for local models.
  */
 export const getMinimalUserStats = async (user: User | null): Promise<string> => {
-  if (!user) return '';
+  if (!user) {
+    return '';
+  }
 
   const units = await SettingsService.getUnits();
   const weightUnit = getWeightUnit(units);
   const parts: string[] = [];
 
-  if (user.gender) parts.push(user.gender);
+  if (user.gender) {
+    parts.push(user.gender);
+  }
 
   try {
     const [latestWeight, latestBodyFat] = await Promise.all([
@@ -245,7 +249,9 @@ export const getMinimalUserStats = async (user: User | null): Promise<string> =>
     // Continue without metrics
   }
 
-  if (user.fitnessGoal) parts.push(user.fitnessGoal);
+  if (user.fitnessGoal) {
+    parts.push(user.fitnessGoal);
+  }
 
   return parts.length > 0 ? `[User: ${parts.join(', ')}]` : '';
 };
@@ -284,9 +290,23 @@ export const getMinimalSystemPrompt = async (
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
 
-  return `You are Loggy, a friendly fitness coach. ${userStats}
+  const role =
+    context === 'nutrition'
+      ? 'nutrition coach'
+      : context === 'exercise'
+        ? 'personal trainer'
+        : 'fitness coach';
+
+  const focus =
+    context === 'nutrition'
+      ? 'Focus only on nutrition and diet topics.'
+      : context === 'exercise'
+        ? 'Focus only on exercise and training topics.'
+        : 'Focus only on fitness and nutrition topics.';
+
+  return `You are Loggy, a friendly ${role}. ${userStats}
 Respond in ${language}. Be helpful and concise.
-Focus only on fitness and nutrition topics.
+${focus}
 Keep responses under 100 words.`;
 };
 
@@ -394,19 +414,25 @@ export const getChatMessagePromptContent = async (
   const user = await UserService.getCurrentUser();
 
   if (provider === 'on-device') {
-    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 3);
-    const summaries: string[] = [];
-    for (const log of recentLogs) {
-      const summary = await getMinimalWorkoutSummary(log.id, undefined, language);
-      if (summary) summaries.push(summary);
-    }
-
-    const sections = [
+    const sections: string[] = [
       await getMinimalSystemPrompt(user, language, context),
       `Date: ${new Date().toLocaleDateString(language)}.`,
-      `Recent workouts:`,
-      ...summaries,
     ];
+
+    if (context !== 'nutrition') {
+      const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 3);
+      const summaries: string[] = [];
+      for (const log of recentLogs) {
+        const summary = await getMinimalWorkoutSummary(log.id, undefined, language);
+        if (summary) {
+          summaries.push(summary);
+        }
+      }
+      if (summaries.length > 0) {
+        sections.push('Recent workouts:', ...summaries);
+      }
+    }
+
     return sections.join('\n');
   }
 
