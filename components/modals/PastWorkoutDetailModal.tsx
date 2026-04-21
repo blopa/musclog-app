@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Edit, Info, RefreshCw, Trophy } from 'lucide-react-native';
+import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -15,6 +15,7 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, MuscleService, WorkoutService } from '@/database/services';
+import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -442,6 +443,11 @@ export default function PastWorkoutDetailModal({
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
   const { shareText } = useNativeShareText();
+  const {
+    captureRef: musclesCaptureRef,
+    isCapturing: isMusclesCapturing,
+    captureAndShare: shareMuscles,
+  } = useChartCapture();
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
@@ -665,7 +671,25 @@ export default function PastWorkoutDetailModal({
         ) : null}
 
         {allWorkoutMuscles.length > 0 ? (
-          <WorkoutMusclesDetails muscleGroups={allWorkoutMuscles} />
+          <View>
+            <View className="mb-2 flex-row items-center justify-between px-1">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                {t('workoutDetail.musclesWorked')}
+              </Text>
+              {!isMusclesCapturing ? (
+                <MenuButton
+                  icon={Platform.OS === 'web' ? Download : Share2}
+                  size="sm"
+                  color={theme.colors.text.tertiary}
+                  onPress={() => shareMuscles(t('workoutDetail.musclesWorked'))}
+                />
+              ) : null}
+            </View>
+            <WorkoutMusclesDetails
+              muscleGroups={allWorkoutMuscles}
+              captureRef={musclesCaptureRef}
+            />
+          </View>
         ) : null}
 
         <ExercisesSection

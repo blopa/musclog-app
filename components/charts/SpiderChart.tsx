@@ -283,7 +283,7 @@ export function SpiderChart({
               <View
                 style={{
                   width: theme.size.xs,
-                  height: theme.size['32'],
+                  height: theme.size['8'],
                   borderRadius: theme.borderRadius['2'],
                   backgroundColor: dataColorResolved,
                 }}
@@ -322,7 +322,7 @@ export function SpiderChart({
               <View
                 style={{
                   width: theme.size.xs,
-                  height: theme.size['32'],
+                  height: theme.size['8'],
                   borderRadius: theme.borderRadius['2'],
                   backgroundColor: gridColor,
                 }}
