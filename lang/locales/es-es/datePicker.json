@@ -1,15 +1,15 @@
 {
   "datePicker": {
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "month": "Month",
-    "nextMonday": "Next Monday",
-    "selectDate": "Select Date",
-    "selectMonthYear": "Select Month Year",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "year": "Year",
-    "xYearsAgo": "{{count}} years ago",
-    "yesterday": "Yesterday"
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "month": "Mes",
+    "nextMonday": "Próximo Lunes",
+    "selectDate": "Seleccionar Fecha",
+    "selectMonthYear": "Seleccionar Mes y Año",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "year": "Año",
+    "xYearsAgo": "Hace {{count}} años",
+    "yesterday": "Ayer"
   }
 }

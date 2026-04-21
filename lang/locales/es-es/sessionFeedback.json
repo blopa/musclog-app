@@ -1,16 +1,16 @@
 {
   "sessionFeedback": {
-    "title": "Session Feedback",
-    "subtitle": "Rate your performance",
-    "difficulty": "Difficulty",
-    "exhaustion": "Exhaustion",
-    "enjoyment": "Enjoyment",
-    "easy": "Easy",
-    "extreme": "Extreme",
-    "fresh": "Fresh",
-    "drained": "Drained",
-    "disliked": "Disliked",
-    "loved": "Loved",
-    "submit": "SUBMIT FEEDBACK"
+    "title": "Comentarios de la Sesión",
+    "subtitle": "Califica tu rendimiento",
+    "difficulty": "Dificultad",
+    "exhaustion": "Agotamiento",
+    "enjoyment": "Disfrute",
+    "easy": "Fácil",
+    "extreme": "Extremo",
+    "fresh": "Fresco",
+    "drained": "Agotado",
+    "disliked": "No me gustó",
+    "loved": "Me encantó",
+    "submit": "ENVIAR COMENTARIOS"
   }
 }

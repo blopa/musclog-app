@@ -1,21 +1,21 @@
 {
   "dailySummaryCard": {
     "alcohol": "Alcohol",
-    "alcoholLabel": "You've also consumed:",
-    "carbs": "Carbs",
-    "fiber": "Fiber",
+    "alcoholLabel": "También has consumido:",
+    "carbs": "Carbos",
+    "fiber": "Fibra",
     "fiberShort": "FI",
     "carbsShort": "C",
-    "dailySummary": "Day Summary",
-    "fats": "Fats",
-    "fatsShort": "F",
+    "dailySummary": "Resumen del Día",
+    "fats": "Grasas",
+    "fatsShort": "G",
     "kcal": "Kcal",
-    "over": "Over",
-    "protein": "Protein",
+    "over": "Excedido",
+    "protein": "Proteína",
     "proteinShort": "P",
-    "remaining": "Remaining",
-    "setGoals": "Set Goals",
-    "setGoalsToTrack": "Set Goals To Track",
-    "today": "Today"
+    "remaining": "Restante",
+    "setGoals": "Establecer Objetivos",
+    "setGoalsToTrack": "Establece objetivos para rastrear",
+    "today": "Hoy"
   }
 }

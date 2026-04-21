@@ -1,15 +1,15 @@
 {
   "workoutDetails": {
-    "subtitle": "Manage this workout",
-    "preview": "Preview Workout",
-    "previewDescription": "View full workout details",
-    "edit": "Edit Workout",
-    "editDescription": "Modify exercises and sets",
-    "duplicate": "Duplicate",
-    "duplicateDescription": "Create a copy of this workout",
-    "share": "Share",
-    "shareDescription": "Share workout with others",
-    "delete": "Delete",
-    "deleteDescription": "Permanently remove this workout"
+    "subtitle": "Gestionar este entrenamiento",
+    "preview": "Vista Previa del Entrenamiento",
+    "previewDescription": "Ver detalles completos del entrenamiento",
+    "edit": "Editar Entrenamiento",
+    "editDescription": "Modificar ejercicios y series",
+    "duplicate": "Duplicar",
+    "duplicateDescription": "Crear una copia de este entrenamiento",
+    "share": "Compartir",
+    "shareDescription": "Compartir entrenamiento con otros",
+    "delete": "Eliminar",
+    "deleteDescription": "Eliminar este entrenamiento permanentemente"
   }
 }

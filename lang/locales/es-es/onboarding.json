@@ -1,139 +1,139 @@
 {
   "onboarding": {
-    "skip": "Skip",
-    "back": "Back",
-    "next": "Next",
-    "getStarted": "Get Started",
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "getStarted": "Empezar",
     "steps": {
       "step1": {
-        "title": "Effortless Tracking",
-        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+        "title": "Seguimiento sin Esfuerzo",
+        "description": "Olvida el cuaderno. Registra tus series, repeticiones y pesos en segundos y visualiza tus ganancias de fuerza con el tiempo."
       },
       "step2": {
-        "title": "Smart Nutrition",
-        "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+        "title": "Nutrición Inteligente",
+        "description": "Registra tus comidas en segundos con el escaneo por IA o nuestra enorme base de datos. Entender tu combustible es clave para el máximo rendimiento."
       },
       "step3": {
-        "title": "One App, Total Control",
-        "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
+        "title": "Una App, Control Total",
+        "description": "Conecta los puntos entre tu dieta y tus levantamientos. Mira exactamente cómo tu nutrición impulsa tus ganancias de fuerza con gráficos de progreso unificados."
       },
       "step4": {
-        "title": "Let's Get Personal",
-        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+        "title": "Hagámoslo Personal",
+        "description": "Para adaptar tu viaje y seguir tus ganancias con precisión, nos encantaría saber un poco más sobre tu historial de fitness."
       }
     },
     "fitnessInfo": {
-      "physicalTitle": "Body Stats",
-      "goalsTitle": "Fitness Goals",
-      "maybeLater": "Maybe later",
-      "save": "Save",
-      "next": "Next",
-      "continue": "Continue",
-      "errorSaving": "Error Saving"
+      "physicalTitle": "Estadísticas Corporales",
+      "goalsTitle": "Objetivos de Fitness",
+      "maybeLater": "Quizás más tarde",
+      "save": "Guardar",
+      "next": "Siguiente",
+      "continue": "Continuar",
+      "errorSaving": "Error al Guardar"
     },
     "personalInfo": {
-      "title": "Set Personal Information",
-      "errorSaving": "Error Saving",
-      "finish": "Finish",
-      "trackCycle": "Track Menstrual Cycle?",
-      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
+      "title": "Establecer Información Personal",
+      "errorSaving": "Error al Guardar",
+      "finish": "Finalizar",
+      "trackCycle": "¿Seguir Ciclo Menstrual?",
+      "trackCycleDescription": "Sincroniza tu rendimiento y nutrición con tus fases hormonales."
     },
     "cycleSetup": {
       "anchor": {
-        "title": "Last Period",
-        "description": "When did your last period start? This helps us calibrate your current phase."
+        "title": "Último Periodo",
+        "description": "¿Cuándo comenzó tu último periodo? Esto nos ayuda a calibrar tu fase actual."
       },
       "birthControl": {
-        "title": "Hormonal Birth Control",
-        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
-        "none": "None",
-        "noneDescription": "No hormonal contraception.",
-        "pill": "Pill",
-        "pillDescription": "Daily oral contraceptive pill.",
-        "iud": "IUD",
-        "iudDescription": "Intrauterine device (hormonal or copper).",
-        "implant": "Implant",
-        "implantDescription": "Subcutaneous hormonal implant.",
-        "other": "Other",
-        "otherDescription": "Another form of contraception."
+        "title": "Control de Natalidad Hormonal",
+        "description": "¿Estás usando algún método anticonceptivo hormonal? Esto afecta las predicciones de las fases hormonales.",
+        "none": "Ninguno",
+        "noneDescription": "Sin anticoncepción hormonal.",
+        "pill": "Píldora",
+        "pillDescription": "Píldora anticonceptiva oral diaria.",
+        "iud": "DIU",
+        "iudDescription": "Dispositivo intrauterino (hormonal o de cobre).",
+        "implant": "Implante",
+        "implantDescription": "Implante hormonal subcutáneo.",
+        "other": "Otro",
+        "otherDescription": "Otra forma de anticoncepción."
       },
       "length": {
-        "title": "Cycle Length",
-        "description": "How long is your typical cycle and period duration?",
-        "cycleLength": "Average Cycle Length",
-        "periodDuration": "Average Period Duration",
-        "cycleLengthLabel": "Cycle Length",
-        "periodDurationLabel": "Period Duration"
+        "title": "Duración del Ciclo",
+        "description": "¿Cuánto dura tu ciclo típico y la duración de tu periodo?",
+        "cycleLength": "Duración Promedio del Ciclo",
+        "periodDuration": "Duración Promedio del Periodo",
+        "cycleLengthLabel": "Duración del Ciclo",
+        "periodDurationLabel": "Duración del Periodo"
       },
       "goal": {
-        "title": "Sync Goal",
-        "description": "What is your primary focus for hormonal syncing?",
-        "performance": "Optimize Performance",
-        "performanceDescription": "Peak strength and PR optimization.",
-        "symptoms": "Manage Symptoms",
-        "symptomsDescription": "Focus on comfort and recovery during shifts.",
-        "energy": "Predict Energy Lows",
-        "energyDescription": "Anticipate lows and adjust intensity accordingly."
+        "title": "Objetivo de Sincronización",
+        "description": "¿Cuál es tu enfoque principal para la sincronización hormonal?",
+        "performance": "Optimizar Rendimiento",
+        "performanceDescription": "Optimización de fuerza máxima y récords personales.",
+        "symptoms": "Gestionar Síntomas",
+        "symptomsDescription": "Enfoque en la comodidad y recuperación durante los cambios.",
+        "energy": "Predecir Bajones de Energía",
+        "energyDescription": "Anticipar bajones y ajustar la intensidad en consecuencia."
       }
     },
     "healthConnect": {
-      "connectYour": "Connect Your",
-      "health": "Health",
-      "description": "Sync your fitness data to Musclog for advanced progress tracking and personalized health insights.",
+      "connectYour": "Conecta tu",
+      "health": "Salud",
+      "description": "Sincroniza tus datos de fitness con Musclog para un seguimiento de progreso avanzado e información de salud personalizada.",
       "categories": {
-        "nutrition": "Nutrition",
-        "weight": "Weight",
-        "sleep": "Sleep",
-        "bodyComposition": "Body Composition"
+        "nutrition": "Nutrición",
+        "weight": "Peso",
+        "sleep": "Sueño",
+        "bodyComposition": "Composición Corporal"
       },
-      "allowHealthAccess": "Allow Health Access",
-      "connectedCount": "Connected {{granted}}/{{total}}",
-      "maybeLater": "Maybe later",
-      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
-      "initializing": "Initializing Health Connect...",
-      "syncing": "Syncing health data...",
-      "processing": "Processing...",
-      "continue": "Continue"
+      "allowHealthAccess": "Permitir Acceso a Salud",
+      "connectedCount": "Conectado {{granted}}/{{total}}",
+      "maybeLater": "Quizás más tarde",
+      "privacyStatement": "Musclog valora tu privacidad. Tus datos están encriptados y se usan solo para tus análisis personales.",
+      "initializing": "Iniciando Health Connect...",
+      "syncing": "Sincronizando datos de salud...",
+      "processing": "Procesando...",
+      "continue": "Continuar"
     },
     "landing": {
-      "getStarted": "Get Started",
-      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
+      "getStarted": "Empezar",
+      "termsAndPrivacy": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
       "appName": "Musclog",
-      "tagline": "Lift, Log, Repeat",
-      "description": "Track your progress with data-driven insights and crush your fitness goals.",
-      "viewTerms": "View Terms",
-      "preparingApp": "Preparing the app for you...",
-      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
-      "migratingData": "Migrating your data...",
-      "migratingStep": "Migrating {{step}}...",
+      "tagline": "Entrena, Registra, Repite",
+      "description": "Sigue tu progreso con información basada en datos y alcanza tus objetivos de fitness.",
+      "viewTerms": "Ver Términos",
+      "preparingApp": "Preparando la app para ti...",
+      "migratingPreamble": "Actualizando desde el Musclog anterior — estamos trayendo tus datos.",
+      "migratingData": "Migrando tus datos...",
+      "migratingStep": "Migrando {{step}}...",
       "migrationSteps": {
-        "preparing": "Preparing",
-        "downloading": "Downloading",
-        "processing": "Processing",
-        "finalizing": "Finalizing",
-        "fitness_goals": "nutrition goals",
-        "user_metrics": "body metrics",
-        "users": "profile",
-        "foods": "foods",
-        "nutrition_logs": "nutrition logs",
-        "exercises": "exercises",
-        "workouts": "workout templates",
-        "workout_logs": "workout history",
-        "workout_template_sets": "workout template sets",
-        "workout_log_sets": "workout log sets",
-        "validating": "data"
+        "preparing": "Preparando",
+        "downloading": "Descargando",
+        "processing": "Procesando",
+        "finalizing": "Finalizando",
+        "fitness_goals": "objetivos de nutrición",
+        "user_metrics": "métricas corporales",
+        "users": "perfil",
+        "foods": "alimentos",
+        "nutrition_logs": "registros de nutrición",
+        "exercises": "ejercicios",
+        "workouts": "plantillas de entrenamiento",
+        "workout_logs": "historial de entrenamiento",
+        "workout_template_sets": "series de plantillas de entrenamiento",
+        "workout_log_sets": "series de registros de entrenamiento",
+        "validating": "datos"
       },
-      "importData": "Import Data"
+      "importData": "Importar Datos"
     },
     "setGoals": {
-      "title": "Smart Goal",
-      "calculation": "Calculation",
-      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
-      "personalizedMacros": "Personalized Macros",
-      "dynamicAdjustments": "Dynamic Adjustments",
-      "calculateForMe": "Calculate for Me",
-      "setThemMyself": "I'll Set Them Myself",
-      "missingData": "Please complete your fitness details first so we can calculate your plan."
+      "title": "Objetivo Inteligente",
+      "calculation": "Cálculo",
+      "description": "Usamos las ecuaciones de Mifflin-St Jeor y Katch-McArdle para estimar tu metabolismo, luego tu nivel de actividad y objetivos para establecer tus metas de calorías y macros.",
+      "personalizedMacros": "Macros Personalizados",
+      "dynamicAdjustments": "Ajustes Dinámicos",
+      "calculateForMe": "Calcular por Mí",
+      "setThemMyself": "Los Estableceré Yo Mismo",
+      "missingData": "Por favor, completa tus detalles de fitness primero para que podamos calcular tu plan."
     }
   }
 }
