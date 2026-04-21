@@ -1,13 +1,13 @@
 {
   "createWorkout": {
-    "title": "Crear nuevo entrenamiento",
+    "title": "Crear Nuevo entrenamiento",
     "save": "Guardar",
-    "workoutIcon": "Icono de entrenamiento",
+    "workoutIcon": "Icono del entrenamiento",
     "essentials": "Esenciales",
     "workoutTitle": "Título del entrenamiento",
-    "workoutTitlePlaceholder": "ej., Destrucción del día de pierna",
+    "workoutTitlePlaceholder": "ej. Destrucción de piernas",
     "description": "Descripción",
-    "descriptionPlaceholder": "Enfoque en cuádriceps y pantorrillas...",
+    "descriptionPlaceholder": "Enfoque en cuádriceps y gemelos...",
     "workoutType": "Tipo de entrenamiento",
     "types": {
       "strength": "Fuerza",
@@ -19,13 +19,13 @@
     "intelligence": "Inteligencia",
     "workoutInsight": {
       "title": "Información del entrenamiento",
-      "description": "Elige cómo Musclog prepara la información para tu próxima sesión. La IA se adapta según los datos de recuperación cuando está activada.",
-      "none": "Ninguna",
+      "description": "Elige cómo Musclog prepara la información para tu próxima sesión. La IA se adapta basándose en los datos de recuperación cuando está habilitada.",
+      "none": "Ninguno",
       "algorithm": "Algoritmo",
       "ai": "IA"
     },
     "routine": "Rutina",
-    "repeatOnDays": "Repetir en días",
+    "repeatOnDays": "Repetir los días",
     "weekly": "Semanal",
     "exercises": "Ejercicios",
     "exercisesInWorkout": "Ejercicios en el entrenamiento",

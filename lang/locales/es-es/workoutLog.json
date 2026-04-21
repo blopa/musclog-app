@@ -1,24 +1,24 @@
 {
   "workoutLog": {
     "manageWorkoutLogData": {
-      "deleteLogWarning": "¿Estás seguro de que quieres eliminar este registro de entrenamiento? Esta acción no se puede deshacer.",
-      "title": "Gestionar registros de entrenamiento",
-      "searchPlaceholder": "Buscar sesiones de entrenamiento...",
-      "noWorkoutLogs": "Aún no hay registros de entrenamiento",
-      "noWorkoutLogsDesc": "Completa entrenamientos para verlos aquí",
-      "endOfHistory": "Fin del historial de entrenamientos",
-      "workoutLogOptions": "Opciones de entrenamiento",
+      "deleteLogWarning": "Are you sure you want to Eliminar this entrenamiento log? This action cannot be undone.",
+      "title": "Gestionar entrenamiento Log datos",
+      "searchPlaceholder": "Buscar entrenamiento sessions...",
+      "noWorkoutLogs": "No entrenamiento logs yet",
+      "noWorkoutLogsDesc": "Complete workouts to see them here",
+      "endOfHistory": "End of entrenamiento historial",
+      "workoutLogOptions": "entrenamiento Options",
       "editWorkoutLog": "Editar entrenamiento",
-      "editWorkoutLogDesc": "Modificar detalles del entrenamiento",
-      "duplicateWorkoutLog": "Duplicar entrenamiento",
-      "duplicateWorkoutLogDesc": "Crear una copia de este entrenamiento",
+      "editWorkoutLogDesc": "Modify entrenamiento details",
+      "duplicateWorkoutLog": "Duplicate entrenamiento",
+      "duplicateWorkoutLogDesc": "Crear a copy of this entrenamiento",
       "deleteWorkoutLog": "Eliminar entrenamiento",
-      "deleteWorkoutLogDesc": "Eliminar este registro de entrenamiento",
+      "deleteWorkoutLogDesc": "Remove this entrenamiento log",
       "detailFormat": "{{status}} • {{volume}}",
-      "statusCompleted": "Completado",
-      "statusInProgress": "En curso",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In progreso",
       "volumeFormat": "{{volume}} {{unit}}",
-      "unknownWorkout": "Entrenamiento desconocido"
+      "unknownWorkout": "Unknown entrenamiento"
     }
   }
 }

@@ -1,10 +1,10 @@
 {
   "healthConnect": {
-    "initializeFirst": "Por favor, inicializa Health Connect primero",
-    "openSettings": "Abrir ajustes",
-    "permissionsDenied": "Se denegaron los permisos de Health Connect",
-    "workoutCaloriesNote": "Calorías: {{calories}} kcal",
-    "workoutVolumeNote": "Volumen: {{volume}} {{unit}}",
+    "initializeFirst": "Please initialize Health Connect first",
+    "openSettings": "Open ajustes",
+    "permissionsDenied": "Health Connect permissions were denied",
+    "workoutCaloriesNote": "Calories: {{calories}} kcal",
+    "workoutVolumeNote": "Volume: {{volume}} {{unit}}",
     "repsWeightFormat": "{{reps}}×{{weight}} {{unit}}"
   }
 }

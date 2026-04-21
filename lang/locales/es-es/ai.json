@@ -1,31 +1,31 @@
 {
   "ai": {
     "settings": {
-      "notConfigured": "La IA no está configurada. Por favor, añade una clave API en los Ajustes de IA."
+      "notConfigured": "AI is not configured. Please Añadir an API key in AI ajustes."
     },
     "notConfiguredModal": {
-      "title": "La IA aún no está configurada",
-      "subtitle": "Añade una clave API antes de poder chatear con el entrenador.",
-      "tipApiKey": "Usa claves API de OpenAI o Google Gemini desde los ajustes de IA.",
-      "tipFeatures": "Una vez configurada, tus mensajes se enviarán al modelo que elijas.",
-      "openSettings": "Abrir ajustes de IA",
-      "notNow": "Ahora no"
+      "title": "AI isn't set up yet",
+      "subtitle": "Añadir an API key before you can chat with the coach.",
+      "tipApiKey": "Use OpenAI or Google Gemini API keys from AI ajustes.",
+      "tipFeatures": "Once configured, Tu messages are sent to the model you choose.",
+      "openSettings": "Open AI ajustes",
+      "notNow": "Not now"
     },
     "providers": {
-      "openAIGemini": "OpenAI o Google Gemini"
+      "openAIGemini": "OpenAI or Google Gemini"
     },
     "icons": {
       "Dumbbell": "Mancuerna",
       "Target": "Objetivo",
-      "Zap": "Rayo",
-      "Trophy": "Trofeo",
-      "Activity": "Actividad",
-      "Heart": "Corazón",
-      "Flame": "Llama"
+      "Zap": "Zap",
+      "Trophy": "Trophy",
+      "Activity": "Activity",
+      "Heart": "Heart",
+      "Flame": "Flame"
     },
     "chat": {
-      "message": "Mensaje",
-      "typeYourMessage": "Escribe tu mensaje..."
+      "message": "Message",
+      "typeYourMessage": "Type Tu message..."
     }
   }
 }

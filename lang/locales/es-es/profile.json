@@ -4,43 +4,43 @@
       "title": "Perfil"
     },
     "goal": "Objetivo",
-    "currentStats": "Estadísticas actuales",
+    "currentStats": "Current Stats",
     "history": "Historial",
-    "management": "Gestión",
+    "management": "Management",
     "loading": "Cargando...",
     "syncing": {
-      "healthKit": "Sincronizando con HealthKit..."
+      "healthKit": "Syncing with HealthKit..."
     },
     "bmiStatus": {
-      "underweight": "Bajo peso",
-      "normal": "Peso normal",
-      "overweight": "Sobrepeso",
-      "obese": "Obeso"
+      "underweight": "Underweight",
+      "normal": "Normal weight",
+      "overweight": "Overweight",
+      "obese": "Obese"
     },
     "gender": {
-      "male": "Hombre",
-      "female": "Mujer",
+      "male": "Male",
+      "female": "Female",
       "other": "Otro"
     },
     "managementItems": {
-      "editPersonal": "Editar info. personal",
-      "editPersonalDesc": "Actualiza tu nombre, avatar y detalles personales",
-      "editFitness": "Editar detalles de fitness",
-      "editFitnessDesc": "Actualiza tus objetivos de fitness y preferencias",
-      "appPreferences": "Preferencias de la aplicación",
-      "appPreferencesDesc": "Personaliza los ajustes y preferencias de la aplicación"
+      "editPersonal": "Editar Personal Info",
+      "editPersonalDesc": "Update Tu name, avatar, and personal details",
+      "editFitness": "Editar Fitness Details",
+      "editFitnessDesc": "Update Tu fitness goals and preferences",
+      "appPreferences": "App Preferences",
+      "appPreferencesDesc": "Customize app ajustes and preferences"
     },
     "stats": {
       "weight": "Peso",
       "height": "Altura",
       "bodyFat": "Grasa corporal",
       "bmi": "IMC",
-      "age": "Edad",
-      "gender": "Género"
+      "age": "Age",
+      "gender": "Gender"
     },
     "weightPrediction": {
-      "title": "Peso predicho",
-      "subtitle": "Estimado a partir del TDEE y tu seguimiento de calorías desde el último pesaje"
+      "title": "Predicted Weight",
+      "subtitle": "Estimated from TDEE and Tu calorie tracking since last weigh-in"
     }
   }
 }

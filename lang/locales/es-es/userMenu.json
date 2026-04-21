@@ -4,11 +4,11 @@
     "profile": "Perfil",
     "settings": "Ajustes",
     "progress": "Progreso",
-    "cycle": "Ciclo",
+    "cycle": "Cycle",
     "workouts": "Entrenamientos",
-    "food": "Comida",
-    "coach": "Coach",
-    "checkin": "Controles",
-    "debugPage": "Página de depuración"
+    "food": "Food",
+    "coach": "Entrenador",
+    "checkin": "Check-ins",
+    "debugPage": "Debug Page"
   }
 }

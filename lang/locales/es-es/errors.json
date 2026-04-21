@@ -1,22 +1,22 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Tiempo de espera de conexión agotado",
-      "description": "No pudimos comunicarnos con los servidores de Musclog. Por favor, comprueba tu conexión a internet.",
+      "title": "Connection Timeout",
+      "description": "We couldn't reach the Musclog servers. Please check Tu internet connection.",
       "tryAgain": "Reintentar"
     },
-    "failedToLoadData": "Error al cargar los datos",
-    "somethingWentWrong": "Algo salió mal",
-    "genericDescription": "Ocurrió un error inesperado.",
-    "reload": "Recargar",
-    "aiCreditsError": "Cuota del servicio de IA excedida. Por favor, comprueba tu clave API o inténtalo de nuevo más tarde.",
-    "aiProcessingError": "Lo siento, tuve problemas para procesar esa solicitud. Por favor, inténtalo de nuevo en un momento.",
-    "aiProcessingErrorTitle": "Error al procesar la solicitud",
-    "gatewayDailyLimitError": "Límite diario gratuito de IA alcanzado. Inténtalo de nuevo mañana o añade tu propia clave API en los ajustes de IA.",
-    "gatewayDailyLimitErrorTitle": "Límite diario alcanzado",
+    "failedToLoadData": "falló to load datos",
+    "somethingWentWrong": "Something went wrong",
+    "genericDescription": "An unexpected error occurred.",
+    "reload": "Reload",
+    "aiCreditsError": "AI service quota exceeded. Please check Tu API key or try again later.",
+    "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
+    "aiProcessingErrorTitle": "error processing request",
+    "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or Añadir Tu own API key in AI ajustes.",
+    "gatewayDailyLimitErrorTitle": "Daily Limit Reached",
     "databaseError": {
-      "title": "Error de base de datos",
-      "description": "Ocurrió un error en la base de datos. Se ha activado el informe de errores para ayudar a resolver este problema."
+      "title": "Database error",
+      "description": "A database error occurred. error reporting has been enabled to help resolve this issue."
     }
   }
 }

@@ -1,11 +1,11 @@
 {
   "portionSizes": {
-    "addNew": "Añadir nueva",
-    "noResults": "Sin resultados",
-    "searchPlaceholder": "Buscar porciones...",
-    "selectTitle": "Seleccionar tamaño de porción",
+    "addNew": "Añadir Nuevo",
+    "noResults": "No Results",
+    "searchPlaceholder": "Buscar portions...",
+    "selectTitle": "Seleccionar portion size",
     "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",
     "loadMore": "Cargar más",
-    "loadingMore": "Cargando más..."
+    "loadingMore": "Loading more..."
   }
 }

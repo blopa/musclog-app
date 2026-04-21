@@ -2,16 +2,16 @@
   "timePicker": {
     "am": "AM",
     "cancel": "Cancelar",
-    "clearSelection": "Limpiar selección",
-    "confirm": "Establecer hora",
-    "confirmTime": "Confirmar hora",
-    "hours": "Horas",
-    "midnight": "Medianoche",
-    "minutes": "Minutos",
-    "noon": "Mediodía",
-    "now": "Ahora",
+    "clearSelection": "Clear Selection",
+    "confirm": "Set Time",
+    "confirmTime": "Confirmar Time",
+    "hours": "Hours",
+    "midnight": "Midnight",
+    "minutes": "Minutes",
+    "noon": "Noon",
+    "now": "Now",
     "pm": "PM",
-    "selectedStartTime": "Hora de inicio seleccionada",
-    "selectTime": "Seleccionar hora"
+    "selectedStartTime": "Selected Start Time",
+    "selectTime": "Seleccionar Time"
   }
 }

@@ -1,18 +1,18 @@
 {
   "replaceExercise": {
-    "title": "Reemplazar ejercicio",
+    "title": "Sustituir ejercicio",
     "cancel": "Cancelar",
-    "replace": "Reemplazar",
+    "replace": "Replace",
     "searchPlaceholder": "Buscar ejercicios...",
     "muscleGroups": {
-      "all": "Todos",
+      "all": "All",
       "chest": "Pecho",
       "shoulders": "Hombros",
       "triceps": "Tríceps"
     },
     "selectExercise": "Seleccionar ejercicio",
     "loadMore": "Cargar más",
-    "loadingMore": "Cargando…",
-    "noExercisesMatch": "Ningún ejercicio coincide"
+    "loadingMore": "Loading…",
+    "noExercisesMatch": "No ejercicios match"
   }
 }

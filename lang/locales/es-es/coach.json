@@ -1,70 +1,70 @@
 {
   "coach": {
     "title": "Chat",
-    "you": "Tú",
+    "you": "You",
     "name": "Loggy",
-    "status": "En línea",
-    "statusOffline": "Desconectado",
+    "status": "Online",
+    "statusOffline": "Offline",
     "context": {
       "general": "General",
       "exercise": "Fitness",
       "nutrition": "Nutrición"
     },
-    "placeholder": "Escribe un mensaje...",
-    "todayAt": "Hoy a las {{time}}",
-    "imageSent": "Envió una imagen",
+    "placeholder": "Type a message...",
+    "todayAt": "Today, {{time}}",
+    "imageSent": "Sent an image",
     "actions": {
       "createWorkout": "Crear entrenamiento",
-      "analyzeProgress": "Analizar progreso",
-      "nutritionCheck": "Control nutricional",
-      "trackMeal": "Registrar comida",
-      "workoutGen": "Gen. de entr.",
-      "mealPlan": "Plan de comidas"
+      "analyzeProgress": "Analyze progreso",
+      "nutritionCheck": "Nutrition Check",
+      "trackMeal": "Track Meal",
+      "workoutGen": "entrenamiento Gen.",
+      "mealPlan": "Meal Plan"
     },
-    "workoutGenerationPrompt": "¡Puedo ayudarte a crear un plan de entrenamiento personalizado! Cuéntame sobre tus objetivos, equipo disponible y cuántos días a la semana te gustaría entrenar.",
-    "mealPlanPrompt": "¡Puedo ayudarte a crear un plan de comidas personalizado para 3 días! Cuéntame tus preferencias, alergias o cualquier alimento específico que te gustaría incluir.",
-    "analyzeProgressPrompt": "Analizaré tus entrenamientos recientes. ¿Algún comentario que quieras decirme antes de que lo haga?",
-    "nutritionCheckPrompt": "Revisaré tu nutrición de los últimos 7 días. ¿Algún comentario que quieras añadir antes de que lo haga?",
-    "trackMealPrompt": "Dime qué has comido (¡incluso puedes enviar una foto!) y estimaré los macros y lo registraré por ti.",
-    "welcomeMessage": "Hola. Mi nombre es Loggy, soy tu entrenador personal de IA. Estoy aquí para ayudarte a lograr tus objetivos de fitness, seguir tu progreso y brindarte orientación personalizada. ¡No dudes en preguntarme cualquier cosa sobre entrenamientos, nutrición o tu viaje de fitness!",
-    "welcomeMessageExercise": "¡Hola! Soy Loggy. Estoy aquí para ayudarte con tu entrenamiento, ya sea creando un nuevo plan de ejercicios, revisando tu técnica o analizando tu progreso. ¿Qué hay en tu horario de entrenamiento hoy?",
-    "welcomeMessageNutrition": "¡Hola! Soy Loggy. Puedo ayudarte a mantenerte al tanto de tu nutrición registrando tus comidas, estimando macros y brindándote información dietética. ¡Háblame de tus comidas recientes o hazme cualquier pregunta sobre nutrición!",
+    "workoutGenerationPrompt": "I can help you Crear a personalized entrenamiento plan! Tell me about Tu goals, available equipment, and how many days per week you'd like to train.",
+    "mealPlanPrompt": "I can help you Crear a personalized meal plan for 3 days! Tell me about Tu preferences, allergies, or any specific foods you'd like to include.",
+    "analyzeProgressPrompt": "I'll analyze Tu recent workouts. Any remarks you'd like to tell me before I do?",
+    "nutritionCheckPrompt": "I'll review Tu nutrition for the last 7 days. Any remarks you'd like to Añadir before I do?",
+    "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
+    "welcomeMessage": "Hello. My name is Loggy, I am Tu AI Fitness Coach. I'm here to help you achieve Tu fitness goals, track Tu progreso, and provide personalized guidance. Feel free to ask me anything about workouts, nutrition, or Tu fitness journey!",
+    "welcomeMessageExercise": "Hello! I'm Loggy. I'm here to help you with Tu training, whether it's building a Nuevo entrenamiento plan, checking Tu form, or analyzing Tu progreso. What's on Tu training schedule today?",
+    "welcomeMessageNutrition": "Hi! I'm Loggy. I can help you stay on top of Tu nutrition by tracking Tu meals, estimating macros, and providing dietary insights. Tell me about Tu recent meals or ask me any nutrition questions!",
     "insights": {
-      "noNutritionLogs": "No puedo brindarte información nutricional porque no has registrado ninguna comida en los últimos 7 días. ¡Comienza a registrar tus alimentos para obtener comentarios de nutrición personalizados!",
-      "noWorkoutLogs": "No puedo brindarte información sobre tus entrenamientos porque no has completado ninguno en los últimos 7 días. ¡Ponte en movimiento y estaré listo para analizar tu entrenamiento!"
+      "noNutritionLogs": "I can't provide nutrition insights because you haven't tracked any meals in the past 7 days. Start logging Tu food to get personalized nutrition feedback!",
+      "noWorkoutLogs": "I can't provide entrenamiento insights because you haven't completed any workouts in the past 7 days. Get moving and I'll be ready to analyze Tu training!"
     },
     "errors": {
-      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
-      "workoutGenerationFailed": "Lo siento, no pude generar un plan de entrenamiento. Por favor, inténtalo de nuevo.",
-      "mealPlanGenerationFailed": "Lo siento, no pude generar un plan de comidas. Por favor, inténtalo de nuevo.",
-      "generalError": "Lo siento, algo salió mal. Por favor, inténtalo de nuevo.",
-      "progressInsightFailed": "No se pudo analizar el progreso. Inténtalo de nuevo más tarde.",
-      "nutritionInsightFailed": "No se pudo comprobar la nutrición. Inténtalo de nuevo más tarde.",
-      "trackMealFailed": "No pude estimar los macros para esa comida. ¿Podrías describirla con más detalle?",
-      "filePickFailed": "Error al elegir el archivo. Por favor, inténtalo de nuevo.",
-      "creditsExhausted": "Parece que tus créditos de IA se han agotado. Por favor, comprueba tu clave API o facturación en Ajustes.",
-      "rateLimited": "Por favor, espera un momento antes de enviar otro mensaje."
+      "aiNotConfigured": "AI features are not configured. Please Añadir a Gemini or OpenAI API key in ajustes.",
+      "workoutGenerationFailed": "Sorry, I couldn't generate a entrenamiento plan. Please try again.",
+      "mealPlanGenerationFailed": "Sorry, I couldn't generate a meal plan. Please try again.",
+      "generalError": "Sorry, something went wrong. Please try again.",
+      "progressInsightFailed": "Could not analyze progreso. Try again later.",
+      "nutritionInsightFailed": "Could not check nutrition. Try again later.",
+      "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
+      "filePickFailed": "falló to pick file. Please try again.",
+      "creditsExhausted": "It looks like Tu AI credits have run out. Please check Tu API key or billing in ajustes.",
+      "rateLimited": "Please wait a moment before sending another message."
     },
-    "goToSettings": "Ir a Ajustes",
+    "goToSettings": "Go to ajustes",
     "success": {
-      "workoutPlanGenerated": "¡He creado {{count}} entrenamientos para ti! 💪 {{description}}",
-      "mealPlanGenerated": "¡He creado un plan de comidas de 3 días con {{count}} comidas para ti! 🥗 {{description}}",
-      "trackMealSuccess": "He registrado {{count}} ingredientes para tu comida: {{ingredients}}. Total: {{calories}} kcal.",
-      "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). ¡Toca una comida para revisarla y registrarla!",
-      "historyCleared": "Historial de chat borrado."
+      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
+      "mealPlanGenerated": "I've created a 3-day meal plan with {{count}} meals for you! 🥗 {{description}}",
+      "trackMealSuccess": "I've tracked {{count}} ingredients for Tu meal: {{ingredients}}. Total: {{calories}} kcal.",
+      "trackMealReady": "I've analyzed {{count}} meal(s): {{meals}} ({{calories}} kcal total). Tap a meal to review and log it!",
+      "historyCleared": "Chat historial cleared."
     },
     "aiInstructions": {
-      "parseWorkouts": "Analiza los entrenamientos y devuelve la lista estructurada.",
-      "parseNutrition": "Analiza los datos de nutrición y devuelve la lista estructurada.",
-      "parseRetrospectiveNutrition": "Analiza las comidas y devuelve la lista estructurada.",
-      "generateWorkoutPlanWithHistory": "Genera un plan de entrenamiento basado en esta conversación.",
-      "generateWorkoutPlanDefault": "Genera un plan de entrenamiento semanal básico (por ejemplo, rutina dividida de 3 días)."
+      "parseWorkouts": "Parse the workouts and return the structured list.",
+      "parseNutrition": "Parse the nutrition datos and return the structured list.",
+      "parseRetrospectiveNutrition": "Parse the meals and return the structured list.",
+      "generateWorkoutPlanWithHistory": "Generate a entrenamiento plan based on this conversation.",
+      "generateWorkoutPlanDefault": "Generate a basic weekly entrenamiento plan (e.g. 3-day split)."
     },
     "chatMessages": {
-      "title": "Mensajes de chat",
+      "title": "Chat Messages",
       "searchPlaceholder": "Buscar mensajes...",
       "noMessages": "Aún no hay mensajes",
-      "noMessagesDesc": "Inicia una conversación con Loggy",
+      "noMessagesDesc": "Empieza una conversación con Loggy",
       "endOfHistory": "Todos los mensajes cargados",
       "messageOptions": "Opciones de mensaje",
       "editMessage": "Editar mensaje",
@@ -72,7 +72,7 @@
       "deleteMessage": "Eliminar mensaje",
       "deleteMessageDesc": "Eliminar permanentemente este mensaje",
       "createMessage": "Crear mensaje",
-      "createMessageDesc": "Añadir un nuevo mensaje al historial" ,
+      "createMessageDesc": "Añadir un nuevo mensaje al historial",
       "createMessageFailed": "Error al crear el mensaje",
       "sender": "Remitente",
       "senderUser": "Usuario",
@@ -81,9 +81,9 @@
     "menu": {
       "title": "Opciones de chat",
       "clearHistory": "Borrar historial de chat",
-      "clearHistoryDesc": "Eliminar todos los mensajes en este contexto de conversación.",
+      "clearHistoryDesc": "Elimina todos los mensajes en este contexto de conversación.",
       "shareHistory": "Compartir historial de chat",
-      "shareHistoryDesc": "Exportar toda esta conversación como texto plano."
+      "shareHistoryDesc": "Exporta toda esta conversación como texto plano."
     },
     "confirmClear": {
       "title": "¿Borrar historial de chat?",
@@ -97,9 +97,9 @@
     },
     "disclaimer": "La IA puede cometer errores. Por favor, verifica la información importante.",
     "message": {
-      "menuTitle": "Acciones del mensaje",
+      "menuTitle": "Acciones de mensaje",
       "copy": "Copiar",
-      "copyDesc": "Copiar el texto del mensaje al portapapeles",
+      "copyDesc": "Copiar texto del mensaje al portapapeles",
       "share": "Compartir",
       "shareDesc": "Compartir este mensaje",
       "delete": "Eliminar",
@@ -107,6 +107,6 @@
       "copied": "Mensaje copiado al portapapeles",
       "deleted": "Mensaje eliminado"
     },
-    "sendViaOpenAI": "Enviar por OpenAI"
+    "sendViaOpenAI": "Enviar vía OpenAI"
   }
 }

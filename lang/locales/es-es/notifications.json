@@ -2,71 +2,71 @@
   "notifications": {
     "header": {
       "title": "Notificaciones",
-      "clearAll": "BORRAR TODO"
+      "clearAll": "CLEAR ALL"
     },
     "sections": {
-      "today": "HOY",
-      "yesterday": "AYER",
-      "earlier": "ANTES"
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "earlier": "EARLIER"
     },
     "channels": {
-      "default": "Predeterminado",
-      "activeWorkout": "Entrenamiento activo"
+      "default": "Default",
+      "activeWorkout": "Active entrenamiento"
     },
-    "startNow": "Empezar ahora",
+    "startNow": "Start Now",
     "types": {
       "aiInsight": {
-        "title": "Información de IA",
-        "description": "Basado en tus levantamientos recientes, intenta aumentar tu ingesta de proteínas en 15g hoy para una recuperación óptima."
+        "title": "AI Insight",
+        "description": "Based on Tu recent lifts, try increasing Tu protein intake by 15g today for optimal recovery."
       },
       "workoutReminder": {
-        "title": "Recordatorio de entrenamiento",
-        "description": "¿Listo para {{workoutName}}? Programado para hoy a las {{time}}."
+        "title": "entrenamiento Reminder",
+        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
       },
       "workoutCompleted": {
-        "title": "¡Entrenamiento completado!",
-        "description": "Buen trabajo machacando {{workoutName}}. Quemaste {{calories}} kcal."
+        "title": "entrenamiento Completed!",
+        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
       },
       "kudosReceived": {
-        "title": "Elogio recibido",
-        "description": "A {{name}} y a {{count}} personas más les gustó tu reciente hito: \"{{milestone}}\""
+        "title": "Kudos Received",
+        "description": "{{name}} and {{count}} others liked Tu recent milestone: \"{{milestone}}\""
       },
       "weeklyReport": {
-        "title": "Informe semanal listo",
-        "description": "Tu informe de progreso de la semana pasada está disponible. Revisa tus estadísticas."
+        "title": "Weekly Report Ready",
+        "description": "Tu progreso report for last week is available. Check Tu stats."
       },
       "activeWorkout": {
-        "title": "Entrenamiento: {{workoutName}}",
+        "title": "entrenamiento: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}"
       },
       "workoutReminderMorning": {
-        "title": "Recordatorio de entrenamiento",
-        "body": "¿Listo para machacar hoy tu entrenamiento {{workoutName}}?"
+        "title": "entrenamiento Reminder",
+        "body": "Ready to crush Tu {{workoutName}} entrenamiento today??"
       },
       "nutritionOverview": {
-        "title": "Resumen nutricional diario",
-        "body": "¡Mira cómo se alineó tu nutrición con tus objetivos hoy!"
+        "title": "Daily Nutrition Overview",
+        "body": "Check how Tu nutrition aligned with Tu goals today!"
       },
       "nutritionCheckin": {
-        "title": "Control de progreso semanal",
-        "body": "¡Es hora de tu control nutricional semanal! Veamos cómo te ha ido."
+        "title": "Weekly progreso Check-in",
+        "body": "It's time for Tu weekly nutrition check-in! Let's see how you've done."
       },
       "periodPrediction": {
-        "title": "Predicción del periodo",
-        "body": "Se predice que tu periodo empezará en 2 días. ¡Prepárate!"
+        "title": "Period Prediction",
+        "body": "Tu period is predicted to start in 2 days. Get ready!"
       },
       "fertileWindow": {
-        "title": "Ventana fértil",
-        "body": "¡Tu ventana fértil está empezando! Útil para seguir tus niveles de energía."
+        "title": "Fertile Window",
+        "body": "Tu fertile window is starting! Useful for tracking Tu energy levels."
       },
       "restTimerAlert": {
-        "title": "Descanso terminado - ¡Vuelve al trabajo!",
-        "body": "Tu periodo de descanso ha terminado. ¡Es hora de machacar la siguiente serie!"
+        "title": "Rest Over - Back to Work!",
+        "body": "Tu rest period is up. Time to crush the next set!"
       },
       "workoutDurationWarning": {
-        "title": "¿Sigues entrenando?",
-        "body": "Tu sesión lleva en curso 5 horas. ¡No olvides terminarla en Musclog!"
+        "title": "Still Working Out?",
+        "body": "Tu session has been running for 5 hours. Don't forget to finish it in Musclog!"
       }
     }
   }

@@ -20,8 +20,8 @@
     "oneWeekAgo": "hace 1 semana",
     "weeksAgo": "hace {{count}} semanas",
     "monthsAgo": "hace {{count}} meses",
-    "oneMonthFromNow": "dentro de 1 mes",
-    "monthsFromNow": "dentro de {{count}} meses",
+    "oneMonthFromNow": "1 month from now",
+    "monthsFromNow": "{{count}} months from now",
     "seeAll": "Ver todo",
     "kcal": "kcal",
     "min": "min",
@@ -77,13 +77,13 @@
     "icon": "Icono",
     "archived": "Archivado",
     "descriptions": {
-      "none": "Ninguna"
+      "none": "Ninguno"
     },
     "duration": {
       "hoursOnly": "{{hours}}h",
-      "hoursMinutes": "{{hours}}h {{minutes}}m",
-      "minutesOnly": "{{minutes}}m",
-      "minutesShort": "{{minutes}} min"
+      "hoursMinutes": "{{hours}}h {{minutes}}L",
+      "minutesOnly": "{{minutes}}L",
+      "minutesShort": "{{minutes}} mins"
     },
     "days": {
       "label": "Días",
@@ -92,9 +92,9 @@
         "mon": "L",
         "tue": "M",
         "wed": "X",
-        "thu": "J",
-        "fri": "V",
-        "sat": "S"
+        "thu": "M",
+        "fri": "G",
+        "sat": "D"
       },
       "short": {
         "sun": "DOM",

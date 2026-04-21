@@ -1,175 +1,175 @@
 {
   "workouts": {
-    "title": "Mis entrenamientos",
+    "title": "My Workouts",
     "filters": {
-      "all": "Todos",
+      "all": "All",
       "strength": "Fuerza",
       "cardio": "Cardio",
       "flexibility": "Flexibilidad",
       "archived": "Archivado"
     },
-    "archive": "Archivar",
-    "archiveSuccess": "Entrenamiento archivado con éxito",
-    "archiveError": "Error al archivar el entrenamiento",
-    "duplicateSuccess": "Entrenamiento duplicado con éxito",
-    "duplicateError": "Error al duplicar el entrenamiento",
+    "archive": "Archive",
+    "archiveSuccess": "entrenamiento archived successfully",
+    "archiveError": "falló to archive entrenamiento",
+    "duplicateSuccess": "entrenamiento duplicated successfully",
+    "duplicateError": "falló to duplicate entrenamiento",
     "delete": "Eliminar",
-    "deleteSuccess": "Entrenamiento eliminado con éxito",
-    "deleteError": "Error al eliminar el entrenamiento",
+    "deleteSuccess": "entrenamiento deleted successfully",
+    "deleteError": "falló to Eliminar entrenamiento",
     "deleteConfirmation": {
       "title": "Eliminar entrenamiento",
-      "message": "¿Estás seguro de que quieres eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+      "message": "Are you sure you want to Eliminar \"{{name}}\"? This action cannot be undone."
     },
-    "searchPlaceholder": "Buscar entrenamientos...",
-    "noSearchResults": "No se encontraron entrenamientos",
-    "noSearchResultsDescription": "Ningún entrenamiento coincide con \"{{query}}\"",
-    "noSearchResultsButtonLabel": "Limpiar búsqueda",
+    "searchPlaceholder": "Buscar workouts...",
+    "noSearchResults": "No workouts found",
+    "noSearchResultsDescription": "No workouts match \"{{query}}\"",
+    "noSearchResultsButtonLabel": "Clear Buscar",
     "exercises": "Ejercicios",
     "addExercise": {
       "title": "Añadir ejercicio",
-      "targetMuscle": "Músculo objetivo",
-      "searchPlaceholder": "Buscar ejercicios de {{muscle}}...",
-      "createSet": "Crear serie",
+      "targetMuscle": "Target Muscle",
+      "searchPlaceholder": "Buscar {{muscle}} ejercicios...",
+      "createSet": "Crear Set",
       "bodyweight": "Peso corporal",
       "sets": "Series",
       "reps": "Reps",
       "weight": "Peso",
-      "addToWorkout": "Añadir al entrenamiento",
-      "restTime": "Tiempo de descanso",
-      "seconds": "seg",
-      "dropSet": "Serie descendente (Drop set)",
-      "notes": "Notas",
-      "notesPlaceholder": "Ajustes de máquina, variaciones de agarre, etc.",
+      "addToWorkout": "Añadir to entrenamiento",
+      "restTime": "Rest Time",
+      "seconds": "sec",
+      "dropSet": "Drop set",
+      "notes": "Notes",
+      "notesPlaceholder": "Machine ajustes, grip variations, etc.",
       "muscleGroups": {
-        "all": "Todos",
+        "all": "All",
         "chest": "Pecho",
-        "back": "Espalda",
+        "back": "Atrás",
         "legs": "Piernas",
         "arms": "Brazos"
       },
       "searchPlaceholderAll": "Buscar ejercicios...",
-      "noExercisesFound": "No se encontraron ejercicios que coincidan con \"{{query}}\"",
-      "noExercisesAvailable": "No hay ejercicios disponibles para {{muscle}}",
-      "exerciseDescription": "{{sets}} series × {{reps}} reps",
-      "exerciseDescriptionWithWeight": "{{sets}} series × {{reps}} reps @ {{weight}}{{unit}}",
-      "exerciseDescriptionLead": "{{sets}} series × {{reps}} reps @"
+      "noExercisesFound": "No ejercicios found matching \"{{query}}\"",
+      "noExercisesAvailable": "No ejercicios available for {{muscle}}",
+      "exerciseDescription": "{{sets}} sets × {{reps}} reps",
+      "exerciseDescriptionWithWeight": "{{sets}} sets × {{reps}} reps @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} sets × {{reps}} reps @"
     },
     "filterWorkouts": {
-      "title": "Filtrar entrenamientos",
+      "title": "Filter Workouts",
       "clear": "Limpiar",
-      "clearFilters": "Limpiar filtros",
+      "clearFilters": "Clear Filters",
       "applyFilters": "Aplicar filtros",
       "workoutType": "Tipo de entrenamiento",
-      "targetMuscles": "MÚSCULOS OBJETIVO",
-      "duration": "DURACIÓN",
-      "upTo": "Hasta {{duration}}",
+      "targetMuscles": "TARGET MUSCLES",
+      "duration": "DURATION",
+      "upTo": "Up to {{duration}}",
       "workoutTypes": {
         "strength": "Fuerza",
-        "strengthDescription": "Pesas, peso corporal",
+        "strengthDescription": "Weights, Bodyweight",
         "cardio": "Cardio",
-        "cardioDescription": "Correr, ciclismo, HIIT",
+        "cardioDescription": "Running, Cycling, HIIT",
         "flexibility": "Flexibilidad",
-        "flexibilityDescription": "Yoga, estiramientos"
+        "flexibilityDescription": "Yoga, Stretching"
       },
       "muscleGroups": {
         "fullBody": "Cuerpo completo",
         "chest": "Pecho",
-        "back": "Espalda",
+        "back": "Atrás",
         "legs": "Piernas",
         "shoulders": "Hombros",
         "arms": "Brazos",
-        "core": "Core"
+        "core": "Núcleo"
       }
     },
     "createWorkoutOptions": {
-      "generateWithAi": "Generar con IA",
-      "generateWithAiSubtitle": "Deja que Musclog cree una rutina personalizada basada en tus objetivos y equipo.",
-      "createFromEmptyTemplate": "Crear desde plantilla vacía",
-      "createFromEmptyTemplateSubtitle": "Diseña tu propia rutina desde cero, ejercicio por ejercicio.",
-      "browseTemplates": "Explorar plantillas",
-      "browseTemplatesSubtitle": "Explora programas creados por expertos y los favoritos de la comunidad."
+      "generateWithAi": "Generate with AI",
+      "generateWithAiSubtitle": "Let Musclog build a personalized routine based on Tu goals and equipment.",
+      "createFromEmptyTemplate": "Crear from Empty Template",
+      "createFromEmptyTemplateSubtitle": "Design Tu own routine from scratch, exercise by exercise.",
+      "browseTemplates": "Browse Templates",
+      "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
     },
     "browseTemplatesModal": {
-      "title": "Explorar plantillas",
-      "searchPlaceholder": "Buscar programas de expertos...",
-      "templateName": "Plantilla {{number}}",
+      "title": "Browse Templates",
+      "searchPlaceholder": "Buscar expert programs...",
+      "templateName": "Template {{number}}",
       "tabs": {
-        "all": "Todos",
-        "beginner": "Principiante",
-        "intermediate": "Intermedio",
-        "advanced": "Avanzado",
+        "all": "All",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
         "strength": "Fuerza",
-        "hypertrophy": "Hipertrofia",
+        "hypertrophy": "Hypertrophy",
         "cardio": "Cardio"
       },
       "stats": {
-        "duration": "Duración",
+        "duration": "Duration",
         "exercises": "Ejercicios",
-        "exercisesQty": "{{count}} ejercicio",
-        "exercisesQty_one": "{{count}} ejercicio",
+        "exercisesQty": "{{count}} Exercise",
+        "exercisesQty_one": "{{count}} Exercise",
         "exercisesQty_other": "{{count}} ejercicios",
         "sets": "Series",
-        "setsQty": "{{count}} serie",
-        "setsQty_one": "{{count}} serie",
-        "setsQty_other": "{{count}} series"
+        "setsQty": "{{count}} Set",
+        "setsQty_one": "{{count}} Set",
+        "setsQty_other": "{{count}} Sets"
       }
     },
     "manageWorkoutTemplateData": {
-      "deleteTemplateWarning": "¿Estás seguro de que quieres eliminar esta plantilla? Esta acción no se puede deshacer.",
-      "title": "Gestionar plantillas de entrenamiento",
-      "searchPlaceholder": "Buscar plantillas...",
-      "noTemplates": "Aún no hay plantillas de entrenamiento",
-      "noTemplatesDesc": "Crea plantillas de entrenamiento para verlas aquí",
-      "endOfHistory": "Fin del historial de plantillas",
-      "templateOptions": "Opciones de plantilla",
-      "editTemplate": "Editar plantilla",
-      "editTemplateDesc": "Modificar nombre de la plantilla y ejercicios",
-      "duplicateTemplate": "Duplicar plantilla",
-      "duplicateTemplateDesc": "Crear una copia de esta plantilla",
-      "deleteTemplate": "Eliminar plantilla",
-      "deleteTemplateDesc": "Eliminar esta plantilla permanentemente",
-      "noDescription": "Sin descripción",
-      "unknownTemplate": "Plantilla desconocida"
+      "deleteTemplateWarning": "Are you sure you want to Eliminar this template? This action cannot be undone.",
+      "title": "Gestionar entrenamiento Template datos",
+      "searchPlaceholder": "Buscar templates...",
+      "noTemplates": "No entrenamiento templates yet",
+      "noTemplatesDesc": "Crear entrenamiento templates to see them here",
+      "endOfHistory": "End of template historial",
+      "templateOptions": "Template Options",
+      "editTemplate": "Editar Template",
+      "editTemplateDesc": "Modify template name and ejercicios",
+      "duplicateTemplate": "Duplicate Template",
+      "duplicateTemplateDesc": "Crear a copy of this template",
+      "deleteTemplate": "Eliminar Template",
+      "deleteTemplateDesc": "Remove this template permanently",
+      "noDescription": "No description",
+      "unknownTemplate": "Unknown Template"
     },
     "createTemplate": {
-      "title": "Crear plantilla de entrenamiento",
-      "description": "Crea una rutina de entrenamiento reutilizable"
+      "title": "Crear entrenamiento Template",
+      "description": "Build a reusable entrenamiento routine"
     },
     "createWorkoutOptionsModal": {
       "header": "Crear entrenamiento",
-      "title": "¿Cómo quieres crear tu rutina?",
-      "subtitle": "Selecciona cómo quieres crear tu rutina hoy."
+      "title": "How do you want to build Tu routine?",
+      "subtitle": "Seleccionar how you want to build Tu routine today."
     },
     "createFromTemplate": {
-      "title": "Crear entrenamientos desde plantilla",
-      "message": "Esto creará plantillas de entrenamiento separadas para cada día en este programa. Cada entrenamiento incluirá los ejercicios, series y repeticiones especificados para ese día.",
-      "confirm": "Crear entrenamientos",
+      "title": "Crear Workouts from Template",
+      "message": "This will Crear separate entrenamiento templates for each day in this program. Each entrenamiento will include the ejercicios, sets, and reps specified for that day.",
+      "confirm": "Crear Workouts",
       "cancel": "Cancelar",
-      "successMessage": "Entrenamientos creados con éxito"
+      "successMessage": "Workouts created successfully"
     },
     "aiGeneration": {
-      "comingSoon": "¡La generación de entrenamientos por IA llegará pronto!",
-      "title": "Generar con IA",
-      "subtitle": "Cuéntanos tus objetivos y crearemos un plan de entrenamiento personalizado",
-      "preferencesLabel": "Tus preferencias",
-      "preferencesPlaceholder": "Ej. Quiero ganar músculo, puedo entrenar 4 días a la semana, tengo acceso a un gimnasio completo, soy un levantador intermedio...",
-      "generateButton": "Generar plan",
-      "successMessage": "¡Tu plan de entrenamiento está listo! Se han añadido {{count}} entrenamiento(s).",
-      "errorMessage": "No se pudo generar un plan. Por favor, inténtalo de nuevo.",
-      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes."
+      "comingSoon": "AI entrenamiento generation coming soon!",
+      "title": "Generate with AI",
+      "subtitle": "Tell us about Tu goals and we'll build a personalized entrenamiento plan",
+      "preferencesLabel": "Tu preferences",
+      "preferencesPlaceholder": "E.g. I want to build muscle, I can train 4 days a week, I have access to a full gym, I'm an intermediate lifter...",
+      "generateButton": "Generate Plan",
+      "successMessage": "Tu entrenamiento plan is ready! {{count}} entrenamiento(s) added.",
+      "errorMessage": "Couldn't generate a plan. Please try again.",
+      "aiNotConfigured": "AI features are not configured. Please Añadir a Gemini or OpenAI API key in ajustes."
     },
     "templateBrowser": {
-      "comingSoon": "¡El explorador de plantillas llegará pronto!"
+      "comingSoon": "Template browser coming soon!"
     },
     "interruptedSession": {
-      "description": "Tienes un entrenamiento en curso.",
-      "resume": "Reanudar",
-      "discard": "Descartar",
-      "discardConfirmTitle": "¿Descartar entrenamiento?",
-      "discardConfirmMessage": "Esto eliminará permanentemente tu entrenamiento en curso y todas las series registradas.",
-      "discardConfirm": "Descartar",
-      "discardCancel": "Mantenerlo"
+      "description": "You have a entrenamiento in progreso.",
+      "resume": "Resume",
+      "discard": "Discard",
+      "discardConfirmTitle": "Discard entrenamiento?",
+      "discardConfirmMessage": "This will permanently Eliminar Tu in-progreso entrenamiento and all logged sets.",
+      "discardConfirm": "Discard",
+      "discardCancel": "Keep It"
     },
-    "unnamed": "Sin nombre"
+    "unnamed": "Unnamed"
   }
 }

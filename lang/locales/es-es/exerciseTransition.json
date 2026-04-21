@@ -1,23 +1,23 @@
 {
   "exerciseTransition": {
-    "totalTime": "TIEMPO TOTAL",
-    "completeSuffix": "¡Completado!",
-    "completedMessage": "Gran esfuerzo. Recupera el aliento.",
-    "upNext": "A CONTINUACIÓN",
-    "target": "OBJETIVO",
+    "totalTime": "TOTAL TIME",
+    "completeSuffix": "Complete!",
+    "completedMessage": "Great effort. Catch Tu breath.",
+    "upNext": "UP NEXT",
+    "target": "Objetivo",
     "weightSingle": "{{value}} {{unit}}",
     "weightRange": "{{min}}~{{max}} {{unit}}",
     "sets": "Series",
     "reps": "Reps",
-    "rest": "DESCANSO",
-    "sec": "seg",
-    "equipment": "EQUIPO",
-    "startNextExercise": "Empezar siguiente ejercicio",
-    "loadingNextExercise": "Cargando siguiente ejercicio...",
-    "errorTitle": "Entrenamiento no encontrado",
-    "errorDescription": "No se pudo cargar la pantalla de transición de ejercicio. Por favor, inténtalo de nuevo.",
-    "goBack": "Volver",
-    "noWorkoutId": "No se proporcionó ID de entrenamiento",
-    "loadFailed": "Error al cargar los datos del entrenamiento"
+    "rest": "REST",
+    "sec": "sec",
+    "equipment": "EQUIPMENT",
+    "startNextExercise": "Start next exercise",
+    "loadingNextExercise": "Loading next exercise...",
+    "errorTitle": "entrenamiento not found",
+    "errorDescription": "Unable to load exercise transition screen. Please try again.",
+    "goBack": "Go Back",
+    "noWorkoutId": "No entrenamiento ID provided",
+    "loadFailed": "falló to load entrenamiento datos"
   }
 }

@@ -1,23 +1,23 @@
 {
   "workout": {
     "import": {
-      "characters": "Caracteres",
-      "emptyData": "Por favor, pega o introduce datos de entrenamiento.",
-      "formatInfo": "Pega o escribe tu registro de entrenamientos (ej. de una nota o aplicación). La IA lo analizará y creará sesiones.",
+      "characters": "Characters",
+      "emptyData": "Please paste or enter entrenamiento datos.",
+      "formatInfo": "Paste or type Tu entrenamiento log (e.g. from a note or app). AI will parse it and Crear sessions.",
       "import": "Importar",
-      "importWorkouts": "Importar entrenamientos",
-      "instructions": "Pega tus datos de entrenamiento a continuación. Compatible con: texto libre, listas de viñetas o registros estructurados.",
-      "pasteWorkoutDataPlaceholder": "Pega los datos de entrenamiento aquí...",
-      "processing": "Procesando...",
-      "processingData": "Entrenamientos importados con éxito.",
-      "processingFailed": "No se pudieron procesar los datos. Por favor, comprueba el formato e inténtalo de nuevo.",
-      "supportedFormats": "Formatos compatibles"
+      "importWorkouts": "Import Workouts",
+      "instructions": "Paste Tu entrenamiento datos below. Supported: free text, bullet lists, or structured logs.",
+      "pasteWorkoutDataPlaceholder": "Paste entrenamiento datos here...",
+      "processing": "procesando...",
+      "processingData": "Workouts imported successfully.",
+      "processingFailed": "Could not process the datos. Please check the format and try again.",
+      "supportedFormats": "Supported formats"
     },
-    "sessionOverview": "Resumen de la sesión",
+    "sessionOverview": "Session Overview",
     "startWorkout": "Empezar entrenamiento",
-    "resumeSession": "Reanudar sesión",
+    "resumeSession": "Resume Session",
     "workout": "Entrenamiento",
-    "inProgress": "En curso",
+    "inProgress": "In progreso",
     "type": {
       "strength": "Fuerza",
       "cardio": "Cardio",
@@ -27,28 +27,28 @@
       "free": "Libre"
     },
     "exercises": "{{count}} ejercicios",
-    "workoutSequence": "Secuencia de entrenamiento",
-    "skipped": "OMITIDO",
+    "workoutSequence": "entrenamiento Sequence",
+    "skipped": "SKIPPED",
     "startFromExercise": {
-      "title": "Empezar desde el ejercicio",
-      "message": "¿Quieres empezar el entrenamiento desde {{exerciseName}}?",
-      "confirm": "Empezar desde aquí",
+      "title": "Start from Exercise",
+      "message": "Do you want to start the entrenamiento from {{exerciseName}}?",
+      "confirm": "Start from Here",
       "cancel": "Cancelar"
     },
     "summary": {
       "failedToLoad": "Error al cargar",
-      "noWorkoutId": "Sin ID de entrenamiento",
-      "unableToLoad": "No se pudo cargar",
-      "feedbackReceived": "Comentarios del entrenamiento enviados con éxito.",
-      "failedToGetFeedback": "No se pudieron obtener los comentarios. Por favor, inténtalo de nuevo."
+      "noWorkoutId": "No entrenamiento ID",
+      "unableToLoad": "Unable to load",
+      "feedbackReceived": "entrenamiento feedback submitted successfully.",
+      "failedToGetFeedback": "Could not get feedback. Please try again."
     },
     "muscleGroups": {
       "chest": "Pecho",
-      "back": "Espalda",
+      "back": "Atrás",
       "legs": "Piernas",
       "shoulders": "Hombros",
       "arms": "Brazos",
-      "core": "Core",
+      "core": "Núcleo",
       "abdomen": "Abdomen",
       "glutes": "Glúteos",
       "fullBody": "Cuerpo completo",
@@ -58,7 +58,7 @@
       "abs": "Abdominales",
       "quads": "Cuádriceps",
       "hamstrings": "Isquiotibiales",
-      "calves": "Pantorrillas",
+      "calves": "Gemelos",
       "full_body": "Cuerpo completo",
       "cardio": "Cardio",
       "other": "Otro"

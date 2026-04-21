@@ -6,12 +6,12 @@
     "dailyLog": "Registro diario",
     "flowIntensity": "Intensidad del flujo",
     "symptomsTitle": "Síntomas",
-    "noLogsToday": "No hay síntomas registrados para hoy.",
+    "noLogsToday": "No se han registrado síntomas para hoy.",
     "logSymptoms": "Registrar síntomas",
     "logDaily": "Registro diario del ciclo",
     "settings": {
       "title": "Ajustes del ciclo",
-      "subtitle": "Edita tu configuración del ciclo",
+      "subtitle": "Edita la configuración de tu ciclo",
       "save": "Guardar cambios"
     },
     "symptoms": {

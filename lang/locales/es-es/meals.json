@@ -1,65 +1,65 @@
 {
   "meals": {
-    "title": "Mis comidas",
+    "title": "My Meals",
     "filters": {
-      "all": "Todas",
-      "highProtein": "Alta en proteína",
-      "breakfast": "Desayuno",
-      "lunch": "Almuerzo"
+      "all": "All",
+      "highProtein": "High Protein",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch"
     },
     "tags": {
-      "highProtein": "Alta en proteína",
-      "ketoFriendly": "Apto para Keto",
-      "vegetarian": "Vegetariano",
-      "breakfast": "Desayuno",
-      "lunch": "Almuerzo",
-      "dinner": "Cena",
-      "snack": "Merienda"
+      "highProtein": "High Protein",
+      "ketoFriendly": "Keto Friendly",
+      "vegetarian": "Vegetarian",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack"
     },
     "chatMealCard": {
-      "mealCount_one": "{{count}} comida",
-      "mealCount_other": "{{count}} comidas",
+      "mealCount_one": "{{count}} meal",
+      "mealCount_other": "{{count}} meals",
       "view": "Ver",
-      "viewBreakfast": "Ver desayuno",
-      "viewLunch": "Ver almuerzo",
-      "viewDinner": "Ver cena",
-      "viewSnack": "Ver merienda",
-      "tracked": "Registrado"
+      "viewBreakfast": "Ver Breakfast",
+      "viewLunch": "Ver Lunch",
+      "viewDinner": "Ver Dinner",
+      "viewSnack": "Ver Snack",
+      "tracked": "Tracked"
     },
-    "untitledMeal": "Comida sin título",
-    "searchPlaceholder": "Buscar comidas...",
-    "loadingMeals": "Cargando comidas...",
-    "noMealsFound": "No se encontraron comidas",
-    "noMealsYet": "Aún no hay comidas",
-    "noMealsMatch": "Ninguna comida coincide con \"{{query}}\"",
-    "createFirstMeal": "Crea tu primera comida para empezar",
-    "tryDifferentFilter": "Prueba con un filtro diferente",
-    "loadingMore": "Cargando más...",
+    "untitledMeal": "Untitled Meal",
+    "searchPlaceholder": "Buscar meals...",
+    "loadingMeals": "Loading meals...",
+    "noMealsFound": "No meals found",
+    "noMealsYet": "No meals yet",
+    "noMealsMatch": "No meals match \"{{query}}\"",
+    "createFirstMeal": "Crear Tu first meal to get started",
+    "tryDifferentFilter": "Try a different filter",
+    "loadingMore": "Loading more...",
     "loadMore": "Cargar más",
-    "customMeal": "Comida personalizada",
-    "createdByYou": "Creado por ti",
-    "logMeal": "Registrar comida",
-    "mealType": "Tipo de comida",
+    "customMeal": "Custom Meal",
+    "createdByYou": "Created by you",
+    "logMeal": "Log Meal",
+    "mealType": "Meal Type",
     "history": {
-      "unknownMeal": "Comida desconocida"
+      "unknownMeal": "Unknown Meal"
     },
     "deleteItem": {
-      "title": "Eliminar elemento",
-      "message": "¿Estás seguro de que quieres eliminar este elemento?",
+      "title": "Eliminar Item",
+      "message": "Are you sure you want to Eliminar this item?",
       "cancel": "Cancelar",
       "delete": "Eliminar"
     },
-    "unknownFood": "Desconocido",
+    "unknownFood": "Unknown",
     "generateAI": {
-      "title": "Generar comidas con IA",
-      "describeLabel": "DESCRIBE TUS PREFERENCIAS",
-      "preferencesLabel": "Preferencias",
-      "placeholder": "ej. Comidas ricas en proteínas para ganar músculo, prefiero pollo y arroz, evita los lácteos...",
-      "applyLabel": "Generar comidas",
-      "successMessage": "¡Comida creada con éxito!",
-      "errorMessage": "No se pudieron generar las comidas. Por favor, inténtalo de nuevo.",
-      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
-      "generating": "Generando comidas..."
+      "title": "Generate Meals with AI",
+      "describeLabel": "DESCRIBE Tu PREFERENCES",
+      "preferencesLabel": "Preferences",
+      "placeholder": "e.g. High protein meals for muscle building, I prefer chicken and rice, avoid dairy...",
+      "applyLabel": "Generate Meals",
+      "successMessage": "Meal created successfully!",
+      "errorMessage": "Couldn't generate meals. Please try again.",
+      "aiNotConfigured": "AI features are not configured. Please Añadir a Gemini or OpenAI API key in ajustes.",
+      "generating": "Generating meals..."
     }
   }
 }

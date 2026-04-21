@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Editar detalles de fitness",
+    "title": "Editar Fitness Details",
     "units": "Unidades",
     "imperial": "Imperial",
     "metric": "Métrico",
-    "bodyStats": "Estadísticas corporales",
-    "gender": "Género",
-    "male": "Hombre",
-    "female": "Mujer",
+    "bodyStats": "Body Stats",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
     "other": "Otro",
-    "currentWeight": "Peso actual",
+    "currentWeight": "Current Weight",
     "height": "Altura",
-    "fatPercentage": "Porcentaje de grasa corporal",
-    "fatPercentageNotSet": "No establecido — toca para introducir",
-    "goalsStrategy": "Objetivos y estrategia",
-    "fitnessGoal": "Objetivo de fitness",
+    "fatPercentage": "Body Fat Percentage",
+    "fatPercentageNotSet": "Not set — tap to enter",
+    "goalsStrategy": "Goals & Strategy",
+    "fitnessGoal": "Fitness objetivo",
     "eatingPhase": "Fase de alimentación",
-    "cut": "Definición",
-    "maintain": "Mantenimiento",
-    "bulk": "Volumen",
-    "lifestyleContext": "Contexto de estilo de vida",
+    "cut": "Cut",
+    "maintain": "Maintain",
+    "bulk": "Bulk",
+    "lifestyleContext": "Lifestyle Context",
     "activityLevel": "Nivel de actividad",
-    "liftingExperience": "Experiencia en pesas",
+    "liftingExperience": "Lifting Experience",
     "saveChanges": "Guardar cambios",
-    "selectGoal": "Seleccionar objetivo de fitness",
-    "selectGoalSubtitle": "Elige el objetivo que mejor se adapte a tu entrenamiento",
-    "selectActivity": "Seleccionar nivel de actividad",
-    "selectActivitySubtitle": "Elige basándote en todo tu día, no solo en los entrenamientos",
+    "selectGoal": "Seleccionar Fitness objetivo",
+    "selectGoalSubtitle": "Choose the objetivo that best fits Tu training",
+    "selectActivity": "Seleccionar Activity Level",
+    "selectActivitySubtitle": "Pick based on Tu whole day, not just workouts",
     "activityLevelLabels": {
-      "sedentary": "Sedentario",
-      "light": "Ligero",
-      "moderate": "Moderado",
+      "sedentary": "Sedentary",
+      "light": "Light",
+      "moderate": "Moderate",
       "active": "Activo",
-      "superActive": "Súper activo"
+      "superActive": "Super Active"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Trabajo de escritorio o sentado, menos de 5,000 pasos al día, sin ejercicio regular",
-      "light": "Trabajo de escritorio o mayormente sentado. Gimnasio o ejercicio ligero 2–4 veces/semana pero poco movimiento por lo demás. La mayoría de los oficinistas que hacen ejercicio entran aquí",
-      "moderate": "De pie gran parte del día (profesor, comercio, enfermería) Y ejercicio 3–5 veces/semana, o 7,500–10,000+ pasos al día",
-      "active": "Trabajo físicamente exigente (oficios, atención médica) o entrenamiento diario intenso con mucho movimiento todo el día",
-      "superActive": "Trabajo físico duro (construcción, agricultura, militar) más entrenamiento regular — movimiento intenso la mayor parte del día"
+      "sedentary": "Desk or sit-down job, under 5,000 steps/day, no regular exercise",
+      "light": "Desk job or mostly sitting. Gym or light exercise 2–4×/week but low movement otherwise. Most office workers who exercise fall here",
+      "moderate": "On Tu feet a good part of the day (teacher, retail, nurse) AND exercise 3–5×/week, or 7,500–10,000+ steps/day",
+      "active": "Physically demanding job (trades, healthcare) or daily intense training with high movement all day",
+      "superActive": "Hard physical job (construction, farming, military) plus regular training — moving heavily most of the day"
     },
     "weightGoal": "Tu objetivo",
     "weightGoalLabels": {
-      "lose": "Perder peso",
-      "maintain": "Mantener",
-      "gain": "Ganar músculo"
+      "lose": "Lose weight",
+      "maintain": "Maintain",
+      "gain": "Gain muscle"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hipertrofia (Ganar músculo)",
-      "strength": "Fuerza (Levantar más pesado)",
-      "endurance": "Resistencia (Estamina)",
-      "weightLoss": "Pérdida de peso (Quemar grasa)",
-      "general": "Fitness general"
+      "hypertrophy": "Hypertrophy (Build Muscle)",
+      "strength": "Strength (Lift Heavier)",
+      "endurance": "Endurance (Stamina)",
+      "weightLoss": "Weight Loss (Burn Fat)",
+      "general": "General Fitness"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Enfoque en tamaño y definición muscular",
-      "strength": "Enfoque en fuerza y potencia máximas",
-      "endurance": "Enfoque en condición cardiovascular",
-      "weightLoss": "Enfoque en pérdida de grasa y tonificación",
-      "general": "Mantener la salud y el bienestar general"
+      "hypertrophy": "Focus on muscle size and definition",
+      "strength": "Focus on maximum strength and power",
+      "endurance": "Focus on cardiovascular fitness",
+      "weightLoss": "Focus on fat loss and toning",
+      "general": "Maintain overall health and wellness"
     },
     "experienceLabels": {
-      "beginner": "Principiante",
-      "intermediate": "Intermedio",
-      "advanced": "Avanzado"
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
     },
     "experienceDescriptions": {
-      "beginner": "Nuevo en el entrenamiento constante. Aún aprendiendo movimientos y ganando fuerza rápidamente semana a semana",
-      "intermediate": "Cómodo con los levantamientos principales. Entrenando constantemente por 1–3 años, el progreso llega mensualmente en lugar de semanalmente",
-      "advanced": "Más de 3 años de entrenamiento estructurado y constante. El progreso es lento y se gana con esfuerzo — cerca de tu potencial de fuerza"
+      "beginner": "Nuevo to consistent training. Still learning movements and gaining strength quickly week to week",
+      "intermediate": "Comfortable with main lifts. Training consistently for 1–3 years, progreso comes monthly rather than weekly",
+      "advanced": "3+ years of structured, consistent training. progreso is slow and hard-earned — near Tu strength potential"
     }
   }
 }
