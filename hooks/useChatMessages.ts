@@ -613,7 +613,11 @@ export function useChatMessages(
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.mealPlanGenerationFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.mealPlanGenerationFailed')
+            );
             return;
           }
         } else if (pendingIntention === GENERATE_MY_WORKOUTS) {
@@ -660,7 +664,11 @@ export function useChatMessages(
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.workoutGenerationFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.workoutGenerationFailed')
+            );
             return;
           }
         } else if (pendingIntention === ANALYZE_PROGRESS) {
@@ -733,7 +741,12 @@ export function useChatMessages(
             }
 
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.trackMealFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.trackMealFailed')
+            );
+
             return;
           }
 

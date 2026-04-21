@@ -380,6 +380,7 @@
       "uploadFromGallery": "Kies uit galerij",
       "aiAnalysisFailed": "AI-analyse mislukt. Probeer het opnieuw.",
       "aiNotConfigured": "AI is niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
+      "onDeviceNotSupported": "Maaltijdfotoanalyse is niet beschikbaar met Apple Intelligence. Configureer OpenAI of Gemini in de Instellingen.",
       "mealLoggedSuccess": "Maaltijd succesvol bijgehouden!",
       "mealLoggingFailed": "Bijhouden van maaltijd mislukt. Probeer het opnieuw.",
       "analysisSuccess": "{{name}}: {{kcal}} kcal, E {{protein}}g K {{carbs}}g V {{fat}}g"

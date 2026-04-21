@@ -380,6 +380,7 @@
       "uploadFromGallery": "Choose from gallery",
       "aiAnalysisFailed": "AI analysis failed. Please try again.",
       "aiNotConfigured": "AI is not configured. Add a Gemini or OpenAI API key in Settings.",
+      "onDeviceNotSupported": "Meal photo analysis is not available with Apple Intelligence. Please configure OpenAI or Gemini in Settings.",
       "mealLoggedSuccess": "Meal logged successfully!",
       "mealLoggingFailed": "Failed to log meal. Please try again.",
       "analysisSuccess": "{{name}}: {{kcal}} kcal, P {{protein}}g C {{carbs}}g F {{fat}}g"

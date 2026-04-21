@@ -1044,6 +1044,11 @@ export async function generateWorkoutPlan(
   history: ChatHistoryEntry[],
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
+  if (config.provider === 'on-device') {
+    // TODO: temporarily disable it for on-device
+    return null;
+  }
+
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);

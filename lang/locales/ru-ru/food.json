@@ -380,6 +380,7 @@
       "uploadFromGallery": "Выбрать из галереи",
       "aiAnalysisFailed": "Анализ ИИ не удался. Пожалуйста, попробуйте снова.",
       "aiNotConfigured": "ИИ не настроен. Добавьте API-ключ Gemini или OpenAI в Настройках.",
+      "onDeviceNotSupported": "Анализ фото блюд недоступен в Apple Intelligence. Пожалуйста, настройте OpenAI или Gemini в Настройках.",
       "mealLoggedSuccess": "Приём пищи успешно записан!",
       "mealLoggingFailed": "Не удалось записать приём пищи. Пожалуйста, попробуйте снова.",
       "analysisSuccess": "{{name}}: {{kcal}} ккал, Б {{protein}}г У {{carbs}}г Ж {{fat}}г"

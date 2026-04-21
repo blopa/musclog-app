@@ -41,6 +41,7 @@
       "progressInsightFailed": "No se pudo analizar el progreso. Inténtalo de nuevo más tarde.",
       "nutritionInsightFailed": "No se pudo revisar la nutrición. Inténtalo de nuevo más tarde.",
       "trackMealFailed": "No pude estimar los macros para esa comida. ¿Podrías describirla con más detalle?",
+      "featureRequiresCloudAi": "Esta función no está disponible con Apple Intelligence. Cambia a OpenAI o Gemini en los Ajustes.",
       "filePickFailed": "Error al elegir el archivo. Por favor, inténtalo de nuevo.",
       "creditsExhausted": "Parece que tus créditos de IA se han agotado. Por favor, comprueba tu clave API o facturación en Ajustes.",
       "rateLimited": "Por favor, espera un momento antes de enviar otro mensaje."
