@@ -4,11 +4,11 @@
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
     "skipRest": "SKIP REST",
-    "done": "Hecho",
-    "reps": "Reps",
+    "done": "Done",
+    "reps": "reps",
     "repsWithCount": "{{count}} reps",
     "upNext": "UP NEXT",
-    "missingWorkoutData": "Missing entrenamiento datos",
+    "missingWorkoutData": "Missing workout data",
     "completedSetNotFound": "Completed set not found"
   }
 }

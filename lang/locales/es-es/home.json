@@ -6,13 +6,13 @@
       "goodEvening": "Good Evening"
     },
     "actions": {
-      "startWorkout": "Start\nentrenamiento",
+      "startWorkout": "Start\nWorkout",
       "trackFood": "Track\nFood"
     },
     "sections": {
       "recentWorkouts": "Recent Workouts",
       "recentFoods": "Recent Foods",
-      "dailySummary": "Resumen diario"
+      "dailySummary": "Daily Summary"
     },
     "activityRings": {
       "move": "Move",
@@ -21,9 +21,9 @@
       "score": "Score"
     },
     "navigation": {
-      "home": "Inicio",
-      "profile": "Perfil",
-      "workouts": "Entrenamientos",
+      "home": "Home",
+      "profile": "Profile",
+      "workouts": "Workouts",
       "food": "Food",
       "coach": "Chat",
       "focus": "Focus",

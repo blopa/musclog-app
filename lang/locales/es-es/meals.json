@@ -19,23 +19,23 @@
     "chatMealCard": {
       "mealCount_one": "{{count}} meal",
       "mealCount_other": "{{count}} meals",
-      "view": "Ver",
-      "viewBreakfast": "Ver Breakfast",
-      "viewLunch": "Ver Lunch",
-      "viewDinner": "Ver Dinner",
-      "viewSnack": "Ver Snack",
+      "view": "View",
+      "viewBreakfast": "View Breakfast",
+      "viewLunch": "View Lunch",
+      "viewDinner": "View Dinner",
+      "viewSnack": "View Snack",
       "tracked": "Tracked"
     },
     "untitledMeal": "Untitled Meal",
-    "searchPlaceholder": "Buscar meals...",
+    "searchPlaceholder": "Search meals...",
     "loadingMeals": "Loading meals...",
     "noMealsFound": "No meals found",
     "noMealsYet": "No meals yet",
     "noMealsMatch": "No meals match \"{{query}}\"",
-    "createFirstMeal": "Crear Tu first meal to get started",
+    "createFirstMeal": "Create your first meal to get started",
     "tryDifferentFilter": "Try a different filter",
     "loadingMore": "Loading more...",
-    "loadMore": "Cargar más",
+    "loadMore": "Load More",
     "customMeal": "Custom Meal",
     "createdByYou": "Created by you",
     "logMeal": "Log Meal",
@@ -44,21 +44,21 @@
       "unknownMeal": "Unknown Meal"
     },
     "deleteItem": {
-      "title": "Eliminar Item",
-      "message": "Are you sure you want to Eliminar this item?",
-      "cancel": "Cancelar",
-      "delete": "Eliminar"
+      "title": "Delete Item",
+      "message": "Are you sure you want to delete this item?",
+      "cancel": "Cancel",
+      "delete": "Delete"
     },
     "unknownFood": "Unknown",
     "generateAI": {
       "title": "Generate Meals with AI",
-      "describeLabel": "DESCRIBE Tu PREFERENCES",
+      "describeLabel": "DESCRIBE YOUR PREFERENCES",
       "preferencesLabel": "Preferences",
       "placeholder": "e.g. High protein meals for muscle building, I prefer chicken and rice, avoid dairy...",
       "applyLabel": "Generate Meals",
       "successMessage": "Meal created successfully!",
       "errorMessage": "Couldn't generate meals. Please try again.",
-      "aiNotConfigured": "AI features are not configured. Please Añadir a Gemini or OpenAI API key in ajustes.",
+      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "generating": "Generating meals..."
     }
   }

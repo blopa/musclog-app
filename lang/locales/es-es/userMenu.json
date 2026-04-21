@@ -1,13 +1,13 @@
 {
   "userMenu": {
-    "greeting": "Cuenta",
-    "profile": "Perfil",
-    "settings": "Ajustes",
-    "progress": "Progreso",
+    "greeting": "Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "progress": "Progress",
     "cycle": "Cycle",
-    "workouts": "Entrenamientos",
+    "workouts": "Workouts",
     "food": "Food",
-    "coach": "Entrenador",
+    "coach": "Coach",
     "checkin": "Check-ins",
     "debugPage": "Debug Page"
   }

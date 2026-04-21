@@ -1,31 +1,31 @@
 {
   "nutritionGoals": {
     "title": "Set Nutrition & Body Goals",
-    "subtitle": "Define Tu targets for nutrition and body composition.",
+    "subtitle": "Define your targets for nutrition and body composition.",
     "dailyMacroTargets": "Daily Macro Targets",
     "totalDailyCalories": "Total Daily Calories",
     "targetBodyMetrics": "Target Body Metrics",
     "macrosDistribution": "Macros Distribution",
     "balance": "Balance",
     "optimal": "Optimal",
-    "protein": "Proteína",
+    "protein": "Protein",
     "carbohydrates": "Carbohydrates",
-    "fats": "Grasas",
-    "targetWeight": "Peso objetivo",
-    "targetBodyFat": "Grasa corporal objetivo",
-    "targetBMI": "IMC objetivo",
-    "targetFFMI": "IFFM objetivo",
-    "targetDate": "Fecha objetivo",
+    "fats": "Fats",
+    "targetWeight": "Target Weight",
+    "targetBodyFat": "Target Body Fat",
+    "targetBMI": "Target BMI",
+    "targetFFMI": "Target FFMI",
+    "targetDate": "Target date",
     "targetDateNotSet": "Not set",
-    "targetDateSublabel": "When you want to reach Tu body targets",
-    "targetDateClear": "Limpiar",
-    "editTitle": "Editar objetivo",
-    "updateGoal": "Update objetivo",
-    "goalStartDate": "objetivo Start Date",
-    "goalStartDateSublabel": "When this objetivo period started",
-    "goalStartDateToday": "Hoy",
+    "targetDateSublabel": "When you want to reach your body targets",
+    "targetDateClear": "Clear",
+    "editTitle": "Edit Goal",
+    "updateGoal": "Update Goal",
+    "goalStartDate": "Goal Start Date",
+    "goalStartDateSublabel": "When this goal period started",
+    "goalStartDateToday": "Today",
     "saveGoals": "Save Goals",
-    "settingsNote": "You can change these values anytime in ajustes.",
+    "settingsNote": "You can change these values anytime in Settings.",
     "kcalPerGram": {
       "protein": "4 kcal/g",
       "carbs": "4 kcal/g",
@@ -43,19 +43,19 @@
     "continue": "Continue",
     "results": {
       "aiCalculationComplete": "Calculation Complete",
-      "your": "Tu",
+      "your": "Your",
       "nutritionPlan": "Nutrition Plan",
-      "aiDescription": "Based on Tu body metrics and activity levels, our calculations has optimized Tu daily targets.",
+      "aiDescription": "Based on your body metrics and activity levels, our calculations has optimized your daily targets.",
       "manualDescription": "Here are the nutrition goals you set. You can continue or go back to adjust them.",
-      "manualPlanBadge": "Tu custom plan",
+      "manualPlanBadge": "Your custom plan",
       "macroSplit": "Macro split",
       "manualTipsTitle": "You're all set",
-      "manualTipsDescription": "Start logging meals to track Tu progreso. You can change these goals anytime in ajustes.",
+      "manualTipsDescription": "Start logging meals to track your progress. You can change these goals anytime in Settings.",
       "dailyCalorieTarget": "Daily Calorie Target",
-      "kcal": "kcal",
-      "protein": "Proteína",
-      "carbs": "Carbohidratos",
-      "fats": "Grasas",
+      "kcal": "KCAL",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fats": "Fats",
       "estimatedWeightLoss": "Estimated Weight Loss",
       "estimatedWeightGain": "Estimated Weight Gain",
       "estimatedMaintenance": "Estimated Maintenance",
@@ -75,7 +75,7 @@
       "goalLabels": {
         "weight_loss": "Weight Loss",
         "muscle_gain": "Muscle Gain",
-        "maintenance": "Mantenimiento",
+        "maintenance": "Maintenance",
         "moderateWeightLoss": "Moderate Weight Loss Strategy",
         "enduranceTraining": "Endurance Training",
         "generalFitness": "General Fitness",
@@ -83,7 +83,7 @@
         "strengthSurplus": "Strength Surplus Strategy"
       }
     },
-    "errorSaving": "Error al guardar",
+    "errorSaving": "Error Saving",
     "dietTypes": {
       "keto": {
         "title": "Keto",
@@ -119,7 +119,7 @@
       },
       "custom": {
         "title": "Custom",
-        "subtitle": "Tu Plan"
+        "subtitle": "Your Plan"
       }
     }
   }

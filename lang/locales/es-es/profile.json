@@ -1,13 +1,13 @@
 {
   "profile": {
     "header": {
-      "title": "Perfil"
+      "title": "Profile"
     },
-    "goal": "Objetivo",
+    "goal": "Goal",
     "currentStats": "Current Stats",
-    "history": "Historial",
+    "history": "History",
     "management": "Management",
-    "loading": "Cargando...",
+    "loading": "Loading...",
     "syncing": {
       "healthKit": "Syncing with HealthKit..."
     },
@@ -20,27 +20,27 @@
     "gender": {
       "male": "Male",
       "female": "Female",
-      "other": "Otro"
+      "other": "Other"
     },
     "managementItems": {
-      "editPersonal": "Editar Personal Info",
-      "editPersonalDesc": "Update Tu name, avatar, and personal details",
-      "editFitness": "Editar Fitness Details",
-      "editFitnessDesc": "Update Tu fitness goals and preferences",
+      "editPersonal": "Edit Personal Info",
+      "editPersonalDesc": "Update your name, avatar, and personal details",
+      "editFitness": "Edit Fitness Details",
+      "editFitnessDesc": "Update your fitness goals and preferences",
       "appPreferences": "App Preferences",
-      "appPreferencesDesc": "Customize app ajustes and preferences"
+      "appPreferencesDesc": "Customize app settings and preferences"
     },
     "stats": {
-      "weight": "Peso",
-      "height": "Altura",
-      "bodyFat": "Grasa corporal",
-      "bmi": "IMC",
+      "weight": "Weight",
+      "height": "Height",
+      "bodyFat": "Body Fat",
+      "bmi": "BMI",
       "age": "Age",
       "gender": "Gender"
     },
     "weightPrediction": {
       "title": "Predicted Weight",
-      "subtitle": "Estimated from TDEE and Tu calorie tracking since last weigh-in"
+      "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
     }
   }
 }

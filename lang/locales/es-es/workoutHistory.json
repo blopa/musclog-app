@@ -1,14 +1,14 @@
 {
   "workoutHistory": {
-    "title": "Session historial",
-    "previewTitle": "entrenamiento Preview",
-    "workoutInProgress": "entrenamiento IN progreso",
+    "title": "Session History",
+    "previewTitle": "Workout Preview",
+    "workoutInProgress": "WORKOUT IN PROGRESS",
     "previewSubtitle": "PREVIEW",
     "duration": "Duration",
     "volume": "Vol",
     "setsDone": "Sets Done",
-    "startThisWorkout": "Start this entrenamiento",
-    "noExercisesYet": "No ejercicios yet",
+    "startThisWorkout": "Start this workout",
+    "noExercisesYet": "No exercises yet",
     "exercise": "Exercise {{number}}",
     "set": "Set {{number}}"
   }

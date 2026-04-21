@@ -1,41 +1,41 @@
 {
   "createWorkout": {
-    "title": "Crear Nuevo entrenamiento",
-    "save": "Guardar",
-    "workoutIcon": "Icono del entrenamiento",
-    "essentials": "Esenciales",
-    "workoutTitle": "Título del entrenamiento",
-    "workoutTitlePlaceholder": "ej. Destrucción de piernas",
-    "description": "Descripción",
-    "descriptionPlaceholder": "Enfoque en cuádriceps y gemelos...",
-    "workoutType": "Tipo de entrenamiento",
+    "title": "Create New Workout",
+    "save": "Save",
+    "workoutIcon": "Workout Icon",
+    "essentials": "Essentials",
+    "workoutTitle": "Workout Title",
+    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
+    "description": "Description",
+    "descriptionPlaceholder": "Focus on quads and calves...",
+    "workoutType": "Workout type",
     "types": {
-      "strength": "Fuerza",
+      "strength": "Strength",
       "cardio": "Cardio",
-      "flexibility": "Flexibilidad",
-      "calisthenics": "Calistenia",
-      "other": "Otro"
+      "flexibility": "Flexibility",
+      "calisthenics": "Calisthenics",
+      "other": "Other"
     },
-    "intelligence": "Inteligencia",
+    "intelligence": "Intelligence",
     "workoutInsight": {
-      "title": "Información del entrenamiento",
-      "description": "Elige cómo Musclog prepara la información para tu próxima sesión. La IA se adapta basándose en los datos de recuperación cuando está habilitada.",
-      "none": "Ninguno",
-      "algorithm": "Algoritmo",
-      "ai": "IA"
+      "title": "Workout insights",
+      "description": "Choose how Musclog prepares insights for your next session. AI adapts based on recovery data when enabled.",
+      "none": "None",
+      "algorithm": "Algorithm",
+      "ai": "AI"
     },
-    "routine": "Rutina",
-    "repeatOnDays": "Repetir los días",
-    "weekly": "Semanal",
-    "exercises": "Ejercicios",
-    "exercisesInWorkout": "Ejercicios en el entrenamiento",
-    "addExerciseError": "Error al añadir ejercicio",
-    "editTitle": "Editar entrenamiento",
-    "loadError": "Error al cargar",
-    "noExercisesPlaceholder": "Sin ejercicios",
-    "saveError": "Error al guardar",
+    "routine": "Routine",
+    "repeatOnDays": "Repeat on days",
+    "weekly": "Weekly",
+    "exercises": "Exercises",
+    "exercisesInWorkout": "Exercises in the workout",
+    "addExerciseError": "Failed to Add Exercise",
+    "editTitle": "Edit Workout",
+    "loadError": "Failed to Load",
+    "noExercisesPlaceholder": "No Exercises",
+    "saveError": "Failed to Save",
     "validation": {
-      "titleRequiredMessage": "Por favor, introduce un título para el entrenamiento"
+      "titleRequiredMessage": "Please enter a workout title"
     }
   }
 }

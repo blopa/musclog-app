@@ -1,72 +1,72 @@
 {
   "notifications": {
     "header": {
-      "title": "Notificaciones",
+      "title": "Notifications",
       "clearAll": "CLEAR ALL"
     },
     "sections": {
-      "today": "Hoy",
-      "yesterday": "Ayer",
+      "today": "TODAY",
+      "yesterday": "YESTERDAY",
       "earlier": "EARLIER"
     },
     "channels": {
       "default": "Default",
-      "activeWorkout": "Active entrenamiento"
+      "activeWorkout": "Active Workout"
     },
     "startNow": "Start Now",
     "types": {
       "aiInsight": {
         "title": "AI Insight",
-        "description": "Based on Tu recent lifts, try increasing Tu protein intake by 15g today for optimal recovery."
+        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
       },
       "workoutReminder": {
-        "title": "entrenamiento Reminder",
+        "title": "Workout Reminder",
         "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
       },
       "workoutCompleted": {
-        "title": "entrenamiento Completed!",
+        "title": "Workout Completed!",
         "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
       },
       "kudosReceived": {
         "title": "Kudos Received",
-        "description": "{{name}} and {{count}} others liked Tu recent milestone: \"{{milestone}}\""
+        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
       },
       "weeklyReport": {
         "title": "Weekly Report Ready",
-        "description": "Tu progreso report for last week is available. Check Tu stats."
+        "description": "Your progress report for last week is available. Check your stats."
       },
       "activeWorkout": {
-        "title": "entrenamiento: {{workoutName}}",
+        "title": "Workout: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}"
       },
       "workoutReminderMorning": {
-        "title": "entrenamiento Reminder",
-        "body": "Ready to crush Tu {{workoutName}} entrenamiento today??"
+        "title": "Workout Reminder",
+        "body": "Ready to crush your {{workoutName}} workout today??"
       },
       "nutritionOverview": {
         "title": "Daily Nutrition Overview",
-        "body": "Check how Tu nutrition aligned with Tu goals today!"
+        "body": "Check how your nutrition aligned with your goals today!"
       },
       "nutritionCheckin": {
-        "title": "Weekly progreso Check-in",
-        "body": "It's time for Tu weekly nutrition check-in! Let's see how you've done."
+        "title": "Weekly Progress Check-in",
+        "body": "It's time for your weekly nutrition check-in! Let's see how you've done."
       },
       "periodPrediction": {
         "title": "Period Prediction",
-        "body": "Tu period is predicted to start in 2 days. Get ready!"
+        "body": "Your period is predicted to start in 2 days. Get ready!"
       },
       "fertileWindow": {
         "title": "Fertile Window",
-        "body": "Tu fertile window is starting! Useful for tracking Tu energy levels."
+        "body": "Your fertile window is starting! Useful for tracking your energy levels."
       },
       "restTimerAlert": {
         "title": "Rest Over - Back to Work!",
-        "body": "Tu rest period is up. Time to crush the next set!"
+        "body": "Your rest period is up. Time to crush the next set!"
       },
       "workoutDurationWarning": {
         "title": "Still Working Out?",
-        "body": "Tu session has been running for 5 hours. Don't forget to finish it in Musclog!"
+        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
       }
     }
   }

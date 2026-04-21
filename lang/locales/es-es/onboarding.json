@@ -1,52 +1,52 @@
 {
   "onboarding": {
     "skip": "Skip",
-    "back": "Atrás",
-    "next": "Siguiente",
+    "back": "Back",
+    "next": "Next",
     "getStarted": "Get Started",
     "steps": {
       "step1": {
         "title": "Effortless Tracking",
-        "description": "Ditch the notebook. Log Tu sets, reps, and weights in seconds and visualize Tu strength gains over time."
+        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
       },
       "step2": {
         "title": "Smart Nutrition",
-        "description": "Log meals in seconds with AI scanning or our massive database. Understanding Tu fuel is the key to peak performance."
+        "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
       },
       "step3": {
         "title": "One App, Total Control",
-        "description": "Connect the dots between Tu diet and Tu lifts. See exactly how Tu nutrition fuels Tu strength gains with unified progreso charts."
+        "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
       },
       "step4": {
         "title": "Let's Get Personal",
-        "description": "To tailor Tu journey and track Tu gains with precision, we'd love to know a bit more about Tu fitness historial."
+        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
       }
     },
     "fitnessInfo": {
       "physicalTitle": "Body Stats",
-      "goalsTitle": "Objetivos de fitness",
+      "goalsTitle": "Fitness Goals",
       "maybeLater": "Maybe later",
-      "save": "Guardar",
-      "next": "Siguiente",
+      "save": "Save",
+      "next": "Next",
       "continue": "Continue",
-      "errorSaving": "Error al guardar"
+      "errorSaving": "Error Saving"
     },
     "personalInfo": {
       "title": "Set Personal Information",
-      "errorSaving": "Error al guardar",
-      "finish": "Finalizar",
+      "errorSaving": "Error Saving",
+      "finish": "Finish",
       "trackCycle": "Track Menstrual Cycle?",
-      "trackCycleDescription": "Sync Tu performance and nutrition with Tu hormonal phases."
+      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
     },
     "cycleSetup": {
       "anchor": {
         "title": "Last Period",
-        "description": "When did Tu last period start? This helps us calibrate Tu current phase."
+        "description": "When did your last period start? This helps us calibrate your current phase."
       },
       "birthControl": {
         "title": "Hormonal Birth Control",
         "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
-        "none": "Ninguno",
+        "none": "None",
         "noneDescription": "No hormonal contraception.",
         "pill": "Pill",
         "pillDescription": "Daily oral contraceptive pill.",
@@ -54,86 +54,86 @@
         "iudDescription": "Intrauterine device (hormonal or copper).",
         "implant": "Implant",
         "implantDescription": "Subcutaneous hormonal implant.",
-        "other": "Otro",
+        "other": "Other",
         "otherDescription": "Another form of contraception."
       },
       "length": {
         "title": "Cycle Length",
-        "description": "How long is Tu typical cycle and period duration?",
+        "description": "How long is your typical cycle and period duration?",
         "cycleLength": "Average Cycle Length",
         "periodDuration": "Average Period Duration",
         "cycleLengthLabel": "Cycle Length",
         "periodDurationLabel": "Period Duration"
       },
       "goal": {
-        "title": "Sync objetivo",
-        "description": "What is Tu primary focus for hormonal syncing?",
+        "title": "Sync Goal",
+        "description": "What is your primary focus for hormonal syncing?",
         "performance": "Optimize Performance",
         "performanceDescription": "Peak strength and PR optimization.",
-        "symptoms": "Gestionar Symptoms",
+        "symptoms": "Manage Symptoms",
         "symptomsDescription": "Focus on comfort and recovery during shifts.",
         "energy": "Predict Energy Lows",
         "energyDescription": "Anticipate lows and adjust intensity accordingly."
       }
     },
     "healthConnect": {
-      "connectYour": "Connect Tu",
+      "connectYour": "Connect Your",
       "health": "Health",
-      "description": "Sync Tu fitness datos to Musclog for advanced progreso tracking and personalized health insights.",
+      "description": "Sync your fitness data to Musclog for advanced progress tracking and personalized health insights.",
       "categories": {
-        "nutrition": "Nutrición",
-        "weight": "Peso",
+        "nutrition": "Nutrition",
+        "weight": "Weight",
         "sleep": "Sleep",
         "bodyComposition": "Body Composition"
       },
       "allowHealthAccess": "Allow Health Access",
       "connectedCount": "Connected {{granted}}/{{total}}",
       "maybeLater": "Maybe later",
-      "privacyStatement": "Musclog values Tu privacy. Tu datos is encrypted and used only for Tu personal analytics.",
+      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
       "initializing": "Initializing Health Connect...",
-      "syncing": "Syncing health datos...",
-      "processing": "procesando...",
+      "syncing": "Syncing health data...",
+      "processing": "Processing...",
       "continue": "Continue"
     },
     "landing": {
       "getStarted": "Get Started",
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
-      "appName": "MUSCLOG",
+      "appName": "Musclog",
       "tagline": "Lift, Log, Repeat",
-      "description": "Track Tu progreso with datos-driven insights and crush Tu fitness goals.",
-      "viewTerms": "Ver Terms",
+      "description": "Track your progress with data-driven insights and crush your fitness goals.",
+      "viewTerms": "View Terms",
       "preparingApp": "Preparing the app for you...",
-      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing Tu datos over.",
-      "migratingData": "Migrating Tu datos...",
+      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
+      "migratingData": "Migrating your data...",
       "migratingStep": "Migrating {{step}}...",
       "migrationSteps": {
         "preparing": "Preparing",
         "downloading": "Downloading",
-        "processing": "Procesando",
+        "processing": "Processing",
         "finalizing": "Finalizing",
-        "fitness_goals": "Objetivos de nutrición",
-        "user_metrics": "Métricas corporales",
-        "users": "Perfil",
+        "fitness_goals": "nutrition goals",
+        "user_metrics": "body metrics",
+        "users": "profile",
         "foods": "foods",
         "nutrition_logs": "nutrition logs",
-        "exercises": "Ejercicios",
-        "workouts": "entrenamiento templates",
-        "workout_logs": "entrenamiento historial",
-        "workout_template_sets": "entrenamiento template sets",
-        "workout_log_sets": "entrenamiento log sets",
-        "validating": "datos"
+        "exercises": "exercises",
+        "workouts": "workout templates",
+        "workout_logs": "workout history",
+        "workout_template_sets": "workout template sets",
+        "workout_log_sets": "workout log sets",
+        "validating": "data"
       },
-      "importData": "Import datos"
+      "importData": "Import Data"
     },
     "setGoals": {
-      "title": "Smart objetivo",
+      "title": "Smart Goal",
       "calculation": "Calculation",
-      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate Tu metabolism, then Tu activity level and goals to set Tu calorie and macro targets.",
+      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
       "personalizedMacros": "Personalized Macros",
       "dynamicAdjustments": "Dynamic Adjustments",
       "calculateForMe": "Calculate for Me",
       "setThemMyself": "I'll Set Them Myself",
-      "missingData": "Please complete Tu fitness details first so we can calculate Tu plan."
+      "missingData": "Please complete your fitness details first so we can calculate your plan."
     }
   }
 }

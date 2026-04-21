@@ -1,6 +1,6 @@
 {
   "editPersonalInfo": {
-    "title": "Editar Personal Info",
+    "title": "Edit Personal Info",
     "fullName": "Full Name",
     "fullNamePlaceholder": "e.g. Alex Johnson",
     "emailAddress": "Email Address",
@@ -10,9 +10,9 @@
     "gender": "Gender",
     "male": "Male",
     "female": "Female",
-    "other": "Otro",
+    "other": "Other",
     "chooseAvatar": "Choose Avatar",
     "chooseColor": "Choose Color",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Save Changes"
   }
 }

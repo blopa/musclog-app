@@ -1,31 +1,31 @@
 {
   "freeTraining": {
     "workoutName": "Free Training",
-    "blankWorkout": "Blank entrenamiento",
+    "blankWorkout": "Blank Workout",
     "title": "Free Training",
     "titleSession": "Session",
-    "subtitle": "Build Tu entrenamiento as you go. No templates, just progreso.",
-    "addFirstExercise": "Añadir FIRST EXERCISE",
-    "tip": "Tip: You can Añadir more ejercicios at any time.",
+    "subtitle": "Build your workout as you go. No templates, just progress.",
+    "addFirstExercise": "ADD FIRST EXERCISE",
+    "tip": "Tip: You can add more exercises at any time.",
     "startFreeTraining": "Start Free Training",
-    "startFreeTrainingSubtitle": "Build Tu entrenamiento as you go. No templates, just progreso.",
+    "startFreeTrainingSubtitle": "Build your workout as you go. No templates, just progress.",
     "duration": "DURATION",
-    "calories": "Calorías",
-    "volume": "Volumen",
-    "inProgress": "In progreso",
+    "calories": "CALORIES",
+    "volume": "VOLUME",
+    "inProgress": "In Progress",
     "addExercise": {
-      "title": "Añadir ejercicio",
+      "title": "Add Exercise",
       "numberOfSets": "NUMBER OF SETS",
-      "addToWorkout": "Añadir TO entrenamiento",
-      "menuDescription": "Añadir ejercicios and sets to this session"
+      "addToWorkout": "ADD TO WORKOUT",
+      "menuDescription": "Add exercises and sets to this session"
     },
     "exerciseComplete": {
       "title": "Great work!",
       "subtitle": "Exercise complete. Ready for more?",
       "setsCompleted": "{{count}} sets completed",
       "totalVolume": "TOTAL VOLUME",
-      "addNextExercise": "Añadir next exercise",
-      "finishWorkout": "Finish entrenamiento"
+      "addNextExercise": "Add next exercise",
+      "finishWorkout": "Finish workout"
     }
   }
 }

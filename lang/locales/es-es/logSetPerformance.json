@@ -5,7 +5,7 @@
     "easy": "EASY",
     "moderate": "MODERATE",
     "failure": "FAILURE",
-    "cancel": "Cancelar",
+    "cancel": "CANCEL",
     "logSet": "LOG SET"
   }
 }

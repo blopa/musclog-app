@@ -1,15 +1,15 @@
 {
   "pastWorkoutHistory": {
-    "title": "entrenamiento historial",
-    "searchPlaceholder": "Buscar sessions...",
-    "noWorkoutsFound": "No workouts found matching Tu Buscar.",
-    "noWorkoutHistory": "No entrenamiento historial yet.",
-    "loadMore": "Cargar más",
-    "loadingMore": "Cargando...",
+    "title": "Workout History",
+    "searchPlaceholder": "Search sessions...",
+    "noWorkoutsFound": "No workouts found matching your search.",
+    "noWorkoutHistory": "No workout history yet.",
+    "loadMore": "Load More",
+    "loadingMore": "Loading...",
     "stats": {
       "duration": "Duration",
-      "volume": "Volumen",
-      "calories": "Calorías"
+      "volume": "Volume",
+      "calories": "Calories"
     },
     "prBadge": {
       "singular": "{{count}} PR",
@@ -17,19 +17,19 @@
     },
     "filters": {
       "title": "Filter Workouts",
-      "workoutType": "Tipo de entrenamiento",
+      "workoutType": "WORKOUT TYPE",
       "minDuration": "MIN. DURATION",
-      "reset": "Restablecer",
-      "applyFilters": "Aplicar filtros",
+      "reset": "Reset",
+      "applyFilters": "Apply Filters",
       "durationFormats": {
         "zero": "0m",
-        "minutes": "{{minutes}}L",
+        "minutes": "{{minutes}}m",
         "minutesPlus": "{{minutes}}+ mins",
         "max": "120m+"
       },
       "workoutTypes": {
         "all": "All Types",
-        "strength": "Fuerza",
+        "strength": "Strength",
         "cardio": "Cardio",
         "hiit": "HIIT",
         "yoga": "Yoga"
@@ -41,14 +41,14 @@
         "custom": "Custom"
       },
       "muscleGroups": {
-        "title": "MUSCLE GROUP (MULTI-Seleccionar)",
-        "chest": "Pecho",
-        "back": "Atrás",
-        "legs": "Piernas",
-        "shoulders": "Hombros",
-        "arms": "Brazos",
-        "core": "Núcleo",
-        "fullBody": "Cuerpo completo"
+        "title": "MUSCLE GROUP (MULTI-SELECT)",
+        "chest": "Chest",
+        "back": "Back",
+        "legs": "Legs",
+        "shoulders": "Shoulders",
+        "arms": "Arms",
+        "core": "Core",
+        "fullBody": "Full Body"
       }
     }
   }

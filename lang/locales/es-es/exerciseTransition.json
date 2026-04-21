@@ -2,22 +2,22 @@
   "exerciseTransition": {
     "totalTime": "TOTAL TIME",
     "completeSuffix": "Complete!",
-    "completedMessage": "Great effort. Catch Tu breath.",
+    "completedMessage": "Great effort. Catch your breath.",
     "upNext": "UP NEXT",
-    "target": "Objetivo",
+    "target": "TARGET",
     "weightSingle": "{{value}} {{unit}}",
     "weightRange": "{{min}}~{{max}} {{unit}}",
-    "sets": "Series",
+    "sets": "Sets",
     "reps": "Reps",
     "rest": "REST",
     "sec": "sec",
     "equipment": "EQUIPMENT",
     "startNextExercise": "Start next exercise",
     "loadingNextExercise": "Loading next exercise...",
-    "errorTitle": "entrenamiento not found",
+    "errorTitle": "Workout not found",
     "errorDescription": "Unable to load exercise transition screen. Please try again.",
     "goBack": "Go Back",
-    "noWorkoutId": "No entrenamiento ID provided",
-    "loadFailed": "falló to load entrenamiento datos"
+    "noWorkoutId": "No workout ID provided",
+    "loadFailed": "Failed to load workout data"
   }
 }
