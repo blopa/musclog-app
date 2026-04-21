@@ -706,9 +706,12 @@ export function AISettingsModal({
               {
                 key: 'send-foundation-foods',
                 label: t('settings.aiSettings.sendFoundationFoodsToLlm'),
-                subtitle: t('settings.aiSettings.sendFoundationFoodsToLlmSubtitle'),
-                value: debouncedSendFoundationFoodsToLlm,
+                subtitle: debouncedUseOnDeviceAi
+                  ? t('settings.aiSettings.onDeviceAi.foundationFoodsDisabled')
+                  : t('settings.aiSettings.sendFoundationFoodsToLlmSubtitle'),
+                value: debouncedUseOnDeviceAi ? false : debouncedSendFoundationFoodsToLlm,
                 onValueChange: handleSendFoundationFoodsToLlmChange,
+                disabled: debouncedUseOnDeviceAi,
                 icon: (
                   <View
                     style={{

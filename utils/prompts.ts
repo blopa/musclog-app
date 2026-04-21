@@ -59,8 +59,14 @@ export const getActiveCustomPrompts = async (
  * Get active memories for the conversation context
  */
 export const getActiveMemories = async (
-  context: 'nutrition' | 'exercise' | 'general'
+  context: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
+  // Skip database memory injection entirely for on-device AI to protect context window
+  if (provider === 'on-device') {
+    return '';
+  }
+
   try {
     const memories = await AiCustomPromptService.getActivePrompts(context, 'memory');
     if (memories.length === 0) {
@@ -80,10 +86,11 @@ export const getActiveMemories = async (
  */
 export const getBaseSystemPrompt = async (
   language: string = 'en-US',
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
   const customPrompts = await getActiveCustomPrompts(context);
-  const memories = context ? await getActiveMemories(context) : '';
+  const memories = context ? await getActiveMemories(context, provider) : '';
 
   const basePrompt =
     `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
@@ -205,6 +212,84 @@ export const getUserDetailsPrompt = async (
   return summary;
 };
 
+/**
+ * Compressed user stats for local models.
+ */
+export const getMinimalUserStats = async (user: User | null): Promise<string> => {
+  if (!user) return '';
+
+  const units = await SettingsService.getUnits();
+  const weightUnit = getWeightUnit(units);
+  const parts: string[] = [];
+
+  if (user.gender) parts.push(user.gender);
+
+  try {
+    const [latestWeight, latestBodyFat] = await Promise.all([
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('body_fat'),
+    ]);
+
+    if (latestWeight) {
+      const { value, unit: storedUnit = 'kg' } = await latestWeight.getDecrypted();
+      const weightKg = storedWeightToKg(value, storedUnit);
+      const displayWeight = kgToDisplay(weightKg, units);
+      parts.push(`${Math.round(displayWeight)}${weightUnit}`);
+    }
+
+    if (latestBodyFat) {
+      const { value } = await latestBodyFat.getDecrypted();
+      parts.push(`${Math.round(value)}%BF`);
+    }
+  } catch (error) {
+    // Continue without metrics
+  }
+
+  if (user.fitnessGoal) parts.push(user.fitnessGoal);
+
+  return parts.length > 0 ? `[User: ${parts.join(', ')}]` : '';
+};
+
+/**
+ * Minimal workout summary for local models.
+ */
+export const getMinimalWorkoutSummary = async (
+  workoutLogId: string,
+  units?: Units,
+  locale: string = 'en-US'
+): Promise<string> => {
+  try {
+    const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    const { workoutLog, sets, exercises } = details;
+    const exerciseCount = exercises.length;
+    const setCount = sets.length;
+
+    const resolvedUnits = units ?? (await SettingsService.getUnits());
+    const totalVolumeKg = workoutLog.totalVolume ?? 0;
+    const totalVolumeStr = `${formatDisplayWeightKg(locale, resolvedUnits, totalVolumeKg)} ${resolvedUnits === 'imperial' ? 'lbs' : 'kg'}`;
+
+    return `User finished "${workoutLog.workoutName}" on ${new Date(workoutLog.startedAt).toLocaleDateString(locale)}: ${totalVolumeStr} volume, ${exerciseCount} exercises, ${setCount} sets.`;
+  } catch (error) {
+    return '';
+  }
+};
+
+/**
+ * Minimal system prompt for Apple Intelligence.
+ */
+export const getMinimalSystemPrompt = async (
+  user: User | null,
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const userStats = await getMinimalUserStats(user);
+
+  return `You are Loggy, a friendly fitness coach. ${userStats}
+Respond in ${language}. Be helpful and concise.
+Focus only on fitness and nutrition topics.
+Keep responses under 100 words.`;
+};
+
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
  * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
 function buildWorkoutSummaryFromDetails(
@@ -303,9 +388,28 @@ async function buildWorkoutSummaryJson(
 export const getChatMessagePromptContent = async (
   language: string = 'en-US',
   eatingPhase?: string,
-  context: 'nutrition' | 'exercise' | 'general' = 'general'
+  context: 'nutrition' | 'exercise' | 'general' = 'general',
+  provider?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
+
+  if (provider === 'on-device') {
+    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 3);
+    const summaries: string[] = [];
+    for (const log of recentLogs) {
+      const summary = await getMinimalWorkoutSummary(log.id, undefined, language);
+      if (summary) summaries.push(summary);
+    }
+
+    const sections = [
+      await getMinimalSystemPrompt(user, language, context),
+      `Date: ${new Date().toLocaleDateString(language)}.`,
+      `Recent workouts:`,
+      ...summaries,
+    ];
+    return sections.join('\n');
+  }
+
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
@@ -327,7 +431,7 @@ export const getChatMessagePromptContent = async (
   }
 
   const sections = [
-    await getBaseSystemPrompt(language, context),
+    await getBaseSystemPrompt(language, context, provider),
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
