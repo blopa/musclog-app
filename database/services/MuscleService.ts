@@ -367,20 +367,23 @@ export class MuscleService {
 
     const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
-    // Find app exercises that have no muscle links yet.
-    // NOTE: this fetches all non-deleted exercise_muscle rows to build the
-    // linked-exercise-id set. WatermelonDB does not support DISTINCT or COUNT
-    // queries, so a full scan is the only option without raw SQL.
     const appExercises = await database
       .get<Exercise>('exercises')
       .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
+    if (appExercises.length === 0) {
+      return;
+    }
+
+    // Scope the exercise_muscles scan to app exercise IDs only so we never
+    // load links belonging to user-created exercises.
+    const appExerciseIds = appExercises.map((ex) => ex.id);
     const linkedExerciseIds = new Set(
       (
         await database
           .get<ExerciseMuscle>('exercise_muscles')
-          .query(Q.where('deleted_at', Q.eq(null)))
+          .query(Q.where('exercise_id', Q.oneOf(appExerciseIds)), Q.where('deleted_at', Q.eq(null)))
           .fetch()
       ).map((l) => l.exerciseId)
     );
