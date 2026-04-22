@@ -3112,3 +3112,44 @@ describe('generateWeeklyCheckins', () => {
     expect(weekly.length).toBeGreaterThan(biweekly.length);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Additional test cases for specific scenario: male, 180cm, 85kg, 39yo
+// ---------------------------------------------------------------------------
+
+describe('calculateTDEE for male 180cm 85kg 39yo', () => {
+  const baseParams = {
+    gender: 'male' as const,
+    age: 39,
+    weightKg: 85,
+    heightCm: 180,
+  };
+
+  it('calculates TDEE without body fat percentage', () => {
+    const bmr = calculateBMR(
+      baseParams.gender,
+      baseParams.weightKg,
+      baseParams.heightCm,
+      baseParams.age
+    );
+    const tdee = calculateTDEE({ bmr, activityLevel: 3 }); // moderate activity
+
+    // Expected BMR: 10*85 + 6.25*180 - 5*39 + 5 = 850 + 1125 - 195 + 5 = 1785
+    // Expected TDEE (moderate): 1785 * 1.55 = 2767 (rounded)
+    expect(bmr).toBe(1785);
+    expect(tdee).toBe(2767);
+  });
+
+  it('calculates TDEE with Katch-McArdle formula when body fat is provided', () => {
+    const bmrKatchMcArdle = calculateBMRKatchMcArdle(baseParams.weightKg, 22);
+
+    // Katch-McArdle: 370 + 21.6 * LBM
+    // LBM = 85 * (1 - 0.22) = 85 * 0.78 = 66.3
+    // BMR = 370 + 21.6 * 66.3 = 370 + 1432.08 = 1802.08 -> 1802
+    expect(bmrKatchMcArdle).toBe(1802);
+
+    const tdeeKatchMcArdle = calculateTDEE({ bmr: bmrKatchMcArdle, activityLevel: 3 });
+    // Expected TDEE (moderate): 1802 * 1.55 = 2793.1 -> 2793
+    expect(tdeeKatchMcArdle).toBe(2793);
+  });
+});
