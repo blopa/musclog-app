@@ -5,9 +5,9 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 
-import { useWorkoutSessionState } from '../useWorkoutSessionState';
-import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
 import { database } from '@/database';
+import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
 
 // Mock dependencies
 jest.mock('@/database', () => ({
@@ -88,11 +88,19 @@ describe('useWorkoutSessionState', () => {
 
     // Mock exercise
     (database.get as jest.Mock).mockImplementation((table) => {
-        if (table === 'workout_logs') return { query: () => mockObserve([{ id: workoutLogId }]) };
-        if (table === 'workout_log_exercises') return { query: () => mockObserve([{ id: 'le-1', exerciseId: 'ex-1' }]) };
-        if (table === 'workout_log_sets') return { query: () => ({ observeWithColumns: () => of(mockSets) }) };
-        if (table === 'exercises') return { query: () => mockObserve([{ id: 'ex-1', equipmentType: 'dumbbell' }]) };
-        return { query: () => mockObserve([]) };
+      if (table === 'workout_logs') {
+        return { query: () => mockObserve([{ id: workoutLogId }]) };
+      }
+      if (table === 'workout_log_exercises') {
+        return { query: () => mockObserve([{ id: 'le-1', exerciseId: 'ex-1' }]) };
+      }
+      if (table === 'workout_log_sets') {
+        return { query: () => ({ observeWithColumns: () => of(mockSets) }) };
+      }
+      if (table === 'exercises') {
+        return { query: () => mockObserve([{ id: 'ex-1', equipmentType: 'dumbbell' }]) };
+      }
+      return { query: () => mockObserve([]) };
     });
 
     const { result } = renderHook(() => useWorkoutSessionState(workoutLogId));
@@ -157,11 +165,19 @@ describe('useWorkoutSessionState', () => {
     workoutUtils.getEffectiveOrder.mockReturnValue(mockSets);
 
     (database.get as jest.Mock).mockImplementation((table) => {
-        if (table === 'workout_logs') return { query: () => mockObserve([{ id: workoutLogId }]) };
-        if (table === 'workout_log_exercises') return { query: () => mockObserve([{ id: 'le-1', exerciseId: 'ex-1' }]) };
-        if (table === 'workout_log_sets') return { query: () => ({ observeWithColumns: () => of(mockSets) }) };
-        if (table === 'exercises') return { query: () => mockObserve([{ id: 'ex-1', equipmentType: 'dumbbell' }]) };
-        return { query: () => mockObserve([]) };
+      if (table === 'workout_logs') {
+        return { query: () => mockObserve([{ id: workoutLogId }]) };
+      }
+      if (table === 'workout_log_exercises') {
+        return { query: () => mockObserve([{ id: 'le-1', exerciseId: 'ex-1' }]) };
+      }
+      if (table === 'workout_log_sets') {
+        return { query: () => ({ observeWithColumns: () => of(mockSets) }) };
+      }
+      if (table === 'exercises') {
+        return { query: () => mockObserve([{ id: 'ex-1', equipmentType: 'dumbbell' }]) };
+      }
+      return { query: () => mockObserve([]) };
     });
 
     const { result } = renderHook(() => useWorkoutSessionState(workoutLogId));
