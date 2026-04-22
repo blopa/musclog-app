@@ -92,21 +92,29 @@ export const getBaseSystemPrompt = async (
   const customPrompts = await getActiveCustomPrompts(context);
   const memories = context ? await getActiveMemories(context, provider) : '';
 
-  const basePrompt =
-    `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
-Your goal is to provide expert, motivating, and practical fitness advice.
+  let finalPrompt = `You are Loggy, a specialized fitness, nutrition, and health assistant.
+Your goal is to provide expert, motivating, and practical advice.
 
-STRICT GUIDELINES:
-1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally—don't sound like a robot.
-2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If you cannot respond in user's language, fallback to ${language}.
-3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas and provide 2-3 specific alternatives within your expertise.
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health topics and wellness strategies
+- Track fitness activities and nutrition logs
+
+Conversation Guidelines:
+1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
+2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}.
+3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
-6. REPETITION: Never repeat identical responses. If you notice you're repeating yourself, acknowledge it and vary your approach.
-7. META-CONVERSATION: If user asks about your behavior or capabilities, respond honestly and self-awarely.
-8. MEMORY: If the user shares something personally significant, a specific preference, or an important milestone that should be remembered for future context, provide a brief note in the "remember_me" field.`.trim();
+6. REPETITION: Never repeat identical responses. If you notice repetition, explicitly vary your approach.
+7. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+8. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
 
-  let finalPrompt = basePrompt;
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`.trim();
+
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
@@ -115,6 +123,129 @@ STRICT GUIDELINES:
   }
 
   return finalPrompt;
+};
+
+/**
+ * Check if provider is a small model that needs Markdown-KV format
+ */
+export const isSmallModel = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  const smallModels = ['llama-3.1-8b', 'llama-3-8b', 'on-device', 'apple-intelligence'];
+  return smallModels.some((model) => provider.toLowerCase().includes(model));
+};
+
+/**
+ * Check if provider is Gemini that needs context-first ordering
+ */
+export const isGeminiProvider = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  return provider.toLowerCase().includes('gemini');
+};
+
+/**
+ * Convert workout data to Markdown-KV format for small models
+ */
+export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
+  if (!workoutData) {
+    return '';
+  }
+
+  let markdown = '## Recent Workout Data\n\n';
+
+  if (workoutData.summary) {
+    markdown += `Workout Summary: ${workoutData.summary}\n`;
+  }
+
+  if (workoutData.date) {
+    markdown += `Date: ${workoutData.date}\n`;
+  }
+
+  if (workoutData.exercises && Array.isArray(workoutData.exercises)) {
+    markdown += '\n### Exercises\n\n';
+    workoutData.exercises.forEach((exercise: any, index: number) => {
+      markdown += `${index + 1}. Exercise: ${exercise.name || 'Unknown'}\n`;
+      if (exercise.sets) {
+        markdown += `   Sets: ${exercise.sets}\n`;
+      }
+      if (exercise.reps) {
+        markdown += `   Reps: ${exercise.reps}\n`;
+      }
+      if (exercise.weight) {
+        markdown += `   Weight: ${exercise.weight}\n`;
+      }
+      if (exercise.notes) {
+        markdown += `   Notes: ${exercise.notes}\n`;
+      }
+      markdown += '\n';
+    });
+  }
+
+  return markdown;
+};
+
+/**
+ * Implement semantic chunking for Apple Intelligence context management
+ */
+export const getAppleIntelligenceContext = (
+  workoutHistory: any[],
+  nutritionHistory: any[],
+  maxTokens: number = 3500 // Leave margin for 4096 limit
+): string => {
+  let context = '';
+  let estimatedTokens = 0;
+
+  // Add most recent workout in full detail with imperative verbs
+  if (workoutHistory.length > 0) {
+    const latestWorkout = workoutHistory[workoutHistory.length - 1];
+    const workoutMarkdown = convertWorkoutToMarkdownKV(latestWorkout);
+    context += '## ANALYZE: Recent Workout Data\n\n';
+    context += workoutMarkdown;
+    estimatedTokens += estimateTokenCount(workoutMarkdown);
+  }
+
+  // Add summarized older workouts if space allows with imperative verbs
+  if (workoutHistory.length > 1 && estimatedTokens < maxTokens - 200) {
+    context += '\n## EVALUATE: Previous Workouts Summary\n\n';
+    const olderWorkouts = workoutHistory.slice(0, -1);
+    const summary = olderWorkouts
+      .map((w, i) => `${i + 1}. ${w.date || 'Recent date'}: ${w.summary || 'Workout completed'}`)
+      .join('\n');
+    context += summary;
+    estimatedTokens += estimateTokenCount(summary);
+  }
+
+  // Add recent nutrition if space allows with imperative verbs
+  if (nutritionHistory.length > 0 && estimatedTokens < maxTokens - 200) {
+    context += '\n## TRACK: Recent Nutrition Summary\n\n';
+    const recentNutrition = nutritionHistory.slice(-3); // Last 3 entries
+    const nutritionSummary = recentNutrition
+      .map((n, i) => `${i + 1}. ${n.date || 'Recent date'}: ${n.summary || 'Meal logged'}`)
+      .join('\n');
+    context += nutritionSummary;
+  }
+
+  // Add imperative verb instruction for Apple Intelligence
+  if (estimatedTokens < maxTokens - 100) {
+    context += '\n\n## ACTION REQUIRED\n\n';
+    context += 'ANALYZE the data above. CREATE personalized recommendations. ';
+    context += 'TRACK progress indicators. CALCULATE next steps. ';
+    context += 'EVALUATE performance trends. RECOMMEND specific actions.';
+  }
+
+  return context;
+};
+
+/**
+ * Simple token count estimator (rough approximation: 1 token ≈ 4 characters)
+ */
+const estimateTokenCount = (text: string): number => {
+  return Math.ceil(text.length / 4);
 };
 
 /**
@@ -301,20 +432,29 @@ export const getMinimalSystemPrompt = async (
 
   const focus =
     context === 'nutrition'
-      ? 'Focus only on nutrition and diet topics.'
+      ? 'Focus on nutrition and diet topics.'
       : context === 'exercise'
-        ? 'Focus only on exercise and training topics.'
-        : 'Focus only on fitness and nutrition topics.';
+        ? 'Focus on exercise and training topics.'
+        : 'Focus on fitness, nutrition, and health topics.';
 
-  return `You are Loggy, a friendly ${role}. ${userStats}
+  return `You are Loggy, a specialized ${role}. ${userStats}
 
-STRICT GUIDELINES:
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health and wellness strategies
+
+Conversation Guidelines:
 1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}.
-2. TONE: Friendly, professional, and human-like. Use emojis naturally.
-3. SCOPE: ${focus}
+2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
+3. TONE: Friendly, professional, and human-like. Use emojis naturally.
 4. CONCISE: Keep responses under 100 words.
-5. REPETITION: Never repeat identical responses. If you notice you're repeating yourself, acknowledge it and vary your approach.
-6. META-CONVERSATION: If user asks about your behavior or capabilities, respond honestly and self-awarely.`;
+5. REPETITION: Never repeat identical responses. If you notice repetition, explicitly vary your approach.
+6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`;
 };
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
@@ -420,25 +560,20 @@ export const getChatMessagePromptContent = async (
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
 
-  if (provider === 'on-device') {
+  // Enhanced Apple Intelligence handling with semantic chunking
+  if (provider === 'on-device' || isSmallModel(provider)) {
+    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
+    const nutritionLogs =
+      context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
+
+    // Use semantic chunking for Apple Intelligence
+    const optimizedContext = getAppleIntelligenceContext(recentLogs, nutritionLogs);
+
     const sections: string[] = [
       await getMinimalSystemPrompt(user, language, context),
       `Date: ${new Date().toLocaleDateString(language)}.`,
+      optimizedContext,
     ];
-
-    if (context !== 'nutrition') {
-      const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 3);
-      const summaries: string[] = [];
-      for (const log of recentLogs) {
-        const summary = await getMinimalWorkoutSummary(log.id, undefined, language);
-        if (summary) {
-          summaries.push(summary);
-        }
-      }
-      if (summaries.length > 0) {
-        sections.push('Recent workouts:', ...summaries);
-      }
-    }
 
     return sections.join('\n');
   }
@@ -447,36 +582,72 @@ export const getChatMessagePromptContent = async (
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  let recentWorkoutsJson = '[]';
+  // Get workout data in appropriate format based on model size
+  let workoutData = '';
   try {
     const units = await SettingsService.getUnits();
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
-    const summaries: string[] = [];
-    for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id, units, language);
-      if (json !== '{}') {
-        summaries.push(json);
+
+    if (isSmallModel(provider)) {
+      // Use Markdown-KV for small models
+      const workoutMarkdowns: string[] = [];
+      for (const log of recentLogs) {
+        const workoutSummary = await getMinimalWorkoutSummary(log.id, units, language);
+        if (workoutSummary) {
+          workoutMarkdowns.push(workoutSummary);
+        }
       }
+      workoutData = workoutMarkdowns.join('\n\n');
+    } else {
+      // Use JSON for large models
+      const summaries: string[] = [];
+      for (const log of recentLogs) {
+        const json = await buildWorkoutSummaryJson(log.id, units, language);
+        if (json !== '{}') {
+          summaries.push(json);
+        }
+      }
+      workoutData = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
     }
-    recentWorkoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching recent workouts for chat prompt:', error);
   }
 
-  const sections = [
-    await getBaseSystemPrompt(language, context, provider),
+  // Build sections based on provider type
+  const contextSections = [
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
-    `The following JSON data are the recent workouts the user did:`,
-    '```json',
-    recentWorkoutsJson,
-    '```',
-    "All weights are in the user's preferred unit (kg or lbs).",
-    'The following content is a conversation between the user and Loggy...',
   ];
 
-  return sections.join('\n');
+  // Add workout data in appropriate format
+  if (isSmallModel(provider)) {
+    contextSections.push(
+      '## Recent Workout Data',
+      workoutData,
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  } else {
+    contextSections.push(
+      'The following JSON data are the recent workouts the user did:',
+      '```json',
+      workoutData,
+      '```',
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  }
+
+  contextSections.push('The following content is a conversation between the user and Loggy...');
+
+  // For Gemini, put context first and instructions last
+  if (isGeminiProvider(provider)) {
+    return [...contextSections, '', await getBaseSystemPrompt(language, context, provider)].join(
+      '\n'
+    );
+  }
+
+  // For other providers, use traditional ordering (instructions first)
+  return [await getBaseSystemPrompt(language, context, provider), ...contextSections].join('\n');
 };
 
 /**
