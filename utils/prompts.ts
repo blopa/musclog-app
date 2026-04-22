@@ -103,12 +103,12 @@ Core Capabilities:
 
 Conversation Guidelines:
 1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
-2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}.
+2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible (e.g. Portuguese, Spanish, etc.). If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
 3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
-6. REPETITION: Never repeat identical responses. If you notice repetition, explicitly vary your approach.
-7. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+6. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
+7. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
 8. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
 
 Error Handling:
@@ -190,53 +190,46 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
 };
 
 /**
- * Implement semantic chunking for Apple Intelligence context management
+ * Implement semantic chunking for Apple Intelligence context management.
+ * Per spec, uses one-line summaries to maximize token efficiency.
  */
-export const getAppleIntelligenceContext = (
+export const getAppleIntelligenceContext = async (
   workoutHistory: any[],
   nutritionHistory: any[],
-  maxTokens: number = 3500 // Leave margin for 4096 limit
-): string => {
-  let context = '';
-  let estimatedTokens = 0;
+  locale: string = 'en-US'
+): Promise<string> => {
+  let context = '## ANALYZE: Recent Workout History\n\n';
 
-  // Add most recent workout in full detail with imperative verbs
+  const units = await SettingsService.getUnits();
+
+  // Add one-line summaries for all available workouts (up to history limit)
   if (workoutHistory.length > 0) {
-    const latestWorkout = workoutHistory[workoutHistory.length - 1];
-    const workoutMarkdown = convertWorkoutToMarkdownKV(latestWorkout);
-    context += '## ANALYZE: Recent Workout Data\n\n';
-    context += workoutMarkdown;
-    estimatedTokens += estimateTokenCount(workoutMarkdown);
+    const summaries: string[] = [];
+    for (const log of workoutHistory) {
+      const summary = await getMinimalWorkoutSummary(log.id, units, locale);
+      if (summary) {
+        summaries.push(`- ${summary}`);
+      }
+    }
+    context += summaries.join('\n');
+  } else {
+    context += 'No recent workout history found.';
   }
 
-  // Add summarized older workouts if space allows with imperative verbs
-  if (workoutHistory.length > 1 && estimatedTokens < maxTokens - 200) {
-    context += '\n## EVALUATE: Previous Workouts Summary\n\n';
-    const olderWorkouts = workoutHistory.slice(0, -1);
-    const summary = olderWorkouts
-      .map((w, i) => `${i + 1}. ${w.date || 'Recent date'}: ${w.summary || 'Workout completed'}`)
-      .join('\n');
-    context += summary;
-    estimatedTokens += estimateTokenCount(summary);
-  }
-
-  // Add recent nutrition if space allows with imperative verbs
-  if (nutritionHistory.length > 0 && estimatedTokens < maxTokens - 200) {
-    context += '\n## TRACK: Recent Nutrition Summary\n\n';
-    const recentNutrition = nutritionHistory.slice(-3); // Last 3 entries
-    const nutritionSummary = recentNutrition
+  // Add recent nutrition if available
+  if (nutritionHistory.length > 0) {
+    context += '\n\n## TRACK: Recent Nutrition Summary\n\n';
+    const nutritionSummary = nutritionHistory
       .map((n, i) => `${i + 1}. ${n.date || 'Recent date'}: ${n.summary || 'Meal logged'}`)
       .join('\n');
     context += nutritionSummary;
   }
 
   // Add imperative verb instruction for Apple Intelligence
-  if (estimatedTokens < maxTokens - 100) {
-    context += '\n\n## ACTION REQUIRED\n\n';
-    context += 'ANALYZE the data above. CREATE personalized recommendations. ';
-    context += 'TRACK progress indicators. CALCULATE next steps. ';
-    context += 'EVALUATE performance trends. RECOMMEND specific actions.';
-  }
+  context += '\n\n## ACTION REQUIRED\n\n';
+  context += 'ANALYZE the data above. CREATE personalized recommendations. ';
+  context += 'TRACK progress indicators. CALCULATE next steps. ';
+  context += 'EVALUATE performance trends. RECOMMEND specific actions.';
 
   return context;
 };
@@ -445,12 +438,12 @@ Core Capabilities:
 - Discuss health and wellness strategies
 
 Conversation Guidelines:
-1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}.
+1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention language capabilities.
 2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
 3. TONE: Friendly, professional, and human-like. Use emojis naturally.
 4. CONCISE: Keep responses under 100 words.
-5. REPETITION: Never repeat identical responses. If you notice repetition, explicitly vary your approach.
-6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+5. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
+6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
 
 Error Handling:
 - If you cannot fulfill a request, explain why clearly and provide specific suggestions.
@@ -567,7 +560,7 @@ export const getChatMessagePromptContent = async (
       context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
 
     // Use semantic chunking for Apple Intelligence
-    const optimizedContext = getAppleIntelligenceContext(recentLogs, nutritionLogs);
+    const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
 
     const sections: string[] = [
       await getMinimalSystemPrompt(user, language, context),

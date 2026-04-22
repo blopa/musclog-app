@@ -90,7 +90,7 @@ export interface ProviderConfig {
 
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
-    maxCharBudget: 9000, // ~2250 tokens for history; system prompt + output get the remaining ~1800 tokens of the 4096 budget
+    maxCharBudget: 2000, // Tight cap per Apple Intelligence optimization spec
     promptComplexity: 'minimal',
     enableContextInjection: true,
     enableFoundationFoods: false,
