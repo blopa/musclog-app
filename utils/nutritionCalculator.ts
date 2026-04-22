@@ -274,7 +274,7 @@ export function getEffectiveKcalPerKgWeightLoss(
 
   const w = lambertW(arg);
   if (Number.isNaN(w)) {
-    return 7700;
+    return DEFAULT_KCAL_PER_KG_LOSS;
   }
 
   const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (forbesC / dBw) * w;
@@ -1060,7 +1060,7 @@ export function estimateTargetBodyFatWhenCutting(
 
 /** Map a stored NutritionPlan to initial form data (Partial<NutritionGoals>). */
 export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals> {
-  const fiber = Math.round(Math.max(25, Math.min(40, (plan.targetCalories / 1000) * 14)));
+  const fiber = fiberFromCalories(plan.targetCalories);
   const eatingPhase: EatingPhase =
     plan.targetCalories < plan.tdee ? 'cut' : plan.targetCalories > plan.tdee ? 'bulk' : 'maintain';
   return {
@@ -1324,11 +1324,10 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
 
   let targetBodyFat: number | undefined;
   if (useBodyFat) {
-    if (weightGoal === 'lose') {
-      targetBodyFat = estimateTargetBodyFatWhenCutting(
-        weightKg,
-        projection.projectedWeightKg,
-        bodyFatPercent!
+    if (weightGoal === 'lose' && estimatedFatChangeKg !== undefined) {
+      const newFatMassKg = weightKg * (bodyFatPercent! / 100) + estimatedFatChangeKg;
+      targetBodyFat = parseFloat(
+        Math.max(0, Math.min(100, (newFatMassKg / projection.projectedWeightKg) * 100)).toFixed(1)
       );
     } else if (weightGoal === 'maintain') {
       targetBodyFat = bodyFatPercent;
