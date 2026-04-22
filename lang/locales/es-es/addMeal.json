@@ -1,0 +1,11 @@
+{
+  "addMeal": {
+    "createMeal": "Crear Comida",
+    "createMealDesc": "Añadir una nueva comida a tu registro diario",
+    "generateMealAI": "Generar Comida con IA",
+    "generateMealAIDesc": "Deja que la IA sugiera una comida basada en tus preferencias",
+    "manageCategories": "Gestionar Categorías",
+    "manageCategoriesDesc": "Organiza tus categorías de comidas (desayuno, almuerzo, etc.)",
+    "title": "Añadir Comida"
+  }
+}

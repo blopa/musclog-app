@@ -12,6 +12,7 @@
     "shareSummary": "Поделиться итогами",
     "workoutCompleted": "Тренировка завершена!",
     "viewDetails": "Подробности",
+    "viewMuscles": "Мышцы",
     "getFeedback": "Получить отзыв ИИ",
     "gettingFeedback": "Получение отзыва...",
     "completedMessage": "Вы завершили тренировку {{workoutName}}",

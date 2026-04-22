@@ -1,0 +1,65 @@
+{
+  "meals": {
+    "title": "Mis Comidas",
+    "filters": {
+      "all": "Todas",
+      "highProtein": "Alta Proteína",
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo"
+    },
+    "tags": {
+      "highProtein": "Alta Proteína",
+      "ketoFriendly": "Keto Friendly",
+      "vegetarian": "Vegetariano",
+      "breakfast": "Desayuno",
+      "lunch": "Almuerzo",
+      "dinner": "Cena",
+      "snack": "Snack"
+    },
+    "chatMealCard": {
+      "mealCount_one": "{{count}} comida",
+      "mealCount_other": "{{count}} comidas",
+      "view": "Ver",
+      "viewBreakfast": "Ver Desayuno",
+      "viewLunch": "Ver Almuerzo",
+      "viewDinner": "Ver Cena",
+      "viewSnack": "Ver Snack",
+      "tracked": "Registrado"
+    },
+    "untitledMeal": "Comida sin Título",
+    "searchPlaceholder": "Buscar comidas...",
+    "loadingMeals": "Cargando comidas...",
+    "noMealsFound": "No se encontraron comidas",
+    "noMealsYet": "Aún no hay comidas",
+    "noMealsMatch": "Ninguna comida coincide con \"{{query}}\"",
+    "createFirstMeal": "Crea tu primera comida para comenzar",
+    "tryDifferentFilter": "Prueba un filtro diferente",
+    "loadingMore": "Cargando más...",
+    "loadMore": "Cargar Más",
+    "customMeal": "Comida Personalizada",
+    "createdByYou": "Creada por ti",
+    "logMeal": "Registrar Comida",
+    "mealType": "Tipo de Comida",
+    "history": {
+      "unknownMeal": "Comida Desconocida"
+    },
+    "deleteItem": {
+      "title": "Eliminar Artículo",
+      "message": "¿Estás seguro de que deseas eliminar este artículo?",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    },
+    "unknownFood": "Desconocido",
+    "generateAI": {
+      "title": "Generar Comidas con IA",
+      "describeLabel": "DESCRIBE TUS PREFERENCIAS",
+      "preferencesLabel": "Preferencias",
+      "placeholder": "ej. Comidas ricas en proteínas para ganar músculo, prefiero pollo y arroz, evitar lácteos...",
+      "applyLabel": "Generar Comidas",
+      "successMessage": "¡Comida creada con éxito!",
+      "errorMessage": "No se pudieron generar las comidas. Por favor, inténtalo de nuevo.",
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
+      "generating": "Generando comidas..."
+    }
+  }
+}

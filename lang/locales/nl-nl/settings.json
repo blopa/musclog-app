@@ -226,7 +226,8 @@
         "toggle": "Apple Intelligence gebruiken",
         "toggleSubtitle": "AI-verzoeken op het apparaat verwerken met Apple Foundation Models. Geen API-sleutel nodig.",
         "toggleSubtitleNotReady": "Apple Intelligence is niet beschikbaar op dit apparaat. Vereist iPhone 15 Pro of nieuwer met iOS 26 en Apple Intelligence ingeschakeld.",
-        "privacyNote": "Je gegevens blijven op het apparaat en worden nooit naar externe servers verzonden."
+        "privacyNote": "Je gegevens blijven op het apparaat en worden nooit naar externe servers verzonden.",
+        "foundationFoodsDisabled": "Basismiddelen injectie is uitgeschakeld voor on-apparaat AI om geheugen te besparen."
       },
       "musclogFreeTier": {
         "sectionTitle": "MUSCLOG GRATIS NIVEAU",

@@ -76,7 +76,6 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { formatAppDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
-import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatDuration } from '@/utils/workout';

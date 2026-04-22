@@ -502,5 +502,32 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+
+    // Canonical muscle catalogue (seeded from bundled data)
+    tableSchema({
+      name: 'muscles',
+      columns: [
+        { name: 'name', type: 'string', isIndexed: true }, // snake_case key, e.g. 'triceps'
+        { name: 'muscle_group', type: 'string', isIndexed: true }, // e.g. 'arms', 'chest'
+        { name: 'display_name', type: 'string' }, // Human-readable, e.g. 'Triceps'
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Junction: which muscles an exercise targets
+    tableSchema({
+      name: 'exercise_muscles',
+      columns: [
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'muscle_id', type: 'string', isIndexed: true },
+        // 'primary' | 'secondary' — defaults to 'primary' until the JSON distinguishes them
+        { name: 'role', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
   ],
 });

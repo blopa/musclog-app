@@ -41,9 +41,13 @@
       "progressInsightFailed": "Kon voortgang niet analyseren. Probeer het later opnieuw.",
       "nutritionInsightFailed": "Kon voeding niet controleren. Probeer het later opnieuw.",
       "trackMealFailed": "Ik kon de macro's voor die maaltijd niet schatten. Kun je het in meer detail beschrijven?",
+      "featureRequiresCloudAi": "Deze functie is niet beschikbaar met Apple Intelligence. Schakel over naar OpenAI of Gemini in de Instellingen.",
       "filePickFailed": "Bestand kiezen mislukt. Probeer het opnieuw.",
       "creditsExhausted": "Het lijkt erop dat je AI-tegoed op is. Controleer je API-sleutel of facturering bij de Instellingen.",
-      "rateLimited": "Wacht een moment voordat je nog een bericht stuurt."
+      "rateLimited": "Wacht een moment voordat je nog een bericht stuurt.",
+      "toolRequestFailed": "Ik kon dat verzoek niet verwerken. Probeer het opnieuw.",
+      "conversationFallback": "Ik kan je helpen met fitness- en voedingsvragen. Wat wil je weten?",
+      "requestProcessingFailed": "Ik had moeite met het verwerken van je verzoek. Kon je het anders formuleren?"
     },
     "goToSettings": "Ga naar Instellingen",
     "success": {

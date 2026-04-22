@@ -1,0 +1,126 @@
+{
+  "nutritionGoals": {
+    "title": "Establecer Objetivos de Nutrición y Cuerpo",
+    "subtitle": "Define tus metas para la nutrición y la composición corporal.",
+    "dailyMacroTargets": "Objetivos Diarios de Macros",
+    "totalDailyCalories": "Calorías Diarias Totales",
+    "targetBodyMetrics": "Métricas Corporales Objetivo",
+    "macrosDistribution": "Distribución de Macros",
+    "balance": "Equilibrio",
+    "optimal": "Óptimo",
+    "protein": "Proteínas",
+    "carbohydrates": "Carbohidratos",
+    "fats": "Grasas",
+    "targetWeight": "Peso Objetivo",
+    "targetBodyFat": "Grasa Corporal Objetivo",
+    "targetBMI": "IMC Objetivo",
+    "targetFFMI": "FFMI Objetivo",
+    "targetDate": "Fecha objetivo",
+    "targetDateNotSet": "No establecida",
+    "targetDateSublabel": "Cuándo quieres alcanzar tus objetivos corporales",
+    "targetDateClear": "Borrar",
+    "editTitle": "Editar Objetivo",
+    "updateGoal": "Actualizar Objetivo",
+    "goalStartDate": "Fecha de Inicio del Objetivo",
+    "goalStartDateSublabel": "Cuándo comenzó este periodo de objetivo",
+    "goalStartDateToday": "Hoy",
+    "saveGoals": "Guardar Objetivos",
+    "settingsNote": "Puedes cambiar estos valores en cualquier momento en Ajustes.",
+    "kcalPerGram": {
+      "protein": "4 kcal/g",
+      "carbs": "4 kcal/g",
+      "fats": "9 kcal/g",
+      "fiber": "2 kcal/g"
+    },
+    "sublabels": {
+      "targetWeight": "Peso objetivo en {{unit}}",
+      "targetBodyFat": "% porcentaje",
+      "targetBMI": "Índice de Masa Corporal",
+      "targetFFMI": "Índice de Masa Libre de Grasa"
+    },
+    "acceptAndContinue": "Aceptar y Continuar",
+    "adjustGoalsManually": "Ajustar Objetivos Manualmente",
+    "continue": "Continuar",
+    "results": {
+      "aiCalculationComplete": "Cálculo Completado",
+      "your": "Tu",
+      "nutritionPlan": "Plan de Nutrición",
+      "aiDescription": "Basado en tus métricas corporales y niveles de actividad, nuestros cálculos han optimizado tus objetivos diarios.",
+      "manualDescription": "Aquí están los objetivos de nutrición que estableciste. Puedes continuar o volver atrás para ajustarlos.",
+      "manualPlanBadge": "Tu plan personalizado",
+      "macroSplit": "Reparto de macros",
+      "manualTipsTitle": "Todo listo",
+      "manualTipsDescription": "Empieza a registrar comidas para seguir tu progreso. Puedes cambiar estos objetivos en cualquier momento en Ajustes.",
+      "dailyCalorieTarget": "Objetivo de Calorías Diarias",
+      "kcal": "KCAL",
+      "protein": "Proteínas",
+      "carbs": "Carbohidratos",
+      "fats": "Grasas",
+      "estimatedWeightLoss": "Pérdida de Peso Estimada",
+      "estimatedWeightGain": "Ganancia de Peso Estimada",
+      "estimatedMaintenance": "Mantenimiento Estimado",
+      "projectionTitle": "Proyección a {{days}} Días",
+      "projectionDescription": "Al seguir estos objetivos, se proyecta que alcances {{value}} {{unit}} en {{days}} días.",
+      "projectionMaintenanceTitle": "Manteniendo el peso",
+      "projectionMaintenanceMuscleGain": "Con un entrenamiento y nutrición constantes, la ganancia muscular natural en {{days}} días es típicamente de {{range}} {{unit}}, dependiendo de la genética y la experiencia.",
+      "calorieRange": "Rango: {{range}} kcal",
+      "bodyFatUncertaintyNote": "El rango tiene en cuenta la variación en la medición de la grasa corporal (±4%)",
+      "dailyDeficit": "Déficit diario: {{kcal}} kcal",
+      "dailySurplus": "Superávit diario: {{kcal}} kcal",
+      "projectionFat": "Grasa: {{value}} {{unit}}",
+      "projectionLean": "Masa Magra: {{value}} {{unit}}",
+      "leanMassClarification": "La masa magra incluye agua, glucógeno y otro tejido no graso, no solo músculo.",
+      "formulasBasedOn": "Basado en el modelo de composición corporal de Hall/Forbes y energía metabolizable (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Objetivos de macros basados en IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), y Helms et al. (2014).",
+      "goalLabels": {
+        "weight_loss": "Pérdida de Peso",
+        "muscle_gain": "Ganancia Muscular",
+        "maintenance": "Mantenimiento",
+        "moderateWeightLoss": "Estrategia de Pérdida de Peso Moderada",
+        "enduranceTraining": "Entrenamiento de Resistencia",
+        "generalFitness": "Fitness General",
+        "leanBulk": "Estrategia de Volumen Limpio",
+        "strengthSurplus": "Estrategia de Superávit de Fuerza"
+      }
+    },
+    "errorSaving": "Error al Guardar",
+    "dietTypes": {
+      "keto": {
+        "title": "Keto",
+        "subtitle": "Bajo en Carbohidratos"
+      },
+      "lowCarb": {
+        "title": "Bajo en Carbos",
+        "subtitle": "Adaptado a las Grasas"
+      },
+      "highProteinMuscle": {
+        "title": "Alta Proteína",
+        "subtitle": "Construcción Muscular"
+      },
+      "highProteinFatLoss": {
+        "title": "Alta Proteína",
+        "subtitle": "Pérdida de Grasa"
+      },
+      "highCarb": {
+        "title": "Alto en Carbos",
+        "subtitle": "Enfoque en Energía"
+      },
+      "balanced": {
+        "title": "Equilibrado",
+        "subtitle": "Óptimo"
+      },
+      "moderateFat": {
+        "title": "Grasas Moderadas",
+        "subtitle": "Energía Sostenida"
+      },
+      "lowFat": {
+        "title": "Bajo en Grasas",
+        "subtitle": "Dieta Magra"
+      },
+      "custom": {
+        "title": "Personalizado",
+        "subtitle": "Tu Plan"
+      }
+    }
+  }
+}

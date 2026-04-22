@@ -7,6 +7,7 @@ export { SavedForLaterService } from './SavedForLaterService';
 
 // Export exercise service
 export { ExerciseService } from './ExerciseService';
+export { MUSCLE_SEED_DATA, MuscleService } from './MuscleService';
 
 // Export chat service
 export { ChatService } from './ChatService';

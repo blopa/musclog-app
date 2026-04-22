@@ -1,7 +1,7 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
+import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -69,11 +69,15 @@ export function StepperInlineInput({
   }, [value, editing, formatValue]);
 
   useEffect(() => {
-    const subscription = Keyboard.addListener('keyboardDidHide', () => {
-      if (editing) {
-        inputRef.current?.blur();
+    const subscription = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        if (editing) {
+          inputRef.current?.blur();
+        }
       }
-    });
+    );
+
     return () => subscription.remove();
   }, [editing]);
 

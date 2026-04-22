@@ -1,0 +1,132 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Métricas Corporales",
+      "newMetric": "Nueva Métrica"
+    },
+    "metrics": {
+      "weight": "Peso",
+      "bodyFat": "Grasa Corporal",
+      "body_fat": "Grasa Corporal",
+      "muscle_mass": "Masa Muscular",
+      "lean_body_mass": "Masa Corporal Magra",
+      "basal_metabolic_rate": "Tasa Metabólica Basal",
+      "total_calories_burned": "Total de Calorías Quemadas",
+      "active_calories_burned": "Calorías Activas Quemadas",
+      "bmi": "IMC",
+      "height": "Altura",
+      "chest": "Pecho",
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "arms": "Brazos",
+      "thighs": "Muslos",
+      "calves": "Gemelos",
+      "neck": "Cuello",
+      "shoulders": "Hombros",
+      "mood": "Estado de Ánimo",
+      "ffmi": "FFMI",
+      "nutrition": "Nutrición",
+      "exercise": "Ejercicio",
+      "other": "Otro",
+      "descriptions": {
+        "weight": "Sigue tu peso corporal a lo largo del tiempo",
+        "body_fat": "Porcentaje de masa grasa corporal",
+        "muscle_mass": "Masa muscular esquelética total",
+        "lean_body_mass": "Peso corporal menos la masa grasa",
+        "basal_metabolic_rate": "Calorías quemadas en reposo absoluto",
+        "total_calories_burned": "Gasto energético diario total",
+        "active_calories_burned": "Calorías quemadas a través de la actividad",
+        "bmi": "Índice de masa corporal basado en la altura y el peso",
+        "height": "Tu altura de pie",
+        "chest": "Medición de la circunferencia del pecho",
+        "waist": "Medición de la circunferencia de la cintura",
+        "hips": "Medición de la circunferencia de la cadera",
+        "arms": "Medición de la circunferencia del brazo",
+        "thighs": "Medición de la circunferencia del muslo",
+        "calves": "Medición de la circunferencia del gemelo",
+        "neck": "Medición de la circunferencia del cuello",
+        "shoulders": "Medición de la circunferencia de los hombros",
+        "mood": "Tu estado de ánimo y bienestar general",
+        "ffmi": "Índice de masa libre de grasa",
+        "nutrition": "Registro diario de ingesta de nutrición",
+        "exercise": "Registro de actividad física y ejercicio",
+        "other": "Otras mediciones de métricas corporales"
+      }
+    },
+    "current": {
+      "label": "ACTUAL"
+    },
+    "history": {
+      "title": "Historial",
+      "filter": "Filtrar",
+      "loadMore": "Cargar Más",
+      "loadingMore": "Cargando...",
+      "notes": {
+        "baseline": "Línea base",
+        "noChange": "Sin cambios",
+        "decreased": "Disminuyó",
+        "increased": "Aumentó"
+      },
+      "filters": {
+        "title": "Filtrar Historial",
+        "sortOrder": {
+          "title": "ORDENAR POR",
+          "newestFirst": "Más reciente primero",
+          "oldestFirst": "Más antiguo primero"
+        },
+        "trend": {
+          "title": "TENDENCIA",
+          "all": "Todos",
+          "increased": "Aumento",
+          "decreased": "Descenso",
+          "noChange": "Sin Cambios"
+        },
+        "reset": "Restablecer",
+        "apply": "Aplicar Filtros"
+      }
+    },
+    "dateFormats": {
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "noDataAvailable": "No hay datos disponibles",
+    "noHistoryDataAvailable": "No hay datos de historial disponibles",
+    "manageMetricData": {
+      "title": "Historial de Métricas",
+      "searchPlaceholder": "Buscar por tipo de métrica...",
+      "noEntries": "Aún no hay entradas de métricas",
+      "noEntriesDesc": "Añade entradas de métricas corporales para verlas aquí",
+      "endOfHistory": "Fin del historial de métricas",
+      "metricOptions": "Opciones de métrica",
+      "editEntry": "Editar entrada",
+      "editEntryDesc": "Cambiar valor y fecha",
+      "duplicateEntry": "Duplicar entrada",
+      "duplicateEntryDesc": "Crear una copia con una nueva fecha",
+      "deleteEntry": "Eliminar entrada",
+      "deleteEntryDesc": "Eliminar esta entrada de métrica"
+    },
+    "addEntry": {
+      "title": "Añadir Entrada",
+      "enterType": "Introducir Tipo",
+      "description": "Registrar una nueva medición de métrica corporal",
+      "enterWeight": "Introducir Peso",
+      "enterBodyFat": "Introducir Grasa Corporal",
+      "enterHeight": "Introducir Altura",
+      "date": "Fecha",
+      "time": "Hora",
+      "moodQuestion": "¿Cómo te sientes hoy?",
+      "moods": {
+        "0": "Mal",
+        "1": "Bajo",
+        "2": "Bien",
+        "3": "Muy bien",
+        "4": "Excelente"
+      },
+      "saveEntry": "Guardar Entrada",
+      "saveSuccess": "Entrada guardada con éxito",
+      "errorSaving": "Error al Guardar",
+      "note": "Nota",
+      "notePlaceholder": "Añadir una nota..."
+    }
+  }
+}

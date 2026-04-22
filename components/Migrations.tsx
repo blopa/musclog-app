@@ -4,7 +4,13 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
-import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
+import { waitForDbReady } from '@/database/dbReady';
+import {
+  ExerciseService,
+  FoodPortionService,
+  MuscleService,
+  WorkoutService,
+} from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
@@ -114,6 +120,25 @@ export function Migrations() {
 
     ExerciseService.backfillExerciseOrderIndex().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
+    );
+  }, []);
+
+  // Backfill exercise-muscle links for users upgrading to v11. Runs on every
+  // boot but is a cheap no-op once all exercises are linked. New installs also
+  // hit this path, but seedProductionData already called backfillExerciseMuscles
+  // during setup — the no-op exit path costs only two DB reads.
+  //
+  // No waitForDbReady() here: upgrading users never trigger unsafeResetDatabase,
+  // so there is no ErrorAdapter race. Consistent with syncAppExercises above.
+  // On a fresh install the rare ErrorAdapter error is caught and logged; the
+  // backfill already ran inside seedProductionData by that point anyway.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    MuscleService.backfillExerciseMuscles().catch((err) =>
+      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
     );
   }, []);
 

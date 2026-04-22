@@ -1,0 +1,175 @@
+{
+  "workouts": {
+    "title": "Mis Entrenamientos",
+    "filters": {
+      "all": "Todos",
+      "strength": "Fuerza",
+      "cardio": "Cardio",
+      "flexibility": "Flexibilidad",
+      "archived": "Archivados"
+    },
+    "archive": "Archivar",
+    "archiveSuccess": "Entrenamiento archivado con éxito",
+    "archiveError": "Error al archivar el entrenamiento",
+    "duplicateSuccess": "Entrenamiento duplicado con éxito",
+    "duplicateError": "Error al duplicar el entrenamiento",
+    "delete": "Eliminar",
+    "deleteSuccess": "Entrenamiento eliminado con éxito",
+    "deleteError": "Error al eliminar el entrenamiento",
+    "deleteConfirmation": {
+      "title": "Eliminar Entrenamiento",
+      "message": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer."
+    },
+    "searchPlaceholder": "Buscar entrenamientos...",
+    "noSearchResults": "No se encontraron entrenamientos",
+    "noSearchResultsDescription": "Ningún entrenamiento coincide con \"{{query}}\"",
+    "noSearchResultsButtonLabel": "Borrar Búsqueda",
+    "exercises": "Ejercicios",
+    "addExercise": {
+      "title": "Añadir Ejercicio",
+      "targetMuscle": "Músculo Objetivo",
+      "searchPlaceholder": "Buscar ejercicios de {{muscle}}...",
+      "createSet": "Crear Serie",
+      "bodyweight": "Peso corporal",
+      "sets": "Series",
+      "reps": "Reps",
+      "weight": "Peso",
+      "addToWorkout": "Añadir al Entrenamiento",
+      "restTime": "Tiempo de Descanso",
+      "seconds": "seg",
+      "dropSet": "Drop set",
+      "notes": "Notas",
+      "notesPlaceholder": "Ajustes de máquina, variaciones de agarre, etc.",
+      "muscleGroups": {
+        "all": "Todos",
+        "chest": "Pecho",
+        "back": "Espalda",
+        "legs": "Piernas",
+        "arms": "Brazos"
+      },
+      "searchPlaceholderAll": "Buscar ejercicios...",
+      "noExercisesFound": "No se encontraron ejercicios que coincidan con \"{{query}}\"",
+      "noExercisesAvailable": "No hay ejercicios disponibles para {{muscle}}",
+      "exerciseDescription": "{{sets}} series × {{reps}} reps",
+      "exerciseDescriptionWithWeight": "{{sets}} series × {{reps}} reps @ {{weight}}{{unit}}",
+      "exerciseDescriptionLead": "{{sets}} series × {{reps}} reps @"
+    },
+    "filterWorkouts": {
+      "title": "Filtrar Entrenamientos",
+      "clear": "Borrar",
+      "clearFilters": "Borrar Filtros",
+      "applyFilters": "Aplicar Filtros",
+      "workoutType": "Tipo de Entrenamiento",
+      "targetMuscles": "MÚSCULOS OBJETIVO",
+      "duration": "DURACIÓN",
+      "upTo": "Hasta {{duration}}",
+      "workoutTypes": {
+        "strength": "Fuerza",
+        "strengthDescription": "Pesas, Peso Corporal",
+        "cardio": "Cardio",
+        "cardioDescription": "Correr, Ciclismo, HIIT",
+        "flexibility": "Flexibilidad",
+        "flexibilityDescription": "Yoga, Estiramientos"
+      },
+      "muscleGroups": {
+        "fullBody": "Cuerpo Completo",
+        "chest": "Pecho",
+        "back": "Espalda",
+        "legs": "Piernas",
+        "shoulders": "Hombros",
+        "arms": "Brazos",
+        "core": "Core"
+      }
+    },
+    "createWorkoutOptions": {
+      "generateWithAi": "Generar con IA",
+      "generateWithAiSubtitle": "Deja que Musclog cree una rutina personalizada basada en tus objetivos y equipo.",
+      "createFromEmptyTemplate": "Crear desde Plantilla Vacía",
+      "createFromEmptyTemplateSubtitle": "Diseña tu propia rutina desde cero, ejercicio por ejercicio.",
+      "browseTemplates": "Explorar Plantillas",
+      "browseTemplatesSubtitle": "Explora programas creados por expertos y los favoritos de la comunidad."
+    },
+    "browseTemplatesModal": {
+      "title": "Explorar Plantillas",
+      "searchPlaceholder": "Buscar programas expertos...",
+      "templateName": "Plantilla {{number}}",
+      "tabs": {
+        "all": "Todas",
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzado",
+        "strength": "Fuerza",
+        "hypertrophy": "Hipertrofia",
+        "cardio": "Cardio"
+      },
+      "stats": {
+        "duration": "Duración",
+        "exercises": "Ejercicios",
+        "exercisesQty": "{{count}} Ejercicio",
+        "exercisesQty_one": "{{count}} Ejercicio",
+        "exercisesQty_other": "{{count}} Ejercicios",
+        "sets": "Series",
+        "setsQty": "{{count}} Serie",
+        "setsQty_one": "{{count}} Serie",
+        "setsQty_other": "{{count}} Series"
+      }
+    },
+    "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "¿Estás seguro de que deseas eliminar esta plantilla? Esta acción no se puede deshacer.",
+      "title": "Gestionar Datos de Plantillas de Entrenamiento",
+      "searchPlaceholder": "Buscar plantillas...",
+      "noTemplates": "Aún no hay plantillas de entrenamiento",
+      "noTemplatesDesc": "Crea plantillas de entrenamiento para verlas aquí",
+      "endOfHistory": "Fin del historial de plantillas",
+      "templateOptions": "Opciones de Plantilla",
+      "editTemplate": "Editar Plantilla",
+      "editTemplateDesc": "Modificar el nombre y los ejercicios de la plantilla",
+      "duplicateTemplate": "Duplicar Plantilla",
+      "duplicateTemplateDesc": "Crear una copia de esta plantilla",
+      "deleteTemplate": "Eliminar Plantilla",
+      "deleteTemplateDesc": "Eliminar esta plantilla permanentemente",
+      "noDescription": "Sin descripción",
+      "unknownTemplate": "Plantilla Desconocida"
+    },
+    "createTemplate": {
+      "title": "Crear Plantilla de Entrenamiento",
+      "description": "Crea una rutina de entrenamiento reutilizable"
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Crear Entrenamiento",
+      "title": "¿Cómo quieres construir tu rutina?",
+      "subtitle": "Selecciona cómo quieres construir tu rutina hoy."
+    },
+    "createFromTemplate": {
+      "title": "Crear Entrenamientos desde Plantilla",
+      "message": "Esto creará plantillas de entrenamiento separadas para cada día de este programa. Cada entrenamiento incluirá los ejercicios, series y repeticiones especificados para ese día.",
+      "confirm": "Crear Entrenamientos",
+      "cancel": "Cancelar",
+      "successMessage": "Entrenamientos creados con éxito"
+    },
+    "aiGeneration": {
+      "comingSoon": "¡La generación de entrenamientos por IA llegará pronto!",
+      "title": "Generar con IA",
+      "subtitle": "Cuéntanos sobre tus objetivos y crearemos un plan de entrenamiento personalizado",
+      "preferencesLabel": "Tus preferencias",
+      "preferencesPlaceholder": "Ej. Quiero ganar músculo, puedo entrenar 4 días a la semana, tengo acceso a un gimnasio completo, soy un levantador intermedio...",
+      "generateButton": "Generar Plan",
+      "successMessage": "¡Tu plan de entrenamiento está listo! {{count}} entrenamiento(s) añadido(s).",
+      "errorMessage": "No se pudo generar un plan. Por favor, inténtalo de nuevo.",
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes."
+    },
+    "templateBrowser": {
+      "comingSoon": "¡El explorador de plantillas llegará pronto!"
+    },
+    "interruptedSession": {
+      "description": "Tienes un entrenamiento en curso.",
+      "resume": "Reanudar",
+      "discard": "Descartar",
+      "discardConfirmTitle": "¿Descartar Entrenamiento?",
+      "discardConfirmMessage": "Esto eliminará permanentemente tu entrenamiento en curso y todas las series registradas.",
+      "discardConfirm": "Descartar",
+      "discardCancel": "Mantenerlo"
+    },
+    "unnamed": "Sin nombre"
+  }
+}

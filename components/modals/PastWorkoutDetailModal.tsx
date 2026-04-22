@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
+import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -9,11 +9,13 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import type { Units } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
+import { EnrichedWorkoutLogSet, MuscleService, WorkoutService } from '@/database/services';
+import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -36,6 +38,7 @@ import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
+import { WorkoutMusclesModal } from './WorkoutMusclesModal';
 import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
 
 // Component: Workout Summary Card
@@ -304,10 +307,11 @@ function SetsTable({ sets }: SetsTableProps) {
 type ExerciseCardProps = {
   exercise: WorkoutExercise;
   onEdit?: (exerciseId?: string) => void;
+  onInfo?: (exerciseId: string) => void;
   onClose?: () => void;
 };
 
-function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
+function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -341,15 +345,24 @@ function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
             </Text>
           </View>
         </View>
-        <MenuButton
-          size="md"
-          color={theme.colors.text.primary}
-          onPress={() => {
-            onEdit?.(exercise.id);
-          }}
-          icon={Edit}
-          className="h-10 w-10"
-        />
+        <View className="flex-row items-center gap-1">
+          <MenuButton
+            size="md"
+            color={theme.colors.text.tertiary}
+            onPress={() => onInfo?.(exercise.id)}
+            icon={Info}
+            className="h-10 w-10"
+          />
+          <MenuButton
+            size="md"
+            color={theme.colors.text.primary}
+            onPress={() => {
+              onEdit?.(exercise.id);
+            }}
+            icon={Edit}
+            className="h-10 w-10"
+          />
+        </View>
       </View>
 
       {/* Sets Table */}
@@ -362,10 +375,11 @@ function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
 type ExercisesSectionProps = {
   exercises: WorkoutExercise[];
   onEdit?: (exerciseId?: string) => void;
+  onInfo?: (exerciseId: string) => void;
   onClose?: () => void;
 };
 
-function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps) {
+function ExercisesSection({ exercises, onEdit, onInfo, onClose }: ExercisesSectionProps) {
   const { t } = useTranslation();
 
   return (
@@ -375,7 +389,13 @@ function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps)
       </Text>
 
       {exercises.map((exercise) => (
-        <ExerciseCard key={exercise.id} exercise={exercise} onEdit={onEdit} onClose={onClose} />
+        <ExerciseCard
+          key={exercise.id}
+          exercise={exercise}
+          onEdit={onEdit}
+          onInfo={onInfo}
+          onClose={onClose}
+        />
       ))}
 
       {/* Bottom spacing */}
@@ -389,8 +409,6 @@ type PastWorkoutDetailModalProps = {
   visible: boolean;
   onClose: () => void;
   workoutId?: string;
-  onEdit?: () => void;
-  onShare?: () => void;
   onDelete?: () => void;
 };
 
@@ -398,8 +416,6 @@ export default function PastWorkoutDetailModal({
   visible,
   onClose,
   workoutId,
-  onEdit,
-  onShare,
   onDelete,
 }: PastWorkoutDetailModalProps) {
   const theme = useTheme();
@@ -427,12 +443,47 @@ export default function PastWorkoutDetailModal({
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
   const { shareText } = useNativeShareText();
+  const {
+    captureRef: musclesCaptureRef,
+    isCapturing: isMusclesCapturing,
+    captureAndShare: shareMuscles,
+  } = useChartCapture();
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
+  const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
+  const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
+  const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!workout) {
+      return;
+    }
+
+    async function loadAllMuscles() {
+      const collected: string[] = [];
+      for (const exercise of workout!.exercises) {
+        try {
+          const muscles = await MuscleService.getMusclesForExercise(exercise.id);
+          if (muscles.length > 0) {
+            collected.push(...muscles.map((m) => m.name));
+          } else if (exercise.muscleGroup) {
+            collected.push(exercise.muscleGroup);
+          }
+        } catch {
+          if (exercise.muscleGroup) {
+            collected.push(exercise.muscleGroup);
+          }
+        }
+      }
+      setAllWorkoutMuscles([...new Set(collected)]);
+    }
+
+    loadAllMuscles();
+  }, [workout]);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
     workoutLog: WorkoutLog;
     sets: EnrichedWorkoutLogSet[];
@@ -444,6 +495,7 @@ export default function PastWorkoutDetailModal({
       setIsEditModalVisible(false);
       setIsEditMetadataVisible(false);
       setIsPreviewModalVisible(false);
+      setIsMusclesModalVisible(false);
       setEditingExerciseId(null);
       setIsMenuVisible(false);
     }
@@ -618,6 +670,28 @@ export default function PastWorkoutDetailModal({
           />
         ) : null}
 
+        {allWorkoutMuscles.length > 0 ? (
+          <View>
+            <View className="mb-2 flex-row items-center justify-between px-1">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                {t('workoutDetail.musclesWorked')}
+              </Text>
+              {!isMusclesCapturing ? (
+                <MenuButton
+                  icon={Platform.OS === 'web' ? Download : Share2}
+                  size="sm"
+                  color={theme.colors.text.tertiary}
+                  onPress={() => shareMuscles(t('workoutDetail.musclesWorked'))}
+                />
+              ) : null}
+            </View>
+            <WorkoutMusclesDetails
+              muscleGroups={allWorkoutMuscles}
+              captureRef={musclesCaptureRef}
+            />
+          </View>
+        ) : null}
+
         <ExercisesSection
           exercises={workout.exercises}
           onEdit={(exerciseId?: string) => {
@@ -627,6 +701,22 @@ export default function PastWorkoutDetailModal({
 
             setEditingExerciseId(exerciseId);
             setIsEditModalVisible(true);
+          }}
+          onInfo={async (exerciseId) => {
+            try {
+              const muscles = await MuscleService.getMusclesForExercise(exerciseId);
+              if (muscles.length > 0) {
+                setMusclesModalGroups(muscles.map((m) => m.name));
+              } else {
+                // Backfill may not have run yet — fall back to coarse muscle group
+                const ex = workout.exercises.find((e) => e.id === exerciseId);
+                setMusclesModalGroups(ex?.muscleGroup ? [ex.muscleGroup] : []);
+              }
+            } catch (err) {
+              console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
+              setMusclesModalGroups([]);
+            }
+            setIsMusclesModalVisible(true);
           }}
           onClose={onClose}
         />
@@ -757,6 +847,12 @@ export default function PastWorkoutDetailModal({
           shouldShowTimer={false}
         />
       ) : null}
+
+      <WorkoutMusclesModal
+        visible={isMusclesModalVisible}
+        onClose={() => setIsMusclesModalVisible(false)}
+        muscleGroups={musclesModalGroups}
+      />
     </FullScreenModal>
   );
 }

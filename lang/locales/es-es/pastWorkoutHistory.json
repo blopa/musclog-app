@@ -1,0 +1,55 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Historial de Entrenamientos",
+    "searchPlaceholder": "Buscar sesiones...",
+    "noWorkoutsFound": "No se encontraron entrenamientos que coincidan con tu búsqueda.",
+    "noWorkoutHistory": "Aún no hay historial de entrenamientos.",
+    "loadMore": "Cargar Más",
+    "loadingMore": "Cargando...",
+    "stats": {
+      "duration": "Duración",
+      "volume": "Volumen",
+      "calories": "Calorías"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PRs"
+    },
+    "filters": {
+      "title": "Filtrar Entrenamientos",
+      "workoutType": "TIPO DE ENTRENAMIENTO",
+      "minDuration": "DURACIÓN MÍN.",
+      "reset": "Restablecer",
+      "applyFilters": "Aplicar Filtros",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ min",
+        "max": "120m+"
+      },
+      "workoutTypes": {
+        "all": "Todos los Tipos",
+        "strength": "Fuerza",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "RANGO DE FECHAS",
+        "30days": "Últimos 30 Días",
+        "90days": "Últimos 90 Días",
+        "custom": "Personalizado"
+      },
+      "muscleGroups": {
+        "title": "GRUPO MUSCULAR (MULTISELECCIÓN)",
+        "chest": "Pecho",
+        "back": "Espalda",
+        "legs": "Piernas",
+        "shoulders": "Hombros",
+        "arms": "Brazos",
+        "core": "Core",
+        "fullBody": "Cuerpo Completo"
+      }
+    }
+  }
+}

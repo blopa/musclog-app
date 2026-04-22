@@ -1,0 +1,102 @@
+{
+  "goalsManagement": {
+    "title": "Gestión de Objetivos",
+    "nutritionAndBodyTab": "Nutrición y Cuerpo",
+    "fitnessAndExerciseTab": "Fitness y Ejercicio",
+    "subtitle": "Sigue tu progreso e historial.",
+    "currentGoals": "OBJETIVOS ACTUALES",
+    "active": "Activo",
+    "history": "HISTORIAL DE OBJETIVOS",
+    "newGoal": "Nuevo Objetivo",
+    "createGoalDesc": "Establecer nuevos objetivos de nutrición y macros",
+    "createCheckin": "Crear Revisión",
+    "createCheckinDesc": "Añadir una nueva entrada de revisión de nutrición",
+    "emptyStateMessage": "Crea un nuevo objetivo para empezar",
+    "editGoal": "Editar",
+    "deleteGoalAction": "Eliminar",
+    "deleteGoal": "Eliminar Objetivo",
+    "deleteGoalMessage": "Este objetivo se eliminará permanentemente de tu historial.",
+    "manageGoalData": {
+      "deleteGoalWarning": "¿Estás seguro de que deseas eliminar este objetivo? Esta acción no se puede deshacer.",
+      "title": "Objetivos de nutrición",
+      "searchPlaceholder": "Buscar objetivos...",
+      "noGoals": "Aún no hay objetivos",
+      "noGoalsDesc": "Establece objetivos de nutrición para verlos aquí",
+      "endOfHistory": "Fin del historial de objetivos",
+      "goalOptions": "Opciones de objetivo",
+      "editGoal": "Editar objetivo",
+      "editGoalDesc": "Cambiar calorías, macros y metas",
+      "duplicateGoal": "Duplicar objetivo",
+      "duplicateGoalDesc": "Crear una copia para usar como un nuevo objetivo",
+      "regenerateCheckins": "Regenerar revisiones",
+      "regenerateCheckinsDesc": "Eliminar y volver a crear las revisiones para este objetivo",
+      "deleteGoal": "Eliminar objetivo",
+      "deleteGoalDesc": "Eliminar este objetivo del historial",
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Objetivo {{targetWeight}} {{unit}}",
+      "phaseCut": "Definición",
+      "phaseMaintain": "Mantenimiento",
+      "phaseBulk": "Volumen"
+    },
+    "goalCreationMethod": {
+      "title": "Nuevo Objetivo",
+      "subtitle": "¿Cómo te gustaría configurar tu nuevo objetivo?",
+      "guidedTitle": "Responder a unas Preguntas",
+      "guidedDescription": "Te guiaremos paso a paso hacia los objetivos adecuados de calorías y macros.",
+      "recommended": "Recomendado",
+      "manualTitle": "Configurar Manualmente",
+      "manualDescription": "Introduce tus calorías, macros y metas directamente.",
+      "autoCalculateTitle": "Calcularlo por mí",
+      "autoCalculateDescription": "Calculamos tus objetivos usando la fórmula Mifflin-St Jeor basada en tu perfil."
+    },
+    "goalWizard": {
+      "title": "Configura tu Objetivo",
+      "step": "Paso {{current}} de {{total}}",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "createGoal": "Crear Objetivo",
+      "goalType": {
+        "title": "¿Cuál es tu objetivo principal?",
+        "subtitle": "Esto nos ayuda a recomendarte las calorías y macros adecuados.",
+        "lose": "Perder Peso",
+        "loseDescription": "Reducir la grasa corporal a través de un déficit calórico.",
+        "maintain": "Mantener Peso",
+        "maintainDescription": "Mantener tu peso y composición corporal actuales.",
+        "gain": "Ganar Peso",
+        "gainDescription": "Ganar músculo y fuerza con un superávit calórico."
+      },
+      "goalWeight": {
+        "titleMain": "¿Cuál es tu",
+        "titleAccent": "peso objetivo?",
+        "subtitle": "Establece el peso al que quieres llegar. Tu peso actual se muestra como referencia.",
+        "label": "Peso Objetivo",
+        "currentWeightLabel": "Tu peso actual",
+        "tipLoseBF": "Apuntar a un 0,5–1% de tu peso corporal por semana es un ritmo sostenible que ayuda a preservar la masa muscular durante una definición.",
+        "tipGain": "Ganar 0,25–0,5 kg por semana mantiene la ganancia de grasa al mínimo mientras permite un crecimiento muscular constante."
+      },
+      "targetDate": {
+        "title": "¿Cuándo quieres alcanzar tu objetivo?",
+        "subtitle": "Establecer una fecha límite te ayuda a seguir tu progreso a lo largo del tiempo.",
+        "label": "Fecha Objetivo",
+        "notSet": "Sin fecha específica",
+        "clear": "Borrar fecha"
+      }
+    },
+    "manageCheckinData": {
+      "title": "Revisiones de Nutrición",
+      "searchPlaceholder": "Buscar revisiones...",
+      "noCheckins": "Aún no hay revisiones",
+      "noCheckinsDesc": "Las revisiones se crean cuando configuras un objetivo de nutrición calculado por IA",
+      "endOfHistory": "Todas las revisiones cargadas",
+      "checkinOptions": "Opciones de revisión",
+      "editCheckin": "Editar revisión",
+      "editCheckinDesc": "Cambiar las metas de la revisión",
+      "deleteCheckin": "Eliminar revisión",
+      "deleteCheckinDesc": "Eliminar permanentemente esta revisión",
+      "subtitleFormat": "Objetivo {{targetWeight}} {{unit}} • {{targetBodyFat}}% de grasa corporal",
+      "checkinDate": "Fecha de Revisión"
+    },
+    "exerciseGoals": "OBJETIVOS DE EJERCICIO",
+    "exerciseGoalsTitle": "Fuerza y Consistencia",
+    "exerciseGoalsSubtitle": "Sigue tus metas de 1RM y frecuencia de entrenamiento"
+  }
+}

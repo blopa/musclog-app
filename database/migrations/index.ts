@@ -9,6 +9,7 @@ import migrationV7 from '@/database/migrations/2026/04/migration-v7';
 import migrationV8 from '@/database/migrations/2026/04/migration-v8';
 import migrationV9 from '@/database/migrations/2026/04/migration-v9';
 import migrationV10 from '@/database/migrations/2026/04/migration-v10';
+import migrationV11 from '@/database/migrations/2026/04/migration-v11';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -58,5 +59,7 @@ export const migrations = schemaMigrations({
     migrationV9,
     // Version 10: Add saved_for_later_groups and saved_for_later_items tables
     migrationV10,
+    // Version 11: Add muscles catalogue and exercise_muscles junction table
+    migrationV11,
   ],
 });

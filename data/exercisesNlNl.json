@@ -1,1574 +1,917 @@
 [
   {
     "name": "Bankdrukken",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een borstoefening waarbij je een halterstang omhoog drukt terwijl je op een bankje ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 1
+    "exerciseIndex": 1
   },
   {
     "name": "Incline Bankdrukken",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een variatie op het bankdrukken uitgevoerd op een schuin bankje om de bovenkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 2
   },
   {
     "name": "Decline Bankdrukken",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een variatie op het bankdrukken uitgevoerd op een achteroverhellend bankje om de onderkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
-    "loadMultiplier": 1.1
+    "exerciseIndex": 3
   },
   {
     "name": "Overhead Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een schouderoefening waarbij je een gewicht boven je hoofd drukt, zowel staand als zittend.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 4
   },
   {
     "name": "Deadlift",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een oefening voor het hele lichaam waarbij je een halterstang van de grond tilt tot je rechtop staat.",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
-    "loadMultiplier": 1.8
+    "exerciseIndex": 5
   },
   {
     "name": "Pec Fly Machine",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Een machine-oefening die de borstspieren isoleert door de beweging van een fly na te bootsen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 6
   },
   {
     "name": "Leg Extension Machine",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening die de quadriceps traint door de benen te strekken vanuit een zittende positie.",
-    "targetMuscles": ["quadriceps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 7
   },
   {
     "name": "Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je door je knieën en heupen buigt om je lichaam te laten zakken en daarna weer opstaat.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 8
   },
   {
     "name": "Barbell Back Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je door je knieën en heupen buigt, met een halterstang op je bovenrug, en daarna weer opstaat.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 9
   },
   {
     "name": "Leg Press",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening waarbij je een gewicht van je af duwt met je benen.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 3.5
+    "exerciseIndex": 10
   },
   {
     "name": "Lat Pulldown",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Een machine-oefening voor de bovenrug waarbij je een stang naar je borst toe trekt.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 11
   },
   {
     "name": "Pull-Up",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Een oefening voor het bovenlichaam waarbij je jezelf optrekt aan een stang met behulp van je rug- en armspieren.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 12
   },
   {
     "name": "Seated Row",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Een machine-oefening voor de rugspieren waarbij je zittend een handgreep naar je romp toe trekt.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 13
   },
   {
     "name": "Bicep Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een armoefening voor the biceps waarbij je een gewicht naar je schouder toe tilt.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 14
   },
   {
     "name": "Tricep Overhead Extension",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een armoefening voor de triceps waarbij je de arm strekt vanuit de elleboog.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 15
   },
   {
     "name": "Leg Curl Machine",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening voor de hamstrings waarbij je de benen naar de billen toe krult.",
-    "targetMuscles": ["hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 16
   },
   {
     "name": "Lateral Raise",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening waarbij je gewichten zijwaarts omhoog tilt.",
-    "targetMuscles": ["lateral_deltoid"],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 17
   },
   {
     "name": "Front Raise",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening waarbij je gewichten voorwaarts omhoog tilt.",
-    "targetMuscles": ["anterior_deltoid"],
-    "loadMultiplier": 0.08
+    "exerciseIndex": 18
   },
   {
     "name": "Kuitheffen",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Een oefening voor het onderlichaam waarbij de kuitspieren worden getraind door de hielen van de grond te tillen.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 19
   },
   {
     "name": "Hammer Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een armoefening vergelijkbaar met de bicep curl, maar met een neutrale grip.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.18
+    "exerciseIndex": 20
   },
   {
     "name": "Preacher Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een variatie op de bicep curl uitgevoerd op een preacher bench om de biceps te isoleren.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 21
   },
   {
     "name": "Cable Tricep Pushdown",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een armoefening voor de triceps waarbij je een kabel naar beneden duwt.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 22
   },
   {
     "name": "Chest Press Machine",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Een machine-oefening die het bankdrukken nabootst.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 23
   },
   {
     "name": "Smith Machine Squat",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een variatie op de squat uitgevoerd op een Smith-machine voor extra stabiliteit.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 1.3
+    "exerciseIndex": 24
   },
   {
     "name": "T-Bar Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een rugoefening waarbij je een T-bar naar je romp toe trekt.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 25
   },
   {
     "name": "Bent Over Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een rugoefening waarbij je vooroverbuigt vanuit je middel en een gewicht naar je romp toe trekt.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 26
   },
   {
     "name": "Upright Row",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een schouderoefening waarbij je een gewicht langs de voorkant van je lichaam omhoog trekt.",
-    "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 27
   },
   {
     "name": "Dumbbell Fly",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Een borstoefening waarbij je dumbbells zijwaarts laat zakken en weer optilt terwijl je op een bankje ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
-    "loadMultiplier": 0.15
+    "exerciseIndex": 28
   },
   {
     "name": "Incline Dumbbell Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een borstoefening vergelijkbaar met de incline bench press, maar dan met dumbbells.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 29
   },
   {
     "name": "Machine Shoulder Press",
-    "muscleGroup": "shoulders",
-    "type": "machine",
     "description": "Een schouderoefening op een machine die de overhead press nabootst.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 30
   },
   {
     "name": "Reverse Pec Deck Fly",
-    "muscleGroup": "shoulders",
-    "type": "machine",
     "description": "Een machine-oefening voor de achterkant van de schouders die de beweging van een reverse fly nabootst.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 31
   },
   {
     "name": "Cable Crossover",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Een borstoefening voor de binnenkant van de borst waarbij je kabels voor je lichaam langs trekt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 32
   },
   {
     "name": "Zittend Kuitheffen",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Een kuitoefening die zittend wordt uitgevoerd, gericht op de scholspier (soleus).",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 33
   },
   {
     "name": "Staand Kuitheffen",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Een kuitoefening die staand wordt uitgevoerd, gericht op de oppervlakkige kuitspier (gastrocnemius).",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 34
   },
   {
     "name": "Romanian Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een variatie op de deadlift die de hamstrings en billen traint.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 1
+    "exerciseIndex": 35
   },
   {
     "name": "Glute Bridge",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Een oefening voor het onderlichaam die de billen traint door de heupen van de grond te tillen terwijl je op je rug ligt.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 36
   },
   {
     "name": "Hip Thrust",
-    "muscleGroup": "glutes",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam die de billen traint door de heupen van de grond te tillen terwijl je schouders op een bankje rusten.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 37
   },
   {
     "name": "Cable Bicep Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een armoefening voor de biceps waarbij je een kabel omhoog krult.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 38
   },
   {
     "name": "Dumbbell Shoulder Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een schouderoefening waarbij je dumbbells boven je hoofd drukt.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 39
   },
   {
     "name": "Smith Machine Bench Press",
-    "muscleGroup": "chest",
-    "type": "machine",
     "description": "Een variatie op het bankdrukken uitgevoerd op een Smith-machine voor extra stabiliteit.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 1
+    "exerciseIndex": 40
   },
   {
     "name": "Hack Squat",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een variatie op de squat uitgevoerd op een hack squat-machine om de quadriceps te trainen.",
-    "targetMuscles": ["quadriceps", "glutes"],
-    "loadMultiplier": 1.5
+    "exerciseIndex": 41
   },
   {
     "name": "Reverse Lunge",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je achteruit stapt in een lunge-positie.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 42
   },
   {
     "name": "Step-Up",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je op een verhoogd platform stapt.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 43
   },
   {
     "name": "Kettlebell Swing",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een oefening voor het hele lichaam waarbij je een kettlebell tussen je benen en tot schouderhoogte zwaait.",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 44
   },
   {
     "name": "Goblet Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een variatie op de squat waarbij je een gewicht voor je borst vasthoudt.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 45
   },
   {
     "name": "Sumo Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een variatie op de deadlift met een brede stand die de binnenkant van de dijen en de billen traint.",
-    "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.8
+    "exerciseIndex": 46
   },
   {
     "name": "Heup Abductie Machine",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening voor de buitenkant van de dijen door de benen naar buiten te duwen.",
-    "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 47
   },
   {
     "name": "Heup Adductie Machine",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening voor de binnenkant van de dijen door de benen naar elkaar toe te duwen.",
-    "targetMuscles": ["adductors", "pectineus"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 48
   },
   {
     "name": "Cable Face Pull",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening voor de achterkant van de schouders waarbij je een kabel naar je gezicht toe trekt.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 49
   },
   {
     "name": "Incline Dumbbell Fly",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Een borstoefening op een schuin bankje om de bovenkant van de borst te trainen.",
-    "targetMuscles": ["pectineus", "anterior_deltoid"],
-    "loadMultiplier": 0.15
+    "exerciseIndex": 50
   },
   {
     "name": "Dips",
-    "muscleGroup": "arms",
-    "type": "bodyweight",
     "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en weer opduwt tussen parallelle stangen.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0
+    "exerciseIndex": 51
   },
   {
     "name": "Push-Up",
-    "muscleGroup": "chest",
-    "type": "bodyweight",
     "description": "Een oefening voor de borst, schouders en triceps waarbij je je lichaam van de grond omhoog duwt.",
-    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0
+    "exerciseIndex": 52
   },
   {
     "name": "Plank",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een oefening voor de core waarbij je een opdrukpositie een bepaalde tijd vasthoudt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
-    "loadMultiplier": 0
+    "exerciseIndex": 53
   },
   {
     "name": "Russian Twist",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een oefening voor de schuine buikspieren waarbij je je romp van links naar rechts draait terwijl je een gewicht vasthoudt.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "rectus_abdominis",
-      "transverse_abdominis"
-    ],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 54
   },
   {
     "name": "Hanging Leg Raise",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Een buikspieroefening waarbij je je benen optilt terwijl je aan een stang hangt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 55
   },
   {
     "name": "Mountain Climbers",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
     "description": "Een oefening voor het hele lichaam waarbij je een loopbeweging maakt vanuit een plankpositie.",
-    "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 56
   },
   {
     "name": "Burpees",
-    "muscleGroup": "full_body",
-    "type": "bodyweight",
     "description": "Een oefening voor het hele lichaam bestaande uit een squat, een sprong en een push-up.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "rectus_abdominis",
-      "triceps",
-      "shoulders"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 57
   },
   {
     "name": "Box Jump",
-    "muscleGroup": "legs",
-    "type": "plyometric",
     "description": "Een plyometrische oefening voor het onderlichaam waarbij je op een verhoogd platform springt.",
-    "targetMuscles": ["quadriceps", "glutes", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 58
   },
   {
     "name": "Turkish Get-Up",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een oefening voor het hele lichaam waarbij je vanuit een liggende positie gaat staan terwijl je een gewicht boven je hoofd houdt.",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 59
   },
   {
     "name": "Farmer's Walk",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een oefening waarbij je loopt met zware gewichten in beide handen.",
-    "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 60
   },
   {
     "name": "Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een olympische oefening waarbij je een halterstang in één beweging van de grond tot boven je hoofd tilt.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 61
   },
   {
     "name": "Clean and Jerk",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een olympische oefening waarbij je een halterstang van de grond naar de schouders brengt en daarna boven je hoofd stoot.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 62
   },
   {
     "name": "Battle Ropes",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een oefening waarbij je golven maakt met zware touwen om kracht en uithoudingsvermogen op te bouwen.",
-    "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
-    "loadMultiplier": 0
+    "exerciseIndex": 63
   },
   {
     "name": "Crunch Machine",
-    "muscleGroup": "abdomen",
-    "type": "machine",
     "description": "Een machine-oefening voor de buikspieren die de beweging van een crunch nabootst.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 64
   },
   {
     "name": "Chest Supported Row Machine",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Een rugoefening op een machine waarbij je roeit met je borst tegen een kussen, gericht op de boven- en middenrug.",
-    "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 65
   },
   {
     "name": "Barbell Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een rugoefening waarbij je een halterstang naar je romp trekt terwijl je voorovergebogen staat.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 66
   },
   {
     "name": "Skull Crusher",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een tricepsoefening waarbij je een halterstang naar je voorhoofd laat zakken en weer omhoog strekt.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 67
   },
   {
     "name": "Bulgarian Split Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je een split-squat uitvoert met je achterste voet op een bankje.",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 68
   },
   {
     "name": "Pallof Press",
-    "muscleGroup": "core",
-    "type": "isolation",
     "description": "Een core-oefening waarbij je een kabel of weerstandsband van je lichaam af duwt om rotatie te weerstaan.",
-    "targetMuscles": [
-      "rectus_abdominis",
-      "internal_obliques",
-      "external_obliques",
-      "transverse_abdominis"
-    ],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 69
   },
   {
     "name": "Hanging Knee Raise",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Een buikspieroefening waarbij je je knieën naar je borst tilt terwijl je aan een stang hangt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 70
   },
   {
     "name": "Landmine Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een schouderoefening waarbij je een halterstang omhoog duwt die aan één kant in een landmine-steun staat.",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 71
   },
   {
     "name": "Landmine Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een rugoefening waarbij je een halterstang naar je romp trekt die aan één kant in een landmine-steun staat.",
-    "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 72
   },
   {
     "name": "Donkey Calf Raise",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Een kuitoefening waarbij je je hielen tilt terwijl je voorovergebogen staat met gewicht op je onderrug.",
-    "targetMuscles": ["calves"],
-    "loadMultiplier": 1
+    "exerciseIndex": 73
   },
   {
     "name": "Touwtjespringen",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening waarbij je over een touw springt terwijl het onder je voeten en over je hoofd draait.",
-    "targetMuscles": ["calves", "glutes", "quadriceps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 74
   },
   {
     "name": "Hardlopen",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening waarbij je jogt of sprint over een bepaalde afstand.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 75
   },
   {
     "name": "Fietsen",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening waarbij je fietst, zowel op een hometrainer als buiten.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 76
   },
   {
     "name": "Roeimachine",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening op een machine die het roeien in een boot nabootst.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 77
   },
   {
     "name": "Crosstrainer",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening op een machine die wandelen of hardlopen nabootst zonder de gewrichten te zwaar te belasten.",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 78
   },
   {
     "name": "High-Intensity Interval Training (HIIT)",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een vorm van cardiotraining die korte periodes van intensieve anaerobe oefening afwisselt met minder intensieve herstelperiodes.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 79
   },
   {
     "name": "Trappenloper",
-    "muscleGroup": "legs",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening op een machine die de beweging van traplopen nabootst.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 80
   },
   {
     "name": "Aerobics",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een vorm van cardiotraining met ritmische activiteiten, vaak uitgevoerd op muziek.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 81
   },
   {
     "name": "Dans Cardio",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening met verschillende dansbewegingen om de hartslag te verhogen.",
-    "targetMuscles": [
-      "quadriceps",
-      "hamstrings",
-      "glutes",
-      "calves",
-      "rectus_abdominis",
-      "external_obliques"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 82
   },
   {
     "name": "Schaduwboksen",
-    "muscleGroup": "full_body",
-    "type": "cardio",
     "description": "Een cardiovasculaire oefening waarbij je in de lucht bokst om je hartslag te verhogen en je conditie te verbeteren.",
-    "targetMuscles": [
-      "rectus_abdominis",
-      "external_obliques",
-      "anterior_deltoid",
-      "lateral_deltoid",
-      "biceps",
-      "triceps"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 83
   },
   {
     "name": "Narrow Grip Lat Pulldown",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Een variatie op de lat pulldown met een smalle grip om de binnenkant van de rugspieren te trainen.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 84
   },
   {
     "name": "Supinated Lat Pulldown",
-    "muscleGroup": "back",
-    "type": "machine",
     "description": "Een variatie op de lat pulldown met een onderhandse grip om de biceps en bovenrug te trainen.",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 85
   },
   {
     "name": "Cable Pullover",
-    "muscleGroup": "back",
-    "type": "isolation",
     "description": "Een rugoefening waarbij je een kabelstang van boven je hoofd naar je heupen trekt, gericht op de lats.",
-    "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 86
   },
   {
     "name": "Dumbbell Pullover",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een veelzijdige oefening voor de borst en lats waarbij je een dumbbell boven je hoofd laat zakken en weer optilt terwijl je op een bankje ligt.",
-    "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 87
   },
   {
     "name": "Reverse Grip Bench Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een variatie op het bankdrukken met een onderhandse grip om de bovenkant van de borst en de triceps te benadrukken.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.8
+    "exerciseIndex": 88
   },
   {
     "name": "Cable Chest Press",
-    "muscleGroup": "chest",
-    "type": "isolation",
     "description": "Een borstoefening waarbij je een kabel naar voren duwt, vergelijkbaar met bankdrukken, maar met constante spanning.",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 89
   },
   {
     "name": "Cable Front Raise",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening waarbij je een kabel voorwaarts omhoog tilt, gericht op de voorkant van de schouders.",
-    "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0.08
+    "exerciseIndex": 90
   },
   {
     "name": "Cable Lateral Raise",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening waarbij je een kabel zijwaarts omhoog tilt, gericht op de zijkant van de schouders.",
-    "targetMuscles": ["lateral_deltoid", "traps"],
-    "loadMultiplier": 0.1
+    "exerciseIndex": 91
   },
   {
     "name": "Single-Arm Dumbbell Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een rugoefening waarbij je een dumbbell naar je romp roeit terwijl je voorovergebogen staat, waarbij je elke kant apart traint.",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 92
   },
   {
     "name": "Dumbbell Shrug",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een schouderoefening voor de trapezius waarbij je je schouders ophaalt terwijl je dumbbells vasthoudt.",
-    "targetMuscles": ["traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 93
   },
   {
     "name": "Lying Leg Curl",
-    "muscleGroup": "legs",
-    "type": "machine",
     "description": "Een machine-oefening voor de hamstrings waarbij je liggend op je buik de benen naar je billen krult.",
-    "targetMuscles": ["hamstrings", "calves"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 94
   },
   {
     "name": "Good Morning",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je vanuit de heupen buigt om je romp te laten zakken, gericht op de hamstrings en billen.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 95
   },
   {
     "name": "Zercher Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een variatie op de squat waarbij je de halterstang in de holte van je ellebogen houdt, met de nadruk op de quads en core.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
-    "loadMultiplier": 1
+    "exerciseIndex": 96
   },
   {
     "name": "Sissy Squat",
-    "muscleGroup": "legs",
-    "type": "isolation",
     "description": "Een op de quads gerichte squat-variatie uitgevoerd op een sissy squat-bankje of door achterover te leunen op de bal van je voet.",
-    "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 97
   },
   {
     "name": "Jefferson Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een variatie op de deadlift waarbij je wijdbeens over de halterstang staat, gericht op de quads, billen en core.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
-    "loadMultiplier": 1.4
+    "exerciseIndex": 98
   },
   {
     "name": "Cossack Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een oefening voor het onderlichaam waarbij je een diepe zijwaartse lunge uitvoert, gericht op de binnenkant van de dijen en de billen.",
-    "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 99
   },
   {
     "name": "Dragon Flag",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een geavanceerde core-oefening waarbij je je lichaam in een rechte lijn laat zakken en weer optilt terwijl je op een bankje ligt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 100
   },
   {
     "name": "Hollow Body Hold",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een core-oefening waarbij je een 'hollow' positie vasthoudt, met je onderrug tegen de vloer gedrukt en je armen en benen gestrekt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 101
   },
   {
     "name": "Reverse Crunch",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Een buikspieroefening waarbij je je heupen naar je borst krult, gericht op de onderste buikspieren.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 102
   },
   {
     "name": "Ab Wheel Rollout",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een core-oefening waarbij je een buikspierwiel van je lichaam af rolt terwijl je je romp stabiel houdt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 103
   },
   {
     "name": "Pike Push-Up",
-    "muscleGroup": "shoulders",
-    "type": "bodyweight",
     "description": "Een schouderoefening waarbij je een push-up uitvoert in een 'pike' positie (met je heupen omhoog).",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 104
   },
   {
     "name": "Cable Crunch",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Een buikspieroefening waarbij je een crunch-beweging maakt met een kabel voor extra weerstand.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 105
   },
   {
     "name": "Dumbbell Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een isolatie-oefening voor de triceps waarbij je vooroverbuigt, je bovenarm stilhoudt en je elleboog strekt om de dumbbell naar achteren te bewegen.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 106
   },
   {
     "name": "Two-Arm Dumbbell Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een variatie op de triceps kickback met een dumbbell in elke arm met hetzelfde voorovergebogen bewegingspatroon.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 107
   },
   {
     "name": "Seated Bent-Over Dumbbell Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een triceps kickback die zittend wordt uitgevoerd terwijl je vooroverleunt om de romp te ondersteunen en de elleboogstrekking te isoleren.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 108
   },
   {
     "name": "Incline Bench Dumbbell Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een triceps kickback die met de borst op een schuin bankje wordt uitgevoerd om het lichaam te stabiliseren en vaart te verminderen.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 109
   },
   {
     "name": "Cable Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een triceps kickback met een lage kabel, waarbij je de bovenarm parallel aan de vloer houdt terwijl je strekt tegen de weerstand in.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28
+    "exerciseIndex": 110
   },
   {
     "name": "Cable Triceps Kickback from High Pulley",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een triceps kickback waarbij de kabel hoger is ingesteld, zodat de trekhoek de lange kop van de triceps anders traint.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.26
+    "exerciseIndex": 111
   },
   {
     "name": "Cable Glute Kickback",
-    "muscleGroup": "glutes",
-    "type": "isolation",
     "description": "Een heupextensie-oefening waarbij je het werkende been naar achteren beweegt tegen de weerstand van een lage kabel aan je enkel.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 112
   },
   {
     "name": "Glute Kickback Machine",
-    "muscleGroup": "glutes",
-    "type": "machine",
     "description": "Een machine-gestuurde heup-kickback die de bilspieren traint via een kussen of platform.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.45
+    "exerciseIndex": 113
   },
   {
     "name": "Banded Glute Kickback",
-    "muscleGroup": "glutes",
-    "type": "isolation",
     "description": "Een glute kickback uitgevoerd met een weerstandsband die laag is verankerd of om de voeten is gelust.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.12
+    "exerciseIndex": 114
   },
   {
     "name": "Bodyweight Quadruped Glute Kickback",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Een kickback met eigen lichaamsgewicht op handen en knieën, waarbij je één heup recht naar achteren strekt.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 115
   },
   {
     "name": "Standing Bodyweight Glute Kickback",
-    "muscleGroup": "glutes",
-    "type": "bodyweight",
     "description": "Een staande heup-kickback waarbij je het been zonder apparatuur naar achteren strekt, vaak met een lichte voorwaartse buiging voor balans.",
-    "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0
+    "exerciseIndex": 116
   },
   {
     "name": "Concentration Biceps",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een bicep curl die zittend wordt uitgevoerd met de elleboog tegen de binnenkant van de dij, waarbij de dumbbell in een gecontroleerde boog naar de schouder wordt gekruld.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 117
   },
   {
     "name": "Dumbbell Bench Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een horizontale druk-oefening op een bankje met dumbbells, wat onafhankelijke bewegingsbanen van de armen en een diepe rek mogelijk maakt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 118
   },
   {
     "name": "Decline Dumbbell Bench Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een dumbbell borstdruk-oefening op een achteroverhellend bankje om de onderkant van de borst te benadrukken.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.32
+    "exerciseIndex": 119
   },
   {
     "name": "Close-Grip Bench Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Een bankdruk-variant met een smallere grip om meer belasting naar de triceps te verschuiven.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 120
   },
   {
     "name": "Arnold Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een zittende of staande dumbbell press waarbij de handen draaien van de handpalmen naar binnen tot naar voren boven het hoofd.",
-    "targetMuscles": [
-      "anterior_deltoid",
-      "lateral_deltoid",
-      "posterior_deltoid",
-      "triceps",
-      "upper_traps"
-    ],
-    "loadMultiplier": 0.22
+    "exerciseIndex": 121
   },
   {
     "name": "Push Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een overhead press waarbij je een kleine kniebuiging en beenkracht gebruikt om de stang te versnellen.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
-    "loadMultiplier": 0.55
+    "exerciseIndex": 122
   },
   {
     "name": "Chin-Up",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Een optrek-variant met een onderhandse grip die de betrokkenheid van de biceps vergroot.",
-    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
-    "loadMultiplier": 0
+    "exerciseIndex": 123
   },
   {
     "name": "Straight-Arm Pulldown",
-    "muscleGroup": "back",
-    "type": "isolation",
     "description": "Een kabeloefening met bijna gestrekte ellebogen, waarbij je de stang naar de dijen trekt om de lats te isoleren.",
-    "targetMuscles": ["lats", "teres_major", "triceps"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 124
   },
   {
     "name": "Dumbbell Romanian Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een deadlift-patroon met dumbbells gericht op de hamstrings en billen, met minder belasting op de onderrug dan de barbell-versie.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 125
   },
   {
     "name": "Trap Bar Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een deadlift met een trap-bar (hex-bar) met een neutrale grip, wat vaak een rechtere rug toelaat.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
-    "loadMultiplier": 1.45
+    "exerciseIndex": 126
   },
   {
     "name": "Rack Pull",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een gedeeltelijke deadlift vanaf steunen onder de knie, gericht op de bovenrug en trapezius.",
-    "targetMuscles": [
-      "traps",
-      "erector_spinae",
-      "rhomboids",
-      "lats",
-      "glutes",
-      "hamstrings",
-      "forearms"
-    ],
-    "loadMultiplier": 1.3
+    "exerciseIndex": 127
   },
   {
     "name": "Front Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een squat met de halterstang op de voorkant van de schouders, met nadruk op de quads en core.",
-    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 128
   },
   {
     "name": "Walking Lunge",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een dynamische lunge waarbij je afwisselend naar voren stapt, gericht op balans en stabiliteit.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 129
   },
   {
     "name": "Forward Lunge",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een lunge-variant waarbij je naar voren stapt in een diepe lunge en weer terugkeert naar de startpositie.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 130
   },
   {
     "name": "Wall Sit",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Een statische oefening met de rug tegen de muur en de dijen parallel aan de vloer om uithoudingsvermogen op te bouwen.",
-    "targetMuscles": ["quadriceps", "glutes"],
-    "loadMultiplier": 0
+    "exerciseIndex": 131
   },
   {
     "name": "Pistol Squat",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Een squat op één been tot volledige diepte, wat veel mobiliteit en balans vereist.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0
+    "exerciseIndex": 132
   },
   {
     "name": "Nordic Hamstring Curl",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Een hamstringoefening waarbij je het lichaam vanuit knielende positie naar voren laat zakken.",
-    "targetMuscles": ["hamstrings", "glutes"],
-    "loadMultiplier": 0
+    "exerciseIndex": 133
   },
   {
     "name": "Glute-Ham Raise",
-    "muscleGroup": "legs",
-    "type": "bodyweight",
     "description": "Een beweging die heupextensie en knieflexie combineert om de hamstrings en billen zwaar te belasten.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 0
+    "exerciseIndex": 134
   },
   {
     "name": "Pendlay Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een voorovergebogen barbell row waarbij elke herhaling vanaf de grond begint.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 135
   },
   {
     "name": "Inverted Row",
-    "muscleGroup": "back",
-    "type": "bodyweight",
     "description": "Een horizontale trekbeweging onder een stang of ringen met een recht lichaam.",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
-    "loadMultiplier": 0
+    "exerciseIndex": 136
   },
   {
     "name": "Barbell Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een staande curl met een onderhandse grip op een halterstang op schouderbreedte.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.42
+    "exerciseIndex": 137
   },
   {
     "name": "EZ Bar Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een bicep curl met een EZ-stang om de polsen te ontlasten.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 138
   },
   {
     "name": "Incline Dumbbell Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een curl op een schuin bankje waarbij de armen naar achteren hangen.",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.18
+    "exerciseIndex": 139
   },
   {
     "name": "Zottman Curl",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een dumbbell curl waarbij je de handen draait voor een langzame neerwaartse fase.",
-    "targetMuscles": ["biceps", "brachialis", "forearms"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 140
   },
   {
     "name": "Cable Overhead Tricep Extension",
-    "muscleGroup": "arms",
-    "type": "isolation",
     "description": "Een tricepsoefening waarbij de kabel van boven komt en je de onderarmen naar voren strekt.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28
+    "exerciseIndex": 141
   },
   {
     "name": "Diamond Push-Up",
-    "muscleGroup": "chest",
-    "type": "bodyweight",
     "description": "Een push-up met de handen dicht bij elkaar in een diamantvorm voor meer nadruk op de triceps.",
-    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0
+    "exerciseIndex": 142
   },
   {
     "name": "Bench Dip",
-    "muscleGroup": "arms",
-    "type": "bodyweight",
     "description": "Een triceps-dip waarbij je met je handen op een bankje achter je steunt.",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
-    "loadMultiplier": 0
+    "exerciseIndex": 143
   },
   {
     "name": "Lying Leg Raise",
-    "muscleGroup": "abdomen",
-    "type": "bodyweight",
     "description": "Een buikspieroefening waarbij je liggend je benen naar het plafond tilt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 144
   },
   {
     "name": "Dead Bug",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een core-oefening waarbij je liggend op je rug afwisselend de tegenovergestelde arm en been uitstrekt.",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0
+    "exerciseIndex": 145
   },
   {
     "name": "Side Plank",
-    "muscleGroup": "core",
-    "type": "bodyweight",
     "description": "Een zijwaartse statische oefening waarbij je op één onderarm steunt.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "transverse_abdominis",
-      "shoulders"
-    ],
-    "loadMultiplier": 0
+    "exerciseIndex": 146
   },
   {
     "name": "Cable Woodchopper",
-    "muscleGroup": "core",
-    "type": "compound",
     "description": "Een diagonale kabelbeweging dwars over het lichaam om rotatiekracht te trainen.",
-    "targetMuscles": [
-      "external_obliques",
-      "internal_obliques",
-      "rectus_abdominis",
-      "transverse_abdominis",
-      "shoulders"
-    ],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 147
   },
   {
     "name": "Bent-Over Dumbbell Rear Delt Fly",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een fly-beweging voor de achterkant van de schouders in een voorovergebogen positie.",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.12
+    "exerciseIndex": 148
   },
   {
     "name": "Barbell Shrug",
-    "muscleGroup": "shoulders",
-    "type": "isolation",
     "description": "Een zware oefening voor de bovenkant van de trapezius waarbij je de schouders ophaalt.",
-    "targetMuscles": ["traps", "forearms"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 149
   },
   {
     "name": "Power Clean",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve olympische oefening waarbij je de stang van de grond naar de schouders brengt.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 150
   },
   {
     "name": "Clean and Press",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een oefening die de power clean combineert met een overhead press.",
-    "targetMuscles": [
-      "glutes",
-      "hamstrings",
-      "quadriceps",
-      "shoulders",
-      "traps",
-      "triceps",
-      "forearms"
-    ],
-    "loadMultiplier": 0.65
+    "exerciseIndex": 151
   },
   {
     "name": "Hang Clean",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een olympische oefening waarbij je begint met de stang op heuphoogte.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 152
   },
   {
     "name": "Power Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve olympische oefening waarbij je de stang in één beweging van de grond tot boven je hoofd brengt.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.55
+    "exerciseIndex": 153
   },
   {
     "name": "Hang Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een olympische oefening die begint met de stang op heuphoogte.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 154
   },
   {
     "name": "Squat Clean",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een volledige olympische clean waarbij de lifter in een diepe squat zakt om de stang op te vangen.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.75
+    "exerciseIndex": 155
   },
   {
     "name": "Squat Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een volledige olympische snatch waarbij de lifter in een diepe squat zakt om de stang boven het hoofd op te vangen.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 156
   },
   {
     "name": "Push Jerk",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve oefening boven het hoofd waarbij je door de knieën gaat en daarna snel onder de stang zakt.",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.7
+    "exerciseIndex": 157
   },
   {
     "name": "Split Jerk",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "De olympische stoot-oefening waarbij de lifter in een uitvalspas zakt om de stang op te vangen.",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.75
+    "exerciseIndex": 158
   },
   {
     "name": "Thruster",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een beweging die een front squat combineert met een overhead press in één vloeiende beweging.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 159
   },
   {
     "name": "Overhead Squat",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een squat die wordt uitgevoerd met de stang boven het hoofd.",
-    "targetMuscles": [
-      "quadriceps",
-      "glutes",
-      "hamstrings",
-      "shoulders",
-      "traps",
-      "erector_spinae",
-      "forearms"
-    ],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 160
   },
   {
     "name": "Snatch Balance",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een olympische oefening waarbij je in een squat zakt terwijl je de stang boven je hoofd drukt.",
-    "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.5
+    "exerciseIndex": 161
   },
   {
     "name": "Muscle Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een snatch-variant waarbij de stang boven het hoofd wordt gebracht zonder in een squat te zakken.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
-    "loadMultiplier": 0.45
+    "exerciseIndex": 162
   },
   {
     "name": "Clean Pull",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Het trekken van de stang zoals bij een clean, maar zonder deze op te vangen.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
-    "loadMultiplier": 1.1
+    "exerciseIndex": 163
   },
   {
     "name": "Snatch Pull",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Het trekken van de stang zoals bij een snatch, maar zonder deze op te vangen.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 164
   },
   {
     "name": "High Pull",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve trekbeweging waarbij de stang tot borsthoogte komt met de ellebogen hoog.",
-    "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
-    "loadMultiplier": 0.6
+    "exerciseIndex": 165
   },
   {
     "name": "Pause Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een back squat met een bewuste pauze op het laagste punt.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 166
   },
   {
     "name": "Pin Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een squat die begint vanaf steunen, waardoor de neerwaartse fase wegvalt.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
-    "loadMultiplier": 1
+    "exerciseIndex": 167
   },
   {
     "name": "Box Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een squat waarbij je op een box of bankje gaat zitten.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
-    "loadMultiplier": 0.95
+    "exerciseIndex": 168
   },
   {
     "name": "Safety Bar Squat",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een squat uitgevoerd met een 'safety squat bar' om de schouders te ontlasten.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
-    "loadMultiplier": 1
+    "exerciseIndex": 169
   },
   {
     "name": "Pause Bench Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Bankdrukken met een pauze op de borst.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 170
   },
   {
     "name": "Floor Press",
-    "muscleGroup": "chest",
-    "type": "compound",
     "description": "Bankdrukken terwijl je op de vloer ligt.",
-    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.85
+    "exerciseIndex": 171
   },
   {
     "name": "Deficit Deadlift",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een deadlift waarbij je op een verhoging staat om de bewegingsuitslag te vergroten.",
-    "targetMuscles": [
-      "quadriceps",
-      "glutes",
-      "hamstrings",
-      "erector_spinae",
-      "traps",
-      "lats",
-      "forearms"
-    ],
-    "loadMultiplier": 0.9
+    "exerciseIndex": 172
   },
   {
     "name": "Block Pull",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Een deadlift vanaf blokken of steunen om de laatste fase van de beweging te trainen.",
-    "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
-    "loadMultiplier": 1.6
+    "exerciseIndex": 173
   },
   {
     "name": "One Arm Kettlebell Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve zwaaibeweging met één arm van een kettlebell van tussen de benen tot boven het hoofd.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 174
   },
   {
     "name": "Kettlebell Clean and Press",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een combinatie van een kettlebell clean en een overhead press.",
-    "targetMuscles": [
-      "glutes",
-      "hamstrings",
-      "quadriceps",
-      "shoulders",
-      "triceps",
-      "traps",
-      "forearms"
-    ],
-    "loadMultiplier": 0.4
+    "exerciseIndex": 175
   },
   {
     "name": "Dumbbell Snatch",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een explosieve beweging waarbij je een dumbbell van de grond tot boven het hoofd tilt.",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 176
   },
   {
     "name": "Single Arm Dumbbell Press",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Een overhead press met één dumbbell om de core extra te belasten voor stabiliteit.",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 177
   },
   {
     "name": "Dumbbell Step-Up",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Op een verhoging stappen terwijl je dumbbells vasthoudt.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 178
   },
   {
     "name": "Single Leg Romanian Deadlift",
-    "muscleGroup": "legs",
-    "type": "compound",
     "description": "Een Roemeense deadlift op één been met dumbbells.",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
-    "loadMultiplier": 0.35
+    "exerciseIndex": 179
   },
   {
     "name": "Renegade Row",
-    "muscleGroup": "back",
-    "type": "compound",
     "description": "Roeien vanuit een plankpositie met dumbbells.",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 180
   },
   {
     "name": "Dumbbell Thruster",
-    "muscleGroup": "full_body",
-    "type": "compound",
     "description": "Een combinatie van een dumbbell front squat en een overhead press.",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
-    "loadMultiplier": 0.25
+    "exerciseIndex": 181
   },
   {
     "name": "Waiter's Carry",
-    "muscleGroup": "shoulders",
-    "type": "compound",
     "description": "Lopen met één gewicht boven het hoofd om de core-stabiliteit te trainen.",
-    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.2
+    "exerciseIndex": 182
   },
   {
     "name": "Suitcase Carry",
-    "muscleGroup": "core",
-    "type": "compound",
     "description": "Lopen met één gewicht aan je zijde om zijwaartse buiging te weerstaan.",
-    "targetMuscles": [
-      "transverse_abdominis",
-      "external_obliques",
-      "internal_obliques",
-      "quadratus_lumborum",
-      "forearms"
-    ],
-    "loadMultiplier": 0.3
+    "exerciseIndex": 183
   }
 ]

@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "TIEMPO TOTAL",
+    "completeSuffix": "¡Completado!",
+    "completedMessage": "Buen esfuerzo. Toma aire.",
+    "upNext": "A CONTINUACIÓN",
+    "target": "OBJETIVO",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Series",
+    "reps": "Reps",
+    "rest": "DESCANSO",
+    "sec": "seg",
+    "equipment": "EQUIPO",
+    "startNextExercise": "Iniciar siguiente ejercicio",
+    "loadingNextExercise": "Cargando siguiente ejercicio...",
+    "errorTitle": "Entrenamiento no encontrado",
+    "errorDescription": "No se pudo cargar la pantalla de transición del ejercicio. Por favor, inténtalo de nuevo.",
+    "goBack": "Volver",
+    "noWorkoutId": "No se proporcionó ID de entrenamiento",
+    "loadFailed": "Error al cargar los datos del entrenamiento"
+  }
+}

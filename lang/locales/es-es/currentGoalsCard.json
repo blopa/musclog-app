@@ -1,0 +1,20 @@
+{
+  "currentGoalsCard": {
+    "dailyTarget": "Objetivo Diario",
+    "kcal": "kcal",
+    "protein": "Proteína",
+    "proteinShort": "P",
+    "carbs": "Carbos",
+    "carbsShort": "C",
+    "fats": "Grasas",
+    "fatsShort": "G",
+    "targetWeight": "Peso Objetivo",
+    "bodyFat": "Grasa Corporal",
+    "ffmi": "FFMI",
+    "bmi": "IMC",
+    "g": "g",
+    "kg": "kg",
+    "lbs": "lbs",
+    "percent": "%"
+  }
+}

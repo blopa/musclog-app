@@ -1,5 +1,6 @@
 {
   "workoutDetail": {
+    "secondaryFocus": "Foco Secundário",
     "totalTime": "Tempo Total",
     "volume": "Volume",
     "calories": "Calorias",
@@ -30,6 +31,18 @@
       "weightKg": "Peso (kg)",
       "weightLbs": "Peso (lbs)",
       "restSec": "Descanso (seg)"
-    }
+    },
+    "musclesWorked": "Músculos Trabalhados",
+    "frontMuscles": "Frente",
+    "backMuscles": "Costas",
+    "noMuscleData": "Sem dados musculares disponíveis",
+    "muscleBalance": "Equilíbrio Muscular",
+    "musclesTargeted": "{{count}} músculos trabalhados",
+    "region_chest": "Peito",
+    "region_back": "Costas",
+    "region_shoulders": "Ombros",
+    "region_arms": "Braços",
+    "region_core": "Core",
+    "region_legs": "Pernas"
   }
 }

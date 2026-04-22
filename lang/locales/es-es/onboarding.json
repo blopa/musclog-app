@@ -1,0 +1,139 @@
+{
+  "onboarding": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "getStarted": "Empezar",
+    "steps": {
+      "step1": {
+        "title": "Seguimiento sin Esfuerzo",
+        "description": "Olvida el cuaderno. Registra tus series, repeticiones y pesos en segundos y visualiza tus ganancias de fuerza con el tiempo."
+      },
+      "step2": {
+        "title": "Nutrición Inteligente",
+        "description": "Registra tus comidas en segundos con el escaneo por IA o nuestra enorme base de datos. Entender tu combustible es clave para el máximo rendimiento."
+      },
+      "step3": {
+        "title": "Una App, Control Total",
+        "description": "Conecta los puntos entre tu dieta y tus levantamientos. Mira exactamente cómo tu nutrición impulsa tus ganancias de fuerza con gráficos de progreso unificados."
+      },
+      "step4": {
+        "title": "Hagámoslo Personal",
+        "description": "Para adaptar tu viaje y seguir tus ganancias con precisión, nos encantaría saber un poco más sobre tu historial de fitness."
+      }
+    },
+    "fitnessInfo": {
+      "physicalTitle": "Estadísticas Corporales",
+      "goalsTitle": "Objetivos de Fitness",
+      "maybeLater": "Quizás más tarde",
+      "save": "Guardar",
+      "next": "Siguiente",
+      "continue": "Continuar",
+      "errorSaving": "Error al Guardar"
+    },
+    "personalInfo": {
+      "title": "Establecer Información Personal",
+      "errorSaving": "Error al Guardar",
+      "finish": "Finalizar",
+      "trackCycle": "¿Seguir Ciclo Menstrual?",
+      "trackCycleDescription": "Sincroniza tu rendimiento y nutrición con tus fases hormonales."
+    },
+    "cycleSetup": {
+      "anchor": {
+        "title": "Último Periodo",
+        "description": "¿Cuándo comenzó tu último periodo? Esto nos ayuda a calibrar tu fase actual."
+      },
+      "birthControl": {
+        "title": "Control de Natalidad Hormonal",
+        "description": "¿Estás usando algún método anticonceptivo hormonal? Esto afecta las predicciones de las fases hormonales.",
+        "none": "Ninguno",
+        "noneDescription": "Sin anticoncepción hormonal.",
+        "pill": "Píldora",
+        "pillDescription": "Píldora anticonceptiva oral diaria.",
+        "iud": "DIU",
+        "iudDescription": "Dispositivo intrauterino (hormonal o de cobre).",
+        "implant": "Implante",
+        "implantDescription": "Implante hormonal subcutáneo.",
+        "other": "Otro",
+        "otherDescription": "Otra forma de anticoncepción."
+      },
+      "length": {
+        "title": "Duración del Ciclo",
+        "description": "¿Cuánto dura tu ciclo típico y la duración de tu periodo?",
+        "cycleLength": "Duración Promedio del Ciclo",
+        "periodDuration": "Duración Promedio del Periodo",
+        "cycleLengthLabel": "Duración del Ciclo",
+        "periodDurationLabel": "Duración del Periodo"
+      },
+      "goal": {
+        "title": "Objetivo de Sincronización",
+        "description": "¿Cuál es tu enfoque principal para la sincronización hormonal?",
+        "performance": "Optimizar Rendimiento",
+        "performanceDescription": "Optimización de fuerza máxima y récords personales.",
+        "symptoms": "Gestionar Síntomas",
+        "symptomsDescription": "Enfoque en la comodidad y recuperación durante los cambios.",
+        "energy": "Predecir Bajones de Energía",
+        "energyDescription": "Anticipar bajones y ajustar la intensidad en consecuencia."
+      }
+    },
+    "healthConnect": {
+      "connectYour": "Conecta tu",
+      "health": "Salud",
+      "description": "Sincroniza tus datos de fitness con Musclog para un seguimiento de progreso avanzado e información de salud personalizada.",
+      "categories": {
+        "nutrition": "Nutrición",
+        "weight": "Peso",
+        "sleep": "Sueño",
+        "bodyComposition": "Composición Corporal"
+      },
+      "allowHealthAccess": "Permitir Acceso a Salud",
+      "connectedCount": "Conectado {{granted}}/{{total}}",
+      "maybeLater": "Quizás más tarde",
+      "privacyStatement": "Musclog valora tu privacidad. Tus datos están encriptados y se usan solo para tus análisis personales.",
+      "initializing": "Iniciando Health Connect...",
+      "syncing": "Sincronizando datos de salud...",
+      "processing": "Procesando...",
+      "continue": "Continuar"
+    },
+    "landing": {
+      "getStarted": "Empezar",
+      "termsAndPrivacy": "Al continuar, aceptas nuestros Términos y Política de Privacidad.",
+      "appName": "Musclog",
+      "tagline": "Entrena, Registra, Repite",
+      "description": "Sigue tu progreso con información basada en datos y alcanza tus objetivos de fitness.",
+      "viewTerms": "Ver Términos",
+      "preparingApp": "Preparando la app para ti...",
+      "migratingPreamble": "Actualizando desde el Musclog anterior — estamos trayendo tus datos.",
+      "migratingData": "Migrando tus datos...",
+      "migratingStep": "Migrando {{step}}...",
+      "migrationSteps": {
+        "preparing": "Preparando",
+        "downloading": "Descargando",
+        "processing": "Procesando",
+        "finalizing": "Finalizando",
+        "fitness_goals": "objetivos de nutrición",
+        "user_metrics": "métricas corporales",
+        "users": "perfil",
+        "foods": "alimentos",
+        "nutrition_logs": "registros de nutrición",
+        "exercises": "ejercicios",
+        "workouts": "plantillas de entrenamiento",
+        "workout_logs": "historial de entrenamiento",
+        "workout_template_sets": "series de plantillas de entrenamiento",
+        "workout_log_sets": "series de registros de entrenamiento",
+        "validating": "datos"
+      },
+      "importData": "Importar Datos"
+    },
+    "setGoals": {
+      "title": "Objetivo Inteligente",
+      "calculation": "Cálculo",
+      "description": "Usamos las ecuaciones de Mifflin-St Jeor y Katch-McArdle para estimar tu metabolismo, luego tu nivel de actividad y objetivos para establecer tus metas de calorías y macros.",
+      "personalizedMacros": "Macros Personalizados",
+      "dynamicAdjustments": "Ajustes Dinámicos",
+      "calculateForMe": "Calcular por Mí",
+      "setThemMyself": "Los Estableceré Yo Mismo",
+      "missingData": "Por favor, completa tus detalles de fitness primero para que podamos calcular tu plan."
+    }
+  }
+}

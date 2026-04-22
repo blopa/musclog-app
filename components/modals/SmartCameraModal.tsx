@@ -350,6 +350,15 @@ export default function SmartCameraModal({
           }
 
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
+          if (!result) {
+            handleError(
+              new Error('estimateNutritionFromPhoto errored'),
+              'SmartCameraModal.estimateNutritionFromPhoto'
+            );
+
+            return;
+          }
+
           if (result && result.meals.length > 0) {
             // Flatten all ingredients from all meals
             const allIngredients = result.meals.flatMap((m) => m.ingredients);

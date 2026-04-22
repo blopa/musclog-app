@@ -10,6 +10,7 @@ type ToggleItem = {
   icon?: ReactNode;
   value: boolean;
   onValueChange: (v: boolean) => void;
+  disabled?: boolean;
 };
 
 type TogglableSettingsProps = {
@@ -41,7 +42,10 @@ export function ToggleInput(props: TogglableSettingsProps) {
       {props.header}
       {items.map((it, idx) => (
         <Fragment key={it.key}>
-          <Pressable onPress={() => it.onValueChange(!it.value)}>
+          <Pressable
+            disabled={it.disabled}
+            onPress={() => !it.disabled && it.onValueChange(!it.value)}
+          >
             {({ pressed }) => (
               <View
                 style={{
@@ -50,6 +54,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   justifyContent: 'space-between',
                   padding: theme.spacing.padding.md,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
+                  opacity: it.disabled ? 0.4 : 1,
                 }}
               >
                 <View
@@ -85,6 +90,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   </View>
                 </View>
                 <Switch
+                  disabled={it.disabled}
                   value={it.value}
                   onValueChange={it.onValueChange}
                   trackColor={{

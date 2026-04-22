@@ -1,0 +1,144 @@
+{
+  "nutrition": {
+    "analyze": "Analizar",
+    "calories": "Calorías",
+    "carbs": "Carbohidratos",
+    "characters": "Caracteres",
+    "confirmAndSave": "Confirmar y Guardar",
+    "createCustom": "Crear Personalizado",
+    "createCustomDesc": "Añadir detalles de nutrición manualmente",
+    "dailyTotals": "Totales Diarios",
+    "dateLabel": "Fecha",
+    "emptyData": "Por favor, pega o introduce los datos de nutrición.",
+    "emptyDescription": "Por favor, introduce una descripción de la comida.",
+    "entriesCount": "Entradas",
+    "example": "Ejemplo",
+    "fat": "Grasas",
+    "fiber": "Fibra",
+    "foodNotFound": "Alimento No Encontrado",
+    "foodNotFoundDescription": "No pudimos encontrar este artículo en nuestra base de datos. ¿Qué te gustaría hacer?",
+    "import": "Importar",
+    "importFormatInfo": "Pega o escribe tu registro de comidas (por ejemplo, desde una nota o app). La IA lo analizará y sugerirá entradas.",
+    "importInstructions": "Pega los datos de tu nutrición a continuación. Formatos compatibles: texto libre, listas con viñetas o registros estructurados.",
+    "importNutrition": "Importar Nutrición",
+    "logPastDay": "Registrar un Día Pasado",
+    "mealDescriptionPlaceholder": "ej. Avena con plátano, 2 huevos, café con leche",
+    "pasteNutritionDataPlaceholder": "Pega los datos de nutrición aquí...",
+    "processing": "Procesando...",
+    "processingData": "Datos de nutrición importados con éxito.",
+    "processingDescription": "Descripción procesada con éxito.",
+    "processingFailed": "No se pudieron procesar los datos. Por favor, comprueba el formato e inténtalo de nuevo.",
+    "protein": "Proteínas",
+    "retrospectiveExample": "ej. Desayuno: avena y plátano. Almuerzo: ensalada de pollo. Cena: pasta con verduras.",
+    "retrospectiveInstructions": "Describe lo que comiste ese día con tus propias palabras. La IA estimará las porciones y los nutrientes.",
+    "review": "Revisar",
+    "searchAgain": "Buscar de Nuevo",
+    "searchAgainDesc": "Intenta con un término de búsqueda diferente",
+    "tryAICamera": "Probar Cámara IA",
+    "tryAICameraDesc": "Escanea tu comida para una identificación instantánea",
+    "supportedFormats": "Formatos compatibles",
+    "checkin": {
+      "title": "Revisión Semanal",
+      "noCheckinFound": "No se encontraron revisiones pendientes.",
+      "currentStatus": "Estado Actual",
+      "onTrack": "En Camino",
+      "ahead": "Adelantado",
+      "behind": "Atrasado",
+      "noCheckinFoundDesc": "No tienes ninguna revisión programada para hoy. ¡Vuelve en tu próximo día de revisión programado!",
+      "headline": {
+        "onTrack": "¡Se ve Genial!",
+        "ahead": "¡Acelerando!",
+        "behind": "Espacio para Mejorar"
+      },
+      "subtext": {
+        "onTrack": "Has mantenido un ritmo constante esta semana. Sigue esforzándote hacia tus objetivos.",
+        "ahead": "¡Vas por delante de tus objetivos de peso! Gran trabajo en la consistencia.",
+        "behind": "Tuviste algunas fluctuaciones esta semana, pero la consistencia es la clave. ¡Volvamos al camino!"
+      },
+      "weightTrend": "Tendencia de Peso",
+      "target": "Objetivo",
+      "targetShort": "Objetivo: {{value}}%",
+      "weeklyBreakdown": "Desglose Semanal",
+      "weekProgress": "Semana {{current}} de {{total}}",
+      "summaryIntro": "Apuntaste a {{target}} kcal/día, pero promediaste",
+      "summaryOutro": "A pesar del resultado, completaste",
+      "workoutsCount": "entrenamientos",
+      "noWorkouts": "sin entrenamientos",
+      "withHighIntensity": "con alta intensidad.",
+      "avgIntake": "Ingesta Prom.",
+      "consistency": "Consistencia",
+      "rate": "ritmo",
+      "avgBodyFat": "Grasa Corporal Prom.",
+      "activeMinutes": "Minutos Activos",
+      "vsLastWeek": "{{prefix}}{{value}}% vs la semana pasada",
+      "adherence": "Adherencia Semanal",
+      "summary": "Apuntaste a {{targetKcal}} kcal/día, pero promediaste {{actualKcal}} kcal/día. Completaste {{workouts}} entrenamientos.",
+      "weightComparison": "Peso: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Has registrado tu peso menos de 4 veces esta semana. Los promedios pueden ser menos precisos.",
+      "keepMacros": "Mantener mis macros actuales",
+      "readjust": "Reajustar mi plan",
+      "nextMilestones": "Próximo Hito",
+      "history": "Historial",
+      "weekTitle": "Resumen de la Semana {{number}}",
+      "prepareNow": "Preparar Ahora",
+      "noMilestones": "No hay revisiones próximas. Completa la configuración de tu objetivo de nutrición para comenzar.",
+      "noHistory": "Aún no hay revisiones completadas.",
+      "selectYear": "Filtrar por Año",
+      "notEnoughDataWarning": "No se han registrado suficientes datos esta semana. Los resultados pueden ser inexactos.",
+      "status": {
+        "pending": "Pendiente",
+        "ahead": "Adelantado",
+        "onTrack": "En Camino",
+        "behind": "Atrasado",
+        "descriptions": {
+          "pending": "Revisión aún no completada",
+          "ahead": "Progreso por delante del objetivo",
+          "onTrack": "Progreso según el objetivo",
+          "behind": "Progreso por detrás del objetivo"
+        }
+      }
+    },
+    "common": {
+      "kcal": "kcal"
+    },
+    "aiCamera": {
+      "estimated": "Estimado",
+      "modes": {
+        "mealPhoto": "Comida IA"
+      }
+    },
+    "createMeal": {
+      "estimated": "Estimado",
+      "totalNutrition": "Nutrición Total"
+    },
+    "macros": {
+      "protein": "Proteínas",
+      "carbs": "Carbos",
+      "fat": "Grasas"
+    },
+    "mealEstimation": {
+      "title": "Estimación de la Comida",
+      "identifiedItems": "Artículos Identificados",
+      "addItem": "Añadir Artículo",
+      "confirmAndLog": "Confirmar y Registrar Comida",
+      "retake": "Volver a tomar"
+    },
+    "index": {
+      "handleSaveCustomFood": "Alimento personalizado guardado con éxito."
+    },
+    "manageFoodData": {
+      "title": "Registro de Nutrición",
+      "searchPlaceholder": "Buscar registros de comida...",
+      "noLogs": "Aún no hay registros de comida",
+      "noLogsDesc": "Empieza a rastrear tus comidas para verlas aquí",
+      "endOfHistory": "Fin del historial del registro de comida",
+      "foodOptions": "Opciones de Comida",
+      "editFoodEntry": "Editar Entrada de Comida",
+      "editFoodEntryDesc": "Modificar los detalles de la comida",
+      "duplicateEntry": "Duplicar Entrada",
+      "duplicateEntryDesc": "Crear una copia de esta entrada",
+      "deleteEntry": "Eliminar Entrada",
+      "deleteEntryDesc": "Eliminar esta entrada de comida"
+    }
+  }
+}

@@ -59,8 +59,14 @@ export const getActiveCustomPrompts = async (
  * Get active memories for the conversation context
  */
 export const getActiveMemories = async (
-  context: 'nutrition' | 'exercise' | 'general'
+  context: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
+  // Skip database memory injection entirely for on-device AI to protect context window
+  if (provider === 'on-device') {
+    return '';
+  }
+
   try {
     const memories = await AiCustomPromptService.getActivePrompts(context, 'memory');
     if (memories.length === 0) {
@@ -80,24 +86,35 @@ export const getActiveMemories = async (
  */
 export const getBaseSystemPrompt = async (
   language: string = 'en-US',
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
   const customPrompts = await getActiveCustomPrompts(context);
-  const memories = context ? await getActiveMemories(context) : '';
+  const memories = context ? await getActiveMemories(context, provider) : '';
 
-  const basePrompt =
-    `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
-Your goal is to provide expert, motivating, and practical fitness advice.
+  let finalPrompt = `You are Loggy, a specialized fitness, nutrition, and health assistant.
+Your goal is to provide expert, motivating, and practical advice.
 
-STRICT GUIDELINES:
-1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally—don't sound like a robot.
-2. LANGUAGE: You MUST respond in ${language}, even if the user speaks to you in another language.
-3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health topics and wellness strategies
+- Track fitness activities and nutrition logs
+
+Conversation Guidelines:
+1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
+2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible (e.g. Portuguese, Spanish, etc.). If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
+3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
-6. MEMORY: If the user shares something personally significant, a specific preference, or an important milestone that should be remembered for future context, provide a brief note in the "remember_me" field.`.trim();
+6. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
+7. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
+8. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
 
-  let finalPrompt = basePrompt;
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`.trim();
+
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
@@ -106,6 +123,122 @@ STRICT GUIDELINES:
   }
 
   return finalPrompt;
+};
+
+/**
+ * Check if provider is a small model that needs Markdown-KV format
+ */
+export const isSmallModel = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  const smallModels = ['llama-3.1-8b', 'llama-3-8b', 'on-device', 'apple-intelligence'];
+  return smallModels.some((model) => provider.toLowerCase().includes(model));
+};
+
+/**
+ * Check if provider is Gemini that needs context-first ordering
+ */
+export const isGeminiProvider = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  return provider.toLowerCase().includes('gemini');
+};
+
+/**
+ * Convert workout data to Markdown-KV format for small models
+ */
+export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
+  if (!workoutData) {
+    return '';
+  }
+
+  let markdown = '## Recent Workout Data\n\n';
+
+  if (workoutData.summary) {
+    markdown += `Workout Summary: ${workoutData.summary}\n`;
+  }
+
+  if (workoutData.date) {
+    markdown += `Date: ${workoutData.date}\n`;
+  }
+
+  if (workoutData.exercises && Array.isArray(workoutData.exercises)) {
+    markdown += '\n### Exercises\n\n';
+    workoutData.exercises.forEach((exercise: any, index: number) => {
+      markdown += `${index + 1}. Exercise: ${exercise.name || 'Unknown'}\n`;
+      if (exercise.sets) {
+        markdown += `   Sets: ${exercise.sets}\n`;
+      }
+      if (exercise.reps) {
+        markdown += `   Reps: ${exercise.reps}\n`;
+      }
+      if (exercise.weight) {
+        markdown += `   Weight: ${exercise.weight}\n`;
+      }
+      if (exercise.notes) {
+        markdown += `   Notes: ${exercise.notes}\n`;
+      }
+      markdown += '\n';
+    });
+  }
+
+  return markdown;
+};
+
+/**
+ * Implement semantic chunking for Apple Intelligence context management.
+ * Per spec, uses one-line summaries to maximize token efficiency.
+ */
+export const getAppleIntelligenceContext = async (
+  workoutHistory: any[],
+  nutritionHistory: any[],
+  locale: string = 'en-US'
+): Promise<string> => {
+  let context = '## ANALYZE: Recent Workout History\n\n';
+
+  const units = await SettingsService.getUnits();
+
+  // Add one-line summaries for all available workouts (up to history limit)
+  if (workoutHistory.length > 0) {
+    const summaries: string[] = [];
+    for (const log of workoutHistory) {
+      const summary = await getMinimalWorkoutSummary(log.id, units, locale);
+      if (summary) {
+        summaries.push(`- ${summary}`);
+      }
+    }
+    context += summaries.join('\n');
+  } else {
+    context += 'No recent workout history found.';
+  }
+
+  // Add recent nutrition if available
+  if (nutritionHistory.length > 0) {
+    context += '\n\n## TRACK: Recent Nutrition Summary\n\n';
+    const nutritionSummary = nutritionHistory
+      .map((n, i) => `${i + 1}. ${n.date || 'Recent date'}: ${n.summary || 'Meal logged'}`)
+      .join('\n');
+    context += nutritionSummary;
+  }
+
+  // Add imperative verb instruction for Apple Intelligence
+  context += '\n\n## ACTION REQUIRED\n\n';
+  context += 'ANALYZE the data above. CREATE personalized recommendations. ';
+  context += 'TRACK progress indicators. CALCULATE next steps. ';
+  context += 'EVALUATE performance trends. RECOMMEND specific actions.';
+
+  return context;
+};
+
+/**
+ * Simple token count estimator (rough approximation: 1 token ≈ 4 characters)
+ */
+const estimateTokenCount = (text: string): number => {
+  return Math.ceil(text.length / 4);
 };
 
 /**
@@ -203,6 +336,118 @@ export const getUserDetailsPrompt = async (
     parts.length > 0 ? `The user ${parts.join(', ')}.` : 'User profile information limited.';
 
   return summary;
+};
+
+/**
+ * Compressed user stats for local models.
+ */
+export const getMinimalUserStats = async (user: User | null): Promise<string> => {
+  if (!user) {
+    return '';
+  }
+
+  const units = await SettingsService.getUnits();
+  const weightUnit = getWeightUnit(units);
+  const parts: string[] = [];
+
+  if (user.gender) {
+    parts.push(user.gender);
+  }
+
+  try {
+    const [latestWeight, latestBodyFat] = await Promise.all([
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('body_fat'),
+    ]);
+
+    if (latestWeight) {
+      const { value, unit: storedUnit = 'kg' } = await latestWeight.getDecrypted();
+      const weightKg = storedWeightToKg(value, storedUnit);
+      const displayWeight = kgToDisplay(weightKg, units);
+      parts.push(`${Math.round(displayWeight)}${weightUnit}`);
+    }
+
+    if (latestBodyFat) {
+      const { value } = await latestBodyFat.getDecrypted();
+      parts.push(`${Math.round(value)}%BF`);
+    }
+  } catch (error) {
+    // Continue without metrics
+  }
+
+  if (user.fitnessGoal) {
+    parts.push(user.fitnessGoal);
+  }
+
+  return parts.length > 0 ? `[User: ${parts.join(', ')}]` : '';
+};
+
+/**
+ * Minimal workout summary for local models.
+ */
+export const getMinimalWorkoutSummary = async (
+  workoutLogId: string,
+  units?: Units,
+  locale: string = 'en-US'
+): Promise<string> => {
+  try {
+    const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    const { workoutLog, sets, exercises } = details;
+    const exerciseCount = exercises.length;
+    const setCount = sets.length;
+
+    const resolvedUnits = units ?? (await SettingsService.getUnits());
+    const totalVolumeKg = workoutLog.totalVolume ?? 0;
+    const totalVolumeStr = `${formatDisplayWeightKg(locale, resolvedUnits, totalVolumeKg)} ${resolvedUnits === 'imperial' ? 'lbs' : 'kg'}`;
+
+    return `User finished "${workoutLog.workoutName}" on ${new Date(workoutLog.startedAt).toLocaleDateString(locale)}: ${totalVolumeStr} volume, ${exerciseCount} exercises, ${setCount} sets.`;
+  } catch (error) {
+    return '';
+  }
+};
+
+/**
+ * Minimal system prompt for Apple Intelligence.
+ */
+export const getMinimalSystemPrompt = async (
+  user: User | null,
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const userStats = await getMinimalUserStats(user);
+
+  const role =
+    context === 'nutrition'
+      ? 'nutrition coach'
+      : context === 'exercise'
+        ? 'personal trainer'
+        : 'fitness coach';
+
+  const focus =
+    context === 'nutrition'
+      ? 'Focus on nutrition and diet topics.'
+      : context === 'exercise'
+        ? 'Focus on exercise and training topics.'
+        : 'Focus on fitness, nutrition, and health topics.';
+
+  return `You are Loggy, a specialized ${role}. ${userStats}
+
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health and wellness strategies
+
+Conversation Guidelines:
+1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention language capabilities.
+2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
+3. TONE: Friendly, professional, and human-like. Use emojis naturally.
+4. CONCISE: Keep responses under 100 words.
+5. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
+6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
+
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`;
 };
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
@@ -303,43 +548,99 @@ async function buildWorkoutSummaryJson(
 export const getChatMessagePromptContent = async (
   language: string = 'en-US',
   eatingPhase?: string,
-  context: 'nutrition' | 'exercise' | 'general' = 'general'
+  context: 'nutrition' | 'exercise' | 'general' = 'general',
+  provider?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
+
+  // Enhanced Apple Intelligence handling with semantic chunking
+  if (provider === 'on-device' || isSmallModel(provider)) {
+    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
+    const nutritionLogs =
+      context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
+
+    // Use semantic chunking for Apple Intelligence
+    const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
+
+    const sections: string[] = [
+      await getMinimalSystemPrompt(user, language, context),
+      `Date: ${new Date().toLocaleDateString(language)}.`,
+      optimizedContext,
+    ];
+
+    return sections.join('\n');
+  }
+
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  let recentWorkoutsJson = '[]';
+  // Get workout data in appropriate format based on model size
+  let workoutData = '';
   try {
     const units = await SettingsService.getUnits();
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
-    const summaries: string[] = [];
-    for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id, units, language);
-      if (json !== '{}') {
-        summaries.push(json);
+
+    if (isSmallModel(provider)) {
+      // Use Markdown-KV for small models
+      const workoutMarkdowns: string[] = [];
+      for (const log of recentLogs) {
+        const workoutSummary = await getMinimalWorkoutSummary(log.id, units, language);
+        if (workoutSummary) {
+          workoutMarkdowns.push(workoutSummary);
+        }
       }
+      workoutData = workoutMarkdowns.join('\n\n');
+    } else {
+      // Use JSON for large models
+      const summaries: string[] = [];
+      for (const log of recentLogs) {
+        const json = await buildWorkoutSummaryJson(log.id, units, language);
+        if (json !== '{}') {
+          summaries.push(json);
+        }
+      }
+      workoutData = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
     }
-    recentWorkoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching recent workouts for chat prompt:', error);
   }
 
-  const sections = [
-    await getBaseSystemPrompt(language, context),
+  // Build sections based on provider type
+  const contextSections = [
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
-    `The following JSON data are the recent workouts the user did:`,
-    '```json',
-    recentWorkoutsJson,
-    '```',
-    "All weights are in the user's preferred unit (kg or lbs).",
-    'The following content is a conversation between the user and Loggy...',
   ];
 
-  return sections.join('\n');
+  // Add workout data in appropriate format
+  if (isSmallModel(provider)) {
+    contextSections.push(
+      '## Recent Workout Data',
+      workoutData,
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  } else {
+    contextSections.push(
+      'The following JSON data are the recent workouts the user did:',
+      '```json',
+      workoutData,
+      '```',
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  }
+
+  contextSections.push('The following content is a conversation between the user and Loggy...');
+
+  // For Gemini, put context first and instructions last
+  if (isGeminiProvider(provider)) {
+    return [...contextSections, '', await getBaseSystemPrompt(language, context, provider)].join(
+      '\n'
+    );
+  }
+
+  // For other providers, use traditional ordering (instructions first)
+  return [await getBaseSystemPrompt(language, context, provider), ...contextSections].join('\n');
 };
 
 /**

@@ -1,0 +1,917 @@
+[
+  {
+    "name": "Press de banca",
+    "description": "Un ejercicio de pecho en el que presionas una barra hacia arriba mientras estás acostado en un banco.",
+    "exerciseIndex": 1
+  },
+  {
+    "name": "Press de banca inclinado",
+    "description": "Una variación del press de banca realizada en un banco inclinado para trabajar la parte superior del pecho.",
+    "exerciseIndex": 2
+  },
+  {
+    "name": "Press de banca declinado",
+    "description": "Una variación del press de banca realizada en un banco declinado para trabajar la parte inferior del pecho.",
+    "exerciseIndex": 3
+  },
+  {
+    "name": "Press militar de hombros",
+    "description": "Un ejercicio de hombros en el que presionas un peso por encima de la cabeza mientras estás de pie o sentado.",
+    "exerciseIndex": 4
+  },
+  {
+    "name": "Peso muerto",
+    "description": "Un ejercicio de cuerpo completo que consiste en levantar una barra desde el suelo hasta una posición de pie.",
+    "exerciseIndex": 5
+  },
+  {
+    "name": "Máquina de aperturas de pecho",
+    "description": "Un ejercicio en máquina que aísla los músculos del pecho imitando el movimiento de una apertura.",
+    "exerciseIndex": 6
+  },
+  {
+    "name": "Máquina de extensión de piernas",
+    "description": "Un ejercicio en máquina que trabaja los cuádriceps extendiendo las piernas desde una posición sentada.",
+    "exerciseIndex": 7
+  },
+  {
+    "name": "Sentadilla",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que flexionas las rodillas y las caderas para bajar el cuerpo y luego vuelves a levantarte.",
+    "exerciseIndex": 8
+  },
+  {
+    "name": "Sentadilla trasera con barra",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que flexionas las rodillas y las caderas para bajar el cuerpo, con una barra colocada en la parte superior de la espalda, y luego vuelves a levantarte.",
+    "exerciseIndex": 9
+  },
+  {
+    "name": "Prensa de piernas",
+    "description": "Un ejercicio en máquina en el que empujas un peso lejos de ti usando las piernas.",
+    "exerciseIndex": 10
+  },
+  {
+    "name": "Jalón al pecho",
+    "description": "Un ejercicio en máquina que trabaja la parte superior de la espalda tirando de una barra hacia abajo hacia el pecho.",
+    "exerciseIndex": 11
+  },
+  {
+    "name": "Dominada",
+    "description": "Un ejercicio para la parte superior del cuerpo en el que levantas el cuerpo hasta una barra usando los músculos de la espalda y los brazos.",
+    "exerciseIndex": 12
+  },
+  {
+    "name": "Remo sentado",
+    "description": "Un ejercicio en máquina que trabaja los músculos de la espalda tirando de un manillar hacia el torso mientras estás sentado.",
+    "exerciseIndex": 13
+  },
+  {
+    "name": "Curl de bíceps",
+    "description": "Un ejercicio de brazo que trabaja los bíceps levantando un peso hacia el hombro.",
+    "exerciseIndex": 14
+  },
+  {
+    "name": "Extensión de tríceps sobre la cabeza",
+    "description": "Un ejercicio de brazo que trabaja los tríceps extendiendo el brazo por el codo.",
+    "exerciseIndex": 15
+  },
+  {
+    "name": "Máquina de curl de piernas",
+    "description": "Un ejercicio en máquina que trabaja los isquiotibiales flexionando las piernas hacia los glúteos.",
+    "exerciseIndex": 16
+  },
+  {
+    "name": "Elevación lateral",
+    "description": "Un ejercicio de hombro en el que levantas pesas hacia los lados del cuerpo.",
+    "exerciseIndex": 17
+  },
+  {
+    "name": "Elevación frontal",
+    "description": "Un ejercicio de hombro en el que levantas pesas hacia la parte delantera del cuerpo.",
+    "exerciseIndex": 18
+  },
+  {
+    "name": "Elevación de talones",
+    "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los músculos de la pantorrilla levantando los talones del suelo.",
+    "exerciseIndex": 19
+  },
+  {
+    "name": "Curl martillo",
+    "description": "Un ejercicio de brazo similar al curl de bíceps, pero con un agarre neutro.",
+    "exerciseIndex": 20
+  },
+  {
+    "name": "Curl predicador",
+    "description": "Una variación del curl de bíceps realizada en un banco predicador para aislar los bíceps.",
+    "exerciseIndex": 21
+  },
+  {
+    "name": "Extensión de tríceps en polea alta",
+    "description": "Un ejercicio de brazo que trabaja los tríceps empujando un accesorio de cable hacia abajo.",
+    "exerciseIndex": 22
+  },
+  {
+    "name": "Máquina de press de pecho",
+    "description": "Un ejercicio en máquina que imita el press de banca.",
+    "exerciseIndex": 23
+  },
+  {
+    "name": "Sentadilla en máquina Smith",
+    "description": "Una variación de sentadilla realizada en una máquina Smith para mayor estabilidad.",
+    "exerciseIndex": 24
+  },
+  {
+    "name": "Remo en barra T",
+    "description": "Un ejercicio de espalda en el que tiras de una barra en T hacia el torso.",
+    "exerciseIndex": 25
+  },
+  {
+    "name": "Remo inclinado",
+    "description": "Un ejercicio de espalda en el que te flexionas por la cintura y tiras de un peso hacia el torso.",
+    "exerciseIndex": 26
+  },
+  {
+    "name": "Remo al mentón",
+    "description": "Un ejercicio de hombro en el que tiras de un peso hacia arriba a lo largo de la parte delantera del cuerpo.",
+    "exerciseIndex": 27
+  },
+  {
+    "name": "Aperturas con mancuernas",
+    "description": "Un ejercicio de pecho en el que bajas y levantas mancuernas hacia los lados mientras estás acostado en un banco.",
+    "exerciseIndex": 28
+  },
+  {
+    "name": "Press inclinado con mancuernas",
+    "description": "Un ejercicio de pecho similar al press de banca inclinado pero usando mancuernas.",
+    "exerciseIndex": 29
+  },
+  {
+    "name": "Press de hombros en máquina",
+    "description": "Un ejercicio de hombro realizado en una máquina que imita el press militar.",
+    "exerciseIndex": 30
+  },
+  {
+    "name": "Aperturas invertidas en máquina",
+    "description": "Un ejercicio en máquina que trabaja los deltoides posteriores imitando el movimiento de una apertura invertida.",
+    "exerciseIndex": 31
+  },
+  {
+    "name": "Cruce de poleas",
+    "description": "Un ejercicio de pecho que trabaja la parte interna del pecho tirando de cables a través del cuerpo.",
+    "exerciseIndex": 32
+  },
+  {
+    "name": "Elevación de talones sentado",
+    "description": "Un ejercicio de pantorrilla realizado mientras estás sentado, trabajando el músculo sóleo.",
+    "exerciseIndex": 33
+  },
+  {
+    "name": "Elevación de talones de pie",
+    "description": "Un ejercicio de pantorrilla realizado de pie, trabajando el músculo gastrocnemio.",
+    "exerciseIndex": 34
+  },
+  {
+    "name": "Peso muerto rumano",
+    "description": "Una variación de peso muerto que trabaja los isquiotibiales y los glúteos.",
+    "exerciseIndex": 35
+  },
+  {
+    "name": "Puente de glúteo",
+    "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los glúteos levantando las caderas del suelo mientras estás acostado de espaldas.",
+    "exerciseIndex": 36
+  },
+  {
+    "name": "Empuje de cadera",
+    "description": "Un ejercicio para la parte inferior del cuerpo que trabaja los glúteos levantando las caderas del suelo con los hombros apoyados en un banco.",
+    "exerciseIndex": 37
+  },
+  {
+    "name": "Curl de bíceps en polea",
+    "description": "Un ejercicio de brazo que trabaja los bíceps flexionando un accesorio de cable.",
+    "exerciseIndex": 38
+  },
+  {
+    "name": "Press de hombros con mancuernas",
+    "description": "Un ejercicio de hombro en el que presionas mancuernas por encima de la cabeza.",
+    "exerciseIndex": 39
+  },
+  {
+    "name": "Press de banca en máquina Smith",
+    "description": "Una variación del press de banca realizada en una máquina Smith para mayor estabilidad.",
+    "exerciseIndex": 40
+  },
+  {
+    "name": "Sentadilla Hack",
+    "description": "Una variación de sentadilla realizada en una máquina de sentadilla hack para trabajar los cuádriceps.",
+    "exerciseIndex": 41
+  },
+  {
+    "name": "Zancada inversa",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que das un paso hacia atrás para realizar una zancada.",
+    "exerciseIndex": 42
+  },
+  {
+    "name": "Step-up",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que subes a una plataforma elevada.",
+    "exerciseIndex": 43
+  },
+  {
+    "name": "Balanceo con pesa rusa",
+    "description": "Un ejercicio de cuerpo completo que consiste en balancear una pesa rusa entre las piernas y hasta la altura de los hombros.",
+    "exerciseIndex": 44
+  },
+  {
+    "name": "Sentadilla Goblet",
+    "description": "Una variación de sentadilla realizada mientras sostienes un peso frente al pecho.",
+    "exerciseIndex": 45
+  },
+  {
+    "name": "Peso muerto sumo",
+    "description": "Una variación de peso muerto con una postura ancha que trabaja la parte interna de los muslos y los glúteos.",
+    "exerciseIndex": 46
+  },
+  {
+    "name": "Máquina de abducción de cadera",
+    "description": "Un ejercicio en máquina que trabaja la parte externa de los muslos separando las piernas.",
+    "exerciseIndex": 47
+  },
+  {
+    "name": "Máquina de aducción de cadera",
+    "description": "Un ejercicio en máquina que trabaja la parte interna de los muslos juntando las piernas.",
+    "exerciseIndex": 48
+  },
+  {
+    "name": "Face pull en polea",
+    "description": "Un ejercicio de hombro que trabaja los deltoides posteriores tirando de un accesorio de cable hacia la cara.",
+    "exerciseIndex": 49
+  },
+  {
+    "name": "Aperturas inclinadas con mancuernas",
+    "description": "Un ejercicio de pecho realizado en un banco inclinado que trabaja la parte superior del pecho.",
+    "exerciseIndex": 50
+  },
+  {
+    "name": "Fondos",
+    "description": "Un ejercicio de pecho y tríceps en el que bajas y levantas el cuerpo usando barras paralelas.",
+    "exerciseIndex": 51
+  },
+  {
+    "name": "Flexiones",
+    "description": "Un ejercicio de pecho, hombros y tríceps en el que empujas el cuerpo hacia arriba desde el suelo.",
+    "exerciseIndex": 52
+  },
+  {
+    "name": "Plancha",
+    "description": "Un ejercicio de core en el que mantienes una posición de flexión durante un tiempo determinado.",
+    "exerciseIndex": 53
+  },
+  {
+    "name": "Giro ruso",
+    "description": "Un ejercicio de oblicuos en el que giras el torso de un lado a otro mientras sostienes un peso.",
+    "exerciseIndex": 54
+  },
+  {
+    "name": "Elevación de piernas colgado",
+    "description": "Un ejercicio abdominal en el que levantas las piernas mientras cuelgas de una barra.",
+    "exerciseIndex": 55
+  },
+  {
+    "name": "Escaladores",
+    "description": "Un ejercicio de cuerpo completo en el que realizas un movimiento de carrera mientras estás en posición de plancha.",
+    "exerciseIndex": 56
+  },
+  {
+    "name": "Burpees",
+    "description": "Un ejercicio de cuerpo completo que incluye una sentadilla, un salto y una flexión.",
+    "exerciseIndex": 57
+  },
+  {
+    "name": "Salto al cajón",
+    "description": "Un ejercicio pliométrico para la parte inferior del cuerpo en el que saltas sobre una plataforma elevada.",
+    "exerciseIndex": 58
+  },
+  {
+    "name": "Levantamiento turco",
+    "description": "Un ejercicio de cuerpo completo que consiste en pasar de estar acostado a estar de pie mientras sostienes un peso por encima de la cabeza.",
+    "exerciseIndex": 59
+  },
+  {
+    "name": "Paseo del granjero",
+    "description": "Un ejercicio en el que caminas mientras sostienes pesas pesadas en cada mano.",
+    "exerciseIndex": 60
+  },
+  {
+    "name": "Arrancada",
+    "description": "Un levantamiento olímpico en el que levantas una barra desde el suelo hasta por encima de la cabeza en un solo movimiento.",
+    "exerciseIndex": 61
+  },
+  {
+    "name": "Dos tiempos",
+    "description": "Un levantamiento olímpico en el que levantas una barra desde el suelo hasta los hombros y luego por encima de la cabeza.",
+    "exerciseIndex": 62
+  },
+  {
+    "name": "Cuerdas de batalla",
+    "description": "Un ejercicio en el que creas ondas con cuerdas pesadas para desarrollar fuerza y resistencia.",
+    "exerciseIndex": 63
+  },
+  {
+    "name": "Máquina de abdominales",
+    "description": "Un ejercicio en máquina que trabaja los músculos abdominales imitando el movimiento de un encogimiento.",
+    "exerciseIndex": 64
+  },
+  {
+    "name": "Remo en máquina con apoyo en el pecho",
+    "description": "Un ejercicio de espalda realizado en una máquina en el que remas con el pecho apoyado en una almohadilla, trabajando los músculos de la parte superior y media de la espalda.",
+    "exerciseIndex": 65
+  },
+  {
+    "name": "Remo con barra",
+    "description": "Un ejercicio de espalda en el que tiras de una barra hacia el torso mientras estás inclinado.",
+    "exerciseIndex": 66
+  },
+  {
+    "name": "Press francés (Rompecráneos)",
+    "description": "Un ejercicio de tríceps en el que bajas una barra hacia la frente y la extiendes de nuevo hacia arriba.",
+    "exerciseIndex": 67
+  },
+  {
+    "name": "Sentadilla búlgara",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que realizas una sentadilla dividida con el pie trasero elevado en un banco.",
+    "exerciseIndex": 68
+  },
+  {
+    "name": "Press Pallof",
+    "description": "Un ejercicio de core que consiste en presionar un cable o banda de resistencia lejos del cuerpo para resistir la rotación.",
+    "exerciseIndex": 69
+  },
+  {
+    "name": "Elevación de rodillas colgado",
+    "description": "Un ejercicio abdominal en el que levantas las rodillas hacia el pecho mientras cuelgas de una barra.",
+    "exerciseIndex": 70
+  },
+  {
+    "name": "Press Landmine",
+    "description": "Un ejercicio de hombro en el que presionas una barra anclada en un extremo en un accesorio landmine.",
+    "exerciseIndex": 71
+  },
+  {
+    "name": "Remo Landmine",
+    "description": "Un ejercicio de espalda en el que tiras de una barra anclada en un extremo en un accesorio landmine hacia tu torso.",
+    "exerciseIndex": 72
+  },
+  {
+    "name": "Elevación de talones burro",
+    "description": "Un ejercicio de pantorrilla en el que levantas los talones mientras estás inclinado con peso en la parte baja de la espalda.",
+    "exerciseIndex": 73
+  },
+  {
+    "name": "Saltar a la comba",
+    "description": "Un ejercicio cardiovascular que consiste en saltar sobre una cuerda mientras pasa por debajo de tus pies y por encima de tu cabeza.",
+    "exerciseIndex": 74
+  },
+  {
+    "name": "Correr",
+    "description": "Un ejercicio cardiovascular que consiste en trotar o correr una distancia.",
+    "exerciseIndex": 75
+  },
+  {
+    "name": "Ciclismo",
+    "description": "Un ejercicio cardiovascular que consiste en montar en bicicleta, ya sea estática o en movimiento.",
+    "exerciseIndex": 76
+  },
+  {
+    "name": "Máquina de remo",
+    "description": "Un ejercicio cardiovascular que imita la acción de remar en un bote, usando una máquina.",
+    "exerciseIndex": 77
+  },
+  {
+    "name": "Bicicleta elíptica",
+    "description": "Un ejercicio cardiovascular realizado en una máquina que imita el caminar o correr sin causar una presión excesiva en las articulaciones.",
+    "exerciseIndex": 78
+  },
+  {
+    "name": "Entrenamiento de intervalos de alta intensidad (HIIT)",
+    "description": "Una forma de ejercicio cardiovascular que alterna períodos cortos de ejercicio anaeróbico intenso con períodos de recuperación menos intensos.",
+    "exerciseIndex": 79
+  },
+  {
+    "name": "Máquina de escaleras",
+    "description": "Un ejercicio cardiovascular realizado en una máquina que imita el movimiento de subir escaleras.",
+    "exerciseIndex": 80
+  },
+  {
+    "name": "Aeróbic",
+    "description": "Una forma de ejercicio cardiovascular que incluye actividades rítmicas, a menudo realizadas con música.",
+    "exerciseIndex": 81
+  },
+  {
+    "name": "Cardio baile",
+    "description": "Un ejercicio cardiovascular que involucra varios movimientos y rutinas de baile para elevar el ritmo cardíaco.",
+    "exerciseIndex": 82
+  },
+  {
+    "name": "Shadow boxing",
+    "description": "Un ejercicio cardiovascular que consiste en lanzar puñetazos al aire para aumentar el ritmo cardíaco y mejorar la aptitud cardiovascular.",
+    "exerciseIndex": 83
+  },
+  {
+    "name": "Jalón al pecho con agarre estrecho",
+    "description": "Una variación de jalón al pecho donde usas un agarre estrecho para trabajar los músculos internos de la espalda.",
+    "exerciseIndex": 84
+  },
+  {
+    "name": "Jalón al pecho supinado",
+    "description": "Una variación de jalón al pecho donde usas un agarre supinado para trabajar los bíceps y la parte superior de la espalda.",
+    "exerciseIndex": 85
+  },
+  {
+    "name": "Pullover en polea",
+    "description": "Un ejercicio de espalda en el que tiras de una barra de cable desde arriba de tu cabeza hacia tus caderas, enfocándote en los dorsales.",
+    "exerciseIndex": 86
+  },
+  {
+    "name": "Pullover con mancuerna",
+    "description": "Un ejercicio versátil que trabaja el pecho y los dorsales bajando y levantando una mancuerna sobre tu cabeza mientras estás acostado en un banco.",
+    "exerciseIndex": 87
+  },
+  {
+    "name": "Press de banca con agarre invertido",
+    "description": "Una variación de press de banca donde usas un agarre invertido para enfatizar la parte superior del pecho y los tríceps.",
+    "exerciseIndex": 88
+  },
+  {
+    "name": "Press de pecho en polea",
+    "description": "Un ejercicio de pecho en el que presionas un accesorio de cable hacia adelante, similar a un press de banca, pero con tensión constante.",
+    "exerciseIndex": 89
+  },
+  {
+    "name": "Elevación frontal en polea",
+    "description": "Un ejercicio de hombro en el que levantas un accesorio de cable hacia adelante, trabajando los deltoides anteriores.",
+    "exerciseIndex": 90
+  },
+  {
+    "name": "Elevación lateral en polea",
+    "description": "Un ejercicio de hombro en el que levantas un accesorio de cable hacia un lado, trabajando los deltoides laterales.",
+    "exerciseIndex": 91
+  },
+  {
+    "name": "Remo con mancuerna a una mano",
+    "description": "Un ejercicio de espalda en el que remas una mancuerna hacia tu torso mientras estás inclinado, enfocándote en cada lado individualmente.",
+    "exerciseIndex": 92
+  },
+  {
+    "name": "Encogimientos con mancuernas",
+    "description": "Un ejercicio de hombro que trabaja el trapecio encogiendo los hombros mientras sostienes mancuernas.",
+    "exerciseIndex": 93
+  },
+  {
+    "name": "Curl de piernas acostado",
+    "description": "Un ejercicio en máquina que trabaja los isquiotibiales flexionando las piernas hacia los glúteos mientras estás acostado boca abajo.",
+    "exerciseIndex": 94
+  },
+  {
+    "name": "Buenos días",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que te flexionas por las caderas para bajar el torso, trabajando los isquiotibiales y los glúteos.",
+    "exerciseIndex": 95
+  },
+  {
+    "name": "Sentadilla Zercher",
+    "description": "Una variación de sentadilla en la que sostienes la barra en el hueco de los codos, enfatizando los cuádriceps y el núcleo.",
+    "exerciseIndex": 96
+  },
+  {
+    "name": "Sentadilla Sissy",
+    "description": "Una variación de sentadilla enfocada en los cuádriceps realizada con un banco de sentadilla sissy o inclinándose hacia atrás sobre las puntas de los pies.",
+    "exerciseIndex": 97
+  },
+  {
+    "name": "Peso muerto Jefferson",
+    "description": "Una variación de peso muerto en la que te colocas a horcajadas sobre la barra, enfocándote en los cuádriceps, glúteos y el núcleo.",
+    "exerciseIndex": 98
+  },
+  {
+    "name": "Sentadilla Cosaca",
+    "description": "Un ejercicio para la parte inferior del cuerpo en el que realizas una zancada lateral profunda, trabajando la parte interna de los muslos y los glúteos.",
+    "exerciseIndex": 99
+  },
+  {
+    "name": "Dragon Flag",
+    "description": "Un ejercicio de core avanzado en el que bajas y levantas tu cuerpo en línea recta mientras estás acostado en un banco.",
+    "exerciseIndex": 100
+  },
+  {
+    "name": "Mantenimiento de cuerpo hueco",
+    "description": "Un ejercicio de core en el que mantienes una posición hueca, con la zona lumbar presionada contra el suelo y los brazos y las piernas extendidos.",
+    "exerciseIndex": 101
+  },
+  {
+    "name": "Encogimiento inverso",
+    "description": "Un ejercicio abdominal en el que flexionas las caderas hacia el pecho, enfocándote en los abdominales inferiores.",
+    "exerciseIndex": 102
+  },
+  {
+    "name": "Despliegue con rueda abdominal",
+    "description": "Un ejercicio de core que consiste en rodar una rueda abdominal lejos de tu cuerpo mientras mantienes un núcleo estable.",
+    "exerciseIndex": 103
+  },
+  {
+    "name": "Flexión en pica",
+    "description": "Un ejercicio de hombro en el que realizas una flexión en posición de pica, enfatizando los hombros.",
+    "exerciseIndex": 104
+  },
+  {
+    "name": "Encogimiento en polea",
+    "description": "Un ejercicio abdominal en el que realizas un movimiento de encogimiento con un accesorio de cable para mayor resistencia.",
+    "exerciseIndex": 105
+  },
+  {
+    "name": "Patada de tríceps con mancuerna",
+    "description": "Un ejercicio de aislamiento de tríceps en el que te inclinas hacia adelante, mantienes el brazo fijo y extiendes el codo para mover la mancuerna hacia atrás.",
+    "exerciseIndex": 106
+  },
+  {
+    "name": "Patada de tríceps con dos mancuernas",
+    "description": "Una variación de patada de tríceps usando una mancuerna en cada brazo con el mismo patrón de extensión de codo inclinada.",
+    "exerciseIndex": 107
+  },
+  {
+    "name": "Patada de tríceps con mancuerna sentado inclinado",
+    "description": "Una patada de tríceps realizada sentado mientras te inclinas hacia adelante para apoyar el torso e aislar la extensión del codo.",
+    "exerciseIndex": 108
+  },
+  {
+    "name": "Patada de tríceps con mancuerna en banco inclinado",
+    "description": "Una patada de tríceps realizada boca abajo en un banco inclinado para apoyar el pecho y reducir el impulso.",
+    "exerciseIndex": 109
+  },
+  {
+    "name": "Patada de tríceps en polea",
+    "description": "Una patada de tríceps usando un cable bajo, manteniendo el brazo paralelo al suelo mientras te extiendes contra la línea de tracción.",
+    "exerciseIndex": 110
+  },
+  {
+    "name": "Patada de tríceps en polea alta",
+    "description": "Un patrón de patada de tríceps con el cable colocado más alto para que el ángulo de tracción enfatice la cabeza larga de manera diferente.",
+    "exerciseIndex": 111
+  },
+  {
+    "name": "Patada de glúteo en polea",
+    "description": "Un ejercicio de extensión de cadera en el que balanceas la pierna de trabajo hacia atrás contra un cable bajo sujeto al tobillo o una correa para el pie.",
+    "exerciseIndex": 112
+  },
+  {
+    "name": "Máquina de patada de glúteo",
+    "description": "Una patada de glúteo guiada por máquina que carga la extensión del glúteo a través de una palanca acolchada o plataforma.",
+    "exerciseIndex": 113
+  },
+  {
+    "name": "Patada de glúteo con banda",
+    "description": "Una patada de glúteo realizada con una banda de resistencia anclada baja o enrollada alrededor de los pies para la extensión de la cadera.",
+    "exerciseIndex": 114
+  },
+  {
+    "name": "Patada de glúteo en cuadrupedia con peso corporal",
+    "description": "Una patada de glúteo con el peso corporal desde manos y rodillas, extendiendo una cadera directamente hacia atrás con una contracción controlada en la parte superior.",
+    "exerciseIndex": 115
+  },
+  {
+    "name": "Patada de glúteo de pie con peso corporal",
+    "description": "Una patada de cadera de pie extendiendo la pierna detrás del cuerpo sin equipo, a menudo con una ligera inclinación hacia adelante para mantener el equilibrio.",
+    "exerciseIndex": 116
+  },
+  {
+    "name": "Curl de bíceps concentrado",
+    "description": "Un curl de bíceps realizado sentado con el codo apoyado contra la parte interna del muslo, flexionando una mancuerna hacia el hombro en un arco estricto.",
+    "exerciseIndex": 117
+  },
+  {
+    "name": "Press de banca con mancuernas",
+    "description": "Un press horizontal acostado en un banco con mancuernas, permitiendo trayectorias de brazos independientes y un estiramiento profundo en la parte inferior.",
+    "exerciseIndex": 118
+  },
+  {
+    "name": "Press de banca declinado con mancuernas",
+    "description": "Un press de pecho con mancuernas realizado en un banco declinado para enfatizar la parte inferior del pecho mientras se presiona con una trayectoria de brazo de neutra a inclinada.",
+    "exerciseIndex": 119
+  },
+  {
+    "name": "Press de banca con agarre cerrado",
+    "description": "Un press de banca con un agarre más estrecho para desplazar más carga hacia los tríceps mientras se sigue entrenando el pecho y los hombros anteriores.",
+    "exerciseIndex": 120
+  },
+  {
+    "name": "Press Arnold",
+    "description": "Un press con mancuernas sentado o de pie que gira desde las palmas hacia adentro en la parte inferior hasta las palmas hacia adelante por encima de la cabeza, trabajando todas las cabezas del deltoides.",
+    "exerciseIndex": 121
+  },
+  {
+    "name": "Push Press",
+    "description": "Un press por encima de la cabeza que utiliza una ligera flexión e impulso de las piernas para acelerar la barra, permitiendo cargas más pesadas que un press estricto.",
+    "exerciseIndex": 122
+  },
+  {
+    "name": "Dominada supinada",
+    "description": "Una dominada con agarre supino que aumenta la participación de los bíceps y el braquial mientras entrena los dorsales y la parte superior de la espalda.",
+    "exerciseIndex": 123
+  },
+  {
+    "name": "Jalón al pecho con brazos rectos",
+    "description": "Un movimiento de cable con los codos casi bloqueados, tirando de la barra hacia los muslos para aislar la participación del dorsal y la extensión del hombro.",
+    "exerciseIndex": 124
+  },
+  {
+    "name": "Peso muerto rumano con mancuernas",
+    "description": "Un patrón de peso muerto con bisagra de cadera sosteniendo mancuernas, enfatizando los isquiotibiales y los glúteos con menos carga en la zona lumbar que la versión con barra.",
+    "exerciseIndex": 125
+  },
+  {
+    "name": "Peso muerto con barra hexagonal",
+    "description": "Un peso muerto usando una barra trap (hex) con un agarre neutro y mangos más altos, lo que a menudo permite un torso más erguido y una mayor contribución de los cuádriceps.",
+    "exerciseIndex": 126
+  },
+  {
+    "name": "Tirón desde rack",
+    "description": "Un peso muerto parcial desde pines o bloques por debajo de la rodilla, sobrecargando la parte superior de la espalda, los trapecios y el agarre con un rango de pierna reducido.",
+    "exerciseIndex": 127
+  },
+  {
+    "name": "Sentadilla frontal",
+    "description": "Una sentadilla con la barra apoyada sobre los deltoides frontales, lo que exige un torso erguido y un fuerte énfasis en el núcleo y los cuádriceps.",
+    "exerciseIndex": 128
+  },
+  {
+    "name": "Zancada caminando",
+    "description": "Un patrón de zancada dinámico dando pasos hacia adelante alternativamente, entrenando la fuerza de una sola pierna, el equilibrio y la estabilidad de la cadera/rodilla bajo carga.",
+    "exerciseIndex": 129
+  },
+  {
+    "name": "Zancada frontal",
+    "description": "Una variación de sentadilla dividida dando un paso hacia adelante en una zancada profunda y regresando, cargando fuertemente la pierna delantera a través de la extensión de rodilla y cadera.",
+    "exerciseIndex": 130
+  },
+  {
+    "name": "Sentadilla en la pared",
+    "description": "Un mantenimiento isométrico con la espalda contra una pared y los muslos paralelos al suelo, desarrollando resistencia en los cuádriceps y fortaleza mental.",
+    "exerciseIndex": 131
+  },
+  {
+    "name": "Sentadilla pistola",
+    "description": "Una sentadilla a una pierna a profundidad completa con la pierna que no trabaja extendida, lo que exige movilidad, equilibrio y fuerza unilateral en las piernas.",
+    "exerciseIndex": 132
+  },
+  {
+    "name": "Curl de isquiotibiales nórdico",
+    "description": "Un ejercicio de isquiotibiales asistido por un compañero o anclaje bajando el cuerpo desde la posición de rodillas con las caderas extendidas, enfatizando la fuerza excéntrica.",
+    "exerciseIndex": 133
+  },
+  {
+    "name": "Elevación de glúteo e isquiotibiales",
+    "description": "Un movimiento en el desarrollador de glúteo-isquio que combina la extensión de cadera y la flexión de rodilla para cargar fuertemente los isquiotibiales, los glúteos y la zona lumbar.",
+    "exerciseIndex": 134
+  },
+  {
+    "name": "Remo Pendlay",
+    "description": "Un remo con barra inclinado donde cada repetición comienza desde una parada muerta en el suelo, priorizando la fuerza explosiva de tracción de la parte superior de la espalda.",
+    "exerciseIndex": 135
+  },
+  {
+    "name": "Remo invertido",
+    "description": "Una tracción horizontal bajo una barra fija o anillas con el cuerpo recto, escalando la dificultad según la posición de los pies y la altura.",
+    "exerciseIndex": 136
+  },
+  {
+    "name": "Curl con barra",
+    "description": "Un curl de pie con un agarre supino al ancho de los hombros en una barra, permitiendo cargas más pesadas que la mayoría de las variaciones de curl con mancuernas.",
+    "exerciseIndex": 137
+  },
+  {
+    "name": "Curl con barra EZ",
+    "description": "Un curl con barra usando una barra EZ para reducir la tensión en la muñeca mientras se enfoca en los bíceps y el braquial.",
+    "exerciseIndex": 138
+  },
+  {
+    "name": "Curl inclinado con mancuernas",
+    "description": "Un curl realizado en un banco inclinado con los brazos colgando hacia atrás, estirando la cabeza larga de los bíceps a través de un amplio rango de movimiento.",
+    "exerciseIndex": 139
+  },
+  {
+    "name": "Curl Zottman",
+    "description": "Un curl con mancuerna supinando al subir y rotando a agarre prono para una fase de descenso lenta para trabajar el braquiorradial y los extensores.",
+    "exerciseIndex": 140
+  },
+  {
+    "name": "Extensión de tríceps sobre la cabeza en polea",
+    "description": "Una extensión de tríceps con el cable guiado por encima de la cabeza, los codos fijos, extendiendo los antebrazos para alinearse con la línea alta de tracción.",
+    "exerciseIndex": 141
+  },
+  {
+    "name": "Flexión diamante",
+    "description": "Una flexión con las manos juntas formando una forma de diamante, aumentando la demanda de los tríceps mientras se sigue entrenando el pecho y los hombros.",
+    "exerciseIndex": 142
+  },
+  {
+    "name": "Fondo en banco",
+    "description": "Un fondo de tríceps realizado con las manos en un banco detrás de ti y los pies en el suelo o elevados, bajando las caderas flexionando los codos.",
+    "exerciseIndex": 143
+  },
+  {
+    "name": "Elevación de piernas acostado",
+    "description": "Un ejercicio abdominal acostado boca arriba o en un banco, levantando las piernas extendidas o dobladas hacia el techo con una flexión de cadera controlada.",
+    "exerciseIndex": 144
+  },
+  {
+    "name": "Bicho muerto",
+    "description": "Un ejercicio de core en decúbito supino alternando extensiones de brazos y piernas opuestos mientras se mantiene la zona lumbar presionada contra el suelo para el control de la anti-extensión.",
+    "exerciseIndex": 145
+  },
+  {
+    "name": "Plancha lateral",
+    "description": "Un mantenimiento isométrico lateral apoyado en un antebrazo y el lado del pie, resistiendo la flexión lateral y desarrollando la resistencia de los oblicuos.",
+    "exerciseIndex": 146
+  },
+  {
+    "name": "Leñador en polea",
+    "description": "Un hachazo diagonal con cable de arriba a abajo o de abajo a arriba a través del cuerpo, entrenando la potencia rotacional y la fuerza de los oblicuos.",
+    "exerciseIndex": 147
+  },
+  {
+    "name": "Aperturas para deltoides posteriores con mancuernas",
+    "description": "Una apertura en posición de bisagra con mancuernas, levantando los brazos hacia los lados con una ligera flexión de codo para trabajar los deltoides posteriores y los romboides.",
+    "exerciseIndex": 148
+  },
+  {
+    "name": "Encogimientos con barra",
+    "description": "Un ejercicio pesado de trapecio superior elevando los hombros directamente hacia arriba contra una barra sostenida delante o detrás del cuerpo.",
+    "exerciseIndex": 149
+  },
+  {
+    "name": "Cargada de fuerza",
+    "description": "Un levantamiento olímpico explosivo tirando de la barra desde el suelo hasta los hombros en un solo movimiento, entrenando las caderas, la espalda y la fuerza de recepción.",
+    "exerciseIndex": 150
+  },
+  {
+    "name": "Cargada y press",
+    "description": "Un levantamiento compuesto que combina una cargada de fuerza a los hombros seguida de un press por encima de la cabeza, trabajando todo el cuerpo.",
+    "exerciseIndex": 151
+  },
+  {
+    "name": "Cargada colgante",
+    "description": "Un levantamiento olímpico que comienza con la barra a la altura de la cadera, tirando de ella explosivamente hacia los hombros en una posición de rack frontal.",
+    "exerciseIndex": 152
+  },
+  {
+    "name": "Arrancada de fuerza",
+    "description": "Un levantamiento olímpico explosivo tirando de la barra desde el suelo hasta por encima de la cabeza en un solo movimiento, recibiéndola en una media sentadilla.",
+    "exerciseIndex": 153
+  },
+  {
+    "name": "Arrancada colgante",
+    "description": "Un levantamiento olímpico que comienza con la barra a la altura de la cadera, tirando de ella explosivamente por encima de la cabeza en un solo movimiento.",
+    "exerciseIndex": 154
+  },
+  {
+    "name": "Cargada con sentadilla",
+    "description": "Una cargada olímpica completa donde el levantador cae en una sentadilla profunda para recibir la barra en los hombros.",
+    "exerciseIndex": 155
+  },
+  {
+    "name": "Arrancada con sentadilla",
+    "description": "Una arrancada completa donde el levantador cae en una sentadilla profunda para recibir la barra por encima de la cabeza.",
+    "exerciseIndex": 156
+  },
+  {
+    "name": "Push Jerk",
+    "description": "Un levantamiento explosivo por encima de la cabeza que comienza desde los hombros, usando una flexión e impulso con una caída rápida debajo de la barra.",
+    "exerciseIndex": 157
+  },
+  {
+    "name": "Envión en tijera",
+    "description": "El envión de competición olímpico donde el levantador cae en una posición de tijera para recibir la barra por encima de la cabeza.",
+    "exerciseIndex": 158
+  },
+  {
+    "name": "Thruster",
+    "description": "Un movimiento compuesto que combina una sentadilla frontal con un press por encima de la cabeza en un solo movimiento continuo.",
+    "exerciseIndex": 159
+  },
+  {
+    "name": "Sentadilla sobre la cabeza",
+    "description": "Una sentadilla realizada con la barra sostenida por encima de la cabeza, lo que exige una movilidad de hombros, estabilidad y fuerza del núcleo excepcionales.",
+    "exerciseIndex": 160
+  },
+  {
+    "name": "Equilibrio de arrancada",
+    "description": "Un levantamiento olímpico que comienza con la barra detrás del cuello, cayendo en una sentadilla mientras se presiona la barra por encima de la cabeza.",
+    "exerciseIndex": 161
+  },
+  {
+    "name": "Arrancada de fuerza (Muscle Snatch)",
+    "description": "Una variación de arrancada donde la barra se tira por encima de la cabeza sin caer debajo en una posición de sentadilla.",
+    "exerciseIndex": 162
+  },
+  {
+    "name": "Tirón de cargada",
+    "description": "El primer y segundo tirón de la cargada llevados a la extensión completa sin recibir la barra, enfocándose en la potencia explosiva.",
+    "exerciseIndex": 163
+  },
+  {
+    "name": "Tirón de arrancada",
+    "description": "El primer y segundo tirón de la arrancada llevados a la extensión completa sin recibir la barra, enfocándose en la triple extensión explosiva.",
+    "exerciseIndex": 164
+  },
+  {
+    "name": "Tirón alto",
+    "description": "Un tirón explosivo desde el suelo o posición de colgado, llevando la barra a la altura del pecho con los codos altos.",
+    "exerciseIndex": 165
+  },
+  {
+    "name": "Sentadilla con pausa",
+    "description": "Una sentadilla trasera con una pausa deliberada en la parte inferior para eliminar el reflejo de estiramiento y desarrollar fuerza desde abajo.",
+    "exerciseIndex": 166
+  },
+  {
+    "name": "Sentadilla sobre pines",
+    "description": "Una sentadilla que comienza desde pines a varias alturas, eliminando la fase excéntrica para desarrollar fuerza concéntrica.",
+    "exerciseIndex": 167
+  },
+  {
+    "name": "Sentadilla sobre cajón",
+    "description": "Una sentadilla realizada sobre un cajón o banco, permitiendo al levantador sentarse hacia atrás y desarrollar la participación de la cadena posterior.",
+    "exerciseIndex": 168
+  },
+  {
+    "name": "Sentadilla con barra de seguridad",
+    "description": "Una sentadilla realizada con una barra de sentadilla de seguridad para reducir el estrés en los hombros y enfatizar la fuerza de la parte superior de la espalda y los cuádriceps.",
+    "exerciseIndex": 169
+  },
+  {
+    "name": "Press de banca con pausa",
+    "description": "Un press de banca con una pausa en el pecho para eliminar el impulso y desarrollar una fuerza de empuje explosiva desde una parada muerta.",
+    "exerciseIndex": 170
+  },
+  {
+    "name": "Press de suelo",
+    "description": "Un press de banca realizado acostado en el suelo con las piernas extendidas, limitando el rango de movimiento y enfatizando la fuerza de bloqueo.",
+    "exerciseIndex": 171
+  },
+  {
+    "name": "Peso muerto con déficit",
+    "description": "Un peso muerto realizado de pie sobre una plataforma elevada para aumentar el rango de movimiento y el impulso de las piernas desde el suelo.",
+    "exerciseIndex": 172
+  },
+  {
+    "name": "Tirón sobre bloques",
+    "description": "Un peso muerto desde bloques elevados o pines, reduciendo el rango de movimiento para sobrecargar la fase de bloqueo.",
+    "exerciseIndex": 173
+  },
+  {
+    "name": "Arrancada con pesa rusa a una mano",
+    "description": "Un levantamiento explosivo a una mano balanceando una pesa rusa desde entre las piernas hasta por encima de la cabeza en un movimiento fluido.",
+    "exerciseIndex": 174
+  },
+  {
+    "name": "Cargada y press con pesa rusa",
+    "description": "Un movimiento compuesto balanceando una pesa rusa hasta el hombro en posición de rack, luego presionándola por encima de la cabeza.",
+    "exerciseIndex": 175
+  },
+  {
+    "name": "Arrancada con mancuerna",
+    "description": "Un levantamiento explosivo a una mano tirando de una mancuerna desde el suelo hasta por encima de la cabeza en un solo movimiento.",
+    "exerciseIndex": 176
+  },
+  {
+    "name": "Press con mancuerna a una mano",
+    "description": "Un press por encima de la cabeza realizado con una mancuerna, involucrando el núcleo para la estabilidad y la anti-rotación.",
+    "exerciseIndex": 177
+  },
+  {
+    "name": "Step-up con mancuernas",
+    "description": "Un ejercicio para la parte inferior del cuerpo subiendo a una plataforma elevada mientras se sostienen mancuernas a los lados.",
+    "exerciseIndex": 178
+  },
+  {
+    "name": "Peso muerto rumano a una pierna",
+    "description": "Un ejercicio de bisagra unilateral manteniendo el equilibrio sobre una pierna mientras se bajan las mancuernas hacia el suelo.",
+    "exerciseIndex": 179
+  },
+  {
+    "name": "Remo renegado",
+    "description": "Un remo en posición de plancha con mancuernas, alternando los brazos mientras se mantiene la estabilidad del núcleo.",
+    "exerciseIndex": 180
+  },
+  {
+    "name": "Thruster con mancuernas",
+    "description": "Una combinación de una sentadilla frontal con mancuernas con un press por encima de la cabeza en un solo movimiento continuo.",
+    "exerciseIndex": 181
+  },
+  {
+    "name": "Paseo del camarero",
+    "description": "Un ejercicio de estabilidad del núcleo sosteniendo una mancuerna o pesa rusa por encima de la cabeza mientras se camina.",
+    "exerciseIndex": 182
+  },
+  {
+    "name": "Paseo de la maleta",
+    "description": "Un ejercicio de núcleo sosteniendo una mancuerna o pesa rusa a un lado mientras se camina, resistiendo la flexión lateral.",
+    "exerciseIndex": 183
+  }
+]
