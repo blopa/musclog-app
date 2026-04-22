@@ -235,6 +235,1274 @@ describe('calculateTDEE', () => {
 });
 
 // ---------------------------------------------------------------------------
+// High-volume scenario matrix: metric + imperial converted, empirical + non-empirical
+// ---------------------------------------------------------------------------
+
+describe('BMR/TDEE high-volume scenarios (metric vs imperial-converted)', () => {
+  type BmrExpectedScenario = {
+    gender: 'male' | 'female' | 'other';
+    age: number;
+    weightKg: number;
+    heightCm: number;
+    expectedBmr: number;
+  };
+
+  const BMR_EXPECTED_SCENARIOS: BmrExpectedScenario[] = [
+    { gender: 'male', age: 20, weightKg: 52, heightCm: 152, expectedBmr: 1375 },
+    { gender: 'male', age: 20, weightKg: 52, heightCm: 167, expectedBmr: 1469 },
+    { gender: 'male', age: 20, weightKg: 52, heightCm: 181, expectedBmr: 1556 },
+    { gender: 'male', age: 20, weightKg: 52, heightCm: 196, expectedBmr: 1650 },
+    { gender: 'male', age: 20, weightKg: 76, heightCm: 152, expectedBmr: 1615 },
+    { gender: 'male', age: 20, weightKg: 76, heightCm: 167, expectedBmr: 1709 },
+    { gender: 'male', age: 20, weightKg: 76, heightCm: 181, expectedBmr: 1796 },
+    { gender: 'male', age: 20, weightKg: 76, heightCm: 196, expectedBmr: 1890 },
+    { gender: 'male', age: 20, weightKg: 102, heightCm: 152, expectedBmr: 1875 },
+    { gender: 'male', age: 20, weightKg: 102, heightCm: 167, expectedBmr: 1969 },
+    { gender: 'male', age: 20, weightKg: 102, heightCm: 181, expectedBmr: 2056 },
+    { gender: 'male', age: 20, weightKg: 102, heightCm: 196, expectedBmr: 2150 },
+    { gender: 'male', age: 38, weightKg: 52, heightCm: 152, expectedBmr: 1285 },
+    { gender: 'male', age: 38, weightKg: 52, heightCm: 167, expectedBmr: 1379 },
+    { gender: 'male', age: 38, weightKg: 52, heightCm: 181, expectedBmr: 1466 },
+    { gender: 'male', age: 38, weightKg: 52, heightCm: 196, expectedBmr: 1560 },
+    { gender: 'male', age: 38, weightKg: 76, heightCm: 152, expectedBmr: 1525 },
+    { gender: 'male', age: 38, weightKg: 76, heightCm: 167, expectedBmr: 1619 },
+    { gender: 'male', age: 38, weightKg: 76, heightCm: 181, expectedBmr: 1706 },
+    { gender: 'male', age: 38, weightKg: 76, heightCm: 196, expectedBmr: 1800 },
+    { gender: 'male', age: 38, weightKg: 102, heightCm: 152, expectedBmr: 1785 },
+    { gender: 'male', age: 38, weightKg: 102, heightCm: 167, expectedBmr: 1879 },
+    { gender: 'male', age: 38, weightKg: 102, heightCm: 181, expectedBmr: 1966 },
+    { gender: 'male', age: 38, weightKg: 102, heightCm: 196, expectedBmr: 2060 },
+    { gender: 'male', age: 61, weightKg: 52, heightCm: 152, expectedBmr: 1170 },
+    { gender: 'male', age: 61, weightKg: 52, heightCm: 167, expectedBmr: 1264 },
+    { gender: 'male', age: 61, weightKg: 52, heightCm: 181, expectedBmr: 1351 },
+    { gender: 'male', age: 61, weightKg: 52, heightCm: 196, expectedBmr: 1445 },
+    { gender: 'male', age: 61, weightKg: 76, heightCm: 152, expectedBmr: 1410 },
+    { gender: 'male', age: 61, weightKg: 76, heightCm: 167, expectedBmr: 1504 },
+    { gender: 'male', age: 61, weightKg: 76, heightCm: 181, expectedBmr: 1591 },
+    { gender: 'male', age: 61, weightKg: 76, heightCm: 196, expectedBmr: 1685 },
+    { gender: 'male', age: 61, weightKg: 102, heightCm: 152, expectedBmr: 1670 },
+    { gender: 'male', age: 61, weightKg: 102, heightCm: 167, expectedBmr: 1764 },
+    { gender: 'male', age: 61, weightKg: 102, heightCm: 181, expectedBmr: 1851 },
+    { gender: 'male', age: 61, weightKg: 102, heightCm: 196, expectedBmr: 1945 },
+    { gender: 'female', age: 20, weightKg: 52, heightCm: 152, expectedBmr: 1209 },
+    { gender: 'female', age: 20, weightKg: 52, heightCm: 167, expectedBmr: 1303 },
+    { gender: 'female', age: 20, weightKg: 52, heightCm: 181, expectedBmr: 1390 },
+    { gender: 'female', age: 20, weightKg: 52, heightCm: 196, expectedBmr: 1484 },
+    { gender: 'female', age: 20, weightKg: 76, heightCm: 152, expectedBmr: 1449 },
+    { gender: 'female', age: 20, weightKg: 76, heightCm: 167, expectedBmr: 1543 },
+    { gender: 'female', age: 20, weightKg: 76, heightCm: 181, expectedBmr: 1630 },
+    { gender: 'female', age: 20, weightKg: 76, heightCm: 196, expectedBmr: 1724 },
+    { gender: 'female', age: 20, weightKg: 102, heightCm: 152, expectedBmr: 1709 },
+    { gender: 'female', age: 20, weightKg: 102, heightCm: 167, expectedBmr: 1803 },
+    { gender: 'female', age: 20, weightKg: 102, heightCm: 181, expectedBmr: 1890 },
+    { gender: 'female', age: 20, weightKg: 102, heightCm: 196, expectedBmr: 1984 },
+    { gender: 'female', age: 38, weightKg: 52, heightCm: 152, expectedBmr: 1119 },
+    { gender: 'female', age: 38, weightKg: 52, heightCm: 167, expectedBmr: 1213 },
+    { gender: 'female', age: 38, weightKg: 52, heightCm: 181, expectedBmr: 1300 },
+    { gender: 'female', age: 38, weightKg: 52, heightCm: 196, expectedBmr: 1394 },
+    { gender: 'female', age: 38, weightKg: 76, heightCm: 152, expectedBmr: 1359 },
+    { gender: 'female', age: 38, weightKg: 76, heightCm: 167, expectedBmr: 1453 },
+    { gender: 'female', age: 38, weightKg: 76, heightCm: 181, expectedBmr: 1540 },
+    { gender: 'female', age: 38, weightKg: 76, heightCm: 196, expectedBmr: 1634 },
+    { gender: 'female', age: 38, weightKg: 102, heightCm: 152, expectedBmr: 1619 },
+    { gender: 'female', age: 38, weightKg: 102, heightCm: 167, expectedBmr: 1713 },
+    { gender: 'female', age: 38, weightKg: 102, heightCm: 181, expectedBmr: 1800 },
+    { gender: 'female', age: 38, weightKg: 102, heightCm: 196, expectedBmr: 1894 },
+    { gender: 'female', age: 61, weightKg: 52, heightCm: 152, expectedBmr: 1004 },
+    { gender: 'female', age: 61, weightKg: 52, heightCm: 167, expectedBmr: 1098 },
+    { gender: 'female', age: 61, weightKg: 52, heightCm: 181, expectedBmr: 1185 },
+    { gender: 'female', age: 61, weightKg: 52, heightCm: 196, expectedBmr: 1279 },
+    { gender: 'female', age: 61, weightKg: 76, heightCm: 152, expectedBmr: 1244 },
+    { gender: 'female', age: 61, weightKg: 76, heightCm: 167, expectedBmr: 1338 },
+    { gender: 'female', age: 61, weightKg: 76, heightCm: 181, expectedBmr: 1425 },
+    { gender: 'female', age: 61, weightKg: 76, heightCm: 196, expectedBmr: 1519 },
+    { gender: 'female', age: 61, weightKg: 102, heightCm: 152, expectedBmr: 1504 },
+    { gender: 'female', age: 61, weightKg: 102, heightCm: 167, expectedBmr: 1598 },
+    { gender: 'female', age: 61, weightKg: 102, heightCm: 181, expectedBmr: 1685 },
+    { gender: 'female', age: 61, weightKg: 102, heightCm: 196, expectedBmr: 1779 },
+    { gender: 'other', age: 20, weightKg: 52, heightCm: 152, expectedBmr: 1292 },
+    { gender: 'other', age: 20, weightKg: 52, heightCm: 167, expectedBmr: 1386 },
+    { gender: 'other', age: 20, weightKg: 52, heightCm: 181, expectedBmr: 1473 },
+    { gender: 'other', age: 20, weightKg: 52, heightCm: 196, expectedBmr: 1567 },
+    { gender: 'other', age: 20, weightKg: 76, heightCm: 152, expectedBmr: 1532 },
+    { gender: 'other', age: 20, weightKg: 76, heightCm: 167, expectedBmr: 1626 },
+    { gender: 'other', age: 20, weightKg: 76, heightCm: 181, expectedBmr: 1713 },
+    { gender: 'other', age: 20, weightKg: 76, heightCm: 196, expectedBmr: 1807 },
+    { gender: 'other', age: 20, weightKg: 102, heightCm: 152, expectedBmr: 1792 },
+    { gender: 'other', age: 20, weightKg: 102, heightCm: 167, expectedBmr: 1886 },
+    { gender: 'other', age: 20, weightKg: 102, heightCm: 181, expectedBmr: 1973 },
+    { gender: 'other', age: 20, weightKg: 102, heightCm: 196, expectedBmr: 2067 },
+    { gender: 'other', age: 38, weightKg: 52, heightCm: 152, expectedBmr: 1202 },
+    { gender: 'other', age: 38, weightKg: 52, heightCm: 167, expectedBmr: 1296 },
+    { gender: 'other', age: 38, weightKg: 52, heightCm: 181, expectedBmr: 1383 },
+    { gender: 'other', age: 38, weightKg: 52, heightCm: 196, expectedBmr: 1477 },
+    { gender: 'other', age: 38, weightKg: 76, heightCm: 152, expectedBmr: 1442 },
+    { gender: 'other', age: 38, weightKg: 76, heightCm: 167, expectedBmr: 1536 },
+    { gender: 'other', age: 38, weightKg: 76, heightCm: 181, expectedBmr: 1623 },
+    { gender: 'other', age: 38, weightKg: 76, heightCm: 196, expectedBmr: 1717 },
+    { gender: 'other', age: 38, weightKg: 102, heightCm: 152, expectedBmr: 1702 },
+    { gender: 'other', age: 38, weightKg: 102, heightCm: 167, expectedBmr: 1796 },
+    { gender: 'other', age: 38, weightKg: 102, heightCm: 181, expectedBmr: 1883 },
+    { gender: 'other', age: 38, weightKg: 102, heightCm: 196, expectedBmr: 1977 },
+    { gender: 'other', age: 61, weightKg: 52, heightCm: 152, expectedBmr: 1087 },
+    { gender: 'other', age: 61, weightKg: 52, heightCm: 167, expectedBmr: 1181 },
+    { gender: 'other', age: 61, weightKg: 52, heightCm: 181, expectedBmr: 1268 },
+    { gender: 'other', age: 61, weightKg: 52, heightCm: 196, expectedBmr: 1362 },
+    { gender: 'other', age: 61, weightKg: 76, heightCm: 152, expectedBmr: 1327 },
+    { gender: 'other', age: 61, weightKg: 76, heightCm: 167, expectedBmr: 1421 },
+    { gender: 'other', age: 61, weightKg: 76, heightCm: 181, expectedBmr: 1508 },
+    { gender: 'other', age: 61, weightKg: 76, heightCm: 196, expectedBmr: 1602 },
+    { gender: 'other', age: 61, weightKg: 102, heightCm: 152, expectedBmr: 1587 },
+    { gender: 'other', age: 61, weightKg: 102, heightCm: 167, expectedBmr: 1681 },
+    { gender: 'other', age: 61, weightKg: 102, heightCm: 181, expectedBmr: 1768 },
+    { gender: 'other', age: 61, weightKg: 102, heightCm: 196, expectedBmr: 1862 },
+  ];
+
+  it('covers at least 100 hardcoded BMR scenarios', () => {
+    expect(BMR_EXPECTED_SCENARIOS.length).toBeGreaterThanOrEqual(100);
+  });
+
+  it.each(BMR_EXPECTED_SCENARIOS)(
+    'matches hardcoded BMR for $gender, age $age, $weightKg kg, $heightCm cm',
+    ({ gender, age, weightKg, heightCm, expectedBmr }) => {
+      expect(calculateBMR(gender, weightKg, heightCm, age)).toBe(expectedBmr);
+    }
+  );
+
+  it.each(BMR_EXPECTED_SCENARIOS)(
+    'imperial-converted BMR stays consistent for $gender, age $age, $weightKg kg, $heightCm cm',
+    ({ gender, age, weightKg, heightCm, expectedBmr }) => {
+      const weightLb = weightKg / 0.45359237;
+      const heightIn = heightCm / 2.54;
+      const convertedWeightKg = lbsToKg(weightLb);
+      const convertedHeightCm = inchesToCm(heightIn);
+
+      const metricBmr = calculateBMR(gender, weightKg, heightCm, age);
+      const convertedBmr = calculateBMR(gender, convertedWeightKg, convertedHeightCm, age);
+      expect(metricBmr).toBe(expectedBmr);
+      expect(Math.abs(convertedBmr - metricBmr)).toBeLessThanOrEqual(1);
+    }
+  );
+
+  type NonEmpiricalTdeeExpectedScenario = BmrExpectedScenario & {
+    activityLevel: 1 | 2 | 3 | 4 | 5;
+    expectedTdee: number;
+  };
+  const NON_EMPIRICAL_TDEE_EXPECTED_SCENARIOS: NonEmpiricalTdeeExpectedScenario[] = [
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1375,
+      activityLevel: 1,
+      expectedTdee: 1650,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1469,
+      activityLevel: 2,
+      expectedTdee: 2020,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1556,
+      activityLevel: 3,
+      expectedTdee: 2412,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1650,
+      activityLevel: 4,
+      expectedTdee: 2846,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1615,
+      activityLevel: 5,
+      expectedTdee: 3069,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1709,
+      activityLevel: 1,
+      expectedTdee: 2051,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1796,
+      activityLevel: 2,
+      expectedTdee: 2470,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1890,
+      activityLevel: 3,
+      expectedTdee: 2930,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1875,
+      activityLevel: 4,
+      expectedTdee: 3234,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1969,
+      activityLevel: 5,
+      expectedTdee: 3741,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 2056,
+      activityLevel: 1,
+      expectedTdee: 2467,
+    },
+    {
+      gender: 'male',
+      age: 20,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 2150,
+      activityLevel: 2,
+      expectedTdee: 2956,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1285,
+      activityLevel: 3,
+      expectedTdee: 1992,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1379,
+      activityLevel: 4,
+      expectedTdee: 2379,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1466,
+      activityLevel: 5,
+      expectedTdee: 2785,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1560,
+      activityLevel: 1,
+      expectedTdee: 1872,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1525,
+      activityLevel: 2,
+      expectedTdee: 2097,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1619,
+      activityLevel: 3,
+      expectedTdee: 2509,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1706,
+      activityLevel: 4,
+      expectedTdee: 2943,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1800,
+      activityLevel: 5,
+      expectedTdee: 3420,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1785,
+      activityLevel: 1,
+      expectedTdee: 2142,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1879,
+      activityLevel: 2,
+      expectedTdee: 2584,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1966,
+      activityLevel: 3,
+      expectedTdee: 3047,
+    },
+    {
+      gender: 'male',
+      age: 38,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 2060,
+      activityLevel: 4,
+      expectedTdee: 3554,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1170,
+      activityLevel: 5,
+      expectedTdee: 2223,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1264,
+      activityLevel: 1,
+      expectedTdee: 1517,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1351,
+      activityLevel: 2,
+      expectedTdee: 1858,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1445,
+      activityLevel: 3,
+      expectedTdee: 2240,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1410,
+      activityLevel: 4,
+      expectedTdee: 2432,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1504,
+      activityLevel: 5,
+      expectedTdee: 2858,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1591,
+      activityLevel: 1,
+      expectedTdee: 1909,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1685,
+      activityLevel: 2,
+      expectedTdee: 2317,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1670,
+      activityLevel: 3,
+      expectedTdee: 2589,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1764,
+      activityLevel: 4,
+      expectedTdee: 3043,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1851,
+      activityLevel: 5,
+      expectedTdee: 3517,
+    },
+    {
+      gender: 'male',
+      age: 61,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 1945,
+      activityLevel: 1,
+      expectedTdee: 2334,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1209,
+      activityLevel: 2,
+      expectedTdee: 1662,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1303,
+      activityLevel: 3,
+      expectedTdee: 2020,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1390,
+      activityLevel: 4,
+      expectedTdee: 2398,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1484,
+      activityLevel: 5,
+      expectedTdee: 2820,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1449,
+      activityLevel: 1,
+      expectedTdee: 1739,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1543,
+      activityLevel: 2,
+      expectedTdee: 2122,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1630,
+      activityLevel: 3,
+      expectedTdee: 2527,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1724,
+      activityLevel: 4,
+      expectedTdee: 2974,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1709,
+      activityLevel: 5,
+      expectedTdee: 3247,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1803,
+      activityLevel: 1,
+      expectedTdee: 2164,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1890,
+      activityLevel: 2,
+      expectedTdee: 2599,
+    },
+    {
+      gender: 'female',
+      age: 20,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 1984,
+      activityLevel: 3,
+      expectedTdee: 3075,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1119,
+      activityLevel: 4,
+      expectedTdee: 1930,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1213,
+      activityLevel: 5,
+      expectedTdee: 2305,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1300,
+      activityLevel: 1,
+      expectedTdee: 1560,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1394,
+      activityLevel: 2,
+      expectedTdee: 1917,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1359,
+      activityLevel: 3,
+      expectedTdee: 2106,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1453,
+      activityLevel: 4,
+      expectedTdee: 2506,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1540,
+      activityLevel: 5,
+      expectedTdee: 2926,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1634,
+      activityLevel: 1,
+      expectedTdee: 1961,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1619,
+      activityLevel: 2,
+      expectedTdee: 2226,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1713,
+      activityLevel: 3,
+      expectedTdee: 2655,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1800,
+      activityLevel: 4,
+      expectedTdee: 3105,
+    },
+    {
+      gender: 'female',
+      age: 38,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 1894,
+      activityLevel: 5,
+      expectedTdee: 3599,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1004,
+      activityLevel: 1,
+      expectedTdee: 1205,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1098,
+      activityLevel: 2,
+      expectedTdee: 1510,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1185,
+      activityLevel: 3,
+      expectedTdee: 1837,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1279,
+      activityLevel: 4,
+      expectedTdee: 2206,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1244,
+      activityLevel: 5,
+      expectedTdee: 2364,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1338,
+      activityLevel: 1,
+      expectedTdee: 1606,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1425,
+      activityLevel: 2,
+      expectedTdee: 1959,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1519,
+      activityLevel: 3,
+      expectedTdee: 2354,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1504,
+      activityLevel: 4,
+      expectedTdee: 2594,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1598,
+      activityLevel: 5,
+      expectedTdee: 3036,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1685,
+      activityLevel: 1,
+      expectedTdee: 2022,
+    },
+    {
+      gender: 'female',
+      age: 61,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 1779,
+      activityLevel: 2,
+      expectedTdee: 2446,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1292,
+      activityLevel: 3,
+      expectedTdee: 2003,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1386,
+      activityLevel: 4,
+      expectedTdee: 2391,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1473,
+      activityLevel: 5,
+      expectedTdee: 2799,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1567,
+      activityLevel: 1,
+      expectedTdee: 1880,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1532,
+      activityLevel: 2,
+      expectedTdee: 2107,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1626,
+      activityLevel: 3,
+      expectedTdee: 2520,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1713,
+      activityLevel: 4,
+      expectedTdee: 2955,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1807,
+      activityLevel: 5,
+      expectedTdee: 3433,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1792,
+      activityLevel: 1,
+      expectedTdee: 2150,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1886,
+      activityLevel: 2,
+      expectedTdee: 2593,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1973,
+      activityLevel: 3,
+      expectedTdee: 3058,
+    },
+    {
+      gender: 'other',
+      age: 20,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 2067,
+      activityLevel: 4,
+      expectedTdee: 3566,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1202,
+      activityLevel: 5,
+      expectedTdee: 2284,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1296,
+      activityLevel: 1,
+      expectedTdee: 1555,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1383,
+      activityLevel: 2,
+      expectedTdee: 1902,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1477,
+      activityLevel: 3,
+      expectedTdee: 2289,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 76,
+      heightCm: 152,
+      expectedBmr: 1442,
+      activityLevel: 4,
+      expectedTdee: 2487,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 76,
+      heightCm: 167,
+      expectedBmr: 1536,
+      activityLevel: 5,
+      expectedTdee: 2918,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 76,
+      heightCm: 181,
+      expectedBmr: 1623,
+      activityLevel: 1,
+      expectedTdee: 1948,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 76,
+      heightCm: 196,
+      expectedBmr: 1717,
+      activityLevel: 2,
+      expectedTdee: 2361,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 102,
+      heightCm: 152,
+      expectedBmr: 1702,
+      activityLevel: 3,
+      expectedTdee: 2638,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 102,
+      heightCm: 167,
+      expectedBmr: 1796,
+      activityLevel: 4,
+      expectedTdee: 3098,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 102,
+      heightCm: 181,
+      expectedBmr: 1883,
+      activityLevel: 5,
+      expectedTdee: 3578,
+    },
+    {
+      gender: 'other',
+      age: 38,
+      weightKg: 102,
+      heightCm: 196,
+      expectedBmr: 1977,
+      activityLevel: 1,
+      expectedTdee: 2372,
+    },
+    {
+      gender: 'other',
+      age: 61,
+      weightKg: 52,
+      heightCm: 152,
+      expectedBmr: 1087,
+      activityLevel: 2,
+      expectedTdee: 1495,
+    },
+    {
+      gender: 'other',
+      age: 61,
+      weightKg: 52,
+      heightCm: 167,
+      expectedBmr: 1181,
+      activityLevel: 3,
+      expectedTdee: 1831,
+    },
+    {
+      gender: 'other',
+      age: 61,
+      weightKg: 52,
+      heightCm: 181,
+      expectedBmr: 1268,
+      activityLevel: 4,
+      expectedTdee: 2187,
+    },
+    {
+      gender: 'other',
+      age: 61,
+      weightKg: 52,
+      heightCm: 196,
+      expectedBmr: 1362,
+      activityLevel: 5,
+      expectedTdee: 2588,
+    },
+  ];
+
+  it('covers at least 100 hardcoded non-empirical TDEE scenarios', () => {
+    expect(NON_EMPIRICAL_TDEE_EXPECTED_SCENARIOS.length).toBeGreaterThanOrEqual(100);
+  });
+
+  it.each(NON_EMPIRICAL_TDEE_EXPECTED_SCENARIOS)(
+    'non-empirical TDEE matches hardcoded expected for $gender age $age activity $activityLevel',
+    ({ gender, age, weightKg, heightCm, activityLevel, expectedBmr, expectedTdee }) => {
+      expect(calculateBMR(gender, weightKg, heightCm, age)).toBe(expectedBmr);
+      expect(calculateTDEE({ bmr: expectedBmr, activityLevel })).toBe(expectedTdee);
+    }
+  );
+
+  it.each(NON_EMPIRICAL_TDEE_EXPECTED_SCENARIOS)(
+    'non-empirical TDEE metric vs imperial-converted consistency for $gender age $age activity $activityLevel',
+    ({ gender, age, weightKg, heightCm, activityLevel, expectedTdee }) => {
+      const weightLb = weightKg / 0.45359237;
+      const heightIn = heightCm / 2.54;
+      const convertedWeightKg = lbsToKg(weightLb);
+      const convertedHeightCm = inchesToCm(heightIn);
+
+      const metricBmr = calculateBMR(gender, weightKg, heightCm, age);
+      const convertedBmr = calculateBMR(gender, convertedWeightKg, convertedHeightCm, age);
+
+      const metricTdee = calculateTDEE({ bmr: metricBmr, activityLevel });
+      const convertedTdee = calculateTDEE({ bmr: convertedBmr, activityLevel });
+      expect(metricTdee).toBe(expectedTdee);
+      expect(Math.abs(convertedTdee - metricTdee)).toBeLessThanOrEqual(2);
+    }
+  );
+
+  type EmpiricalTdeeScenario = {
+    gender: 'male' | 'female';
+    age: number;
+    heightCm: number;
+    initialWeightKg: number;
+    finalWeightKg: number;
+    totalDays: number;
+    kcalPerDay: number;
+    activityLevel: 1 | 2 | 3 | 4 | 5;
+    liftingExperience: 'beginner' | 'intermediate' | 'advanced';
+    initialFatPercentage?: number;
+    finalFatPercentage?: number;
+  };
+
+  const empiricalScenarios: EmpiricalTdeeScenario[] = [];
+  const empiricalAges = [24, 38, 54];
+  const empiricalHeightsCm = [160, 175, 189];
+  const empiricalInitialWeightsKg = [58, 74, 92];
+  const empiricalDeltasKg = [-2.5, 2.0];
+  const empiricalDays = [21, 35];
+  const empiricalKcalPerDay = [1850, 2400];
+  const empiricalActivityLevels: EmpiricalTdeeScenario['activityLevel'][] = [2, 4];
+  const empiricalLifting: EmpiricalTdeeScenario['liftingExperience'][] = [
+    'beginner',
+    'intermediate',
+    'advanced',
+  ];
+
+  for (const gender of ['male', 'female'] as const) {
+    for (const age of empiricalAges) {
+      for (const heightCm of empiricalHeightsCm) {
+        for (const initialWeightKg of empiricalInitialWeightsKg) {
+          for (const delta of empiricalDeltasKg) {
+            for (const totalDays of empiricalDays) {
+              for (const kcalPerDay of empiricalKcalPerDay) {
+                const finalWeightKg = parseFloat((initialWeightKg + delta).toFixed(2));
+                const activityLevel =
+                  empiricalActivityLevels[
+                    (empiricalScenarios.length + age + Math.round(initialWeightKg)) %
+                      empiricalActivityLevels.length
+                  ];
+                const liftingExperience =
+                  empiricalLifting[
+                    (empiricalScenarios.length + totalDays + Math.round(heightCm)) %
+                      empiricalLifting.length
+                  ];
+
+                empiricalScenarios.push({
+                  gender,
+                  age,
+                  heightCm,
+                  initialWeightKg,
+                  finalWeightKg,
+                  totalDays,
+                  kcalPerDay,
+                  activityLevel,
+                  liftingExperience,
+                });
+
+                empiricalScenarios.push({
+                  gender,
+                  age,
+                  heightCm,
+                  initialWeightKg,
+                  finalWeightKg,
+                  totalDays,
+                  kcalPerDay,
+                  activityLevel,
+                  liftingExperience,
+                  initialFatPercentage: 26,
+                  finalFatPercentage: delta < 0 ? 23 : 27,
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const EMPIRICAL_TDEE_SCENARIOS = empiricalScenarios.slice(0, 140);
+
+  it('covers at least 100 generated empirical TDEE scenarios', () => {
+    expect(EMPIRICAL_TDEE_SCENARIOS.length).toBeGreaterThanOrEqual(100);
+  });
+
+  it.each(EMPIRICAL_TDEE_SCENARIOS)(
+    'empirical TDEE returns plausible value for $gender age $age, $initialWeightKg->$finalWeightKg kg',
+    ({
+      gender,
+      age,
+      heightCm,
+      initialWeightKg,
+      finalWeightKg,
+      totalDays,
+      kcalPerDay,
+      activityLevel,
+      liftingExperience,
+      initialFatPercentage,
+      finalFatPercentage,
+    }) => {
+      const totalCalories = totalDays * kcalPerDay;
+      const empiricalTdee = calculateTDEE({
+        totalCalories,
+        totalDays,
+        initialWeight: initialWeightKg,
+        finalWeight: finalWeightKg,
+        initialFatPercentage,
+        finalFatPercentage,
+        activityLevel,
+        liftingExperience,
+        gender,
+        age,
+        heightCm,
+      });
+
+      const avgIntake = totalCalories / totalDays;
+
+      expect(empiricalTdee).toBeGreaterThan(0);
+      expect(empiricalTdee).toBeLessThan(6000);
+      if (finalWeightKg < initialWeightKg) {
+        expect(empiricalTdee).toBeGreaterThan(avgIntake);
+      } else {
+        expect(empiricalTdee).toBeLessThan(avgIntake);
+      }
+    }
+  );
+
+  it.each(EMPIRICAL_TDEE_SCENARIOS.slice(0, 110))(
+    'empirical TDEE metric vs imperial-converted consistency for $gender age $age',
+    ({
+      gender,
+      age,
+      heightCm,
+      initialWeightKg,
+      finalWeightKg,
+      totalDays,
+      kcalPerDay,
+      activityLevel,
+      liftingExperience,
+      initialFatPercentage,
+      finalFatPercentage,
+    }) => {
+      const totalCalories = totalDays * kcalPerDay;
+      const initialWeightLb = initialWeightKg / 0.45359237;
+      const finalWeightLb = finalWeightKg / 0.45359237;
+      const heightIn = heightCm / 2.54;
+
+      const metricEmpirical = calculateTDEE({
+        totalCalories,
+        totalDays,
+        initialWeight: initialWeightKg,
+        finalWeight: finalWeightKg,
+        initialFatPercentage,
+        finalFatPercentage,
+        activityLevel,
+        liftingExperience,
+        gender,
+        age,
+        heightCm,
+      });
+
+      const convertedEmpirical = calculateTDEE({
+        totalCalories,
+        totalDays,
+        initialWeight: lbsToKg(initialWeightLb),
+        finalWeight: lbsToKg(finalWeightLb),
+        initialFatPercentage,
+        finalFatPercentage,
+        activityLevel,
+        liftingExperience,
+        gender,
+        age,
+        heightCm: inchesToCm(heightIn),
+      });
+
+      expect(Math.abs(convertedEmpirical - metricEmpirical)).toBeLessThanOrEqual(2);
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
 // Target Calories
 // ---------------------------------------------------------------------------
 
@@ -790,7 +2058,11 @@ describe('calculateNutritionPlan with bodyFatPercent', () => {
   });
 
   it('targetBodyFat for maintain equals current body fat', () => {
-    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'maintain', bodyFatPercent: 20 });
+    const plan = calculateNutritionPlan({
+      ...baseInput,
+      weightGoal: 'maintain',
+      bodyFatPercent: 20,
+    });
     expect(plan.targetBodyFat).toBe(20);
   });
 
@@ -804,7 +2076,11 @@ describe('calculateNutritionPlan with bodyFatPercent', () => {
     expect(plan.targetFFMI).toBeDefined();
     expect(plan.targetFFMI).toBeGreaterThan(0);
     expect(plan.targetFFMI).toBe(
-      ffmiFromWeightHeightAndBodyFat(plan.projectedWeightKg, baseInput.heightCm / 100, plan.targetBodyFat!)
+      ffmiFromWeightHeightAndBodyFat(
+        plan.projectedWeightKg,
+        baseInput.heightCm / 100,
+        plan.targetBodyFat!
+      )
     );
   });
 
@@ -1408,8 +2684,12 @@ describe('getEffectiveKcalPerKgGain', () => {
   });
 
   it('beginner has lowest kcal/kg (cheapest gains → most weight per surplus)', () => {
-    expect(getEffectiveKcalPerKgGain('beginner')).toBeLessThan(getEffectiveKcalPerKgGain('intermediate'));
-    expect(getEffectiveKcalPerKgGain('intermediate')).toBeLessThan(getEffectiveKcalPerKgGain('advanced'));
+    expect(getEffectiveKcalPerKgGain('beginner')).toBeLessThan(
+      getEffectiveKcalPerKgGain('intermediate')
+    );
+    expect(getEffectiveKcalPerKgGain('intermediate')).toBeLessThan(
+      getEffectiveKcalPerKgGain('advanced')
+    );
   });
 });
 
@@ -1583,7 +2863,9 @@ describe('computeWeightChangeFromCalorieDelta', () => {
   });
 
   it('returns positive kg for a calorie surplus', () => {
-    const change = computeWeightChangeFromCalorieDelta(6370, 80, { liftingExperience: 'intermediate' });
+    const change = computeWeightChangeFromCalorieDelta(6370, 80, {
+      liftingExperience: 'intermediate',
+    });
     // 6370 / 6370 = 1.0 kg
     expect(change).toBeCloseTo(1.0, 5);
   });
@@ -1605,8 +2887,12 @@ describe('computeWeightChangeFromCalorieDelta', () => {
   });
 
   it('uses experience-based build cost for surplus', () => {
-    const beginner = computeWeightChangeFromCalorieDelta(5876, 80, { liftingExperience: 'beginner' });
-    const advanced = computeWeightChangeFromCalorieDelta(5876, 80, { liftingExperience: 'advanced' });
+    const beginner = computeWeightChangeFromCalorieDelta(5876, 80, {
+      liftingExperience: 'beginner',
+    });
+    const advanced = computeWeightChangeFromCalorieDelta(5876, 80, {
+      liftingExperience: 'advanced',
+    });
     // 5876/5876=1 for beginner, 5876/6864<1 for advanced
     expect(beginner).toBeGreaterThan(advanced);
   });
@@ -1740,8 +3026,12 @@ describe('generateWeeklyCheckins', () => {
 
   it('returns empty array when period <= frequencyDays', () => {
     const plan = calculateNutritionPlan(baseInput);
-    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 7 * DAY_MS, 1.75, null)).toHaveLength(0);
-    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 6 * DAY_MS, 1.75, null)).toHaveLength(0);
+    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 7 * DAY_MS, 1.75, null)).toHaveLength(
+      0
+    );
+    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 6 * DAY_MS, 1.75, null)).toHaveLength(
+      0
+    );
   });
 
   it('returns one checkin for a 14-day period', () => {
