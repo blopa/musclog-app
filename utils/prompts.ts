@@ -4,6 +4,8 @@ import OpenAI from 'openai';
 
 import type { Units } from '@/constants/settings';
 import { User } from '@/database/models';
+import Food from '@/database/models/Food';
+import WorkoutLog from '@/database/models/WorkoutLog';
 import {
   AiCustomPromptService,
   ExerciseService,
@@ -33,6 +35,27 @@ import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
+
+/**
+ * Type for nutrition log entries returned by NutritionService.getRecentNutritionLogs
+ */
+export type NutritionHistoryEntry = {
+  log: {
+    date?: number;
+    type?: string;
+  };
+  food: Food | null;
+  nutrients: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    alcohol: number;
+  };
+  gramWeight: number;
+  displayName: string;
+};
 
 /**
  * Base system prompt for Loggy persona
@@ -193,8 +216,8 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
  * Per spec, uses one-line summaries to maximize token efficiency.
  */
 export const getAppleIntelligenceContext = async (
-  workoutHistory: any[], // TODO: do not use any
-  nutritionHistory: any[], // TODO: do not use any
+  workoutHistory: WorkoutLog[],
+  nutritionHistory: NutritionHistoryEntry[],
   locale: string = 'en-US'
 ): Promise<string> => {
   let context = '## ANALYZE: Recent Workout History\n\n';
@@ -219,7 +242,10 @@ export const getAppleIntelligenceContext = async (
   if (nutritionHistory.length > 0) {
     context += '\n\n## TRACK: Recent Nutrition Summary\n\n';
     const nutritionSummary = nutritionHistory
-      .map((n, i) => `${i + 1}. ${n.date || 'Recent date'}: ${n.summary || 'Meal logged'}`)
+      .map((n, i) => {
+        const date = n.log.date ? new Date(n.log.date).toLocaleDateString(locale) : 'Recent date';
+        return `${i + 1}. ${date}: ${n.displayName || 'Meal logged'}`;
+      })
       .join('\n');
     context += nutritionSummary;
   }
