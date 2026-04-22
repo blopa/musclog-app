@@ -226,7 +226,8 @@
         "toggle": "Usar Apple Intelligence",
         "toggleSubtitle": "Procesar solicitudes de IA en el dispositivo usando modelos de Apple. Sin necesidad de clave API.",
         "toggleSubtitleNotReady": "Apple Intelligence no está disponible en este dispositivo. Requiere iPhone 15 Pro o posterior con iOS 26 y Apple Intelligence habilitado.",
-        "privacyNote": "Tus datos se quedan en el dispositivo y nunca se envían a servidores externos."
+        "privacyNote": "Tus datos se quedan en el dispositivo y nunca se envían a servidores externos.",
+        "foundationFoodsDisabled": "La inyección de alimentos base está desactivada para la IA en el dispositivo para ahorrar memoria."
       },
       "musclogFreeTier": {
         "sectionTitle": "NIVEL GRATUITO DE MUSCLOG",

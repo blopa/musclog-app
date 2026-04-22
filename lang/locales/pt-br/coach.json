@@ -44,7 +44,10 @@
       "featureRequiresCloudAi": "Este recurso não está disponível com Apple Intelligence. Por favor, mude para OpenAI ou Gemini nas Configurações.",
       "filePickFailed": "Falha ao selecionar arquivo. Por favor, tente novamente.",
       "creditsExhausted": "Parece que seus créditos de IA acabaram. Por favor, verifique sua chave de API ou cobrança em Configurações.",
-      "rateLimited": "Por favor, aguarde um momento antes de enviar outra mensagem."
+      "rateLimited": "Por favor, aguarde um momento antes de enviar outra mensagem.",
+      "toolRequestFailed": "Não consegui processar essa solicitação. Por favor, tente novamente.",
+      "conversationFallback": "Posso ajudar com perguntas sobre fitness e nutrição. O que você gostaria de saber?",
+      "requestProcessingFailed": "Tive dificuldade em processar sua solicitação. Você poderia tentar reformular?"
     },
     "goToSettings": "Ir para Configurações",
     "success": {
