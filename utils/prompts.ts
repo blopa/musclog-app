@@ -103,13 +103,12 @@ Core Capabilities:
 
 Conversation Guidelines:
 1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
-2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible (e.g. Portuguese, Spanish, etc.). If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
+2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
 3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
-6. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
-7. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
-8. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
+6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+7. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
 
 Error Handling:
 - If you cannot fulfill a request, explain why clearly and provide specific suggestions.
@@ -194,8 +193,8 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
  * Per spec, uses one-line summaries to maximize token efficiency.
  */
 export const getAppleIntelligenceContext = async (
-  workoutHistory: any[],
-  nutritionHistory: any[],
+  workoutHistory: any[], // TODO: do not use any
+  nutritionHistory: any[], // TODO: do not use any
   locale: string = 'en-US'
 ): Promise<string> => {
   let context = '## ANALYZE: Recent Workout History\n\n';
@@ -225,7 +224,7 @@ export const getAppleIntelligenceContext = async (
     context += nutritionSummary;
   }
 
-  // Add imperative verb instruction for Apple Intelligence
+  // TODO: does these make sense? I dont think they do...
   context += '\n\n## ACTION REQUIRED\n\n';
   context += 'ANALYZE the data above. CREATE personalized recommendations. ';
   context += 'TRACK progress indicators. CALCULATE next steps. ';
@@ -442,8 +441,7 @@ Conversation Guidelines:
 2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
 3. TONE: Friendly, professional, and human-like. Use emojis naturally.
 4. CONCISE: Keep responses under 100 words.
-5. REPETITION: Never repeat the exact same response consecutively. If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
-6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities (e.g. "Why are you repeating yourself?").
+5. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
 
 Error Handling:
 - If you cannot fulfill a request, explain why clearly and provide specific suggestions.

@@ -90,7 +90,7 @@ export interface ProviderConfig {
 
 export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
   'on-device': {
-    maxCharBudget: 2000, // Tight cap per Apple Intelligence optimization spec
+    maxCharBudget: 4500, // Tight cap per Apple Intelligence optimization spec
     promptComplexity: 'minimal',
     enableContextInjection: true,
     enableFoundationFoods: false,
