@@ -10,7 +10,6 @@ import { sendOnDeviceMessage } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
-  getBaseSystemPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getChatMessagePromptContent,
@@ -499,6 +498,7 @@ async function sendViaOpenAI(
 
   const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
   const normalized = normalizeHistory(truncatedHistory);
+
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     ...normalized.map((entry) => ({
@@ -975,9 +975,6 @@ export async function getNutritionInsights(
   }
 }
 
-/**
- * Generate a workout plan from conversation history
- */
 /**
  * Generate a meal plan from conversation history
  */
