@@ -35,7 +35,6 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { wrapUserContent } from './promptSanitizer';
-import { similarity } from './stringSimilarity';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -896,19 +895,6 @@ export async function trackMeal(
   }
 }
 
-/**
- * Detects if a response is repetitive compared to recent history.
- * Per spec, checks against the last 3 coach messages with a 0.8 threshold.
- */
-function isRepetitive(newResponse: string, history: ChatHistoryEntry[]): boolean {
-  const recentCoachMessages = history
-    .filter((e) => e.role === 'coach')
-    .slice(-3)
-    .map((e) => e.content);
-
-  return recentCoachMessages.some((old) => similarity(newResponse, old) > 0.8);
-}
-
 export async function sendCoachMessage(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
@@ -918,32 +904,25 @@ export async function sendCoachMessage(
   // Wrap user message with delimiters to prevent prompt injection attacks
   const sanitizedMessage = wrapUserContent(userMessage);
 
-  let response: CoachResponse;
-
   if (config.provider === 'on-device') {
-    response = await sendViaOnDevice(config, history, sanitizedMessage, context);
-  } else if (config.provider === 'gemini') {
-    response = await sendViaGemini(config, history, sanitizedMessage, context);
-  } else {
-    // OpenAI-compatible providers (local, gateway, openai)
-    response = await sendViaOpenAI(config, history, sanitizedMessage, context);
+    return sendViaOnDevice(config, history, sanitizedMessage, context);
   }
 
-  // Check for repetition loop (Diversity Tracking)
-  if (isRepetitive(response.msg4User, history)) {
-    const userGoal = context === 'nutrition' ? 'nutrition' : 'fitness';
-    return {
-      msg4User: i18n.t('coach.repetitionPivotMessage', {
-        defaultValue: `I apologize, I'm getting stuck in a loop. Let's pivot: how else can I help with your ${userGoal}?`,
-        userGoal,
-      }),
-      sumMsg: i18n.t('coach.repetitionPivotMessageTitle', {
-        defaultValue: "Let's pivot the conversation.",
-      }),
-    };
+  if (config.provider === 'gemini') {
+    return sendViaGemini(config, history, sanitizedMessage, context);
   }
 
-  return response;
+  // Local provider uses OpenAI-compatible API but with a custom base URL
+  if (config.provider === 'local') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
+  }
+
+  // Gateway uses OpenAI-compatible protocol via Cloudflare AI Gateway
+  if (config.provider === 'gateway') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
+  }
+
+  return sendViaOpenAI(config, history, sanitizedMessage, context);
 }
 
 /**
