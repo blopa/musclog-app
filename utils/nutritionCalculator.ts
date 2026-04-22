@@ -659,10 +659,9 @@ export const calculateTDEE = (params: TDEEParams): number => {
     const multiplier =
       activityLevel !== undefined ? (ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55) : 1.55;
 
-    // TODO: why not use the existing bmiFromWeightAndHeightM?
     const bmi =
       initialWeight !== undefined && heightCm !== undefined && heightCm > 0
-        ? initialWeight / Math.pow(heightCm / 100, 2)
+        ? bmiFromWeightAndHeightM(initialWeight, heightCm / 100)
         : undefined;
     const tissueCoeffs = getScaledTissueCoefficients(bmi, age);
 
