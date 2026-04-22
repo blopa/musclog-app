@@ -89,7 +89,8 @@ export function SpiderChart({
 
   const cx = size / 2;
   const cy = size / 2;
-  const maxRadius = size * 0.43; // ~130 for 300
+  // Keep the radar slightly smaller so translated axis labels fit on mobile.
+  const maxRadius = size * 0.34;
 
   const gridColor = theme.colors?.border?.light ?? DEFAULT_GRID_COLOR;
   const mutedColor = theme.colors.text.tertiary;
@@ -117,7 +118,7 @@ export function SpiderChart({
   const dataPointsStr = dataPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   // Label positions: slightly outside the outer polygon
-  const labelRadius = maxRadius + size * 0.08;
+  const labelRadius = maxRadius + size * 0.09;
   const labelPositions = Array.from({ length: n }, (_, i) => {
     const p = vertex(cx, cy, labelRadius, i, n);
     const angle = vertexAngle(i, n);
@@ -128,7 +129,13 @@ export function SpiderChart({
     } else if (angle > 150 || angle < -150) {
       anchor = 'end';
     }
-    return { x: p.x, y: p.y, anchor };
+    const horizontalPadding = size * 0.09;
+    const verticalPadding = size * 0.07;
+    return {
+      x: Math.min(size - horizontalPadding, Math.max(horizontalPadding, p.x)),
+      y: Math.min(size - verticalPadding, Math.max(verticalPadding, p.y)),
+      anchor,
+    };
   });
 
   return (
@@ -205,6 +212,8 @@ export function SpiderChart({
               fontSize={theme.typography.fontSize.xs}
               fontWeight="600"
               textAnchor={pos.anchor}
+              alignmentBaseline="middle"
+              verticalAlign="middle"
             >
               {String(axes[idx]).toUpperCase()}
             </SvgText>
