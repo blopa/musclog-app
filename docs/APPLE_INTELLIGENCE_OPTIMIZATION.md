@@ -1,51 +1,110 @@
-# Apple Intelligence Optimization Technical Specification
+# Apple Intelligence Technical Specification: Performance Optimization & Chat Loop Resolution
 
-## Overview
+## 1. Overview
+This specification addresses two critical areas of the Musclog AI experience:
+1. **Chat Loop Resolution**: Eliminating repetitive, canned responses and language confusion through advanced prompt engineering and meta-conversation logic.
+2. **On-Device Optimization**: Managing hardware limitations (memory/tokens) for Apple Intelligence via character-budgeted context windows and tiered prompt injection.
 
-This document outlines the technical improvements implemented to optimize Apple Intelligence (on-device AI) performance in the Musclog app. These changes address issues with context overload, prompt bloat, and memory limitations of local models.
+---
 
-## Architecture
+## 2. Architecture: Provider-Aware Configuration
+To maintain performance across different environments, AI providers are governed by a `PROVIDER_CONFIGS` registry in `utils/coachAI.ts`.
 
-### 1. Provider-Aware Configuration System
+| Feature | On-Device (Apple Intelligence) | Cloud (Standard) |
+| :--- | :--- | :--- |
+| **maxCharBudget** | ~2,000 chars (~500 tokens) | 16,000+ chars |
+| **Prompt Complexity** | Minimal / Compressed | Full "Loggy PhD" Persona |
+| **Foundation Foods** | Disabled (Schema reduction) | Enabled |
+| **Memories** | Disabled (Context preservation) | Enabled |
+| **Response Diversity** | Active (Local tracking) | Active (Server/Local) |
 
-AI providers are governed by a `PROVIDER_CONFIGS` registry in `utils/coachAI.ts`. This centralizes limits and feature availability:
+---
 
-- **`maxCharBudget`**: Total character limit for conversation history. On-device is capped at ~2000 chars (~500 tokens).
-- **`promptComplexity`**: Minimal (on-device) vs Standard (cloud).
-- **`enableFoundationFoods`**: Disabled for on-device AI to prevent massive schema/prompt injection.
-- **`enableMemories`**: Disabled for on-device AI to save context window.
+## 3. System Prompt Redesign (The "Loggy" Persona)
 
-### 2. Context Window Management (Budget-Based)
+### 3.1 Tiered Prompt Injection
+We utilize a compressed version of the "Loggy" persona to prevent "prompt bloat" while maintaining the core personality requirements.
 
-Instead of message count truncation, we use `truncateHistoryByBudget` in `utils/coachAI.ts`. This function traverses history backwards and sums character lengths until the budget is reached, ensuring the model always receives the most recent and relevant messages without exceeding its limits.
+* **Persona Core**: Specialized fitness/nutrition assistant.
+* **User Stats (Compressed)**: Injected as a tag: `[User: Male, 85kg, 15%BF, hypertrophy]`.
+* **Workout Summaries**: One-line summaries instead of JSON: `User finished "Push Day" on 2026-04-22: 5400 kg volume, 18 sets.`
 
-### 3. Tiered Prompt & Compressed Context Injection
+### 3.2 Conversation & Meta-Rules
+To solve the repetitive loop behavior, the system prompt includes specific logic for meta-conversation and self-awareness:
 
-#### Minimal System Prompt
+```swift
+// CORE CONVERSATION GUIDELINES
+- If asked about topics outside your domain, politely explain your specialization.
+- Never repeat the exact same response consecutively.
+- Acknowledge and respond to meta-questions about your behavior ("Why are you repeating yourself?").
+- Detect language automatically; default to the user's language (no unprompted mentions of Portuguese/English).
+- If you notice repetition, explicitly acknowledge it: "You're right, I'm repeating myself. Let's try a different approach."
+```
 
-On-device models use a highly compressed prompt defined in `utils/prompts.ts`. This prompt bypasses the heavy "Loggy PhD" persona in favor of a concise coach persona.
+---
 
-#### Compressed User Stats
+## 4. Context & Loop Management
 
-Instead of detailed paragraphs, user stats are injected as a compressed tag:
-`[User: Male, 85kg, 15%BF, hypertrophy]`
+### 4.1 Budget-Based Truncation
+Instead of message counts, `truncateHistoryByBudget` traverses history backwards until the `maxCharBudget` is reached. This ensures the model receives the most recent data without exceeding the 4,096 token hardware limit or the tighter 2,000 char on-device cap.
 
-#### Minimal Workout Summaries
+### 4.2 Response Diversity System
+To prevent the "Canned Response" loop, we implement a similarity checker to monitor outbound messages.
 
-Recent workouts are injected as one-line summaries instead of large JSON blocks:
-`User finished "Push Day" on 2024-05-20: 5400 kg volume, 6 exercises, 18 sets.`
+```swift
+class ResponseDiversityChecker {
+    private var recentResponses: [String] = []
+    private let maxHistorySize = 3
 
-### 4. Feature Degradation
+    func isRepetitive(_ newResponse: String) -> Bool {
+        return recentResponses.contains { response in
+            similarity(newResponse, response) > 0.8 // 80% similarity threshold
+        }
+    }
 
-- **Foundation Foods**: When Apple Intelligence is active, the foundation foods database matching is disabled. This reduces the system prompt size by several thousand characters and simplifies the JSON schema.
-- **Memories**: Historical conversation memories are not injected into on-device requests to preserve the context window for the current conversation.
+    func processOutbound(response: String) -> String {
+        if isRepetitive(response) {
+            return "I apologize, I'm getting stuck in a loop. Let's pivot: how else can I help with your [User Goal]?"
+        }
+        updateHistory(response)
+        return response
+    }
+}
+```
 
-## Implementation Details
+---
 
-- **Location**: Core AI logic resides in `utils/coachAI.ts` and prompt construction in `utils/prompts.ts`.
-- **UI Integration**: In `AISettingsModal.tsx`, enabling Apple Intelligence automatically disables and locks the "Send Foundation Foods" toggle to prevent memory-related crashes on-device.
-- **Reliability**: Per user directive, the implementation does **not** fall back to cloud providers if on-device fails, treating the local model as a specialized, air-gapped tool.
+## 5. Feature Degradation & Reliability
 
-## Conclusion
+### 5.1 On-Device Feature Toggles
+When Apple Intelligence is active, the following features are disabled via `AISettingsModal.tsx` to prevent memory-related crashes:
+* **Foundation Foods Database**: Reduces system prompt size by several thousand characters.
+* **Historical Memories**: Preserves the narrow context window for current conversation flow.
 
-By shifting to character budgets and compressed payloads, Musclog provides a fast, private, and reliable AI experience on-device while maintaining the full power of cloud models when configured.
+### 5.2 Error Handling & Fallbacks
+* **No Cloud Fallback**: Per user directive, the local model is treated as a specialized, air-gapped tool; it does not failover to cloud providers.
+* **Graceful Refusal**: Refusals must be personalized. Avoid: "I can't help with that." Use: "I'm focused on your fitness logs right now; I can't help with [topic], but we could adjust your Push Day volume?"
+
+---
+
+## 6. Implementation & Testing Plan
+
+### Phase 1: Optimization (Architecture)
+1. Implement `PROVIDER_CONFIGS` registry.
+2. Integrate `truncateHistoryByBudget` logic.
+3. Apply compressed User/Workout tag injection.
+
+### Phase 2: Chat Loop Fix (Logic)
+1. Update system prompts with Meta-Conversation rules.
+2. Deploy `ResponseDiversityChecker`.
+3. Fix language detection logic (removing unprompted capability mentions).
+
+### Phase 3: Success Metrics
+* **Repetition Rate**: Target < 2%.
+* **On-Device Crash Rate**: Target 0% (Memory-bound).
+* **Response Latency**: Ensure budget-based truncation keeps time-to-first-token low.
+
+---
+
+## 7. Conclusion
+By combining **Character Budgets** for hardware efficiency with **Diversity Tracking** for conversational quality, Musclog provides a private, fast, and intelligent experience. The focus shifts from "technical limitations" to "intentional prompt design," ensuring the AI remains helpful without falling into repetitive cycles.
