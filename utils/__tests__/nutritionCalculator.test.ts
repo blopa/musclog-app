@@ -115,31 +115,13 @@ describe('calculateTDEE', () => {
       liftingExperience: 'intermediate' as const,
     };
 
-    // Calculate expected without drift first to understand the baseline
-    // 84kg * 0.25 = 21kg initial fat mass
-    // getWeightChangeComposition(21, -4, 'intermediate')
-    // Hall/Forbes will give us the split.
-    // Let's just run it and see the result, then verify the math.
+    // No gender provided → forbesC = average(10.4, 13.8) = 12.1.
+    // No heightCm/age → tissue coefficients unscaled.
+    // Fat/lean split changes vs old FORBES_C=10.4 calculation; adaptive penalty now 20 kcal/kg/day.
     const tdee = calculateTDEE(params);
 
-    // Initial Fat Mass = 84 * 0.25 = 21kg
-    // deltaWeight = -4kg
-    // getWeightChangeComposition(21, -4, 'intermediate')
-    // fatChangeKg: -3.07, leanChangeKg: -0.93
-    // fatCalories = -3.07 * 7730 = -23731.1
-    // leanCalories = -0.93 * 1250 = -1162.5
-    // totalStored = -24893.6
-    // averageTdee = (60000 - (-24893.6)) / 30 = 84893.6 / 30 = 2729.78  <-- ERROR IN PREVIOUS CALC (84893/30 is 2829, but let's see)
-    // Wait, 81893/30 = 2729.78.
-    // 60000 + 24893 = 84893. 84893 / 30 = 2829.76.
-    // Received was 2680.
-    // 2680 + 50 = 2730.
-    // 2730 * 30 = 81900.
-    // Ah, my manual totalStored calculation is wrong.
-    // expectedTdee = 2730 - 50 = 2680.
-
     expect(tdee).toBeGreaterThan(2000); // Deficit should result in TDEE > intake
-    expect(tdee).toBe(2680);
+    expect(tdee).toBe(2638);
   });
 
   it('calculates empirical TDEE with drift correction correctly (weight gain)', () => {
@@ -152,10 +134,10 @@ describe('calculateTDEE', () => {
     // averageTdee = (90000 - 12740) / 30 = 77260 / 30 = 2575.33
     // Refined Drift Model (default PAL = 1.55):
     // restingDrop = (1/2 * 13) + (1/2 * 4.5) = 6.5 + 2.25 = 8.75
-    // activityScaledDrop = 8.75 * 1.55 = 13.56
-    // adaptivePenalty = (2/2 * 15) = 15
-    // totalDriftAdjustment = 28.56
-    // expectedTdee = 2575.33 + 28.56 = 2603.89 -> 2604
+    // activityScaledDrop = 8.75 * 1.55 = 13.5625
+    // adaptivePenalty = (2/2 * 20) = 20  [ADAPTIVE_THERMOGENESIS_KCAL_PER_KG updated to 20.0]
+    // totalDriftAdjustment = 33.5625
+    // expectedTdee = 2575.33 + 33.56 = 2608.89 -> 2609
 
     const params = {
       totalCalories: 3000 * 30,
@@ -166,7 +148,7 @@ describe('calculateTDEE', () => {
     };
 
     const tdee = calculateTDEE(params);
-    expect(tdee).toBe(2604);
+    expect(tdee).toBe(2609);
   });
 });
 
@@ -288,12 +270,18 @@ describe('calculateWeightProjection', () => {
   });
 
   it('calculates correct weight change for -500 kcal/day deficit', () => {
-    // -500 * 7 / 7700 ≈ -0.45 kg/week
+    // Steady-state rate: -500 * 7 / 7700 ≈ -0.45 kg/week
     const result = calculateWeightProjection(80, 2000, 2500);
     expect(result.weeklyWeightChangeKg).toBeCloseTo(-0.45, 1);
-    // Over 90 days (~12.86 weeks): -0.45 * 12.86 ≈ -5.8 kg
-    const expectedProjected = 80 + result.weeklyWeightChangeKg * (90 / 7);
-    expect(result.projectedWeightKg).toBeCloseTo(expectedProjected, 0);
+    // Glycogen-pool projection over 90 days (80 kg person):
+    //   glycogenDryKg  = 80 * 0.015 = 1.2 kg
+    //   glycogenWetKg  = 1.2 * 4   = 4.8 kg
+    //   glycogenEnergy = 1.2 * 4206 = 5047 kcal
+    //   totalDeficit   = 500 * 90  = 45 000 kcal
+    //   earlyPhase     = min(45000, 5047) = 5047 kcal → loses 4.8 kg (glycogen+water)
+    //   steadyPhase    = (45000 - 5047) / 7700 ≈ 5.19 kg
+    //   projected      = 80 - 4.8 - 5.19 = 70.0 kg
+    expect(result.projectedWeightKg).toBeCloseTo(70.0, 0);
   });
 });
 
