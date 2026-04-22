@@ -36,6 +36,7 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { wrapUserContent } from './promptSanitizer';
+import { calculateSimilarity } from './stringSimilarity';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
@@ -575,13 +576,60 @@ async function sendViaOnDevice(
       { role: 'user' as const, content: userMessage },
     ];
 
-    const raw = await sendOnDeviceMessage(messages, systemPrompt);
+    let raw = await sendOnDeviceMessage(messages, systemPrompt);
+
+    // Response Loop Prevention Logic
+    // Check if the new response is too similar to any of the last 3 assistant responses
+    const lastAssistantResponses = normalized
+      .filter((e) => e.role === 'coach')
+      .slice(-3)
+      .map((e) => e.content);
+
+    const SIMILARITY_THRESHOLD = 0.8;
+    const isRepetitive =
+      !!raw &&
+      lastAssistantResponses.some((prev) => calculateSimilarity(raw, prev) > SIMILARITY_THRESHOLD);
+
+    if (isRepetitive) {
+      console.warn(
+        '[coachAI] Repetitive on-device response detected. Retrying with variation hint.'
+      );
+      const variationPrompt =
+        systemPrompt +
+        '\n\nREPETITION ALERT: You have already used a similar response. Explicitly vary your phrasing and approach in the next response. Avoid canned or identical language.';
+
+      raw = await sendOnDeviceMessage(messages, variationPrompt);
+    }
+
+    // Final fallback if the model still returns empty or fails
+    if (!raw?.trim()) {
+      return {
+        msg4User: i18n.t('coach.onDeviceFallbackResponse', {
+          defaultValue:
+            "I'm here to help with your fitness and nutrition! Could you please clarify your request or ask me something about your workouts or meals?",
+        }),
+        sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+      };
+    }
+
     return {
-      msg4User: raw || i18n.t('errors.aiProcessingError'),
-      sumMsg: raw?.slice(0, 120) ?? '',
+      msg4User: raw,
+      sumMsg: raw.slice(0, 120),
     };
-  } catch (error) {
+  } catch (error: any) {
     handleError(error, 'coachAI.sendViaOnDevice');
+
+    // Handle specific errors like model busy or context exceeded
+    const errorMessage = error?.message?.toLowerCase() ?? '';
+    if (errorMessage.includes('busy') || errorMessage.includes('responding')) {
+      return {
+        msg4User: i18n.t('errors.aiModelBusy', {
+          defaultValue: "I'm still thinking about your last message. Please wait a moment!",
+        }),
+        sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+      };
+    }
+
     return {
       msg4User: i18n.t('errors.aiProcessingError'),
       sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
