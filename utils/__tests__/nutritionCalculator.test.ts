@@ -1,4 +1,6 @@
 import {
+  ACTIVITY_MULTIPLIERS,
+  ADAPTIVE_THERMOGENESIS_KCAL_PER_KG,
   bmiFromWeightAndHeightM,
   BODY_FAT_UNCERTAINTY,
   calculateBMR,
@@ -8,10 +10,20 @@ import {
   calculateTargetCalories,
   calculateTDEE,
   calculateWeightProjection,
+  computeWeightChangeFromCalorieDelta,
+  eatingPhaseToWeightGoal,
   estimateTargetBodyFatWhenCutting,
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
+  FORBES_C_FEMALE,
+  FORBES_C_MALE,
+  generateWeeklyCheckins,
   getCalorieAdjustment,
+  getEffectiveKcalPerKgGain,
+  getEffectiveKcalPerKgWeightLoss,
+  getGainFatFraction,
+  getMinCalories,
+  getWeightChangeComposition,
   inchesToCm,
   isValidBodyFat,
   lbsToKg,
@@ -19,6 +31,9 @@ import {
   normalizeFitnessGoal,
   normalizeWeightGoal,
   type NutritionCalculatorInput,
+  planToInitialGoals,
+  RMR_FAT_KCAL_PER_KG,
+  RMR_LEAN_KCAL_PER_KG,
 } from '@/utils/nutritionCalculator';
 
 // ---------------------------------------------------------------------------
@@ -98,6 +113,10 @@ describe('calculateTDEE', () => {
     expect(superActive).toBeGreaterThan(sedentary);
   });
 
+  it('returns 0 when neither empirical data nor bmr+activityLevel are provided', () => {
+    expect(calculateTDEE({})).toBe(0);
+  });
+
   it('calculates empirical TDEE with drift correction correctly (weight loss)', () => {
     // Scenario: User loses 4kg in 30 days, eating 2000 kcal/day.
     // Average weight: (84 + 80) / 2 = 82kg.
@@ -149,6 +168,69 @@ describe('calculateTDEE', () => {
 
     const tdee = calculateTDEE(params);
     expect(tdee).toBe(2609);
+  });
+
+  it('produces different TDEE when heightCm creates BMI > 30 (obesity scaling)', () => {
+    const shared = {
+      totalCalories: 2000 * 30,
+      totalDays: 30,
+      initialWeight: 100,
+      finalWeight: 96,
+      liftingExperience: 'intermediate' as const,
+    };
+    const withoutHeight = calculateTDEE(shared);
+    // BMI = 100 / (1.65^2) ≈ 36.7 > 30 → tissue coefficients scaled down 2%
+    const withObeseHeight = calculateTDEE({ ...shared, heightCm: 165 });
+    expect(withoutHeight).toBeGreaterThan(0);
+    expect(withObeseHeight).toBeGreaterThan(0);
+    expect(withObeseHeight).not.toBe(withoutHeight);
+  });
+
+  it('produces different TDEE when age > 50 (age scaling)', () => {
+    const shared = {
+      totalCalories: 2000 * 30,
+      totalDays: 30,
+      initialWeight: 80,
+      finalWeight: 77,
+      liftingExperience: 'intermediate' as const,
+    };
+    const young = calculateTDEE({ ...shared, age: 30 });
+    const older = calculateTDEE({ ...shared, age: 55 });
+    expect(young).not.toBe(older);
+  });
+
+  it('uses activity multiplier for drift correction when activityLevel is provided', () => {
+    const shared = {
+      totalCalories: 2000 * 30,
+      totalDays: 30,
+      initialWeight: 80,
+      finalWeight: 77,
+      liftingExperience: 'intermediate' as const,
+    };
+    const sedentary = calculateTDEE({ ...shared, activityLevel: 1 });
+    const active = calculateTDEE({ ...shared, activityLevel: 5 });
+    expect(sedentary).not.toBe(active);
+  });
+
+  it('uses exact body fat split when both initial and final fat % are provided', () => {
+    const withExactBF = calculateTDEE({
+      totalCalories: 2000 * 30,
+      totalDays: 30,
+      initialWeight: 84,
+      finalWeight: 80,
+      initialFatPercentage: 25,
+      finalFatPercentage: 23,
+      liftingExperience: 'intermediate' as const,
+    });
+    const withoutBF = calculateTDEE({
+      totalCalories: 2000 * 30,
+      totalDays: 30,
+      initialWeight: 84,
+      finalWeight: 80,
+      liftingExperience: 'intermediate' as const,
+    });
+    expect(withExactBF).not.toBe(withoutBF);
+    expect(withExactBF).toBeGreaterThan(0);
   });
 });
 
@@ -243,6 +325,27 @@ describe('calculateMacros', () => {
       expect(result.proteinPct + result.carbsPct + result.fatsPct).toBe(100);
     }
   });
+
+  it('uses FFM-based protein for weight_loss when body fat is valid', () => {
+    // 80kg at 20% BF → FFM = 64kg; weight_loss target: 2.7 g/kg FFM = 172.8 → 173g
+    const result = calculateMacros(2000, 'weight_loss', { weightKg: 80, bodyFatPercent: 20 });
+    expect(result.protein).toBe(Math.round(64 * 2.7));
+    // Protein pct should be recalculated from actual grams
+    expect(result.proteinPct).toBeGreaterThan(0);
+    expect(result.carbsPct + result.fatsPct + result.proteinPct).toBe(100);
+  });
+
+  it('uses FFM-based protein for hypertrophy when body fat is valid', () => {
+    // 80kg at 20% BF → FFM = 64kg; hypertrophy target: 2.0 g/kg FFM = 128g
+    const result = calculateMacros(2500, 'hypertrophy', { weightKg: 80, bodyFatPercent: 20 });
+    expect(result.protein).toBe(Math.round(64 * 2.0));
+  });
+
+  it('falls back to pct-based when body fat is invalid', () => {
+    const withInvalidBF = calculateMacros(2000, 'weight_loss', { weightKg: 80, bodyFatPercent: 3 });
+    const withoutBF = calculateMacros(2000, 'weight_loss');
+    expect(withInvalidBF.protein).toBe(withoutBF.protein);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -282,6 +385,21 @@ describe('calculateWeightProjection', () => {
     //   steadyPhase    = (45000 - 5047) / 7700 ≈ 5.19 kg
     //   projected      = 80 - 4.8 - 5.19 = 70.0 kg
     expect(result.projectedWeightKg).toBeCloseTo(70.0, 0);
+  });
+
+  it('uses Forbes model for deficit projection when body fat is valid', () => {
+    const withBF = calculateWeightProjection(80, 2000, 2500, { bodyFatPercent: 20 });
+    const withoutBF = calculateWeightProjection(80, 2000, 2500);
+    // Forbes gives a composition-aware kcal/kg, so projections differ
+    expect(withBF.projectedWeightKg).not.toBe(withoutBF.projectedWeightKg);
+    expect(withBF.weeklyWeightChangeKg).not.toBe(withoutBF.weeklyWeightChangeKg);
+  });
+
+  it('uses experience-dependent build cost for surplus', () => {
+    const beginner = calculateWeightProjection(80, 3000, 2500, { liftingExperience: 'beginner' });
+    const advanced = calculateWeightProjection(80, 3000, 2500, { liftingExperience: 'advanced' });
+    // Beginner has lower effective build cost → more weight gained
+    expect(beginner.projectedWeightKg).toBeGreaterThan(advanced.projectedWeightKg);
   });
 });
 
@@ -450,6 +568,51 @@ describe('calculateNutritionPlan', () => {
     const superActive = calculateNutritionPlan({ ...baseInput, activityLevel: 5 });
     expect(superActive.tdee).toBeGreaterThan(sedentary.tdee);
   });
+
+  it('populates dailyCalorieDeficit for lose goal', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'lose' });
+    expect(plan.dailyCalorieDeficit).toBeDefined();
+    expect(plan.dailyCalorieDeficit).toBeGreaterThan(0);
+    expect(plan.dailyCalorieSurplus).toBeUndefined();
+    expect(plan.dailyCalorieDeficit).toBe(plan.tdee - plan.targetCalories);
+  });
+
+  it('populates dailyCalorieSurplus for gain goal', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'gain' });
+    expect(plan.dailyCalorieSurplus).toBeDefined();
+    expect(plan.dailyCalorieSurplus).toBeGreaterThan(0);
+    expect(plan.dailyCalorieDeficit).toBeUndefined();
+    expect(plan.dailyCalorieSurplus).toBe(plan.targetCalories - plan.tdee);
+  });
+
+  it('omits both deficit and surplus for maintain goal', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'maintain' });
+    expect(plan.dailyCalorieDeficit).toBeUndefined();
+    expect(plan.dailyCalorieSurplus).toBeUndefined();
+  });
+
+  it('populates targetBMI when heightCm > 0', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    expect(plan.targetBMI).toBeDefined();
+    expect(plan.targetBMI).toBeGreaterThan(0);
+    expect(plan.targetBMI).toBe(
+      bmiFromWeightAndHeightM(plan.projectedWeightKg, baseInput.heightCm / 100)
+    );
+  });
+
+  it('populates estimatedFatChangeKg and estimatedLeanChangeKg for non-maintenance', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'lose' });
+    expect(plan.estimatedFatChangeKg).toBeDefined();
+    expect(plan.estimatedLeanChangeKg).toBeDefined();
+    expect(plan.estimatedFatChangeKg).toBeLessThan(0); // cutting
+    expect(plan.estimatedLeanChangeKg).toBeLessThan(0); // cutting
+  });
+
+  it('estimatedFatChangeKg and estimatedLeanChangeKg sum to total weight change', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'lose' });
+    const totalChange = plan.projectedWeightKg - plan.currentWeightKg;
+    expect(plan.estimatedFatChangeKg! + plan.estimatedLeanChangeKg!).toBeCloseTo(totalChange, 1);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -592,6 +755,62 @@ describe('calculateNutritionPlan with bodyFatPercent', () => {
 
   it('BODY_FAT_UNCERTAINTY constant is 4', () => {
     expect(BODY_FAT_UNCERTAINTY).toBe(4);
+  });
+
+  it('targetBodyFat for cuts is consistent with estimatedFatChangeKg (Forbes model)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+
+    expect(plan.targetBodyFat).toBeDefined();
+    expect(plan.estimatedFatChangeKg).toBeDefined();
+
+    const expectedNewFatMass = baseInput.weightKg * 0.2 + plan.estimatedFatChangeKg!;
+    const expectedTargetBF = parseFloat(
+      Math.max(0, Math.min(100, (expectedNewFatMass / plan.projectedWeightKg) * 100)).toFixed(1)
+    );
+    expect(plan.targetBodyFat).toBe(expectedTargetBF);
+  });
+
+  it('targetBodyFat for cuts (Forbes) differs from the 70%-hardcoded estimate', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+    const oldEstimate = estimateTargetBodyFatWhenCutting(
+      baseInput.weightKg,
+      plan.projectedWeightKg,
+      20
+    );
+    // The Forbes model gives a different lean/fat split than a fixed 70% fat assumption
+    expect(plan.targetBodyFat).not.toBe(oldEstimate);
+  });
+
+  it('targetBodyFat for gain uses Forbes composition model', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'gain', bodyFatPercent: 20 });
+    expect(plan.targetBodyFat).toBeDefined();
+    expect(plan.targetBodyFat).toBeGreaterThan(0);
+    // For a bulk, body fat % should be slightly higher than current
+    expect(plan.targetBodyFat).toBeGreaterThan(20);
+  });
+
+  it('targetBodyFat for maintain equals current body fat', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'maintain', bodyFatPercent: 20 });
+    expect(plan.targetBodyFat).toBe(20);
+  });
+
+  it('targetBodyFat is undefined when body fat not provided', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    expect(plan.targetBodyFat).toBeUndefined();
+  });
+
+  it('targetFFMI is populated when height and targetBodyFat are available', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+    expect(plan.targetFFMI).toBeDefined();
+    expect(plan.targetFFMI).toBeGreaterThan(0);
+    expect(plan.targetFFMI).toBe(
+      ffmiFromWeightHeightAndBodyFat(plan.projectedWeightKg, baseInput.heightCm / 100, plan.targetBodyFat!)
+    );
+  });
+
+  it('targetFFMI is undefined when body fat is not provided', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    expect(plan.targetFFMI).toBeUndefined();
   });
 });
 
@@ -1082,5 +1301,524 @@ describe('calculateNutritionPlan – diverse scenarios', () => {
     const advanced = calculateNutritionPlan({ ...base, liftingExperience: 'advanced' });
     // Same TDEE/target → same surplus; beginner has lower effective kcal/kg gain → more kg gained
     expect(beginner.projectedWeightKg).toBeGreaterThan(advanced.projectedWeightKg);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getMinCalories
+// ---------------------------------------------------------------------------
+
+describe('getMinCalories', () => {
+  it('returns 1200 for female with no BMR', () => {
+    expect(getMinCalories('female')).toBe(1200);
+  });
+
+  it('returns 1500 for male with no BMR', () => {
+    expect(getMinCalories('male')).toBe(1500);
+  });
+
+  it('returns 1350 for other with no BMR', () => {
+    expect(getMinCalories('other')).toBe(1350);
+  });
+
+  it('applies 80% BMR floor when it exceeds gender floor', () => {
+    // female, BMR=2000 → 80% = 1600 > 1200 → floor = 1600
+    expect(getMinCalories('female', 2000)).toBe(1600);
+    // male, BMR=2000 → 80% = 1600 > 1500 → floor = 1600
+    expect(getMinCalories('male', 2000)).toBe(1600);
+  });
+
+  it('uses gender floor when 80% BMR is below it', () => {
+    // female, BMR=1000 → 80% = 800 < 1200 → floor = 1200
+    expect(getMinCalories('female', 1000)).toBe(1200);
+    // male, BMR=1500 → 80% = 1200 < 1500 → floor = 1500
+    expect(getMinCalories('male', 1500)).toBe(1500);
+  });
+
+  it('returns rounded result', () => {
+    // male, BMR=1876 → 80% = 1500.8 → rounded 1501 vs floor 1500 → 1501
+    expect(getMinCalories('male', 1876)).toBe(Math.round(1876 * 0.8));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// eatingPhaseToWeightGoal
+// ---------------------------------------------------------------------------
+
+describe('eatingPhaseToWeightGoal', () => {
+  it('maps cut to lose', () => {
+    expect(eatingPhaseToWeightGoal('cut')).toBe('lose');
+  });
+
+  it('maps bulk to gain', () => {
+    expect(eatingPhaseToWeightGoal('bulk')).toBe('gain');
+  });
+
+  it('maps maintain to maintain', () => {
+    expect(eatingPhaseToWeightGoal('maintain')).toBe('maintain');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getGainFatFraction
+// ---------------------------------------------------------------------------
+
+describe('getGainFatFraction', () => {
+  it('returns 0.4 for beginner (60% lean gain)', () => {
+    expect(getGainFatFraction('beginner')).toBe(0.4);
+  });
+
+  it('returns 0.5 for intermediate (50/50)', () => {
+    expect(getGainFatFraction('intermediate')).toBe(0.5);
+  });
+
+  it('returns 0.6 for advanced (40% lean gain)', () => {
+    expect(getGainFatFraction('advanced')).toBe(0.6);
+  });
+
+  it('returns 0.5 for undefined (defaults to intermediate)', () => {
+    expect(getGainFatFraction(undefined)).toBe(0.5);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getEffectiveKcalPerKgGain
+// ---------------------------------------------------------------------------
+
+describe('getEffectiveKcalPerKgGain', () => {
+  // CALORIES_BUILD_KG_FAT = 8840, CALORIES_BUILD_KG_MUSCLE = 3900
+
+  it('calculates correctly for intermediate (50/50 split)', () => {
+    // 0.5 * 8840 + 0.5 * 3900 = 4420 + 1950 = 6370
+    expect(getEffectiveKcalPerKgGain('intermediate')).toBe(6370);
+  });
+
+  it('calculates correctly for beginner (40% fat / 60% lean)', () => {
+    // 0.4 * 8840 + 0.6 * 3900 = 3536 + 2340 = 5876
+    expect(getEffectiveKcalPerKgGain('beginner')).toBe(5876);
+  });
+
+  it('calculates correctly for advanced (60% fat / 40% lean)', () => {
+    // 0.6 * 8840 + 0.4 * 3900 = 5304 + 1560 = 6864
+    expect(getEffectiveKcalPerKgGain('advanced')).toBe(6864);
+  });
+
+  it('defaults to intermediate for undefined experience', () => {
+    expect(getEffectiveKcalPerKgGain(undefined)).toBe(6370);
+  });
+
+  it('beginner has lowest kcal/kg (cheapest gains → most weight per surplus)', () => {
+    expect(getEffectiveKcalPerKgGain('beginner')).toBeLessThan(getEffectiveKcalPerKgGain('intermediate'));
+    expect(getEffectiveKcalPerKgGain('intermediate')).toBeLessThan(getEffectiveKcalPerKgGain('advanced'));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getEffectiveKcalPerKgWeightLoss
+// ---------------------------------------------------------------------------
+
+describe('getEffectiveKcalPerKgWeightLoss', () => {
+  // RHO_FAT_KCAL_PER_KG = 39.5 * 239 = 9440.5
+
+  it('returns RHO_FAT when deltaWeightKg is zero (no change)', () => {
+    expect(getEffectiveKcalPerKgWeightLoss(20, 0)).toBe(39.5 * 239);
+  });
+
+  it('returns RHO_FAT when deltaWeightKg is positive (gaining)', () => {
+    expect(getEffectiveKcalPerKgWeightLoss(20, 2)).toBe(39.5 * 239);
+  });
+
+  it('returns RHO_FAT when initialFatMassKg is zero', () => {
+    expect(getEffectiveKcalPerKgWeightLoss(0, -5)).toBe(39.5 * 239);
+  });
+
+  it('returns a value within the clamped range [1000, 9500] for valid loss', () => {
+    const result = getEffectiveKcalPerKgWeightLoss(16, -5);
+    expect(result).toBeGreaterThanOrEqual(1000);
+    expect(result).toBeLessThanOrEqual(9500);
+  });
+
+  it('is lower than pure fat loss density when body composition is mixed', () => {
+    // Mixed fat+lean loss is cheaper per kg than pure fat loss
+    const result = getEffectiveKcalPerKgWeightLoss(16, -5);
+    expect(result).toBeLessThan(39.5 * 239);
+  });
+
+  it('approaches pure fat density when initial fat mass is very large', () => {
+    // Very obese person: mostly fat lost → approaches RHO_FAT
+    const result = getEffectiveKcalPerKgWeightLoss(100, -5);
+    expect(result).toBeGreaterThan(8000); // close to 9440.5
+  });
+
+  it('male and female give different results (different Forbes C)', () => {
+    const male = getEffectiveKcalPerKgWeightLoss(16, -5, 'male');
+    const female = getEffectiveKcalPerKgWeightLoss(16, -5, 'female');
+    expect(male).not.toBe(female);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getWeightChangeComposition
+// ---------------------------------------------------------------------------
+
+describe('getWeightChangeComposition', () => {
+  it('returns zeros for zero weight change', () => {
+    const result = getWeightChangeComposition(16, 0);
+    expect(result.fatChangeKg).toBe(0);
+    expect(result.leanChangeKg).toBe(0);
+  });
+
+  it('splits gain by fat fraction for intermediate (50/50)', () => {
+    // 2kg gain, intermediate: 1kg fat, 1kg lean
+    const result = getWeightChangeComposition(16, 2, 'intermediate');
+    expect(result.fatChangeKg).toBe(1.0);
+    expect(result.leanChangeKg).toBe(1.0);
+  });
+
+  it('splits gain by fat fraction for beginner (40% fat)', () => {
+    // 2kg gain, beginner: 0.8kg fat, 1.2kg lean
+    const result = getWeightChangeComposition(16, 2, 'beginner');
+    expect(result.fatChangeKg).toBe(0.8);
+    expect(result.leanChangeKg).toBe(1.2);
+  });
+
+  it('splits gain by fat fraction for advanced (60% fat)', () => {
+    // 2kg gain, advanced: 1.2kg fat, 0.8kg lean
+    const result = getWeightChangeComposition(16, 2, 'advanced');
+    expect(result.fatChangeKg).toBe(1.2);
+    expect(result.leanChangeKg).toBe(0.8);
+  });
+
+  it('fat + lean equals total weight change for gain', () => {
+    const result = getWeightChangeComposition(16, 3, 'intermediate');
+    expect(result.fatChangeKg + result.leanChangeKg).toBeCloseTo(3, 1);
+  });
+
+  it('uses 75/25 fallback for loss when initialFatMassKg is zero', () => {
+    const result = getWeightChangeComposition(0, -4);
+    expect(result.fatChangeKg).toBe(-3.0);
+    expect(result.leanChangeKg).toBe(-1.0);
+  });
+
+  it('both components are negative for weight loss', () => {
+    const result = getWeightChangeComposition(16, -4);
+    expect(result.fatChangeKg).toBeLessThan(0);
+    expect(result.leanChangeKg).toBeLessThan(0);
+  });
+
+  it('fat + lean sum approximately equals total weight loss (Forbes)', () => {
+    const result = getWeightChangeComposition(16, -4);
+    expect(result.fatChangeKg + result.leanChangeKg).toBeCloseTo(-4, 1);
+  });
+
+  it('fat loss is larger share than lean loss for average body fat (Forbes)', () => {
+    const result = getWeightChangeComposition(16, -4);
+    expect(Math.abs(result.fatChangeKg)).toBeGreaterThan(Math.abs(result.leanChangeKg));
+  });
+
+  it('gender affects the fat/lean split during loss', () => {
+    const male = getWeightChangeComposition(16, -4, 'intermediate', 'male');
+    const female = getWeightChangeComposition(16, -4, 'intermediate', 'female');
+    expect(male.fatChangeKg).not.toBe(female.fatChangeKg);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getCalorieAdjustment
+// ---------------------------------------------------------------------------
+
+describe('getCalorieAdjustment', () => {
+  it('returns 0 for maintain', () => {
+    expect(getCalorieAdjustment('maintain', 80)).toBe(0);
+  });
+
+  it('returns negative deficit for lose', () => {
+    const adj = getCalorieAdjustment('lose', 80);
+    expect(adj).toBeLessThan(0);
+  });
+
+  it('returns positive surplus for gain', () => {
+    const adj = getCalorieAdjustment('gain', 80);
+    expect(adj).toBeGreaterThan(0);
+  });
+
+  it('deficit is clamped to minimum -250 for very light person', () => {
+    // 5.5 * 40 = 220 < 250 → clamped to -250
+    expect(getCalorieAdjustment('lose', 40)).toBe(-250);
+  });
+
+  it('deficit is clamped to maximum -750 for very heavy person', () => {
+    // 5.5 * 140 = 770 > 750 → clamped to -750
+    expect(getCalorieAdjustment('lose', 140)).toBe(-750);
+  });
+
+  it('calculates unclamped deficit for typical weight (80kg)', () => {
+    // 5.5 * 80 = 440, within [250, 750]
+    expect(getCalorieAdjustment('lose', 80)).toBe(-440);
+  });
+
+  it('surplus is clamped to minimum 150 for very light person', () => {
+    // 2.75 * 40 = 110 < 150 → clamped to 150
+    expect(getCalorieAdjustment('gain', 40)).toBe(150);
+  });
+
+  it('surplus is clamped to maximum 400 for very heavy person', () => {
+    // 2.75 * 160 = 440 > 400 → clamped to 400
+    expect(getCalorieAdjustment('gain', 160)).toBe(400);
+  });
+
+  it('calculates unclamped surplus for typical weight (80kg)', () => {
+    // 2.75 * 80 = 220, within [150, 400]
+    expect(getCalorieAdjustment('gain', 80)).toBe(220);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeWeightChangeFromCalorieDelta
+// ---------------------------------------------------------------------------
+
+describe('computeWeightChangeFromCalorieDelta', () => {
+  it('returns 0 for zero delta', () => {
+    expect(computeWeightChangeFromCalorieDelta(0, 80)).toBe(0);
+  });
+
+  it('returns positive kg for a calorie surplus', () => {
+    const change = computeWeightChangeFromCalorieDelta(6370, 80, { liftingExperience: 'intermediate' });
+    // 6370 / 6370 = 1.0 kg
+    expect(change).toBeCloseTo(1.0, 5);
+  });
+
+  it('returns negative kg for a calorie deficit (no body fat)', () => {
+    // -7700 / 7700 = -1.0 kg
+    const change = computeWeightChangeFromCalorieDelta(-7700, 80);
+    expect(change).toBeCloseTo(-1.0, 5);
+  });
+
+  it('uses Forbes model when body fat is valid for deficit', () => {
+    const withBF = computeWeightChangeFromCalorieDelta(-7700, 80, {
+      bodyFatPercent: 20,
+      gender: 'male',
+    });
+    const withoutBF = computeWeightChangeFromCalorieDelta(-7700, 80);
+    // Forbes gives a different kcal/kg than the default 7700
+    expect(withBF).not.toBe(withoutBF);
+  });
+
+  it('uses experience-based build cost for surplus', () => {
+    const beginner = computeWeightChangeFromCalorieDelta(5876, 80, { liftingExperience: 'beginner' });
+    const advanced = computeWeightChangeFromCalorieDelta(5876, 80, { liftingExperience: 'advanced' });
+    // 5876/5876=1 for beginner, 5876/6864<1 for advanced
+    expect(beginner).toBeGreaterThan(advanced);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Exported constants
+// ---------------------------------------------------------------------------
+
+describe('exported constants', () => {
+  it('ACTIVITY_MULTIPLIERS has entries for levels 1–5', () => {
+    expect(ACTIVITY_MULTIPLIERS[1]).toBe(1.2);
+    expect(ACTIVITY_MULTIPLIERS[2]).toBe(1.375);
+    expect(ACTIVITY_MULTIPLIERS[3]).toBe(1.55);
+    expect(ACTIVITY_MULTIPLIERS[4]).toBe(1.725);
+    expect(ACTIVITY_MULTIPLIERS[5]).toBe(1.9);
+  });
+
+  it('FORBES_C_MALE is greater than FORBES_C_FEMALE', () => {
+    expect(FORBES_C_MALE).toBeGreaterThan(FORBES_C_FEMALE);
+    expect(FORBES_C_MALE).toBe(13.8);
+    expect(FORBES_C_FEMALE).toBe(10.4);
+  });
+
+  it('RMR constants are positive', () => {
+    expect(RMR_LEAN_KCAL_PER_KG).toBe(13.0);
+    expect(RMR_FAT_KCAL_PER_KG).toBe(4.5);
+    expect(RMR_LEAN_KCAL_PER_KG).toBeGreaterThan(RMR_FAT_KCAL_PER_KG);
+  });
+
+  it('ADAPTIVE_THERMOGENESIS_KCAL_PER_KG is 20', () => {
+    expect(ADAPTIVE_THERMOGENESIS_KCAL_PER_KG).toBe(20.0);
+  });
+
+  it('BODY_FAT_UNCERTAINTY is 4', () => {
+    expect(BODY_FAT_UNCERTAINTY).toBe(4);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// planToInitialGoals
+// ---------------------------------------------------------------------------
+
+describe('planToInitialGoals', () => {
+  const loseInput: NutritionCalculatorInput = {
+    gender: 'male',
+    weightKg: 83,
+    heightCm: 180,
+    age: 30,
+    activityLevel: 3,
+    weightGoal: 'lose',
+    fitnessGoal: 'weight_loss',
+    liftingExperience: 'intermediate',
+  };
+
+  it('maps totalCalories, macros, and targetWeight from plan', () => {
+    const plan = calculateNutritionPlan(loseInput);
+    const goals = planToInitialGoals(plan);
+
+    expect(goals.totalCalories).toBe(plan.targetCalories);
+    expect(goals.protein).toBe(plan.protein);
+    expect(goals.carbs).toBe(plan.carbs);
+    expect(goals.fats).toBe(plan.fats);
+    expect(goals.targetWeight).toBe(plan.projectedWeightKg);
+    expect(goals.targetDate).toBeNull();
+  });
+
+  it('calculates fiber via fiberFromCalories (not inline)', () => {
+    const plan = calculateNutritionPlan(loseInput);
+    const goals = planToInitialGoals(plan);
+    expect(goals.fiber).toBe(fiberFromCalories(plan.targetCalories));
+  });
+
+  it('sets eatingPhase to cut when targetCalories < tdee', () => {
+    const plan = calculateNutritionPlan(loseInput);
+    expect(plan.targetCalories).toBeLessThan(plan.tdee);
+    const goals = planToInitialGoals(plan);
+    expect(goals.eatingPhase).toBe('cut');
+  });
+
+  it('sets eatingPhase to bulk when targetCalories > tdee', () => {
+    const plan = calculateNutritionPlan({ ...loseInput, weightGoal: 'gain' });
+    expect(plan.targetCalories).toBeGreaterThan(plan.tdee);
+    const goals = planToInitialGoals(plan);
+    expect(goals.eatingPhase).toBe('bulk');
+  });
+
+  it('sets eatingPhase to maintain when targetCalories equals tdee', () => {
+    const plan = calculateNutritionPlan({ ...loseInput, weightGoal: 'maintain' });
+    expect(plan.targetCalories).toBe(plan.tdee);
+    const goals = planToInitialGoals(plan);
+    expect(goals.eatingPhase).toBe('maintain');
+  });
+
+  it('maps optional body composition targets when available', () => {
+    const plan = calculateNutritionPlan({ ...loseInput, bodyFatPercent: 20 });
+    const goals = planToInitialGoals(plan);
+
+    expect(goals.targetBodyFat).toBe(plan.targetBodyFat);
+    expect(goals.targetBMI).toBe(plan.targetBMI);
+    expect(goals.targetFFMI).toBe(plan.targetFFMI);
+  });
+
+  it('optional targets are undefined when plan has no body fat', () => {
+    const plan = calculateNutritionPlan(loseInput);
+    const goals = planToInitialGoals(plan);
+    expect(goals.targetBodyFat).toBeUndefined();
+    expect(goals.targetFFMI).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// generateWeeklyCheckins
+// ---------------------------------------------------------------------------
+
+describe('generateWeeklyCheckins', () => {
+  const baseInput: NutritionCalculatorInput = {
+    gender: 'male',
+    weightKg: 80,
+    heightCm: 175,
+    age: 30,
+    activityLevel: 3,
+    weightGoal: 'lose',
+    fitnessGoal: 'weight_loss',
+    liftingExperience: 'intermediate',
+  };
+
+  // Use noon UTC timestamps to avoid timezone boundary issues
+  const START_MS = new Date('2026-01-15T12:00:00.000Z').getTime();
+  const DAY_MS = 86_400_000;
+
+  it('returns empty array when period <= frequencyDays', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 7 * DAY_MS, 1.75, null)).toHaveLength(0);
+    expect(generateWeeklyCheckins(plan, START_MS, START_MS + 6 * DAY_MS, 1.75, null)).toHaveLength(0);
+  });
+
+  it('returns one checkin for a 14-day period', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    // totalCalendarDays=14, totalIntervals=2, loop interval 1 only → 1 checkin
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 14 * DAY_MS, 1.75, null);
+    expect(checkins).toHaveLength(1);
+  });
+
+  it('returns three checkins for a 28-day period (weekly frequency)', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    // totalCalendarDays=28, totalIntervals=4, loop interval 1..3 → 3 checkins
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null);
+    expect(checkins).toHaveLength(3);
+  });
+
+  it('each checkin has required fields', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null);
+    for (const checkin of checkins) {
+      expect(checkin.checkinDate).toBeDefined();
+      expect(typeof checkin.targetWeight).toBe('number');
+    }
+  });
+
+  it('target weights move toward projected weight (losing)', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null);
+    // Each checkin should have a lower target weight than the current
+    for (const checkin of checkins) {
+      expect(checkin.targetWeight).toBeLessThanOrEqual(baseInput.weightKg);
+    }
+    // And weights decrease monotonically
+    for (let i = 1; i < checkins.length; i++) {
+      expect(checkins[i].targetWeight).toBeLessThanOrEqual(checkins[i - 1].targetWeight);
+    }
+  });
+
+  it('target weights move upward for a bulk plan', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'gain' });
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null);
+    for (const checkin of checkins) {
+      expect(checkin.targetWeight).toBeGreaterThanOrEqual(baseInput.weightKg);
+    }
+  });
+
+  it('includes targetBodyFat when body fat is provided (cutting)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, 20);
+    expect(checkins.length).toBeGreaterThan(0);
+    for (const checkin of checkins) {
+      expect(checkin.targetBodyFat).toBeDefined();
+      expect(checkin.targetBodyFat).toBeGreaterThan(0);
+    }
+  });
+
+  it('includes targetBmi and targetFfmi when height and body fat are provided', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, 20);
+    for (const checkin of checkins) {
+      expect(checkin.targetBmi).toBeDefined();
+      expect(checkin.targetFfmi).toBeDefined();
+    }
+  });
+
+  it('omits targetBodyFat when currentBodyFatPercent is null', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    const checkins = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null);
+    for (const checkin of checkins) {
+      expect(checkin.targetBodyFat).toBeUndefined();
+    }
+  });
+
+  it('custom frequencyDays changes number of checkins', () => {
+    const plan = calculateNutritionPlan(baseInput);
+    const weekly = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null, 7);
+    const biweekly = generateWeeklyCheckins(plan, START_MS, START_MS + 28 * DAY_MS, 1.75, null, 14);
+    expect(weekly.length).toBeGreaterThan(biweekly.length);
   });
 });
