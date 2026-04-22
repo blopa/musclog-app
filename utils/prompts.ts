@@ -250,20 +250,7 @@ export const getAppleIntelligenceContext = async (
     context += nutritionSummary;
   }
 
-  // TODO: does these make sense? I dont think they do...
-  context += '\n\n## ACTION REQUIRED\n\n';
-  context += 'ANALYZE the data above. CREATE personalized recommendations. ';
-  context += 'TRACK progress indicators. CALCULATE next steps. ';
-  context += 'EVALUATE performance trends. RECOMMEND specific actions.';
-
   return context;
-};
-
-/**
- * Simple token count estimator (rough approximation: 1 token ≈ 4 characters)
- */
-const estimateTokenCount = (text: string): number => {
-  return Math.ceil(text.length / 4);
 };
 
 /**
