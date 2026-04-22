@@ -291,17 +291,6 @@ export type NutritionEntry = {
 
 const LENGTH_SOFT_LIMIT = 50;
 
-/**
- * Merged System Prompt:
- * Combines Loggy's app integration with Chad's PhD personality and guardrails.
- */
-const getSystemPrompt = async (
-  language: string = 'en-US',
-  context?: 'nutrition' | 'exercise' | 'general'
-) => {
-  return await getBaseSystemPrompt(language, context);
-};
-
 const baseSchemaProperties = {
   msg4User: {
     type: 'string',
