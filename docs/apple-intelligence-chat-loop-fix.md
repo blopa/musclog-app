@@ -12,12 +12,14 @@ The Apple Intelligence chat interface is experiencing repetitive loop behavior w
 ## Root Cause Analysis
 
 ### Primary Issues
+
 - **Overly restrictive system prompts** causing limited response patterns
 - **Poor error handling logic** leading to canned response loops
 - **Missing meta-conversation support** for self-referential questions
 - **Faulty language detection** triggering incorrect language constraints
 
 ### NOT Context Window Related
+
 - Messages are well under 4,096 token limit
 - Conversation is too short for context window overflow
 - Issue is prompt design, not technical limitations
@@ -27,15 +29,17 @@ The Apple Intelligence chat interface is experiencing repetitive loop behavior w
 ### 1. System Prompt Redesign
 
 #### Current Problems
+
 ```swift
 // PROBLEMATIC: Overly restrictive
 "You are a fitness, nutrition, and health assistant. Only respond about these topics. If you can't help, suggest workout tips."
 ```
 
 #### Improved Design
+
 ```swift
 // IMPROVED: Flexible with clear boundaries
-"You are Loggy, a specialized fitness, nutrition, and health assistant. 
+"You are Loggy, a specialized fitness, nutrition, and health assistant.
 
 Core Capabilities:
 - Provide workout advice and exercise guidance
@@ -61,6 +65,7 @@ Error Handling:
 ### 2. Response Loop Prevention
 
 #### Implementation Strategy
+
 ```swift
 // Add to system prompt
 "Response Diversity Rules:
@@ -71,12 +76,13 @@ Error Handling:
 ```
 
 #### Detection Logic
+
 ```swift
 // In your chat processing logic
 class ResponseDiversityChecker {
     private let recentResponses: [String] = []
     private let maxHistorySize = 3
-    
+
     func isRepetitive(_ newResponse: String) -> Bool {
         // Check for high similarity with recent responses
         // Implement similarity threshold (e.g., >80% similarity)
@@ -84,7 +90,7 @@ class ResponseDiversityChecker {
             similarity(newResponse, response) > 0.8
         }
     }
-    
+
     func shouldVaryResponse(_ response: String) -> Bool {
         return isRepetitive(response)
     }
@@ -94,9 +100,11 @@ class ResponseDiversityChecker {
 ### 3. Language Detection Fix
 
 #### Current Issue
+
 The model incorrectly detects Portuguese when user is speaking English.
 
 #### Solution
+
 ```swift
 // Add to system prompt
 "Language Handling:
@@ -109,6 +117,7 @@ The model incorrectly detects Portuguese when user is speaking English.
 ### 4. Meta-Conversation Support
 
 #### Enhanced System Prompt
+
 ```swift
 "Meta-Conversation Rules:
 - If user asks about your behavior, capabilities, or repetition: respond honestly
@@ -118,6 +127,7 @@ The model incorrectly detects Portuguese when user is speaking English.
 ```
 
 #### Example Meta-Responses
+
 ```swift
 // Instead of: "Sorry, I can't assist with that..."
 // Use: "You're right, I notice I've been repeating myself. Let me try a different approach..."
@@ -126,17 +136,18 @@ The model incorrectly detects Portuguese when user is speaking English.
 ### 5. Context Window Management
 
 #### Proactive Monitoring
+
 ```swift
 // Even though not the current issue, implement for robustness
 class ContextWindowManager {
     private let maxTokens = 4096
     private let safetyMargin = 500
-    
+
     func shouldSummarize(conversation: [Message]) -> Bool {
         let tokenCount = estimateTokens(conversation)
         return tokenCount > (maxTokens - safetyMargin)
     }
-    
+
     func summarizeConversation(_ conversation: [Message]) -> String {
         // Implement conversation summarization
         // Preserve key context while reducing token count
@@ -147,24 +158,28 @@ class ContextWindowManager {
 ## Implementation Plan
 
 ### Phase 1: System Prompt Updates
+
 1. **Update base system prompt** with improved guidelines
 2. **Add conversation flow rules** for better handling
 3. **Implement meta-conversation support**
 4. **Fix language detection logic**
 
 ### Phase 2: Response Diversity System
+
 1. **Implement response similarity detection**
 2. **Add variation logic for repeated patterns**
 3. **Create response history tracking**
 4. **Add automatic response variation**
 
 ### Phase 3: Enhanced Error Handling
+
 1. **Implement graceful refusal responses**
 2. **Add contextual suggestion generation**
 3. **Create fallback conversation strategies**
 4. **Add self-correction mechanisms**
 
 ### Phase 4: Monitoring & Testing
+
 1. **Add loop detection metrics**
 2. **Implement conversation quality monitoring**
 3. **Create test cases for edge conditions**
@@ -173,6 +188,7 @@ class ContextWindowManager {
 ## Testing Strategy
 
 ### Unit Tests
+
 ```swift
 // Test response diversity
 func testResponseDiversity() {
@@ -191,12 +207,14 @@ func testLanguageDetection() {
 ```
 
 ### Integration Tests
+
 - **Conversation flow testing** with various user inputs
 - **Edge case testing** for unusual requests
 - **Long conversation testing** for context window management
 - **Multi-language testing** for language handling
 
 ### User Acceptance Testing
+
 - **Real-world conversation scenarios**
 - **User feedback collection**
 - **Performance monitoring**
@@ -205,12 +223,14 @@ func testLanguageDetection() {
 ## Success Metrics
 
 ### Quantitative Metrics
+
 - **Response repetition rate**: < 5% (target: 0%)
 - **Conversation completion rate**: > 90%
 - **User satisfaction score**: > 4.5/5
 - **Error handling success rate**: > 95%
 
 ### Qualitative Metrics
+
 - **Natural conversation flow**
 - **Appropriate topic handling**
 - **Graceful error recovery**
@@ -219,12 +239,14 @@ func testLanguageDetection() {
 ## Rollout Strategy
 
 ### Canary Release
+
 1. **Test with small user group** (1-5%)
 2. **Monitor key metrics** closely
 3. **Collect user feedback**
 4. **Iterate based on results**
 
 ### Full Rollout
+
 1. **Gradual user expansion** (10% → 50% → 100%)
 2. **Continuous monitoring**
 3. **Rapid rollback capability**
@@ -233,6 +255,7 @@ func testLanguageDetection() {
 ## Monitoring & Maintenance
 
 ### Real-time Monitoring
+
 ```swift
 // Track conversation health
 struct ConversationMetrics {
@@ -244,12 +267,14 @@ struct ConversationMetrics {
 ```
 
 ### Alerting
+
 - **High repetition rate** alerts
 - **Conversation abandonment** monitoring
 - **Error handling failures** notifications
 - **User satisfaction drops** alerts
 
 ### Continuous Improvement
+
 - **A/B testing** for prompt variations
 - **User feedback integration**
 - **Performance optimization**
@@ -258,12 +283,14 @@ struct ConversationMetrics {
 ## Risk Mitigation
 
 ### Potential Risks
+
 1. **Over-correction**: Making prompts too permissive
 2. **Response quality degradation**: Too much variation
 3. **Performance impact**: Additional processing overhead
 4. **User confusion**: Changed behavior patterns
 
 ### Mitigation Strategies
+
 1. **Gradual rollout** with monitoring
 2. **A/B testing** for optimization
 3. **Performance benchmarking**
@@ -274,6 +301,7 @@ struct ConversationMetrics {
 The chat loop issue is primarily a **prompt engineering problem** rather than a technical limitation. By implementing comprehensive system prompt improvements, response diversity mechanisms, and robust error handling, we can eliminate the repetitive behavior while maintaining the AI's helpfulness and personality.
 
 The key focus should be on:
+
 - **Clear, flexible system prompts**
 - **Response diversity enforcement**
 - **Meta-conversation support**
