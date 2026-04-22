@@ -16,9 +16,6 @@
     },
     "plugins": [
       "react-native-edge-to-edge",
-      "./plugins/withAndroidBarcodeScannerFix",
-      "./plugins/withIosSimulatorBuildFix",
-      "./plugins/withSentryBuildPhaseFix",
       "expo-localization",
       "expo-router",
       "expo-health-connect",

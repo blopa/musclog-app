@@ -9,7 +9,8 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint:all": "git add . && npm run lint:eslint-fix && npm run format && npm run prebuild:cross-platform && npm run typecheck",
-    "prebuild:cross-platform": "node scripts/prebuild-cross-platform.js",
+    "prebuild:cross-platform-old": "node scripts/prebuild-cross-platform.js",
+    "prebuild:cross-platform": "npm run prebuild",
     "bump": "ncu -u -t minor",
     "bump-any": "ncu -u",
     "clear-cache": "rm -rf node_modules/.cache /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",
@@ -55,7 +56,8 @@
     "build-and-submit-ios": "node scripts/prepare-for-eas.js && eas build --platform ios --profile production --auto-submit",
     "run-ios-device": "expo run:ios --device",
     "ios-simulator": "expo run:ios --device",
-    "patch-ios-project": "node scripts/fix-ios-project.js",
+    "patch-ios-project-old": "node scripts/fix-ios-project.js",
+    "patch-ios-project": "node -v",
     "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
   },
   "optionalDependencies": {
