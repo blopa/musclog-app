@@ -214,19 +214,25 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
 
     try {
       if (isEditing && selectedGoal) {
-        await NutritionGoalService.updateGoal(selectedGoal.id, input);
+        await NutritionGoalService.updateGoal(selectedGoal.id, input, true);
       } else {
         const startDate = nutritionGoals.goalStartDate;
         const todayStartMs = localDayStartMs(new Date());
+
+        let savedGoalId: string;
         if (startDate != null && startDate < todayStartMs) {
-          await NutritionGoalService.addGoalAtDate(input, startDate);
+          savedGoalId = (await NutritionGoalService.addGoalAtDate(input, startDate)).id;
         } else {
-          await NutritionGoalService.saveGoals(input);
+          savedGoalId = (await NutritionGoalService.saveGoals(input)).id;
         }
+
+        await NutritionGoalService.regenerateCheckins(savedGoalId);
       }
+
       if (refreshNutritionRef.current) {
         await refreshNutritionRef.current();
       }
+
       setNutritionGoalsModalVisible(false);
       setPendingWizardPrefill(null);
     } catch (error) {
