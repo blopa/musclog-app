@@ -1,7 +1,7 @@
 import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
-import { NutritionService, SettingsService } from '@/database/services';
+import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
@@ -157,6 +157,26 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
       : undefined,
     fetch: devWebProxyFetch,
   });
+}
+
+async function logLlmDebugEvent(params: {
+  provider: CoachAIProvider;
+  direction: 'request' | 'response';
+  operation: string;
+  payload: unknown;
+  config?: CoachAIConfig;
+}): Promise<void> {
+  try {
+    await DebugDumpService.logJsonEvent({
+      provider: params.provider,
+      direction: params.direction,
+      operation: params.operation,
+      payload: params.payload,
+      secrets: params.config?.apiKey ? [params.config.apiKey] : [],
+    });
+  } catch (error) {
+    console.warn('[coachAI] Failed to write debug dump:', error);
+  }
 }
 
 export type ChatHistoryEntry = {
@@ -474,7 +494,35 @@ async function sendViaGemini(
   );
 
   const contents = buildGeminiContents(truncatedHistory, userMessage);
+  const requestPayload = {
+    model: config.model,
+    contents,
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: buildResponseSchema(includeUserSummary),
+      systemInstruction: {
+        parts: systemParts,
+      },
+    },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'sendViaGemini',
+    payload: requestPayload,
+    config,
+  });
+
   const result = await genModel.generateContent({ contents });
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'sendViaGemini',
+    payload: result,
+    config,
+  });
+
   const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
@@ -509,24 +557,47 @@ async function sendViaOpenAI(
   ];
 
   const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+    model: config.model,
+    messages,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'coach_response',
+        strict: true,
+        schema,
+      },
+    },
+  };
 
   try {
-    const completion = await client.chat.completions.create({
-      model: config.model,
-      messages,
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'coach_response',
-          strict: true,
-          schema,
-        },
-      },
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'sendViaOpenAI',
+      payload: requestPayload,
+      config,
+    });
+
+    const completion = await client.chat.completions.create(requestPayload);
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'sendViaOpenAI',
+      payload: completion,
+      config,
     });
 
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error: any) {
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'sendViaOpenAI',
+      payload: { error },
+      config,
+    });
     console.error('[coachAI] sendViaOpenAI error:', error);
 
     // Log detailed error for debugging but don't expose internals to user
@@ -603,6 +674,24 @@ async function generateText(
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
+      config: {
+        systemInstruction: {
+          parts: [{ text: promptWithLang } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateText',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -613,17 +702,41 @@ async function generateText(
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateText',
+      payload: result,
+      config,
+    });
     const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
   const client = buildOpenAIClient(config);
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
       { role: 'user', content: sanitizedUserMessage },
     ],
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateText',
+    payload: requestPayload,
+    config,
+  });
+
+  const completion = await client.chat.completions.create(requestPayload);
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateText',
+    payload: completion,
+    config,
   });
 
   const raw = completion.choices[0]?.message?.content ?? '';
@@ -643,6 +756,25 @@ async function generateTextWithHistory(
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
   if (config.provider === 'gemini') {
+    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
+    const requestPayload = {
+      model: config.model,
+      contents,
+      config: {
+        systemInstruction: {
+          parts: [{ text: systemPrompt } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateTextWithHistory',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -650,24 +782,48 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
     const result = await genModel.generateContent({ contents });
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateTextWithHistory',
+      payload: result,
+      config,
+    });
+
     const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
   const client = buildOpenAIClient(config);
-  const historyMessages = recentConversation.map((e) => ({
+  const historyMessages: OpenAI.Chat.ChatCompletionMessageParam[] = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
   }));
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: systemPrompt },
       ...historyMessages,
       { role: 'user', content: sanitizedFinalUserMessage },
     ],
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateTextWithHistory',
+    payload: requestPayload,
+    config,
+  });
+
+  const completion = await client.chat.completions.create(requestPayload);
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateTextWithHistory',
+    payload: completion,
+    config,
   });
 
   const raw = completion.choices[0]?.message?.content ?? '';
@@ -702,6 +858,26 @@ async function generateStructured<T>(
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: schema,
+        systemInstruction: {
+          parts: [{ text: promptWithLang } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateStructured',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -715,10 +891,19 @@ async function generateStructured<T>(
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateStructured',
+      payload: result,
+      config,
+    });
+
     const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
+
     try {
       const clean = raw.replace(/```json|```/g, '').trim();
       return JSON.parse(clean) as T;
@@ -726,9 +911,10 @@ async function generateStructured<T>(
       return null;
     }
   }
+
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
@@ -742,11 +928,30 @@ async function generateStructured<T>(
         schema: strictSchema,
       },
     },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateStructured',
+    payload: requestPayload,
+    config,
   });
+
+  const completion = await client.chat.completions.create(requestPayload);
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateStructured',
+    payload: completion,
+    config,
+  });
+
   const raw = completion.choices[0]?.message?.content ?? '';
   if (!raw?.trim()) {
     return null;
   }
+
   try {
     const clean = raw.replace(/```json|```/g, '').trim();
     return JSON.parse(clean) as T;
@@ -773,6 +978,39 @@ async function generateWithImageStructured<T>(
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [
+        {
+          parts: [
+            { text: userText } as Part,
+            {
+              inlineData: {
+                data: base64Image,
+                mimeType: mimeType,
+              },
+            } as Part,
+          ],
+          role: 'user',
+        },
+      ],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: schema,
+        systemInstruction: {
+          parts: [{ text: systemPrompt } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateWithImageStructured',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -784,6 +1022,7 @@ async function generateWithImageStructured<T>(
       },
       [{ text: systemPrompt } as Part]
     );
+
     const contents: Content[] = [
       {
         parts: [
@@ -798,11 +1037,21 @@ async function generateWithImageStructured<T>(
         role: 'user',
       },
     ];
+
     const result = await genModel.generateContent({ contents });
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateWithImageStructured',
+      payload: result,
+      config,
+    });
+
     const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
+
     try {
       const clean = raw.replace(/```json|```/g, '').trim();
       return JSON.parse(clean) as T;
@@ -813,7 +1062,7 @@ async function generateWithImageStructured<T>(
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -833,11 +1082,30 @@ async function generateWithImageStructured<T>(
         schema: strictSchema,
       },
     },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateWithImageStructured',
+    payload: requestPayload,
+    config,
   });
+
+  const completion = await client.chat.completions.create(requestPayload);
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateWithImageStructured',
+    payload: completion,
+    config,
+  });
+
   const raw = completion.choices[0]?.message?.content ?? '';
   if (!raw?.trim()) {
     return null;
   }
+
   try {
     const clean = raw.replace(/```json|```/g, '').trim();
     return JSON.parse(clean) as T;

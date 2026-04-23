@@ -11,6 +11,7 @@ export { MUSCLE_SEED_DATA, MuscleService } from './MuscleService';
 
 // Export chat service
 export { ChatService } from './ChatService';
+export { DebugDumpService } from './DebugDumpService';
 
 // Export AI custom prompt service
 export { AiCustomPromptService } from './AiCustomPromptService';

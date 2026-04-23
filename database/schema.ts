@@ -373,6 +373,20 @@ export const schema = appSchema({
       ],
     }),
 
+    // Hidden development/debug table for sanitized LLM JSON traffic
+    tableSchema({
+      name: 'debug_dump',
+      columns: [
+        { name: 'provider', type: 'string', isIndexed: true },
+        { name: 'direction', type: 'string', isIndexed: true }, // 'request' | 'response'
+        { name: 'operation', type: 'string', isIndexed: true },
+        { name: 'payload_json', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // User Profile
     tableSchema({
       name: 'users',

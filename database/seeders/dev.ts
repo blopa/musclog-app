@@ -2319,6 +2319,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   // Seed Gemini AI settings
   await SettingsService.setEnableGoogleGemini(true);
   await SettingsService.setGoogleGeminiApiKey('dev-gemini-api-key-12345');
+  await SettingsService.setDumpLlmRequests(true);
   console.log('Seeded Gemini AI settings: enabled=true, apiKey=dev-gemini-api-key-12345');
 
   console.log(

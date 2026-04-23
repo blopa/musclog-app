@@ -20,6 +20,7 @@ export type SettingType =
   | 'use_on_device_ai'
   | 'use_musclog_free_tier'
   | 'musclog_gateway_anonymous_id'
+  | 'dump_llm_requests'
   | 'chart_tooltip_position'
   | 'nutrition_display'
   | 'other';

@@ -1,6 +1,7 @@
 // Export all models
 export { default as AiCustomPrompt } from './AiCustomPrompt';
 export { default as ChatMessage } from './ChatMessage';
+export { default as DebugDump } from './DebugDump';
 export { default as Exercise } from './Exercise';
 export { default as ExerciseGoal } from './ExerciseGoal';
 export { default as ExerciseMuscle } from './ExerciseMuscle';
@@ -30,6 +31,7 @@ export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
 export type { ChatMessageType, ChatSender } from './ChatMessage';
+export type { DebugDumpDirection } from './DebugDump';
 export type { EquipmentType, ExerciseSource, MechanicType, MuscleGroup } from './Exercise';
 export type { ExerciseGoalType } from './ExerciseGoal';
 export type { MicrosData } from './Food';

@@ -32,6 +32,7 @@ export async function verifyDatabaseTables(): Promise<{
     'user_metrics',
     'user_metrics_notes',
     'settings',
+    'debug_dump',
     'users',
     'nutrition_goals',
     'nutrition_checkins',

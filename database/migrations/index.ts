@@ -10,6 +10,7 @@ import migrationV8 from '@/database/migrations/2026/04/migration-v8';
 import migrationV9 from '@/database/migrations/2026/04/migration-v9';
 import migrationV10 from '@/database/migrations/2026/04/migration-v10';
 import migrationV11 from '@/database/migrations/2026/04/migration-v11';
+import migrationV12 from '@/database/migrations/2026/04/migration-v12';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -61,5 +62,7 @@ export const migrations = schemaMigrations({
     migrationV10,
     // Version 11: Add muscles catalogue and exercise_muscles junction table
     migrationV11,
+    // Version 12: Add debug_dump table for sanitized LLM request/response logs
+    migrationV12,
   ],
 });

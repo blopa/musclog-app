@@ -11,6 +11,7 @@ import adapter from './adapter';
 // Import all models
 import AiCustomPrompt from './models/AiCustomPrompt';
 import ChatMessage from './models/ChatMessage';
+import DebugDump from './models/DebugDump';
 import Exercise from './models/Exercise';
 import ExerciseGoal from './models/ExerciseGoal';
 import ExerciseMuscle from './models/ExerciseMuscle';
@@ -72,5 +73,6 @@ export const database = new Database({
     SavedForLaterGroup,
     SavedForLaterItem,
     ChatMessage,
+    DebugDump,
   ],
 });
