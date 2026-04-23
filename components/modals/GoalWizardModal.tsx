@@ -1,5 +1,5 @@
 import { addMonths, addWeeks } from 'date-fns';
-import { ChevronLeft, Lightbulb, Scale, TrendingDown, TrendingUp, X } from 'lucide-react-native';
+import { ChevronLeft, Lightbulb, Scale, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -501,39 +501,18 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
             {t('goalsManagement.goalWizard.targetDate.label')}
           </Text>
-          {targetDate !== null ? (
-            <Pressable
-              onPress={() => setTargetDate(null)}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.7 : 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 6,
-              })}
-            >
-              <X size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  textTransform: 'uppercase',
-                  color: theme.colors.text.tertiary,
-                }}
-              >
-                {t('goalsManagement.goalWizard.targetDate.clear')}
-              </Text>
-            </Pressable>
-          ) : null}
         </View>
 
         <DatePickerInput
           selectedDate={displayDate}
           onPress={() => setDatePickerVisible(true)}
+          onClear={() => setTargetDate(null)}
           hideLabel
           variant="default"
           unset={targetDate === null}
           unsetPlaceholder={t('goalsManagement.goalWizard.targetDate.notSet')}
           dateDisplay="single-line"
+          showClearButton
         />
 
         <DatePickerModal

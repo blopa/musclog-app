@@ -817,20 +817,17 @@ export function NutritionGoalsBody({
                   hideLabel
                   variant="compact"
                   dateDisplay="single-line"
+                  alignDateContentEnd
                   showLeadingIcon={!showIcons}
                   selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
                   unset={goalStartDate == null}
                   unsetPlaceholder={t('nutritionGoals.goalStartDateToday')}
                   onPress={() => setIsGoalStartDatePickerVisible(true)}
+                  onClear={() => setGoalStartDate(null)}
+                  clearLabel={t('nutritionGoals.targetDateClear')}
+                  showClearButton
                 />
               </View>
-              {goalStartDate != null ? (
-                <Pressable hitSlop={8} onPress={() => setGoalStartDate(null)}>
-                  <Text className="text-xs text-accent-primary">
-                    {t('nutritionGoals.targetDateClear')}
-                  </Text>
-                </Pressable>
-              ) : null}
             </View>
           </View>
         ) : null}
@@ -1213,20 +1210,17 @@ export function NutritionGoalsBody({
                   hideLabel
                   variant="compact"
                   dateDisplay="single-line"
+                  alignDateContentEnd
                   showLeadingIcon={!showIcons}
                   selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
                   unset={targetDate == null}
                   unsetPlaceholder={t('nutritionGoals.targetDateNotSet')}
                   onPress={() => setIsTargetDatePickerVisible(true)}
+                  onClear={() => setTargetDate(null)}
+                  clearLabel={t('nutritionGoals.targetDateClear')}
+                  showClearButton
                 />
               </View>
-              {targetDate != null ? (
-                <Pressable hitSlop={8} onPress={() => setTargetDate(null)}>
-                  <Text className="text-xs text-accent-primary">
-                    {t('nutritionGoals.targetDateClear')}
-                  </Text>
-                </Pressable>
-              ) : null}
             </View>
           </View>
         </View>
