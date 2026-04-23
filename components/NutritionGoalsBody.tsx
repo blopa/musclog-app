@@ -188,17 +188,16 @@ function MacrosDistributionChart({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
 
-  const digestibleCarbs = Math.max(0, carbs - fiber);
   const totalCals =
     protein * CALORIES_FOR_PROTEIN +
-    digestibleCarbs * CALORIES_FOR_CARBS +
+    carbs * CALORIES_FOR_CARBS +
     fats * CALORIES_FOR_FAT +
     fiber * CALORIES_FOR_FIBER;
 
   const proteinPercentage =
     totalCals > 0 ? ((protein * CALORIES_FOR_PROTEIN) / totalCals) * 100 : 0;
   const carbsPercentage =
-    totalCals > 0 ? ((digestibleCarbs * CALORIES_FOR_CARBS) / totalCals) * 100 : 0;
+    totalCals > 0 ? ((carbs * CALORIES_FOR_CARBS) / totalCals) * 100 : 0;
   const fatsPercentage = totalCals > 0 ? ((fats * CALORIES_FOR_FAT) / totalCals) * 100 : 0;
   const fiberPercentage = totalCals > 0 ? ((fiber * CALORIES_FOR_FIBER) / totalCals) * 100 : 0;
 
@@ -213,7 +212,7 @@ function MacrosDistributionChart({
 
       <MacrosPizzaChart
         protein={protein * CALORIES_FOR_PROTEIN}
-        carbs={digestibleCarbs * CALORIES_FOR_CARBS}
+        carbs={carbs * CALORIES_FOR_CARBS}
         fats={fats * CALORIES_FOR_FAT}
         fiber={fiber * CALORIES_FOR_FIBER}
         insightMessage={macroInsight}
@@ -327,16 +326,15 @@ export function NutritionGoalsBody({
   });
 
   const syncMacroRatios = useCallback(() => {
-    const digestibleCarbs = Math.max(0, preciseMacros.current.carbs - preciseMacros.current.fiber);
     const totalCals =
       preciseMacros.current.protein * CALORIES_FOR_PROTEIN +
-      digestibleCarbs * CALORIES_FOR_CARBS +
+      preciseMacros.current.carbs * CALORIES_FOR_CARBS +
       preciseMacros.current.fats * CALORIES_FOR_FAT +
       preciseMacros.current.fiber * CALORIES_FOR_FIBER;
     if (totalCals > 0) {
       macroCalorieRatios.current = {
         protein: (preciseMacros.current.protein * CALORIES_FOR_PROTEIN) / totalCals,
-        carbs: (digestibleCarbs * CALORIES_FOR_CARBS) / totalCals,
+        carbs: (preciseMacros.current.carbs * CALORIES_FOR_CARBS) / totalCals,
         fats: (preciseMacros.current.fats * CALORIES_FOR_FAT) / totalCals,
         fiber: (preciseMacros.current.fiber * CALORIES_FOR_FIBER) / totalCals,
       };
@@ -499,10 +497,8 @@ export function NutritionGoalsBody({
       macrosArePristine.current = false;
 
       const newProtein = (sanitized * macroCalorieRatios.current.protein) / CALORIES_FOR_PROTEIN;
-      const newDigestibleCarbs =
-        (sanitized * macroCalorieRatios.current.carbs) / CALORIES_FOR_CARBS;
+      const newCarbs = (sanitized * macroCalorieRatios.current.carbs) / CALORIES_FOR_CARBS;
       const newFiber = (sanitized * macroCalorieRatios.current.fiber) / CALORIES_FOR_FIBER;
-      const newCarbs = newDigestibleCarbs + newFiber;
       const newFats = (sanitized * macroCalorieRatios.current.fats) / CALORIES_FOR_FAT;
 
       preciseMacros.current = {
@@ -684,12 +680,9 @@ export function NutritionGoalsBody({
       return;
     }
 
-    // Note: Fiber is typically included in the total carbs (4kcal/g) on labels,
-    // but for accuracy we count net carbs at 4kcal/g and fiber at 2kcal/g.
-    const digestibleCarbs = Math.max(0, preciseMacros.current.carbs - preciseMacros.current.fiber);
     const calculatedCalories =
       preciseMacros.current.protein * CALORIES_FOR_PROTEIN +
-      digestibleCarbs * CALORIES_FOR_CARBS +
+      preciseMacros.current.carbs * CALORIES_FOR_CARBS +
       preciseMacros.current.fats * CALORIES_FOR_FAT +
       preciseMacros.current.fiber * CALORIES_FOR_FIBER;
     setTotalCalories(Math.round(calculatedCalories));

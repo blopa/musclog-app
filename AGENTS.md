@@ -53,6 +53,9 @@
   - **Unit labels**: Use `getWeightUnit(units)`, `getHeightUnit(units)`, `getMassUnitLabel(units)`, or `metricDisplayUnit(metricType, units)` — never hardcode "kg", "lbs", "g", "oz" in UI.
   - **Type classification**: `isWeightMetricType(type)` (kg↔lbs: weight, muscle_mass, lean_body_mass) and `isLengthMetricType(type)` (cm↔in: height, chest, waist, hips, arms, thighs, calves, neck, shoulders).
   - **No conversion needed**: Macros (protein, carbs, fat, fiber) are always in grams, calories in kcal, body fat / BMI / FFMI are unitless — these stay the same in both systems.
+- **Carbs vs fiber convention (critical)**: There are two conventions in the codebase — **do not mix them**:
+  - **Food items / nutrition logs** (`NutritionLog`, `inferCaloriesFromMacros.ts`, `NutritionCharts.tsx`, food DB mappers): `carbs` = total carbohydrates **including** fiber, matching the US nutrition label standard. Digestible carbs = `carbs − fiber`. Always use `Math.max(0, carbs - fiber) * CALORIES_FOR_CARBS + fiber * CALORIES_FOR_FIBER` here.
+  - **User nutrition goals** (`NutritionGoalsBody`, saved goal records, onboarding results): `carbs` = **net/digestible carbs only** (fiber is a separate, additive macro). Total calories = `protein * 4 + carbs * 4 + fats * 9 + fiber * 2`. Never subtract fiber from carbs in this context.
   - **Food serving weights**: Stored in grams, displayed as g or oz. Use `gramsToDisplay`/`displayToGrams` and `getMassUnitLabel`. The `ServingSizeSelector` component handles this automatically.
   - **Every new feature** that displays or accepts weight, height, body measurements, or food serving sizes **must** use these conversion helpers. Test with imperial mode enabled.
 - **Translation**: Check the `lang` directory for translation files. Any new feature implemented must use translation keys and add new keys to the translation files for all available languages.
