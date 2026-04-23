@@ -278,6 +278,7 @@ export function NutritionGoalsBody({
   const { formatInteger } = useFormatAppNumber();
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
+  const defaultGoalStartDate = showGoalStartDate ? localDayStartMs(new Date()) : null;
   const [totalCalories, setTotalCalories] = useState(initialGoals.totalCalories);
   const [protein, setProtein] = useState(initialGoals.protein);
   const [carbs, setCarbs] = useState(initialGoals.carbs);
@@ -294,7 +295,7 @@ export function NutritionGoalsBody({
   const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals.targetFFMI || null);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals.targetDate ?? null);
   const [goalStartDate, setGoalStartDate] = useState<number | null>(
-    initialGoals.goalStartDate ?? null
+    initialGoals.goalStartDate ?? defaultGoalStartDate
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
@@ -380,6 +381,14 @@ export function NutritionGoalsBody({
       setTargetWeight(kgToDisplay(initialGoals.targetWeight, units));
     }
   }, [initialGoals?.targetWeight, units]);
+
+  useEffect(() => {
+    setTargetDate(initialGoals.targetDate ?? null);
+  }, [initialGoals.targetDate]);
+
+  useEffect(() => {
+    setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
+  }, [defaultGoalStartDate, initialGoals.goalStartDate]);
 
   // Load user's height once on mount so we can derive BMI and FFMI
   useEffect(() => {
@@ -1261,7 +1270,7 @@ export function NutritionGoalsBody({
           </View>
         ) : null}
       </View>
-      <View pointerEvents="none" style={{ height: theme.spacing.padding['80'] }} />
+      <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
     </ScrollView>
   );
 }
