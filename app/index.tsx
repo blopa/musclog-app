@@ -1,5 +1,5 @@
 import * as ExpoLinking from 'expo-linking';
-import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
+import { useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,6 @@ import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
-import { showSnackbar } from '@/utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
 declare global {
@@ -66,8 +65,6 @@ export default function HomeScreen() {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
-  // TODO: why is action not being used here?
-  const params = useLocalSearchParams<{ action?: string }>();
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
