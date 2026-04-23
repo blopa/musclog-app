@@ -86,6 +86,20 @@ function landingI18nPatcher() {
 
 const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})();`;
 
+function landingPanelGate(base: string) {
+  try {
+    const path = window.location.pathname.slice(base.length) || '/';
+    if (!path.startsWith('/app')) {
+      document.documentElement.classList.add('hide-desktop-wrapper');
+    }
+  } catch (_) {}
+}
+
+// process.env.EXPO_BASE_URL is resolved in Node and passed as an argument so the
+// function body stays free of Node-only globals and .toString() works in the browser.
+const _base = JSON.stringify((process.env.EXPO_BASE_URL ?? '').replace(/\/+$/, ''));
+const LANDING_GATE_SCRIPT = `(${landingPanelGate.toString()})(${_base});`;
+
 // Web-only: configures the root HTML for every web page during static rendering.
 // Only runs in Node.js; has no access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
@@ -106,6 +120,9 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <ScrollViewStyleReset />
+        {/* Gate: hides desktop wrapper on non-/app routes before body renders */}
+        <script dangerouslySetInnerHTML={{ __html: LANDING_GATE_SCRIPT }} />
+        <style>{`.hide-desktop-wrapper .expo-web-landing,.hide-desktop-wrapper .expo-web-phone-frame{display:none!important}`}</style>
       </head>
       <body className="expo-web-body">
         {/* Desktop-only landing panel — hidden on mobile via CSS */}
