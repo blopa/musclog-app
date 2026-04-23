@@ -2038,7 +2038,7 @@ export default function FoodScreen() {
             });
 
             // Reload the current screen using expo-router
-            router.replace('/nutrition/food');
+            router.replace('/app/nutrition/food');
           }
         }}
         isAiEnabled={isAiConfigured}

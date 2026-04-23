@@ -154,7 +154,7 @@ export default function RestOverScreen() {
 
   const handleStartNextSet = () => {
     if (workoutLogId) {
-      router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+      router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
     }
   };
 
@@ -182,7 +182,7 @@ export default function RestOverScreen() {
             title={error || t('workoutSession.notFoundTitle')}
             description={t('workoutSession.notFoundDescription')}
             buttonLabel={t('workoutSession.goBack')}
-            onButtonPress={() => router.replace('/workout/workouts')}
+            onButtonPress={() => router.replace('/app/workout/workouts')}
           />
         </View>
       </MasterLayout>
@@ -266,7 +266,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishAndSave');
@@ -281,7 +281,7 @@ export default function RestOverScreen() {
             }
 
             // navigate to workout screen
-            router.replace('/workout/workouts');
+            router.replace('/app/workout/workouts');
           }}
         />
       ) : null}
@@ -294,16 +294,16 @@ export default function RestOverScreen() {
           workoutLogId={workoutLogId}
           onStartWorkout={() => {
             setIsWorkoutOverviewModalVisible(false);
-            router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+            router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
           }}
           onResumeSession={() => {
             setIsWorkoutOverviewModalVisible(false);
-            router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+            router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
           }}
           onSelectExercise={(exerciseId) => {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(
-              `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+              `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
             );
           }}
           onCancelWorkout={() => {
@@ -316,7 +316,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishWorkout');

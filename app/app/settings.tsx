@@ -74,7 +74,7 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
-              router.navigate('/');
+              router.navigate('/app');
             }}
           >
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />

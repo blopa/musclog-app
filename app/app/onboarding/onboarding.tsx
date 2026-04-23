@@ -140,7 +140,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           }}
         >
           <ImageBackground
-            source={require('../../assets/app-insights.png')}
+            source={require('../../../assets/app-insights.png')}
             style={{
               width: '100%',
               height: '100%',
@@ -276,7 +276,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
           }}
         >
           <ImageBackground
-            source={require('../../assets/nutrition-tracking.png')}
+            source={require('../../../assets/nutrition-tracking.png')}
             style={{
               width: '100%',
               height: '100%',
@@ -412,7 +412,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
           }}
         >
           <ImageBackground
-            source={require('../../assets/efordless-tracking.png')}
+            source={require('../../../assets/efordless-tracking.png')}
             style={{
               width: '100%',
               height: '100%',
@@ -517,9 +517,9 @@ export default function OnboardingScreen() {
     } else {
       // Navigate to home when on last step
       if (!__DEV__ && Platform.OS === 'web') {
-        router.navigate('/onboarding/fitness-info');
+        router.navigate('/app/onboarding/fitness-info');
       } else {
-        router.navigate('/onboarding/health-connect');
+        router.navigate('/app/onboarding/health-connect');
       }
     }
   };
@@ -544,9 +544,9 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               if (!__DEV__ && Platform.OS === 'web') {
-                router.navigate('/onboarding/fitness-info');
+                router.navigate('/app/onboarding/fitness-info');
               } else {
-                router.navigate('/onboarding/health-connect');
+                router.navigate('/app/onboarding/health-connect');
               }
             }}
             text={t('onboarding.skip')}

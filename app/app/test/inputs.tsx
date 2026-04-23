@@ -34,7 +34,6 @@ export default function InputsTestScreen() {
   const [bulkingPhase, setBulkingPhase] = useState(true);
   const [difficulty, setDifficulty] = useState(8);
   const [fullName, setFullName] = useState('Alex Johnson');
-  const [bodyMetric, setBodyMetric] = useState(70);
   const [newNumeric, setNewNumeric] = useState(5);
   const [singleSelection, setSingleSelection] = useState<string | number | undefined>('1');
   const [multiSelection, setMultiSelection] = useState<(string | number)[]>(['a']);

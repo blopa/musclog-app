@@ -4,7 +4,6 @@ import convert from 'convert';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -19,6 +18,7 @@ import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import { type EatingPhase } from '@/database/models';
 import { UserMetricService, UserService } from '@/database/services';
 import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import {
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDaysFromNow,
@@ -466,7 +466,7 @@ export default function SetGoals() {
       }
 
       router.navigate({
-        pathname: '/onboarding/nutrition-goals-results',
+        pathname: '/app/onboarding/nutrition-goals-results',
         params: { aiGenerated: 'true' },
       });
     } catch (error) {
@@ -481,7 +481,7 @@ export default function SetGoals() {
     setIsCalculating(true);
     try {
       await calculateAndStorePlan();
-      router.navigate('/onboarding/nutrition-goals');
+      router.navigate('/app/onboarding/nutrition-goals');
     } catch (error) {
       console.error('Error calculating nutrition plan:', error);
       showSnackbar('error', t('onboarding.setGoals.missingData'));
@@ -612,7 +612,7 @@ export default function SetGoals() {
 
         <MaybeLaterButton
           onPress={() => {
-            router.navigate('/onboarding/personal-info');
+            router.navigate('/app/onboarding/personal-info');
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />

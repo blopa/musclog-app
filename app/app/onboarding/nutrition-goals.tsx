@@ -168,17 +168,17 @@ export default function NutritionGoalsScreen() {
         // If the user arrived here from the results screen to adjust the AI plan,
         // then after saving we should continue the onboarding flow to personal-info.
         if (isAdjusting) {
-          router.navigate('/onboarding/personal-info');
+          router.navigate('/app/onboarding/personal-info');
           return;
         }
 
         if (isCheckinAdjusting) {
-          router.replace('/nutrition/checkin-list');
+          router.replace('/app/nutrition/checkin-list');
           return;
         }
 
         router.navigate({
-          pathname: '/onboarding/nutrition-goals-results',
+          pathname: '/app/onboarding/nutrition-goals-results',
           params: { aiGenerated: 'false' },
         });
       } catch (e) {

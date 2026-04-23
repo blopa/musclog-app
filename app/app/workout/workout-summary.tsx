@@ -212,7 +212,7 @@ export default function WorkoutSummaryScreen() {
   }, [i18n.language, i18n.resolvedLanguage, setUnreadCount, t, units, workoutLogId]);
 
   const handleGoHome = () => {
-    router.replace('/');
+    router.replace('/app');
   };
 
   const handleShareSummary = async () => {
@@ -254,7 +254,7 @@ export default function WorkoutSummaryScreen() {
         await processFeedbackResponse(feedback);
         setUnreadCount((prev) => prev + 1);
         showSnackbar('success', t('workout.summary.feedbackReceived'));
-        router.replace('/');
+        router.replace('/app');
       } else {
         showSnackbar('error', t('workout.summary.failedToGetFeedback'));
       }

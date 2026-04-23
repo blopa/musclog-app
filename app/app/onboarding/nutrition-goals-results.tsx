@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import convert from 'convert';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTheme } from 'hooks/useTheme';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -29,6 +28,7 @@ import {
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
   fiberFromCalories,
@@ -356,7 +356,7 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      router.navigate('/onboarding/personal-info');
+      router.navigate('/app/onboarding/personal-info');
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -1153,7 +1153,7 @@ export default function NutritionGoalsResults() {
               size="sm"
               onPress={() => {
                 router.navigate({
-                  pathname: '/onboarding/nutrition-goals',
+                  pathname: '/app/onboarding/nutrition-goals',
                   params: { isAdjusting: 'true' },
                 });
               }}

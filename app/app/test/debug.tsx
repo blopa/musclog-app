@@ -21,12 +21,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
+import { handleError } from '@/utils/handleError';
 import {
   isOnDeviceAiAvailable,
   isOnDeviceAiCapable,
   sendOnDeviceMessage,
 } from '@/utils/onDeviceAi';
-import { handleError } from '@/utils/handleError';
 import { formatDuration } from '@/utils/workout';
 
 // All app screens for navigation
@@ -115,7 +115,7 @@ export default function DebugTestScreen() {
         .fetch();
       setSettings(allSettings);
 
-      const { UserMetricService } = await import('../../database/services/UserMetricService');
+      const { UserMetricService } = await import('../../../database/services/UserMetricService');
       const allMetrics = await UserMetricService.getMetricsHistory(undefined, undefined, 100, 0);
       const withDecrypted = await Promise.all(
         allMetrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
@@ -626,7 +626,7 @@ export default function DebugTestScreen() {
                 Apple Intelligence Test
               </Text>
               <Text className="mb-2 text-sm text-text-secondary">
-                Checks capability and readiness, then sends "Hello there!" and shows the response.
+                Checks capability and readiness, then sends Hello there! and shows the response.
               </Text>
               <Button
                 onPress={testOnDeviceAi}

@@ -318,7 +318,7 @@ export default function WorkoutSessionScreen() {
   // Redirect if no active workout
   useEffect(() => {
     if (!isLoading && !workoutLog && !workoutLogId) {
-      router.replace('/workout/workouts');
+      router.replace('/app/workout/workouts');
     }
   }, [isLoading, workoutLog, workoutLogId, router]);
 
@@ -340,7 +340,7 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       return;
     }
 
@@ -457,7 +457,9 @@ export default function WorkoutSessionScreen() {
       if (allSetsDone) {
         if (workoutLog.templateId) {
           await completeWorkout(workoutLog.id);
-          router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`);
+          router.replace(
+            `/app/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+          );
           setTimeout(() => setIsLogSetModalVisible(false), 0);
           return;
         }
@@ -474,7 +476,7 @@ export default function WorkoutSessionScreen() {
       }
 
       router.replace(
-        `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
+        `/app/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
       );
       // Defer closing modal so navigation can run first and we avoid a flash of the session screen
       setTimeout(() => setIsLogSetModalVisible(false), 0);
@@ -506,7 +508,9 @@ export default function WorkoutSessionScreen() {
       if (allSetsDone) {
         if (workoutLog.templateId) {
           await completeWorkout(workoutLog.id);
-          router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`);
+          router.replace(
+            `/app/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+          );
         } else {
           setCompletedExerciseForModal({
             exerciseId: currentSetData.set.exerciseId ?? '',
@@ -519,7 +523,7 @@ export default function WorkoutSessionScreen() {
         }
       } else {
         router.replace(
-          `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
+          `/app/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
         );
       }
     } catch (err) {
@@ -787,7 +791,7 @@ export default function WorkoutSessionScreen() {
           title={error ? error : t('workoutSession.notFoundTitle')}
           description={t('workoutSession.notFoundDescription')}
           buttonLabel={t('workoutSession.goBack')}
-          onButtonPress={() => router.replace('/workout/workouts')}
+          onButtonPress={() => router.replace('/app/workout/workouts')}
         />
       </View>
     );
@@ -1106,7 +1110,7 @@ export default function WorkoutSessionScreen() {
               }
 
               // navigate to workout screen
-              router.replace('/workout/workouts');
+              router.replace('/app/workout/workouts');
             }}
           />
         ) : null}
@@ -1117,7 +1121,7 @@ export default function WorkoutSessionScreen() {
             visible={isSessionFeedbackModalVisible}
             onClose={() => {
               setIsSessionFeedbackModalVisible(false);
-              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
             }}
             onSubmit={async (data) => {
               try {
@@ -1125,7 +1129,7 @@ export default function WorkoutSessionScreen() {
               } catch (err) {
                 console.error('Error saving workout feedback:', err);
               } finally {
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+                router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
               }
             }}
           />

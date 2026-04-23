@@ -9,7 +9,6 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { AddMealModal } from '@/components/modals/AddMealModal';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
-import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AiCustomPromptEditModal } from '@/components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
@@ -41,6 +40,7 @@ import {
   WorkoutLogDataModal,
   WorkoutTemplateDataModal,
 } from '@/components/modals/DataLogModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { DatePickerInput } from '@/components/modals/DatePickerInput';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { EditFitnessDetailsModal } from '@/components/modals/EditFitnessDetailsModal';
