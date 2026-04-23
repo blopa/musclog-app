@@ -196,8 +196,7 @@ function MacrosDistributionChart({
 
   const proteinPercentage =
     totalCals > 0 ? ((protein * CALORIES_FOR_PROTEIN) / totalCals) * 100 : 0;
-  const carbsPercentage =
-    totalCals > 0 ? ((carbs * CALORIES_FOR_CARBS) / totalCals) * 100 : 0;
+  const carbsPercentage = totalCals > 0 ? ((carbs * CALORIES_FOR_CARBS) / totalCals) * 100 : 0;
   const fatsPercentage = totalCals > 0 ? ((fats * CALORIES_FOR_FAT) / totalCals) * 100 : 0;
   const fiberPercentage = totalCals > 0 ? ((fiber * CALORIES_FOR_FIBER) / totalCals) * 100 : 0;
 

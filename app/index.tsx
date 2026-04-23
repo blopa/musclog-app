@@ -193,7 +193,8 @@ export default function HomeScreen() {
   const handleSaveNutritionGoals = useCallback(
     async (goals: any) => {
       try {
-        await NutritionGoalService.saveGoals(goals);
+        const savedGoal = await NutritionGoalService.saveGoals(goals);
+        await NutritionGoalService.regenerateCheckins(savedGoal.id);
         setIsNutritionGoalsVisible(false);
       } catch (error) {
         await handleError(error, 'index.saveNutritionGoals', {
