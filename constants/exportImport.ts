@@ -18,6 +18,7 @@ export const RESTORE_ORDER: string[] = [
   'meals',
   'workout_templates',
   'settings',
+  'debug_dump',
 
   // Template-dependent tables
   'schedules',
