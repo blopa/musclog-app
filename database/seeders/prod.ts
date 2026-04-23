@@ -405,6 +405,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
     }
 
+    // uncomment this when debugging Apple Intelligence
+    // await SettingsService.setDumpLlmRequests(true);
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');
