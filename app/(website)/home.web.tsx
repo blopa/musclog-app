@@ -2,6 +2,8 @@ import { Link } from 'expo-router';
 import {
   ArrowRight,
   Calendar,
+  Check,
+  ChevronDown,
   Code2,
   Download,
   Dumbbell,
@@ -987,39 +989,122 @@ const languages = [
 ];
 
 export function LanguagePicker() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
+  const [isOpen, setIsOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [isOpen]);
 
   const handleLanguageChange = (newLocale: string) => {
     i18n.changeLanguage(newLocale).catch((err) => {
       console.warn('[LanguagePicker] Failed to change language:', err);
     });
+    setIsOpen(false);
   };
 
   const currentLanguage = languages.find((lang) => lang.code === locale);
-  const currentLanguageLabel = currentLanguage
-    ? `${currentLanguage.flag} ${currentLanguage.label}`
-    : 'Language';
+  const currentLanguageLabel = currentLanguage?.label ?? t('language');
 
   return (
-    <label className="relative inline-flex items-center">
-      <span className="sr-only">Language</span>
-      <span className="pointer-events-none absolute left-2 text-sm">🇬🇧</span>
-      <select
-        aria-label="Language"
-        className="w-fit cursor-pointer rounded-md border-none bg-transparent py-1 pl-8 pr-2 text-sm outline-none"
-        style={{ color: '#F3F4F6' }}
-        value={locale}
-        onChange={(event) => handleLanguageChange(event.target.value)}
+    <div className="relative inline-flex" ref={pickerRef}>
+      <button
+        type="button"
+        aria-label={t('language')}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
         title={currentLanguageLabel}
+        onClick={() => setIsOpen((current) => !current)}
+        className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-150 hover:border-white/20 hover:bg-white/10"
+        style={{
+          color: '#F3F4F6',
+          borderColor: isOpen ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255,255,255,0.08)',
+          backgroundColor: isOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
+          boxShadow: isOpen ? '0 0 0 1px rgba(34,197,94,0.18)' : 'none',
+        }}
       >
-        {!currentLanguage ? <option value="">Language</option> : null}
-        {languages.map((language) => (
-          <option key={language.code} value={language.code}>
-            {language.flag} {language.label}
-          </option>
-        ))}
-      </select>
-    </label>
+        <span className="text-base leading-none">{currentLanguage?.flag ?? '🌐'}</span>
+        <span className="hidden lg:inline" style={{ color: BODY_TEXT_SOFT }}>
+          {t('language')}
+        </span>
+        <span className="max-w-[7.5rem] truncate font-medium">{currentLanguageLabel}</span>
+        <ChevronDown
+          className={`h-4 w-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
+          color={BODY_TEXT_SOFT}
+        />
+      </button>
+
+      {isOpen ? (
+        <div
+          role="menu"
+          aria-label={t('language')}
+          className="absolute right-0 top-full z-[170] mt-3 min-w-[220px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
+          style={{
+            borderColor: 'rgba(255,255,255,0.1)',
+            background:
+              'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.96) 100%)',
+            boxShadow:
+              '0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03), 0 0 30px rgba(34,197,94,0.08)',
+          }}
+        >
+          <div
+            className="border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
+            style={{ color: BODY_TEXT_SOFT, borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            {t('language')}
+          </div>
+
+          <div className="p-2">
+            {languages.map((language) => {
+              const isSelected = language.code === locale;
+
+              return (
+                <button
+                  key={language.code}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={isSelected}
+                  onClick={() => handleLanguageChange(language.code)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/6"
+                  style={{
+                    backgroundColor: isSelected ? 'rgba(34,197,94,0.14)' : 'transparent',
+                    color: isSelected ? '#F9FAFB' : BODY_TEXT,
+                  }}
+                >
+                  <span className="text-lg leading-none">{language.flag}</span>
+                  <span className="flex-1 text-sm font-medium">{language.label}</span>
+                  {isSelected ? <Check className="h-4 w-4" color={BRAND_GREEN_BRIGHT} /> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 

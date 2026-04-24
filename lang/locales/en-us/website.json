@@ -121,7 +121,8 @@
       "appTagline": "Lift, Log, Repeat",
       "features": "Features",
       "github": "GitHub",
-      "download": "Download Now"
+      "download": "Download Now",
+      "language": "Language"
     },
     "storeButtons": {
       "googleTitle": "GET IT ON",
@@ -133,6 +134,7 @@
     "footer": {
       "privacyPolicy": "Privacy Policy",
       "terms": "Terms",
+      "github": "Github",
       "contact": "Contact",
       "license": "License",
       "copyright": "Free & Open Source Software. Built for your privacy."
