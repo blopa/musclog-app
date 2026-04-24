@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 export default function Home() {
   const router = useRouter();
@@ -18,8 +18,8 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h1>Hello world</h1>
-    </div>
+    <View>
+      <Text>Hello world</Text>
+    </View>
   );
 }
