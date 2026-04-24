@@ -1133,9 +1133,17 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-20">
-      <GridPattern className="text-primary/40" />
+    <section className="relative overflow-hidden py-20 md:py-24">
+      <SectionBackground variant="grid" />
       <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[48%] h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.10) 0%, rgba(34,197,94,0.07) 34%, rgba(0,0,0,0) 72%)',
+        }}
+        aria-hidden="true"
+      />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
@@ -1149,28 +1157,41 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3 md:gap-12">
+        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3 md:gap-12">
           {steps.map((item, index) => (
-            <div key={item.step} className="relative">
+            <div key={item.step} className="relative flex justify-center">
               {/* Connector line for desktop */}
               {index < steps.length - 1 ? (
-                <div className="bg-border absolute left-[60%] top-12 hidden h-px w-[80%] md:block" />
+                <div
+                  className="absolute left-[62%] top-12 hidden h-px w-[76%] md:block"
+                  style={{
+                    background:
+                      'linear-gradient(90deg, rgba(34,197,94,0.24) 0%, rgba(209,213,219,0.18) 100%)',
+                  }}
+                />
               ) : null}
 
-              <div className="flex flex-col items-center text-center">
+              <div className="flex max-w-sm flex-col items-center text-center">
                 <div className="relative mb-6">
                   <div
-                    className="flex h-24 w-24 items-center justify-center rounded-full"
-                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}
+                    className="flex h-24 w-24 items-center justify-center rounded-full border"
+                    style={{
+                      backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                      borderColor: 'rgba(255,255,255,0.08)',
+                      boxShadow: '0 0 0 10px rgba(34,197,94,0.03), 0 0 40px rgba(0,255,163,0.12)',
+                    }}
                   >
                     <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
                   </div>
-                  <span className="bg-primary text-primary-foreground absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
+                  <span
+                    className="absolute right-0 top-0 flex h-8 w-8 translate-x-1/4 -translate-y-1/4 items-center justify-center rounded-full text-[11px] font-bold"
+                    style={{ backgroundColor: BRAND_GREEN_BRIGHT, color: '#000000' }}
+                  >
                     {item.step}
                   </span>
                 </div>
                 <h3 className="mb-3 text-xl font-bold text-white">{item.title}</h3>
-                <p className="max-w-xs leading-relaxed" style={{ color: BODY_TEXT }}>
+                <p className="max-w-xs leading-relaxed" style={{ color: '#9CA3AF' }}>
                   {item.description}
                 </p>
               </div>
