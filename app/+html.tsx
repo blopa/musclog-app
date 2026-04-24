@@ -141,7 +141,24 @@ export default function Root({ children }: PropsWithChildren) {
         <ScrollViewStyleReset />
         {/* Gate: hides desktop wrapper on non-/app routes before body renders */}
         <script dangerouslySetInnerHTML={{ __html: LANDING_GATE_SCRIPT }} />
-        <style>{`.hide-desktop-wrapper .expo-web-landing,.hide-desktop-wrapper .expo-web-phone-frame{display:none!important}`}</style>
+        <style>{`
+          .hide-desktop-wrapper .expo-web-landing,
+          .hide-desktop-wrapper .expo-web-phone-frame { display: none !important; }
+          .hide-desktop-wrapper .expo-web-root {
+            flex: 1 !important;
+            aspect-ratio: unset !important;
+            width: 100% !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          .hide-desktop-wrapper .expo-web-app-shell {
+            position: static !important;
+            left: auto !important; top: auto !important;
+            right: auto !important; bottom: auto !important;
+            width: 100% !important;
+            zoom: 1 !important;
+          }
+        `}</style>
       </head>
       <body className="expo-web-body">
         {/* Desktop-only landing panel — hidden on mobile via CSS */}
