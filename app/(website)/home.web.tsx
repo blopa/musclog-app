@@ -361,7 +361,17 @@ export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'gr
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       {variant === 'dots' ? <DotPattern className="text-emerald-400/25" /> : null}
-      {variant === 'grid' ? <GridPattern className="text-emerald-400/25" /> : null}
+      {variant === 'grid' ? (
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(34, 197, 94, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 197, 94, 0.15) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+            backgroundPosition: 'center center',
+          }}
+        />
+      ) : null}
 
       {/* Subtle gradient for depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-400/[0.03] to-transparent" />
@@ -539,10 +549,10 @@ export function FeatureGrid() {
     <section className="bg-card/50 relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="grid" />
       <div
-        className="pointer-events-none absolute left-1/2 top-[56%] h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[130px]"
+        className="pointer-events-none absolute left-1/2 top-[54%] h-[640px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
         style={{
           background:
-            'radial-gradient(circle, rgba(0,255,163,0.14) 0%, rgba(34,197,94,0.09) 36%, rgba(0,0,0,0) 74%)',
+            'radial-gradient(circle, rgba(0,255,163,0.15) 0%, rgba(34,197,94,0.11) 32%, rgba(0,0,0,0) 74%)',
         }}
         aria-hidden="true"
       />
@@ -551,10 +561,7 @@ export function FeatureGrid() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p
-            className="mx-auto max-w-2xl text-balance text-base md:text-lg"
-            style={{ color: BODY_TEXT_SOFT }}
-          >
+          <p className="mx-auto max-w-2xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT_SOFT }}>
             {t('description')}
           </p>
         </div>
@@ -563,8 +570,12 @@ export function FeatureGrid() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-2xl border bg-black/32 p-6 transition-colors hover:border-white/20"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+              className="group rounded-2xl border p-6 transition-colors hover:border-white/20"
+              style={{
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                backdropFilter: 'blur(8px)',
+              }}
             >
               <div
                 className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
@@ -573,7 +584,7 @@ export function FeatureGrid() {
                 <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
               </div>
               <h3 className="mb-2 text-lg font-bold text-white">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#C7D2DA' }}>
+              <p className="text-sm leading-relaxed" style={{ color: '#9CA3AF' }}>
                 {feature.description}
               </p>
             </div>
@@ -910,7 +921,7 @@ export function Stats() {
   ];
 
   return (
-    <section className="relative overflow-hidden border-y py-16 md:py-20" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+    <section className="relative overflow-hidden border-y py-20 md:py-24" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       <DotPattern className="text-primary/40" />
       <div className="from-background/80 to-background/80 absolute inset-0 bg-gradient-to-r via-transparent" />
       <div className="container relative z-10 mx-auto px-4">
@@ -924,7 +935,7 @@ export function Stats() {
                 {stat.value}
               </div>
               <div className="mb-1 font-bold text-white">{stat.label}</div>
-              <div className="text-sm" style={{ color: '#C7D2DA' }}>
+              <div className="text-sm" style={{ color: '#D1D5DB' }}>
                 {stat.description}
               </div>
             </div>
@@ -1012,10 +1023,7 @@ export function HowItWorks() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p
-            className="mx-auto max-w-xl text-balance text-base md:text-lg"
-            style={{ color: '#C7D2DA' }}
-          >
+          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: '#D1D5DB' }}>
             {t('description')}
           </p>
         </div>
