@@ -24,8 +24,9 @@ import i18n from '@/lang/lang';
 const trackStoreButtonClick = (param: any) => {};
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT = '#9CA3AF';
-const CARD_BORDER = 'rgba(255, 255, 255, 0.16)';
+const BODY_TEXT = '#D1D5DB';
+const BODY_TEXT_SOFT = '#9CA3AF';
+const CARD_BORDER = 'rgba(255, 255, 255, 0.12)';
 
 interface DownloadModalProps {
   children: ReactNode;
@@ -38,6 +39,28 @@ const emptySubscribe = () => () => {};
 
 function useIsClient() {
   return useSyncExternalStore(emptySubscribe, clientSnapshot, serverSnapshot);
+}
+
+function HeroHexWatermark() {
+  return (
+    <svg
+      className="absolute left-[-64px] top-[210px] h-[260px] w-[260px] text-emerald-400/12"
+      viewBox="0 0 220 220"
+      fill="none"
+      aria-hidden="true"
+    >
+      <polygon
+        points="110,12 191,58 191,162 110,208 29,162 29,58"
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+      <polygon
+        points="110,43 163,74 163,146 110,177 57,146 57,74"
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+    </svg>
+  );
 }
 
 function AppleLogo() {
@@ -90,13 +113,13 @@ interface StoreButtonProps {
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
   const className =
-    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border-2 border-white/25 bg-black px-4 py-2.5 text-white transition-colors hover:border-white/45';
+    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-white/30 bg-black/85 px-4 py-2.5 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition-colors hover:border-white/50';
 
   const content = (
     <>
       <span className="shrink-0">{logo}</span>
       <span className="flex flex-col items-start">
-        <span className="text-[11px] leading-none text-gray-300">{title}</span>
+        <span className="text-[11px] leading-none text-gray-200">{title}</span>
         <span className="text-lg font-bold leading-tight text-white">{storeName}</span>
       </span>
     </>
@@ -211,7 +234,7 @@ export function DotPattern({ className = '' }: { className?: string }) {
     >
       <defs>
         <pattern id="dot-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.2" fill="currentColor" fillOpacity="0.5" />
+          <circle cx="2" cy="2" r="1.15" fill="currentColor" fillOpacity="0.72" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#dot-pattern)" />
@@ -301,14 +324,23 @@ export function HeroBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       {/* Base grid */}
-      <GridPattern className="text-primary" />
+      <GridPattern className="text-emerald-400/10" />
+      <DotPattern className="text-emerald-400/20 opacity-75" />
+      <HeroHexWatermark />
 
       {/* Gradient overlays */}
       <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
       <div className="from-background to-background/50 absolute inset-0 bg-gradient-to-r via-transparent" />
 
       {/* Glow orbs */}
-      <div className="bg-primary/10 absolute right-1/4 top-20 h-96 w-96 rounded-full blur-[128px]" />
+      <div
+        className="absolute right-[14%] top-12 h-[520px] w-[520px] rounded-full blur-[150px]"
+        style={{ backgroundColor: 'rgba(0, 255, 163, 0.14)' }}
+      />
+      <div
+        className="absolute bottom-[-40px] left-1/2 h-[240px] w-[70%] -translate-x-1/2 rounded-full blur-[120px]"
+        style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.16) 0%, rgba(34,197,94,0.08) 35%, rgba(0,0,0,0) 72%)' }}
+      />
       <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-cyan-500/10 blur-[100px]" />
 
       {/* Floating geometric shapes */}
@@ -328,11 +360,11 @@ export function HeroBackground() {
 export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'grid' | 'minimal' }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {variant === 'dots' ? <DotPattern className="text-primary/60" /> : null}
-      {variant === 'grid' ? <GridPattern className="text-primary/60" /> : null}
+      {variant === 'dots' ? <DotPattern className="text-emerald-400/25" /> : null}
+      {variant === 'grid' ? <GridPattern className="text-emerald-400/25" /> : null}
 
       {/* Subtle gradient for depth */}
-      <div className="via-primary/[0.05] absolute inset-0 bg-gradient-to-b from-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-400/[0.03] to-transparent" />
 
       {/* Edge fades - reduced height */}
       <div className="from-background absolute inset-x-0 top-0 h-16 bg-gradient-to-b to-transparent" />
@@ -506,12 +538,23 @@ export function FeatureGrid() {
   return (
     <section className="bg-card/50 relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="grid" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[56%] h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[130px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.14) 0%, rgba(34,197,94,0.09) 36%, rgba(0,0,0,0) 74%)',
+        }}
+        aria-hidden="true"
+      />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p className="mx-auto max-w-2xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+          <p
+            className="mx-auto max-w-2xl text-balance text-base md:text-lg"
+            style={{ color: BODY_TEXT_SOFT }}
+          >
             {t('description')}
           </p>
         </div>
@@ -520,8 +563,8 @@ export function FeatureGrid() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-2xl border bg-black/30 p-6 transition-colors hover:border-white/25"
-              style={{ borderColor: CARD_BORDER }}
+              className="group rounded-2xl border bg-black/32 p-6 transition-colors hover:border-white/20"
+              style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
             >
               <div
                 className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
@@ -530,7 +573,7 @@ export function FeatureGrid() {
                 <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
               </div>
               <h3 className="mb-2 text-lg font-bold text-white">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+              <p className="text-sm leading-relaxed" style={{ color: '#C7D2DA' }}>
                 {feature.description}
               </p>
             </div>
@@ -594,8 +637,8 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="space-y-4 rounded-2xl border bg-black/32 p-7 transition-colors hover:border-white/25"
-              style={{ borderColor: CARD_BORDER }}
+              className="space-y-4 rounded-2xl border bg-black/32 p-7 transition-colors hover:border-white/20"
+              style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
             >
               <div
                 className="flex h-14 w-14 items-center justify-center rounded-xl"
@@ -746,7 +789,7 @@ export function Header() {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-base font-bold text-white">{t('appName')}</span>
-            <span className="text-xs" style={{ color: BODY_TEXT }}>
+            <span className="text-xs" style={{ color: BODY_TEXT_SOFT }}>
               {t('appTagline')}
             </span>
           </div>
@@ -756,14 +799,14 @@ export function Header() {
           <Link
             href="#features"
             className="text-sm transition-colors hover:text-white"
-            style={{ color: BODY_TEXT }}
+            style={{ color: '#F3F4F6' }}
           >
             {t('features')}
           </Link>
           <Link
             href="/calculator"
             className="text-sm transition-colors hover:text-white"
-            style={{ color: BODY_TEXT }}
+            style={{ color: '#F3F4F6' }}
           >
             Calculator
           </Link>
@@ -772,7 +815,7 @@ export function Header() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm transition-colors hover:text-white"
-            style={{ color: BODY_TEXT }}
+            style={{ color: '#F3F4F6' }}
           >
             {t('github')}
           </a>
@@ -874,9 +917,14 @@ export function Stats() {
         <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-primary mb-2 text-4xl font-bold md:text-5xl">{stat.value}</div>
+              <div
+                className="mb-2 text-4xl font-extrabold md:text-5xl"
+                style={{ color: BRAND_GREEN_BRIGHT }}
+              >
+                {stat.value}
+              </div>
               <div className="mb-1 font-bold text-white">{stat.label}</div>
-              <div className="text-sm" style={{ color: BODY_TEXT }}>
+              <div className="text-sm" style={{ color: '#C7D2DA' }}>
                 {stat.description}
               </div>
             </div>
@@ -915,7 +963,7 @@ export function LanguagePicker() {
       <select
         aria-label="Language"
         className="w-fit cursor-pointer rounded-md border-none bg-transparent py-1 pl-8 pr-2 text-sm outline-none"
-        style={{ color: BODY_TEXT }}
+        style={{ color: '#F3F4F6' }}
         value={locale}
         onChange={(event) => handleLanguageChange(event.target.value)}
         title={currentLanguageLabel}
@@ -964,7 +1012,10 @@ export function HowItWorks() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+          <p
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
+            style={{ color: '#C7D2DA' }}
+          >
             {t('description')}
           </p>
         </div>
@@ -1048,7 +1099,7 @@ export function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-white"
-              style={{ color: BODY_TEXT }}
+              style={{ color: '#D1D5DB' }}
             >
               <Code2 className="h-4 w-4" />
               {t('github')}
@@ -1059,10 +1110,10 @@ export function Hero() {
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
               <div
-                className="absolute inset-0 rounded-full blur-[90px]"
+                className="absolute inset-0 rounded-full blur-[110px]"
                 style={{
-                  background: `radial-gradient(circle, rgba(0,255,163,0.22) 0%, rgba(34,197,94,0.14) 35%, rgba(0,0,0,0) 72%)`,
-                  transform: 'translate(6%, 10%) scale(1.05)',
+                  background: 'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
+                  transform: 'translate(6%, 10%) scale(1.12)',
                 }}
                 aria-hidden="true"
               />
@@ -1078,6 +1129,7 @@ export function Hero() {
                     width={320}
                     height={640}
                     className="h-auto w-full"
+                    style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
                   />
                 </div>
               </div>
