@@ -1,0 +1,141 @@
+{
+  "website": {
+    "hero": {
+      "badge1": "★ GRATUITO Y OPEN SOURCE",
+      "badge2": "ENFOQUE EN PRIVACIDAD (SIN LOGIN NECESARIO)",
+      "title1": "Controla Tus",
+      "title2": "Datos de Fitness",
+      "subheading": "Un rastreador de fitness local-first, open-source. Sin cuentas, sin rastreo, sin nube. Solo tú y tus ganancias.",
+      "github": "Ver en GitHub"
+    },
+    "features": {
+      "title": "Construido para Rendimiento y Privacidad",
+      "description": "Sin telemetría, sin rastreo, sin suscripción. Solo un motor potente para tu viaje de fitness.",
+      "strengthTracking": {
+        "title": "Rastreo de Fuerza Offline",
+        "description": "Registra tus sets y repeticiones directamente en tu dispositivo. Sin internet necesaria. Tus datos nunca salen de tu bolsillo.",
+        "link": "VER MÁS"
+      },
+      "privacyFirst": {
+        "title": "Privacidad en Primer Lugar",
+        "description": "Sin registros, sin logins y sin rastreo de terceros. Musclog respeta tu soberanía digital.",
+        "link": "MANIFIESTO DE PRIVACIDAD"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "Musclog es impulsado por la comunidad. Audita el código, contribuye con funciones o haz un fork para personalizarlo.",
+        "link": "VER CÓDIGO"
+      }
+    },
+    "featureGrid": {
+      "title": "Todo lo que Necesitas para Entrenar de Forma Más Inteligente",
+      "description": "Desde el entrenamiento con IA hasta análisis detallados, Musclog ofrece las herramientas para que tengas control total de tu viaje de fitness.",
+      "items": {
+        "aiCoach": {
+          "title": "Entrenador de IA (Loggy)",
+          "description": "Conversa con tu entrenador de IA para planes de entrenamiento personalizados, consejos de nutrición y estimación de comidas por foto."
+        },
+        "barcode": {
+          "title": "Lector de Código de Barras",
+          "description": "Añade productos rápidamente escaneando códigos de barras. Accede a la base de datos Open Food Facts con millones de productos."
+        },
+        "checkins": {
+          "title": "Check-ins Semanales",
+          "description": "Análisis automatizado de 7 días de tu progreso con ajustes dinámicos de metas para mantenerte en el camino correcto."
+        },
+        "analytics": {
+          "title": "Análisis de Progreso",
+          "description": "Gráficos interativos para peso, grasa corporal y progreso de levantamiento. Rastrea tu TDEE con datos reales."
+        },
+        "cycle": {
+          "title": "Consciencia del Ciclo",
+          "description": "Rastrea las fases menstruales y recibe recomendaciones de entrenamiento optimizadas para tu ciclo."
+        },
+        "templates": {
+          "title": "Plantillas de Entrenamiento",
+          "description": "Crea rutinas personalizadas como PPL o Superior/Inferior. Accede a una extensa biblioteca de ejercicios con enfoque muscular."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Sincroniza con Google Health Connect para compartir datos con otras apps de salud y fitness en Android."
+        },
+        "encryption": {
+          "title": "Almacenamiento Cifrado",
+          "description": "Tus datos sensibles de salud se cifran en reposo usando AES. Exporta en cualquier momento como JSON o Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitaminas y Minerales",
+        "description": "Que puedes rastrear diariamente"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Listo para Offline",
+        "description": "Sin internet necesaria"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Subidas a la Nube",
+        "description": "Los datos permanecen locales"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Cifrado",
+        "description": "Seguridad en reposo"
+      }
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "description": "Empieza en minutos. Sin configuración complicada, sin suscripciones, sin recopilación de datos.",
+      "steps": {
+        "step1": {
+          "title": "Descarga y Empieza",
+          "description": "Instala Musclog en la App Store o Google Play. Sin cuenta necesaria — solo abre y empieza a rastrear."
+        },
+        "step2": {
+          "title": "Registra Tu Entrenamiento",
+          "description": "Registra sets, repeticiones y pesos. Escanea códigos de barras o haz fotos para registrar comidas. Todo se queda en tu dispositivo."
+        },
+        "step3": {
+          "title": "Sigue el Progreso",
+          "description": "Revisa check-ins semanales, visualiza tendencias y deja que el entrenador de IA te ayude a optimizar tu enfoque."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"Musclog es la primera aplicación que respeta mi privacidad mientras ofrece una experiencia de entrenamiento de clase mundial. Local-first es el futuro.\"",
+      "author": "Laura F.",
+      "role": "Desarrolladora Ocupada"
+    },
+    "cta": {
+      "title": "¿Listo para empezar?",
+      "description": "Únete a miles de atletas que usan Musclog para rastrear su progreso sin comprometer la privacidad.",
+      "download": "Descargar Ahora",
+      "sourceCode": "Ver Código Fuente"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Levanta, Registra, Repite",
+      "features": "Funciones",
+      "github": "GitHub",
+      "download": "Descargar Ahora"
+    },
+    "storeButtons": {
+      "googleTitle": "DISPONIBLE EN",
+      "googleStore": "Google Play",
+      "appleTitle": "DESCARGAR EN",
+      "appleStore": "App Store",
+      "comingSoon": "¡App Store próximamente!"
+    },
+    "footer": {
+      "privacyPolicy": "Política de Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto",
+      "license": "Licencia",
+      "copyright": "Software Libre y Open Source. Construido para tu privacidad."
+    }
+  }
+}

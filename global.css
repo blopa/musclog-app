@@ -13,6 +13,27 @@ body {
 	height: 100%;
 }
 
+/* Website routes: disable the phone-frame flex layout so native browser scroll works */
+html.hide-desktop-wrapper,
+html.hide-desktop-wrapper body {
+	height: auto !important;
+	overflow: auto !important;
+}
+
+html.hide-desktop-wrapper body.expo-web-body {
+	display: block !important;
+	min-height: 100dvh !important;
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
+}
+
+html.hide-desktop-wrapper .expo-web-root,
+html.hide-desktop-wrapper .expo-web-app-shell {
+	height: auto !important;
+	min-height: 100dvh !important;
+	overflow: visible !important;
+}
+
 /*
  * Modal portal host (WebModalShellContext.web.tsx). RN `pointerEvents="box-none"` maps to
  * non-standard HTML `pointer-events: box-none` (ignored → effective `auto`), which steals clicks.
@@ -79,6 +100,18 @@ body {
  * Keep 1024 in sync with WEB_DESKTOP_PHONE_FRAME_MIN_WIDTH in utils/webPhoneFrame.ts.
  */
 @media (min-width: 1024px) {
+	.hide-desktop-wrapper .expo-web-body {
+		gap: 0 !important;
+		align-items: stretch !important;
+		background-color: #091310 !important;
+		background-image: none !important;
+	}
+
+	.hide-desktop-wrapper .expo-web-root {
+		min-height: 100dvh !important;
+		height: auto !important;
+	}
+
 	.expo-web-body {
 		gap: 52px;
 		align-items: center;

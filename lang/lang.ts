@@ -81,6 +81,7 @@ import enUsStartWorkout from './locales/en-us/startWorkout.json';
 import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
+import enUsWebsite from './locales/en-us/website.json';
 import enUsWorkout from './locales/en-us/workout.json';
 import enUsWorkoutLogSets from './locales/en-us/workout_log_sets.json';
 import enUsWorkoutLogs from './locales/en-us/workout_logs.json';
@@ -153,6 +154,7 @@ import esEsStartWorkout from './locales/es-es/startWorkout.json';
 import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
+import esEsWebsite from './locales/es-es/website.json';
 import esEsWorkout from './locales/es-es/workout.json';
 import esEsWorkoutLogSets from './locales/es-es/workout_log_sets.json';
 import esEsWorkoutLogs from './locales/es-es/workout_logs.json';
@@ -225,6 +227,7 @@ import nlNlStartWorkout from './locales/nl-nl/startWorkout.json';
 import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
+import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWorkout from './locales/nl-nl/workout.json';
 import nlNlWorkoutLogSets from './locales/nl-nl/workout_log_sets.json';
 import nlNlWorkoutLogs from './locales/nl-nl/workout_logs.json';
@@ -297,6 +300,7 @@ import ptBrStartWorkout from './locales/pt-br/startWorkout.json';
 import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
+import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWorkout from './locales/pt-br/workout.json';
 import ptBrWorkoutLogSets from './locales/pt-br/workout_log_sets.json';
 import ptBrWorkoutLogs from './locales/pt-br/workout_logs.json';
@@ -369,6 +373,7 @@ import ruRuStartWorkout from './locales/ru-ru/startWorkout.json';
 import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
+import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWorkout from './locales/ru-ru/workout.json';
 import ruRuWorkoutLogSets from './locales/ru-ru/workout_log_sets.json';
 import ruRuWorkoutLogs from './locales/ru-ru/workout_logs.json';
@@ -462,6 +467,7 @@ const resources = {
       ...enUsTimePicker,
       ...enUsTokenType,
       ...enUsUserMenu,
+      ...enUsWebsite,
       ...enUsWorkout,
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
@@ -538,6 +544,7 @@ const resources = {
       ...esEsTimePicker,
       ...esEsTokenType,
       ...esEsUserMenu,
+      ...esEsWebsite,
       ...esEsWorkout,
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
@@ -614,6 +621,7 @@ const resources = {
       ...nlNlTimePicker,
       ...nlNlTokenType,
       ...nlNlUserMenu,
+      ...nlNlWebsite,
       ...nlNlWorkout,
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
@@ -690,6 +698,7 @@ const resources = {
       ...ptBrTimePicker,
       ...ptBrTokenType,
       ...ptBrUserMenu,
+      ...ptBrWebsite,
       ...ptBrWorkout,
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
@@ -766,6 +775,7 @@ const resources = {
       ...ruRuTimePicker,
       ...ruRuTokenType,
       ...ruRuUserMenu,
+      ...ruRuWebsite,
       ...ruRuWorkout,
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,

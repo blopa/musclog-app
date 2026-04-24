@@ -1,0 +1,141 @@
+{
+  "website": {
+    "hero": {
+      "badge1": "★ FREE & OPEN SOURCE",
+      "badge2": "PRIVACY FOCUSED (NO LOGIN REQUIRED)",
+      "title1": "Own Your",
+      "title2": "Fitness Data",
+      "subheading": "A local-first, open-source fitness tracker. No accounts, no tracking, and no cloud. Just you and your gains.",
+      "github": "View on GitHub"
+    },
+    "features": {
+      "title": "Built for Performance & Privacy",
+      "description": "No telemetry, no tracking, no subscription. Just a powerful engine for your fitness journey.",
+      "strengthTracking": {
+        "title": "Offline Strength Tracking",
+        "description": "Log your sets and reps directly to your device. No internet required. Your data never leaves your pocket.",
+        "link": "VIEW MORE"
+      },
+      "privacyFirst": {
+        "title": "Privacy First",
+        "description": "No sign-ups, no logins, and no third-party tracking. Musclog respects your digital sovereignty.",
+        "link": "PRIVACY MANIFESTO"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "Musclog is community-driven. Audit the code, contribute features, or fork it to make it your own.",
+        "link": "VIEW SOURCE"
+      }
+    },
+    "featureGrid": {
+      "title": "Everything You Need to Train Smarter",
+      "description": "From AI-powered coaching to detailed analytics, Musclog gives you the tools to take full control of your fitness journey.",
+      "items": {
+        "aiCoach": {
+          "title": "AI Coach (Loggy)",
+          "description": "Chat with your AI fitness coach for personalized workout plans, nutrition advice, and meal photo estimation."
+        },
+        "barcode": {
+          "title": "Barcode Scanner",
+          "description": "Quickly add products by scanning barcodes. Access the Open Food Facts database with millions of products."
+        },
+        "checkins": {
+          "title": "Weekly Check-ins",
+          "description": "Automated 7-day analysis of your progress with dynamic goal adjustments to keep you on track."
+        },
+        "analytics": {
+          "title": "Progress Analytics",
+          "description": "Interactive charts for weight, body fat, and lifting progress. Track your TDEE with real data."
+        },
+        "cycle": {
+          "title": "Cycle Awareness",
+          "description": "Track menstrual phases and receive training recommendations optimized for your cycle."
+        },
+        "templates": {
+          "title": "Workout Templates",
+          "description": "Create custom routines like PPL or Upper/Lower. Access an extensive exercise library with muscle targeting."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Sync with Google Health Connect to share data with other health and fitness apps on Android."
+        },
+        "encryption": {
+          "title": "Encrypted Storage",
+          "description": "Your sensitive health data is encrypted at rest using AES. Export anytime as JSON or Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitamins & Minerals",
+        "description": "That you can track daily"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Offline Ready",
+        "description": "No internet needed"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Cloud Uploads",
+        "description": "Data stays local"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Encryption",
+        "description": "At-rest security"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "description": "Get started in minutes. No complicated setup, no subscriptions, no data harvesting.",
+      "steps": {
+        "step1": {
+          "title": "Download & Go",
+          "description": "Install Musclog from the App Store or Google Play. No account required — just open and start tracking."
+        },
+        "step2": {
+          "title": "Log Your Training",
+          "description": "Record sets, reps, and weights. Scan barcodes or snap photos to log meals. Everything stays on your device."
+        },
+        "step3": {
+          "title": "Track Progress",
+          "description": "Review weekly check-ins, visualize trends, and let the AI coach help you optimize your approach."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"Musclog is the first app that respects my privacy while providing a world-class training experience. Local-first is the future.\"",
+      "author": "Laura F.",
+      "role": "Busy Developer"
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "description": "Join thousands of athletes who use Musclog to track their progress without compromising privacy.",
+      "download": "Download Now",
+      "sourceCode": "View Source Code"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Lift, Log, Repeat",
+      "features": "Features",
+      "github": "GitHub",
+      "download": "Download Now"
+    },
+    "storeButtons": {
+      "googleTitle": "GET IT ON",
+      "googleStore": "Google Play",
+      "appleTitle": "DOWNLOAD ON THE",
+      "appleStore": "App Store",
+      "comingSoon": "App Store coming soon!"
+    },
+    "footer": {
+      "privacyPolicy": "Privacy Policy",
+      "terms": "Terms",
+      "contact": "Contact",
+      "license": "License",
+      "copyright": "Free & Open Source Software. Built for your privacy."
+    }
+  }
+}

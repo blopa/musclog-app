@@ -1,0 +1,141 @@
+{
+  "website": {
+    "hero": {
+      "badge1": "★ GRATIS & OPEN SOURCE",
+      "badge2": "FOCUS OP PRIVACY (GEEN LOGIN NODIG)",
+      "title1": "Beheers Uw",
+      "title2": "Fitness Gegevens",
+      "subheading": "Een lokaal-eerst, open-source fitnesstracker. Geen accounts, geen tracking, geen cloud. Alleen u en uw gains.",
+      "github": "Bekijk op GitHub"
+    },
+    "features": {
+      "title": "Gebouwd voor Prestatie & Privacy",
+      "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",
+      "strengthTracking": {
+        "title": "Offline Krachttraining Tracking",
+        "description": "Registreer uw sets en herhalingen direct op uw apparaat. Geen internet nodig. Uw gegevens verlaten nooit uw zak.",
+        "link": "MEER BEKIJKEN"
+      },
+      "privacyFirst": {
+        "title": "Privacy Eerst",
+        "description": "Geen registraties, geen logins, en geen tracking door derden. Musclog respecteert uw digitale soevereiniteit.",
+        "link": "PRIVACY MANIFEST"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "Musclog wordt gedreven door de community. Controleer de code, draag functies bij, of fork het om het uw eigen te maken.",
+        "link": "BRONCODE BEKIJKEN"
+      }
+    },
+    "featureGrid": {
+      "title": "Alles Wat U Nodig Heeft om Slimmer te Trainen",
+      "description": "Van AI-gestuurde coaching tot gedetailleerde analyses, Musclog geeft u de tools om volledige controle te nemen over uw fitnessreis.",
+      "items": {
+        "aiCoach": {
+          "title": "AI Coach (Loggy)",
+          "description": "Chat met uw AI fitness coach voor gepersonaliseerde workoutplannen, voedingsadvies en maaltijdfoto-schatting."
+        },
+        "barcode": {
+          "title": "Barcode Scanner",
+          "description": "Voeg producten snel toe door barcodes te scannen. Toegang tot de Open Food Facts database met miljoenen producten."
+        },
+        "checkins": {
+          "title": "Wekelijkse Check-ins",
+          "description": "Geautomatiseerde 7-daagse analyse van uw voortgang met dynamische doelaanpassingen om u op koers te houden."
+        },
+        "analytics": {
+          "title": "Voortgangsanalyses",
+          "description": "Interactieve grafieken voor gewicht, lichaamsvet en lifting-voortgang. Volg uw TDEE met echte gegevens."
+        },
+        "cycle": {
+          "title": "Cyclus Bewustzijn",
+          "description": "Volg menstruele fasen en ontvang trainingsaanbevelingen geoptimaliseerd voor uw cyclus."
+        },
+        "templates": {
+          "title": "Workout Sjablonen",
+          "description": "Maak aangepaste routines zoals PPL of Bovenlichaam/Onderlichaam. Toegang tot een uitgebreide oefenbibliotheek met spierdoelgerichtheid."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Synchroniseer met Google Health Connect om gegevens te delen met andere gezondheids- en fitness-apps op Android."
+        },
+        "encryption": {
+          "title": "Gecodeerde Opslag",
+          "description": "Uw gevoelige gezondheidsgegevens worden gecodeerd opgeslagen met AES. Exporteer op elk moment als JSON of Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitaminen & Mineralen",
+        "description": "Die u dagelijks kunt volgen"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Offline Klaar",
+        "description": "Geen internet nodig"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Cloud Uploads",
+        "description": "Gegevens blijven lokaal"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Encryptie",
+        "description": "Veiligheid in rust"
+      }
+    },
+    "howItWorks": {
+      "title": "Hoe Het Werkt",
+      "description": "Begin binnen enkele minuten. Geen ingewikkelde setup, geen abonnementen, geen gegevensverzameling.",
+      "steps": {
+        "step1": {
+          "title": "Download & Ga",
+          "description": "Installeer Musclog vanuit de App Store of Google Play. Geen account nodig — gewoon openen en beginnen met volgen."
+        },
+        "step2": {
+          "title": "Registreer Uw Training",
+          "description": "Registreer sets, herhalingen en gewichten. Scan barcodes of maak foto's om maaltijden te loggen. Alles blijft op uw apparaat."
+        },
+        "step3": {
+          "title": "Volg Voortgang",
+          "description": "Bekijk wekelijkse check-ins, visualiseer trends en laat de AI coach u helpen uw aanpak te optimaliseren."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"Musclog is de eerste app die mijn privacy respecteert terwijl het een wereldklasse trainingservaring biedt. Lokaal-eerst is de toekomst.\"",
+      "author": "Laura F.",
+      "role": "Drukke Ontwikkelaar"
+    },
+    "cta": {
+      "title": "Klaar om te starten?",
+      "description": "Sluit u aan bij duizenden atleten die Musclog gebruiken om hun voortgang te volgen zonder hun privacy op te geven.",
+      "download": "Nu Downloaden",
+      "sourceCode": "Bekijk Broncode"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Lift, Log, Herhaal",
+      "features": "Functies",
+      "github": "GitHub",
+      "download": "Nu Downloaden"
+    },
+    "storeButtons": {
+      "googleTitle": "VERKRIJG HET OP",
+      "googleStore": "Google Play",
+      "appleTitle": "DOWNLOAD OP DE",
+      "appleStore": "App Store",
+      "comingSoon": "App Store binnenkort beschikbaar!"
+    },
+    "footer": {
+      "privacyPolicy": "Privacybeleid",
+      "terms": "Voorwaarden",
+      "contact": "Contact",
+      "license": "Licentie",
+      "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
+    }
+  }
+}

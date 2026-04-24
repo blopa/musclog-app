@@ -157,6 +157,13 @@ export default function Root({ children }: PropsWithChildren) {
             right: auto !important; bottom: auto !important;
             width: 100% !important;
             zoom: 1 !important;
+            overflow: visible !important;
+            min-height: 0 !important;
+            height: auto !important;
+          }
+          .hide-desktop-wrapper .expo-web-app-shell > * {
+            flex: none !important;
+            min-height: 0 !important;
           }
         `}</style>
       </head>
