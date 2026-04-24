@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import {
   ArrowRight,
   Calendar,
@@ -13,9 +14,11 @@ import {
   Sparkles,
   TrendingUp,
 } from 'lucide-react-native';
-import { ReactNode, useState, useSyncExternalStore } from 'react';
+import { ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+
+import i18n from '@/lang/lang';
 
 // TODO: implement this later
 const trackStoreButtonClick = (param: any) => {};
@@ -152,23 +155,24 @@ export function StoreButtons() {
         />
       </div>
 
-      {mounted &&
-        snackbar.isOpen ? createPortal(
-          <div
-            className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[200] flex items-center justify-between rounded-lg bg-zinc-800 px-4 py-3 text-white shadow-lg sm:left-auto sm:right-4 sm:w-80"
-            role="status"
-          >
-            <span className="text-sm">{snackbar.message}</span>
-            <button
-              type="button"
-              onClick={() => setSnackbar({ isOpen: false, message: '' })}
-              className="ml-4 text-zinc-400 transition-colors hover:text-white"
+      {mounted && snackbar.isOpen
+        ? createPortal(
+            <div
+              className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[200] flex items-center justify-between rounded-lg bg-zinc-800 px-4 py-3 text-white shadow-lg sm:left-auto sm:right-4 sm:w-80"
+              role="status"
             >
-              ✕
-            </button>
-          </div>,
-          document.body
-        ) : null}
+              <span className="text-sm">{snackbar.message}</span>
+              <button
+                type="button"
+                onClick={() => setSnackbar({ isOpen: false, message: '' })}
+                className="ml-4 text-zinc-400 transition-colors hover:text-white"
+              >
+                ✕
+              </button>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }
@@ -334,7 +338,7 @@ export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'gr
 }
 
 export function CTA() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
   return (
     <section className="px-4 py-16 md:py-24">
       <div className="container mx-auto">
@@ -352,20 +356,15 @@ export function CTA() {
                 <Download className="h-4 w-4" />
                 {t('download')}
               </DownloadModal>
-              <Button
-                variant="outline"
-                className="gap-2 border-white/30 text-white hover:bg-white/10"
-                asChild
+              <a
+                href="https://github.com/blopa/musclog-app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 px-4 py-3 font-medium text-white transition-colors hover:bg-white/10"
               >
-                <a
-                  href="https://github.com/blopa/musclog-app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Code2 className="h-4 w-4" />
-                  {t('sourceCode')}
-                </a>
-              </Button>
+                <Code2 className="h-4 w-4" />
+                {t('sourceCode')}
+              </a>
             </div>
           </div>
         </div>
@@ -375,34 +374,79 @@ export function CTA() {
 }
 
 export function DownloadModal({ children, variant = 'default' }: DownloadModalProps) {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   const buttonClasses = {
     default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    outline: 'border-white/30 text-white hover:bg-white/10',
+    outline: 'border border-white/30 text-white hover:bg-white/10',
     white: 'bg-white text-background hover:bg-white/90',
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className={buttonClasses[variant]}>{children}</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
-        </DialogHeader>
-        <div className="flex justify-center py-4">
-          <StoreButtons />
+    <>
+      <button
+        type="button"
+        className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-medium transition-colors ${buttonClasses[variant]}`}
+        onClick={() => setIsOpen(true)}
+      >
+        {children}
+      </button>
+      {isOpen ? (
+        <div
+          className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="download-modal-title"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="bg-background border-border w-full max-w-md rounded-2xl border p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <h3 id="download-modal-title" className="text-xl font-semibold">
+                  {t('title')}
+                </h3>
+                <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
+              </div>
+              <button
+                type="button"
+                aria-label={t('close', { defaultValue: 'Close' })}
+                className="text-muted-foreground hover:text-foreground text-xl leading-none"
+                onClick={() => setIsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="flex justify-center py-4">
+              <StoreButtons />
+            </div>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      ) : null}
+    </>
   );
 }
 
 export function FeatureGrid() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
 
   const features = [
     {
@@ -476,7 +520,7 @@ export function FeatureGrid() {
 }
 
 export function Features() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
 
   const features = [
     {
@@ -651,7 +695,7 @@ export function Footer() {
 }
 
 export function Header() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
   return (
     <header className="bg-background/80 border-border fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -700,7 +744,7 @@ export function Header() {
 }
 
 export function Testimonial() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <section className="relative overflow-hidden py-16 md:py-24">
@@ -721,7 +765,7 @@ export function Testimonial() {
           {/* Author */}
           <div className="flex flex-col items-center gap-3">
             <div className="bg-secondary border-primary/30 h-14 w-14 overflow-hidden rounded-full border-2">
-              <Image
+              <img
                 src="/images/user-avatar.jpg"
                 alt={t('author')}
                 width={56}
@@ -741,7 +785,7 @@ export function Testimonial() {
 }
 
 export function Stats() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
 
   const stats = [
     {
@@ -793,43 +837,39 @@ const languages = [
 ];
 
 export function LanguagePicker() {
-  const { t}  = useTranslation();
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
+  const { t } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const handleLanguageChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
+    i18n.changeLanguage(newLocale).catch((err) => {
+      console.warn('[LanguagePicker] Failed to change language:', err);
+    });
   };
 
   const currentLanguage = languages.find((lang) => lang.code === locale);
 
   return (
-    <Select value={locale} onValueChange={handleLanguageChange}>
-      <SelectTrigger
+    <label className="relative inline-flex items-center">
+      <span className="sr-only">{t('language')}</span>
+      <select
         aria-label={t('language')}
-        className="hover:bg-accent w-fit cursor-pointer border-none bg-transparent px-2"
-        size="sm"
+        className="hover:bg-accent text-foreground w-fit cursor-pointer rounded-md border-none bg-transparent px-2 py-1 text-sm outline-none"
+        value={locale}
+        onChange={(event) => handleLanguageChange(event.target.value)}
       >
-        <SelectValue placeholder={t('language')}>
-          <span className="mr-1">{currentLanguage?.flag}</span>
-          <span className="hidden sm:inline">{currentLanguage?.label}</span>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent align="end">
+        {!currentLanguage ? <option value="">{t('language')}</option> : null}
         {languages.map((language) => (
-          <SelectItem key={language.code} value={language.code}>
-            <span className="mr-2">{language.flag}</span>
-            {language.label}
-          </SelectItem>
+          <option key={language.code} value={language.code}>
+            {language.flag} {language.label}
+          </option>
         ))}
-      </SelectContent>
-    </Select>
+      </select>
+    </label>
   );
 }
 
 export function HowItWorks() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
 
   const steps = [
     {
@@ -866,7 +906,9 @@ export function HowItWorks() {
           {steps.map((item, index) => (
             <div key={item.step} className="relative">
               {/* Connector line for desktop */}
-              {index < steps.length - 1 ? <div className="bg-border absolute left-[60%] top-12 hidden h-px w-[80%] md:block" /> : null}
+              {index < steps.length - 1 ? (
+                <div className="bg-border absolute left-[60%] top-12 hidden h-px w-[80%] md:block" />
+              ) : null}
 
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
@@ -889,7 +931,7 @@ export function HowItWorks() {
 }
 
 export function Hero() {
-  const { t}  = useTranslation();
+  const { t } = useTranslation();
   return (
     <section className="relative overflow-hidden pb-16 pt-24 md:pb-24 md:pt-32">
       <HeroBackground />
@@ -941,13 +983,12 @@ export function Hero() {
               {/* Phone Frame */}
               <div className="bg-card border-primary/30 shadow-primary/10 relative w-[280px] rounded-[2.5rem] border-2 p-2 shadow-2xl md:w-[320px]">
                 <div className="overflow-hidden rounded-[2rem]">
-                  <Image
+                  <img
                     src="/images/app-screenshot.png"
                     alt={t('appScreenshot')}
                     width={320}
                     height={640}
                     className="h-auto w-full"
-                    priority
                   />
                 </div>
               </div>
@@ -959,7 +1000,7 @@ export function Hero() {
   );
 }
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Header />
