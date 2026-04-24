@@ -14,7 +14,7 @@ import {
   Sparkles,
   TrendingUp,
 } from 'lucide-react-native';
-import { ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
+import { ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +22,8 @@ import i18n from '@/lang/lang';
 
 // TODO: implement this later
 const trackStoreButtonClick = (param: any) => {};
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.werules.logger';
+const TESTFLIGHT_URL = 'https://testflight.apple.com/join/mq3QMSHU';
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT = '#D1D5DB';
@@ -31,6 +33,8 @@ const CARD_BORDER = 'rgba(255, 255, 255, 0.12)';
 interface DownloadModalProps {
   children: ReactNode;
   variant?: 'default' | 'outline' | 'white';
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 const clientSnapshot = () => true;
@@ -146,61 +150,26 @@ function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: Sto
   );
 }
 
-interface Snackbar {
-  isOpen: boolean;
-  message: string;
-}
-
 export function StoreButtons() {
-  const [snackbar, setSnackbar] = useState<Snackbar>({ isOpen: false, message: '' });
-  const mounted = useIsClient();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.storeButtons' });
 
-  const handleAppStoreClick = () => {
-    trackStoreButtonClick({ store: 'app_store', availability: 'coming_soon' });
-    setSnackbar({ isOpen: true, message: t('comingSoon') });
-    setTimeout(() => setSnackbar({ isOpen: false, message: '' }), 3000);
-  };
-
   return (
-    <>
-      <div className="flex flex-wrap gap-3">
-        <StoreButton
-          logo={<GooglePlayLogo />}
-          title={t('googleTitle')}
-          storeName={t('googleStore')}
-          href="https://play.google.com/store/apps/details?id=com.werules.logger"
-          onLinkClick={() =>
-            trackStoreButtonClick({ store: 'google_play', availability: 'available' })
-          }
-        />
-        <StoreButton
-          logo={<AppleLogo />}
-          title={t('appleTitle')}
-          storeName={t('appleStore')}
-          onClick={handleAppStoreClick}
-        />
-      </div>
-
-      {mounted && snackbar.isOpen
-        ? createPortal(
-            <div
-              className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[200] flex items-center justify-between rounded-lg border border-white/10 bg-zinc-900 px-4 py-3 text-white shadow-lg sm:left-auto sm:right-4 sm:w-80"
-              role="status"
-            >
-              <span className="text-sm text-gray-100">{snackbar.message}</span>
-              <button
-                type="button"
-                onClick={() => setSnackbar({ isOpen: false, message: '' })}
-                className="ml-4 text-zinc-400 transition-colors hover:text-white"
-              >
-                ✕
-              </button>
-            </div>,
-            document.body
-          )
-        : null}
-    </>
+    <div className="flex flex-wrap gap-3">
+      <StoreButton
+        logo={<GooglePlayLogo />}
+        title={t('googleTitle')}
+        storeName={t('googleStore')}
+        href={GOOGLE_PLAY_URL}
+        onLinkClick={() => trackStoreButtonClick({ store: 'google_play', availability: 'available' })}
+      />
+      <StoreButton
+        logo={<AppleLogo />}
+        title={t('appleTitle')}
+        storeName={t('appleStore')}
+        href={TESTFLIGHT_URL}
+        onLinkClick={() => trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })}
+      />
+    </div>
   );
 }
 
@@ -436,9 +405,16 @@ export function CTA() {
   );
 }
 
-export function DownloadModal({ children, variant = 'default' }: DownloadModalProps) {
+export function DownloadModal({
+  children,
+  variant = 'default',
+  className,
+  style,
+}: DownloadModalProps) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const mounted = useIsClient();
 
   useEffect(() => {
     if (!isOpen) {
@@ -451,8 +427,19 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
       }
     };
 
+    const handlePointerDown = (event: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
   }, [isOpen]);
 
   const buttonClasses = {
@@ -460,54 +447,71 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
     outline: 'border border-white/30 text-white hover:bg-white/10',
     white: 'bg-white text-black hover:bg-white/90',
   };
+  const popoverClasses = {
+    default: 'right-0',
+    outline: 'right-0',
+    white: 'left-1/2 -translate-x-1/2',
+  };
 
   return (
-    <>
+    <div className="relative inline-flex" ref={popoverRef}>
       <button
         type="button"
-        className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]}`}
-        onClick={() => setIsOpen(true)}
+        className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]} ${className ?? ''}`}
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+        onClick={() => setIsOpen((current) => !current)}
+        style={style}
       >
         {children}
       </button>
-      {isOpen ? (
-        <div
-          className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="download-modal-title"
-          onClick={() => setIsOpen(false)}
-        >
-          <div
-            className="bg-background w-full max-w-md rounded-2xl border p-6 shadow-2xl"
-            style={{ borderColor: CARD_BORDER }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-4 flex items-start justify-between gap-4">
-              <div>
-                <h3 id="download-modal-title" className="text-xl font-bold text-white">
-                  {t('title')}
-                </h3>
-                <p className="mt-1 text-sm" style={{ color: BODY_TEXT }}>
-                  {t('description')}
-                </p>
+
+      {mounted && isOpen
+        ? createPortal(
+            <div
+              className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
+              style={{
+                borderColor: CARD_BORDER,
+                top: popoverRef.current
+                  ? popoverRef.current.getBoundingClientRect().bottom + 12
+                  : 0,
+                left:
+                  variant === 'white' && popoverRef.current
+                    ? popoverRef.current.getBoundingClientRect().left +
+                      popoverRef.current.getBoundingClientRect().width / 2
+                    : undefined,
+                right:
+                  variant !== 'white' && popoverRef.current
+                    ? window.innerWidth - popoverRef.current.getBoundingClientRect().right
+                    : undefined,
+              }}
+              role="dialog"
+              aria-labelledby="download-modal-title"
+            >
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <h3 id="download-modal-title" className="text-base font-bold text-white">
+                    {t('title')}
+                  </h3>
+                  <p className="mt-1 text-sm" style={{ color: BODY_TEXT }}>
+                    {t('description')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={t('close', { defaultValue: 'Close' })}
+                  className="text-muted-foreground hover:text-foreground text-xl leading-none"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ×
+                </button>
               </div>
-              <button
-                type="button"
-                aria-label={t('close', { defaultValue: 'Close' })}
-                className="text-muted-foreground hover:text-foreground text-xl leading-none"
-                onClick={() => setIsOpen(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="flex justify-center py-4">
               <StoreButtons />
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </>
+            </div>,
+            document.body
+          )
+        : null}
+    </div>
   );
 }
 
@@ -866,15 +870,13 @@ export function Header() {
           >
             {t('github')}
           </a>
-          <a
-            href="https://play.google.com/store/apps/details?id=com.werules.logger"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
+          <DownloadModal
+            variant="default"
+            className="px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
             style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
           >
             {t('download')}
-          </a>
+          </DownloadModal>
           <LanguagePicker />
         </nav>
 
