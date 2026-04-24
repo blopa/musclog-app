@@ -88,10 +88,29 @@ const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})();`;
 
 function landingPanelGate(base: string) {
   try {
-    const path = window.location.pathname.slice(base.length) || '/';
-    if (!path.startsWith('/app')) {
-      document.documentElement.classList.add('hide-desktop-wrapper');
+    function update() {
+      const raw = window.location.pathname;
+      const path = (base && raw.startsWith(base) ? raw.slice(base.length) : raw) || '/';
+      if (!path.startsWith('/app')) {
+        document.documentElement.classList.add('hide-desktop-wrapper');
+      } else {
+        document.documentElement.classList.remove('hide-desktop-wrapper');
+      }
     }
+
+    update();
+    window.addEventListener('popstate', update);
+    const origPush = history.pushState.bind(history);
+    history.pushState = function (...args: Parameters<typeof history.pushState>) {
+      origPush(...args);
+      update();
+    };
+
+    const origReplace = history.replaceState.bind(history);
+    history.replaceState = function (...args: Parameters<typeof history.replaceState>) {
+      origReplace(...args);
+      update();
+    };
   } catch (_) {}
 }
 
