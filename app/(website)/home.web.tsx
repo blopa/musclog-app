@@ -44,7 +44,7 @@ function useIsClient() {
 function HeroHexWatermark() {
   return (
     <svg
-      className="absolute left-[-64px] top-[210px] h-[260px] w-[260px] text-emerald-400/12"
+      className="text-emerald-400/12 absolute left-[-64px] top-[210px] h-[260px] w-[260px]"
       viewBox="0 0 220 220"
       fill="none"
       aria-hidden="true"
@@ -339,7 +339,10 @@ export function HeroBackground() {
       />
       <div
         className="absolute bottom-[-40px] left-1/2 h-[240px] w-[70%] -translate-x-1/2 rounded-full blur-[120px]"
-        style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.16) 0%, rgba(34,197,94,0.08) 35%, rgba(0,0,0,0) 72%)' }}
+        style={{
+          background:
+            'radial-gradient(circle, rgba(34,197,94,0.16) 0%, rgba(34,197,94,0.08) 35%, rgba(0,0,0,0) 72%)',
+        }}
       />
       <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-cyan-500/10 blur-[100px]" />
 
@@ -386,12 +389,21 @@ export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'gr
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   return (
-    <section className="px-4 py-16 md:py-20">
-      <div className="container mx-auto">
+    <section className="relative overflow-hidden px-4 py-16 md:py-20">
+      <SectionBackground variant="grid" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[440px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.12) 0%, rgba(34,197,94,0.08) 34%, rgba(0,0,0,0) 72%)',
+        }}
+        aria-hidden="true"
+      />
+      <div className="container relative z-10 mx-auto">
         <div
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r p-8 md:p-14"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r p-10 md:p-16"
           style={{
-            backgroundImage: `linear-gradient(135deg, ${BRAND_GREEN}dd, #14b8a6cc 58%, #0891b2cc 100%)`,
+            backgroundImage: `linear-gradient(90deg, #0f766ecc 0%, #0891b2dd 42%, ${BRAND_GREEN}ee 100%)`,
           }}
         >
           {/* Background Glow */}
@@ -411,7 +423,7 @@ export function CTA() {
                 href="https://github.com/blopa/musclog-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 px-4 py-3 font-semibold text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-black/15 px-4 py-3 font-semibold text-white transition-colors hover:border-white hover:text-white"
               >
                 <Code2 className="h-4 w-4" />
                 {t('sourceCode')}
@@ -446,7 +458,7 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
   const buttonClasses = {
     default: 'bg-primary text-primary-foreground hover:bg-primary/90',
     outline: 'border border-white/30 text-white hover:bg-white/10',
-    white: 'bg-white text-background hover:bg-white/90',
+    white: 'bg-white text-black hover:bg-white/90',
   };
 
   return (
@@ -561,7 +573,10 @@ export function FeatureGrid() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p className="mx-auto max-w-2xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT_SOFT }}>
+          <p
+            className="mx-auto max-w-2xl text-balance text-base md:text-lg"
+            style={{ color: BODY_TEXT_SOFT }}
+          >
             {t('description')}
           </p>
         </div>
@@ -638,7 +653,10 @@ export function Features() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+          <p
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
+            style={{ color: BODY_TEXT }}
+          >
             {t('description')}
           </p>
         </div>
@@ -648,7 +666,7 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="space-y-4 rounded-2xl border bg-black/32 p-7 transition-colors hover:border-white/20"
+              className="bg-black/32 space-y-4 rounded-2xl border p-7 transition-colors hover:border-white/20"
               style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
             >
               <div
@@ -692,6 +710,7 @@ export function Features() {
 
 export function Footer() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.footer' });
+  const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
 
   const footerLinks = [
     { text: t('privacyPolicy'), href: '/privacy' },
@@ -702,15 +721,27 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-border border-t py-8">
+    <footer
+      className="relative overflow-hidden border-t py-8"
+      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+    >
+      <SectionBackground variant="grid" />
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="bg-primary flex h-7 w-7 items-center justify-center rounded-lg">
-              <Dumbbell className="text-primary-foreground h-4 w-4" />
+          <Link href="/" className="flex items-center gap-3">
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-lg"
+              style={{ backgroundColor: BRAND_GREEN }}
+            >
+              <Dumbbell className="h-5 w-5 text-black" />
             </div>
-            <span className="font-semibold">Musclog</span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-white">{navT('appName')}</span>
+              <span className="text-xs" style={{ color: BODY_TEXT_SOFT }}>
+                {navT('appTagline')}
+              </span>
+            </div>
           </Link>
 
           {/* Links */}
@@ -722,8 +753,8 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:text-white"
-                  style={{ color: BODY_TEXT }}
+                  className="text-sm transition-colors hover:text-[#22C55E]"
+                  style={{ color: BODY_TEXT_SOFT }}
                 >
                   {link.text}
                 </a>
@@ -731,8 +762,8 @@ export function Footer() {
                 <Link
                   key={link.text}
                   href={link.href}
-                  className="text-sm transition-colors hover:text-white"
-                  style={{ color: BODY_TEXT }}
+                  className="text-sm transition-colors hover:text-[#22C55E]"
+                  style={{ color: BODY_TEXT_SOFT }}
                 >
                   {link.text}
                 </Link>
@@ -741,8 +772,8 @@ export function Footer() {
             <button
               // resetAnalyticsConsent
               onClick={() => {}}
-              className="cursor-pointer text-sm transition-colors hover:text-white"
-              style={{ color: BODY_TEXT }}
+              className="cursor-pointer text-sm transition-colors hover:text-[#22C55E]"
+              style={{ color: BODY_TEXT_SOFT }}
             >
               Cookie Settings
             </button>
@@ -754,7 +785,8 @@ export function Footer() {
               href="https://youtube.com/@musclog"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="transition-colors hover:text-[#22C55E]"
+              style={{ color: BODY_TEXT_SOFT }}
               aria-label="YouTube"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -765,7 +797,8 @@ export function Footer() {
               href="https://instagram.com/musclog.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="transition-colors hover:text-[#22C55E]"
+              style={{ color: BODY_TEXT_SOFT }}
               aria-label="Instagram"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -777,7 +810,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-border mt-8 border-t pt-6 text-center">
-          <p className="text-sm" style={{ color: BODY_TEXT }}>
+          <p className="text-sm" style={{ color: 'rgba(209, 213, 219, 0.62)' }}>
             {`© ${new Date().getFullYear()} Musclog. ${t('copyright')}`}
           </p>
         </div>
@@ -789,7 +822,10 @@ export function Footer() {
 export function Header() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md" style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}>
+    <header
+      className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md"
+      style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <div
@@ -809,14 +845,14 @@ export function Header() {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="#features"
-            className="text-sm transition-colors hover:text-white"
+            className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
             {t('features')}
           </Link>
           <Link
             href="/calculator"
-            className="text-sm transition-colors hover:text-white"
+            className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
             Calculator
@@ -825,7 +861,7 @@ export function Header() {
             href="https://github.com/blopa/musclog-app"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm transition-colors hover:text-white"
+            className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
             {t('github')}
@@ -862,7 +898,7 @@ export function Testimonial() {
         <div className="mx-auto max-w-3xl space-y-8 text-center">
           {/* Quote Icon */}
           <div className="flex justify-center">
-            <Quote className="text-primary h-12 w-12 rotate-180" />
+            <Quote className="h-12 w-12 rotate-180" color={BRAND_GREEN_BRIGHT} />
           </div>
 
           {/* Quote Text */}
@@ -883,7 +919,7 @@ export function Testimonial() {
             </div>
             <div>
               <p className="font-bold text-white">{t('author')}</p>
-              <p className="text-sm" style={{ color: BODY_TEXT }}>
+              <p className="text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {t('role')}
               </p>
             </div>
@@ -921,7 +957,10 @@ export function Stats() {
   ];
 
   return (
-    <section className="relative overflow-hidden border-y py-20 md:py-24" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+    <section
+      className="relative overflow-hidden border-y py-20 md:py-24"
+      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+    >
       <DotPattern className="text-primary/40" />
       <div className="from-background/80 to-background/80 absolute inset-0 bg-gradient-to-r via-transparent" />
       <div className="container relative z-10 mx-auto px-4">
@@ -1023,7 +1062,10 @@ export function HowItWorks() {
           <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
-          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: '#D1D5DB' }}>
+          <p
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
+            style={{ color: '#D1D5DB' }}
+          >
             {t('description')}
           </p>
         </div>
@@ -1038,7 +1080,10 @@ export function HowItWorks() {
 
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full" style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}>
+                  <div
+                    className="flex h-24 w-24 items-center justify-center rounded-full"
+                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}
+                  >
                     <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
                   </div>
                   <span className="bg-primary text-primary-foreground absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
@@ -1077,7 +1122,11 @@ export function Hero() {
               </span>
               <span
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
-                style={{ borderColor: 'rgba(255,255,255,0.1)', color: BODY_TEXT, backgroundColor: 'rgba(255,255,255,0.04)' }}
+                style={{
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  color: BODY_TEXT,
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                }}
               >
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
@@ -1120,7 +1169,8 @@ export function Hero() {
               <div
                 className="absolute inset-0 rounded-full blur-[110px]"
                 style={{
-                  background: 'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
+                  background:
+                    'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
                   transform: 'translate(6%, 10%) scale(1.12)',
                 }}
                 aria-hidden="true"
@@ -1128,7 +1178,10 @@ export function Hero() {
               {/* Phone Frame */}
               <div
                 className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
-                style={{ borderColor: 'rgba(255,255,255,0.65)', boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)' }}
+                style={{
+                  borderColor: 'rgba(255,255,255,0.65)',
+                  boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
+                }}
               >
                 <div className="overflow-hidden rounded-[2rem]">
                   <img
