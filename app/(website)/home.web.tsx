@@ -22,6 +22,10 @@ import i18n from '@/lang/lang';
 
 // TODO: implement this later
 const trackStoreButtonClick = (param: any) => {};
+const BRAND_GREEN = '#22C55E';
+const BRAND_GREEN_BRIGHT = '#00FFA3';
+const BODY_TEXT = '#9CA3AF';
+const CARD_BORDER = 'rgba(255, 255, 255, 0.16)';
 
 interface DownloadModalProps {
   children: ReactNode;
@@ -86,14 +90,14 @@ interface StoreButtonProps {
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
   const className =
-    'inline-flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 border-zinc-700 bg-black text-white hover:border-zinc-500 transition-colors cursor-pointer min-w-[175px]';
+    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border-2 border-white/25 bg-black px-4 py-2.5 text-white transition-colors hover:border-white/45';
 
   const content = (
     <>
       <span className="shrink-0">{logo}</span>
       <span className="flex flex-col items-start">
-        <span className="text-[11px] leading-none text-zinc-400">{title}</span>
-        <span className="font-sans text-lg font-bold leading-tight">{storeName}</span>
+        <span className="text-[11px] leading-none text-gray-300">{title}</span>
+        <span className="text-lg font-bold leading-tight text-white">{storeName}</span>
       </span>
     </>
   );
@@ -127,7 +131,7 @@ interface Snackbar {
 export function StoreButtons() {
   const [snackbar, setSnackbar] = useState<Snackbar>({ isOpen: false, message: '' });
   const mounted = useIsClient();
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.storeButtons' });
 
   const handleAppStoreClick = () => {
     trackStoreButtonClick({ store: 'app_store', availability: 'coming_soon' });
@@ -158,10 +162,10 @@ export function StoreButtons() {
       {mounted && snackbar.isOpen
         ? createPortal(
             <div
-              className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[200] flex items-center justify-between rounded-lg bg-zinc-800 px-4 py-3 text-white shadow-lg sm:left-auto sm:right-4 sm:w-80"
+              className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[200] flex items-center justify-between rounded-lg border border-white/10 bg-zinc-900 px-4 py-3 text-white shadow-lg sm:left-auto sm:right-4 sm:w-80"
               role="status"
             >
-              <span className="text-sm">{snackbar.message}</span>
+              <span className="text-sm text-gray-100">{snackbar.message}</span>
               <button
                 type="button"
                 onClick={() => setSnackbar({ isOpen: false, message: '' })}
@@ -338,19 +342,24 @@ export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'gr
 }
 
 export function CTA() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   return (
-    <section className="px-4 py-16 md:py-24">
+    <section className="px-4 py-16 md:py-20">
       <div className="container mx-auto">
-        <div className="from-primary/80 relative overflow-hidden rounded-3xl bg-gradient-to-r via-teal-500/80 to-cyan-500/80 p-8 md:p-16">
+        <div
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r p-8 md:p-14"
+          style={{
+            backgroundImage: `linear-gradient(135deg, ${BRAND_GREEN}dd, #14b8a6cc 58%, #0891b2cc 100%)`,
+          }}
+        >
           {/* Background Glow */}
           <div className="from-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
 
           <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
-            <h2 className="text-balance text-3xl font-bold text-white md:text-4xl lg:text-5xl">
+            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl lg:text-5xl">
               {t('title')}
             </h2>
-            <p className="text-balance text-lg text-white/90">{t('description')}</p>
+            <p className="text-balance text-lg font-medium text-white/90">{t('description')}</p>
             <div className="flex flex-wrap justify-center gap-4">
               <DownloadModal variant="white">
                 <Download className="h-4 w-4" />
@@ -360,7 +369,7 @@ export function CTA() {
                 href="https://github.com/blopa/musclog-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 px-4 py-3 font-medium text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 px-4 py-3 font-semibold text-white transition-colors hover:bg-white/10"
               >
                 <Code2 className="h-4 w-4" />
                 {t('sourceCode')}
@@ -374,7 +383,7 @@ export function CTA() {
 }
 
 export function DownloadModal({ children, variant = 'default' }: DownloadModalProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -402,7 +411,7 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
     <>
       <button
         type="button"
-        className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-medium transition-colors ${buttonClasses[variant]}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]}`}
         onClick={() => setIsOpen(true)}
       >
         {children}
@@ -416,15 +425,18 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="bg-background border-border w-full max-w-md rounded-2xl border p-6 shadow-2xl"
+            className="bg-background w-full max-w-md rounded-2xl border p-6 shadow-2xl"
+            style={{ borderColor: CARD_BORDER }}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
-                <h3 id="download-modal-title" className="text-xl font-semibold">
+                <h3 id="download-modal-title" className="text-xl font-bold text-white">
                   {t('title')}
                 </h3>
-                <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
+                <p className="mt-1 text-sm" style={{ color: BODY_TEXT }}>
+                  {t('description')}
+                </p>
               </div>
               <button
                 type="button"
@@ -446,7 +458,7 @@ export function DownloadModal({ children, variant = 'default' }: DownloadModalPr
 }
 
 export function FeatureGrid() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.featureGrid' });
 
   const features = [
     {
@@ -492,25 +504,35 @@ export function FeatureGrid() {
   ];
 
   return (
-    <section className="bg-card/50 relative overflow-hidden py-16 md:py-24">
+    <section className="bg-card/50 relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="grid" />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-bold md:text-4xl">{t('title')}</h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-balance">{t('description')}</p>
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mx-auto max-w-2xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="border-border bg-background hover:border-primary/40 group rounded-2xl border p-6 transition-colors"
+              className="group rounded-2xl border bg-black/30 p-6 transition-colors hover:border-white/25"
+              style={{ borderColor: CARD_BORDER }}
             >
-              <div className="bg-primary/10 group-hover:bg-primary/20 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-                <feature.icon className="text-primary h-6 w-6" />
+              <div
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
+                style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}
+              >
+                <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+              <h3 className="mb-2 text-lg font-bold text-white">{feature.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
@@ -520,26 +542,29 @@ export function FeatureGrid() {
 }
 
 export function Features() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.features' });
 
   const features = [
     {
       icon: Dumbbell,
-      iconColor: 'text-primary',
+      iconColor: BRAND_GREEN_BRIGHT,
+      iconBg: 'rgba(34, 197, 94, 0.13)',
       title: t('strengthTracking.title'),
       description: t('strengthTracking.description'),
       link: { text: t('strengthTracking.link'), href: '#features' },
     },
     {
       icon: Shield,
-      iconColor: 'text-cyan-400',
+      iconColor: '#38BDF8',
+      iconBg: 'rgba(56, 189, 248, 0.12)',
       title: t('privacyFirst.title'),
       description: t('privacyFirst.description'),
       link: { text: t('privacyFirst.link'), href: '/privacy' },
     },
     {
       icon: Code2,
-      iconColor: 'text-pink-400',
+      iconColor: '#A855F7',
+      iconBg: 'rgba(168, 85, 247, 0.12)',
       title: t('openSource.title'),
       description: t('openSource.description'),
       link: {
@@ -551,13 +576,17 @@ export function Features() {
   ];
 
   return (
-    <section id="features" className="relative overflow-hidden py-16 md:py-24">
+    <section id="features" className="relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="dots" />
       <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-bold md:text-4xl">{t('title')}</h2>
-          <p className="text-muted-foreground mx-auto max-w-xl text-balance">{t('description')}</p>
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
         </div>
 
         {/* Feature Cards */}
@@ -565,21 +594,26 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="bg-card border-border hover:border-primary/30 space-y-4 rounded-2xl border p-6 transition-colors"
+              className="space-y-4 rounded-2xl border bg-black/32 p-7 transition-colors hover:border-white/25"
+              style={{ borderColor: CARD_BORDER }}
             >
               <div
-                className={`bg-secondary flex h-10 w-10 items-center justify-center rounded-lg ${feature.iconColor}`}
+                className="flex h-14 w-14 items-center justify-center rounded-xl"
+                style={{ backgroundColor: feature.iconBg }}
               >
-                <feature.icon className="h-5 w-5" />
+                <feature.icon className="h-7 w-7" color={feature.iconColor} />
               </div>
-              <h3 className="text-lg font-semibold">{feature.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+              <h3 className="text-xl font-bold text-white">{feature.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+                {feature.description}
+              </p>
               {feature.link.external ? (
                 <a
                   href={feature.link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+                  style={{ color: feature.iconColor }}
                 >
                   {feature.link.text}
                   <ArrowRight className="h-4 w-4" />
@@ -587,7 +621,8 @@ export function Features() {
               ) : (
                 <Link
                   href={feature.link.href}
-                  className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+                  style={{ color: feature.iconColor }}
                 >
                   {feature.link.text}
                   <ArrowRight className="h-4 w-4" />
@@ -602,7 +637,7 @@ export function Features() {
 }
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.footer' });
 
   const footerLinks = [
     { text: t('privacyPolicy'), href: '/privacy' },
@@ -621,7 +656,7 @@ export function Footer() {
             <div className="bg-primary flex h-7 w-7 items-center justify-center rounded-lg">
               <Dumbbell className="text-primary-foreground h-4 w-4" />
             </div>
-            <span className="font-semibold">{t('title')}</span>
+            <span className="font-semibold">Musclog</span>
           </Link>
 
           {/* Links */}
@@ -633,7 +668,8 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  className="text-sm transition-colors hover:text-white"
+                  style={{ color: BODY_TEXT }}
                 >
                   {link.text}
                 </a>
@@ -641,7 +677,8 @@ export function Footer() {
                 <Link
                   key={link.text}
                   href={link.href}
-                  className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  className="text-sm transition-colors hover:text-white"
+                  style={{ color: BODY_TEXT }}
                 >
                   {link.text}
                 </Link>
@@ -650,9 +687,10 @@ export function Footer() {
             <button
               // resetAnalyticsConsent
               onClick={() => {}}
-              className="text-muted-foreground hover:text-foreground cursor-pointer text-sm transition-colors"
+              className="cursor-pointer text-sm transition-colors hover:text-white"
+              style={{ color: BODY_TEXT }}
             >
-              {t('cookieSettings')}
+              Cookie Settings
             </button>
           </nav>
 
@@ -685,8 +723,8 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-border mt-8 border-t pt-6 text-center">
-          <p className="text-muted-foreground text-sm">
-            {`© ${new Date().getFullYear()} Musclog. Free & Open Source Software. Built for your privacy.`}
+          <p className="text-sm" style={{ color: BODY_TEXT }}>
+            {`© ${new Date().getFullYear()} Musclog. ${t('copyright')}`}
           </p>
         </div>
       </div>
@@ -695,47 +733,63 @@ export function Footer() {
 }
 
 export function Header() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   return (
-    <header className="bg-background/80 border-border fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md">
+    <header className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md" style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}>
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-            <Dumbbell className="text-primary-foreground h-5 w-5" />
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+            style={{ backgroundColor: BRAND_GREEN }}
+          >
+            <Dumbbell className="h-5 w-5 text-black" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-semibold">{t('appName')}</span>
-            <span className="text-muted-foreground text-xs">{t('appTagline')}</span>
+            <span className="text-base font-bold text-white">{t('appName')}</span>
+            <span className="text-xs" style={{ color: BODY_TEXT }}>
+              {t('appTagline')}
+            </span>
           </div>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="#features"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            className="text-sm transition-colors hover:text-white"
+            style={{ color: BODY_TEXT }}
           >
             {t('features')}
           </Link>
           <Link
             href="/calculator"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            className="text-sm transition-colors hover:text-white"
+            style={{ color: BODY_TEXT }}
           >
-            {t('calculator')}
+            Calculator
           </Link>
           <a
             href="https://github.com/blopa/musclog-app"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            className="text-sm transition-colors hover:text-white"
+            style={{ color: BODY_TEXT }}
           >
             {t('github')}
           </a>
-          <DownloadModal variant="default">{t('download')}</DownloadModal>
+          <a
+            href="https://play.google.com/store/apps/details?id=com.werules.logger"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
+            style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
+          >
+            {t('download')}
+          </a>
           <LanguagePicker />
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
-          <DownloadModal variant="default">{t('downloadShort')}</DownloadModal>
+          <DownloadModal variant="default">{t('download')}</DownloadModal>
           <LanguagePicker />
         </div>
       </div>
@@ -744,10 +798,10 @@ export function Header() {
 }
 
 export function Testimonial() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.testimonial' });
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-24">
+    <section className="relative overflow-hidden py-16 md:py-20">
       <DotPattern className="text-primary/50" />
       <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
       <div className="container relative z-10 mx-auto px-4">
@@ -758,7 +812,7 @@ export function Testimonial() {
           </div>
 
           {/* Quote Text */}
-          <blockquote className="text-balance text-2xl font-medium leading-relaxed md:text-3xl lg:text-4xl">
+          <blockquote className="text-balance text-2xl font-bold leading-relaxed text-white md:text-3xl lg:text-4xl">
             {t('quote')}
           </blockquote>
 
@@ -774,8 +828,10 @@ export function Testimonial() {
               />
             </div>
             <div>
-              <p className="font-semibold">{t('author')}</p>
-              <p className="text-muted-foreground text-sm">{t('role')}</p>
+              <p className="font-bold text-white">{t('author')}</p>
+              <p className="text-sm" style={{ color: BODY_TEXT }}>
+                {t('role')}
+              </p>
             </div>
           </div>
         </div>
@@ -785,7 +841,7 @@ export function Testimonial() {
 }
 
 export function Stats() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.stats' });
 
   const stats = [
     {
@@ -811,7 +867,7 @@ export function Stats() {
   ];
 
   return (
-    <section className="border-border relative overflow-hidden border-y py-16 md:py-20">
+    <section className="relative overflow-hidden border-y py-16 md:py-20" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       <DotPattern className="text-primary/40" />
       <div className="from-background/80 to-background/80 absolute inset-0 bg-gradient-to-r via-transparent" />
       <div className="container relative z-10 mx-auto px-4">
@@ -819,8 +875,10 @@ export function Stats() {
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-primary mb-2 text-4xl font-bold md:text-5xl">{stat.value}</div>
-              <div className="text-foreground mb-1 font-medium">{stat.label}</div>
-              <div className="text-muted-foreground text-sm">{stat.description}</div>
+              <div className="mb-1 font-bold text-white">{stat.label}</div>
+              <div className="text-sm" style={{ color: BODY_TEXT }}>
+                {stat.description}
+              </div>
             </div>
           ))}
         </div>
@@ -830,14 +888,13 @@ export function Stats() {
 }
 
 const languages = [
-  { code: 'en-us', label: 'English', flag: '🇺🇸' },
+  { code: 'en-us', label: 'English', flag: '🇬🇧' },
   { code: 'es-es', label: 'Español', flag: '🇪🇸' },
   { code: 'nl-nl', label: 'Nederlands', flag: '🇳🇱' },
   { code: 'pt-br', label: 'Português', flag: '🇧🇷' },
 ];
 
 export function LanguagePicker() {
-  const { t } = useTranslation();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const handleLanguageChange = (newLocale: string) => {
@@ -847,17 +904,23 @@ export function LanguagePicker() {
   };
 
   const currentLanguage = languages.find((lang) => lang.code === locale);
+  const currentLanguageLabel = currentLanguage
+    ? `${currentLanguage.flag} ${currentLanguage.label}`
+    : 'Language';
 
   return (
     <label className="relative inline-flex items-center">
-      <span className="sr-only">{t('language')}</span>
+      <span className="sr-only">Language</span>
+      <span className="pointer-events-none absolute left-2 text-sm">🇬🇧</span>
       <select
-        aria-label={t('language')}
-        className="hover:bg-accent text-foreground w-fit cursor-pointer rounded-md border-none bg-transparent px-2 py-1 text-sm outline-none"
+        aria-label="Language"
+        className="w-fit cursor-pointer rounded-md border-none bg-transparent py-1 pl-8 pr-2 text-sm outline-none"
+        style={{ color: BODY_TEXT }}
         value={locale}
         onChange={(event) => handleLanguageChange(event.target.value)}
+        title={currentLanguageLabel}
       >
-        {!currentLanguage ? <option value="">{t('language')}</option> : null}
+        {!currentLanguage ? <option value="">Language</option> : null}
         {languages.map((language) => (
           <option key={language.code} value={language.code}>
             {language.flag} {language.label}
@@ -869,7 +932,7 @@ export function LanguagePicker() {
 }
 
 export function HowItWorks() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.howItWorks' });
 
   const steps = [
     {
@@ -893,13 +956,17 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-24">
+    <section className="relative overflow-hidden py-16 md:py-20">
       <GridPattern className="text-primary/40" />
       <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-bold md:text-4xl">{t('title')}</h2>
-          <p className="text-muted-foreground mx-auto max-w-xl text-balance">{t('description')}</p>
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mx-auto max-w-xl text-balance text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3 md:gap-12">
@@ -912,15 +979,17 @@ export function HowItWorks() {
 
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-6">
-                  <div className="bg-primary/10 flex h-24 w-24 items-center justify-center rounded-full">
-                    <item.icon className="text-primary h-10 w-10" />
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full" style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}>
+                    <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
                   </div>
                   <span className="bg-primary text-primary-foreground absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
                     {item.step}
                   </span>
                 </div>
-                <h3 className="mb-3 text-xl font-semibold">{item.title}</h3>
-                <p className="text-muted-foreground max-w-xs leading-relaxed">{item.description}</p>
+                <h3 className="mb-3 text-xl font-bold text-white">{item.title}</h3>
+                <p className="max-w-xs leading-relaxed" style={{ color: BODY_TEXT }}>
+                  {item.description}
+                </p>
               </div>
             </div>
           ))}
@@ -931,9 +1000,9 @@ export function HowItWorks() {
 }
 
 export function Hero() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
   return (
-    <section className="relative overflow-hidden pb-16 pt-24 md:pb-24 md:pt-32">
+    <section className="relative overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32">
       <HeroBackground />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -941,10 +1010,16 @@ export function Hero() {
           <div className="space-y-6">
             {/* Badges */}
             <div className="flex flex-wrap gap-3">
-              <span className="bg-primary/10 text-primary border-primary/20 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium">
-                <span className="text-yellow-400">★</span> {t('badge1')}
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
+                style={{ backgroundColor: BRAND_GREEN, color: '#ffffff' }}
+              >
+                <span className="text-white">★</span> {t('badge1')}
               </span>
-              <span className="bg-secondary text-muted-foreground border-border inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium">
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
+                style={{ borderColor: 'rgba(255,255,255,0.1)', color: BODY_TEXT, backgroundColor: 'rgba(255,255,255,0.04)' }}
+              >
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
                 </svg>
@@ -953,14 +1028,16 @@ export function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-balance text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+            <h1 className="text-balance text-4xl font-extrabold leading-tight text-white md:text-6xl lg:text-[4.6rem]">
               {t('title1')}
               <br />
-              <span className="text-primary">{t('title2')}</span>
+              <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('title2')}</span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-muted-foreground max-w-md text-lg">{t('subheading')}</p>
+            <p className="max-w-md text-lg leading-9" style={{ color: BODY_TEXT }}>
+              {t('subheading')}
+            </p>
 
             {/* CTA Buttons */}
             <StoreButtons />
@@ -970,7 +1047,8 @@ export function Hero() {
               href="https://github.com/blopa/musclog-app"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-white"
+              style={{ color: BODY_TEXT }}
             >
               <Code2 className="h-4 w-4" />
               {t('github')}
@@ -980,12 +1058,23 @@ export function Hero() {
           {/* Right Content - Phone Mockup with Screenshot */}
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
+              <div
+                className="absolute inset-0 rounded-full blur-[90px]"
+                style={{
+                  background: `radial-gradient(circle, rgba(0,255,163,0.22) 0%, rgba(34,197,94,0.14) 35%, rgba(0,0,0,0) 72%)`,
+                  transform: 'translate(6%, 10%) scale(1.05)',
+                }}
+                aria-hidden="true"
+              />
               {/* Phone Frame */}
-              <div className="bg-card border-primary/30 shadow-primary/10 relative w-[280px] rounded-[2.5rem] border-2 p-2 shadow-2xl md:w-[320px]">
+              <div
+                className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
+                style={{ borderColor: 'rgba(255,255,255,0.65)', boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)' }}
+              >
                 <div className="overflow-hidden rounded-[2rem]">
                   <img
                     src="/images/app-screenshot.png"
-                    alt={t('appScreenshot')}
+                    alt="Musclog app screenshot"
                     width={320}
                     height={640}
                     className="h-auto w-full"
