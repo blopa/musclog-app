@@ -1,5 +1,21 @@
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 
 export default function Index() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // If platform is web, redirect user to home.tsx
+    if (Platform.OS === 'web') {
+      router.replace('/home');
+    }
+  }, [router]);
+
+  // Show loading state while redirecting on web platforms
+  if (Platform.OS === 'web') {
+    return null;
+  }
+
   return <Redirect href="/app" />;
 }
