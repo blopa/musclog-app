@@ -39,14 +39,6 @@ interface DownloadModalProps {
   style?: React.CSSProperties;
 }
 
-const clientSnapshot = () => true;
-const serverSnapshot = () => false;
-const emptySubscribe = () => () => {};
-
-function useIsClient() {
-  return useSyncExternalStore(emptySubscribe, clientSnapshot, serverSnapshot);
-}
-
 function HeroHexWatermark() {
   return (
     <svg
@@ -416,7 +408,6 @@ export function DownloadModal({
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
-  const mounted = useIsClient();
 
   useEffect(() => {
     if (!isOpen) {
@@ -468,7 +459,7 @@ export function DownloadModal({
         {children}
       </button>
 
-      {mounted && isOpen
+      {isOpen
         ? createPortal(
             <div
               className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
