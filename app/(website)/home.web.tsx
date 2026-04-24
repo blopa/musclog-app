@@ -22,6 +22,8 @@ import i18n from '@/lang/lang';
 
 // TODO: implement this later
 const trackStoreButtonClick = (param: any) => {};
+const resetAnalyticsConsent = () => {};
+
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.werules.logger';
 const TESTFLIGHT_URL = 'https://testflight.apple.com/join/mq3QMSHU';
 const BRAND_GREEN = '#22C55E';
@@ -774,8 +776,7 @@ export function Footer() {
               )
             )}
             <button
-              // resetAnalyticsConsent
-              onClick={() => {}}
+              onClick={resetAnalyticsConsent}
               className="cursor-pointer text-sm transition-colors hover:text-[#22C55E]"
               style={{ color: BODY_TEXT_SOFT }}
             >
