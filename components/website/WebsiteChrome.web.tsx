@@ -284,7 +284,7 @@ export function Header() {
 
         <nav className="hidden items-center gap-6 md:flex">
           <Link
-            href="#features"
+            href="/home#features"
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
