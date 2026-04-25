@@ -282,6 +282,7 @@ export default function Root({ children }: PropsWithChildren) {
               Download the App
             </span>
             <img
+              // TODO: instead generate the QRCode programatically
               src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
               alt="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"
