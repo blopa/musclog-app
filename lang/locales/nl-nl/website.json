@@ -458,6 +458,47 @@
         "title": "Neem contact op",
         "content": "Als je vragen hebt over deze Algemene Voorwaarden, kun je contact met ons opnemen via"
       }
+    },
+    "contact": {
+      "titleStart": "Neem",
+      "titleHighlight": "Contact op",
+      "description": "Heb je een vraag, een bug gevonden of wil je bijdragen? We horen graag van je.",
+      "form": {
+        "fullName": "Volledige naam",
+        "email": "E-mailadres",
+        "subject": "Onderwerp",
+        "message": "Bericht",
+        "submit": "Bericht versturen",
+        "mailto": "Openen in e-mailapp",
+        "startOver": "Nog een bericht sturen",
+        "helpText": "Klik op de knop hierboven om het bericht te openen in je standaard e-mailapp.",
+        "placeholders": {
+          "fullName": "Jan de Vries",
+          "email": "jan@voorbeeld.nl",
+          "subject": "Wat heb je in gedachten?",
+          "message": "Vertel ons hoe we je kunnen helpen…"
+        }
+      },
+      "connect": {
+        "title": "Verbind met ons",
+        "follow": "Volg ons",
+        "github": {
+          "title": "GitHub-repository",
+          "description": "Meld bugs, vraag functies aan of draag direct code bij op GitHub."
+        },
+        "discord": {
+          "title": "Community Discord",
+          "description": "Word lid van onze community om te chatten met andere gebruikers en de beheerders."
+        },
+        "email": {
+          "title": "Support e-mail",
+          "description": "Hulp nodig? Stuur ons een e-mail en we reageren zo snel mogelijk."
+        }
+      },
+      "privacy": {
+        "title": "Privacy eerst",
+        "description": "We slaan niets op van wat je hier verstuurt. Je bericht gaat rechtstreeks naar ons e-mailadres — geen servers, geen logs."
+      }
     }
   }
 }

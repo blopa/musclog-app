@@ -458,6 +458,47 @@
         "title": "Contáctanos",
         "content": "Si tienes alguna pregunta sobre estos Términos y Condiciones, puedes contactarnos en"
       }
+    },
+    "contact": {
+      "titleStart": "Ponte en",
+      "titleHighlight": "Contacto",
+      "description": "¿Tienes una pregunta, encontraste un error o quieres contribuir? Nos encantaría saber de ti.",
+      "form": {
+        "fullName": "Nombre completo",
+        "email": "Correo electrónico",
+        "subject": "Asunto",
+        "message": "Mensaje",
+        "submit": "Enviar mensaje",
+        "mailto": "Abrir en correo",
+        "startOver": "Enviar otro mensaje",
+        "helpText": "Haz clic en el botón de arriba para abrir el mensaje en tu aplicación de correo predeterminada.",
+        "placeholders": {
+          "fullName": "Juan García",
+          "email": "juan@ejemplo.com",
+          "subject": "¿Qué tienes en mente?",
+          "message": "Cuéntanos cómo podemos ayudarte…"
+        }
+      },
+      "connect": {
+        "title": "Conéctate con nosotros",
+        "follow": "Síguenos",
+        "github": {
+          "title": "Repositorio en GitHub",
+          "description": "Reporta errores, solicita funciones o contribuye con código directamente en GitHub."
+        },
+        "discord": {
+          "title": "Discord de la comunidad",
+          "description": "Únete a nuestra comunidad para chatear con otros usuarios y los mantenedores."
+        },
+        "email": {
+          "title": "Correo de soporte",
+          "description": "¿Necesitas ayuda? Envíanos un correo y te responderemos lo antes posible."
+        }
+      },
+      "privacy": {
+        "title": "Privacidad primero",
+        "description": "No almacenamos nada de lo que envíes aquí. Tu mensaje va directamente a nuestro correo — sin servidores, sin registros."
+      }
     }
   }
 }

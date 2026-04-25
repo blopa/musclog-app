@@ -458,6 +458,47 @@
         "title": "Fale conosco",
         "content": "Se você tiver alguma dúvida sobre estes Termos e Condições, pode entrar em contato conosco pelo"
       }
+    },
+    "contact": {
+      "titleStart": "Entre em",
+      "titleHighlight": "Contato",
+      "description": "Tem uma pergunta, encontrou um bug ou quer contribuir? Adoraríamos ouvir de você.",
+      "form": {
+        "fullName": "Nome completo",
+        "email": "Endereço de e-mail",
+        "subject": "Assunto",
+        "message": "Mensagem",
+        "submit": "Enviar mensagem",
+        "mailto": "Abrir no app de e-mail",
+        "startOver": "Enviar outra mensagem",
+        "helpText": "Clique no botão acima para abrir a mensagem no seu app de e-mail padrão.",
+        "placeholders": {
+          "fullName": "João Silva",
+          "email": "joao@exemplo.com.br",
+          "subject": "O que você tem em mente?",
+          "message": "Conta como podemos ajudar…"
+        }
+      },
+      "connect": {
+        "title": "Conecte-se conosco",
+        "follow": "Siga-nos",
+        "github": {
+          "title": "Repositório no GitHub",
+          "description": "Reporte bugs, solicite funcionalidades ou contribua com código diretamente no GitHub."
+        },
+        "discord": {
+          "title": "Discord da comunidade",
+          "description": "Junte-se à nossa comunidade para conversar com outros usuários e os mantenedores."
+        },
+        "email": {
+          "title": "E-mail de suporte",
+          "description": "Precisa de ajuda? Envie-nos um e-mail e responderemos o mais rápido possível."
+        }
+      },
+      "privacy": {
+        "title": "Privacidade em primeiro lugar",
+        "description": "Não armazenamos nada do que você enviar aqui. Sua mensagem vai diretamente para nosso e-mail — sem servidores, sem logs."
+      }
     }
   }
 }

@@ -459,6 +459,47 @@
         "title": "Contact Us",
         "content": "If you have any questions about these Terms and Conditions, you can contact us at"
       }
+    },
+    "contact": {
+      "titleStart": "Get in",
+      "titleHighlight": "Touch",
+      "description": "Have a question, found a bug, or want to contribute? We'd love to hear from you.",
+      "form": {
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "subject": "Subject",
+        "message": "Message",
+        "submit": "Send Message",
+        "mailto": "Open in Mail App",
+        "startOver": "Send another message",
+        "helpText": "Click the button above to open the message in your default mail app.",
+        "placeholders": {
+          "fullName": "John Doe",
+          "email": "john@example.com",
+          "subject": "What's on your mind?",
+          "message": "Tell us how we can help…"
+        }
+      },
+      "connect": {
+        "title": "Connect with Us",
+        "follow": "Follow Us",
+        "github": {
+          "title": "GitHub Repository",
+          "description": "Report bugs, request features, or contribute code directly on GitHub."
+        },
+        "discord": {
+          "title": "Community Discord",
+          "description": "Join our community to chat with other users and the maintainers."
+        },
+        "email": {
+          "title": "Support Email",
+          "description": "Need help? Send us an email and we'll get back to you as soon as possible."
+        }
+      },
+      "privacy": {
+        "title": "Privacy First",
+        "description": "We don't store anything you send here. Your message goes directly to our email — no servers, no logs."
+      }
     }
   }
 }
