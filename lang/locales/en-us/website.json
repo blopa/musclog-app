@@ -6,7 +6,11 @@
       "title1": "Own Your",
       "title2": "Fitness Data",
       "subheading": "A local-first, open-source fitness tracker. No accounts, no tracking, and no cloud. Just you and your gains.",
-      "github": "View on GitHub"
+      "github": "View on GitHub",
+      "demoEyebrow": "Instant preview",
+      "demoTitle": "Try the web demo",
+      "demoDescription": "Open a browser-based preview of the app and explore the experience before downloading.",
+      "demoButton": "Open web demo"
     },
     "features": {
       "title": "Built for Performance & Privacy",

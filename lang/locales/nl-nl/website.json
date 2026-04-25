@@ -6,7 +6,11 @@
       "title1": "Beheers Uw",
       "title2": "Fitness Gegevens",
       "subheading": "Een lokaal-eerst, open-source fitnesstracker. Geen accounts, geen tracking, geen cloud. Alleen u en uw gains.",
-      "github": "Bekijk op GitHub"
+      "github": "Bekijk op GitHub",
+      "demoEyebrow": "Directe preview",
+      "demoTitle": "Probeer de webdemo",
+      "demoDescription": "Open een browserpreview van de app en verken de ervaring voordat u downloadt.",
+      "demoButton": "Open webdemo"
     },
     "features": {
       "title": "Gebouwd voor Prestatie & Privacy",

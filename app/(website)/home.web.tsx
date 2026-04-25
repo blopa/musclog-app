@@ -553,7 +553,7 @@ export function Hero() {
 
           {/* Right Content - Phone Mockup with Screenshot */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative">
+            <div className="relative w-full max-w-[420px]">
               <div
                 className="absolute inset-0 rounded-full blur-[110px]"
                 style={{
@@ -563,24 +563,43 @@ export function Hero() {
                 }}
                 aria-hidden="true"
               />
-              {/* Phone Frame */}
-              <div
-                className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
-                style={{
-                  borderColor: 'rgba(255,255,255,0.65)',
-                  boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
-                }}
-              >
-                <div className="overflow-hidden rounded-[2rem]">
-                  <img
-                    src="/images/app-screenshot.png"
-                    alt="Musclog app screenshot"
-                    width={320}
-                    height={640}
-                    className="h-auto w-full"
-                    style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
-                  />
+              <div className="flex justify-center">
+                {/* Phone Frame */}
+                <div
+                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
+                  style={{
+                    borderColor: 'rgba(255,255,255,0.65)',
+                    boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
+                  }}
+                >
+                  <div className="overflow-hidden rounded-[2rem]">
+                    <img
+                      src="/images/app-screenshot.png"
+                      alt="Musclog app screenshot"
+                      width={320}
+                      height={640}
+                      className="h-auto w-full"
+                      style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
+                    />
+                  </div>
                 </div>
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Link
+                  href="/app"
+                  className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-[#00ffa34d] bg-[#071813] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{
+                      backgroundColor: BRAND_GREEN_BRIGHT,
+                      boxShadow: '0 0 14px rgba(0,255,163,0.8)',
+                    }}
+                  />
+                  <span>{t('demoButton')}</span>
+                  <ArrowRight className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
+                </Link>
               </div>
             </div>
           </div>

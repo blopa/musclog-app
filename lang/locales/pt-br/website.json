@@ -6,7 +6,11 @@
       "title1": "Controle Seus",
       "title2": "Dados de Fitness",
       "subheading": "Um rastreador de fitness local-first, open-source. Sem contas, sem rastreamento, sem nuvem. Apenas você e seus ganhos.",
-      "github": "Ver no GitHub"
+      "github": "Ver no GitHub",
+      "demoEyebrow": "Prévia instantânea",
+      "demoTitle": "Experimente a demo web",
+      "demoDescription": "Abra uma prévia do app no navegador e explore a experiência antes de baixar.",
+      "demoButton": "Abrir demo web"
     },
     "features": {
       "title": "Construído para Performance e Privacidade",
