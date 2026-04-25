@@ -1,4 +1,6 @@
-import { ReactNode } from 'react';
+import { BrowserQRCodeSvgWriter } from '@zxing/library';
+import { ReactNode, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
@@ -88,8 +90,110 @@ function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: Sto
   );
 }
 
+function QRCodeIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M4 4h5v5H4V4Zm11 0h5v5h-5V4ZM4 15h5v5H4v-5Zm13 0v2m0 3v.01M15 15h2m3 0h.01M8 8h.01M8 16h1m2 0h1m-2 2v1m4-4h1m0 2h2m-2 2h1"
+      />
+    </svg>
+  );
+}
+
+function QRCodeCard({
+  href,
+  label,
+  alt,
+  onLinkClick,
+}: {
+  href: string;
+  label: string;
+  alt: string;
+  onLinkClick?: () => void;
+}) {
+  const qrCodeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!qrCodeRef.current) {
+      return;
+    }
+
+    qrCodeRef.current.replaceChildren();
+
+    const writer = new BrowserQRCodeSvgWriter();
+    const svg = writer.write(href, 132, 132);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', alt);
+    svg.style.display = 'block';
+    svg.style.width = '132px';
+    svg.style.height = '132px';
+    qrCodeRef.current.appendChild(svg);
+
+    return () => {
+      qrCodeRef.current?.replaceChildren();
+    };
+  }, [alt, href]);
+
+  return (
+    <div className="flex flex-1 flex-col items-center rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <span className="mb-3 text-sm font-semibold text-white">{label}</span>
+      <div
+        ref={qrCodeRef}
+        className="rounded-xl bg-white p-2 shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+        aria-hidden="true"
+      />
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 text-sm font-medium text-[#A7F3D0] transition-colors hover:text-white"
+        onClick={onLinkClick}
+      >
+        {label}
+      </a>
+    </div>
+  );
+}
+
 export function StoreButtons() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.storeButtons' });
+  const [isQrOpen, setIsQrOpen] = useState(false);
+  const qrButtonRef = useRef<HTMLDivElement>(null);
+  const qrPopoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isQrOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsQrOpen(false);
+      }
+    };
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickedTrigger = qrButtonRef.current?.contains(target);
+      const clickedPopover = qrPopoverRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedPopover) {
+        setIsQrOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [isQrOpen]);
 
   return (
     <div className="flex flex-wrap gap-3">
@@ -111,6 +215,82 @@ export function StoreButtons() {
           trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
         }
       />
+      <div className="relative inline-flex" ref={qrButtonRef}>
+        <button
+          type="button"
+          aria-label={t('qrButton', { defaultValue: 'Show QR codes' })}
+          aria-expanded={isQrOpen}
+          aria-haspopup="dialog"
+          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-white/30 bg-black/85 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition-colors hover:border-white/50"
+          onClick={() => setIsQrOpen((current) => !current)}
+        >
+          <QRCodeIcon />
+        </button>
+
+        {isQrOpen && typeof document !== 'undefined'
+          ? createPortal(
+              <div
+                ref={qrPopoverRef}
+                role="dialog"
+                aria-labelledby="store-qr-popover-title"
+                className="border-white/12 fixed z-[170] w-[min(calc(100vw-2rem),30rem)] rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
+                style={{
+                  top: qrButtonRef.current
+                    ? qrButtonRef.current.getBoundingClientRect().bottom + 12
+                    : 0,
+                  left: qrButtonRef.current
+                    ? Math.min(
+                        Math.max(qrButtonRef.current.getBoundingClientRect().left - 180, 16),
+                        window.innerWidth - 16 - Math.min(window.innerWidth - 32, 480)
+                      )
+                    : 16,
+                }}
+              >
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div>
+                    <h3 id="store-qr-popover-title" className="text-base font-bold text-white">
+                      {t('qrTitle', { defaultValue: 'Scan to install' })}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-300">
+                      {t('qrDescription', {
+                        defaultValue:
+                          'Open the Android or iOS install page directly on your phone.',
+                      })}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={t('close', { defaultValue: 'Close' })}
+                    className="text-xl leading-none text-gray-400 transition-colors hover:text-white"
+                    onClick={() => setIsQrOpen(false)}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <QRCodeCard
+                    href={GOOGLE_PLAY_URL}
+                    label={t('qrGoogleLabel', { defaultValue: 'Google Play' })}
+                    alt={t('qrGoogleAlt', { defaultValue: 'Google Play QR code' })}
+                    onLinkClick={() =>
+                      trackStoreButtonClick({ store: 'google_play', availability: 'available' })
+                    }
+                  />
+                  <QRCodeCard
+                    href={TESTFLIGHT_URL}
+                    label={t('qrAppleLabel', { defaultValue: 'TestFlight' })}
+                    alt={t('qrAppleAlt', { defaultValue: 'TestFlight QR code' })}
+                    onLinkClick={() =>
+                      trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
+                    }
+                  />
+                </div>
+              </div>,
+              document.body
+            )
+          : null}
+      </div>
     </div>
   );
 }
