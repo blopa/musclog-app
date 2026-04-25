@@ -134,9 +134,91 @@
       "appName": "Musclog",
       "appTagline": "Levanta, Registra, Repite",
       "features": "Funciones",
+      "progress": "Progreso",
       "github": "GitHub",
       "download": "Descargar Ahora",
       "language": "Idioma"
+    },
+    "progress": {
+      "metaTitle": "Importación de progreso de Musclog",
+      "loading": "Cargando tu base de datos local de progreso...",
+      "hero": {
+        "eyebrow": "Visor de progreso para escritorio",
+        "title": "Importa aquí los datos exportados de tu app Musclog",
+        "description": "Sube tu exportación JSON de Musclog para desbloquear un panel de progreso en el navegador con tendencias de peso, patrones de nutrición, volumen de entrenamiento y correlaciones clave optimizadas para pantallas grandes.",
+        "points": {
+          "weight": {
+            "title": "Peso y composición corporal",
+            "description": "Revisa tendencias de peso, cambios de grasa corporal, FFMI y mediciones corporales en un solo lugar."
+          },
+          "nutrition": {
+            "title": "Nutrición y TDEE",
+            "description": "Inspecciona la ingesta calórica, el reparto de macros y resúmenes medios a partir de tu registro importado."
+          },
+          "training": {
+            "title": "Entrenamiento y correlaciones",
+            "description": "Compara volumen de entrenamiento, estado de ánimo y señales de recuperación en un lienzo web más amplio."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Importación local",
+        "title": "Trae la exportación de tu app a este navegador",
+        "description": "Elige el JSON exportado desde la app móvil de Musclog. La importación se ejecuta localmente en el almacenamiento del navegador y nunca sale de tu dispositivo.",
+        "passphraseLabel": "Frase de descifrado",
+        "passphrasePlaceholder": "Opcional, solo si la exportación estaba cifrada",
+        "cta": "Elegir exportación JSON",
+        "importing": "Importando datos...",
+        "hint": "Formato compatible: exportación JSON de Musclog",
+        "selectedFile": "Archivo seleccionado: {{fileName}}",
+        "genericError": "No se pudo importar este archivo. Confirma que sea una exportación válida de Musclog.",
+        "localOnlyTitle": "Privado por defecto",
+        "localOnlyDescription": "Esta página carga tu exportación solo en la base de datos web local para que puedas explorar tus datos sin subirlos a un servidor."
+      },
+      "dashboard": {
+        "eyebrow": "Analítica importada",
+        "title": "Tu progreso de Musclog, rediseñado para la web de escritorio",
+        "description": "Este panel usa la misma base de datos local y los mismos cálculos de progreso que la app, pero los presenta en un diseño de escritorio más amplio para leer tendencias y comparar patrones con facilidad.",
+        "replaceData": "Reemplazar datos importados",
+        "localStorageHint": "Los datos se guardan en la base de datos local de Musclog de tu navegador."
+      },
+      "stats": {
+        "weightHint": "Último peso dentro del rango seleccionado.",
+        "caloriesHint": "Calorías medias en {{count}} días con nutrición registrada.",
+        "workoutsHint": "Entrenamientos completados dentro del rango actual.",
+        "tdeeHint": "Mantenimiento estimado actual según los datos disponibles."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Resumen de composición corporal",
+          "description": "Tus métricas corporales principales aparecen primero para que los cambios más importantes se vean de inmediato."
+        },
+        "nutrition": {
+          "title": "Tendencias de nutrición",
+          "description": "Los totales diarios de calorías y el equilibrio reciente de macros facilitan conectar la ingesta con los resultados que estás viendo.",
+          "macroSplit": "Reparto reciente de calorías por macros"
+        },
+        "training": {
+          "title": "Rendimiento de entrenamiento",
+          "description": "El volumen de entrenamiento y las series por grupo muscular muestran dónde se ha concentrado realmente tu esfuerzo."
+        },
+        "correlations": {
+          "title": "Vistas de correlación",
+          "description": "Estas vistas de dispersión en escritorio facilitan inspeccionar si la ingesta y los cambios de composición corporal se mueven juntos."
+        },
+        "mood": {
+          "title": "Resumen de estado de ánimo",
+          "description": "Las entradas de estado de ánimo siguen visibles como una capa ligera de preparación junto a las tendencias corporales y de entrenamiento.",
+          "summaryTitle": "Resumen del estado de ánimo",
+          "totalEntries": "Periodos registrados",
+          "averageScore": "Puntuación media"
+        },
+        "measurements": {
+          "title": "Mediciones",
+          "description": "Cuando existen registros de circunferencias, se muestran aquí como tarjetas compactas de tendencia.",
+          "empty": "No se encontraron mediciones corporales en el rango importado."
+        }
+      }
     },
     "storeButtons": {
       "googleTitle": "DISPONIBLE EN",

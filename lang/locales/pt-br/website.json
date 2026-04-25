@@ -134,9 +134,91 @@
       "appName": "Musclog",
       "appTagline": "Levante, Registre, Repita",
       "features": "Recursos",
+      "progress": "Progresso",
       "github": "GitHub",
       "download": "Baixar Agora",
       "language": "Idioma"
+    },
+    "progress": {
+      "metaTitle": "Importação de progresso do Musclog",
+      "loading": "Carregando seu banco de dados local de progresso...",
+      "hero": {
+        "eyebrow": "Visualizador de progresso para desktop",
+        "title": "Importe aqui os dados exportados do seu app Musclog",
+        "description": "Envie sua exportação JSON do Musclog para liberar um painel de progresso no navegador com tendências de peso, padrões de nutrição, volume de treino e correlações importantes otimizadas para telas maiores.",
+        "points": {
+          "weight": {
+            "title": "Peso e composição corporal",
+            "description": "Revise tendências de peso, mudanças de gordura corporal, FFMI e medidas corporais em um só lugar."
+          },
+          "nutrition": {
+            "title": "Nutrição e TDEE",
+            "description": "Inspecione ingestão calórica, divisão de macros e médias do seu registro importado."
+          },
+          "training": {
+            "title": "Treino e correlações",
+            "description": "Compare volume de treino, humor e sinais de recuperação em uma experiência web mais ampla."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Importação local",
+        "title": "Traga a exportação do app para este navegador",
+        "description": "Escolha o arquivo JSON exportado no app móvel do Musclog. A importação roda localmente no armazenamento do navegador e nunca sai do seu dispositivo.",
+        "passphraseLabel": "Frase de descriptografia",
+        "passphrasePlaceholder": "Opcional, apenas se sua exportação estiver criptografada",
+        "cta": "Escolher exportação JSON",
+        "importing": "Importando dados...",
+        "hint": "Formato compatível: exportação JSON do Musclog",
+        "selectedFile": "Arquivo selecionado: {{fileName}}",
+        "genericError": "Não foi possível importar este arquivo. Confirme se é uma exportação válida do Musclog.",
+        "localOnlyTitle": "Privado por padrão",
+        "localOnlyDescription": "Esta página carrega sua exportação apenas no banco de dados web local para que você explore seus dados sem enviá-los a um servidor."
+      },
+      "dashboard": {
+        "eyebrow": "Análises importadas",
+        "title": "Seu progresso no Musclog, redesenhado para a web desktop",
+        "description": "Este painel usa o mesmo banco de dados local e os mesmos cálculos de progresso do app, mas apresenta tudo em um layout de desktop mais amplo para ler tendências e comparar padrões com facilidade.",
+        "replaceData": "Substituir dados importados",
+        "localStorageHint": "Os dados ficam salvos no banco de dados local do Musclog no navegador."
+      },
+      "stats": {
+        "weightHint": "Peso mais recente dentro do intervalo selecionado.",
+        "caloriesHint": "Calorias médias em {{count}} dias com nutrição registrada.",
+        "workoutsHint": "Treinos concluídos no intervalo atual.",
+        "tdeeHint": "Estimativa atual de manutenção com base nos dados disponíveis."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Visão geral da composição corporal",
+          "description": "Suas métricas corporais principais aparecem primeiro para que as maiores mudanças fiquem visíveis rapidamente."
+        },
+        "nutrition": {
+          "title": "Tendências de nutrição",
+          "description": "Totais diários de calorias e o equilíbrio recente de macros ajudam a conectar ingestão com os resultados que você está vendo.",
+          "macroSplit": "Divisão recente de calorias por macros"
+        },
+        "training": {
+          "title": "Saída de treino",
+          "description": "Volume de treino e séries por grupo muscular mostram para onde seu esforço realmente foi."
+        },
+        "correlations": {
+          "title": "Visões de correlação",
+          "description": "Essas visualizações de dispersão no desktop ajudam a inspecionar se ingestão e mudanças de composição corporal caminham juntas."
+        },
+        "mood": {
+          "title": "Resumo de humor",
+          "description": "Os registros de humor continuam visíveis como uma camada leve de prontidão ao lado das grandes tendências corporais e de treino.",
+          "summaryTitle": "Resumo do humor",
+          "totalEntries": "Períodos rastreados",
+          "averageScore": "Pontuação média"
+        },
+        "measurements": {
+          "title": "Medidas",
+          "description": "Quando existem registros de circunferência, eles aparecem aqui como cartões compactos de tendência.",
+          "empty": "Nenhuma medida corporal foi encontrada no intervalo importado."
+        }
+      }
     },
     "storeButtons": {
       "googleTitle": "DISPONÍVEL NO",

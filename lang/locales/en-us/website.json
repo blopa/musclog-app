@@ -134,9 +134,91 @@
       "appName": "Musclog",
       "appTagline": "Lift, Log, Repeat",
       "features": "Features",
+      "progress": "Progress",
       "github": "GitHub",
       "download": "Download Now",
       "language": "Language"
+    },
+    "progress": {
+      "metaTitle": "Musclog Progress Import",
+      "loading": "Loading your local progress database...",
+      "hero": {
+        "eyebrow": "Desktop progress viewer",
+        "title": "Import the exported data from your Musclog app here",
+        "description": "Drop in your Musclog JSON export to unlock a browser-based progress dashboard with weight trends, nutrition patterns, workout volume, and key correlations rendered for larger screens.",
+        "points": {
+          "weight": {
+            "title": "Weight and body composition",
+            "description": "Review scale trends, body-fat changes, FFMI, and body measurements in one place."
+          },
+          "nutrition": {
+            "title": "Nutrition and TDEE",
+            "description": "Inspect calorie intake, macro balance, and average intake snapshots from your imported log."
+          },
+          "training": {
+            "title": "Training and correlations",
+            "description": "Compare workout volume, mood, and recovery-style signals on a wider desktop canvas."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Local import",
+        "title": "Bring your app export into this browser",
+        "description": "Choose the JSON export created from the Musclog mobile app. The import runs locally in your browser storage and never leaves your device.",
+        "passphraseLabel": "Decryption phrase",
+        "passphrasePlaceholder": "Optional, only if your export was encrypted",
+        "cta": "Choose JSON export",
+        "importing": "Importing data...",
+        "hint": "Supported format: Musclog JSON export",
+        "selectedFile": "Selected file: {{fileName}}",
+        "genericError": "Could not import this file. Please confirm it is a valid Musclog export.",
+        "localOnlyTitle": "Private by default",
+        "localOnlyDescription": "This page reads your export into the local web database only, so you can explore progress data without uploading it to a server."
+      },
+      "dashboard": {
+        "eyebrow": "Imported analytics",
+        "title": "Your Musclog progress, redesigned for the desktop web",
+        "description": "This dashboard uses the same local database and progress calculations as the app, but presents them in a roomier desktop layout tuned for scanning trends and comparing patterns.",
+        "replaceData": "Replace imported data",
+        "localStorageHint": "Data is stored in your browser's local Musclog database."
+      },
+      "stats": {
+        "weightHint": "Latest weight in your selected range.",
+        "caloriesHint": "Average calories across {{count}} logged nutrition days.",
+        "workoutsHint": "Completed workout entries in the current range.",
+        "tdeeHint": "Current estimated maintenance based on available data."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Body composition overview",
+          "description": "Your primary body metrics are surfaced first so the biggest shifts are visible at a glance."
+        },
+        "nutrition": {
+          "title": "Nutrition trends",
+          "description": "Daily calorie totals and recent macro balance make it easier to connect intake with the outcomes you are seeing.",
+          "macroSplit": "Recent macro calorie split"
+        },
+        "training": {
+          "title": "Training output",
+          "description": "Workout volume and sets per muscle group show where your training effort has actually been going."
+        },
+        "correlations": {
+          "title": "Correlation views",
+          "description": "These desktop scatter views make it easier to inspect whether intake and body-composition changes move together."
+        },
+        "mood": {
+          "title": "Mood snapshots",
+          "description": "Mood entries stay visible as a lightweight readiness layer beside the bigger body and training trends.",
+          "summaryTitle": "Mood summary",
+          "totalEntries": "Tracked periods",
+          "averageScore": "Average score"
+        },
+        "measurements": {
+          "title": "Measurements",
+          "description": "When circumference logs exist, they are surfaced here as compact trend cards.",
+          "empty": "No body measurements were found in the imported range."
+        }
+      }
     },
     "storeButtons": {
       "googleTitle": "GET IT ON",

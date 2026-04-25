@@ -134,9 +134,91 @@
       "appName": "Musclog",
       "appTagline": "Lift, Log, Herhaal",
       "features": "Functies",
+      "progress": "Voortgang",
       "github": "GitHub",
       "download": "Nu Downloaden",
       "language": "Taal"
+    },
+    "progress": {
+      "metaTitle": "Musclog voortgangsimport",
+      "loading": "Uw lokale voortgangsdatabase wordt geladen...",
+      "hero": {
+        "eyebrow": "Desktop voortgangsviewer",
+        "title": "Importeer hier de geëxporteerde gegevens uit uw Musclog-app",
+        "description": "Laad uw Musclog JSON-export in om een browserdashboard te openen met gewichtstrends, voedingspatronen, trainingsvolume en belangrijke correlaties voor grotere schermen.",
+        "points": {
+          "weight": {
+            "title": "Gewicht en lichaamssamenstelling",
+            "description": "Bekijk gewichtstrends, veranderingen in lichaamsvet, FFMI en lichaamsmetingen op één plek."
+          },
+          "nutrition": {
+            "title": "Voeding en TDEE",
+            "description": "Inspecteer calorie-inname, macroverdeling en gemiddelde innames uit uw geïmporteerde log."
+          },
+          "training": {
+            "title": "Training en correlaties",
+            "description": "Vergelijk trainingsvolume, stemming en herstelsignalen op een ruimere desktopweergave."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Lokale import",
+        "title": "Breng uw app-export naar deze browser",
+        "description": "Kies het JSON-exportbestand dat in de mobiele Musclog-app is gemaakt. De import wordt lokaal uitgevoerd in de browseropslag en verlaat uw apparaat niet.",
+        "passphraseLabel": "Decryptiezin",
+        "passphrasePlaceholder": "Optioneel, alleen als uw export versleuteld is",
+        "cta": "Kies JSON-export",
+        "importing": "Gegevens worden geïmporteerd...",
+        "hint": "Ondersteund formaat: Musclog JSON-export",
+        "selectedFile": "Geselecteerd bestand: {{fileName}}",
+        "genericError": "Dit bestand kon niet worden geïmporteerd. Controleer of het een geldige Musclog-export is.",
+        "localOnlyTitle": "Standaard privé",
+        "localOnlyDescription": "Deze pagina leest uw export alleen in de lokale webdatabase in, zodat u voortgangsgegevens kunt bekijken zonder deze naar een server te uploaden."
+      },
+      "dashboard": {
+        "eyebrow": "Geïmporteerde analyse",
+        "title": "Uw Musclog-voortgang, opnieuw ontworpen voor desktopweb",
+        "description": "Dit dashboard gebruikt dezelfde lokale database en voortgangsberekeningen als de app, maar presenteert ze in een ruimere desktoplay-out die beter werkt voor het scannen van trends en het vergelijken van patronen.",
+        "replaceData": "Geïmporteerde gegevens vervangen",
+        "localStorageHint": "Gegevens worden opgeslagen in de lokale Musclog-browserdatabase."
+      },
+      "stats": {
+        "weightHint": "Laatste gewicht binnen uw geselecteerde bereik.",
+        "caloriesHint": "Gemiddelde calorieën over {{count}} gelogde voedingsdagen.",
+        "workoutsHint": "Voltooide workouts in het huidige bereik.",
+        "tdeeHint": "Huidige geschatte onderhoudsbehoefte op basis van beschikbare gegevens."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Overzicht lichaamssamenstelling",
+          "description": "Uw belangrijkste lichaamsmetingen staan vooraan, zodat grote verschuivingen direct zichtbaar zijn."
+        },
+        "nutrition": {
+          "title": "Voedingstrends",
+          "description": "Dagelijkse calorietotalen en recente macrobalans maken het makkelijker om inname te koppelen aan de resultaten die u ziet.",
+          "macroSplit": "Recente macro-calorieverdeling"
+        },
+        "training": {
+          "title": "Trainingsoutput",
+          "description": "Trainingsvolume en sets per spiergroep laten zien waar uw inspanning daadwerkelijk naartoe is gegaan."
+        },
+        "correlations": {
+          "title": "Correlatieweergaven",
+          "description": "Deze desktop-scatterplots maken het eenvoudiger om te zien of inname en veranderingen in lichaamssamenstelling samen bewegen."
+        },
+        "mood": {
+          "title": "Stemmingsmomenten",
+          "description": "Stemmingsregistraties blijven zichtbaar als een lichte paraatheidslaag naast de grotere lichaams- en trainingstrends.",
+          "summaryTitle": "Stemmingsoverzicht",
+          "totalEntries": "Bijgehouden periodes",
+          "averageScore": "Gemiddelde score"
+        },
+        "measurements": {
+          "title": "Metingen",
+          "description": "Wanneer omtrekmetingen bestaan, verschijnen ze hier als compacte trendkaarten.",
+          "empty": "Er zijn geen lichaamsmetingen gevonden in het geïmporteerde bereik."
+        }
+      }
     },
     "storeButtons": {
       "googleTitle": "VERKRIJG HET OP",
