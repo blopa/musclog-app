@@ -156,8 +156,12 @@
           "description": "Criptografia avançada e controles de acesso protegem suas informações."
         }
       },
-      "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos sobre a coleta, uso e divulgação de suas informações quando você usa o Serviço, e informa sobre seus direitos de privacidade e como a lei o protege. Usamos seus Dados Pessoais para fornecer e melhorar o Serviço. Ao usar o Serviço, você concorda com a coleta e uso de informações de acordo com esta Política de Privacidade.",
+      "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos relativos à coleta, ao uso, ao armazenamento e à divulgação de suas informações quando você utiliza o Musclog. Ela se aplica tanto ao aplicativo Musclog quanto ao site Musclog, embora as categorias de dados tratadas em cada contexto sejam diferentes. Esta Política de Privacidade também explica seus direitos de privacidade e como a lei o protege.",
       "sections": {
+        "scope": {
+          "title": "Escopo desta Política de Privacidade",
+          "content": "O Musclog está disponível tanto por meio de um aplicativo quanto por meio de um site público. Como esses dois serviços funcionam de forma diferente, as práticas de privacidade aplicáveis são resumidas separadamente abaixo e descritas com mais detalhes ao longo desta Política de Privacidade."
+        },
         "interpretation": {
           "title": "Interpretação e Definições",
           "content": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural."
@@ -185,7 +189,10 @@
               "term": "Dados Pessoais",
               "def": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo."
             },
-            "service": { "term": "Serviço", "def": "refere-se ao Aplicativo." },
+            "service": {
+              "term": "Serviço",
+              "def": "refere-se ao aplicativo Musclog e ao site Musclog, salvo indicação em contrário na seção pertinente."
+            },
             "serviceProvider": {
               "term": "Provedor de Serviços",
               "def": "significa qualquer pessoa física ou jurídica que processa os dados em nome da Musclog."
@@ -329,6 +336,7 @@
       "appVsWebsite": {
         "app": {
           "title": "No aplicativo Musclog",
+          "summary": "O aplicativo Musclog foi projetado principalmente como um produto local-first. A maior parte dos dados do usuário permanece armazenada no seu dispositivo e não é transmitida aos nossos servidores.",
           "items": [
             "Todos os dados inseridos no aplicativo são armazenados localmente no seu dispositivo.",
             "O aplicativo não exige conta e não oferece sincronização em nuvem.",
@@ -338,6 +346,7 @@
         },
         "website": {
           "title": "Neste site",
+          "summary": "O site trata um conjunto mais limitado de dados, principalmente relacionados à operação do site, à preferência de idioma, à análise e ao gerenciamento do consentimento de cookies.",
           "items": [
             "Este site utiliza o Vercel Analytics para medir dados de tráfego anônimos e sem cookies, sem exigir consentimento.",
             "Este site utiliza o Google Analytics 4 somente após você fornecer consentimento explícito por meio do banner de cookies.",

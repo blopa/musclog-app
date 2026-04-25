@@ -56,6 +56,33 @@ export default function Privacy() {
   const appItems = t('appVsWebsite.app.items', { returnObjects: true }) as string[];
   const websiteItems = t('appVsWebsite.website.items', { returnObjects: true }) as string[];
 
+  const scopePanels = [
+    {
+      key: 'app',
+      icon: Smartphone,
+      title: t('appVsWebsite.app.title'),
+      summary: t('appVsWebsite.app.summary'),
+      items: appItems,
+      accent: BRAND_GREEN_BRIGHT,
+      borderColor: 'rgba(0,255,163,0.25)',
+      backgroundColor: 'rgba(0,255,163,0.04)',
+      badgeBackground: 'rgba(0,255,163,0.12)',
+      badgeBorder: 'rgba(0,255,163,0.22)',
+    },
+    {
+      key: 'website',
+      icon: Globe,
+      title: t('appVsWebsite.website.title'),
+      summary: t('appVsWebsite.website.summary'),
+      items: websiteItems,
+      accent: '#38BDF8',
+      borderColor: 'rgba(56,189,248,0.25)',
+      backgroundColor: 'rgba(56,189,248,0.04)',
+      badgeBackground: 'rgba(56,189,248,0.12)',
+      badgeBorder: 'rgba(56,189,248,0.22)',
+    },
+  ];
+
   return (
     <main className="relative overflow-hidden pb-20 pt-24">
       <DotPattern className="text-primary/30" />
@@ -108,57 +135,68 @@ export default function Privacy() {
           {t('intro')}
         </p>
 
-        {/* App vs Website distinction */}
-        <div className="mb-10 grid gap-4 sm:grid-cols-2">
-          <div
-            className="rounded-xl border p-5"
-            style={{
-              borderColor: 'rgba(0,255,163,0.25)',
-              backgroundColor: 'rgba(0,255,163,0.04)',
-            }}
-          >
-            <div className="mb-3 flex items-center gap-2">
-              <Smartphone className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
-              <h3 className="font-bold text-white">{t('appVsWebsite.app.title')}</h3>
-            </div>
-            <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
-              {appItems.map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="shrink-0 font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
-                    ✓
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div
-            className="rounded-xl border p-5"
-            style={{
-              borderColor: 'rgba(56,189,248,0.25)',
-              backgroundColor: 'rgba(56,189,248,0.04)',
-            }}
-          >
-            <div className="mb-3 flex items-center gap-2">
-              <Globe className="h-5 w-5" color="#38BDF8" />
-              <h3 className="font-bold text-white">{t('appVsWebsite.website.title')}</h3>
-            </div>
-            <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
-              {websiteItems.map((item, i) => (
-                <li key={i} className="flex gap-2">
-                  <span className="mt-0.5 shrink-0" style={{ color: '#38BDF8' }}>
-                    ›
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
         {/* Sections */}
         <div className="space-y-10">
+          {/* Scope */}
+          <section>
+            <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+              {t('sections.scope.title')}
+            </h2>
+            <p className="mb-5 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+              {t('sections.scope.content')}
+            </p>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {scopePanels.map(
+                ({
+                  key,
+                  icon: Icon,
+                  title,
+                  summary,
+                  items,
+                  accent,
+                  borderColor,
+                  backgroundColor,
+                  badgeBackground,
+                  badgeBorder,
+                }) => (
+                  <div
+                    key={key}
+                    className="rounded-2xl border p-5"
+                    style={{ borderColor, backgroundColor }}
+                  >
+                    <div className="mb-3 flex items-center gap-3">
+                      <div
+                        className="flex h-10 w-10 items-center justify-center rounded-full border"
+                        style={{ backgroundColor: badgeBackground, borderColor: badgeBorder }}
+                      >
+                        <Icon className="h-5 w-5" color={accent} />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">{title}</h3>
+                      </div>
+                    </div>
+
+                    <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                      {summary}
+                    </p>
+
+                    <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+                      {items.map((item, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="mt-0.5 shrink-0" style={{ color: accent }}>
+                            ›
+                          </span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              )}
+            </div>
+          </section>
+
           {/* Interpretation and Definitions */}
           <section>
             <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>

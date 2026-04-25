@@ -156,8 +156,12 @@
           "description": "Geavanceerde versleuteling en toegangscontroles beschermen uw informatie."
         }
       },
-      "intro": "Dit Privacybeleid beschrijft ons beleid en onze procedures voor het verzamelen, gebruiken en openbaar maken van uw informatie wanneer u de Service gebruikt, en informeert u over uw privacyrechten en hoe de wet u beschermt. Wij gebruiken uw Persoonsgegevens om de Service te leveren en te verbeteren. Door de Service te gebruiken, stemt u in met het verzamelen en gebruiken van informatie overeenkomstig dit Privacybeleid.",
+      "intro": "Dit Privacybeleid beschrijft Ons beleid en onze procedures met betrekking tot het verzamelen, gebruiken, opslaan en openbaar maken van Uw informatie wanneer U Musclog gebruikt. Het is van toepassing op zowel de Musclog-applicatie als de Musclog-website, hoewel de categorieën gegevens die in elke context worden verwerkt verschillen. Dit Privacybeleid legt ook Uw privacyrechten uit en hoe de wet U beschermt.",
       "sections": {
+        "scope": {
+          "title": "Reikwijdte van dit Privacybeleid",
+          "content": "Musclog is beschikbaar via zowel een applicatie als een openbare website. Omdat deze twee diensten verschillend functioneren, worden de toepasselijke privacypraktijken hieronder afzonderlijk samengevat en elders in dit Privacybeleid nader toegelicht."
+        },
         "interpretation": {
           "title": "Interpretatie en Definities",
           "content": "Woorden waarvan de beginletter een hoofdletter heeft, hebben betekenissen die zijn gedefinieerd onder de volgende voorwaarden. De volgende definities hebben dezelfde betekenis, ongeacht of ze in enkelvoud of meervoud voorkomen."
@@ -185,7 +189,10 @@
               "term": "Persoonsgegevens",
               "def": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren."
             },
-            "service": { "term": "Service", "def": "verwijst naar de Applicatie." },
+            "service": {
+              "term": "Service",
+              "def": "verwijst naar de Musclog-applicatie en de Musclog-website, tenzij in de desbetreffende sectie anders is vermeld."
+            },
             "serviceProvider": {
               "term": "Serviceprovider",
               "def": "betekent elke natuurlijke of rechtspersoon die de gegevens verwerkt namens Musclog."
@@ -329,6 +336,7 @@
       "appVsWebsite": {
         "app": {
           "title": "Binnen de Musclog-applicatie",
+          "summary": "De Musclog-applicatie is in de eerste plaats ontworpen als een local-first product. De meeste gebruikersgegevens blijven op uw apparaat opgeslagen en worden niet naar onze servers verzonden.",
           "items": [
             "Alle gegevens die u in de applicatie invoert, worden lokaal op uw apparaat opgeslagen.",
             "De applicatie vereist geen account en biedt geen cloudsynchronisatie.",
@@ -338,6 +346,7 @@
         },
         "website": {
           "title": "Op deze website",
+          "summary": "De website verwerkt een beperktere set gegevens, hoofdzakelijk met betrekking tot websitefunctionaliteit, taalvoorkeur, analyse en het beheer van cookie-toestemming.",
           "items": [
             "Deze website gebruikt Vercel Analytics om anonieme, cookieloze verkeersgegevens te meten zonder toestemming te vereisen.",
             "Deze website gebruikt Google Analytics 4 uitsluitend nadat u via de cookiebanner expliciet toestemming hebt gegeven.",
