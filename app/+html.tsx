@@ -1,6 +1,12 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
+import enUsWebsite from '@/lang/locales/en-us/website.json';
+import esEsWebsite from '@/lang/locales/es-es/website.json';
+import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
+import ptBrWebsite from '@/lang/locales/pt-br/website.json';
+import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
+
 /**
  * Root HTML runs only in Node (static render). Use `public/` static files
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
@@ -11,6 +17,26 @@ import { type PropsWithChildren } from 'react';
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
 const GOOGLE_PLAY_QR_CODE = '/images/google-play-qrcode.png';
+const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
+
+type LandingCopy = {
+  cta: string;
+  f1: string;
+  f2: string;
+  f3: string;
+  f4: string;
+  qrcode_text: string;
+  qrcode_title: string;
+  tagline: string;
+};
+
+const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
+  'en-US': enUsWebsite.website.landing,
+  'es-ES': esEsWebsite.website.landing,
+  'nl-NL': nlNlWebsite.website.landing,
+  'pt-BR': ptBrWebsite.website.landing,
+  'ru-RU': ruRuWebsite.website.landing,
+};
 
 /** Prefix URLs when `experiments.baseUrl` is set (e.g. `/musclog-app`). */
 function withExpoBaseUrl(path: string): string {
@@ -35,45 +61,11 @@ function withExpoBaseUrl(path: string): string {
 /**
  * Patches the landing panel text from localStorage before React boots.
  * Serialized via .toString() so the logic lives as real code, not a string.
- * Storage key must match LANDING_LANGUAGE_STORAGE_KEY in lang/lang.ts.
  */
-function landingI18nPatcher() {
+function landingI18nPatcher(translations: Record<string, LandingCopy>, storageKey: string) {
   try {
-    let t = {
-      'en-US': {
-        cta: 'Try it live',
-        f1: 'Smart workout tracking',
-        f2: 'AI photo nutrition logging',
-        f3: 'Detailed progress charts',
-        f4: '100% private & on-device',
-        tagline: 'AI-powered fitness & nutrition tracking — free & open source.',
-        qrcode_title: 'Download the App',
-        qrcode_text: 'Scan to download for Android',
-      },
-      'pt-BR': {
-        cta: 'Experimente agora',
-        f1: 'Rastreamento inteligente de treinos',
-        f2: 'Registro de nutrição por foto com IA',
-        f3: 'Gráficos detalhados de progresso',
-        f4: '100% privado e no dispositivo',
-        tagline: 'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',
-        qrcode_title: 'Baixe o App',
-        qrcode_text: 'Escaneie para baixar no Android',
-      },
-      'ru-RU': {
-        cta: 'Попробуйте сейчас',
-        f1: 'Умный учёт тренировок',
-        f2: 'Запись питания по фото с ИИ',
-        f3: 'Подробные графики прогресса',
-        f4: '100% приватно и на устройстве',
-        tagline: 'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',
-        qrcode_title: 'Скачать приложение',
-        qrcode_text: 'Сканируйте для загрузки на Android',
-      },
-    };
-
-    let lang = localStorage.getItem('musclog_lang');
-    let s = (lang && t[lang as keyof typeof t]) || t['en-US'];
+    let lang = localStorage.getItem(storageKey);
+    let s = (lang && translations[lang as keyof typeof translations]) || translations['en-US'];
 
     document.querySelectorAll('[data-landing-i18n]').forEach(function (el) {
       let k = el.getAttribute('data-landing-i18n') as keyof typeof s;
@@ -84,7 +76,42 @@ function landingI18nPatcher() {
   } catch (_) {}
 }
 
-const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})();`;
+const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify(
+  LANDING_TRANSLATIONS
+)}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)});`;
+
+function landingPanelGate(base: string) {
+  try {
+    function update() {
+      const raw = window.location.pathname;
+      const path = (base && raw.startsWith(base) ? raw.slice(base.length) : raw) || '/';
+      if (!path.startsWith('/app')) {
+        document.documentElement.classList.add('hide-desktop-wrapper');
+      } else {
+        document.documentElement.classList.remove('hide-desktop-wrapper');
+      }
+    }
+
+    update();
+    window.addEventListener('popstate', update);
+    const origPush = history.pushState.bind(history);
+    history.pushState = function (...args: Parameters<typeof history.pushState>) {
+      origPush(...args);
+      update();
+    };
+
+    const origReplace = history.replaceState.bind(history);
+    history.replaceState = function (...args: Parameters<typeof history.replaceState>) {
+      origReplace(...args);
+      update();
+    };
+  } catch (_) {}
+}
+
+// process.env.EXPO_BASE_URL is resolved in Node and passed as an argument so the
+// function body stays free of Node-only globals and .toString() works in the browser.
+const _base = JSON.stringify((process.env.EXPO_BASE_URL ?? '').replace(/\/+$/, ''));
+const LANDING_GATE_SCRIPT = `(${landingPanelGate.toString()})(${_base});`;
 
 // Web-only: configures the root HTML for every web page during static rendering.
 // Only runs in Node.js; has no access to the DOM or browser APIs.
@@ -106,6 +133,33 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <ScrollViewStyleReset />
+        {/* Gate: hides desktop wrapper on non-/app routes before body renders */}
+        <script dangerouslySetInnerHTML={{ __html: LANDING_GATE_SCRIPT }} />
+        <style>{`
+          .hide-desktop-wrapper .expo-web-landing,
+          .hide-desktop-wrapper .expo-web-phone-frame { display: none !important; }
+          .hide-desktop-wrapper .expo-web-root {
+            flex: 1 !important;
+            aspect-ratio: unset !important;
+            width: 100% !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          .hide-desktop-wrapper .expo-web-app-shell {
+            position: static !important;
+            left: auto !important; top: auto !important;
+            right: auto !important; bottom: auto !important;
+            width: 100% !important;
+            zoom: 1 !important;
+            overflow: visible !important;
+            min-height: 0 !important;
+            height: auto !important;
+          }
+          .hide-desktop-wrapper .expo-web-app-shell > * {
+            flex: none !important;
+            min-height: 0 !important;
+          }
+        `}</style>
       </head>
       <body className="expo-web-body">
         {/* Desktop-only landing panel — hidden on mobile via CSS */}
@@ -228,6 +282,7 @@ export default function Root({ children }: PropsWithChildren) {
               Download the App
             </span>
             <img
+              // TODO: instead generate the QRCode programatically
               src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
               alt="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"

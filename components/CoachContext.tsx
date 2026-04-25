@@ -49,7 +49,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
         onClose={() => setIsNotConfiguredVisible(false)}
         onOpenAISettings={() => {
           setIsNotConfiguredVisible(false);
-          router.navigate('/settings');
+          router.navigate('/app/settings');
         }}
       />
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />

@@ -207,7 +207,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'profile'}
                   onPress={() => {
                     navigateAndClose('profile', () => {
-                      onProfilePress ? onProfilePress() : router.navigate('/profile');
+                      onProfilePress ? onProfilePress() : router.navigate('/app/profile');
                     });
                   }}
                 />
@@ -222,7 +222,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'progress'}
                   onPress={() => {
                     navigateAndClose('progress', () => {
-                      onProgressPress ? onProgressPress() : router.navigate('/progress');
+                      onProgressPress ? onProgressPress() : router.navigate('/app/progress');
                     });
                   }}
                 />
@@ -235,7 +235,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'cycle'}
                   onPress={() => {
                     navigateAndClose('cycle', () => {
-                      onCyclePress ? onCyclePress() : router.navigate('/cycle');
+                      onCyclePress ? onCyclePress() : router.navigate('/app/cycle');
                     });
                   }}
                 />
@@ -247,7 +247,7 @@ export function UserMenuModal({
                   label={t('userMenu.workouts')}
                   isLoading={loadingItem === 'workouts'}
                   onPress={() => {
-                    navigateAndClose('workouts', () => router.navigate('/workout/workouts'));
+                    navigateAndClose('workouts', () => router.navigate('/app/workout/workouts'));
                   }}
                 />
               ) : null}
@@ -263,7 +263,7 @@ export function UserMenuModal({
                   label={t('userMenu.food')}
                   isLoading={loadingItem === 'food'}
                   onPress={() => {
-                    navigateAndClose('food', () => router.navigate('/nutrition/food'));
+                    navigateAndClose('food', () => router.navigate('/app/nutrition/food'));
                   }}
                 />
               ) : null}
@@ -279,7 +279,9 @@ export function UserMenuModal({
                   label={t('userMenu.checkin')}
                   isLoading={loadingItem === 'checkin'}
                   onPress={() => {
-                    navigateAndClose('checkin', () => router.navigate('/nutrition/checkin-list'));
+                    navigateAndClose('checkin', () =>
+                      router.navigate('/app/nutrition/checkin-list')
+                    );
                   }}
                 />
               ) : null}
@@ -304,7 +306,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'settings'}
                   onPress={() => {
                     navigateAndClose('settings', () => {
-                      onSettingsPress ? onSettingsPress() : router.navigate('/settings');
+                      onSettingsPress ? onSettingsPress() : router.navigate('/app/settings');
                     });
                   }}
                 />

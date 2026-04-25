@@ -12,7 +12,7 @@
     },
     "experiments": {
       "tsconfigPaths": true,
-      "baseUrl": "/musclog-app"
+      "baseUrl": "/"
     },
     "plugins": [
       "react-native-edge-to-edge",

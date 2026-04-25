@@ -19,8 +19,8 @@ export async function reloadApp() {
       await Updates.reloadAsync();
     }
 
-    router.replace('/');
+    router.replace('/app');
   } catch (error) {
-    router.replace('/');
+    router.replace('/app');
   }
 }

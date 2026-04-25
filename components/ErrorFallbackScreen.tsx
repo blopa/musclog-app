@@ -26,7 +26,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
     if (resetError) {
       resetError();
     } else {
-      router.replace('/');
+      router.replace('/app');
     }
   }, [resetError, router]);
 

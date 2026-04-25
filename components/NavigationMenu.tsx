@@ -46,7 +46,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const isPathActive = useCallback(
     (path: string) => {
       if (path === '/') {
-        return pathname === '/';
+        return pathname === '/app';
       }
       return pathname.startsWith(path);
     },
@@ -54,21 +54,21 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const isFoodActive = useCallback(() => {
-    return pathname.startsWith('/nutrition/');
+    return pathname.startsWith('/app/nutrition/');
   }, [pathname]);
 
   const renderNavSlot = useCallback(
     (slotKey: NavItemKey) => {
       switch (slotKey) {
         case 'workouts': {
-          const active = isPathActive('/workout');
+          const active = isPathActive('/app/workout');
           return (
             <Pressable
               key="workouts"
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/workout/workouts');
+                  router.navigate('/app/workout/workouts');
                 }
               }}
             >
@@ -98,7 +98,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.replace('/nutrition/food');
+                  router.replace('/app/nutrition/food');
                 }
               }}
             >
@@ -121,7 +121,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'profile': {
-          const active = isPathActive('/profile') || isPathActive('/progress');
+          const active = isPathActive('/app/profile') || isPathActive('/app/progress');
           return (
             <Pressable
               key="profile"
@@ -129,10 +129,10 @@ export const NavigationMenu = memo(function NavigationMenu({
               onPressIn={() => {
                 if (!active) {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-                  router.prefetch('/profile');
+                  router.prefetch('/app/profile');
                 }
               }}
-              onPress={() => router.navigate('/profile')}
+              onPress={() => router.navigate('/app/profile')}
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
@@ -189,14 +189,14 @@ export const NavigationMenu = memo(function NavigationMenu({
           if (!isCycleActive) {
             return null;
           }
-          const active = isPathActive('/cycle');
+          const active = isPathActive('/app/cycle');
           return (
             <Pressable
               key="cycle"
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/cycle');
+                  router.navigate('/app/cycle');
                 }
               }}
             >
@@ -219,14 +219,14 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'settings': {
-          const active = isPathActive('/settings');
+          const active = isPathActive('/app/settings');
           return (
             <Pressable
               key="settings"
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/settings');
+                  router.navigate('/app/settings');
                 }
               }}
             >
@@ -249,14 +249,14 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'progress': {
-          const active = isPathActive('/progress');
+          const active = isPathActive('/app/progress');
           return (
             <Pressable
               key="progress"
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/progress');
+                  router.navigate('/app/progress');
                 }
               }}
             >
@@ -279,14 +279,14 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'checkin': {
-          const active = isPathActive('/nutrition/checkin-list');
+          const active = isPathActive('/app/nutrition/checkin-list');
           return (
             <Pressable
               key="checkin"
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/nutrition/checkin-list');
+                  router.navigate('/app/nutrition/checkin-list');
                 }
               }}
             >
@@ -316,7 +316,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const homeActive = isPathActive('/');
-  const cameraFabActive = isPathActive('/nutrition/ai-camera');
+  const cameraFabActive = isPathActive('/app/nutrition/ai-camera');
 
   return (
     <View
@@ -332,7 +332,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           className="flex-1 items-center justify-center gap-1"
           onPress={() => {
             if (!homeActive) {
-              router.navigate('/');
+              router.navigate('/app');
             }
           }}
         >
