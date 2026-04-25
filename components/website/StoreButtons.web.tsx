@@ -118,11 +118,13 @@ function QRCodeCard({
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!qrCodeRef.current) {
+    const qrCodeNode = qrCodeRef.current;
+
+    if (!qrCodeNode) {
       return;
     }
 
-    qrCodeRef.current.replaceChildren();
+    qrCodeNode.replaceChildren();
 
     const writer = new BrowserQRCodeSvgWriter();
     const svg = writer.write(href, 132, 132);
@@ -131,10 +133,10 @@ function QRCodeCard({
     svg.style.display = 'block';
     svg.style.width = '132px';
     svg.style.height = '132px';
-    qrCodeRef.current.appendChild(svg);
+    qrCodeNode.appendChild(svg);
 
     return () => {
-      qrCodeRef.current?.replaceChildren();
+      qrCodeNode.replaceChildren();
     };
   }, [alt, href]);
 
@@ -170,28 +172,32 @@ export function StoreButtons() {
       return;
     }
 
+    const closePopover = () => setIsQrOpen(false);
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsQrOpen(false);
+        closePopover();
       }
     };
 
-    const handlePointerDown = (event: MouseEvent) => {
+    const handlePointerDown = (event: MouseEvent | PointerEvent | TouchEvent) => {
       const target = event.target as Node;
       const clickedTrigger = qrButtonRef.current?.contains(target);
       const clickedPopover = qrPopoverRef.current?.contains(target);
 
       if (!clickedTrigger && !clickedPopover) {
-        setIsQrOpen(false);
+        closePopover();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown, { passive: true });
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
     };
   }, [isQrOpen]);
 
@@ -215,7 +221,10 @@ export function StoreButtons() {
           trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
         }
       />
-      <div className="relative inline-flex" ref={qrButtonRef}>
+      <div
+        className="relative hidden [@media(min-width:767px)]:inline-flex"
+        ref={qrButtonRef}
+      >
         <button
           type="button"
           aria-label={t('qrButton', { defaultValue: 'Show QR codes' })}

@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { Check, ChevronDown, Dumbbell } from 'lucide-react-native';
+import { Check, ChevronDown, Download, Dumbbell } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -44,40 +44,66 @@ export function DownloadModal({
       return;
     }
 
+    const closeModal = () => setIsOpen(false);
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false);
+        closeModal();
       }
     };
 
-    const handlePointerDown = (event: MouseEvent) => {
+    const handlePointerDown = (event: MouseEvent | PointerEvent | TouchEvent) => {
       const target = event.target as Node;
       const clickedTrigger = triggerRef.current?.contains(target);
       const clickedPopover = popoverContentRef.current?.contains(target);
 
       if (!clickedTrigger && !clickedPopover) {
-        setIsOpen(false);
+        closeModal();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown, { passive: true });
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
     };
   }, [isOpen]);
 
   const buttonClasses = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    default: 'hover:opacity-90',
     outline: 'border border-white/30 text-white hover:bg-white/10',
-    white: 'bg-white text-black hover:bg-white/90',
+    white: 'hover:bg-white/90',
   };
   const popoverClasses = {
     default: 'right-0',
     outline: 'right-0',
     white: 'left-1/2 -translate-x-1/2',
+  };
+
+  const triggerRect = triggerRef.current?.getBoundingClientRect();
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
+  const modalWidth = Math.min(Math.max(viewportWidth - 32, 0), 384);
+  const centeredLeft =
+    triggerRect != null && viewportWidth > 0
+      ? Math.min(
+          Math.max(triggerRect.left + triggerRect.width / 2 - modalWidth / 2, 16),
+          viewportWidth - modalWidth - 16
+        )
+      : 16;
+  const buttonStyleByVariant: Record<DownloadModalProps['variant'], React.CSSProperties> = {
+    default: {
+      backgroundColor: BRAND_GREEN,
+      color: '#000000',
+    },
+    outline: {},
+    white: {
+      backgroundColor: '#FFFFFF',
+      color: '#000000',
+    },
   };
 
   return (
@@ -88,7 +114,7 @@ export function DownloadModal({
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
-        style={style}
+        style={{ ...buttonStyleByVariant[variant], ...style }}
       >
         {children}
       </button>
@@ -100,18 +126,8 @@ export function DownloadModal({
               className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
               style={{
                 borderColor: CARD_BORDER,
-                top: triggerRef.current
-                  ? triggerRef.current.getBoundingClientRect().bottom + 12
-                  : 0,
-                left:
-                  variant === 'white' && triggerRef.current
-                    ? triggerRef.current.getBoundingClientRect().left +
-                      triggerRef.current.getBoundingClientRect().width / 2
-                    : undefined,
-                right:
-                  variant !== 'white' && triggerRef.current
-                    ? window.innerWidth - triggerRef.current.getBoundingClientRect().right
-                    : undefined,
+                top: triggerRect ? triggerRect.bottom + 12 : 0,
+                left: centeredLeft,
               }}
               role="dialog"
               aria-labelledby="download-modal-title"
@@ -321,7 +337,13 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
-          <DownloadModal variant="default">{t('download')}</DownloadModal>
+          <DownloadModal
+            variant="default"
+            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
+          >
+            <Download className="h-4 w-4" />
+            <span>{t('download')}</span>
+          </DownloadModal>
           <LanguagePicker />
         </div>
       </div>
