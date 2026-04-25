@@ -1,12 +1,20 @@
-export function GridPattern() {
+interface ClassNameProps {
+  className?: string;
+}
+
+interface SectionBackgroundProps {
+  variant?: 'dots' | 'grid' | 'minimal';
+}
+
+export function GridPattern(_props: ClassNameProps) {
   return null;
 }
 
-export function DotPattern() {
+export function DotPattern(_props: ClassNameProps) {
   return null;
 }
 
-export function FloatingShapes() {
+export function FloatingShapes(_props: ClassNameProps) {
   return null;
 }
 
@@ -14,6 +22,6 @@ export function HeroBackground() {
   return null;
 }
 
-export function SectionBackground() {
+export function SectionBackground(_props: SectionBackgroundProps) {
   return null;
 }
