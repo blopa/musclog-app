@@ -2,7 +2,8 @@
  * Barcode Scanner Utility - Platform-agnostic export
  *
  * On Android: Uses react-native-barcodes-detector for image-based barcode detection (see barcodeScanner.android.ts)
- * On iOS: Stub implementation (see barcodeScanner.ios.ts) - react-native-barcodes-detector removed due to architecture incompatibility
+ * On iOS: Uses @react-native-ml-kit/barcode-scanning for image-based barcode detection
+ * (see barcodeScanner.ios.ts)
  * On Web: Uses @ericblade/quagga2 (see file.web.ts)
  *
  * For real-time barcode scanning across platforms, use the CameraView component
