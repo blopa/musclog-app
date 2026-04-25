@@ -214,7 +214,10 @@
           "typesCollected": {
             "title": "Types of Data Collected",
             "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:",
-            "items": ["First name and last name", "Usage Data"]
+            "items": [
+              "First name and last name",
+              "Usage Data"
+            ]
           },
           "googleOAuth": {
             "title": "Google OAuth Data",
@@ -372,7 +375,8 @@
       "contact": {
         "title": "Contact Us",
         "content": "If you have any questions about this Privacy Policy, You can contact us by email:"
-      }
+      },
+      "pageTitle": "Privacy Policy | Musclog"
     },
     "terms": {
       "titleStart": "Terms &",
@@ -458,7 +462,8 @@
       "contact": {
         "title": "Contact Us",
         "content": "If you have any questions about these Terms and Conditions, you can contact us at"
-      }
+      },
+      "pageTitle": "Terms & Conditions | Musclog"
     },
     "contact": {
       "titleStart": "Get in",
@@ -499,7 +504,8 @@
       "privacy": {
         "title": "Privacy First",
         "description": "We don't store anything you send here. Your message goes directly to our email — no servers, no logs."
-      }
+      },
+      "pageTitle": "Contact | Musclog"
     }
   }
 }

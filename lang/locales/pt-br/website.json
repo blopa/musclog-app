@@ -213,7 +213,10 @@
           "typesCollected": {
             "title": "Tipos de dados coletados",
             "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
-            "items": ["Nome e sobrenome", "Dados de uso"]
+            "items": [
+              "Nome e sobrenome",
+              "Dados de uso"
+            ]
           },
           "googleOAuth": {
             "title": "Dados do Google OAuth",
@@ -371,7 +374,8 @@
       "contact": {
         "title": "Fale conosco",
         "content": "Se você tiver alguma dúvida sobre esta Política de Privacidade, pode entrar em contato conosco pelo e-mail:"
-      }
+      },
+      "pageTitle": "Política de Privacidade | Musclog"
     },
     "terms": {
       "titleStart": "Termos e",
@@ -457,7 +461,8 @@
       "contact": {
         "title": "Fale conosco",
         "content": "Se você tiver alguma dúvida sobre estes Termos e Condições, pode entrar em contato conosco pelo"
-      }
+      },
+      "pageTitle": "Termos e Condições | Musclog"
     },
     "contact": {
       "titleStart": "Entre em",
@@ -498,7 +503,8 @@
       "privacy": {
         "title": "Privacidade em primeiro lugar",
         "description": "Não armazenamos nada do que você enviar aqui. Sua mensagem vai diretamente para nosso e-mail — sem servidores, sem logs."
-      }
+      },
+      "pageTitle": "Contato | Musclog"
     }
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { ExternalLink, Mail, MessageSquare, Send, Shield } from 'lucide-react-native';
+import Head from 'expo-router/head';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,6 +54,10 @@ export default function Contact() {
     ];
 
     return (
+        <>
+        <Head>
+            <title>{t('pageTitle')}</title>
+        </Head>
         <main className="relative overflow-hidden pb-20 pt-28">
             <GridPattern className="text-primary/50" />
             <FloatingShapes />
@@ -311,5 +316,6 @@ export default function Contact() {
                 </div>
             </div>
         </main>
+        </>
     );
 }

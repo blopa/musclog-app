@@ -213,7 +213,10 @@
           "typesCollected": {
             "title": "Soorten verzamelde gegevens",
             "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
-            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
+            "items": [
+              "Voor- en achternaam",
+              "Gebruiksgegevens"
+            ]
           },
           "googleOAuth": {
             "title": "Google OAuth-gegevens",
@@ -371,7 +374,8 @@
       "contact": {
         "title": "Neem contact op",
         "content": "Als u vragen heeft over dit Privacybeleid, kunt u contact met ons opnemen via e-mail:"
-      }
+      },
+      "pageTitle": "Privacybeleid | Musclog"
     },
     "terms": {
       "titleStart": "Algemene",
@@ -457,7 +461,8 @@
       "contact": {
         "title": "Neem contact op",
         "content": "Als je vragen hebt over deze Algemene Voorwaarden, kun je contact met ons opnemen via"
-      }
+      },
+      "pageTitle": "Algemene Voorwaarden | Musclog"
     },
     "contact": {
       "titleStart": "Neem",
@@ -498,7 +503,8 @@
       "privacy": {
         "title": "Privacy eerst",
         "description": "We slaan niets op van wat je hier verstuurt. Je bericht gaat rechtstreeks naar ons e-mailadres — geen servers, geen logs."
-      }
+      },
+      "pageTitle": "Contact | Musclog"
     }
   }
 }
