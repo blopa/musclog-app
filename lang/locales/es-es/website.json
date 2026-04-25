@@ -245,13 +245,23 @@
               "Permiso de bloqueo de activación para mantener la aplicación en ejecución durante los entrenamientos.",
               "Datos de salud como calorías activas quemadas, grasa corporal, masa ósea, frecuencia cardíaca, altura, masa corporal magra, nutrición, pasos, calorías totales quemadas y peso para un seguimiento integral del estado físico."
             ]
+          },
+          "optionalAi": {
+            "title": "Funciones de IA opcionales y proveedores LLM de terceros",
+            "content1": "La aplicación Musclog puede utilizarse completamente sin conexión, excepto por las solicitudes opcionales a fuentes externas de datos nutricionales. De forma predeterminada, Musclog no envía tus datos de entrenamiento, nutrición, salud o perfil a nuestros servidores.",
+            "content2": "Musclog también ofrece funciones de IA opcionales que requieren que aportes tu propia clave de API. Estas funciones están desactivadas a menos que las habilites explícitamente y configures tu propio proveedor.",
+            "content3": "Si decides usar una función de IA con tu propia clave de API, los datos que decidas enviar a ese proveedor podrán ser tratados por el proveedor externo seleccionado de acuerdo con tu relación y con los términos de privacidad aplicables de dicho proveedor. Musclog no controla cómo esos proveedores tratan los datos que les envías.",
+            "content4": "Actualmente, los proveedores compatibles son OpenAI y Google Gemini. Debes revisar las políticas de privacidad aplicables antes de habilitar estas funciones:",
+            "openaiPrivacyPolicy": "Política de Privacidad de OpenAI",
+            "googlePrivacyPolicy": "Política de Privacidad de Google",
+            "and": "y"
           }
         },
         "useOfData": {
           "title": "Uso de tus Datos Personales",
           "items": [
             "Para proporcionar y mantener nuestro Servicio, incluyendo el monitoreo de su uso.",
-            "Para analizar los datos del usuario y enviarlos a nuestros socios LLM para proporcionar comentarios personalizados sobre entrenamientos, nutrición y otras actividades relacionadas con la salud.",
+            "Para proporcionar funciones opcionales impulsadas por IA solo cuando las habilites explícitamente y configures tu propio proveedor externo.",
             "Para gestionar tu Cuenta: para gestionar tu registro como usuario del Servicio.",
             "Para el cumplimiento de un contrato: el desarrollo, cumplimiento y ejecución del contrato de compra de los productos o servicios que hayas adquirido.",
             "Para contactarte por correo electrónico, llamadas telefónicas, SMS u otras formas equivalentes de comunicación electrónica.",

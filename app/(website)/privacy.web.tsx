@@ -300,6 +300,45 @@ export default function Privacy() {
                   ))}
                 </ul>
               </div>
+
+              {/* Optional AI Providers */}
+              <div>
+                <h3 className="mb-2 text-base font-semibold text-white">
+                  {t('sections.collecting.optionalAi.title')}
+                </h3>
+                <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                  {t('sections.collecting.optionalAi.content1')}
+                </p>
+                <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                  {t('sections.collecting.optionalAi.content2')}
+                </p>
+                <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                  {t('sections.collecting.optionalAi.content3')}
+                </p>
+                <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                  {t('sections.collecting.optionalAi.content4')}{' '}
+                  <a
+                    href="https://openai.com/policies/privacy-policy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {t('sections.collecting.optionalAi.openaiPrivacyPolicy')}
+                  </a>
+                  {' '}{t('sections.collecting.optionalAi.and')}{' '}
+                  <a
+                    href="https://policies.google.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {t('sections.collecting.optionalAi.googlePrivacyPolicy')}
+                  </a>
+                  .
+                </p>
+              </div>
             </div>
           </section>
 
