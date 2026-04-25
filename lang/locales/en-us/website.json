@@ -1,6 +1,7 @@
 {
   "website": {
     "landing": {
+      "title": "Musclog Web Demo",
       "cta": "Try it live",
       "f1": "Smart workout tracking",
       "f2": "AI photo nutrition logging",

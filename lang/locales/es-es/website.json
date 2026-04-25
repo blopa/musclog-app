@@ -1,6 +1,7 @@
 {
   "website": {
     "landing": {
+      "title": "Demo Web de Musclog",
       "cta": "Pruébalo ahora",
       "f1": "Seguimiento inteligente de entrenamientos",
       "f2": "Registro nutricional con IA a partir de fotos",

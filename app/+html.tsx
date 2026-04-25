@@ -20,6 +20,7 @@ const GOOGLE_PLAY_QR_CODE = '/images/google-play-qrcode.png';
 const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 type LandingCopy = {
+  title: string;
   cta: string;
   f1: string;
   f2: string;
@@ -119,6 +120,7 @@ export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <head>
+        <title data-landing-i18n="title">Musclog Web Demo</title>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         {/*
