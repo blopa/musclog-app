@@ -371,6 +371,42 @@ export function Footer() {
     >
       <SectionBackground variant="grid" />
       <div className="container mx-auto px-4">
+        <div
+          className="mb-8 flex flex-wrap items-center justify-center gap-3 [@media(min-width:767px)]:hidden"
+          aria-label={navT('appName')}
+        >
+          <Link
+            href="/home#features"
+            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
+            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            {navT('features')}
+          </Link>
+          <Link
+            href="/calculator"
+            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
+            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            Calculator
+          </Link>
+          <a
+            href="https://github.com/blopa/musclog-app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
+            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            {navT('github')}
+          </a>
+          <DownloadModal
+            variant="default"
+            className="min-h-10 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)]"
+          >
+            <Download className="h-4 w-4" />
+            <span>{navT('download')}</span>
+          </DownloadModal>
+        </div>
+
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <Link href="/" className="flex items-center gap-3">
             <div

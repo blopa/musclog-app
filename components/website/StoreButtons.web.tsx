@@ -221,10 +221,7 @@ export function StoreButtons() {
           trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
         }
       />
-      <div
-        className="relative hidden [@media(min-width:767px)]:inline-flex"
-        ref={qrButtonRef}
-      >
+      <div className="relative hidden [@media(min-width:767px)]:inline-flex" ref={qrButtonRef}>
         <button
           type="button"
           aria-label={t('qrButton', { defaultValue: 'Show QR codes' })}
