@@ -121,7 +121,8 @@
       "appTagline": "Лифт, Лог, Повтор",
       "features": "Функции",
       "github": "GitHub",
-      "download": "Скачать Сейчас"
+      "download": "Скачать Сейчас",
+      "language": "Язык"
     },
     "storeButtons": {
       "googleTitle": "ДОСТУПНО В",
@@ -133,6 +134,7 @@
     "footer": {
       "privacyPolicy": "Политика Конфиденциальности",
       "terms": "Условия",
+      "github": "GitHub",
       "contact": "Контакт",
       "license": "Лицензия",
       "copyright": "Бесплатное и Open Source ПО. Создано для вашей конфиденциальности."
@@ -148,6 +150,7 @@
     "privacy": {
       "titleStart": "Политика",
       "titleHighlight": "конфиденциальности",
+      "lastUpdated": "Последнее обновление: 25 апреля 2026 г.",
       "highlights": {
         "dataProtection": {
           "title": "Защита данных",
@@ -383,6 +386,7 @@
     "terms": {
       "titleStart": "Условия",
       "conditions": "использования",
+      "lastUpdated": "Последнее обновление: 25 апреля 2026 г.",
       "highlights": {
         "agreement": {
           "title": "Пользовательское соглашение",

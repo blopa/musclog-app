@@ -134,6 +134,7 @@
     "footer": {
       "privacyPolicy": "Política de Privacidad",
       "terms": "Términos",
+      "github": "GitHub",
       "contact": "Contacto",
       "license": "Licencia",
       "copyright": "Software Libre y Open Source. Construido para tu privacidad."
@@ -149,6 +150,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidad",
+      "lastUpdated": "Última actualización: 25 de abril de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protección de datos",
@@ -384,6 +386,7 @@
     "terms": {
       "titleStart": "Términos y",
       "conditions": "Condiciones",
+      "lastUpdated": "Última actualización: 25 de abril de 2026",
       "highlights": {
         "agreement": {
           "title": "Acuerdo de uso",

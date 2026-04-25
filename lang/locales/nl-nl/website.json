@@ -134,6 +134,7 @@
     "footer": {
       "privacyPolicy": "Privacybeleid",
       "terms": "Voorwaarden",
+      "github": "GitHub",
       "contact": "Contact",
       "license": "Licentie",
       "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
@@ -149,6 +150,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
+      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -384,6 +386,7 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
+      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",
