@@ -326,6 +326,26 @@
           "content6": "Tu elección de consentimiento se almacena localmente en tu navegador (localStorage) y nunca se envía a nuestros servidores. Se utiliza únicamente para recordar tu preferencia entre visitas."
         }
       },
+      "appVsWebsite": {
+        "app": {
+          "title": "Dentro de la aplicación Musclog",
+          "items": [
+            "Todos los datos que introduces en la aplicación se almacenan localmente en tu dispositivo.",
+            "La aplicación no requiere una cuenta ni ofrece sincronización en la nube.",
+            "No tenemos acceso a los datos de salud o fitness almacenados en la aplicación.",
+            "Los datos sensibles almacenados por la aplicación se cifran en reposo mediante AES."
+          ]
+        },
+        "website": {
+          "title": "En este sitio web",
+          "items": [
+            "Este sitio web utiliza Vercel Analytics para medir datos de tráfico anónimos y sin cookies, sin requerir consentimiento.",
+            "Este sitio web utiliza Google Analytics 4 únicamente después de que otorgues tu consentimiento explícito mediante el banner de cookies.",
+            "Tu preferencia de idioma se almacena localmente en tu navegador y no se transmite a nuestros servidores.",
+            "Tu elección de consentimiento de cookies se almacena localmente en tu navegador y no se transmite a nuestros servidores."
+          ]
+        }
+      },
       "contact": {
         "title": "Contáctanos",
         "content": "Si tienes alguna pregunta sobre esta Política de Privacidad, puedes contactarnos por correo electrónico:"

@@ -326,6 +326,26 @@
           "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden."
         }
       },
+      "appVsWebsite": {
+        "app": {
+          "title": "Binnen de Musclog-applicatie",
+          "items": [
+            "Alle gegevens die u in de applicatie invoert, worden lokaal op uw apparaat opgeslagen.",
+            "De applicatie vereist geen account en biedt geen cloudsynchronisatie.",
+            "Wij hebben geen toegang tot de gezondheids- of fitnessgegevens die in de applicatie zijn opgeslagen.",
+            "Gevoelige gegevens die door de applicatie worden opgeslagen, worden versleuteld in rust met AES."
+          ]
+        },
+        "website": {
+          "title": "Op deze website",
+          "items": [
+            "Deze website gebruikt Vercel Analytics om anonieme, cookieloze verkeersgegevens te meten zonder toestemming te vereisen.",
+            "Deze website gebruikt Google Analytics 4 uitsluitend nadat u via de cookiebanner expliciet toestemming hebt gegeven.",
+            "Uw taalvoorkeur wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden.",
+            "Uw cookie-toestemmingskeuze wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden."
+          ]
+        }
+      },
       "contact": {
         "title": "Neem contact op",
         "content": "Als u vragen heeft over dit Privacybeleid, kunt u contact met ons opnemen via e-mail:"

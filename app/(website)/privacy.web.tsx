@@ -1,4 +1,4 @@
-import { Database, Lock, Mail, Shield } from 'lucide-react-native';
+import { Database, Globe, Lock, Mail, Shield, Smartphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
@@ -53,6 +53,8 @@ export default function Privacy() {
   const sharingItems = t('sections.sharing.items', { returnObjects: true }) as string[];
   const disclosureItems = t('sections.disclosure.items', { returnObjects: true }) as string[];
   const analyticsItems = t('sections.analytics.items', { returnObjects: true }) as string[];
+  const appItems = t('appVsWebsite.app.items', { returnObjects: true }) as string[];
+  const websiteItems = t('appVsWebsite.website.items', { returnObjects: true }) as string[];
 
   return (
     <main className="relative overflow-hidden pb-20 pt-24">
@@ -105,6 +107,55 @@ export default function Privacy() {
         <p className="mb-10 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
           {t('intro')}
         </p>
+
+        {/* App vs Website distinction */}
+        <div className="mb-10 grid gap-4 sm:grid-cols-2">
+          <div
+            className="rounded-xl border p-5"
+            style={{
+              borderColor: 'rgba(0,255,163,0.25)',
+              backgroundColor: 'rgba(0,255,163,0.04)',
+            }}
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <Smartphone className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
+              <h3 className="font-bold text-white">{t('appVsWebsite.app.title')}</h3>
+            </div>
+            <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+              {appItems.map((item, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="shrink-0 font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div
+            className="rounded-xl border p-5"
+            style={{
+              borderColor: 'rgba(56,189,248,0.25)',
+              backgroundColor: 'rgba(56,189,248,0.04)',
+            }}
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <Globe className="h-5 w-5" color="#38BDF8" />
+              <h3 className="font-bold text-white">{t('appVsWebsite.website.title')}</h3>
+            </div>
+            <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+              {websiteItems.map((item, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="mt-0.5 shrink-0" style={{ color: '#38BDF8' }}>
+                    ›
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         {/* Sections */}
         <div className="space-y-10">
