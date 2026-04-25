@@ -95,7 +95,10 @@ export function DownloadModal({
         )
       : 16;
 
-  const buttonStyleByVariant: Record<NonNullable<DownloadModalProps['variant']>, React.CSSProperties> = {
+  const buttonStyleByVariant: Record<
+    NonNullable<DownloadModalProps['variant']>,
+    React.CSSProperties
+  > = {
     default: {
       backgroundColor: BRAND_GREEN,
       color: '#000000',

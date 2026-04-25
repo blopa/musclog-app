@@ -1,3 +1,5 @@
+import { Redirect } from 'expo-router';
+
 export default function Contact() {
-  return null;
+  return <Redirect href="/app" />;
 }

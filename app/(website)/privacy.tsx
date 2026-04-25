@@ -1,3 +1,5 @@
+import { Redirect } from 'expo-router';
+
 export default function Privacy() {
-  return null;
+  return <Redirect href="/app" />;
 }
