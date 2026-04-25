@@ -339,9 +339,10 @@ export default function ExerciseGoalCreationModal({
       if (!targetDate) {
         setTargetDate(addMonths(new Date(), 3));
       }
+
       setStep('summary');
     }
-  }, [step]);
+  }, [step, targetDate]);
 
   const handleSelectExercise = useCallback(
     (id: string) => {
