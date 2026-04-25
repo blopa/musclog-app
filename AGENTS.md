@@ -24,6 +24,27 @@
 - `npx jest --selectProjects node [path]`: Run specific unit tests in Node environment (avoids ESM/JSI issues)
 - `npx jest --selectProjects jsdom [path]`: Run hook tests requiring DOM (e.g., hooks using `useColorScheme`)
 
+## Repo Structure: Dual-Purpose (App + Website)
+
+This repository serves two distinct purposes that share the same Expo Router project:
+
+- **`app/app/`** — All mobile app screens (iOS & Android). These are the core product screens: nutrition, workout, profile, progress, settings, onboarding, etc.
+- **`app/(website)/`** — The institutional/marketing website (landing page, privacy policy, etc.). This is only rendered on the web platform. Route group `(website)` keeps it isolated from the app routes.
+
+**Key conventions for the website:**
+
+- Files ending in `.web.tsx` inside `app/(website)/` are the web-specific implementations (e.g. `home.web.tsx`). Their non-web counterparts (e.g. `home.tsx`) exist as native stubs or redirects.
+- Website components live in `components/website/` (e.g. `StoreButtons`, `WebsiteBackgrounds`, `WebsiteChrome`).
+- The website uses standard HTML elements (`<div>`, `<section>`, `<a>`) and Tailwind/NativeWind utility classes — **not** React Native primitives.
+- When working on website files, treat them as a standard React web app, not a React Native app.
+- Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.
+
+**When making changes:**
+
+- Changes to `app/app/` affect the mobile app only.
+- Changes to `app/(website)/` affect the public website only.
+- Shared logic (services, database, utils) lives outside both and is used by both platforms.
+
 ## Tech Stack
 
 - **Framework**: React Native (Expo SDK 54) with Expo Router
@@ -53,6 +74,9 @@
   - **Unit labels**: Use `getWeightUnit(units)`, `getHeightUnit(units)`, `getMassUnitLabel(units)`, or `metricDisplayUnit(metricType, units)` — never hardcode "kg", "lbs", "g", "oz" in UI.
   - **Type classification**: `isWeightMetricType(type)` (kg↔lbs: weight, muscle_mass, lean_body_mass) and `isLengthMetricType(type)` (cm↔in: height, chest, waist, hips, arms, thighs, calves, neck, shoulders).
   - **No conversion needed**: Macros (protein, carbs, fat, fiber) are always in grams, calories in kcal, body fat / BMI / FFMI are unitless — these stay the same in both systems.
+- **Carbs vs fiber convention (critical)**: There are two conventions in the codebase — **do not mix them**:
+  - **Food items / nutrition logs** (`NutritionLog`, `inferCaloriesFromMacros.ts`, `NutritionCharts.tsx`, food DB mappers): `carbs` = total carbohydrates **including** fiber, matching the US nutrition label standard. Digestible carbs = `carbs − fiber`. Always use `Math.max(0, carbs - fiber) * CALORIES_FOR_CARBS + fiber * CALORIES_FOR_FIBER` here.
+  - **User nutrition goals** (`NutritionGoalsBody`, saved goal records, onboarding results): `carbs` = **net/digestible carbs only** (fiber is a separate, additive macro). Total calories = `protein * 4 + carbs * 4 + fats * 9 + fiber * 2`. Never subtract fiber from carbs in this context.
   - **Food serving weights**: Stored in grams, displayed as g or oz. Use `gramsToDisplay`/`displayToGrams` and `getMassUnitLabel`. The `ServingSizeSelector` component handles this automatically.
   - **Every new feature** that displays or accepts weight, height, body measurements, or food serving sizes **must** use these conversion helpers. Test with imperial mode enabled.
 - **Translation**: Check the `lang` directory for translation files. Any new feature implemented must use translation keys and add new keys to the translation files for all available languages.

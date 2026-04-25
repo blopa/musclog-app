@@ -1,77 +1,18 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import Body, { Slug as BodySlug } from 'react-native-body-highlighter';
 
 import { useTheme } from '@/hooks/useTheme';
-import {
-  BACK_SLUGS,
-  buildSlugIntensityMap,
-  FRONT_SLUGS,
-  MuscleSlug,
-  SLUG_TO_LABEL,
-} from '@/utils/muscleGroupMapping';
+import { buildSlugIntensityMap } from '@/utils/muscleGroupMapping';
 
 type BodyHighlighterProps = {
   muscleGroups: (string | null | undefined)[];
 };
 
-function MuscleChip({ slug, intensity }: { slug: MuscleSlug; intensity: number }) {
-  const theme = useTheme();
-  const alpha = intensity >= 3 ? '' : intensity === 2 ? '99' : '55';
-  const bgColor = theme.colors.accent.primary + alpha;
-
-  return (
-    <View className="mb-2 mr-2 rounded-full px-3 py-1.5" style={{ backgroundColor: bgColor }}>
-      <Text className="text-xs font-semibold text-white">{SLUG_TO_LABEL[slug]}</Text>
-    </View>
-  );
-}
-
-function MuscleSection({
-  title,
-  muscles,
-}: {
-  title: string;
-  muscles: { slug: MuscleSlug; intensity: number }[];
-}) {
-  const theme = useTheme();
-
-  if (muscles.length === 0) {
-    return null;
-  }
-
-  return (
-    <View className="mb-4">
-      <Text
-        className="mb-2 text-[10px] font-bold uppercase tracking-widest"
-        style={{ color: theme.colors.text.tertiary }}
-      >
-        {title}
-      </Text>
-      <View className="flex-row flex-wrap">
-        {muscles.map(({ slug, intensity }) => (
-          <MuscleChip key={slug} slug={slug} intensity={intensity} />
-        ))}
-      </View>
-    </View>
-  );
-}
-
 export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const intensityMap = buildSlugIntensityMap(muscleGroups);
-
-  const frontMuscles: { slug: MuscleSlug; intensity: number }[] = [];
-  const backMuscles: { slug: MuscleSlug; intensity: number }[] = [];
-
-  for (const [slug, intensity] of intensityMap.entries()) {
-    const entry = { slug, intensity };
-    if (FRONT_SLUGS.has(slug)) {
-      frontMuscles.push(entry);
-    }
-    if (BACK_SLUGS.has(slug)) {
-      backMuscles.push(entry);
-    }
-  }
 
   if (intensityMap.size === 0) {
     return (
@@ -81,10 +22,37 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
     );
   }
 
+  const data = Array.from(intensityMap.entries()).map(([slug, count]) => ({
+    slug: slug as BodySlug,
+    intensity: Math.min(count, 3) as 1 | 2 | 3,
+  }));
+
+  const colors: readonly string[] = [
+    theme.colors.accent.primary + '55',
+    theme.colors.accent.primary + '99',
+    theme.colors.accent.primary,
+  ];
+
   return (
-    <View className="flex-1 py-2">
-      <MuscleSection title={t('workoutDetail.frontMuscles')} muscles={frontMuscles} />
-      <MuscleSection title={t('workoutDetail.backMuscles')} muscles={backMuscles} />
+    <View className="flex-row items-start justify-center gap-6 py-4">
+      <View className="items-center gap-2">
+        <Text
+          className="text-[10px] font-bold uppercase tracking-widest"
+          style={{ color: theme.colors.text.tertiary }}
+        >
+          {t('workoutDetail.frontMuscles')}
+        </Text>
+        <Body data={data} side="front" scale={0.95} colors={colors} border="none" />
+      </View>
+      <View className="items-center gap-2">
+        <Text
+          className="text-[10px] font-bold uppercase tracking-widest"
+          style={{ color: theme.colors.text.tertiary }}
+        >
+          {t('workoutDetail.backMuscles')}
+        </Text>
+        <Body data={data} side="back" scale={0.95} colors={colors} border="none" />
+      </View>
     </View>
   );
 }

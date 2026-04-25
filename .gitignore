@@ -81,6 +81,8 @@ devenv.local.yaml
 # direnv
 .direnv
 
+.codex
+
 # pre-commit
 .pre-commit-config.yaml
 

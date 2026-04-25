@@ -938,7 +938,7 @@ export async function createRecord(
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
 
-      await NutritionGoalService.saveGoals({
+      const savedGoal = await NutritionGoalService.saveGoals({
         totalCalories: values.totalCalories as number,
         protein: values.protein as number,
         carbs: values.carbs as number,
@@ -950,6 +950,8 @@ export async function createRecord(
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
       });
+
+      await NutritionGoalService.regenerateCheckins(savedGoal.id);
       break;
     }
 

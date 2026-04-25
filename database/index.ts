@@ -5,6 +5,7 @@ export { database } from './database-instance';
 
 // Export models for convenience
 export { default as ChatMessage } from './models/ChatMessage';
+export { default as DebugDump } from './models/DebugDump';
 export { default as Exercise } from './models/Exercise';
 export { default as NutritionGoal } from './models/NutritionGoal';
 export { default as Schedule } from './models/Schedule';

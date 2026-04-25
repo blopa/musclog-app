@@ -42,7 +42,7 @@ try {
   if (isMacOS) {
     // Step 2: Apply iOS project patches (PBXTargetDependency, hermesvm paths, xcscheme, etc.)
     console.log('[prebuild-cross-platform] Step 2: Applying iOS project patches...');
-    execSync('node scripts/fix-ios-project.js', { stdio: 'inherit', cwd: process.cwd() });
+    execSync('npm run patch-ios-project', { stdio: 'inherit', cwd: process.cwd() });
 
     // Step 3: Remove EXCLUDED_ARCHS from xcconfigs
     // The main app target uses these xcconfigs as baseConfigurationReference.

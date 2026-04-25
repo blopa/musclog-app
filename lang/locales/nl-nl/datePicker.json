@@ -1,6 +1,7 @@
 {
   "datePicker": {
     "cancel": "Annuleren",
+    "clearDate": "Datum wissen",
     "confirm": "Bevestigen",
     "month": "Maand",
     "nextMonday": "Volgende maandag",

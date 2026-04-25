@@ -8,6 +8,7 @@ import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  DUMP_LLM_REQUESTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -370,6 +371,10 @@ export class SettingsService {
     await SettingsService.setBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, value);
   }
 
+  static async setDumpLlmRequests(value: boolean) {
+    await SettingsService.setBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, value);
+  }
+
   /**
    * Upsert the language setting
    */
@@ -472,6 +477,10 @@ export class SettingsService {
 
   static async getSendFoundationFoodsToLlm(): Promise<boolean> {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
+  }
+
+  static async getDumpLlmRequests(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, false);
   }
 
   static async getDailyNutritionInsights(): Promise<boolean> {

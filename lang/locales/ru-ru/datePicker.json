@@ -1,6 +1,7 @@
 {
   "datePicker": {
     "cancel": "Отмена",
+    "clearDate": "Очистить дату",
     "confirm": "Подтвердить",
     "month": "Месяц",
     "nextMonday": "Следующий понедельник",

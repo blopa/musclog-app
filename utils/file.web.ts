@@ -12,8 +12,7 @@ function getExportFileName(): string {
 
 export async function downloadFile(uri: string, fileName?: string): Promise<void> {
   if (uri.startsWith('web-backup://')) {
-    const { getWebBackupContent, getStoredBackups } =
-      await import('@/database/preMigrationBackup.web');
+    const { getWebBackupContent, getStoredBackups } = await import('@/database/preMigrationBackup');
     const hash = uri.replace('web-backup://', '');
     const content = getWebBackupContent(hash);
     if (!content) {

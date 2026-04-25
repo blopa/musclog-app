@@ -22,6 +22,14 @@ const filesToSync = [
     src: path.join(root, 'assets', 'google-play-qrcode.png'),
     dest: path.join(destDir, 'google-play-qrcode.png'),
   },
+  {
+    src: path.join(root, 'assets', 'app-screenshot.png'),
+    dest: path.join(destDir, 'app-screenshot.png'),
+  },
+  {
+    src: path.join(root, 'assets', 'user-avatar.jpg'),
+    dest: path.join(destDir, 'user-avatar.jpg'),
+  },
 ];
 
 function main() {

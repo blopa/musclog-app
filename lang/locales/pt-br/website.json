@@ -1,0 +1,679 @@
+{
+  "website": {
+    "landing": {
+      "cta": "Experimente agora",
+      "f1": "Rastreamento inteligente de treinos",
+      "f2": "Registro de nutrição por foto com IA",
+      "f3": "Gráficos detalhados de progresso",
+      "f4": "100% privado e no dispositivo",
+      "tagline": "Acompanhamento de fitness e nutrição com IA — gratuito e open source.",
+      "qrcode_title": "Baixe o App",
+      "qrcode_text": "Escaneie para baixar no Android"
+    },
+    "hero": {
+      "badge1": "★ GRÁTIS E OPEN SOURCE",
+      "badge2": "FOCO NA PRIVACIDADE (SEM LOGIN NECESSÁRIO)",
+      "title1": "Controle Seus",
+      "title2": "Dados de Fitness",
+      "subheading": "Um rastreador de fitness local-first, open-source. Sem contas, sem rastreamento, sem nuvem. Apenas você e seus ganhos.",
+      "github": "Ver no GitHub",
+      "demoEyebrow": "Prévia instantânea",
+      "demoTitle": "Experimente a demo web",
+      "demoDescription": "Abra uma prévia do app no navegador e explore a experiência antes de baixar.",
+      "demoButton": "Abrir demo web"
+    },
+    "features": {
+      "title": "Construído para Performance e Privacidade",
+      "description": "Sem telemetria, sem rastreamento, sem assinatura. Apenas um motor poderoso para sua jornada de fitness.",
+      "strengthTracking": {
+        "title": "Rastreamento de Força Offline",
+        "description": "Registre seus sets e repetições diretamente no seu dispositivo. Sem internet necessária. Seus dados nunca saem do seu bolso.",
+        "link": "VER MAIS"
+      },
+      "privacyFirst": {
+        "title": "Privacidade em Primeiro Lugar",
+        "description": "Sem cadastros, sem logins e sem rastreamento de terceiros. O Musclog respeita sua soberania digital.",
+        "link": "MANIFESTO DE PRIVACIDADE"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "O Musclog é movido pela comunidade. Audite o código, contribua com recursos ou faça um fork para personalizá-lo.",
+        "link": "VER CÓDIGO"
+      }
+    },
+    "featureGrid": {
+      "title": "Tudo o que Você Precisa para Treinar de Forma Mais Inteligente",
+      "description": "Do treinamento com IA até análises detalhadas, o Musclog oferece as ferramentas para você ter controle total da sua jornada de fitness.",
+      "items": {
+        "aiCoach": {
+          "title": "Treinador de IA (Loggy)",
+          "description": "Converse com seu treinador de IA para planos de treino personalizados, conselhos de nutrição e estimativa de refeições por foto."
+        },
+        "barcode": {
+          "title": "Leitor de Código de Barras",
+          "description": "Adicione produtos rapidamente escaneando códigos de barras. Acesse o banco de dados Open Food Facts com milhões de produtos."
+        },
+        "checkins": {
+          "title": "Check-ins Semanais",
+          "description": "Análise automatizada de 7 dias do seu progresso com ajustes dinâmicos de metas para mantê-lo no caminho certo."
+        },
+        "analytics": {
+          "title": "Análises de Progresso",
+          "description": "Gráficos interativos para peso, gordura corporal e progresso de levantamento. Rastreie seu TDEE com dados reais."
+        },
+        "cycle": {
+          "title": "Consciência do Ciclo",
+          "description": "Rastreie as fases menstruais e receba recomendações de treino otimizadas para seu ciclo."
+        },
+        "templates": {
+          "title": "Modelos de Treino",
+          "description": "Crie rotinas personalizadas como PPL ou Superior/Inferior. Acesse uma extensa biblioteca de exercícios com foco muscular."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Sincronize com o Google Health Connect para compartilhar dados com outros apps de saúde e fitness no Android."
+        },
+        "encryption": {
+          "title": "Armazenamento Criptografado",
+          "description": "Seus dados sensíveis de saúde são criptografados em repouso usando AES. Exporte a qualquer momento como JSON ou Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitaminas e Minerais",
+        "description": "Que você pode rastrear diariamente"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Pronto para Offline",
+        "description": "Sem internet necessária"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Uploads para Nuvem",
+        "description": "Dados permanecem locais"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Criptografia",
+        "description": "Segurança em repouso"
+      }
+    },
+    "howItWorks": {
+      "title": "Como Funciona",
+      "description": "Comece em minutos. Sem configuração complicada, sem assinaturas, sem coleta de dados.",
+      "steps": {
+        "step1": {
+          "title": "Baixe e Comece",
+          "description": "Instale o Musclog na App Store ou Google Play. Sem conta necessária — apenas abra e comece a rastrear."
+        },
+        "step2": {
+          "title": "Registre Seu Treino",
+          "description": "Registre sets, repetições e pesos. Escaneie códigos de barras ou tire fotos para registrar refeições. Tudo fica no seu dispositivo."
+        },
+        "step3": {
+          "title": "Acompanhe o Progresso",
+          "description": "Revise check-ins semanais, visualize tendências e deixe o treinador de IA ajudá-lo a otimizar sua abordagem."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"O Musclog é o primeiro aplicativo que respeita minha privacidade enquanto oferece uma experiência de treino de classe mundial. Local-first é o futuro.\"",
+      "author": "Laura F.",
+      "role": "Desenvolvedora Ocupada"
+    },
+    "cta": {
+      "title": "Pronto para começar?",
+      "description": "Junte-se a milhares de atletas que usam o Musclog para rastrear seu progresso sem comprometer a privacidade.",
+      "download": "Baixar Agora",
+      "sourceCode": "Ver Código Fonte"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Levante, Registre, Repita",
+      "features": "Recursos",
+      "progress": "Progresso",
+      "github": "GitHub",
+      "download": "Baixar Agora",
+      "language": "Idioma"
+    },
+    "progress": {
+      "metaTitle": "Importação de progresso do Musclog",
+      "loading": "Carregando seu banco de dados local de progresso...",
+      "hero": {
+        "eyebrow": "Visualizador de progresso para desktop",
+        "title": "Importe aqui os dados exportados do seu app Musclog",
+        "description": "Envie sua exportação JSON do Musclog para liberar um painel de progresso no navegador com tendências de peso, padrões de nutrição, volume de treino e correlações importantes otimizadas para telas maiores.",
+        "points": {
+          "weight": {
+            "title": "Peso e composição corporal",
+            "description": "Revise tendências de peso, mudanças de gordura corporal, FFMI e medidas corporais em um só lugar."
+          },
+          "nutrition": {
+            "title": "Nutrição e TDEE",
+            "description": "Inspecione ingestão calórica, divisão de macros e médias do seu registro importado."
+          },
+          "training": {
+            "title": "Treino e correlações",
+            "description": "Compare volume de treino, humor e sinais de recuperação em uma experiência web mais ampla."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Importação local",
+        "title": "Traga a exportação do app para este navegador",
+        "description": "Escolha o arquivo JSON exportado no app móvel do Musclog. A importação roda localmente no armazenamento do navegador e nunca sai do seu dispositivo.",
+        "passphraseLabel": "Frase de descriptografia",
+        "passphrasePlaceholder": "Opcional, apenas se sua exportação estiver criptografada",
+        "cta": "Escolher exportação JSON",
+        "importing": "Importando dados...",
+        "hint": "Formato compatível: exportação JSON do Musclog",
+        "selectedFile": "Arquivo selecionado: {{fileName}}",
+        "genericError": "Não foi possível importar este arquivo. Confirme se é uma exportação válida do Musclog.",
+        "localOnlyTitle": "Privado por padrão",
+        "localOnlyDescription": "Esta página carrega sua exportação apenas no banco de dados web local para que você explore seus dados sem enviá-los a um servidor."
+      },
+      "dashboard": {
+        "eyebrow": "Análises importadas",
+        "title": "Seu progresso no Musclog, redesenhado para a web desktop",
+        "description": "Este painel usa o mesmo banco de dados local e os mesmos cálculos de progresso do app, mas apresenta tudo em um layout de desktop mais amplo para ler tendências e comparar padrões com facilidade.",
+        "replaceData": "Substituir dados importados",
+        "localStorageHint": "Os dados ficam salvos no banco de dados local do Musclog no navegador."
+      },
+      "stats": {
+        "weightHint": "Peso mais recente dentro do intervalo selecionado.",
+        "caloriesHint": "Calorias médias em {{count}} dias com nutrição registrada.",
+        "workoutsHint": "Treinos concluídos no intervalo atual.",
+        "tdeeHint": "Estimativa atual de manutenção com base nos dados disponíveis."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Visão geral da composição corporal",
+          "description": "Suas métricas corporais principais aparecem primeiro para que as maiores mudanças fiquem visíveis rapidamente."
+        },
+        "nutrition": {
+          "title": "Tendências de nutrição",
+          "description": "Totais diários de calorias e o equilíbrio recente de macros ajudam a conectar ingestão com os resultados que você está vendo.",
+          "macroSplit": "Divisão recente de calorias por macros"
+        },
+        "training": {
+          "title": "Saída de treino",
+          "description": "Volume de treino e séries por grupo muscular mostram para onde seu esforço realmente foi."
+        },
+        "correlations": {
+          "title": "Visões de correlação",
+          "description": "Essas visualizações de dispersão no desktop ajudam a inspecionar se ingestão e mudanças de composição corporal caminham juntas."
+        },
+        "mood": {
+          "title": "Resumo de humor",
+          "description": "Os registros de humor continuam visíveis como uma camada leve de prontidão ao lado das grandes tendências corporais e de treino.",
+          "summaryTitle": "Resumo do humor",
+          "totalEntries": "Períodos rastreados",
+          "averageScore": "Pontuação média"
+        },
+        "measurements": {
+          "title": "Medidas",
+          "description": "Quando existem registros de circunferência, eles aparecem aqui como cartões compactos de tendência.",
+          "empty": "Nenhuma medida corporal foi encontrada no intervalo importado."
+        }
+      }
+    },
+    "storeButtons": {
+      "googleTitle": "DISPONÍVEL NO",
+      "googleStore": "Google Play",
+      "appleTitle": "BAIXAR NA",
+      "appleStore": "App Store",
+      "comingSoon": "App Store em breve!"
+    },
+    "footer": {
+      "privacyPolicy": "Política de Privacidade",
+      "terms": "Termos",
+      "github": "GitHub",
+      "contact": "Contato",
+      "license": "Licença",
+      "copyright": "Software Livre e Open Source. Construído para sua privacidade."
+    },
+    "cookieConsent": {
+      "ariaLabel": "Consentimento de cookies",
+      "description": "Usamos o Google Analytics para entender como os visitantes usam o site. Os cookies analíticos só são definidos se você aceitar. Leia nossa",
+      "privacyLink": "Política de Privacidade",
+      "accept": "Aceitar",
+      "reject": "Recusar",
+      "cookieSettings": "Configurações de cookies"
+    },
+    "privacy": {
+      "titleStart": "Política de",
+      "titleHighlight": "Privacidade",
+      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "highlights": {
+        "dataProtection": {
+          "title": "Proteção de dados",
+          "description": "Medidas técnicas e organizacionais abrangentes protegem seus dados."
+        },
+        "localFirst": {
+          "title": "Armazenamento local",
+          "description": "Seus dados são armazenados principalmente no seu dispositivo, não em nossos servidores."
+        },
+        "security": {
+          "title": "Segurança em primeiro lugar",
+          "description": "Criptografia avançada e controles de acesso protegem suas informações."
+        }
+      },
+      "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos relativos à coleta, ao uso, ao armazenamento e à divulgação de suas informações quando você utiliza o Musclog. Ela se aplica tanto ao aplicativo Musclog quanto ao site Musclog, embora as categorias de dados tratadas em cada contexto sejam diferentes. Esta Política de Privacidade também explica seus direitos de privacidade e como a lei o protege.",
+      "sections": {
+        "scope": {
+          "title": "Escopo desta Política de Privacidade",
+          "content": "O Musclog está disponível tanto por meio de um aplicativo quanto por meio de um site público. Como esses dois serviços funcionam de forma diferente, as práticas de privacidade aplicáveis são resumidas separadamente abaixo e descritas com mais detalhes ao longo desta Política de Privacidade."
+        },
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural."
+        },
+        "definitions": {
+          "title": "Definições",
+          "items": {
+            "account": {
+              "term": "Conta",
+              "def": "significa uma conta única criada para que você acesse nosso Serviço ou partes dele."
+            },
+            "application": {
+              "term": "Aplicativo",
+              "def": "refere-se ao Musclog, o programa de software fornecido pela Musclog."
+            },
+            "company": {
+              "term": "Empresa",
+              "def": "(também referida como \"Musclog\", \"Nós\" ou \"Nossa\" neste Acordo) refere-se à Musclog."
+            },
+            "device": {
+              "term": "Dispositivo",
+              "def": "significa qualquer dispositivo que possa acessar o Serviço, como um computador, celular ou tablet digital."
+            },
+            "personalData": {
+              "term": "Dados Pessoais",
+              "def": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo."
+            },
+            "service": {
+              "term": "Serviço",
+              "def": "refere-se ao aplicativo Musclog e ao site Musclog, salvo indicação em contrário na seção pertinente."
+            },
+            "serviceProvider": {
+              "term": "Provedor de Serviços",
+              "def": "significa qualquer pessoa física ou jurídica que processa os dados em nome da Musclog."
+            },
+            "usageData": {
+              "term": "Dados de Uso",
+              "def": "Os Dados de Uso são coletados automaticamente ao usar o Serviço, incluindo informações do dispositivo, endereço IP, tipo de navegador e dados de diagnóstico."
+            },
+            "you": {
+              "term": "Você",
+              "def": "significa o indivíduo que acessa ou usa o Serviço, ou a Musclog, ou outra entidade legal em nome da qual esse indivíduo acessa ou usa o Serviço, conforme aplicável."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Coleta e uso de seus Dados Pessoais",
+          "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo.",
+          "typesCollected": {
+            "title": "Tipos de dados coletados",
+            "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
+            "items": ["Nome e sobrenome", "Dados de uso"]
+          },
+          "googleOAuth": {
+            "title": "Dados do Google OAuth",
+            "content": "Nosso aplicativo integra o Google OAuth para os seguintes fins:",
+            "items": [
+              "Para obter seu nome e personalizar sua experiência de usuário.",
+              "Para acessar os recursos de Google Generative AI e aprimorar as funcionalidades do aplicativo.",
+              "Todos os dados são armazenados offline no seu dispositivo e não são enviados para nossos servidores.",
+              "Não compartilhamos seus dados com terceiros para fins de marketing ou outros fins.",
+              "O Google OAuth é opcional e pode ser desativado nas configurações do aplicativo."
+            ]
+          },
+          "usageData": {
+            "title": "Dados de uso",
+            "content": "Os Dados de Uso são coletados automaticamente ao usar o Serviço. Os Dados de Uso podem incluir informações como o endereço de Protocolo de Internet do seu dispositivo (p. ex. endereço IP), tipo e versão do navegador, as páginas do nosso Serviço que você visita, a data e hora da sua visita, o tempo gasto nessas páginas, identificadores únicos de dispositivo e outros dados de diagnóstico. Quando você acessa o Serviço por meio de um dispositivo móvel, podemos coletar certas informações automaticamente, incluindo o tipo de dispositivo móvel que você usa, o ID exclusivo do seu dispositivo móvel, o endereço IP do seu dispositivo móvel, seu sistema operacional móvel e o tipo de navegador de Internet móvel que você usa."
+          },
+          "appPermissions": {
+            "title": "Informações coletadas ao usar o Aplicativo",
+            "content": "Ao usar nosso Aplicativo, para fornecer seus recursos, podemos coletar, com sua permissão prévia:",
+            "items": [
+              "Dados de reconhecimento de atividade para rastrear seus treinos e atividades físicas.",
+              "Dados de sensores corporais para monitorar frequência cardíaca, passos e outras métricas de saúde.",
+              "Acesso à Internet para conectar-se aos nossos servidores e fornecer funcionalidades online.",
+              "Dados do calendário para integração com sua agenda e planejamento de treinos.",
+              "Acesso ao armazenamento externo para ler e gravar dados de treino e outras informações.",
+              "Permissão para receber notificações de inicialização concluída para reiniciar tarefas agendadas após a reinicialização do dispositivo.",
+              "Permissão de janela de alerta do sistema para exibir notificações importantes sobre outros aplicativos.",
+              "Permissão de vibração para fornecer feedback háptico durante treinos e notificações.",
+              "Permissão de wake lock para manter o aplicativo em execução durante os treinos.",
+              "Dados de saúde como calorias ativas queimadas, gordura corporal, massa óssea, frequência cardíaca, altura, massa corporal magra, nutrição, passos, calorias totais queimadas e peso para rastreamento abrangente de condicionamento físico."
+            ]
+          },
+          "optionalAi": {
+            "title": "Recursos opcionais de IA e provedores LLM de terceiros",
+            "content1": "O aplicativo Musclog pode ser usado integralmente offline, exceto por solicitações opcionais a fontes externas de dados nutricionais. Por padrão, o Musclog não envia seus dados de treino, nutrição, saúde ou perfil aos nossos servidores.",
+            "content2": "O Musclog também oferece recursos opcionais de IA que exigem que você configure seu próprio provedor, como OpenAI, Google Gemini, Apple Intelligence no iOS ou um endpoint de LLM local/autohospedado. Esses recursos permanecem desativados, a menos que você os habilite expressamente.",
+            "content3": "Se você optar por usar um recurso de IA, os dados que decidir enviar serão enviados ao provedor ou endpoint que você configurar. Se você utilizar um modelo local autohospedado sob seu próprio controle, esses dados poderão permanecer dentro do seu próprio ambiente. Se você utilizar um endpoint hospedado por terceiros, incluindo um serviço hospedado de modelos locais, esse provedor poderá processar os dados de acordo com seus próprios termos e práticas de privacidade. O Musclog não controla a forma como provedores externos processam os dados que você lhes envia.",
+            "content4": "O Musclog também pode oferecer uma opção de LLM gratuito do Musclog. Quando você usa essa opção, sua solicitação é roteada por meio do Cloudflare AI Gateway e depois encaminhada usando uma chave de API gratuita do OpenAI ou do Google Gemini gerenciada pelo Musclog. Se você optar por usar esse recurso, deve entender que sua solicitação poderá ser processada pelo Cloudflare e pelo provedor de modelo downstream selecionado pelo Musclog para essa solicitação.",
+            "content5": "Atualmente, o Musclog oferece suporte a OpenAI, Google Gemini, Apple Intelligence no iOS, endpoints de LLM locais ou autohospedados compatíveis e à rota de LLM gratuito do Musclog. Você deve revisar as políticas de privacidade aplicáveis antes de habilitar provedores de terceiros ou aceitar a opção gratuita, incluindo:",
+            "cloudflarePrivacyPolicy": "Política de Privacidade da Cloudflare",
+            "openaiPrivacyPolicy": "Política de Privacidade da OpenAI",
+            "googlePrivacyPolicy": "Política de Privacidade do Google",
+            "applePrivacyPolicy": "Política de Privacidade da Apple",
+            "and": "e"
+          }
+        },
+        "useOfData": {
+          "title": "Uso de seus Dados Pessoais",
+          "items": [
+            "Para fornecer e manter nosso Serviço, incluindo o monitoramento do uso do nosso Serviço.",
+            "Para fornecer recursos opcionais com tecnologia de IA apenas quando você os habilitar expressamente e configurar seu próprio provedor ou endpoint.",
+            "Para gerenciar sua Conta: para gerenciar seu registro como usuário do Serviço.",
+            "Para a execução de um contrato: o desenvolvimento, cumprimento e execução do contrato de compra dos produtos ou serviços que você adquiriu.",
+            "Para entrar em contato com você por e-mail, chamadas telefônicas, SMS ou outras formas equivalentes de comunicação eletrônica.",
+            "Para fornecer notícias, ofertas especiais e informações gerais sobre outros bens, serviços e eventos.",
+            "Para gerenciar suas solicitações: para atender e gerenciar suas solicitações a nós.",
+            "Para transferências comerciais: podemos usar suas informações para avaliar ou realizar uma fusão, alienação, reestruturação, reorganização, dissolução ou outra venda ou transferência de alguns ou todos os nossos ativos.",
+            "Para outros fins: podemos usar suas informações para análise de dados, identificação de tendências de uso, determinação da eficácia de nossas campanhas promocionais e avaliação e melhoria do nosso Serviço."
+          ]
+        },
+        "sharing": {
+          "title": "Compartilhamento de seus Dados Pessoais",
+          "items": [
+            "Com Provedores de Serviços: podemos compartilhar suas informações pessoais com Provedores de Serviços para monitorar e analisar o uso do nosso Serviço.",
+            "Para transferências comerciais: podemos compartilhar ou transferir suas informações pessoais em conexão com qualquer fusão, venda de ativos da Empresa, financiamento ou aquisição.",
+            "Com Afiliadas: podemos compartilhar suas informações com nossas afiliadas, exigindo que essas afiliadas cumpram esta Política de Privacidade.",
+            "Com parceiros comerciais: podemos compartilhar suas informações com nossos parceiros comerciais para oferecer determinados produtos, serviços ou promoções.",
+            "Com outros usuários: quando você compartilha informações pessoais ou interage nas áreas públicas com outros usuários, essas informações podem ser vistas por todos os usuários.",
+            "Com seu consentimento: podemos divulgar suas informações pessoais para qualquer outra finalidade com seu consentimento."
+          ]
+        },
+        "retention": {
+          "title": "Retenção de seus Dados Pessoais",
+          "content": "A Musclog reterá seus Dados Pessoais apenas pelo tempo necessário para os fins estabelecidos nesta Política de Privacidade. Reteremos e usaremos seus Dados Pessoais na medida necessária para cumprir nossas obrigações legais, resolver disputas e fazer cumprir nossos acordos e políticas legais. A Musclog também reterá os Dados de Uso para fins de análise interna. Os Dados de Uso geralmente são retidos por um período mais curto, exceto quando esses dados são usados para fortalecer a segurança ou melhorar a funcionalidade do Serviço, ou quando somos legalmente obrigados a retê-los por períodos mais longos."
+        },
+        "transfer": {
+          "title": "Transferência de seus Dados Pessoais",
+          "content": "Suas informações, incluindo Dados Pessoais, são processadas nos escritórios operacionais da Musclog e em quaisquer outros locais onde as partes envolvidas no processamento estejam localizadas. Isso significa que essas informações podem ser transferidas e mantidas em computadores localizados fora do seu estado, província, país ou outra jurisdição governamental, onde as leis de proteção de dados podem ser diferentes das da sua jurisdição. Seu consentimento a esta Política de Privacidade, seguido do envio de tais informações, representa sua concordância com essa transferência. A Musclog tomará todas as medidas razoavelmente necessárias para garantir que seus dados sejam tratados com segurança e de acordo com esta Política de Privacidade."
+        },
+        "deletion": {
+          "title": "Excluir seus Dados Pessoais",
+          "content": "Você tem o direito de excluir ou solicitar que auxiliemos na exclusão dos Dados Pessoais que coletamos sobre você. Nosso Serviço pode oferecer a você a capacidade de excluir certas informações sobre você dentro do Serviço. Você pode atualizar, corrigir ou excluir suas informações a qualquer momento fazendo login em sua Conta, se tiver uma, e visitando a seção de configurações da conta. Você também pode nos contatar para solicitar acesso, correção ou exclusão de qualquer informação pessoal que nos forneceu. Observe, no entanto, que podemos precisar reter certas informações quando tivermos uma obrigação legal ou base legal para fazê-lo."
+        },
+        "disclosure": {
+          "title": "Divulgação de seus Dados Pessoais",
+          "content": "A Musclog pode divulgar seus Dados Pessoais de boa fé quando tal ação for necessária para:",
+          "items": [
+            "Cumprir uma obrigação legal",
+            "Proteger e defender os direitos ou propriedade da Musclog",
+            "Prevenir ou investigar possíveis irregularidades em conexão com o Serviço",
+            "Proteger a segurança pessoal dos Usuários do Serviço ou do público",
+            "Proteger contra responsabilidade legal"
+          ]
+        },
+        "security": {
+          "title": "Segurança de seus Dados Pessoais",
+          "content": "A segurança de seus Dados Pessoais é importante para nós, mas lembre-se que nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro. Empregamos medidas técnicas e organizacionais abrangentes para proteger seus dados pessoais contra processamento não autorizado ou ilegal, bem como contra perda, destruição ou dano acidental. Essas medidas incluem protocolos de criptografia avançados para dados em trânsito e em repouso, controles de acesso rigorosos e avaliações regulares de segurança."
+        },
+        "childrenPrivacy": {
+          "title": "Privacidade de crianças",
+          "content": "Nosso Serviço não se dirige a menores de 13 anos. Não coletamos intencionalmente informações pessoalmente identificáveis de menores de 13 anos. Se você for pai ou responsável e souber que seu filho nos forneceu Dados Pessoais, entre em contato conosco. Se soubermos que coletamos Dados Pessoais de alguém com menos de 13 anos sem verificação do consentimento dos pais, tomamos medidas para remover essas informações de nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para outros sites que não são operados por nós. Se você clicar em um link de terceiros, será direcionado para o site desse terceiro. Recomendamos enfaticamente que você revise a Política de Privacidade de cada site que visitar. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "changes": {
+          "title": "Alterações a esta Política de Privacidade",
+          "content": "Podemos atualizar nossa Política de Privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova Política de Privacidade nesta página. Informaremos você por e-mail e/ou por um aviso destacado em nosso Serviço antes que a alteração entre em vigor e atualizaremos a data de \"Última atualização\" no topo desta Política de Privacidade. Aconselhamos que você revise esta Política de Privacidade periodicamente para verificar alterações."
+        },
+        "googlePlay": {
+          "title": "Rótulos de segurança de dados da Google Play Store",
+          "content": "Nossos rótulos de segurança de dados na Google Play Store estão meticulosamente alinhados com as divulgações fornecidas nesta política de privacidade. Estamos comprometidos em manter um alto padrão de transparência e garantir total conformidade com todos os requisitos e diretrizes da Google Play Store. Os dados coletados são utilizados estritamente para fornecer ou aprimorar a funcionalidade e os recursos do seu aplicativo, e em nenhuma circunstância são usados para fins fora deste escopo, como marketing ou venda a terceiros. O acesso a quaisquer dados do usuário é estritamente regulado e só pode ocorrer após a obtenção do consentimento explícito do usuário."
+        },
+        "analytics": {
+          "title": "Análise do site",
+          "content1": "Este site usa o Vercel Web Analytics, um serviço de análise sem cookies e com foco em privacidade. Ele não coleta identificadores pessoais e não usa cookies — os visitantes são identificados apenas por um hash anônimo que é redefinido a cada 24 horas. Não é necessário consentimento para esta ferramenta sob a Diretiva ePrivacy.",
+          "content2": "Este site também usa o Google Analytics 4 (GA4), um serviço fornecido pela Google LLC, para coletar dados anonimizados sobre como os visitantes interagem com o site. Os cookies de análise só são definidos após você consentir explicitamente clicando em \"Aceitar\" no banner de cookies.",
+          "content3": "Quando você consente com o GA4, o Google Analytics pode coletar:",
+          "items": [
+            "Páginas visitadas e tempo gasto em cada página",
+            "Localização geográfica geral (em nível de país ou cidade, não localização precisa)",
+            "Tipo de navegador, tipo de dispositivo e sistema operacional",
+            "Site ou mecanismo de pesquisa de referência",
+            "Eventos de interação anônimos (p. ex. cliques em links)"
+          ],
+          "content4": "Base legal para o GA4: Consentimento (RGPD Art. 6(1)(a)). Você pode retirar seu consentimento a qualquer momento clicando em \"Configurações de cookies\" no rodapé da página. A retirada do consentimento impedirá qualquer coleta adicional e não afetará a legalidade do processamento realizado antes da retirada.",
+          "content5": "Os dados do GA4 são retidos no Google Analytics por 14 meses por padrão. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
+          "googlePrivacyPolicy": "Política de Privacidade do Google",
+          "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas."
+        }
+      },
+      "appVsWebsite": {
+        "app": {
+          "title": "No aplicativo Musclog",
+          "summary": "O aplicativo Musclog foi projetado principalmente como um produto local-first. A maior parte dos dados do usuário permanece armazenada no seu dispositivo e não é transmitida aos nossos servidores.",
+          "items": [
+            "Todos os dados inseridos no aplicativo são armazenados localmente no seu dispositivo.",
+            "O aplicativo não exige conta e não oferece sincronização em nuvem.",
+            "Não temos acesso aos seus dados de saúde ou condicionamento físico armazenados no aplicativo.",
+            "Os dados sensíveis armazenados pelo aplicativo são criptografados em repouso com AES."
+          ]
+        },
+        "website": {
+          "title": "Neste site",
+          "summary": "O site trata um conjunto mais limitado de dados, principalmente relacionados à operação do site, à preferência de idioma, à análise e ao gerenciamento do consentimento de cookies.",
+          "items": [
+            "Este site utiliza o Vercel Analytics para medir dados de tráfego anônimos e sem cookies, sem exigir consentimento.",
+            "Este site utiliza o Google Analytics 4 somente após você fornecer consentimento explícito por meio do banner de cookies.",
+            "Sua preferência de idioma é armazenada localmente no seu navegador e não é transmitida aos nossos servidores.",
+            "Sua escolha de consentimento de cookies é armazenada localmente no seu navegador e não é transmitida aos nossos servidores."
+          ]
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre esta Política de Privacidade, pode entrar em contato conosco pelo e-mail:"
+      },
+      "pageTitle": "Política de Privacidade | Musclog"
+    },
+    "terms": {
+      "titleStart": "Termos e",
+      "conditions": "Condições",
+      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "highlights": {
+        "agreement": {
+          "title": "Acordo de uso",
+          "description": "Ao usar este aplicativo, você concorda com estes termos."
+        },
+        "liability": {
+          "title": "Responsabilidade limitada",
+          "description": "Não somos responsáveis por decisões de saúde tomadas com este app."
+        },
+        "warranty": {
+          "title": "Sem garantia",
+          "description": "O aplicativo é fornecido como está, sem garantias."
+        }
+      },
+      "intro": "Por favor, leia estes Termos e Condições com atenção antes de usar o aplicativo Musclog. Ao acessar ou usar nosso serviço, você concorda em estar vinculado a estes termos.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content1": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural.",
+          "content2": "Para os fins destes Termos e Condições:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Aplicativo",
+            "def": "significa o programa de software fornecido pela Musclog, baixado por você em qualquer dispositivo eletrônico, chamado Musclog."
+          },
+          "company": {
+            "term": "Empresa",
+            "def": "refere-se à Musclog, a desenvolvedora e mantenedora deste aplicativo de código aberto."
+          },
+          "device": {
+            "term": "Dispositivo",
+            "def": "significa qualquer dispositivo que possa acessar o Serviço, como um smartphone ou tablet."
+          },
+          "service": {
+            "term": "Serviço",
+            "def": "refere-se ao Aplicativo."
+          },
+          "you": {
+            "term": "Você",
+            "def": "significa o indivíduo que acessa ou usa o Serviço."
+          }
+        },
+        "acknowledgment": {
+          "title": "Reconhecimento",
+          "content1": "Estes são os Termos e Condições que regem o uso deste Serviço e o acordo que opera entre você e a Empresa. Ao acessar ou usar o Serviço, você concorda em estar vinculado a estes Termos e Condições.",
+          "content2": "Seu acesso e uso do Serviço também estão condicionados à sua aceitação e conformidade com a Política de Privacidade da Empresa.",
+          "content3": "O Musclog é um rastreador de fitness local-first e de código aberto. Nenhuma conta é necessária. Seus dados permanecem no seu dispositivo e nunca são enviados aos nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para sites ou serviços de terceiros que não são de propriedade nem controlados pela Empresa. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "termination": {
+          "title": "Rescisão",
+          "content": "Podemos encerrar ou suspender seu acesso imediatamente, sem aviso prévio ou responsabilidade, por qualquer motivo, incluindo se você violar estes Termos e Condições. Após o encerramento, seu direito de usar o Serviço cessará imediatamente."
+        },
+        "liability": {
+          "title": "Limitação de responsabilidade",
+          "content1": "Na máxima extensão permitida pela lei aplicável, a Empresa não será responsável por danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo sem limitação, perda de lucros, dados, uso, fundo de comércio ou outras perdas intangíveis.",
+          "content2": "Este aplicativo não é um dispositivo médico. Sempre consulte um profissional de saúde qualificado antes de tomar decisões de saúde ou fitness com base nos dados deste aplicativo."
+        },
+        "disclaimer": {
+          "title": "Isenção de responsabilidade",
+          "content1": "O Serviço é fornecido a você \"COMO ESTÁ\" e \"CONFORME DISPONÍVEL\", com todas as falhas e defeitos e sem garantia de qualquer tipo.",
+          "content2": "Sem limitar o exposto acima, a Empresa não oferece garantia de que o Serviço atenderá aos seus requisitos, alcançará os resultados pretendidos ou será compatível com outros softwares, aplicativos, sistemas ou serviços."
+        },
+        "governingLaw": {
+          "title": "Lei aplicável",
+          "content1": "As leis do país, excluindo suas regras de conflito de leis, regerão estes Termos e o uso do Serviço.",
+          "content2": "As leis locais de proteção ao consumidor podem lhe conceder direitos adicionais. Nada nestes Termos afeta quaisquer direitos que você possa ter como consumidor sob a lei aplicável."
+        },
+        "changes": {
+          "title": "Alterações nestes termos",
+          "content": "Reservamo-nos o direito, a nosso exclusivo critério, de modificar ou substituir estes Termos a qualquer momento. Tentaremos fornecer pelo menos 30 dias de aviso antes que os novos termos entrem em vigor. Ao continuar a acessar ou usar nosso Serviço após as revisões se tornarem efetivas, você concorda em estar vinculado aos termos revisados."
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre estes Termos e Condições, pode entrar em contato conosco pelo"
+      },
+      "pageTitle": "Termos e Condições | Musclog"
+    },
+    "contact": {
+      "titleStart": "Entre em",
+      "titleHighlight": "Contato",
+      "description": "Tem uma pergunta, encontrou um bug ou quer contribuir? Adoraríamos ouvir de você.",
+      "form": {
+        "fullName": "Nome completo",
+        "email": "Endereço de e-mail",
+        "subject": "Assunto",
+        "message": "Mensagem",
+        "submit": "Enviar mensagem",
+        "mailto": "Abrir no app de e-mail",
+        "startOver": "Enviar outra mensagem",
+        "helpText": "Clique no botão acima para abrir a mensagem no seu app de e-mail padrão.",
+        "placeholders": {
+          "fullName": "João Silva",
+          "email": "joao@exemplo.com.br",
+          "subject": "O que você tem em mente?",
+          "message": "Conta como podemos ajudar…"
+        }
+      },
+      "connect": {
+        "title": "Conecte-se conosco",
+        "follow": "Siga-nos",
+        "github": {
+          "title": "Repositório no GitHub",
+          "description": "Reporte bugs, solicite funcionalidades ou contribua com código diretamente no GitHub."
+        },
+        "discord": {
+          "title": "Discord da comunidade",
+          "description": "Junte-se à nossa comunidade para conversar com outros usuários e os mantenedores."
+        },
+        "email": {
+          "title": "E-mail de suporte",
+          "description": "Precisa de ajuda? Envie-nos um e-mail e responderemos o mais rápido possível."
+        }
+      },
+      "privacy": {
+        "title": "Privacidade em primeiro lugar",
+        "description": "Não armazenamos nada do que você enviar aqui. Sua mensagem vai diretamente para nosso e-mail — sem servidores, sem logs."
+      },
+      "pageTitle": "Contato | Musclog"
+    },
+    "calculator": {
+      "pageTitle": "Calculadora TDEE | Musclog",
+      "titleStart": "TDEE",
+      "titleHighlight": "CALCULADORA",
+      "subtitle": "Dados de precisão para o atleta de alto desempenho. Calcule sua linha de base biológica e otimize sua trajetória.",
+      "form": {
+        "title": "PERFIL FITNESS",
+        "age": "IDADE",
+        "gender": "GÊNERO",
+        "male": "Masculino",
+        "female": "Feminino",
+        "other": "Outro",
+        "weight": "PESO (KG)",
+        "height": "ALTURA (CM)",
+        "bodyFat": "GORDURA CORPORAL %",
+        "experience": "EXPERIÊNCIA",
+        "beginner": "Iniciante",
+        "intermediate": "Intermediário",
+        "advanced": "Avançado",
+        "activityLevel": "NÍVEL DE ATIVIDADE",
+        "activity1": "Sedentário (pouco ou nenhum exercício)",
+        "activity2": "Leve (1–3 dias/semana)",
+        "activity3": "Moderado (3–5x/semana)",
+        "activity4": "Ativo (6–7 dias/semana)",
+        "activity5": "Muito ativo (trabalho físico + treino)",
+        "weightGoal": "OBJETIVO DE PESO",
+        "cut": "Cutting",
+        "maintain": "Manter",
+        "bulk": "Bulking",
+        "trainingFocus": "FOCO DE TREINO",
+        "hypertrophy": "HIPERTROFIA",
+        "hypertrophyDesc": "Desenvolver tamanho e definição muscular",
+        "strength": "FORÇA",
+        "strengthDesc": "Levantar mais e desenvolver potência",
+        "endurance": "RESISTÊNCIA",
+        "enduranceDesc": "Melhorar a condição cardiovascular",
+        "weightLoss": "PERDA DE PESO",
+        "weightLossDesc": "Queimar gordura e melhorar o tônus",
+        "general": "FITNESS GERAL",
+        "generalDesc": "Saúde e bem-estar geral",
+        "realtime": "RESULTADOS EM TEMPO REAL"
+      },
+      "results": {
+        "bmr": "TMB",
+        "bmrDesc": "Taxa Metabólica Basal: energia gasta em repouso.",
+        "tdee": "TDEE",
+        "tdeeDesc": "Gasto Energético Diário Total baseado na atividade.",
+        "target": "ALVO",
+        "bmi": "IMC",
+        "bmiDesc": "Índice de Massa Corporal: relação altura-peso normalizada.",
+        "ffmi": "FFMI",
+        "ffmiDesc": "Índice de Massa Livre de Gordura: indicador de massa muscular.",
+        "macroProfile": "PERFIL MACRO",
+        "protein": "PROTEÍNA",
+        "fats": "GORDURAS",
+        "carbs": "CARBOIDRATOS",
+        "kcal": "KCAL",
+        "metabolicVelocity": "VELOCIDADE METABÓLICA",
+        "velocityMaintain": "Faixa de desempenho ideal detectada.",
+        "velocityCut": "Otimizado para trajetória de perda de gordura.",
+        "velocityBulk": "Preparado para acumulação de massa magra.",
+        "dailyTarget": "ALVO CALÓRICO DIÁRIO",
+        "maintenance": "MANUTENÇÃO",
+        "calorieSurplus": "SUPERÁVIT CALÓRICO",
+        "calorieDeficit": "DÉFICIT CALÓRICO"
+      }
+    }
+  }
+}

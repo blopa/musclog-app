@@ -1,6 +1,7 @@
 {
   "datePicker": {
     "cancel": "Cancelar",
+    "clearDate": "Borrar fecha",
     "confirm": "Confirmar",
     "month": "Mes",
     "nextMonday": "Próximo Lunes",
