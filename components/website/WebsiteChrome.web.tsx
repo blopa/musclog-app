@@ -36,6 +36,7 @@ export function DownloadModal({
 }: DownloadModalProps) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
+  const [popoverHeight, setPopoverHeight] = useState(0);
   const triggerRef = useRef<HTMLDivElement>(null);
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +74,14 @@ export function DownloadModal({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen || !popoverContentRef.current) {
+      return;
+    }
+
+    setPopoverHeight(popoverContentRef.current.getBoundingClientRect().height);
+  }, [isOpen]);
+
   const buttonClasses = {
     default: 'hover:opacity-90',
     outline: 'border border-white/30 text-white hover:bg-white/10',
@@ -94,6 +103,14 @@ export function DownloadModal({
           viewportWidth - modalWidth - 16
         )
       : 16;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
+  const spaceBelow = triggerRect != null ? viewportHeight - triggerRect.bottom - 16 : 0;
+  const shouldOpenUpward = popoverHeight > 0 && spaceBelow < popoverHeight + 12;
+  const popoverTop = triggerRect
+    ? shouldOpenUpward
+      ? Math.max(triggerRect.top - popoverHeight - 12, 16)
+      : triggerRect.bottom + 12
+    : 0;
 
   const buttonStyleByVariant: Record<
     NonNullable<DownloadModalProps['variant']>,
@@ -130,7 +147,7 @@ export function DownloadModal({
               className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
               style={{
                 borderColor: CARD_BORDER,
-                top: triggerRect ? triggerRect.bottom + 12 : 0,
+                top: popoverTop,
                 left: centeredLeft,
               }}
               role="dialog"
