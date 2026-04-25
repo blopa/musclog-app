@@ -65,7 +65,7 @@ export default function NewExerciseTransitionScreen() {
 
       if (!params.nextExerciseId) {
         setIsLoading(false);
-        router.replace(`/workout/workout-session?workoutLogId=${params.workoutLogId}`);
+        router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}`);
         return;
       }
 
@@ -181,7 +181,7 @@ export default function NewExerciseTransitionScreen() {
   const handleStartNextExercise = () => {
     if (params.workoutLogId) {
       const exerciseId = params.nextExerciseId ? `&exerciseId=${params.nextExerciseId}` : '';
-      router.replace(`/workout/workout-session?workoutLogId=${params.workoutLogId}${exerciseId}`);
+      router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}${exerciseId}`);
     }
   };
 
@@ -216,7 +216,7 @@ export default function NewExerciseTransitionScreen() {
             buttonLabel={t('exerciseTransition.goBack')}
             onButtonPress={() => {
               if (params.workoutLogId) {
-                router.replace(`/workout/workout-session?workoutLogId=${params.workoutLogId}`);
+                router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}`);
               } else {
                 router.back();
               }
@@ -229,7 +229,7 @@ export default function NewExerciseTransitionScreen() {
 
   if (!nextExercise) {
     if (params.workoutLogId) {
-      router.replace(`/workout/workout-session?workoutLogId=${params.workoutLogId}`);
+      router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}`);
     }
     return null;
   }
