@@ -333,8 +333,6 @@ export default function ModalsTestScreen() {
   // Scanned Food Details Modal
   const [isScannedFoodDetailsVisible, setIsScannedFoodDetailsVisible] = useState(false);
 
-  // Smart Camera Modal
-
   // Visual Settings Modal
   const [isVisualSettingsVisible, setIsVisualSettingsVisible] = useState(false);
 
