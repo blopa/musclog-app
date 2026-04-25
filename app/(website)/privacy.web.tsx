@@ -336,6 +336,16 @@ export default function Privacy() {
                   >
                     {t('sections.collecting.optionalAi.googlePrivacyPolicy')}
                   </a>
+                  , {t('sections.collecting.optionalAi.and')}{' '}
+                  <a
+                    href="https://www.apple.com/legal/privacy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {t('sections.collecting.optionalAi.applePrivacyPolicy')}
+                  </a>
                   .
                 </p>
               </div>
