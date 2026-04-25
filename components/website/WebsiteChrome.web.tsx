@@ -94,7 +94,8 @@ export function DownloadModal({
           viewportWidth - modalWidth - 16
         )
       : 16;
-  const buttonStyleByVariant: Record<DownloadModalProps['variant'], React.CSSProperties> = {
+
+  const buttonStyleByVariant: Record<NonNullable<DownloadModalProps['variant']>, React.CSSProperties> = {
     default: {
       backgroundColor: BRAND_GREEN,
       color: '#000000',
