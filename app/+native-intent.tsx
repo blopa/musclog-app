@@ -40,11 +40,11 @@ export const redirectSystemPath = ({ path, initial }: { path: string; initial: b
 
       if (action === 'open-camera') {
         (global as any).__PENDING_WIDGET_ACTION = action;
-        return '/';
+        return '/app';
       }
 
       if (action === 'open-nutrition') {
-        return '/nutrition/food';
+        return '/app/nutrition/food';
       }
     }
   } catch {
