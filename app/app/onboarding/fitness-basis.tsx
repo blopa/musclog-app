@@ -30,7 +30,7 @@ export default function FitnessBasis() {
     const result = await saveFitnessData(data);
 
     router.navigate({
-      pathname: '/onboarding/set-goals',
+      pathname: '/app/onboarding/set-goals',
       params: {
         weightMetricId: result.weightMetricId || params.weightMetricId,
         heightMetricId: result.heightMetricId || params.heightMetricId,
@@ -43,7 +43,7 @@ export default function FitnessBasis() {
     const result = await saveFitnessData(data);
 
     router.navigate({
-      pathname: '/onboarding/set-goals',
+      pathname: '/app/onboarding/set-goals',
       params: {
         weightMetricId: result.weightMetricId || params.weightMetricId,
         heightMetricId: result.heightMetricId || params.heightMetricId,

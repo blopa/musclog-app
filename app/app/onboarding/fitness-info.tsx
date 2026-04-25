@@ -28,7 +28,7 @@ export default function FitnessInfo() {
     const result = await saveFitnessData(data);
 
     router.navigate({
-      pathname: '/onboarding/fitness-basis',
+      pathname: '/app/onboarding/fitness-basis',
       params:
         result.weightMetricId && result.heightMetricId
           ? { weightMetricId: result.weightMetricId, heightMetricId: result.heightMetricId }
@@ -41,7 +41,7 @@ export default function FitnessInfo() {
     const result = await saveFitnessData(data);
 
     router.navigate({
-      pathname: '/onboarding/fitness-basis',
+      pathname: '/app/onboarding/fitness-basis',
       params:
         result.weightMetricId && result.heightMetricId
           ? { weightMetricId: result.weightMetricId, heightMetricId: result.heightMetricId }
