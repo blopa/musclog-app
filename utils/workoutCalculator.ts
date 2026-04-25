@@ -367,7 +367,7 @@ export function calculateCaloriesBurnedBySteps(
   }
 
   // 1. Estimate Stride Length and Distance
-  const strideFactor = gender === 'male'? 0.415 : gender === 'female'? 0.413 : 0.414;
+  const strideFactor = gender === 'male' ? 0.415 : gender === 'female' ? 0.413 : 0.414;
   const strideLengthMeters = (heightCm * strideFactor) / 100;
   const distanceMeters = steps * strideLengthMeters;
 
