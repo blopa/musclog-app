@@ -1,5 +1,15 @@
 {
   "website": {
+    "landing": {
+      "cta": "Pruébalo ahora",
+      "f1": "Seguimiento inteligente de entrenamientos",
+      "f2": "Registro nutricional con IA a partir de fotos",
+      "f3": "Gráficos detallados de progreso",
+      "f4": "100% privado y en tu dispositivo",
+      "tagline": "Seguimiento de fitness y nutrición con IA: gratis y de código abierto.",
+      "qrcode_title": "Descarga la App",
+      "qrcode_text": "Escanea para descargar en Android"
+    },
     "hero": {
       "badge1": "★ GRATUITO Y OPEN SOURCE",
       "badge2": "ENFOQUE EN PRIVACIDAD (SIN LOGIN NECESARIO)",

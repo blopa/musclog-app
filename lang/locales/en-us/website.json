@@ -1,5 +1,15 @@
 {
   "website": {
+    "landing": {
+      "cta": "Try it live",
+      "f1": "Smart workout tracking",
+      "f2": "AI photo nutrition logging",
+      "f3": "Detailed progress charts",
+      "f4": "100% private & on-device",
+      "tagline": "AI-powered fitness & nutrition tracking — free & open source.",
+      "qrcode_title": "Download the App",
+      "qrcode_text": "Scan to download for Android"
+    },
     "hero": {
       "badge1": "★ FREE & OPEN SOURCE",
       "badge2": "PRIVACY FOCUSED (NO LOGIN REQUIRED)",

@@ -1,6 +1,12 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
+import enUsWebsite from '@/lang/locales/en-us/website.json';
+import esEsWebsite from '@/lang/locales/es-es/website.json';
+import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
+import ptBrWebsite from '@/lang/locales/pt-br/website.json';
+import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
+
 /**
  * Root HTML runs only in Node (static render). Use `public/` static files
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
@@ -11,6 +17,26 @@ import { type PropsWithChildren } from 'react';
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
 const GOOGLE_PLAY_QR_CODE = '/images/google-play-qrcode.png';
+const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
+
+type LandingCopy = {
+  cta: string;
+  f1: string;
+  f2: string;
+  f3: string;
+  f4: string;
+  qrcode_text: string;
+  qrcode_title: string;
+  tagline: string;
+};
+
+const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
+  'en-US': enUsWebsite.website.landing,
+  'es-ES': esEsWebsite.website.landing,
+  'nl-NL': nlNlWebsite.website.landing,
+  'pt-BR': ptBrWebsite.website.landing,
+  'ru-RU': ruRuWebsite.website.landing,
+};
 
 /** Prefix URLs when `experiments.baseUrl` is set (e.g. `/musclog-app`). */
 function withExpoBaseUrl(path: string): string {
@@ -35,45 +61,11 @@ function withExpoBaseUrl(path: string): string {
 /**
  * Patches the landing panel text from localStorage before React boots.
  * Serialized via .toString() so the logic lives as real code, not a string.
- * Storage key must match LANDING_LANGUAGE_STORAGE_KEY in lang/lang.ts.
  */
-function landingI18nPatcher() {
+function landingI18nPatcher(translations: Record<string, LandingCopy>, storageKey: string) {
   try {
-    let t = {
-      'en-US': {
-        cta: 'Try it live',
-        f1: 'Smart workout tracking',
-        f2: 'AI photo nutrition logging',
-        f3: 'Detailed progress charts',
-        f4: '100% private & on-device',
-        tagline: 'AI-powered fitness & nutrition tracking — free & open source.',
-        qrcode_title: 'Download the App',
-        qrcode_text: 'Scan to download for Android',
-      },
-      'pt-BR': {
-        cta: 'Experimente agora',
-        f1: 'Rastreamento inteligente de treinos',
-        f2: 'Registro de nutrição por foto com IA',
-        f3: 'Gráficos detalhados de progresso',
-        f4: '100% privado e no dispositivo',
-        tagline: 'Acompanhamento de fitness e nutrição com IA — gratuito e open source.',
-        qrcode_title: 'Baixe o App',
-        qrcode_text: 'Escaneie para baixar no Android',
-      },
-      'ru-RU': {
-        cta: 'Попробуйте сейчас',
-        f1: 'Умный учёт тренировок',
-        f2: 'Запись питания по фото с ИИ',
-        f3: 'Подробные графики прогресса',
-        f4: '100% приватно и на устройстве',
-        tagline: 'Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.',
-        qrcode_title: 'Скачать приложение',
-        qrcode_text: 'Сканируйте для загрузки на Android',
-      },
-    };
-
-    let lang = localStorage.getItem('musclog_lang');
-    let s = (lang && t[lang as keyof typeof t]) || t['en-US'];
+    let lang = localStorage.getItem(storageKey);
+    let s = (lang && translations[lang as keyof typeof translations]) || translations['en-US'];
 
     document.querySelectorAll('[data-landing-i18n]').forEach(function (el) {
       let k = el.getAttribute('data-landing-i18n') as keyof typeof s;
@@ -84,7 +76,9 @@ function landingI18nPatcher() {
   } catch (_) {}
 }
 
-const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})();`;
+const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify(
+  LANDING_TRANSLATIONS
+)}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)});`;
 
 function landingPanelGate(base: string) {
   try {

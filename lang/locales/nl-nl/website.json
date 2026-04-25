@@ -1,5 +1,15 @@
 {
   "website": {
+    "landing": {
+      "cta": "Probeer het nu",
+      "f1": "Slimme workouttracking",
+      "f2": "AI-fotologging voor voeding",
+      "f3": "Gedetailleerde voortgangsgrafieken",
+      "f4": "100% privé en op uw apparaat",
+      "tagline": "AI-gestuurde fitness- en voedingsregistratie — gratis en open source.",
+      "qrcode_title": "Download de App",
+      "qrcode_text": "Scan om te downloaden voor Android"
+    },
     "hero": {
       "badge1": "★ GRATIS & OPEN SOURCE",
       "badge2": "FOCUS OP PRIVACY (GEEN LOGIN NODIG)",
