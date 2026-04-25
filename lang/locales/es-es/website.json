@@ -213,10 +213,7 @@
           "typesCollected": {
             "title": "Tipos de datos recopilados",
             "content": "Al usar nuestro Servicio, podemos pedirte que nos proporciones cierta información de identificación personal. La información de identificación personal puede incluir, entre otros:",
-            "items": [
-              "Nombre y apellido",
-              "Datos de uso"
-            ]
+            "items": ["Nombre y apellido", "Datos de uso"]
           },
           "googleOAuth": {
             "title": "Datos de Google OAuth",
@@ -568,7 +565,9 @@
         "velocityCut": "Optimizado para pérdida de grasa.",
         "velocityBulk": "Preparado para acumulación de masa magra.",
         "dailyTarget": "OBJETIVO CALÓRICO DIARIO",
-        "vsTdee": "VS. TDEE"
+        "maintenance": "MANTENIMIENTO",
+        "calorieSurplus": "SUPERÁVIT CALÓRICO",
+        "calorieDeficit": "DÉFICIT CALÓRICO"
       }
     }
   }

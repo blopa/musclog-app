@@ -1,5 +1,5 @@
-import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import Head from 'expo-router/head';
+import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
@@ -147,96 +147,96 @@ export default function Terms() {
 
   return (
     <>
-    <Head>
-      <title>{t('pageTitle')}</title>
-    </Head>
-    <main className="relative overflow-hidden pb-20 pt-24">
-      <DotPattern className="text-primary/30" />
-      <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
+      <Head>
+        <title>{t('pageTitle')}</title>
+      </Head>
+      <main className="relative overflow-hidden pb-20 pt-24">
+        <DotPattern className="text-primary/30" />
+        <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-      <div className="container relative z-10 mx-auto max-w-5xl px-4">
-        {/* Title */}
-        <div className="mb-10 text-center">
-          <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">
-            {t('titleStart')} <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('conditions')}</span>
-          </h1>
-          <p className="text-sm" style={{ color: MUTED }}>
-            {t('lastUpdated')}
-          </p>
-        </div>
+        <div className="container relative z-10 mx-auto max-w-5xl px-4">
+          {/* Title */}
+          <div className="mb-10 text-center">
+            <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">
+              {t('titleStart')} <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('conditions')}</span>
+            </h1>
+            <p className="text-sm" style={{ color: MUTED }}>
+              {t('lastUpdated')}
+            </p>
+          </div>
 
-        {/* Highlight cards */}
-        <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {highlights.map(({ icon: Icon, title, description }) => (
-            <div
-              key={title}
-              className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
-              style={{
-                borderColor: 'rgba(255,255,255,0.1)',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-              }}
-            >
+          {/* Highlight cards */}
+          <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {highlights.map(({ icon: Icon, title, description }) => (
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full border"
+                key={title}
+                className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
                 style={{
-                  backgroundColor: 'rgba(34,197,94,0.1)',
-                  borderColor: 'rgba(34,197,94,0.2)',
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  backgroundColor: 'rgba(255,255,255,0.03)',
                 }}
               >
-                <Icon className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: 'rgba(34,197,94,0.1)',
+                    borderColor: 'rgba(34,197,94,0.2)',
+                  }}
+                >
+                  <Icon className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{title}</p>
+                  <p className="mt-0.5 text-xs" style={{ color: MUTED }}>
+                    {description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-white">{title}</p>
-                <p className="mt-0.5 text-xs" style={{ color: MUTED }}>
-                  {description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Intro */}
-        <p className="mb-10 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-          {t('intro')}
-        </p>
-
-        {/* Sections */}
-        <div className="space-y-10">
-          {sections.map((section) => (
-            <section key={section.title}>
-              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
-                {section.title}
-              </h2>
-              {section.content}
-            </section>
-          ))}
-        </div>
-
-        {/* Contact callout */}
-        <div
-          className="mt-14 rounded-xl border p-6"
-          style={{
-            borderColor: 'rgba(255,255,255,0.1)',
-            backgroundColor: 'rgba(255,255,255,0.03)',
-          }}
-        >
-          <div className="mb-2 flex items-center gap-2">
-            <Mail className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
-            <h3 className="font-semibold text-white">{t('contact.title')}</h3>
+            ))}
           </div>
-          <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-            {t('contact.content')}{' '}
-            <a
-              href="mailto:support@musclog.app"
-              className="hover:underline"
-              style={{ color: BRAND_GREEN_BRIGHT }}
-            >
-              support@musclog.app
-            </a>
+
+          {/* Intro */}
+          <p className="mb-10 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+            {t('intro')}
           </p>
+
+          {/* Sections */}
+          <div className="space-y-10">
+            {sections.map((section) => (
+              <section key={section.title}>
+                <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                  {section.title}
+                </h2>
+                {section.content}
+              </section>
+            ))}
+          </div>
+
+          {/* Contact callout */}
+          <div
+            className="mt-14 rounded-xl border p-6"
+            style={{
+              borderColor: 'rgba(255,255,255,0.1)',
+              backgroundColor: 'rgba(255,255,255,0.03)',
+            }}
+          >
+            <div className="mb-2 flex items-center gap-2">
+              <Mail className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
+              <h3 className="font-semibold text-white">{t('contact.title')}</h3>
+            </div>
+            <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+              {t('contact.content')}{' '}
+              <a
+                href="mailto:support@musclog.app"
+                className="hover:underline"
+                style={{ color: BRAND_GREEN_BRIGHT }}
+              >
+                support@musclog.app
+              </a>
+            </p>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
     </>
   );
 }

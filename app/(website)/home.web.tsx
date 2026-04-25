@@ -593,18 +593,18 @@ export function Hero() {
 export default function Home() {
   return (
     <>
-    <Head>
-      <title>Musclog - Lift, Log, Repeat</title>
-    </Head>
-    <main>
-      <Hero />
-      <Features />
-      <FeatureGrid />
-      <Stats />
-      <HowItWorks />
-      <Testimonial />
-      <CTA />
-    </main>
+      <Head>
+        <title>Musclog - Lift, Log, Repeat</title>
+      </Head>
+      <main>
+        <Hero />
+        <Features />
+        <FeatureGrid />
+        <Stats />
+        <HowItWorks />
+        <Testimonial />
+        <CTA />
+      </main>
     </>
   );
 }

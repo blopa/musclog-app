@@ -85,7 +85,9 @@ function WebSelect<T extends string | number>({
   const selected = options.find((option) => option.value === value) ?? options[0];
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
     const handlePointerDown = (event: MouseEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
@@ -175,7 +177,9 @@ export default function Calculator() {
   const set = (patch: Partial<FormState>) => setForm((prev) => ({ ...prev, ...patch }));
 
   const plan = useMemo(() => {
-    if (!form.age || !form.weightKg || !form.heightCm) return null;
+    if (!form.age || !form.weightKg || !form.heightCm) {
+      return null;
+    }
     return calculateNutritionPlan({
       activityLevel: form.activityLevel,
       age: form.age,
@@ -192,9 +196,7 @@ export default function Calculator() {
   const bmr = plan?.bmr ?? 0;
   const tdee = plan?.tdee ?? 0;
   const target = plan?.targetCalories ?? 0;
-  const vsTdee = target - tdee;
-  const bmi =
-    form.heightCm > 0 ? bmiFromWeightAndHeightM(form.weightKg, form.heightCm / 100) : 0;
+  const bmi = form.heightCm > 0 ? bmiFromWeightAndHeightM(form.weightKg, form.heightCm / 100) : 0;
   const ffmi =
     isValidBodyFat(form.bodyFatPercent) && form.heightCm > 0
       ? ffmiFromWeightHeightAndBodyFat(form.weightKg, form.heightCm / 100, form.bodyFatPercent!)
@@ -483,7 +485,7 @@ export default function Calculator() {
                         key={goal}
                         type="button"
                         onClick={() => set({ fitnessGoal: goal })}
-                        className={`rounded-xl border p-3 text-left transition-colors${isLast ? ' col-span-2' : ''}`}
+                        className={`rounded-xl border p-3 text-left transition-colors${isLast ? 'col-span-2' : ''}`}
                         style={{
                           backgroundColor: active ? 'rgba(0,255,163,0.08)' : INPUT_BG,
                           borderColor: active ? 'rgba(0,255,163,0.4)' : INPUT_BORDER,
@@ -626,23 +628,36 @@ export default function Calculator() {
 
                 {(
                   [
-                    ['protein', plan?.protein ?? 0, plan?.proteinPct ?? 0, MACRO_COLORS.protein, CALORIES_FOR_PROTEIN],
-                    ['fats', plan?.fats ?? 0, plan?.fatsPct ?? 0, MACRO_COLORS.fats, CALORIES_FOR_FAT],
-                    ['carbs', plan?.carbs ?? 0, plan?.carbsPct ?? 0, MACRO_COLORS.carbs, CALORIES_FOR_CARBS],
+                    [
+                      'protein',
+                      plan?.protein ?? 0,
+                      plan?.proteinPct ?? 0,
+                      MACRO_COLORS.protein,
+                      CALORIES_FOR_PROTEIN,
+                    ],
+                    [
+                      'fats',
+                      plan?.fats ?? 0,
+                      plan?.fatsPct ?? 0,
+                      MACRO_COLORS.fats,
+                      CALORIES_FOR_FAT,
+                    ],
+                    [
+                      'carbs',
+                      plan?.carbs ?? 0,
+                      plan?.carbsPct ?? 0,
+                      MACRO_COLORS.carbs,
+                      CALORIES_FOR_CARBS,
+                    ],
                   ] as [string, number, number, string, number][]
                 ).map(([key, grams, pct, color, kcalPerG]) => (
                   <div key={key} className="mb-3 last:mb-0">
                     <div className="mb-1.5 flex items-center justify-between">
                       <span className="text-[10px] font-bold tracking-widest text-white">
-                        {t(`results.${key}`)}{' '}
-                        <span style={{ color: MUTED }}>{pct}%</span>
+                        {t(`results.${key}`)} <span style={{ color: MUTED }}>{pct}%</span>
                       </span>
-                      <span
-                        className="text-[10px] font-bold"
-                        style={{ color: BODY_TEXT_SOFT }}
-                      >
-                        {fmt(grams)}G / {fmt(Math.round(grams * kcalPerG))}{' '}
-                        {t('results.kcal')}
+                      <span className="text-[10px] font-bold" style={{ color: BODY_TEXT_SOFT }}>
+                        {fmt(grams)}G / {fmt(Math.round(grams * kcalPerG))} {t('results.kcal')}
                       </span>
                     </div>
                     <div
@@ -708,21 +723,10 @@ export default function Calculator() {
                       className="text-[9px] font-semibold uppercase tracking-widest"
                       style={{ color: MUTED }}
                     >
-                      {t('results.vsTdee')}
+                      {t('results.tdee')}
                     </p>
-                    <p
-                      className="text-lg font-bold"
-                      style={{
-                        color:
-                          vsTdee === 0
-                            ? BODY_TEXT_SOFT
-                            : vsTdee > 0
-                              ? BRAND_GREEN
-                              : '#F87171',
-                      }}
-                    >
-                      {vsTdee > 0 ? '+' : ''}
-                      {fmt(vsTdee)}{' '}
+                    <p className="text-lg font-bold" style={{ color: BODY_TEXT_SOFT }}>
+                      {fmt(tdee)}{' '}
                       <span className="text-xs" style={{ color: MUTED }}>
                         {t('results.kcal')}
                       </span>

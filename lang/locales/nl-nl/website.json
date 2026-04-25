@@ -213,10 +213,7 @@
           "typesCollected": {
             "title": "Soorten verzamelde gegevens",
             "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
-            "items": [
-              "Voor- en achternaam",
-              "Gebruiksgegevens"
-            ]
+            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
           },
           "googleOAuth": {
             "title": "Google OAuth-gegevens",
@@ -568,7 +565,9 @@
         "velocityCut": "Geoptimaliseerd voor vetverbrandingstraject.",
         "velocityBulk": "Klaar voor magere massa-opbouw.",
         "dailyTarget": "DAGELIJKS CALORIEDOEL",
-        "vsTdee": "VS. TDEE"
+        "maintenance": "ONDERHOUD",
+        "calorieSurplus": "CALORIE-OVERSCHOT",
+        "calorieDeficit": "CALORIETEKORT"
       }
     }
   }
