@@ -30,6 +30,7 @@ export interface UseWeightPredictionResult {
 // then from that, calculate how many extra calories were burned because of these new steps
 // the idea is that if the user went on holidays, they eat more, but they also move more, so maybe it all evens out
 // as for the workouts, we need to think of a way to infer if the gained weight is muscle or fat based on it
+// use the calculateCaloriesBurnedBySteps function for it
 export function useWeightPrediction(): UseWeightPredictionResult {
   const [dataLoading, setDataLoading] = useState(true);
   const [conditionsMet, setConditionsMet] = useState(false);
