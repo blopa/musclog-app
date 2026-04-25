@@ -138,6 +138,285 @@
       "contact": "Contact",
       "license": "License",
       "copyright": "Free & Open Source Software. Built for your privacy."
+    },
+    "privacy": {
+      "titleStart": "Privacy",
+      "titleHighlight": "Policy",
+      "lastUpdated": "Last updated: July 14, 2024",
+      "highlights": {
+        "dataProtection": {
+          "title": "Data Protection",
+          "description": "Comprehensive technical and organizational measures safeguard your data."
+        },
+        "localFirst": {
+          "title": "Local-First Storage",
+          "description": "Your data is stored primarily on your device, not our servers."
+        },
+        "security": {
+          "title": "Security First",
+          "description": "Advanced encryption and access controls protect your information."
+        }
+      },
+      "intro": "This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You. We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretation and Definitions",
+          "content": "The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural."
+        },
+        "definitions": {
+          "title": "Definitions",
+          "items": {
+            "account": {
+              "term": "Account",
+              "def": "means a unique account created for You to access our Service or parts of our Service."
+            },
+            "application": {
+              "term": "Application",
+              "def": "refers to Musclog, the software program provided by Musclog."
+            },
+            "company": {
+              "term": "Company",
+              "def": "(referred to as either \"Musclog\", \"We\", \"Us\" or \"Our\" in this Agreement) refers to Musclog."
+            },
+            "device": {
+              "term": "Device",
+              "def": "means any device that can access the Service such as a computer, a cellphone or a digital tablet."
+            },
+            "personalData": {
+              "term": "Personal Data",
+              "def": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You."
+            },
+            "service": { "term": "Service", "def": "refers to the Application." },
+            "serviceProvider": {
+              "term": "Service Provider",
+              "def": "means any natural or legal person who processes the data on behalf of Musclog."
+            },
+            "usageData": {
+              "term": "Usage Data",
+              "def": "Usage Data is collected automatically when using the Service, including device information, IP address, browser type, and diagnostic data."
+            },
+            "you": {
+              "term": "You",
+              "def": "means the individual accessing or using the Service, or Musclog, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Collecting and Using Your Personal Data",
+          "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You.",
+          "typesCollected": {
+            "title": "Types of Data Collected",
+            "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:",
+            "items": ["First name and last name", "Usage Data"]
+          },
+          "googleOAuth": {
+            "title": "Google OAuth Data",
+            "content": "Our application integrates Google OAuth for the following purposes:",
+            "items": [
+              "To obtain your name to personalize your user experience.",
+              "To access Google Generative AI capabilities to enhance application features.",
+              "All data is stored offline on your device and not uploaded to our servers.",
+              "We do not share your data with third parties for marketing or other purposes.",
+              "Google OAuth is optional and can be disabled in the application settings."
+            ]
+          },
+          "usageData": {
+            "title": "Usage Data",
+            "content": "Usage Data is collected automatically when using the Service. Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data. When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data. We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device."
+          },
+          "appPermissions": {
+            "title": "Information Collected while Using the Application",
+            "content": "While using Our Application, in order to provide features of Our Application, We may collect, with Your prior permission:",
+            "items": [
+              "Activity recognition data to track your workouts and fitness activities.",
+              "Body sensor data to monitor heart rate, steps, and other health metrics.",
+              "Internet access to connect to our servers and provide online functionalities.",
+              "Calendar data to integrate with your schedule and plan your workouts.",
+              "External storage access to read and write workout data and other information.",
+              "Permission to receive boot completed notifications to restart any scheduled tasks after your device reboots.",
+              "System alert window permission to display important notifications over other apps.",
+              "Vibrate permission to provide haptic feedback during workouts and notifications.",
+              "Wake lock permission to keep the app running during workouts and prevent the device from sleeping.",
+              "Health data such as active calories burned, body fat, bone mass, heart rate, height, lean body mass, nutrition, steps, total calories burned, and weight to provide comprehensive fitness tracking."
+            ]
+          }
+        },
+        "useOfData": {
+          "title": "Use of Your Personal Data",
+          "items": [
+            "To provide and maintain our Service, including to monitor the usage of our Service.",
+            "To analyze user data and send it to our LLM partners to provide personalized feedback on workouts, nutrition, and other health-related activities.",
+            "To manage Your Account: to manage Your registration as a user of the Service.",
+            "For the performance of a contract: the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased.",
+            "To contact You: To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication.",
+            "To provide You with news, special offers and general information about other goods, services and events.",
+            "To manage Your requests: To attend and manage Your requests to Us.",
+            "For business transfers: We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets.",
+            "For other purposes: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service."
+          ]
+        },
+        "sharing": {
+          "title": "Sharing Your Personal Data",
+          "items": [
+            "With Service Providers: We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.",
+            "For business transfers: We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition.",
+            "With Affiliates: We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy.",
+            "With business partners: We may share Your information with Our business partners to offer You certain products, services or promotions.",
+            "With other users: when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users.",
+            "With Your consent: We may disclose Your personal information for any other purpose with Your consent."
+          ]
+        },
+        "retention": {
+          "title": "Retention of Your Personal Data",
+          "content": "Musclog will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our legal agreements and policies. Musclog will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods."
+        },
+        "transfer": {
+          "title": "Transfer of Your Personal Data",
+          "content": "Your information, including Personal Data, is processed at Musclog's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction. Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer. Musclog will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy."
+        },
+        "deletion": {
+          "title": "Delete Your Personal Data",
+          "content": "You have the right to delete or request that We assist in deleting the Personal Data that We have collected about You. Our Service may give You the ability to delete certain information about You from within the Service. You may update, amend, or delete Your information at any time by signing in to Your Account, if you have one, and visiting the account settings section that allows you to manage Your personal information. You may also contact Us to request access to, correct, or delete any personal information that You have provided to Us. Please note, however, that We may need to retain certain information when we have a legal obligation or lawful basis to do so."
+        },
+        "disclosure": {
+          "title": "Disclosure of Your Personal Data",
+          "content": "Musclog may disclose Your Personal Data in the good faith belief that such action is necessary to:",
+          "items": [
+            "Comply with a legal obligation",
+            "Protect and defend the rights or property of Musclog",
+            "Prevent or investigate possible wrongdoing in connection with the Service",
+            "Protect the personal safety of Users of the Service or the public",
+            "Protect against legal liability"
+          ]
+        },
+        "security": {
+          "title": "Security of Your Personal Data",
+          "content": "The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security. We employ comprehensive technical and organizational measures to safeguard your personal data from unauthorized or unlawful processing, as well as accidental loss, destruction, or damage. These measures include advanced encryption protocols for data in transit and at rest, stringent access controls, and regular security assessments."
+        },
+        "childrenPrivacy": {
+          "title": "Children's Privacy",
+          "content": "Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers. If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information."
+        },
+        "links": {
+          "title": "Links to Other Websites",
+          "content": "Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party's site. We strongly advise You to review the Privacy Policy of every site You visit. We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services."
+        },
+        "changes": {
+          "title": "Changes to this Privacy Policy",
+          "content": "We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page. We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the \"Last updated\" date at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page."
+        },
+        "googlePlay": {
+          "title": "Google Play Store Data Safety Labels",
+          "content": "Our data safety labels on the Google Play Store are meticulously aligned with the disclosures provided in this privacy policy. We are committed to maintaining a high standard of transparency and ensuring full compliance with all Google Play Store requirements and guidelines. The data collected is strictly utilized to provide or enhance the functionality and features of your application. This data usage is confined to improving user experience and application performance, and under no circumstances is it used for any purposes outside this scope, such as marketing or selling to third parties. Access to any user data is strictly regulated and can only occur after obtaining explicit consent from the user."
+        },
+        "analytics": {
+          "title": "Website Analytics",
+          "content1": "This website uses Vercel Web Analytics, a cookieless and privacy-first analytics service. It collects no personal identifiers and uses no cookies — visitors are identified only by an anonymous hash that resets every 24 hours. No consent is required for this tool under the ePrivacy Directive.",
+          "content2": "This website also uses Google Analytics 4 (GA4), a service provided by Google LLC, to collect anonymized data about how visitors interact with the site. Analytics cookies are only set after you explicitly consent by clicking \"Accept\" in the cookie banner.",
+          "content3": "When you consent to GA4, Google Analytics may collect:",
+          "items": [
+            "Pages visited and time spent on each page",
+            "General geographic location (country or city level, not precise location)",
+            "Browser type, device type, and operating system",
+            "Referring website or search engine",
+            "Anonymous interaction events (e.g. link clicks)"
+          ],
+          "content4": "Legal basis for GA4: Consent (GDPR Art. 6(1)(a)). You may withdraw your consent at any time by clicking \"Cookie settings\" in the page footer. Withdrawal of consent will prevent any further collection and does not affect the lawfulness of processing carried out before withdrawal.",
+          "content5": "GA4 data is retained in Google Analytics for 14 months by default. Google acts as a data processor under a Data Processing Agreement. For more information on how Google handles data, see the",
+          "googlePrivacyPolicy": "Google Privacy Policy",
+          "content6": "Your consent choice is stored locally in your browser (localStorage) and is never sent to our servers. It is used solely to remember your preference between visits."
+        }
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have any questions about this Privacy Policy, You can contact us by email:"
+      }
+    },
+    "terms": {
+      "titleStart": "Terms &",
+      "conditions": "Conditions",
+      "lastUpdated": "Last updated: January 1, 2025",
+      "highlights": {
+        "agreement": {
+          "title": "User Agreement",
+          "description": "By using this app, you agree to these terms."
+        },
+        "liability": {
+          "title": "Limited Liability",
+          "description": "We are not liable for health decisions made using this app."
+        },
+        "warranty": {
+          "title": "No Warranty",
+          "description": "The app is provided as-is without any warranties."
+        }
+      },
+      "intro": "Please read these Terms and Conditions carefully before using the Musclog application. By accessing or using our service, you agree to be bound by these terms.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretation & Definitions",
+          "content1": "The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.",
+          "content2": "For the purposes of these Terms and Conditions:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Application",
+            "def": "means the software program provided by Musclog, downloaded by you on any electronic device, named Musclog."
+          },
+          "company": {
+            "term": "Company",
+            "def": "refers to Musclog, the developer and maintainer of this open-source application."
+          },
+          "device": {
+            "term": "Device",
+            "def": "means any device that can access the Service such as a smartphone or tablet."
+          },
+          "service": {
+            "term": "Service",
+            "def": "refers to the Application."
+          },
+          "you": {
+            "term": "You",
+            "def": "means the individual accessing or using the Service."
+          }
+        },
+        "acknowledgment": {
+          "title": "Acknowledgment",
+          "content1": "These are the Terms and Conditions governing the use of this Service and the agreement that operates between you and the Company. By accessing or using the Service you agree to be bound by these Terms and Conditions.",
+          "content2": "Your access to and use of the Service is also conditioned on your acceptance of and compliance with the Privacy Policy of the Company.",
+          "content3": "Musclog is a local-first, open-source fitness tracker. No account is required. Your data stays on your device and is never sent to our servers."
+        },
+        "links": {
+          "title": "Links to Other Websites",
+          "content": "Our Service may contain links to third-party websites or services that are not owned or controlled by the Company. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services."
+        },
+        "termination": {
+          "title": "Termination",
+          "content": "We may terminate or suspend your access immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach these Terms and Conditions. Upon termination, your right to use the Service will cease immediately."
+        },
+        "liability": {
+          "title": "Limitation of Liability",
+          "content1": "To the maximum extent permitted by applicable law, in no event shall the Company be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.",
+          "content2": "This application is not a medical device. Always consult a qualified healthcare professional before making health or fitness decisions based on data from this app."
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "content1": "The Service is provided to you \"AS IS\" and \"AS AVAILABLE\" and with all faults and defects without warranty of any kind.",
+          "content2": "Without limiting the foregoing, the Company provides no warranty or undertaking, and makes no representation of any kind that the Service will meet your requirements, achieve any intended results, or be compatible or work with any other software, applications, systems, or services."
+        },
+        "governingLaw": {
+          "title": "Governing Law",
+          "content1": "The laws of the country excluding its conflicts of law rules shall govern this Terms and your use of the Service.",
+          "content2": "Your local consumer protection laws may provide you with additional rights. Nothing in these Terms affects any rights you may have as a consumer under applicable law."
+        },
+        "changes": {
+          "title": "Changes to These Terms",
+          "content": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will try to provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms."
+        }
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have any questions about these Terms and Conditions, you can contact us at"
+      }
     }
   }
 }

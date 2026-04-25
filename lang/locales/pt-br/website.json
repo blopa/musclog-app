@@ -137,6 +137,285 @@
       "contact": "Contato",
       "license": "Licença",
       "copyright": "Software Livre e Open Source. Construído para sua privacidade."
+    },
+    "privacy": {
+      "titleStart": "Política de",
+      "titleHighlight": "Privacidade",
+      "lastUpdated": "Última atualização: 14 de julho de 2024",
+      "highlights": {
+        "dataProtection": {
+          "title": "Proteção de dados",
+          "description": "Medidas técnicas e organizacionais abrangentes protegem seus dados."
+        },
+        "localFirst": {
+          "title": "Armazenamento local",
+          "description": "Seus dados são armazenados principalmente no seu dispositivo, não em nossos servidores."
+        },
+        "security": {
+          "title": "Segurança em primeiro lugar",
+          "description": "Criptografia avançada e controles de acesso protegem suas informações."
+        }
+      },
+      "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos sobre a coleta, uso e divulgação de suas informações quando você usa o Serviço, e informa sobre seus direitos de privacidade e como a lei o protege. Usamos seus Dados Pessoais para fornecer e melhorar o Serviço. Ao usar o Serviço, você concorda com a coleta e uso de informações de acordo com esta Política de Privacidade.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural."
+        },
+        "definitions": {
+          "title": "Definições",
+          "items": {
+            "account": {
+              "term": "Conta",
+              "def": "significa uma conta única criada para que você acesse nosso Serviço ou partes dele."
+            },
+            "application": {
+              "term": "Aplicativo",
+              "def": "refere-se ao Musclog, o programa de software fornecido pela Musclog."
+            },
+            "company": {
+              "term": "Empresa",
+              "def": "(também referida como \"Musclog\", \"Nós\" ou \"Nossa\" neste Acordo) refere-se à Musclog."
+            },
+            "device": {
+              "term": "Dispositivo",
+              "def": "significa qualquer dispositivo que possa acessar o Serviço, como um computador, celular ou tablet digital."
+            },
+            "personalData": {
+              "term": "Dados Pessoais",
+              "def": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo."
+            },
+            "service": { "term": "Serviço", "def": "refere-se ao Aplicativo." },
+            "serviceProvider": {
+              "term": "Provedor de Serviços",
+              "def": "significa qualquer pessoa física ou jurídica que processa os dados em nome da Musclog."
+            },
+            "usageData": {
+              "term": "Dados de Uso",
+              "def": "Os Dados de Uso são coletados automaticamente ao usar o Serviço, incluindo informações do dispositivo, endereço IP, tipo de navegador e dados de diagnóstico."
+            },
+            "you": {
+              "term": "Você",
+              "def": "significa o indivíduo que acessa ou usa o Serviço, ou a Musclog, ou outra entidade legal em nome da qual esse indivíduo acessa ou usa o Serviço, conforme aplicável."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Coleta e uso de seus Dados Pessoais",
+          "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo.",
+          "typesCollected": {
+            "title": "Tipos de dados coletados",
+            "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
+            "items": ["Nome e sobrenome", "Dados de uso"]
+          },
+          "googleOAuth": {
+            "title": "Dados do Google OAuth",
+            "content": "Nosso aplicativo integra o Google OAuth para os seguintes fins:",
+            "items": [
+              "Para obter seu nome e personalizar sua experiência de usuário.",
+              "Para acessar os recursos de Google Generative AI e aprimorar as funcionalidades do aplicativo.",
+              "Todos os dados são armazenados offline no seu dispositivo e não são enviados para nossos servidores.",
+              "Não compartilhamos seus dados com terceiros para fins de marketing ou outros fins.",
+              "O Google OAuth é opcional e pode ser desativado nas configurações do aplicativo."
+            ]
+          },
+          "usageData": {
+            "title": "Dados de uso",
+            "content": "Os Dados de Uso são coletados automaticamente ao usar o Serviço. Os Dados de Uso podem incluir informações como o endereço de Protocolo de Internet do seu dispositivo (p. ex. endereço IP), tipo e versão do navegador, as páginas do nosso Serviço que você visita, a data e hora da sua visita, o tempo gasto nessas páginas, identificadores únicos de dispositivo e outros dados de diagnóstico. Quando você acessa o Serviço por meio de um dispositivo móvel, podemos coletar certas informações automaticamente, incluindo o tipo de dispositivo móvel que você usa, o ID exclusivo do seu dispositivo móvel, o endereço IP do seu dispositivo móvel, seu sistema operacional móvel e o tipo de navegador de Internet móvel que você usa."
+          },
+          "appPermissions": {
+            "title": "Informações coletadas ao usar o Aplicativo",
+            "content": "Ao usar nosso Aplicativo, para fornecer seus recursos, podemos coletar, com sua permissão prévia:",
+            "items": [
+              "Dados de reconhecimento de atividade para rastrear seus treinos e atividades físicas.",
+              "Dados de sensores corporais para monitorar frequência cardíaca, passos e outras métricas de saúde.",
+              "Acesso à Internet para conectar-se aos nossos servidores e fornecer funcionalidades online.",
+              "Dados do calendário para integração com sua agenda e planejamento de treinos.",
+              "Acesso ao armazenamento externo para ler e gravar dados de treino e outras informações.",
+              "Permissão para receber notificações de inicialização concluída para reiniciar tarefas agendadas após a reinicialização do dispositivo.",
+              "Permissão de janela de alerta do sistema para exibir notificações importantes sobre outros aplicativos.",
+              "Permissão de vibração para fornecer feedback háptico durante treinos e notificações.",
+              "Permissão de wake lock para manter o aplicativo em execução durante os treinos.",
+              "Dados de saúde como calorias ativas queimadas, gordura corporal, massa óssea, frequência cardíaca, altura, massa corporal magra, nutrição, passos, calorias totais queimadas e peso para rastreamento abrangente de condicionamento físico."
+            ]
+          }
+        },
+        "useOfData": {
+          "title": "Uso de seus Dados Pessoais",
+          "items": [
+            "Para fornecer e manter nosso Serviço, incluindo o monitoramento do uso do nosso Serviço.",
+            "Para analisar dados do usuário e enviá-los aos nossos parceiros LLM para fornecer feedback personalizado sobre treinos, nutrição e outras atividades relacionadas à saúde.",
+            "Para gerenciar sua Conta: para gerenciar seu registro como usuário do Serviço.",
+            "Para a execução de um contrato: o desenvolvimento, cumprimento e execução do contrato de compra dos produtos ou serviços que você adquiriu.",
+            "Para entrar em contato com você por e-mail, chamadas telefônicas, SMS ou outras formas equivalentes de comunicação eletrônica.",
+            "Para fornecer notícias, ofertas especiais e informações gerais sobre outros bens, serviços e eventos.",
+            "Para gerenciar suas solicitações: para atender e gerenciar suas solicitações a nós.",
+            "Para transferências comerciais: podemos usar suas informações para avaliar ou realizar uma fusão, alienação, reestruturação, reorganização, dissolução ou outra venda ou transferência de alguns ou todos os nossos ativos.",
+            "Para outros fins: podemos usar suas informações para análise de dados, identificação de tendências de uso, determinação da eficácia de nossas campanhas promocionais e avaliação e melhoria do nosso Serviço."
+          ]
+        },
+        "sharing": {
+          "title": "Compartilhamento de seus Dados Pessoais",
+          "items": [
+            "Com Provedores de Serviços: podemos compartilhar suas informações pessoais com Provedores de Serviços para monitorar e analisar o uso do nosso Serviço.",
+            "Para transferências comerciais: podemos compartilhar ou transferir suas informações pessoais em conexão com qualquer fusão, venda de ativos da Empresa, financiamento ou aquisição.",
+            "Com Afiliadas: podemos compartilhar suas informações com nossas afiliadas, exigindo que essas afiliadas cumpram esta Política de Privacidade.",
+            "Com parceiros comerciais: podemos compartilhar suas informações com nossos parceiros comerciais para oferecer determinados produtos, serviços ou promoções.",
+            "Com outros usuários: quando você compartilha informações pessoais ou interage nas áreas públicas com outros usuários, essas informações podem ser vistas por todos os usuários.",
+            "Com seu consentimento: podemos divulgar suas informações pessoais para qualquer outra finalidade com seu consentimento."
+          ]
+        },
+        "retention": {
+          "title": "Retenção de seus Dados Pessoais",
+          "content": "A Musclog reterá seus Dados Pessoais apenas pelo tempo necessário para os fins estabelecidos nesta Política de Privacidade. Reteremos e usaremos seus Dados Pessoais na medida necessária para cumprir nossas obrigações legais, resolver disputas e fazer cumprir nossos acordos e políticas legais. A Musclog também reterá os Dados de Uso para fins de análise interna. Os Dados de Uso geralmente são retidos por um período mais curto, exceto quando esses dados são usados para fortalecer a segurança ou melhorar a funcionalidade do Serviço, ou quando somos legalmente obrigados a retê-los por períodos mais longos."
+        },
+        "transfer": {
+          "title": "Transferência de seus Dados Pessoais",
+          "content": "Suas informações, incluindo Dados Pessoais, são processadas nos escritórios operacionais da Musclog e em quaisquer outros locais onde as partes envolvidas no processamento estejam localizadas. Isso significa que essas informações podem ser transferidas e mantidas em computadores localizados fora do seu estado, província, país ou outra jurisdição governamental, onde as leis de proteção de dados podem ser diferentes das da sua jurisdição. Seu consentimento a esta Política de Privacidade, seguido do envio de tais informações, representa sua concordância com essa transferência. A Musclog tomará todas as medidas razoavelmente necessárias para garantir que seus dados sejam tratados com segurança e de acordo com esta Política de Privacidade."
+        },
+        "deletion": {
+          "title": "Excluir seus Dados Pessoais",
+          "content": "Você tem o direito de excluir ou solicitar que auxiliemos na exclusão dos Dados Pessoais que coletamos sobre você. Nosso Serviço pode oferecer a você a capacidade de excluir certas informações sobre você dentro do Serviço. Você pode atualizar, corrigir ou excluir suas informações a qualquer momento fazendo login em sua Conta, se tiver uma, e visitando a seção de configurações da conta. Você também pode nos contatar para solicitar acesso, correção ou exclusão de qualquer informação pessoal que nos forneceu. Observe, no entanto, que podemos precisar reter certas informações quando tivermos uma obrigação legal ou base legal para fazê-lo."
+        },
+        "disclosure": {
+          "title": "Divulgação de seus Dados Pessoais",
+          "content": "A Musclog pode divulgar seus Dados Pessoais de boa fé quando tal ação for necessária para:",
+          "items": [
+            "Cumprir uma obrigação legal",
+            "Proteger e defender os direitos ou propriedade da Musclog",
+            "Prevenir ou investigar possíveis irregularidades em conexão com o Serviço",
+            "Proteger a segurança pessoal dos Usuários do Serviço ou do público",
+            "Proteger contra responsabilidade legal"
+          ]
+        },
+        "security": {
+          "title": "Segurança de seus Dados Pessoais",
+          "content": "A segurança de seus Dados Pessoais é importante para nós, mas lembre-se que nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro. Empregamos medidas técnicas e organizacionais abrangentes para proteger seus dados pessoais contra processamento não autorizado ou ilegal, bem como contra perda, destruição ou dano acidental. Essas medidas incluem protocolos de criptografia avançados para dados em trânsito e em repouso, controles de acesso rigorosos e avaliações regulares de segurança."
+        },
+        "childrenPrivacy": {
+          "title": "Privacidade de crianças",
+          "content": "Nosso Serviço não se dirige a menores de 13 anos. Não coletamos intencionalmente informações pessoalmente identificáveis de menores de 13 anos. Se você for pai ou responsável e souber que seu filho nos forneceu Dados Pessoais, entre em contato conosco. Se soubermos que coletamos Dados Pessoais de alguém com menos de 13 anos sem verificação do consentimento dos pais, tomamos medidas para remover essas informações de nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para outros sites que não são operados por nós. Se você clicar em um link de terceiros, será direcionado para o site desse terceiro. Recomendamos enfaticamente que você revise a Política de Privacidade de cada site que visitar. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "changes": {
+          "title": "Alterações a esta Política de Privacidade",
+          "content": "Podemos atualizar nossa Política de Privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova Política de Privacidade nesta página. Informaremos você por e-mail e/ou por um aviso destacado em nosso Serviço antes que a alteração entre em vigor e atualizaremos a data de \"Última atualização\" no topo desta Política de Privacidade. Aconselhamos que você revise esta Política de Privacidade periodicamente para verificar alterações."
+        },
+        "googlePlay": {
+          "title": "Rótulos de segurança de dados da Google Play Store",
+          "content": "Nossos rótulos de segurança de dados na Google Play Store estão meticulosamente alinhados com as divulgações fornecidas nesta política de privacidade. Estamos comprometidos em manter um alto padrão de transparência e garantir total conformidade com todos os requisitos e diretrizes da Google Play Store. Os dados coletados são utilizados estritamente para fornecer ou aprimorar a funcionalidade e os recursos do seu aplicativo, e em nenhuma circunstância são usados para fins fora deste escopo, como marketing ou venda a terceiros. O acesso a quaisquer dados do usuário é estritamente regulado e só pode ocorrer após a obtenção do consentimento explícito do usuário."
+        },
+        "analytics": {
+          "title": "Análise do site",
+          "content1": "Este site usa o Vercel Web Analytics, um serviço de análise sem cookies e com foco em privacidade. Ele não coleta identificadores pessoais e não usa cookies — os visitantes são identificados apenas por um hash anônimo que é redefinido a cada 24 horas. Não é necessário consentimento para esta ferramenta sob a Diretiva ePrivacy.",
+          "content2": "Este site também usa o Google Analytics 4 (GA4), um serviço fornecido pela Google LLC, para coletar dados anonimizados sobre como os visitantes interagem com o site. Os cookies de análise só são definidos após você consentir explicitamente clicando em \"Aceitar\" no banner de cookies.",
+          "content3": "Quando você consente com o GA4, o Google Analytics pode coletar:",
+          "items": [
+            "Páginas visitadas e tempo gasto em cada página",
+            "Localização geográfica geral (em nível de país ou cidade, não localização precisa)",
+            "Tipo de navegador, tipo de dispositivo e sistema operacional",
+            "Site ou mecanismo de pesquisa de referência",
+            "Eventos de interação anônimos (p. ex. cliques em links)"
+          ],
+          "content4": "Base legal para o GA4: Consentimento (RGPD Art. 6(1)(a)). Você pode retirar seu consentimento a qualquer momento clicando em \"Configurações de cookies\" no rodapé da página. A retirada do consentimento impedirá qualquer coleta adicional e não afetará a legalidade do processamento realizado antes da retirada.",
+          "content5": "Os dados do GA4 são retidos no Google Analytics por 14 meses por padrão. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
+          "googlePrivacyPolicy": "Política de Privacidade do Google",
+          "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas."
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre esta Política de Privacidade, pode entrar em contato conosco pelo e-mail:"
+      }
+    },
+    "terms": {
+      "titleStart": "Termos e",
+      "conditions": "Condições",
+      "lastUpdated": "Última atualização: 1 de janeiro de 2025",
+      "highlights": {
+        "agreement": {
+          "title": "Acordo de uso",
+          "description": "Ao usar este aplicativo, você concorda com estes termos."
+        },
+        "liability": {
+          "title": "Responsabilidade limitada",
+          "description": "Não somos responsáveis por decisões de saúde tomadas com este app."
+        },
+        "warranty": {
+          "title": "Sem garantia",
+          "description": "O aplicativo é fornecido como está, sem garantias."
+        }
+      },
+      "intro": "Por favor, leia estes Termos e Condições com atenção antes de usar o aplicativo Musclog. Ao acessar ou usar nosso serviço, você concorda em estar vinculado a estes termos.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content1": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural.",
+          "content2": "Para os fins destes Termos e Condições:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Aplicativo",
+            "def": "significa o programa de software fornecido pela Musclog, baixado por você em qualquer dispositivo eletrônico, chamado Musclog."
+          },
+          "company": {
+            "term": "Empresa",
+            "def": "refere-se à Musclog, a desenvolvedora e mantenedora deste aplicativo de código aberto."
+          },
+          "device": {
+            "term": "Dispositivo",
+            "def": "significa qualquer dispositivo que possa acessar o Serviço, como um smartphone ou tablet."
+          },
+          "service": {
+            "term": "Serviço",
+            "def": "refere-se ao Aplicativo."
+          },
+          "you": {
+            "term": "Você",
+            "def": "significa o indivíduo que acessa ou usa o Serviço."
+          }
+        },
+        "acknowledgment": {
+          "title": "Reconhecimento",
+          "content1": "Estes são os Termos e Condições que regem o uso deste Serviço e o acordo que opera entre você e a Empresa. Ao acessar ou usar o Serviço, você concorda em estar vinculado a estes Termos e Condições.",
+          "content2": "Seu acesso e uso do Serviço também estão condicionados à sua aceitação e conformidade com a Política de Privacidade da Empresa.",
+          "content3": "O Musclog é um rastreador de fitness local-first e de código aberto. Nenhuma conta é necessária. Seus dados permanecem no seu dispositivo e nunca são enviados aos nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para sites ou serviços de terceiros que não são de propriedade nem controlados pela Empresa. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "termination": {
+          "title": "Rescisão",
+          "content": "Podemos encerrar ou suspender seu acesso imediatamente, sem aviso prévio ou responsabilidade, por qualquer motivo, incluindo se você violar estes Termos e Condições. Após o encerramento, seu direito de usar o Serviço cessará imediatamente."
+        },
+        "liability": {
+          "title": "Limitação de responsabilidade",
+          "content1": "Na máxima extensão permitida pela lei aplicável, a Empresa não será responsável por danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo sem limitação, perda de lucros, dados, uso, fundo de comércio ou outras perdas intangíveis.",
+          "content2": "Este aplicativo não é um dispositivo médico. Sempre consulte um profissional de saúde qualificado antes de tomar decisões de saúde ou fitness com base nos dados deste aplicativo."
+        },
+        "disclaimer": {
+          "title": "Isenção de responsabilidade",
+          "content1": "O Serviço é fornecido a você \"COMO ESTÁ\" e \"CONFORME DISPONÍVEL\", com todas as falhas e defeitos e sem garantia de qualquer tipo.",
+          "content2": "Sem limitar o exposto acima, a Empresa não oferece garantia de que o Serviço atenderá aos seus requisitos, alcançará os resultados pretendidos ou será compatível com outros softwares, aplicativos, sistemas ou serviços."
+        },
+        "governingLaw": {
+          "title": "Lei aplicável",
+          "content1": "As leis do país, excluindo suas regras de conflito de leis, regerão estes Termos e o uso do Serviço.",
+          "content2": "As leis locais de proteção ao consumidor podem lhe conceder direitos adicionais. Nada nestes Termos afeta quaisquer direitos que você possa ter como consumidor sob a lei aplicável."
+        },
+        "changes": {
+          "title": "Alterações nestes termos",
+          "content": "Reservamo-nos o direito, a nosso exclusivo critério, de modificar ou substituir estes Termos a qualquer momento. Tentaremos fornecer pelo menos 30 dias de aviso antes que os novos termos entrem em vigor. Ao continuar a acessar ou usar nosso Serviço após as revisões se tornarem efetivas, você concorda em estar vinculado aos termos revisados."
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre estes Termos e Condições, pode entrar em contato conosco pelo"
+      }
     }
   }
 }

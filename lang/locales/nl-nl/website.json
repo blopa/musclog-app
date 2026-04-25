@@ -137,6 +137,285 @@
       "contact": "Contact",
       "license": "Licentie",
       "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
+    },
+    "privacy": {
+      "titleStart": "Privacybeleid",
+      "titleHighlight": "",
+      "lastUpdated": "Laatste update: 14 juli 2024",
+      "highlights": {
+        "dataProtection": {
+          "title": "Gegevensbescherming",
+          "description": "Uitgebreide technische en organisatorische maatregelen beschermen uw gegevens."
+        },
+        "localFirst": {
+          "title": "Lokale opslag",
+          "description": "Uw gegevens worden primair opgeslagen op uw apparaat, niet op onze servers."
+        },
+        "security": {
+          "title": "Beveiliging voorop",
+          "description": "Geavanceerde versleuteling en toegangscontroles beschermen uw informatie."
+        }
+      },
+      "intro": "Dit Privacybeleid beschrijft ons beleid en onze procedures voor het verzamelen, gebruiken en openbaar maken van uw informatie wanneer u de Service gebruikt, en informeert u over uw privacyrechten en hoe de wet u beschermt. Wij gebruiken uw Persoonsgegevens om de Service te leveren en te verbeteren. Door de Service te gebruiken, stemt u in met het verzamelen en gebruiken van informatie overeenkomstig dit Privacybeleid.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretatie en Definities",
+          "content": "Woorden waarvan de beginletter een hoofdletter heeft, hebben betekenissen die zijn gedefinieerd onder de volgende voorwaarden. De volgende definities hebben dezelfde betekenis, ongeacht of ze in enkelvoud of meervoud voorkomen."
+        },
+        "definitions": {
+          "title": "Definities",
+          "items": {
+            "account": {
+              "term": "Account",
+              "def": "betekent een uniek account dat voor u is aangemaakt om toegang te krijgen tot onze Service of delen daarvan."
+            },
+            "application": {
+              "term": "Applicatie",
+              "def": "verwijst naar Musclog, het softwareprogramma dat door Musclog wordt aangeboden."
+            },
+            "company": {
+              "term": "Bedrijf",
+              "def": "(ook aangeduid als \"Musclog\", \"Wij\", \"Ons\" of \"Onze\" in deze Overeenkomst) verwijst naar Musclog."
+            },
+            "device": {
+              "term": "Apparaat",
+              "def": "betekent elk apparaat dat toegang heeft tot de Service, zoals een computer, mobiele telefoon of digitale tablet."
+            },
+            "personalData": {
+              "term": "Persoonsgegevens",
+              "def": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren."
+            },
+            "service": { "term": "Service", "def": "verwijst naar de Applicatie." },
+            "serviceProvider": {
+              "term": "Serviceprovider",
+              "def": "betekent elke natuurlijke of rechtspersoon die de gegevens verwerkt namens Musclog."
+            },
+            "usageData": {
+              "term": "Gebruiksgegevens",
+              "def": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service, inclusief apparaatinformatie, IP-adres, browsertype en diagnostische gegevens."
+            },
+            "you": {
+              "term": "U",
+              "def": "betekent de persoon die de Service gebruikt of benadert, of Musclog, of een andere rechtspersoon namens wie die persoon de Service gebruikt of benadert, al naar gelang van toepassing."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Verzamelen en gebruiken van uw Persoonsgegevens",
+          "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren.",
+          "typesCollected": {
+            "title": "Soorten verzamelde gegevens",
+            "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
+            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
+          },
+          "googleOAuth": {
+            "title": "Google OAuth-gegevens",
+            "content": "Onze applicatie integreert Google OAuth voor de volgende doeleinden:",
+            "items": [
+              "Om uw naam te verkrijgen ter personalisatie van uw gebruikerservaring.",
+              "Om toegang te krijgen tot Google Generative AI-mogelijkheden ter verbetering van applicatiefuncties.",
+              "Alle gegevens worden offline op uw apparaat opgeslagen en niet geüpload naar onze servers.",
+              "Wij delen uw gegevens niet met derden voor marketing of andere doeleinden.",
+              "Google OAuth is optioneel en kan worden uitgeschakeld in de applicatie-instellingen."
+            ]
+          },
+          "usageData": {
+            "title": "Gebruiksgegevens",
+            "content": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service. Gebruiksgegevens kunnen informatie bevatten zoals het IP-adres van uw apparaat, browsertype en -versie, de pagina's van onze Service die u bezoekt, de datum en tijd van uw bezoek, de tijd besteed aan die pagina's, unieke apparaat-ID's en andere diagnostische gegevens. Wanneer u de Service benadert via een mobiel apparaat, kunnen wij automatisch bepaalde informatie verzamelen, waaronder het type mobiel apparaat, de unieke ID van uw mobiele apparaat, het IP-adres van uw mobiele apparaat, uw mobiel besturingssysteem en het type mobiele internetbrowser dat u gebruikt."
+          },
+          "appPermissions": {
+            "title": "Informatie verzameld bij gebruik van de Applicatie",
+            "content": "Bij gebruik van onze Applicatie kunnen wij, om de functies van onze Applicatie te bieden, met uw voorafgaande toestemming verzamelen:",
+            "items": [
+              "Activiteitsherkenningsgegevens om uw trainingen en fitnessactiviteiten bij te houden.",
+              "Lichaamssensorgegevens om hartslag, stappen en andere gezondheidsstatistieken te monitoren.",
+              "Internettoegang om verbinding te maken met onze servers en online functionaliteiten te bieden.",
+              "Kalendergegevens om te integreren met uw agenda en trainingen te plannen.",
+              "Toegang tot externe opslag om trainingsgegevens en andere informatie te lezen en op te slaan.",
+              "Toestemming voor opstartmeldingen om geplande taken na het opnieuw opstarten van uw apparaat te hervatten.",
+              "Toestemming voor systeemwaarschuwingsvenster om belangrijke meldingen boven andere apps weer te geven.",
+              "Trillingstoestemming voor haptische feedback tijdens trainingen en meldingen.",
+              "Wake lock-toestemming om de app actief te houden tijdens trainingen.",
+              "Gezondheidsgegevens zoals verbrande actieve calorieën, lichaamsvet, botmassa, hartslag, lengte, vetvrije massa, voeding, stappen, totale verbrande calorieën en gewicht voor uitgebreide fitnesstracking."
+            ]
+          }
+        },
+        "useOfData": {
+          "title": "Gebruik van uw Persoonsgegevens",
+          "items": [
+            "Om onze Service te leveren en te onderhouden, inclusief het monitoren van het gebruik.",
+            "Om gebruikersgegevens te analyseren en door te sturen naar onze LLM-partners voor gepersonaliseerde feedback over trainingen, voeding en andere gezondheidsgerelateerde activiteiten.",
+            "Om uw Account te beheren: om uw registratie als gebruiker van de Service te beheren.",
+            "Voor de uitvoering van een contract: de ontwikkeling, naleving en uitvoering van het aankoopcontract voor de producten of diensten die u hebt aangeschaft.",
+            "Om contact met u op te nemen via e-mail, telefoongesprekken, sms of andere gelijkwaardige vormen van elektronische communicatie.",
+            "Om u nieuws, speciale aanbiedingen en algemene informatie te bieden over andere goederen, diensten en evenementen.",
+            "Om uw verzoeken te beheren: om uw verzoeken aan ons te behandelen en te beheren.",
+            "Voor bedrijfsoverdrachten: wij kunnen uw informatie gebruiken om een fusie, afsplitsing, herstructurering, reorganisatie, ontbinding of andere verkoop of overdracht van onze activa te evalueren of uit te voeren.",
+            "Voor andere doeleinden: wij kunnen uw informatie gebruiken voor gegevensanalyse, het identificeren van gebruikstrends, het bepalen van de effectiviteit van onze promotiecampagnes en het evalueren en verbeteren van onze Service."
+          ]
+        },
+        "sharing": {
+          "title": "Delen van uw Persoonsgegevens",
+          "items": [
+            "Met Serviceproviders: wij kunnen uw persoonlijke informatie delen met Serviceproviders om het gebruik van onze Service te monitoren en te analyseren.",
+            "Voor bedrijfsoverdrachten: wij kunnen uw persoonlijke informatie delen of overdragen in verband met een fusie, verkoop van bedrijfsactiva, financiering of overname.",
+            "Met Gelieerde ondernemingen: wij kunnen uw informatie delen met onze gelieerde ondernemingen, waarbij wij eisen dat deze gelieerde ondernemingen dit Privacybeleid naleven.",
+            "Met zakelijke partners: wij kunnen uw informatie delen met onze zakelijke partners om u bepaalde producten, diensten of promoties aan te bieden.",
+            "Met andere gebruikers: wanneer u persoonlijke informatie deelt of anderszins interageert in de openbare gebieden met andere gebruikers, kan deze informatie door alle gebruikers worden bekeken.",
+            "Met uw toestemming: wij kunnen uw persoonlijke informatie voor elk ander doel openbaar maken met uw toestemming."
+          ]
+        },
+        "retention": {
+          "title": "Bewaring van uw Persoonsgegevens",
+          "content": "Musclog bewaart uw Persoonsgegevens alleen zolang als noodzakelijk is voor de doeleinden zoals uiteengezet in dit Privacybeleid. Wij bewaren en gebruiken uw Persoonsgegevens voor zover noodzakelijk om te voldoen aan onze wettelijke verplichtingen, geschillen op te lossen en onze wettelijke overeenkomsten en beleidsregels af te dwingen. Musclog bewaart ook Gebruiksgegevens voor interne analysedoeleinden. Gebruiksgegevens worden doorgaans gedurende een kortere periode bewaard, tenzij deze gegevens worden gebruikt om de beveiliging te versterken of de functionaliteit van onze Service te verbeteren, of wij wettelijk verplicht zijn deze gegevens langer te bewaren."
+        },
+        "transfer": {
+          "title": "Overdracht van uw Persoonsgegevens",
+          "content": "Uw informatie, inclusief Persoonsgegevens, wordt verwerkt op de kantoren van Musclog en op elk andere locatie waar de bij de verwerking betrokken partijen zich bevinden. Dit betekent dat deze informatie kan worden overgedragen naar en opgeslagen op computers buiten uw staat, provincie, land of andere overheidsinstantie, waar de wetgeving inzake gegevensbescherming kan verschillen van die in uw jurisdictie. Uw instemming met dit Privacybeleid, gevolgd door uw indiening van dergelijke informatie, vertegenwoordigt uw akkoord met die overdracht. Musclog neemt alle redelijkerwijs noodzakelijke stappen om ervoor te zorgen dat uw gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
+        },
+        "deletion": {
+          "title": "Uw Persoonsgegevens verwijderen",
+          "content": "U heeft het recht om de Persoonsgegevens die wij over u hebben verzameld te verwijderen of te verzoeken dat wij helpen bij het verwijderen daarvan. Onze Service kan u de mogelijkheid bieden om bepaalde informatie over u vanuit de Service te verwijderen. U kunt uw informatie op elk moment bijwerken, wijzigen of verwijderen door in te loggen op uw Account en de accountinstellingen te bezoeken. U kunt ook contact met ons opnemen om toegang te vragen tot, correctie of verwijdering van persoonlijke informatie die u ons hebt verstrekt. Houd er echter rekening mee dat wij bepaalde informatie mogelijk moeten bewaren wanneer wij een wettelijke verplichting of juridische grondslag hebben om dit te doen."
+        },
+        "disclosure": {
+          "title": "Openbaarmaking van uw Persoonsgegevens",
+          "content": "Musclog kan uw Persoonsgegevens te goeder trouw openbaar maken wanneer een dergelijke actie noodzakelijk is om:",
+          "items": [
+            "Te voldoen aan een wettelijke verplichting",
+            "De rechten of eigendommen van Musclog te beschermen en te verdedigen",
+            "Mogelijke misstanden in verband met de Service te voorkomen of te onderzoeken",
+            "De persoonlijke veiligheid van gebruikers van de Service of het publiek te beschermen",
+            "Te beschermen tegen wettelijke aansprakelijkheid"
+          ]
+        },
+        "security": {
+          "title": "Beveiliging van uw Persoonsgegevens",
+          "content": "De beveiliging van uw Persoonsgegevens is belangrijk voor ons, maar onthoud dat geen enkele methode van overdracht via internet of elektronische opslag 100% veilig is. Wij passen uitgebreide technische en organisatorische maatregelen toe om uw persoonsgegevens te beschermen tegen ongeautoriseerde of onrechtmatige verwerking, evenals tegen onopzettelijk verlies, vernietiging of beschadiging. Deze maatregelen omvatten geavanceerde versleutelingsprotocollen voor gegevens tijdens overdracht en in rust, strikte toegangscontroles en regelmatige beveiligingsbeoordelingen."
+        },
+        "childrenPrivacy": {
+          "title": "Privacy van kinderen",
+          "content": "Onze Service richt zich niet op personen jonger dan 13 jaar. Wij verzamelen niet bewust persoonlijk identificeerbare informatie van personen jonger dan 13 jaar. Als u een ouder of voogd bent en weet dat uw kind ons Persoonsgegevens heeft verstrekt, neem dan contact met ons op. Als wij ons ervan bewust worden dat wij Persoonsgegevens hebben verzameld van iemand jonger dan 13 jaar zonder verificatie van ouderlijke toestemming, nemen wij maatregelen om die informatie van onze servers te verwijderen."
+        },
+        "links": {
+          "title": "Links naar andere websites",
+          "content": "Onze Service kan links bevatten naar andere websites die niet door ons worden beheerd. Als u op een link van een derde partij klikt, wordt u doorgestuurd naar de site van die derde partij. Wij raden u sterk aan het Privacybeleid van elke site die u bezoekt te bekijken. Wij hebben geen controle over en aanvaarden geen verantwoordelijkheid voor de inhoud, het privacybeleid of de praktijken van sites of diensten van derden."
+        },
+        "changes": {
+          "title": "Wijzigingen in dit Privacybeleid",
+          "content": "Wij kunnen ons Privacybeleid van tijd tot tijd bijwerken. Wij stellen u op de hoogte van eventuele wijzigingen door het nieuwe Privacybeleid op deze pagina te plaatsen. Wij zullen u informeren via e-mail en/of een prominente kennisgeving op onze Service voordat de wijziging van kracht wordt en de datum \"Laatste update\" bovenaan dit Privacybeleid bijwerken. U wordt geadviseerd dit Privacybeleid periodiek te bekijken op eventuele wijzigingen."
+        },
+        "googlePlay": {
+          "title": "Gegevensveiligheidslabels van Google Play Store",
+          "content": "Onze gegevensveiligheidslabels in de Google Play Store zijn nauwkeurig afgestemd op de informatie in dit privacybeleid. Wij zijn toegewijd aan het handhaven van een hoge standaard van transparantie en het waarborgen van volledige naleving van alle vereisten en richtlijnen van de Google Play Store. De verzamelde gegevens worden uitsluitend gebruikt om de functionaliteit en functies van uw applicatie te bieden of te verbeteren, en worden onder geen enkele omstandigheid gebruikt voor doeleinden buiten dit kader, zoals marketing of verkoop aan derden. Toegang tot gebruikersgegevens is strikt gereguleerd en kan alleen plaatsvinden na het verkrijgen van expliciete toestemming van de gebruiker."
+        },
+        "analytics": {
+          "title": "Website-analyse",
+          "content1": "Deze website maakt gebruik van Vercel Web Analytics, een cookieloze en privacy-gerichte analyseservice. Het verzamelt geen persoonlijke identificatoren en gebruikt geen cookies — bezoekers worden alleen geïdentificeerd door een anonieme hash die elke 24 uur wordt gereset. Er is geen toestemming vereist voor deze tool onder de ePrivacy-richtlijn.",
+          "content2": "Deze website maakt ook gebruik van Google Analytics 4 (GA4), een dienst van Google LLC, om geanonimiseerde gegevens te verzamelen over hoe bezoekers de site gebruiken. Analysecookies worden alleen ingesteld nadat u expliciet toestemming geeft door op \"Accepteren\" in de cookiebanner te klikken.",
+          "content3": "Wanneer u toestemming geeft voor GA4, kan Google Analytics verzamelen:",
+          "items": [
+            "Bezochte pagina's en tijd besteed aan elke pagina",
+            "Algemene geografische locatie (op land- of stadsniveau, niet precieze locatie)",
+            "Browsertype, apparaattype en besturingssysteem",
+            "Verwijzende website of zoekmachine",
+            "Anonieme interactiegebeurtenissen (bijv. linkklikken)"
+          ],
+          "content4": "Rechtsgrondslag voor GA4: Toestemming (AVG Art. 6(1)(a)). U kunt uw toestemming op elk moment intrekken door op \"Cookie-instellingen\" in de paginavoettekst te klikken. Intrekking van toestemming voorkomt verdere verzameling en heeft geen invloed op de rechtmatigheid van de verwerking vóór de intrekking.",
+          "content5": "GA4-gegevens worden standaard 14 maanden bewaard in Google Analytics. Google treedt op als gegevensverwerker onder een Gegevensverwerkingsovereenkomst. Voor meer informatie over hoe Google gegevens verwerkt, zie het",
+          "googlePrivacyPolicy": "Privacybeleid van Google",
+          "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden."
+        }
+      },
+      "contact": {
+        "title": "Neem contact op",
+        "content": "Als u vragen heeft over dit Privacybeleid, kunt u contact met ons opnemen via e-mail:"
+      }
+    },
+    "terms": {
+      "titleStart": "Algemene",
+      "conditions": "Voorwaarden",
+      "lastUpdated": "Laatste update: 1 januari 2025",
+      "highlights": {
+        "agreement": {
+          "title": "Gebruikersovereenkomst",
+          "description": "Door deze app te gebruiken, ga je akkoord met deze voorwaarden."
+        },
+        "liability": {
+          "title": "Beperkte aansprakelijkheid",
+          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen op basis van deze app."
+        },
+        "warranty": {
+          "title": "Geen garantie",
+          "description": "De app wordt aangeboden zoals hij is, zonder enige garantie."
+        }
+      },
+      "intro": "Lees deze Algemene Voorwaarden zorgvuldig door voordat je de Musclog-applicatie gebruikt. Door onze service te openen of te gebruiken, ga je akkoord met deze voorwaarden.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretatie en Definities",
+          "content1": "Woorden waarvan de beginletter een hoofdletter is, hebben betekenissen die zijn gedefinieerd onder de volgende voorwaarden. De volgende definities hebben dezelfde betekenis, ongeacht of ze in enkelvoud of meervoud voorkomen.",
+          "content2": "Voor de doeleinden van deze Algemene Voorwaarden:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Applicatie",
+            "def": "betekent het softwareprogramma dat door Musclog wordt aangeboden, door jou gedownload op een elektronisch apparaat, genaamd Musclog."
+          },
+          "company": {
+            "term": "Bedrijf",
+            "def": "verwijst naar Musclog, de ontwikkelaar en beheerder van deze open-source applicatie."
+          },
+          "device": {
+            "term": "Apparaat",
+            "def": "betekent elk apparaat dat toegang heeft tot de Service, zoals een smartphone of tablet."
+          },
+          "service": {
+            "term": "Service",
+            "def": "verwijst naar de Applicatie."
+          },
+          "you": {
+            "term": "Jij",
+            "def": "betekent de persoon die de Service gebruikt of benadert."
+          }
+        },
+        "acknowledgment": {
+          "title": "Erkenning",
+          "content1": "Dit zijn de Algemene Voorwaarden die het gebruik van deze Service regelen en de overeenkomst die van kracht is tussen jou en het Bedrijf. Door de Service te gebruiken, ga je akkoord met deze Algemene Voorwaarden.",
+          "content2": "Je toegang tot en gebruik van de Service is ook afhankelijk van je aanvaarding van en naleving van het Privacybeleid van het Bedrijf.",
+          "content3": "Musclog is een local-first, open-source fitnesstracker. Er is geen account vereist. Je gegevens blijven op je apparaat en worden nooit naar onze servers verzonden."
+        },
+        "links": {
+          "title": "Links naar andere websites",
+          "content": "Onze Service kan links bevatten naar websites of diensten van derden die niet eigendom zijn van of worden beheerd door het Bedrijf. Wij hebben geen controle over en aanvaarden geen verantwoordelijkheid voor de inhoud, het privacybeleid of de praktijken van websites of diensten van derden."
+        },
+        "termination": {
+          "title": "Beëindiging",
+          "content": "Wij kunnen je toegang onmiddellijk beëindigen of opschorten, zonder voorafgaande kennisgeving of aansprakelijkheid, om welke reden dan ook, inclusief als je deze Algemene Voorwaarden schendt. Na beëindiging eindigt je recht om de Service te gebruiken onmiddellijk."
+        },
+        "liability": {
+          "title": "Beperking van aansprakelijkheid",
+          "content1": "Voor zover maximaal toegestaan door toepasselijk recht, is het Bedrijf in geen geval aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade, inclusief maar niet beperkt tot verlies van winst, gegevens, gebruik, goodwill of andere immateriële verliezen.",
+          "content2": "Deze applicatie is geen medisch hulpmiddel. Raadpleeg altijd een gekwalificeerde zorgverlener voordat je gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app."
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "content1": "De Service wordt aan jou geleverd \"ZOALS ZIJ IS\" en \"ZOALS BESCHIKBAAR\", met alle fouten en gebreken en zonder enige garantie.",
+          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten."
+        },
+        "governingLaw": {
+          "title": "Toepasselijk recht",
+          "content1": "De wetten van het land, met uitzondering van de conflictregelgeving, zijn van toepassing op deze Voorwaarden en je gebruik van de Service.",
+          "content2": "Lokale consumentenbeschermingswetten kunnen je aanvullende rechten verlenen. Niets in deze Voorwaarden tast rechten aan die je als consument hebt op grond van toepasselijk recht."
+        },
+        "changes": {
+          "title": "Wijzigingen in deze voorwaarden",
+          "content": "Wij behouden ons het recht voor om deze Voorwaarden naar eigen goeddunken op elk moment te wijzigen of te vervangen. Wij zullen proberen minimaal 30 dagen van tevoren kennis te geven voordat nieuwe voorwaarden van kracht worden. Door de Service te blijven gebruiken na de inwerkingtreding van de wijzigingen, ga je akkoord met de herziene voorwaarden."
+        }
+      },
+      "contact": {
+        "title": "Neem contact op",
+        "content": "Als je vragen hebt over deze Algemene Voorwaarden, kun je contact met ons opnemen via"
+      }
     }
   }
 }

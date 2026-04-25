@@ -24,6 +24,27 @@
 - `npx jest --selectProjects node [path]`: Run specific unit tests in Node environment (avoids ESM/JSI issues)
 - `npx jest --selectProjects jsdom [path]`: Run hook tests requiring DOM (e.g., hooks using `useColorScheme`)
 
+## Repo Structure: Dual-Purpose (App + Website)
+
+This repository serves two distinct purposes that share the same Expo Router project:
+
+- **`app/app/`** — All mobile app screens (iOS & Android). These are the core product screens: nutrition, workout, profile, progress, settings, onboarding, etc.
+- **`app/(website)/`** — The institutional/marketing website (landing page, privacy policy, etc.). This is only rendered on the web platform. Route group `(website)` keeps it isolated from the app routes.
+
+**Key conventions for the website:**
+
+- Files ending in `.web.tsx` inside `app/(website)/` are the web-specific implementations (e.g. `home.web.tsx`). Their non-web counterparts (e.g. `home.tsx`) exist as native stubs or redirects.
+- Website components live in `components/website/` (e.g. `StoreButtons`, `WebsiteBackgrounds`, `WebsiteChrome`).
+- The website uses standard HTML elements (`<div>`, `<section>`, `<a>`) and Tailwind/NativeWind utility classes — **not** React Native primitives.
+- When working on website files, treat them as a standard React web app, not a React Native app.
+- Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.
+
+**When making changes:**
+
+- Changes to `app/app/` affect the mobile app only.
+- Changes to `app/(website)/` affect the public website only.
+- Shared logic (services, database, utils) lives outside both and is used by both platforms.
+
 ## Tech Stack
 
 - **Framework**: React Native (Expo SDK 54) with Expo Router
