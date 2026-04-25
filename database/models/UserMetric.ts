@@ -37,6 +37,7 @@ export type UserMetricType =
   | 'period_flow'
   | 'period_symptoms'
   | 'basal_body_temp'
+  | 'daily_steps'
   | 'other';
 
 export default class UserMetric extends Model {

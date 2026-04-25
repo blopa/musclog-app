@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { WorkoutLogRepository } from '@/database/repositories/WorkoutLogRepository';
 import { NutritionService, UserMetricService } from '@/database/services';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import { computeWeightChangeFromCalorieDelta } from '@/utils/nutritionCalculator';
@@ -17,15 +18,25 @@ export interface UseWeightPredictionResult {
   shouldShow: boolean;
   /** Predicted weight in kg */
   predictedWeightKg: number | null;
+  /** Whether the user had completed workouts since the last weigh-in */
+  hadWorkouts: boolean;
+  /** Average daily steps since the last weigh-in, or null if no data */
+  avgDailySteps: number | null;
   isLoading: boolean;
 }
 
 // TODO: check if there were any workouts and steps since last weight and use that to predict if weight change was just fat or muscle
+// to do that, get the average steps from a period when the user was still weighting in, and then compare to the steps from the period without weight ins
+// then from that, calculate how many extra calories were burned because of these new steps
+// the idea is that if the user went on holidays, they eat more, but they also move more, so maybe it all evens out
+// as for the workouts, we need to think of a way to infer if the gained weight is muscle or fat based on it
 export function useWeightPrediction(): UseWeightPredictionResult {
   const [dataLoading, setDataLoading] = useState(true);
   const [conditionsMet, setConditionsMet] = useState(false);
   const [lastWeightKg, setLastWeightKg] = useState<number | null>(null);
   const [recentCalories, setRecentCalories] = useState<number[] | null>(null);
+  const [hadWorkouts, setHadWorkouts] = useState(false);
+  const [avgDailySteps, setAvgDailySteps] = useState<number | null>(null);
 
   const { tdee, isLoading: tdeeLoading } = useEmpiricalTDEE({
     lookbackDays: 30,
@@ -81,8 +92,31 @@ export function useWeightPrediction(): UseWeightPredictionResult {
         const decrypted = await latestWeight.getDecrypted();
         const weightKg = storedWeightToKg(decrypted.value, decrypted.unit);
 
+        // Activity data since last weigh-in: workouts and steps
+        const sinceLastWeighIn = {
+          startDate: latestWeight.date,
+          endDate: todayStart,
+        };
+
+        const completedWorkouts = await WorkoutLogRepository.getCompleted(sinceLastWeighIn).fetch();
+        const workoutsPresent = completedWorkouts.length > 0;
+
+        const stepsMetrics = await UserMetricService.getMetricsHistory(
+          'daily_steps',
+          sinceLastWeighIn
+        );
+
+        let averageSteps: number | null = null;
+        if (stepsMetrics.length > 0) {
+          const decryptedSteps = await Promise.all(stepsMetrics.map((m) => m.getDecrypted()));
+          const total = decryptedSteps.reduce((sum, s) => sum + s.value, 0);
+          averageSteps = total / stepsMetrics.length;
+        }
+
         setLastWeightKg(weightKg);
         setRecentCalories(caloriesPerDay);
+        setHadWorkouts(workoutsPresent);
+        setAvgDailySteps(averageSteps);
         setConditionsMet(true);
       } catch {
         setConditionsMet(false);
@@ -111,9 +145,16 @@ export function useWeightPrediction(): UseWeightPredictionResult {
       0
     );
 
+    // If the user had no declared lifting experience but was actively working out
+    // during the period, treat them as at least intermediate so the prediction
+    // reflects realistic muscle-vs-fat composition rather than defaulting to a
+    // beginner split.
+    const inferredExperience =
+      user?.liftingExperience ?? (hadWorkouts ? 'intermediate' : undefined);
+
     const weightChangeKg = computeWeightChangeFromCalorieDelta(totalDeltaKcal, lastWeightKg, {
       bodyFatPercent: metrics?.bodyFat ?? undefined,
-      liftingExperience: user?.liftingExperience ?? undefined,
+      liftingExperience: inferredExperience,
     });
 
     return lastWeightKg + weightChangeKg;
@@ -127,6 +168,7 @@ export function useWeightPrediction(): UseWeightPredictionResult {
     metricsLoading,
     metrics?.bodyFat,
     user?.liftingExperience,
+    hadWorkouts,
   ]);
 
   const isLoading = dataLoading || tdeeLoading || userLoading || metricsLoading;
@@ -134,6 +176,8 @@ export function useWeightPrediction(): UseWeightPredictionResult {
   return {
     shouldShow: !isLoading && conditionsMet && predictedWeightKg !== null,
     predictedWeightKg,
+    hadWorkouts,
+    avgDailySteps,
     isLoading,
   };
 }

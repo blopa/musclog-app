@@ -23,11 +23,13 @@ import { database } from '@/database';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import Setting from '@/database/models/Setting';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 import {
   DataValidator,
+  HealthDataTransformer,
   HeightConverter,
   MetricType,
   TimestampConverter,
@@ -259,7 +261,110 @@ export async function syncFitnessMetrics(
     }
   }
 
+  try {
+    if (await canReadQuantity('HKQuantityTypeIdentifierStepCount')) {
+      const stepsCounts = await syncDailySteps(timeRange);
+      totals.totalRead += stepsCounts.totalRead;
+      totals.written += stepsCounts.written;
+      totals.updated += stepsCounts.updated;
+    }
+  } catch (err) {
+    handleError(err, 'healthConnectFitness.ios.syncDailySteps');
+    console.warn('[healthConnectFitness.iOS] Failed to sync daily steps:', err);
+  }
+
   return totals;
+}
+
+/**
+ * Reads step count samples from HealthKit, aggregates by local calendar day,
+ * and upserts one `daily_steps` UserMetric per day.
+ */
+async function syncDailySteps(timeRange: {
+  startTime: number;
+  endTime: number;
+}): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {
+  const counts = { totalRead: 0, written: 0, updated: 0 };
+
+  const samples = await queryQuantitySamples('HKQuantityTypeIdentifierStepCount', {
+    limit: 0,
+    unit: 'count',
+    ascending: false,
+    filter: {
+      date: {
+        startDate: new Date(timeRange.startTime),
+        endDate: new Date(timeRange.endTime),
+      },
+    },
+  });
+
+  counts.totalRead = samples.length;
+
+  // Aggregate step counts by local calendar day (midnight ms)
+  const stepsByDay = new Map<number, number>();
+  for (const sample of samples) {
+    const dayMs = localDayStartMs(sample.startDate);
+    stepsByDay.set(dayMs, (stepsByDay.get(dayMs) ?? 0) + sample.quantity);
+  }
+
+  if (stepsByDay.size === 0) {
+    return counts;
+  }
+
+  const existingMetrics = await database
+    .get<UserMetric>('user_metrics')
+    .query(
+      Q.where('type', MetricType.STEPS),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.where('date', Q.gte(timeRange.startTime)),
+      Q.where('date', Q.lte(timeRange.endTime))
+    )
+    .fetch();
+
+  const existingByDay = new Map<number, UserMetric>();
+  for (const m of existingMetrics) {
+    existingByDay.set(m.date, m);
+  }
+
+  const now = Date.now();
+  const timezone = TimestampConverter.getTimezone();
+
+  await database.write(async () => {
+    for (const [dayMs, totalSteps] of stepsByDay.entries()) {
+      const transformed = HealthDataTransformer.transformSteps(totalSteps, dayMs);
+      const encrypted = await encryptUserMetricFields({
+        value: transformed.value,
+        unit: transformed.unit,
+        date: transformed.date,
+      });
+
+      const existing = existingByDay.get(dayMs);
+      if (!existing) {
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = MetricType.STEPS as UserMetricType;
+          metric.valueRaw = encrypted.value;
+          metric.unitRaw = encrypted.unit;
+          metric.date = dayMs;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        counts.written++;
+      } else {
+        const decrypted = await existing.getDecrypted();
+        if (Math.abs(decrypted.value - totalSteps) > 0) {
+          await existing.update((m) => {
+            m.valueRaw = encrypted.value;
+            m.unitRaw = encrypted.unit;
+            m.updatedAt = now;
+          });
+          counts.updated++;
+        }
+      }
+    }
+  });
+
+  return counts;
 }
 
 async function syncMetricTypeWithRetry(

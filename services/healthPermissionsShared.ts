@@ -21,4 +21,5 @@ export const REQUIRED_HEALTH_PERMISSIONS: readonly HealthPermissionDescriptor[] 
   { accessType: 'write', recordType: 'ExerciseSession' },
   { accessType: 'read', recordType: 'LeanBodyMass' },
   { accessType: 'write', recordType: 'LeanBodyMass' },
+  { accessType: 'read', recordType: 'Steps' },
 ];

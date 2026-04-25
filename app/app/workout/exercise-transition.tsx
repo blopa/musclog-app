@@ -181,7 +181,9 @@ export default function NewExerciseTransitionScreen() {
   const handleStartNextExercise = () => {
     if (params.workoutLogId) {
       const exerciseId = params.nextExerciseId ? `&exerciseId=${params.nextExerciseId}` : '';
-      router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}${exerciseId}`);
+      router.replace(
+        `/app/workout/workout-session?workoutLogId=${params.workoutLogId}${exerciseId}`
+      );
     }
   };
 

@@ -22,6 +22,7 @@ import { database } from '@/database';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import Setting from '@/database/models/Setting';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
+import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 import { healthConnectService } from './healthConnect';
@@ -242,7 +243,120 @@ export async function syncFitnessMetrics(
     }
   }
 
+  try {
+    const hasStepsPermission = await healthConnectService.hasPermissionForRecordType(
+      'Steps',
+      'read'
+    );
+
+    if (hasStepsPermission) {
+      const stepsCounts = await syncDailySteps(timeRange);
+      totals.totalRead += stepsCounts.totalRead;
+      totals.written += stepsCounts.written;
+      totals.updated += stepsCounts.updated;
+    }
+  } catch (err) {
+    handleError(err, 'healthConnectFitness.android.syncDailySteps');
+    console.warn('[healthConnectFitness] Failed to sync daily steps:', err);
+  }
+
   return totals;
+}
+
+// ---------------------------------------------------------------------------
+// Daily steps sync (aggregated — different from point-in-time metric sync)
+// ---------------------------------------------------------------------------
+
+/**
+ * Reads Steps records from Health Connect, aggregates by local calendar day,
+ * and upserts one `daily_steps` UserMetric per day.
+ */
+async function syncDailySteps(timeRange: {
+  startTime: number;
+  endTime: number;
+}): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {
+  const counts = { totalRead: 0, written: 0, updated: 0 };
+
+  const hcResult = await healthConnectService.readRecords('Steps', {
+    operator: 'between',
+    startTime: TimestampConverter.unixToIso(timeRange.startTime),
+    endTime: TimestampConverter.unixToIso(timeRange.endTime),
+  });
+
+  const hcRecords = hcResult.records ?? [];
+  counts.totalRead = hcRecords.length;
+
+  // Aggregate step counts by local calendar day (midnight ms)
+  const stepsByDay = new Map<number, number>();
+  for (const record of hcRecords) {
+    try {
+      const ts = TimestampConverter.isoToUnix(record.startTime);
+      const dayMs = localDayStartMs(new Date(ts));
+      stepsByDay.set(dayMs, (stepsByDay.get(dayMs) ?? 0) + (record.count ?? 0));
+    } catch {
+      // skip malformed records
+    }
+  }
+
+  if (stepsByDay.size === 0) {
+    return counts;
+  }
+
+  // Load existing daily_steps metrics for the window
+  const existingMetrics = await database
+    .get<UserMetric>('user_metrics')
+    .query(
+      Q.where('type', MetricType.STEPS),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.where('date', Q.gte(timeRange.startTime)),
+      Q.where('date', Q.lte(timeRange.endTime))
+    )
+    .fetch();
+
+  const existingByDay = new Map<number, UserMetric>();
+  for (const m of existingMetrics) {
+    existingByDay.set(m.date, m);
+  }
+
+  const now = Date.now();
+  const timezone = TimestampConverter.getTimezone();
+
+  await database.write(async () => {
+    for (const [dayMs, totalSteps] of stepsByDay.entries()) {
+      const transformed = HealthDataTransformer.transformSteps(totalSteps, dayMs);
+      const encrypted = await encryptUserMetricFields({
+        value: transformed.value,
+        unit: transformed.unit,
+        date: transformed.date,
+      });
+
+      const existing = existingByDay.get(dayMs);
+      if (!existing) {
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = MetricType.STEPS as UserMetricType;
+          metric.valueRaw = encrypted.value;
+          metric.unitRaw = encrypted.unit;
+          metric.date = dayMs;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        counts.written++;
+      } else {
+        const decrypted = await existing.getDecrypted();
+        if (Math.abs(decrypted.value - totalSteps) > 0) {
+          await existing.update((m) => {
+            m.valueRaw = encrypted.value;
+            m.unitRaw = encrypted.unit;
+            m.updatedAt = now;
+          });
+          counts.updated++;
+        }
+      }
+    }
+  });
+
+  return counts;
 }
 
 // ---------------------------------------------------------------------------
