@@ -1,5 +1,5 @@
 import { EXERCISE_TYPES } from '@/constants/exercises';
-import type { EquipmentType } from '@/database/models';
+import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
 import { roundToDecimalPlaces } from './roundDecimal';
@@ -335,4 +335,37 @@ export function calculateRepsForTargetRIR(
   }
 
   return Math.max(1, lo - targetRIR);
+}
+
+/**
+ * Estimates calories burned from daily steps using:
+ * 1. stride length inferred from height and gender
+ * 2. an age-adjusted default walking cadence to estimate time
+ * 3. the ACSM level-walking equation to estimate gross energy expenditure
+ */
+export function calculateCaloriesBurnedBySteps(
+  steps: number,
+  gender: Gender,
+  age: number,
+  weightKg: number,
+  heightCm: number
+): number {
+  if (steps <= 0 || age <= 0 || weightKg <= 0 || heightCm <= 0) {
+    return 0;
+  }
+
+  const strideFactor = gender === 'male' ? 0.415 : gender === 'female' ? 0.413 : 0.414;
+  const strideLengthMeters = (heightCm * strideFactor) / 100;
+  const distanceMeters = steps * strideLengthMeters;
+
+  // Default cadence buckets keep the estimate stable without needing duration input.
+  const cadenceStepsPerMinute = age >= 65 ? 95 : age >= 40 ? 100 : 105;
+  const durationMinutes = steps / cadenceStepsPerMinute;
+  const speedMetersPerMinute = distanceMeters / durationMinutes;
+
+  // ACSM horizontal walking estimate on level ground: VO2 = 3.5 + 0.1 * speed(m/min)
+  const vo2MlPerKgPerMin = 3.5 + 0.1 * speedMetersPerMinute;
+  const calories = (vo2MlPerKgPerMin * weightKg * durationMinutes) / 200;
+
+  return roundToDecimalPlaces(calories);
 }
