@@ -36,7 +36,8 @@ export function DownloadModal({
 }: DownloadModalProps) {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popoverContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -50,7 +51,11 @@ export function DownloadModal({
     };
 
     const handlePointerDown = (event: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedTrigger = triggerRef.current?.contains(target);
+      const clickedPopover = popoverContentRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedPopover) {
         setIsOpen(false);
       }
     };
@@ -76,7 +81,7 @@ export function DownloadModal({
   };
 
   return (
-    <div className="relative inline-flex" ref={popoverRef}>
+    <div className="relative inline-flex" ref={triggerRef}>
       <button
         type="button"
         className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]} ${className ?? ''}`}
@@ -91,20 +96,21 @@ export function DownloadModal({
       {isOpen
         ? createPortal(
             <div
+              ref={popoverContentRef}
               className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
               style={{
                 borderColor: CARD_BORDER,
-                top: popoverRef.current
-                  ? popoverRef.current.getBoundingClientRect().bottom + 12
+                top: triggerRef.current
+                  ? triggerRef.current.getBoundingClientRect().bottom + 12
                   : 0,
                 left:
-                  variant === 'white' && popoverRef.current
-                    ? popoverRef.current.getBoundingClientRect().left +
-                      popoverRef.current.getBoundingClientRect().width / 2
+                  variant === 'white' && triggerRef.current
+                    ? triggerRef.current.getBoundingClientRect().left +
+                      triggerRef.current.getBoundingClientRect().width / 2
                     : undefined,
                 right:
-                  variant !== 'white' && popoverRef.current
-                    ? window.innerWidth - popoverRef.current.getBoundingClientRect().right
+                  variant !== 'white' && triggerRef.current
+                    ? window.innerWidth - triggerRef.current.getBoundingClientRect().right
                     : undefined,
               }}
               role="dialog"
