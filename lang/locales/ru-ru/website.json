@@ -137,10 +137,17 @@
       "license": "Лицензия",
       "copyright": "Бесплатное и Open Source ПО. Создано для вашей конфиденциальности."
     },
+    "cookieConsent": {
+      "ariaLabel": "Согласие на cookies",
+      "description": "Мы используем Google Analytics, чтобы понять, как посетители используют сайт. Аналитические cookies устанавливаются только если вы согласитесь. Ознакомьтесь с нашей",
+      "privacyLink": "Политикой конфиденциальности",
+      "accept": "Принять",
+      "reject": "Отклонить",
+      "cookieSettings": "Настройки cookies"
+    },
     "privacy": {
       "titleStart": "Политика",
       "titleHighlight": "конфиденциальности",
-      "lastUpdated": "Последнее обновление: 14 июля 2024 г.",
       "highlights": {
         "dataProtection": {
           "title": "Защита данных",
@@ -376,7 +383,6 @@
     "terms": {
       "titleStart": "Условия",
       "conditions": "использования",
-      "lastUpdated": "Последнее обновление: 1 января 2025 г.",
       "highlights": {
         "agreement": {
           "title": "Пользовательское соглашение",

@@ -138,10 +138,17 @@
       "license": "Licencia",
       "copyright": "Software Libre y Open Source. Construido para tu privacidad."
     },
+    "cookieConsent": {
+      "ariaLabel": "Consentimiento de cookies",
+      "description": "Usamos Google Analytics para entender cómo los visitantes usan el sitio web. Las cookies analíticas solo se configuran si aceptas. Lee nuestra",
+      "privacyLink": "Política de Privacidad",
+      "accept": "Aceptar",
+      "reject": "Rechazar",
+      "cookieSettings": "Configuración de cookies"
+    },
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidad",
-      "lastUpdated": "Última actualización: 14 de julio de 2024",
       "highlights": {
         "dataProtection": {
           "title": "Protección de datos",
@@ -377,7 +384,6 @@
     "terms": {
       "titleStart": "Términos y",
       "conditions": "Condiciones",
-      "lastUpdated": "Última actualización: 1 de enero de 2025",
       "highlights": {
         "agreement": {
           "title": "Acuerdo de uso",

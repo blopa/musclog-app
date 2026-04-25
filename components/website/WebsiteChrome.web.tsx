@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { StoreButtons } from '@/components/website/StoreButtons';
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import i18n from '@/lang/lang';
+import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
 const BRAND_GREEN = '#22C55E';
 const BODY_TEXT = '#D1D5DB';
@@ -19,9 +20,6 @@ const languages = [
   { code: 'nl-nl', label: 'Nederlands', flag: '🇳🇱' },
   { code: 'pt-br', label: 'Português', flag: '🇧🇷' },
 ];
-
-// TODO: implement this later
-const resetAnalyticsConsent = () => {};
 
 interface DownloadModalProps {
   children: ReactNode;
@@ -328,6 +326,7 @@ export function Header() {
 export function Footer() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.footer' });
   const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const { t: consentT } = useTranslation(undefined, { keyPrefix: 'website.cookieConsent' });
 
   const footerLinks = [
     { text: t('privacyPolicy'), href: '/privacy' },
@@ -389,7 +388,7 @@ export function Footer() {
               className="cursor-pointer text-sm transition-colors hover:text-[#22C55E]"
               style={{ color: BODY_TEXT_SOFT }}
             >
-              Cookie Settings
+              {consentT('cookieSettings')}
             </button>
           </nav>
 

@@ -138,10 +138,17 @@
       "license": "Licentie",
       "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
     },
+    "cookieConsent": {
+      "ariaLabel": "Cookietoestemming",
+      "description": "We gebruiken Google Analytics om te begrijpen hoe bezoekers de website gebruiken. Analytische cookies worden alleen geplaatst als u accepteert. Lees ons",
+      "privacyLink": "Privacybeleid",
+      "accept": "Accepteren",
+      "reject": "Weigeren",
+      "cookieSettings": "Cookie-instellingen"
+    },
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatste update: 14 juli 2024",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -377,7 +384,6 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
-      "lastUpdated": "Laatste update: 1 januari 2025",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",

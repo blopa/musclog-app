@@ -139,10 +139,18 @@
       "license": "License",
       "copyright": "Free & Open Source Software. Built for your privacy."
     },
+    "cookieConsent": {
+      "ariaLabel": "Cookie consent",
+      "description": "We use Google Analytics to understand how visitors use the website. Analytics cookies are only set if you accept. Read our",
+      "privacyLink": "Privacy Policy",
+      "accept": "Accept",
+      "reject": "Reject",
+      "cookieSettings": "Cookie settings"
+    },
     "privacy": {
       "titleStart": "Privacy",
       "titleHighlight": "Policy",
-      "lastUpdated": "Last updated: July 14, 2024",
+      "lastUpdated": "Last updated: April 25, 2026",
       "highlights": {
         "dataProtection": {
           "title": "Data Protection",
@@ -378,7 +386,7 @@
     "terms": {
       "titleStart": "Terms &",
       "conditions": "Conditions",
-      "lastUpdated": "Last updated: January 1, 2025",
+      "lastUpdated": "Last updated: April 25, 2026",
       "highlights": {
         "agreement": {
           "title": "User Agreement",

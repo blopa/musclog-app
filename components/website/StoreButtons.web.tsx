@@ -1,11 +1,10 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
+
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.werules.logger';
 const TESTFLIGHT_URL = 'https://testflight.apple.com/join/mq3QMSHU';
-
-// TODO: implement this later
-const trackStoreButtonClick = (_param: unknown) => {};
 
 function AppleLogo() {
   return (
