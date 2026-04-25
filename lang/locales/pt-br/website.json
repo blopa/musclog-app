@@ -249,9 +249,9 @@
           "optionalAi": {
             "title": "Recursos opcionais de IA e provedores LLM de terceiros",
             "content1": "O aplicativo Musclog pode ser usado integralmente offline, exceto por solicitações opcionais a fontes externas de dados nutricionais. Por padrão, o Musclog não envia seus dados de treino, nutrição, saúde ou perfil aos nossos servidores.",
-            "content2": "O Musclog também oferece recursos opcionais de IA que exigem que você utilize sua própria chave de API. Esses recursos permanecem desativados, a menos que você os habilite expressamente e configure seu próprio provedor.",
-            "content3": "Se você optar por usar um recurso de IA com sua própria chave de API, os dados que decidir enviar a esse provedor poderão ser processados pelo provedor terceirizado selecionado de acordo com sua relação com ele e com os termos de privacidade aplicáveis desse provedor. O Musclog não controla a forma como esses provedores processam os dados que você lhes envia.",
-            "content4": "Atualmente, os provedores compatíveis são OpenAI e Google Gemini. Você deve revisar as políticas de privacidade aplicáveis antes de habilitar esses recursos:",
+            "content2": "O Musclog também oferece recursos opcionais de IA que exigem que você configure seu próprio provedor, como OpenAI, Google Gemini ou um endpoint de LLM local/autohospedado. Esses recursos permanecem desativados, a menos que você os habilite expressamente.",
+            "content3": "Se você optar por usar um recurso de IA, os dados que decidir enviar serão enviados ao provedor ou endpoint que você configurar. Se você utilizar um modelo local autohospedado sob seu próprio controle, esses dados poderão permanecer dentro do seu próprio ambiente. Se você utilizar um endpoint hospedado por terceiros, incluindo um serviço hospedado de modelos locais, esse provedor poderá processar os dados de acordo com seus próprios termos e práticas de privacidade. O Musclog não controla a forma como provedores externos processam os dados que você lhes envia.",
+            "content4": "Atualmente, o Musclog oferece suporte a OpenAI, Google Gemini e endpoints de LLM locais ou autohospedados compatíveis. Você deve revisar as políticas de privacidade aplicáveis antes de habilitar provedores de terceiros, incluindo:",
             "openaiPrivacyPolicy": "Política de Privacidade da OpenAI",
             "googlePrivacyPolicy": "Política de Privacidade do Google",
             "and": "e"
@@ -261,7 +261,7 @@
           "title": "Uso de seus Dados Pessoais",
           "items": [
             "Para fornecer e manter nosso Serviço, incluindo o monitoramento do uso do nosso Serviço.",
-            "Para fornecer recursos opcionais com tecnologia de IA apenas quando você os habilitar expressamente e configurar seu próprio provedor terceirizado.",
+            "Para fornecer recursos opcionais com tecnologia de IA apenas quando você os habilitar expressamente e configurar seu próprio provedor ou endpoint.",
             "Para gerenciar sua Conta: para gerenciar seu registro como usuário do Serviço.",
             "Para a execução de um contrato: o desenvolvimento, cumprimento e execução do contrato de compra dos produtos ou serviços que você adquiriu.",
             "Para entrar em contato com você por e-mail, chamadas telefônicas, SMS ou outras formas equivalentes de comunicação eletrônica.",

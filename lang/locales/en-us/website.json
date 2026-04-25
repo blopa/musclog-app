@@ -250,9 +250,9 @@
           "optionalAi": {
             "title": "Optional AI Features and Third-Party LLM Providers",
             "content1": "The Musclog application can be used fully offline, except for optional requests to external nutrition data sources. By default, Musclog does not send your workout, nutrition, health, or profile data to our servers.",
-            "content2": "Musclog also offers optional AI features that require you to bring your own API key. These features are disabled unless you explicitly enable them and configure your own provider.",
-            "content3": "If you choose to use an AI feature with your own API key, the data that you choose to submit to that provider may be processed by the selected third-party provider in accordance with your relationship and privacy terms with that provider. Musclog does not control how those providers process data you send to them.",
-            "content4": "At present, the supported providers are OpenAI and Google Gemini. You should review the applicable privacy policies before enabling those features:",
+            "content2": "Musclog also offers optional AI features that require you to configure your own provider, such as OpenAI, Google Gemini, or a local/self-hosted LLM endpoint. These features are disabled unless you explicitly enable them.",
+            "content3": "If you choose to use an AI feature, the data that you decide to submit will be sent to the provider or endpoint you configure. If you use a self-hosted local model under your own control, that data may remain within your own environment. If you use a third-party hosted endpoint, including a hosted local-model service, that provider may process the data in accordance with its own terms and privacy practices. Musclog does not control how external providers process data you send to them.",
+            "content4": "At present, Musclog supports OpenAI, Google Gemini, and compatible local or self-hosted LLM endpoints. You should review the applicable privacy policies before enabling third-party providers, including:",
             "openaiPrivacyPolicy": "OpenAI Privacy Policy",
             "googlePrivacyPolicy": "Google Privacy Policy",
             "and": "and"
@@ -262,7 +262,7 @@
           "title": "Use of Your Personal Data",
           "items": [
             "To provide and maintain our Service, including to monitor the usage of our Service.",
-            "To provide optional AI-powered features only when you explicitly enable them and configure your own third-party provider.",
+            "To provide optional AI-powered features only when you explicitly enable them and configure your own provider or endpoint.",
             "To manage Your Account: to manage Your registration as a user of the Service.",
             "For the performance of a contract: the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased.",
             "To contact You: To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication.",

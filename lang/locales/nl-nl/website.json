@@ -249,9 +249,9 @@
           "optionalAi": {
             "title": "Optionele AI-functies en externe LLM-providers",
             "content1": "De Musclog-applicatie kan volledig offline worden gebruikt, met uitzondering van optionele verzoeken aan externe bronnen voor voedingsgegevens. Standaard verzendt Musclog uw trainings-, voedings-, gezondheids- of profielgegevens niet naar onze servers.",
-            "content2": "Musclog biedt ook optionele AI-functies waarvoor u uw eigen API-sleutel moet gebruiken. Deze functies zijn uitgeschakeld tenzij u ze uitdrukkelijk inschakelt en uw eigen provider configureert.",
-            "content3": "Als u ervoor kiest een AI-functie met uw eigen API-sleutel te gebruiken, kunnen de gegevens die u besluit naar die provider te verzenden door de geselecteerde externe provider worden verwerkt overeenkomstig uw relatie met die provider en diens privacyvoorwaarden. Musclog heeft geen controle over de manier waarop die providers de gegevens verwerken die u naar hen verzendt.",
-            "content4": "Momenteel worden OpenAI en Google Gemini ondersteund. U dient de toepasselijke privacybeleidsregels te raadplegen voordat u deze functies inschakelt:",
+            "content2": "Musclog biedt ook optionele AI-functies waarvoor u uw eigen provider moet configureren, zoals OpenAI, Google Gemini of een lokale/zelfgehoste LLM-endpoint. Deze functies blijven uitgeschakeld tenzij u ze uitdrukkelijk inschakelt.",
+            "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
+            "content4": "Momenteel ondersteunt Musclog OpenAI, Google Gemini en compatibele lokale of zelfgehoste LLM-endpoints. U dient de toepasselijke privacybeleidsregels te raadplegen voordat u externe providers inschakelt, waaronder:",
             "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
             "googlePrivacyPolicy": "Privacybeleid van Google",
             "and": "en"
@@ -261,7 +261,7 @@
           "title": "Gebruik van uw Persoonsgegevens",
           "items": [
             "Om onze Service te leveren en te onderhouden, inclusief het monitoren van het gebruik.",
-            "Om optionele AI-functies aan te bieden, uitsluitend wanneer u deze uitdrukkelijk inschakelt en uw eigen externe provider configureert.",
+            "Om optionele AI-functies aan te bieden, uitsluitend wanneer u deze uitdrukkelijk inschakelt en uw eigen provider of endpoint configureert.",
             "Om uw Account te beheren: om uw registratie als gebruiker van de Service te beheren.",
             "Voor de uitvoering van een contract: de ontwikkeling, naleving en uitvoering van het aankoopcontract voor de producten of diensten die u hebt aangeschaft.",
             "Om contact met u op te nemen via e-mail, telefoongesprekken, sms of andere gelijkwaardige vormen van elektronische communicatie.",
