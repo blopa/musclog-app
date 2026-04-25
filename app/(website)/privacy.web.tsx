@@ -315,8 +315,21 @@ export default function Privacy() {
                 <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                   {t('sections.collecting.optionalAi.content3')}
                 </p>
+                <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                  {t('sections.collecting.optionalAi.content4')}
+                </p>
                 <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-                  {t('sections.collecting.optionalAi.content4')}{' '}
+                  {t('sections.collecting.optionalAi.content5')}{' '}
+                  <a
+                    href="https://www.cloudflare.com/privacypolicy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {t('sections.collecting.optionalAi.cloudflarePrivacyPolicy')}
+                  </a>
+                  ,{' '}
                   <a
                     href="https://openai.com/policies/privacy-policy/"
                     target="_blank"
@@ -326,7 +339,7 @@ export default function Privacy() {
                   >
                     {t('sections.collecting.optionalAi.openaiPrivacyPolicy')}
                   </a>
-                  {' '}{t('sections.collecting.optionalAi.and')}{' '}
+                  ,{' '}
                   <a
                     href="https://policies.google.com/privacy"
                     target="_blank"
