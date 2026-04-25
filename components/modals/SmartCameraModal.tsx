@@ -78,6 +78,12 @@ type CameraModalProps = {
   mealTypeForLog?: MealType;
   /** Called when user wants to open food search. Parent should close camera and open food search to avoid nested modals. */
   onOpenFoodSearch?: (mealType: MealType) => void;
+  /**
+   * When provided, the camera operates in "return barcode" mode: any detected barcode (live, shutter,
+   * or gallery) is forwarded to this callback and the modal closes — the internal food-details and
+   * food-not-found flows are bypassed entirely. The parent owns what to do with the barcode value.
+   */
+  onBarcodeScanned?: (data: string) => void;
 };
 
 export default function SmartCameraModal({
@@ -90,6 +96,7 @@ export default function SmartCameraModal({
   logDate,
   mealTypeForLog,
   onOpenFoodSearch,
+  onBarcodeScanned,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -263,12 +270,18 @@ export default function SmartCameraModal({
     ({ data }: { data: string }) => {
       if (cameraMode === 'barcode-scan' && !isSearchingBarcodeRef.current) {
         isSearchingBarcodeRef.current = true;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+        if (onBarcodeScanned) {
+          onBarcodeScanned(data);
+          onClose();
+          return;
+        }
+
         setIsSearchingBarcode(true);
         setDetectedBarcode(data);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       }
     },
-    [cameraMode]
+    [cameraMode, onBarcodeScanned, onClose]
   );
 
   const processAiPhoto = useCallback(
@@ -463,13 +476,22 @@ export default function SmartCameraModal({
         const barcode = await detectBarcodes(photo.uri);
 
         if (barcode) {
+          if (onBarcodeScanned) {
+            onBarcodeScanned(barcode);
+            onClose();
+            return;
+          }
+
           setDetectedBarcode(barcode);
           setIsFoodDetailsModalVisible(true);
         } else {
           showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
           isSearchingBarcodeRef.current = false;
           setIsSearchingBarcode(false);
-          setIsFoodNotFoundModalVisible(true);
+
+          if (!onBarcodeScanned) {
+            setIsFoodNotFoundModalVisible(true);
+          }
         }
       } catch (error) {
         console.error('Error detecting barcode:', error);
@@ -481,7 +503,7 @@ export default function SmartCameraModal({
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, [cameraMode, t, processAiPhoto]);
+  }, [cameraMode, t, processAiPhoto, onBarcodeScanned, onClose]);
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -643,6 +665,12 @@ export default function SmartCameraModal({
             const barcode = await detectBarcodes(selectedAsset.uri);
 
             if (barcode) {
+              if (onBarcodeScanned) {
+                onBarcodeScanned(barcode);
+                onClose();
+                return;
+              }
+
               setDetectedBarcode(barcode);
               setIsFoodDetailsModalVisible(true);
               // Keep loading visible until food details modal is shown (cleared in useEffect above)
@@ -650,8 +678,11 @@ export default function SmartCameraModal({
               showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
               isSearchingBarcodeRef.current = false;
               setIsSearchingBarcode(false);
-              // Show food not found modal instead of food details modal
-              setIsFoodNotFoundModalVisible(true);
+
+              if (!onBarcodeScanned) {
+                // Show food not found modal instead of food details modal
+                setIsFoodNotFoundModalVisible(true);
+              }
             }
           } catch (error) {
             console.error('Error detecting barcode from gallery:', error);
@@ -680,7 +711,7 @@ export default function SmartCameraModal({
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [cameraMode, processAiPhoto, t]);
+  }, [cameraMode, processAiPhoto, t, onBarcodeScanned, onClose]);
 
   if (!visible) {
     isSearchingBarcodeRef.current = false;

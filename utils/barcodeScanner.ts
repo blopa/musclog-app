@@ -20,5 +20,6 @@ export async function detectBarcodes(imageUri: string): Promise<string | null> {
     '[barcodeScanner.ts] detectBarcodes is not implemented for Web in this file. ' +
       'For web implementations, use the detectBarcodes function from file.web.ts which uses Quagga2.'
   );
+
   return null;
 }

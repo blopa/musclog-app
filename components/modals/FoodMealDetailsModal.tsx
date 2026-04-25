@@ -33,6 +33,7 @@ import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
 import Food from '@/database/models/Food';
@@ -87,7 +88,6 @@ import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
@@ -333,6 +333,7 @@ export function FoodMealDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
+  const { openCamera } = useSmartCamera();
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
@@ -418,7 +419,6 @@ export function FoodMealDetailsModal({
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
   const [editMicroOpen, setEditMicroOpen] = useState(false);
-  const [showBarcodeScannerInEdit, setShowBarcodeScannerInEdit] = useState(false);
   /** Holds product data fetched from an alternate source when the primary source had zero macros. */
   const [refetchedProductDetails, setRefetchedProductDetails] =
     useState<ProductDetailsQueryData | null>(null);
@@ -2126,7 +2126,6 @@ export function FoodMealDetailsModal({
       setEditedOverrides(null);
       setIsEditPopUpVisible(false);
       setEditMicroOpen(false);
-      setShowBarcodeScannerInEdit(false);
       setRefetchedProductDetails(null);
       setIsRefetchingSource(false);
       setAlternateSourceLookupFailed(false);
@@ -2380,7 +2379,14 @@ export function FoodMealDetailsModal({
                   height: theme.size['10'],
                   backgroundColor: theme.colors.accent.primary10,
                 }}
-                onPress={() => setShowBarcodeScannerInEdit(true)}
+                onPress={() =>
+                  openCamera({
+                    mode: 'barcode-scan',
+                    hideCameraModePicker: true,
+                    onBarcodeScanned: (data) =>
+                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
+                  })
+                }
               >
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
@@ -2497,15 +2503,6 @@ export function FoodMealDetailsModal({
           </KeyboardAvoidingView>
         ) : null}
       </BottomPopUp>
-
-      <BarcodeCameraModal
-        visible={showBarcodeScannerInEdit}
-        onClose={() => setShowBarcodeScannerInEdit(false)}
-        onBarcodeScanned={(data) => {
-          setEditForm((prev) => (prev ? { ...prev, barcode: data } : null));
-          setShowBarcodeScannerInEdit(false);
-        }}
-      />
     </FullScreenModal>
   );
 }
