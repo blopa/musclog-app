@@ -15,7 +15,6 @@ import { UserMetricService } from '@/database/services';
 import { usePendingSupplements } from '@/hooks/usePendingSupplements';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { useTodayMood } from '@/hooks/useTodayMood';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -30,8 +29,7 @@ export function HomeSupplementPrompt({
 }: HomeSupplementPromptProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { showDailyMoodPrompt, showDailySupplementPrompt } = useSettings();
-  const { hasMoodToday, isLoading: isMoodLoading } = useTodayMood();
+  const { showDailySupplementPrompt } = useSettings();
   const { pendingSupplements, isLoading: isSupplementsLoading } = usePendingSupplements();
 
   const [isActuallyVisible, setIsActuallyVisible] = useState(false);
@@ -54,14 +52,10 @@ export function HomeSupplementPrompt({
     }
   }, [pendingSupplements, resolvingSupplementId]);
 
-  const moodPromptStillHasPriority = showDailyMoodPrompt && (isMoodLoading || !hasMoodToday);
-  const isLoading = isMoodLoading || isSupplementsLoading;
-
   useEffect(() => {
     const shouldBeVisible =
-      !isLoading &&
+      !isSupplementsLoading &&
       showDailySupplementPrompt &&
-      !moodPromptStillHasPriority &&
       !blockedByHigherPriorityPrompt &&
       currentSupplement != null &&
       resolvingSupplementId == null;
@@ -84,9 +78,8 @@ export function HomeSupplementPrompt({
     blockedByHigherPriorityPrompt,
     currentSupplement,
     height,
-    isLoading,
+    isSupplementsLoading,
     marginBottom,
-    moodPromptStillHasPriority,
     opacity,
     resolvingSupplementId,
     showDailySupplementPrompt,
@@ -101,7 +94,7 @@ export function HomeSupplementPrompt({
 
   if (
     !isActuallyVisible &&
-    (!showDailySupplementPrompt || isLoading || currentSupplement == null)
+    (!showDailySupplementPrompt || isSupplementsLoading || currentSupplement == null)
   ) {
     return null;
   }
@@ -137,9 +130,7 @@ export function HomeSupplementPrompt({
 
     setIsSaving(true);
     setResolvingSupplementId(currentSupplement.id);
-    setTimeout(() => {
-      void saveResponse(value);
-    }, 50);
+    void saveResponse(value);
   };
 
   return (

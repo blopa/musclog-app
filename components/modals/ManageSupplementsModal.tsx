@@ -1,10 +1,12 @@
 import { Check, Pencil, Pill, Plus, Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
+import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { Supplement } from '@/database';
@@ -27,6 +29,8 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
 
   const [supplements, setSupplements] = useState<Supplement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [activeMenuSupplement, setActiveMenuSupplement] = useState<Supplement | null>(null);
   const [isEditorVisible, setIsEditorVisible] = useState(false);
   const [editingSupplement, setEditingSupplement] = useState<Supplement | null>(null);
   const [supplementToDelete, setSupplementToDelete] = useState<Supplement | null>(null);
@@ -34,7 +38,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
   const [hasReminder, setHasReminder] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadSupplements = async () => {
+  const loadSupplements = useCallback(async () => {
     setIsLoading(true);
     try {
       setSupplements(await SupplementService.getActiveSupplements());
@@ -44,13 +48,13 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (visible) {
       void loadSupplements();
     }
-  }, [visible]);
+  }, [visible, loadSupplements]);
 
   useEffect(() => {
     if (!isEditorVisible) {
@@ -71,6 +75,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
   }, [editingSupplement, isEditorVisible]);
 
   const openCreateModal = () => {
+    setIsMenuVisible(false);
     setEditingSupplement(null);
     setIsEditorVisible(true);
   };
@@ -140,13 +145,12 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         title={t('settings.advancedSettings.manageSupplements')}
         subtitle={t('settings.advancedSettings.manageSupplementsSubtitle')}
         headerRight={
-          <Pressable
-            onPress={openCreateModal}
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-bg-overlay"
-            hitSlop={8}
-          >
-            <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          </Pressable>
+          <MenuButton
+            size="md"
+            color={theme.colors.text.primary}
+            onPress={() => setIsMenuVisible(true)}
+            className="h-10 w-10"
+          />
         }
       >
         <View className="px-4 py-6">
@@ -189,30 +193,14 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                           <Text className="text-base font-bold text-text-primary">
                             {supplement.name}
                           </Text>
-                          <Text className="mt-1 text-sm text-text-secondary">
-                            {t('settings.advancedSettings.dailySupplementPromptSubtitle')}
-                          </Text>
                         </View>
                       </View>
-                      <View className="flex-row items-center gap-2">
-                        <Pressable
-                          onPress={() => {
-                            setEditingSupplement(supplement);
-                            setIsEditorVisible(true);
-                          }}
-                          className="h-10 w-10 items-center justify-center rounded-full active:bg-bg-overlay"
-                          hitSlop={8}
-                        >
-                          <Pencil size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                        </Pressable>
-                        <Pressable
-                          onPress={() => setSupplementToDelete(supplement)}
-                          className="h-10 w-10 items-center justify-center rounded-full active:bg-bg-overlay"
-                          hitSlop={8}
-                        >
-                          <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
-                        </Pressable>
-                      </View>
+                      <MenuButton
+                        size="md"
+                        color={theme.colors.text.primary}
+                        onPress={() => setActiveMenuSupplement(supplement)}
+                        className="h-10 w-10"
+                      />
                     </View>
                     <View className="mt-4">
                       <ToggleInput
@@ -304,6 +292,54 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         message={t('common.deleteConfirmMessage', { name: supplementToDelete?.name ?? '' })}
         confirmLabel={t('common.delete')}
         variant="destructive"
+      />
+
+      <BottomPopUpMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        title={t('settings.advancedSettings.manageSupplements')}
+        items={[
+          {
+            icon: Plus,
+            iconColor: theme.colors.text.black,
+            iconBgColor: theme.colors.accent.primary,
+            title: t('settings.advancedSettings.addSupplement'),
+            description: t('settings.advancedSettings.addSupplementDescription'),
+            onPress: openCreateModal,
+          },
+        ]}
+      />
+
+      <BottomPopUpMenu
+        visible={activeMenuSupplement != null}
+        onClose={() => setActiveMenuSupplement(null)}
+        title={activeMenuSupplement?.name ?? ''}
+        items={[
+          {
+            icon: Pencil,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.background.iconDarker,
+            title: t('settings.advancedSettings.editSupplement'),
+            description: t('settings.advancedSettings.editSupplementDescription'),
+            onPress: () => {
+              setEditingSupplement(activeMenuSupplement);
+              setActiveMenuSupplement(null);
+              setIsEditorVisible(true);
+            },
+          },
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('common.delete'),
+            description: t('settings.advancedSettings.deleteSupplementDescription'),
+            titleColor: theme.colors.status.error,
+            onPress: () => {
+              setSupplementToDelete(activeMenuSupplement);
+              setActiveMenuSupplement(null);
+            },
+          },
+        ]}
       />
     </>
   );

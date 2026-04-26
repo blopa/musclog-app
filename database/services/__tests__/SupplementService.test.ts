@@ -26,7 +26,7 @@ jest.mock('@/database/database-instance', () => {
   return {
     database: {
       get: jest.fn().mockReturnValue(mockCollection),
-      write: jest.fn((callback) => callback()),
+      write: jest.fn(async (callback) => callback()),
     },
   };
 });
@@ -54,27 +54,27 @@ describe('SupplementService', () => {
   });
 
   it('creates a supplement with trimmed name and reminder flag', async () => {
-    const mockCreate = jest.fn();
+    const mockRecord = {} as any;
+    const mockCreate = jest.fn().mockImplementation((callback) => {
+      callback(mockRecord);
+      return mockRecord;
+    });
 
     mockDatabase.get.mockReturnValue({
       create: mockCreate,
     } as any);
 
-    await SupplementService.createSupplement({
+    const result = await SupplementService.createSupplement({
       name: '  Creatine  ',
       hasReminder: true,
     });
 
     expect(mockDatabase.write).toHaveBeenCalled();
     expect(mockCreate).toHaveBeenCalledTimes(1);
-
-    const createCallback = mockCreate.mock.calls[0][0];
-    const record = {} as any;
-    createCallback(record);
-
-    expect(record.name).toBe('Creatine');
-    expect(record.hasReminder).toBe(true);
-    expect(typeof record.createdAt).toBe('number');
-    expect(typeof record.updatedAt).toBe('number');
+    expect(mockRecord.name).toBe('Creatine');
+    expect(mockRecord.hasReminder).toBe(true);
+    expect(typeof mockRecord.createdAt).toBe('number');
+    expect(typeof mockRecord.updatedAt).toBe('number');
+    expect(result).toBe(mockRecord);
   });
 });
