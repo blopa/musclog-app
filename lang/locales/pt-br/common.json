@@ -113,5 +113,32 @@
     "errorStack": "Pilha de Erro",
     "componentStack": "Pilha de Componentes",
     "userAgent": "Agente do Usuário"
+  },
+  "app": {
+    "title": "Musclog - Rastreador de Fitness e Nutrição"
+  },
+  "nutrition": {
+    "title": "Nutrição",
+    "food": {
+      "title": "Registro Alimentar"
+    }
+  },
+  "workout": {
+    "title": "Treino",
+    "workouts": {
+      "title": "Treinos"
+    }
+  },
+  "progress": {
+    "title": "Progresso"
+  },
+  "profile": {
+    "title": "Perfil"
+  },
+  "settings": {
+    "title": "Configurações"
+  },
+  "cycle": {
+    "title": "Ciclo"
   }
 }

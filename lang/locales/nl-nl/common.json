@@ -113,5 +113,32 @@
     "errorStack": "Error Stack",
     "componentStack": "Component Stack",
     "userAgent": "User Agent"
+  },
+  "app": {
+    "title": "Musclog - Fitness & Voeding Tracker"
+  },
+  "nutrition": {
+    "title": "Voeding",
+    "food": {
+      "title": "Voedingslogboek"
+    }
+  },
+  "workout": {
+    "title": "Training",
+    "workouts": {
+      "title": "Trainingen"
+    }
+  },
+  "progress": {
+    "title": "Voortgang"
+  },
+  "profile": {
+    "title": "Profiel"
+  },
+  "settings": {
+    "title": "Instellingen"
+  },
+  "cycle": {
+    "title": "Cyclus"
   }
 }

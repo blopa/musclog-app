@@ -113,5 +113,32 @@
     "errorStack": "Стек Ошибки",
     "componentStack": "Стек Компонента",
     "userAgent": "Пользовательский Агент"
+  },
+  "app": {
+    "title": "Musclog - Трекер Фитнеса и Питания"
+  },
+  "nutrition": {
+    "title": "Питание",
+    "food": {
+      "title": "Журнал Питания"
+    }
+  },
+  "workout": {
+    "title": "Тренировка",
+    "workouts": {
+      "title": "Тренировки"
+    }
+  },
+  "progress": {
+    "title": "Прогресс"
+  },
+  "profile": {
+    "title": "Профиль"
+  },
+  "settings": {
+    "title": "Настройки"
+  },
+  "cycle": {
+    "title": "Цикл"
   }
 }
