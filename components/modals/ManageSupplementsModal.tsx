@@ -3,9 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { GenericCard } from '@/components/cards/GenericCard';
-import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
