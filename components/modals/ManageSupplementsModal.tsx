@@ -3,8 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
@@ -14,7 +15,6 @@ import { SupplementService } from '@/database/services';
 import { useTheme } from '@/hooks/useTheme';
 import { showSnackbar } from '@/utils/snackbarService';
 
-import { CenteredModal } from './CenteredModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -224,9 +224,9 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         </View>
       </FullScreenModal>
 
-      <CenteredModal
+      <BottomPopUp
         visible={isEditorVisible}
-        onClose={() => setIsEditorVisible(false)}
+        onClose={isSaving ? undefined : () => setIsEditorVisible(false)}
         title={
           editingSupplement
             ? t('settings.advancedSettings.editSupplement')
@@ -240,6 +240,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
               variant="outline"
               size="sm"
               width="flex-1"
+              disabled={isSaving}
             />
             <Button
               label={t('common.save')}
@@ -254,7 +255,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           </View>
         }
       >
-        <View className="gap-4">
+        <View className="gap-4" pointerEvents={isSaving ? 'none' : 'auto'}>
           <TextInput
             label={t('settings.advancedSettings.supplementNameLabel')}
             value={name}
@@ -279,10 +280,11 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
               icon={Trash2}
               variant="discard"
               width="full"
+              disabled={isSaving}
             />
           ) : null}
         </View>
-      </CenteredModal>
+      </BottomPopUp>
 
       <ConfirmationModal
         visible={supplementToDelete != null}
