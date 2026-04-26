@@ -226,7 +226,8 @@
       "googleStore": "Google Play",
       "appleTitle": "DOWNLOAD ON THE",
       "appleStore": "App Store",
-      "comingSoon": "App Store coming soon!"
+      "comingSoon": "App Store coming soon!",
+      "qrButton": "Show QR codes"
     },
     "footer": {
       "privacyPolicy": "Privacy Policy",

@@ -226,7 +226,8 @@
       "googleStore": "Google Play",
       "appleTitle": "СКАЧАТЬ В",
       "appleStore": "App Store",
-      "comingSoon": "App Store скоро!"
+      "comingSoon": "App Store скоро!",
+      "qrButton": "Показать QR-коды"
     },
     "footer": {
       "privacyPolicy": "Политика Конфиденциальности",

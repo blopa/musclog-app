@@ -226,7 +226,8 @@
       "googleStore": "Google Play",
       "appleTitle": "BAIXAR NA",
       "appleStore": "App Store",
-      "comingSoon": "App Store em breve!"
+      "comingSoon": "App Store em breve!",
+      "qrButton": "Mostrar códigos QR"
     },
     "footer": {
       "privacyPolicy": "Política de Privacidade",
