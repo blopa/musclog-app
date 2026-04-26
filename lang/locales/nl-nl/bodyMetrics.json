@@ -118,6 +118,7 @@
       "moodQuestion": "Hoe voel je je vandaag?",
       "supplementQuestion": "Heb je vandaag je supplement genomen?",
       "supplementQuestionWithName": "Heb je vandaag {{name}} genomen?",
+      "waterQuestionWithAmount": "Ben je eraan gedacht om vandaag {{amount}} liter water te drinken?",
       "moods": {
         "0": "Slecht",
         "1": "Matig",
@@ -128,6 +129,8 @@
       "saveEntry": "Meting opslaan",
       "saveSuccess": "Meting succesvol opgeslagen",
       "errorSaving": "Fout bij opslaan",
+      "yes": "Ja",
+      "no": "Nee",
       "taken": "Genomen",
       "notTaken": "Niet genomen",
       "note": "Notitie",

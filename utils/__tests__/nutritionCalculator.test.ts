@@ -23,6 +23,7 @@ import {
   getEffectiveKcalPerKgWeightLoss,
   getGainFatFraction,
   getMinCalories,
+  getProposedDailyWaterIntake,
   getWeightChangeComposition,
   inchesToCm,
   isValidBodyFat,
@@ -1668,6 +1669,20 @@ describe('calculateWeightProjection', () => {
     const advanced = calculateWeightProjection(80, 3000, 2500, { liftingExperience: 'advanced' });
     // Beginner has lower effective build cost → more weight gained
     expect(beginner.projectedWeightKg).toBeGreaterThan(advanced.projectedWeightKg);
+  });
+});
+
+describe('getProposedDailyWaterIntake', () => {
+  it('returns 0 for invalid or non-positive TDEE values', () => {
+    expect(getProposedDailyWaterIntake(0)).toBe(0);
+    expect(getProposedDailyWaterIntake(-100)).toBe(0);
+    expect(getProposedDailyWaterIntake(Number.NaN)).toBe(0);
+  });
+
+  it('calculates 0.75 ml per kcal and returns liters', () => {
+    expect(getProposedDailyWaterIntake(2000)).toBe(1.5);
+    expect(getProposedDailyWaterIntake(2500)).toBe(1.875);
+    expect(getProposedDailyWaterIntake(3200)).toBe(2.4);
   });
 });
 

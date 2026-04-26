@@ -73,6 +73,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'language',
       'maxAiMemories',
       'showDailyMoodPrompt',
+      'showDailyWaterPrompt',
       'showDailySupplementPrompt',
       'alwaysAllowFoodEditing',
       'showWeightPrediction',
@@ -259,6 +260,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'showDailyMoodPrompt',
     SettingsService.setShowDailyMoodPrompt
   );
+  const handleShowDailyWaterPromptChange = createSettingHandler<boolean>(
+    'showDailyWaterPrompt',
+    SettingsService.setShowDailyWaterPrompt
+  );
   const handleShowDailySupplementPromptChange = createSettingHandler<boolean>(
     'showDailySupplementPrompt',
     SettingsService.setShowDailySupplementPrompt
@@ -386,6 +391,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'showDailyMoodPrompt':
             await SettingsService.setShowDailyMoodPrompt(value as boolean);
             break;
+          case 'showDailyWaterPrompt':
+            await SettingsService.setShowDailyWaterPrompt(value as boolean);
+            break;
           case 'showDailySupplementPrompt':
             await SettingsService.setShowDailySupplementPrompt(value as boolean);
             break;
@@ -476,6 +484,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
     showDailyMoodPrompt:
       (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
+    showDailyWaterPrompt:
+      (localSettings.showDailyWaterPrompt as boolean) ?? actualSettings.showDailyWaterPrompt,
     showDailySupplementPrompt:
       (localSettings.showDailySupplementPrompt as boolean) ??
       actualSettings.showDailySupplementPrompt,
@@ -527,6 +537,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleLanguageChange,
     handleMaxAiMemoriesChange,
     handleShowDailyMoodPromptChange,
+    handleShowDailyWaterPromptChange,
     handleShowDailySupplementPromptChange,
     handleAlwaysAllowFoodEditingChange,
     handleShowWeightPredictionChange,

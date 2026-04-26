@@ -12,6 +12,7 @@ import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
 import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
+import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -61,7 +62,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const { defaults: nutritionGoalsDefaults } = useDefaultNutritionGoals();
+  const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
   const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
@@ -123,6 +124,7 @@ export default function HomeScreen() {
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
+  const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
 
   // Get time-based greeting
   const getTimeBasedGreeting = useCallback(() => {
@@ -444,7 +446,14 @@ export default function HomeScreen() {
         {/* Home prompts */}
         <View className="mx-4">
           <HomeMoodPrompt onVisibilityChange={setIsMoodPromptVisible} />
-          <HomeSupplementPrompt blockedByHigherPriorityPrompt={isMoodPromptVisible} />
+          <HomeWaterPrompt
+            tdee={planData?.tdee ?? nutritionGoalsDefaults.totalCalories}
+            blockedByHigherPriorityPrompt={isMoodPromptVisible}
+            onVisibilityChange={setIsWaterPromptVisible}
+          />
+          <HomeSupplementPrompt
+            blockedByHigherPriorityPrompt={isMoodPromptVisible || isWaterPromptVisible}
+          />
         </View>
 
         {/* Action Buttons */}

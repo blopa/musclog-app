@@ -118,6 +118,8 @@
       "reminders": "RECORDATORIOS",
       "dailyMoodPrompt": "Aviso Diario de Estado de Ánimo",
       "dailyMoodPromptSubtitle": "Mostrar un selector de estado de ánimo en la pantalla de inicio si aún no se ha registrado hoy",
+      "dailyWaterPrompt": "Recordatorio Diario de Agua",
+      "dailyWaterPromptSubtitle": "Mostrar un recordatorio nocturno de agua en la pantalla principal después de las 20:00",
       "dailySupplementPrompt": "Recordatorio Diario de Suplementos",
       "dailySupplementPromptSubtitle": "Mostrar recordatorios diarios de suplementos en la pantalla principal",
       "manageSupplements": "Gestionar Suplementos",

@@ -118,6 +118,7 @@
       "moodQuestion": "Как вы себя чувствуете сегодня?",
       "supplementQuestion": "Вы приняли сегодня свою добавку?",
       "supplementQuestionWithName": "Вы приняли сегодня {{name}}?",
+      "waterQuestionWithAmount": "Вы не забыли выпить сегодня {{amount}} литра воды?",
       "moods": {
         "0": "Плохо",
         "1": "Низко",
@@ -128,6 +129,8 @@
       "saveEntry": "Сохранить запись",
       "saveSuccess": "Запись успешно сохранена",
       "errorSaving": "Ошибка сохранения",
+      "yes": "Да",
+      "no": "Нет",
       "taken": "Принято",
       "notTaken": "Не принято",
       "note": "Заметка",

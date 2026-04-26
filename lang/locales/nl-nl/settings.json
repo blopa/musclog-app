@@ -118,6 +118,8 @@
       "reminders": "HERINNERINGEN",
       "dailyMoodPrompt": "Dagelijkse stemmingsvraag",
       "dailyMoodPromptSubtitle": "Toon een stemmingskiezer op het startscherm als deze vandaag nog niet is vastgelegd",
+      "dailyWaterPrompt": "Dagelijkse waterherinnering",
+      "dailyWaterPromptSubtitle": "Toon na 20:00 een waterherinnering op het startscherm",
       "dailySupplementPrompt": "Dagelijkse Supplementherinnering",
       "dailySupplementPromptSubtitle": "Toon dagelijkse supplementherinneringen op het startscherm",
       "manageSupplements": "Supplementen Beheren",

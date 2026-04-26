@@ -118,6 +118,8 @@
       "reminders": "LEMBRETES",
       "dailyMoodPrompt": "Pergunta Diária de Humor",
       "dailyMoodPromptSubtitle": "Mostrar um seletor de humor na tela inicial se ainda não tiver sido registrado hoje",
+      "dailyWaterPrompt": "Lembrete Diário de Água",
+      "dailyWaterPromptSubtitle": "Mostrar um lembrete noturno de água na tela inicial após as 20h",
       "dailySupplementPrompt": "Lembrete Diário de Suplementos",
       "dailySupplementPromptSubtitle": "Mostrar lembretes diários de suplementos na tela inicial",
       "manageSupplements": "Gerenciar Suplementos",

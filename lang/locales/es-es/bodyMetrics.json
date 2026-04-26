@@ -118,6 +118,7 @@
       "moodQuestion": "¿Cómo te sientes hoy?",
       "supplementQuestion": "¿Tomaste tu suplemento hoy?",
       "supplementQuestionWithName": "¿Tomaste {{name}} hoy?",
+      "waterQuestionWithAmount": "¿Recordaste beber {{amount}} litros de agua hoy?",
       "moods": {
         "0": "Mal",
         "1": "Bajo",
@@ -128,6 +129,8 @@
       "saveEntry": "Guardar Entrada",
       "saveSuccess": "Entrada guardada con éxito",
       "errorSaving": "Error al Guardar",
+      "yes": "Sí",
+      "no": "No",
       "taken": "Tomado",
       "notTaken": "No tomado",
       "note": "Nota",
