@@ -730,7 +730,24 @@ async function sendViaOnDevice(
       { role: 'user' as const, content: userMessage },
     ];
 
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'request',
+      operation: 'sendCoachMessage',
+      payload: { systemPrompt, messages },
+      config,
+    });
+
     const raw = await sendOnDeviceMessage(messages, systemPrompt);
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'response',
+      operation: 'sendCoachMessage',
+      payload: { text: raw },
+      config,
+    });
+
     return {
       msg4User: raw || i18n.t('errors.aiProcessingError'),
       sumMsg: raw?.slice(0, 120) ?? '',
@@ -1646,8 +1663,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] estimateNutritionFromPhoto error:', error);
-    // TODO: show a snackbar
+    handleError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
 }
