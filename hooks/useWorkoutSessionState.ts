@@ -332,7 +332,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [workoutLogId]);
+  }, [bodyWeightKg, progressionMode, workoutLogId]);
 
   const refresh = useCallback(() => {
     if (!workoutLogId) {

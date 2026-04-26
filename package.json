@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.6.11",
+  "version": "2.6.12",
   "engines": {
     "node": "24.x"
   },
@@ -12,7 +12,6 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint:all": "git add . && npm run lint:eslint-fix && npm run format && npm run prebuild:cross-platform && npm run typecheck",
-    "prebuild:cross-platform-old": "node scripts/prebuild-cross-platform.js",
     "prebuild:cross-platform": "npm run prebuild",
     "bump": "ncu -u -t minor",
     "bump-any": "ncu -u",
@@ -59,7 +58,6 @@
     "build-and-submit-ios": "eas build --platform ios --profile production --auto-submit",
     "run-ios-device": "expo run:ios --device",
     "ios-simulator": "expo run:ios --device",
-    "patch-ios-project-old": "node scripts/fix-ios-project.js",
     "patch-ios-project": "node -v",
     "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
   },
@@ -83,10 +81,11 @@
     "@react-native-community/netinfo": "11.5.2",
     "@react-native-community/slider": "5.1.2",
     "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-native-ml-kit/barcode-scanning": "^2.0.0",
     "@react-spring/web": "10.0.3",
     "@sentry/react-native": "~7.11.0",
     "@shopify/react-native-skia": "2.4.18",
-    "@tanstack/react-query": "^5.100.1",
+    "@tanstack/react-query": "^5.100.5",
     "@zxing/library": "0.21.3",
     "buffer": "6.0.3",
     "classnames": "2.5.1",
@@ -131,7 +130,7 @@
     "expo-web-browser": "~55.0.14",
     "glob": "13.0.6",
     "html-to-image": "^1.11.13",
-    "i18next": "26.0.7",
+    "i18next": "26.0.8",
     "ics": "3.12.0",
     "intl-pluralrules": "2.0.1",
     "lucide-react-native": "1.8.0",
@@ -152,7 +151,7 @@
     "react-native-health-connect": "3.5.0",
     "react-native-keyboard-controller": "1.20.7",
     "react-native-markdown-display": "7.0.2",
-    "react-native-nitro-modules": "^0.35.4",
+    "react-native-nitro-modules": "^0.35.5",
     "react-native-pager-view": "8.0.0",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
@@ -191,9 +190,9 @@
     "npm-check-updates": "^21.0.3",
     "patch-package": "^8.0.1",
     "prettier": "3.8.3",
-    "prettier-plugin-tailwindcss": "0.7.2",
+    "prettier-plugin-tailwindcss": "0.7.3",
     "tailwindcss": "3.4.19",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.3"
   },
   "main": "index.js",
   "private": false,

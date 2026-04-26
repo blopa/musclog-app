@@ -15,6 +15,7 @@ export const RESTORE_ORDER: string[] = [
   'users',
   'foods',
   'food_portions',
+  'supplements',
   'meals',
   'workout_templates',
   'settings',

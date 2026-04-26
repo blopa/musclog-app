@@ -20,6 +20,7 @@ export enum MetricType {
   ACTIVE_CALORIES = 'active_calories_burned',
   NUTRITION = 'nutrition',
   EXERCISE = 'exercise',
+  STEPS = 'daily_steps',
 }
 
 /**
@@ -43,6 +44,7 @@ export const HC_TO_APP_METRIC_MAP: Record<string, MetricType> = {
   ActiveCaloriesBurned: MetricType.ACTIVE_CALORIES,
   Nutrition: MetricType.NUTRITION,
   ExerciseSession: MetricType.EXERCISE,
+  Steps: MetricType.STEPS,
 };
 
 /**
@@ -61,6 +63,7 @@ export const METRIC_VALIDATION_RANGES: Record<
   [MetricType.ACTIVE_CALORIES]: { min: 0, max: 15000, unit: 'kcal' }, // 0 - 15000 kcal
   [MetricType.NUTRITION]: { min: 0, max: 100000, unit: 'kcal' }, // 0 - 100000 kcal (for single meal)
   [MetricType.EXERCISE]: { min: 0, max: 86400000, unit: 'ms' }, // 0 - 24 hours in milliseconds
+  [MetricType.STEPS]: { min: 0, max: 200000, unit: 'steps' }, // 0 - 200000 steps per day
 };
 
 /**
@@ -499,6 +502,31 @@ export class HealthDataTransformer {
       value: bmrKcal,
       unit: 'kcal/day',
       date: timestamp,
+      timezone: TimestampConverter.getTimezone(),
+    };
+  }
+
+  /**
+   * Transform a daily-aggregated step count into app format.
+   * `count` is the total steps for the day; `date` is local-midnight ms for that day.
+   */
+  static transformSteps(
+    count: number,
+    date: number
+  ): {
+    type: MetricType;
+    value: number;
+    unit: string;
+    date: number;
+    timezone: string;
+  } {
+    DataValidator.validateMetricValue(MetricType.STEPS, count);
+
+    return {
+      type: MetricType.STEPS,
+      value: count,
+      unit: 'steps',
+      date,
       timezone: TimestampConverter.getTimezone(),
     };
   }

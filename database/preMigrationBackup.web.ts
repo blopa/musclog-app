@@ -163,8 +163,10 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     const createdAt = new Date().toISOString();
 
     // Store content — handle QuotaExceededError by clearing older backups first.
+    let stored = false;
     try {
       localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+      stored = true;
     } catch {
       console.warn('[WebBackup] localStorage quota exceeded, clearing old backups before retry');
       const existing = await getStoredBackups();
@@ -173,7 +175,16 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
         localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${h}`);
       }
       localStorage.removeItem(WEB_BACKUPS_KEY);
-      localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+      try {
+        localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+        stored = true;
+      } catch {
+        console.warn('[WebBackup] Database dump too large for localStorage, skipping web backup');
+      }
+    }
+
+    if (!stored) {
+      return;
     }
 
     // Update metadata index.

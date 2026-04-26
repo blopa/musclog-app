@@ -11,6 +11,7 @@ import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/Dail
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
+import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
 import { useCoach } from '@/components/CoachContext';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -121,6 +122,7 @@ export default function HomeScreen() {
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
+  const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
 
   // Get time-based greeting
   const getTimeBasedGreeting = useCallback(() => {
@@ -439,9 +441,10 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Home Mood Prompt */}
+        {/* Home prompts */}
         <View className="mx-4">
-          <HomeMoodPrompt />
+          <HomeMoodPrompt onVisibilityChange={setIsMoodPromptVisible} />
+          <HomeSupplementPrompt blockedByHigherPriorityPrompt={isMoodPromptVisible} />
         </View>
 
         {/* Action Buttons */}

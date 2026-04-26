@@ -31,12 +31,14 @@ export type UserMetricType =
   | 'neck'
   | 'shoulders'
   | 'mood'
+  | 'supplement'
   | 'ffmi'
   | 'nutrition'
   | 'exercise'
   | 'period_flow'
   | 'period_symptoms'
   | 'basal_body_temp'
+  | 'daily_steps'
   | 'other';
 
 export default class UserMetric extends Model {
@@ -44,6 +46,7 @@ export default class UserMetric extends Model {
 
   @field('type') type!: UserMetricType;
   @field('external_id') externalId?: string;
+  @field('supplement_id') supplementId?: string;
   @field('value') valueRaw!: string;
   @field('unit') unitRaw?: string;
   @field('date') date!: number;

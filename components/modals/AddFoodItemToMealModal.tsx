@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import Food from '@/database/models/Food';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -13,7 +14,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 import { ScannedFoodDetailsModal } from './ScannedFoodDetailsModal';
 
@@ -239,17 +239,17 @@ export function AddFoodItemToMealModal({
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { openCamera } = useSmartCamera();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: number }>
   >({});
-  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) {
-      setShowBarcodeScanner(false);
       setShowScannedFoodDetails(false);
       setScannedBarcode(null);
     }
@@ -296,14 +296,15 @@ export function AddFoodItemToMealModal({
     onAddFoods?.([foodData]);
   };
 
-  const handleBarcodeScanned = (scannedBarcode: string) => {
-    setScannedBarcode(scannedBarcode);
-    setShowBarcodeScanner(false);
-    setShowScannedFoodDetails(true);
-  };
-
   const openBarcodeScanner = () => {
-    setShowBarcodeScanner(true);
+    openCamera({
+      mode: 'barcode-scan',
+      hideCameraModePicker: true,
+      onBarcodeScanned: (data) => {
+        setScannedBarcode(data);
+        setShowScannedFoodDetails(true);
+      },
+    });
   };
 
   return (
@@ -448,11 +449,6 @@ export function AddFoodItemToMealModal({
           </ScrollView>
         )}
       </View>
-      <BarcodeCameraModal
-        visible={showBarcodeScanner}
-        onClose={() => setShowBarcodeScanner(false)}
-        onBarcodeScanned={handleBarcodeScanned}
-      />
       <ScannedFoodDetailsModal
         visible={showScannedFoodDetails}
         onClose={() => setShowScannedFoodDetails(false)}

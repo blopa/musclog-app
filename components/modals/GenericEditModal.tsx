@@ -127,6 +127,38 @@ export function GenericEditModal({
     const value = formValues[field.key];
     const label = t(field.label, field.label); // Try translation, fallback to raw label
 
+    if (field.key === 'value' && formValues.type === 'supplement') {
+      return (
+        <View key={field.key} className="gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+          <SegmentedControl
+            options={[
+              { label: t('bodyMetrics.addEntry.notTaken'), value: '0' },
+              { label: t('bodyMetrics.addEntry.taken'), value: '1' },
+            ]}
+            value={String(value ?? '1')}
+            onValueChange={(nextValue) => handleFieldChange(field.key, Number(nextValue))}
+          />
+        </View>
+      );
+    }
+
+    if (field.key === 'value' && formValues.type === 'mood') {
+      return (
+        <View key={field.key} className="gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+          <SegmentedControl
+            options={[0, 1, 2, 3, 4].map((moodValue) => ({
+              label: t(`bodyMetrics.addEntry.moods.${moodValue}`),
+              value: String(moodValue),
+            }))}
+            value={String(value ?? '2')}
+            onValueChange={(nextValue) => handleFieldChange(field.key, Number(nextValue))}
+          />
+        </View>
+      );
+    }
+
     switch (field.type) {
       case 'text': {
         const textField = field as TextFieldConfig;

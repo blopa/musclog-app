@@ -1,6 +1,7 @@
 {
   "website": {
     "landing": {
+      "title": "Musclog Web Demo",
       "cta": "Probeer het nu",
       "f1": "Slimme workouttracking",
       "f2": "AI-fotologging voor voeding",
@@ -225,7 +226,8 @@
       "googleStore": "Google Play",
       "appleTitle": "DOWNLOAD OP DE",
       "appleStore": "App Store",
-      "comingSoon": "App Store binnenkort beschikbaar!"
+      "comingSoon": "App Store binnenkort beschikbaar!",
+      "qrButton": "QR-codes weergeven"
     },
     "footer": {
       "privacyPolicy": "Privacybeleid",

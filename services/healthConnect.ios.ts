@@ -48,7 +48,8 @@ export type HealthRecordType =
   | 'ActiveCaloriesBurned'
   | 'BasalMetabolicRate'
   | 'ExerciseSession'
-  | 'LeanBodyMass';
+  | 'LeanBodyMass'
+  | 'Steps';
 
 export type HealthPermission = { accessType: 'read' | 'write'; recordType: HealthRecordType };
 
@@ -79,6 +80,8 @@ function hkReadTypesForRecord(recordType: string): ObjectTypeIdentifier[] {
       ];
     case 'ExerciseSession':
       return [WorkoutTypeIdentifier as unknown as ObjectTypeIdentifier];
+    case 'Steps':
+      return ['HKQuantityTypeIdentifierStepCount'];
     default:
       return [];
   }

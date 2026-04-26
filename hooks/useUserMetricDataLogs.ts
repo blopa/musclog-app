@@ -37,6 +37,7 @@ const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   height: 'straighten',
   bmi: 'trending-up',
   mood: 'mood',
+  supplement: 'medication',
   chest: 'straighten',
   waist: 'straighten',
   hips: 'straighten',

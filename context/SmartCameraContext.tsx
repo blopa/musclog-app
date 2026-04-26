@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 
 import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
 import type { MealType } from '@/database/models';
@@ -11,6 +11,7 @@ type OpenCameraOptions = {
   hideCameraModePicker?: boolean;
   logDate?: Date;
   mealType?: MealType;
+  onBarcodeScanned?: (data: string) => void;
 };
 
 type SmartCameraContextType = {
@@ -27,22 +28,29 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
   const [logDate, setLogDate] = useState<Date | undefined>(undefined);
   const [mealTypeForLog, setMealTypeForLog] = useState<MealType | undefined>(undefined);
+  const onBarcodeScannedRef = useRef<((data: string) => void) | undefined>(undefined);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
     setLogDate(options?.logDate);
     setMealTypeForLog(options?.mealType);
+    onBarcodeScannedRef.current = options?.onBarcodeScanned;
     setIsVisible(true);
   }, []);
 
   const handleCameraModalClose = useCallback(() => {
     setIsVisible(false);
     setMealTypeForLog(undefined);
+    onBarcodeScannedRef.current = undefined;
   }, []);
 
   const setCurrentDate = useCallback((date: Date | undefined) => {
     setLogDate(date);
+  }, []);
+
+  const handleBarcodeScanned = useCallback((data: string) => {
+    onBarcodeScannedRef.current?.(data);
   }, []);
 
   return (
@@ -54,10 +62,11 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           onClose={handleCameraModalClose}
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
-          isAiEnabled={isAiConfigured}
+          isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
           useOcrBeforeAi={useOcrBeforeAi}
           logDate={logDate}
           mealTypeForLog={mealTypeForLog}
+          onBarcodeScanned={onBarcodeScannedRef.current ? handleBarcodeScanned : undefined}
         />
       ) : null}
     </SmartCameraContext.Provider>

@@ -1,5 +1,5 @@
 import { EXERCISE_TYPES } from '@/constants/exercises';
-import type { EquipmentType } from '@/database/models';
+import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
 import { roundToDecimalPlaces } from './roundDecimal';
@@ -335,4 +335,51 @@ export function calculateRepsForTargetRIR(
   }
 
   return Math.max(1, lo - targetRIR);
+}
+
+/**
+ * Estimates NET calories burned from daily steps.
+ *
+ * Updates from previous version:
+ * 1. Converts to Net Energy Expenditure (NEE) instead of Gross Energy (GEE)
+ *    to prevent double-counting calories if the user also tracks Basal Metabolic Rate (BMR).
+ * 2. Eliminates the "Cadence Paradox": By isolating the horizontal work component of the
+ *    ACSM equation (0.1 * speed), the 'duration' mathematically cancels out.
+ *    Net Calories = (0.1 * distance * weight) / 200. This removes the need to guess cadence.
+ *
+ * Key Sources:
+ * - Stride Length Estimation (0.415 / 0.413 ratios):
+ *   Pratama et al. (2012) & Hoover et al. (2017)
+ *   https://www.mdpi.com/2072-4292/11/1/55
+ *   https://pmc.ncbi.nlm.nih.gov/articles/PMC9646807/
+ * - ACSM Metabolic Equations (Net Energy calculation):
+ *   American College of Sports Medicine Guidelines
+ *   https://www.scribd.com/document/811373428/ecuaciones-acsm
+ */
+export function calculateCaloriesBurnedBySteps(
+  steps: number,
+  gender: Gender,
+  weightKg: number,
+  heightCm: number
+): number {
+  if (steps <= 0 || weightKg <= 0 || heightCm <= 0) {
+    return 0;
+  }
+
+  // 1. Estimate Stride Length and Distance
+  const strideFactor = gender === 'male' ? 0.415 : gender === 'female' ? 0.413 : 0.414;
+  const strideLengthMeters = (heightCm * strideFactor) / 100;
+  const distanceMeters = steps * strideLengthMeters;
+
+  // 2. Calculate Net Energy Expenditure (NEE)
+  // ACSM Net horizontal walking estimate: VO2 (ml/kg/min) = 0.1 * speed (m/min)
+  // Total VO2 (ml) for the bout = VO2_rate * weight * duration
+  // Since speed (m/min) * duration (min) = distance (m), the time factor cancels out perfectly.
+  // Total Net VO2 (ml) = 0.1 * distanceMeters * weightKg
+
+  // 3. Convert to Kilocalories
+  // 1 Liter of O2 = ~5 kcals. Therefore, divide ml by 1000 and multiply by 5 (which is mathematically equivalent to dividing by 200).
+  const netCalories = (0.1 * distanceMeters * weightKg) / 200;
+
+  return roundToDecimalPlaces(netCalories);
 }

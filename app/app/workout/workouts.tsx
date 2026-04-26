@@ -630,7 +630,7 @@ export default function WorkoutsScreen() {
           try {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
-            router.navigate(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
@@ -801,17 +801,17 @@ export default function WorkoutsScreen() {
         workoutLogId={selectedWorkoutLogId}
         onStartWorkout={() => {
           setIsWorkoutOverviewVisible(false);
-          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onResumeSession={() => {
           setIsWorkoutOverviewVisible(false);
-          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onSelectExercise={(exerciseId) => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout session with selected exercise
           router.navigate(
-            `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
+            `/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
           );
         }}
         onCancelWorkout={async () => {
@@ -835,7 +835,7 @@ export default function WorkoutsScreen() {
         onFinishWorkout={() => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout summary
-          router.navigate(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/app/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
         }}
       />
 

@@ -29,6 +29,7 @@ import SavedForLaterGroup from './models/SavedForLaterGroup';
 import SavedForLaterItem from './models/SavedForLaterItem';
 import Schedule from './models/Schedule';
 import Setting from './models/Setting';
+import Supplement from './models/Supplement';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
 import UserMetricsNote from './models/UserMetricsNote';
@@ -74,5 +75,6 @@ export const database = new Database({
     SavedForLaterItem,
     ChatMessage,
     DebugDump,
+    Supplement,
   ],
 });

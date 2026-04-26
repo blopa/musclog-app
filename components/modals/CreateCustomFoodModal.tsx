@@ -40,6 +40,7 @@ import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
@@ -58,7 +59,6 @@ import {
 import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
@@ -84,6 +84,7 @@ export default function CreateCustomFoodModal({
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const { units } = useSettings();
+  const { openCamera } = useSmartCamera();
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
@@ -93,7 +94,6 @@ export default function CreateCustomFoodModal({
   const [barcode, setBarcode] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
@@ -145,7 +145,6 @@ export default function CreateCustomFoodModal({
 
   useEffect(() => {
     if (!visible) {
-      setShowBarcodeScanner(false);
       setIsFoodDetailsVisible(false);
     }
   }, [visible]);
@@ -267,13 +266,12 @@ export default function CreateCustomFoodModal({
     }));
   };
 
-  const handleBarcodeScanned = (scannedBarcode: string) => {
-    setBarcode(scannedBarcode);
-    setShowBarcodeScanner(false);
-  };
-
   const openBarcodeScanner = () => {
-    setShowBarcodeScanner(true);
+    openCamera({
+      mode: 'barcode-scan',
+      hideCameraModePicker: true,
+      onBarcodeScanned: (data) => setBarcode(data),
+    });
   };
 
   const micronutrientsData = [
@@ -934,11 +932,6 @@ export default function CreateCustomFoodModal({
           </View>
         </View>
       </ScrollView>
-      <BarcodeCameraModal
-        visible={showBarcodeScanner}
-        onClose={() => setShowBarcodeScanner(false)}
-        onBarcodeScanned={handleBarcodeScanned}
-      />
       {isFoodDetailsVisible && createdFood ? (
         <FoodMealDetailsModal
           visible={isFoodDetailsVisible}

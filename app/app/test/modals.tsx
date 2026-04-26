@@ -14,7 +14,6 @@ import { AiCustomPromptsModal } from '@/components/modals/AiCustomPromptsModal';
 import { AINotConfiguredModal } from '@/components/modals/AINotConfiguredModal';
 import { AINutritionTrackingContextModal } from '@/components/modals/AINutritionTrackingContextModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
-import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
 import BodyMetricsHistoryModal from '@/components/modals/BodyMetricsHistoryModal';
 import { BrowseTemplatesModal } from '@/components/modals/BrowseTemplatesModal';
@@ -81,7 +80,6 @@ import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScannedFoodDetailsModal } from '@/components/modals/ScannedFoodDetailsModal';
 import { SelectModal } from '@/components/modals/SelectModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
-import SmartCameraModal from '@/components/modals/SmartCameraModal';
 import { TimePickerInput } from '@/components/modals/TimePickerInput';
 import { TimePickerModal } from '@/components/modals/TimePickerModal';
 import { UserMenuModal } from '@/components/modals/UserMenuModal';
@@ -91,6 +89,7 @@ import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, ExerciseService, WorkoutService } from '@/database/services';
@@ -100,6 +99,7 @@ import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
   const { cycle } = useMenstrualCycle();
+  const { openCamera } = useSmartCamera();
 
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
@@ -155,7 +155,6 @@ export default function ModalsTestScreen() {
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
-  const [isBarcodeCameraVisible, setIsBarcodeCameraVisible] = useState(false);
 
   // Add Meal Modal
   const [isAddMealVisible, setIsAddMealVisible] = useState(false);
@@ -333,9 +332,6 @@ export default function ModalsTestScreen() {
 
   // Scanned Food Details Modal
   const [isScannedFoodDetailsVisible, setIsScannedFoodDetailsVisible] = useState(false);
-
-  // Smart Camera Modal
-  const [isSmartCameraVisible, setIsSmartCameraVisible] = useState(false);
 
   // Visual Settings Modal
   const [isVisualSettingsVisible, setIsVisualSettingsVisible] = useState(false);
@@ -749,7 +745,13 @@ export default function ModalsTestScreen() {
               label="Open Barcode Camera Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsBarcodeCameraVisible(true)}
+              onPress={() =>
+                openCamera({
+                  mode: 'barcode-scan',
+                  hideCameraModePicker: true,
+                  onBarcodeScanned: (data) => console.log('Barcode scanned:', data),
+                })
+              }
             />
           </View>
           {/* Notifications Modal */}
@@ -1619,7 +1621,7 @@ export default function ModalsTestScreen() {
               label="Open Smart Camera Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsSmartCameraVisible(true)}
+              onPress={() => openCamera({ mode: 'barcode-scan' })}
             />
           </View>
 
@@ -1676,12 +1678,6 @@ export default function ModalsTestScreen() {
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setIsBasicSettingsVisible(false)}
-      />
-
-      <BarcodeCameraModal
-        visible={isBarcodeCameraVisible}
-        onClose={() => setIsBarcodeCameraVisible(false)}
-        onBarcodeScanned={(data) => console.log('Barcode scanned:', data)}
       />
 
       <DataSettingsModal
@@ -1822,7 +1818,7 @@ export default function ModalsTestScreen() {
         onAiCameraPress={() => {
           console.log('AI Camera pressed');
         }}
-        onScanBarcodePress={() => setIsBarcodeCameraVisible(true)}
+        onScanBarcodePress={() => openCamera({ mode: 'barcode-scan', hideCameraModePicker: true })}
         onSearchFoodPress={() => {
           console.log('Search food pressed');
         }}
@@ -2402,12 +2398,6 @@ export default function ModalsTestScreen() {
         onClose={() => setIsScannedFoodDetailsVisible(false)}
         barcode="3017620425035"
         onAddFood={(food) => console.log('Food added from scan:', food)}
-      />
-
-      <SmartCameraModal
-        visible={isSmartCameraVisible}
-        onClose={() => setIsSmartCameraVisible(false)}
-        mode="barcode-scan"
       />
 
       <VisualSettingsModal

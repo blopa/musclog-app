@@ -78,6 +78,84 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
+const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
+const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
+
+function getErrorStatus(error: any): number | undefined {
+  return error?.status ?? error?.response?.status;
+}
+
+function getErrorCode(error: any): string {
+  return String(error?.error?.code ?? error?.code ?? '').toLowerCase();
+}
+
+function getErrorMessage(error: any): string {
+  return String(error?.message ?? '').toLowerCase();
+}
+
+function isQuotaStyleError(error: any): boolean {
+  const code = getErrorCode(error);
+  const message = getErrorMessage(error);
+
+  if (code === 'insufficient_quota') {
+    return true;
+  }
+
+  return (
+    message.includes('quota') ||
+    message.includes('insufficient_quota') ||
+    message.includes('resource_exhausted') ||
+    message.includes('billing') ||
+    message.includes('daily limit')
+  );
+}
+
+function shouldRetryLlmError(error: any): boolean {
+  const status = getErrorStatus(error);
+  if (status === undefined || !RETRYABLE_LLM_STATUSES.has(status)) {
+    return false;
+  }
+
+  if (status === 429 && isQuotaStyleError(error)) {
+    return false;
+  }
+
+  return true;
+}
+
+async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withLlmRetry<T>(
+  operation: string,
+  provider: CoachAIProvider,
+  request: () => Promise<T>
+): Promise<T> {
+  let attempt = 0;
+
+  while (true) {
+    try {
+      return await request();
+    } catch (error) {
+      if (attempt >= LLM_RETRY_DELAYS_MS.length || !shouldRetryLlmError(error)) {
+        throw error;
+      }
+
+      const delayMs = LLM_RETRY_DELAYS_MS[attempt];
+      const nextAttempt = attempt + 2;
+      const status = getErrorStatus(error);
+
+      console.warn(
+        `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${nextAttempt}/${LLM_RETRY_DELAYS_MS.length + 1})`
+      );
+
+      attempt += 1;
+      await sleep(delayMs);
+    }
+  }
+}
+
 export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local' | 'gateway';
 
 export interface ProviderConfig {
@@ -514,7 +592,10 @@ async function sendViaGemini(
     config,
   });
 
-  const result = await genModel.generateContent({ contents });
+  const result = await withLlmRetry('sendViaGemini', config.provider, () =>
+    genModel.generateContent({ contents })
+  );
+
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -579,7 +660,10 @@ async function sendViaOpenAI(
       config,
     });
 
-    const completion = await client.chat.completions.create(requestPayload);
+    const completion = await withLlmRetry('sendViaOpenAI', config.provider, () =>
+      client.chat.completions.create(requestPayload)
+    );
+
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -701,7 +785,10 @@ async function generateText(
     );
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await genModel.generateContent({ contents });
+    const result = await withLlmRetry('generateText', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -709,6 +796,7 @@ async function generateText(
       payload: result,
       config,
     });
+
     const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
@@ -730,7 +818,10 @@ async function generateText(
     config,
   });
 
-  const completion = await client.chat.completions.create(requestPayload);
+  const completion = await withLlmRetry('generateText', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -782,7 +873,10 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const result = await genModel.generateContent({ contents });
+    const result = await withLlmRetry('generateTextWithHistory', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -800,6 +894,7 @@ async function generateTextWithHistory(
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
   }));
+
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
@@ -817,7 +912,10 @@ async function generateTextWithHistory(
     config,
   });
 
-  const completion = await client.chat.completions.create(requestPayload);
+  const completion = await withLlmRetry('generateTextWithHistory', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -890,7 +988,10 @@ async function generateStructured<T>(
       [{ text: promptWithLang } as Part]
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await genModel.generateContent({ contents });
+    const result = await withLlmRetry('generateStructured', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -938,7 +1039,10 @@ async function generateStructured<T>(
     config,
   });
 
-  const completion = await client.chat.completions.create(requestPayload);
+  const completion = await withLlmRetry('generateStructured', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
@@ -1038,7 +1142,10 @@ async function generateWithImageStructured<T>(
       },
     ];
 
-    const result = await genModel.generateContent({ contents });
+    const result = await withLlmRetry('generateWithImageStructured', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -1092,7 +1199,10 @@ async function generateWithImageStructured<T>(
     config,
   });
 
-  const completion = await client.chat.completions.create(requestPayload);
+  const completion = await withLlmRetry('generateWithImageStructured', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',

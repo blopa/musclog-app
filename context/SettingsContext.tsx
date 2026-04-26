@@ -45,6 +45,7 @@ import {
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -101,6 +102,7 @@ type SettingsState = {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showDailySupplementPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
@@ -150,6 +152,7 @@ const DEFAULT_STATE: SettingsState = {
   chartTooltipPosition: 'right',
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
+  showDailySupplementPrompt: true,
   alwaysAllowFoodEditing: false,
   showWeightPrediction: true,
   requireExportEncryption: true,
@@ -260,6 +263,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
+    showDailySupplementPrompt: getBoolean(map, SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE, true),
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
@@ -309,6 +313,7 @@ export type SettingsContextType = UseSettingsResult & {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showDailySupplementPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;

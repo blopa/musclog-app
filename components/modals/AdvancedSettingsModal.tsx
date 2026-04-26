@@ -4,18 +4,22 @@ import {
   AlignLeft,
   BrainCircuit,
   Bug,
+  ChevronRight,
   Coffee,
   Dumbbell,
+  Pill,
 } from 'lucide-react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { SettingsCard } from '@/components/cards/SettingsCard';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
+import { ManageSupplementsModal } from './ManageSupplementsModal';
 
 type AdvancedSettingsModalProps = {
   visible: boolean;
@@ -33,6 +37,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleChartTooltipPositionChange,
     showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
     handleShowDailyMoodPromptChange,
+    showDailySupplementPrompt: debouncedShowDailySupplementPrompt,
+    handleShowDailySupplementPromptChange,
     alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
     handleAlwaysAllowFoodEditingChange,
     showWeightPrediction: debouncedShowWeightPrediction,
@@ -96,6 +102,30 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       value: debouncedShowDailyMoodPrompt,
       onValueChange: handleShowDailyMoodPromptChange,
     },
+    {
+      key: 'daily-supplement-prompt',
+      label: t('settings.advancedSettings.dailySupplementPrompt'),
+      subtitle: t('settings.advancedSettings.dailySupplementPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedShowDailySupplementPrompt,
+      onValueChange: handleShowDailySupplementPromptChange,
+    },
+  ];
+
+  const behaviorItems = [
     {
       key: 'always-allow-food-editing',
       label: t('settings.advancedSettings.alwaysAllowFoodEditing'),
@@ -188,6 +218,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     },
   ];
 
+  const [showManageSupplementsModal, setShowManageSupplementsModal] = useState(false);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -195,6 +227,30 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       title={t('settings.appBehaviorSettings.title')}
     >
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
+        {/* Reminders Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.advancedSettings.reminders')}
+          </Text>
+          <ToggleInput items={dailyMoodPromptItems} />
+          <SettingsCard
+            icon={<Pill size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['10'],
+              height: theme.size['10'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageSupplements')}
+            subtitle={t('settings.advancedSettings.manageSupplementsSubtitle')}
+            onPress={() => setShowManageSupplementsModal(true)}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+        </View>
+
         {/* Privacy & Diagnostics Section */}
         <View>
           <Text
@@ -205,7 +261,7 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
           </Text>
           <ToggleInput items={bugReportItems} />
           <View className="mt-4" />
-          <ToggleInput items={dailyMoodPromptItems} />
+          <ToggleInput items={behaviorItems} />
         </View>
 
         {/* Workouts Section */}
@@ -254,6 +310,11 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
           </Text>
           <ToggleInput items={chartTooltipPositionItems} />
         </View>
+
+        <ManageSupplementsModal
+          visible={showManageSupplementsModal}
+          onClose={() => setShowManageSupplementsModal(false)}
+        />
       </View>
     </FullScreenModal>
   );
