@@ -33,6 +33,7 @@ import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { CenteredModal } from './CenteredModal';
+import { ManageSupplementsModal } from './ManageSupplementsModal';
 import {
   ChatMessageDataModal,
   ExerciseDataModal,
@@ -166,6 +167,7 @@ export function AdvancedSettingsModal({
   const [showNutritionGoalsModal, setShowNutritionGoalsModal] = useState(false);
   const [showNutritionCheckinsModal, setShowNutritionCheckinsModal] = useState(false);
   const [showChatMessagesModal, setShowChatMessagesModal] = useState(false);
+  const [showManageSupplementsModal, setShowManageSupplementsModal] = useState(false);
   const bugReportItems = [
     {
       key: 'bug-report',
@@ -322,26 +324,6 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.reminders')}
             </Text>
             <ToggleInput items={dailyMoodPromptItems} />
-            <View className="mt-4" />
-            <ToggleInput items={dailySupplementPromptItems} />
-            {debouncedShowSupplementPrompt && (
-              <View className="mt-4 gap-3 px-4">
-                <TextInput
-                  label={t('settings.advancedSettings.supplementNameLabel')}
-                  value={supplementNameInput}
-                  onChangeText={setSupplementNameInput}
-                  placeholder={t('settings.advancedSettings.supplementNamePlaceholder')}
-                />
-                <Button
-                  label={t('common.save')}
-                  icon={Check}
-                  size="sm"
-                  variant="outline"
-                  onPress={handleSaveSupplementName}
-                  disabled={supplementNameInput === actualSupplementName}
-                />
-              </View>
-            )}
           </View>
 
           {/* Privacy & Diagnostics Section */}
@@ -385,6 +367,21 @@ export function AdvancedSettingsModal({
               title={t('settings.advancedSettings.manageFoodData')}
               subtitle={t('settings.advancedSettings.manageFoodDataSubtitle')}
               onPress={() => setShowFoodDataModal(true)}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              }
+            />
+            <SettingsCard
+              icon={<Pill size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              iconContainerStyle={{
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.sm,
+                backgroundColor: theme.colors.accent.primary20,
+              }}
+              title={t('settings.advancedSettings.manageSupplements')}
+              subtitle={t('settings.advancedSettings.manageSupplementsSubtitle')}
+              onPress={() => setShowManageSupplementsModal(true)}
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
@@ -698,6 +695,10 @@ export function AdvancedSettingsModal({
       <ChatMessageDataModal
         visible={showChatMessagesModal}
         onClose={() => setShowChatMessagesModal(false)}
+      />
+      <ManageSupplementsModal
+        visible={showManageSupplementsModal}
+        onClose={() => setShowManageSupplementsModal(false)}
       />
     </>
   );

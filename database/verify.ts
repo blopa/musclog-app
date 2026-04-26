@@ -26,6 +26,7 @@ export async function verifyDatabaseTables(): Promise<{
     'foods',
     'food_portions',
     'food_food_portions',
+    'supplements',
     'meals',
     'meal_foods',
     'nutrition_logs',

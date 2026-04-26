@@ -14,7 +14,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { UserMetricService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useTodayMood } from '../../hooks/useTodayMood';
-import { useTodaySupplement } from '../../hooks/useTodaySupplement';
+import { usePendingSupplements } from '../../hooks/usePendingSupplements';
 import { useTheme } from '../../hooks/useTheme';
 import { showSnackbar } from '../../utils/snackbarService';
 import { Button } from '../theme/Button';
@@ -23,9 +23,9 @@ import { GenericCard } from './GenericCard';
 export function HomeSupplementPrompt() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { showSupplementPrompt, supplementName, showDailyMoodPrompt } = useSettings();
+  const { showDailyMoodPrompt } = useSettings();
   const { hasMoodToday, isLoading: isLoadingMood } = useTodayMood();
-  const { hasSupplementToday, isLoading: isLoadingSupplement } = useTodaySupplement();
+  const { pendingSupplements, isLoading: isLoadingSupplement } = usePendingSupplements();
 
   const [isSaving, setIsSaving] = useState(false);
   const [isActuallyVisible, setIsActuallyVisible] = useState(false);
@@ -65,13 +65,17 @@ export function HomeSupplementPrompt() {
     const isLoading = isLoadingMood || isLoadingSupplement;
 
     // Logic: show if:
-    // 1. Enabled in settings
-    // 2. Not already taken today
-    // 3. Not dismissed today
-    // 4. Mood prompt is either already done, not enabled, or dismissed
+    // 1. Supplements are pending
+    // 2. Not dismissed today
+    // 3. Mood prompt is either already done, not enabled, or dismissed
     const moodConditionMet = !showDailyMoodPrompt || hasMoodToday || moodDismissedToday;
 
-    const shouldBeVisible = !isLoading && showSupplementPrompt && !hasSupplementToday && !isDismissed && !isLocallyDismissed && moodConditionMet;
+    const shouldBeVisible =
+      !isLoading &&
+      pendingSupplements.length > 0 &&
+      !isDismissed &&
+      !isLocallyDismissed &&
+      moodConditionMet;
 
     if (shouldBeVisible) {
       setIsActuallyVisible(true);
@@ -90,8 +94,7 @@ export function HomeSupplementPrompt() {
   }, [
     isLoadingMood,
     isLoadingSupplement,
-    showSupplementPrompt,
-    hasSupplementToday,
+    pendingSupplements,
     isDismissed,
     isLocallyDismissed,
     showDailyMoodPrompt,
@@ -99,7 +102,7 @@ export function HomeSupplementPrompt() {
     moodDismissedToday,
     opacity,
     height,
-    marginBottom
+    marginBottom,
   ]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -109,11 +112,18 @@ export function HomeSupplementPrompt() {
     overflow: 'hidden',
   }));
 
-  if (!isActuallyVisible && (isLoadingMood || isLoadingSupplement || !showSupplementPrompt || hasSupplementToday || isLocallyDismissed)) {
+  if (
+    !isActuallyVisible &&
+    (isLoadingMood || isLoadingSupplement || pendingSupplements.length === 0 || isLocallyDismissed)
+  ) {
     return null;
   }
 
+  const currentSupplement = pendingSupplements[0];
+
   const performSave = async () => {
+    if (!currentSupplement) return;
+
     try {
       const now = new Date();
       now.setUTCHours(0, 0, 0, 0);
@@ -123,7 +133,8 @@ export function HomeSupplementPrompt() {
       await UserMetricService.createMetric({
         type: 'supplement',
         value: 1,
-        note: supplementName || undefined,
+        supplementId: currentSupplement.id,
+        note: currentSupplement.name,
         date: dateTimestamp,
         timezone,
       });
@@ -157,8 +168,10 @@ export function HomeSupplementPrompt() {
             <View className="flex-row items-center gap-3">
               <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
               <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-                {supplementName
-                  ? t('bodyMetrics.addEntry.supplementQuestionWithName', { name: supplementName })
+                {currentSupplement
+                  ? t('bodyMetrics.addEntry.supplementQuestionWithName', {
+                      name: currentSupplement.name,
+                    })
                   : t('bodyMetrics.addEntry.supplementQuestion')}
               </Text>
             </View>

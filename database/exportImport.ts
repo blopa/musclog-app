@@ -46,6 +46,7 @@ const RESTORE_ORDER: string[] = [
   'users',
   'foods',
   'food_portions',
+  'supplements',
   'meals',
   'workout_templates',
   'settings',
@@ -268,9 +269,11 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
           const unit = raw.unit != null ? String(raw.unit) : undefined;
           const date = Number(raw.date);
           const timezone = raw.timezone != null ? String(raw.timezone) : '';
+          const supplementId = raw.supplement_id != null ? (mapId('supplements', raw.supplement_id as string) ?? raw.supplement_id) : undefined;
           const encrypted = await encryptUserMetricFields({ value, unit: unit ?? '', date });
           const created = await collection.create((rec: any) => {
             rec.type = raw.type;
+            rec.supplementId = supplementId;
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
             rec.date = date;
