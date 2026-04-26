@@ -24,6 +24,7 @@
       "neck": "Neck",
       "shoulders": "Shoulders",
       "mood": "Mood",
+      "supplement": "Supplement",
       "ffmi": "FFMI",
       "nutrition": "Nutrition",
       "exercise": "Exercise",
@@ -115,6 +116,8 @@
       "date": "Date",
       "time": "Time",
       "moodQuestion": "How do you feel today?",
+      "supplementQuestion": "Did you take your supplement today?",
+      "supplementQuestionWithName": "Did you take {{name}} today?",
       "moods": {
         "0": "Poor",
         "1": "Low",
@@ -125,6 +128,8 @@
       "saveEntry": "Save Entry",
       "saveSuccess": "Entry saved successfully",
       "errorSaving": "Error Saving",
+      "taken": "Taken",
+      "notTaken": "Not taken",
       "note": "Note",
       "notePlaceholder": "Add a note..."
     }

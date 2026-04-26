@@ -73,6 +73,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'language',
       'maxAiMemories',
       'showDailyMoodPrompt',
+      'showDailySupplementPrompt',
       'alwaysAllowFoodEditing',
       'showWeightPrediction',
       'requireExportEncryption',
@@ -258,6 +259,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'showDailyMoodPrompt',
     SettingsService.setShowDailyMoodPrompt
   );
+  const handleShowDailySupplementPromptChange = createSettingHandler<boolean>(
+    'showDailySupplementPrompt',
+    SettingsService.setShowDailySupplementPrompt
+  );
   const handleAlwaysAllowFoodEditingChange = createSettingHandler<boolean>(
     'alwaysAllowFoodEditing',
     SettingsService.setAlwaysAllowFoodEditing
@@ -381,6 +386,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'showDailyMoodPrompt':
             await SettingsService.setShowDailyMoodPrompt(value as boolean);
             break;
+          case 'showDailySupplementPrompt':
+            await SettingsService.setShowDailySupplementPrompt(value as boolean);
+            break;
           case 'alwaysAllowFoodEditing':
             await SettingsService.setAlwaysAllowFoodEditing(value as boolean);
             break;
@@ -468,6 +476,9 @@ export function useDebouncedSettings(debounceMs = 200) {
     maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
     showDailyMoodPrompt:
       (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
+    showDailySupplementPrompt:
+      (localSettings.showDailySupplementPrompt as boolean) ??
+      actualSettings.showDailySupplementPrompt,
     alwaysAllowFoodEditing:
       (localSettings.alwaysAllowFoodEditing as boolean) ?? actualSettings.alwaysAllowFoodEditing,
     showWeightPrediction:
@@ -516,6 +527,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleLanguageChange,
     handleMaxAiMemoriesChange,
     handleShowDailyMoodPromptChange,
+    handleShowDailySupplementPromptChange,
     handleAlwaysAllowFoodEditingChange,
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,

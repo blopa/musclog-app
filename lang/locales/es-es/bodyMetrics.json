@@ -24,6 +24,7 @@
       "neck": "Cuello",
       "shoulders": "Hombros",
       "mood": "Estado de Ánimo",
+      "supplement": "Suplemento",
       "ffmi": "FFMI",
       "nutrition": "Nutrición",
       "exercise": "Ejercicio",
@@ -115,6 +116,8 @@
       "date": "Fecha",
       "time": "Hora",
       "moodQuestion": "¿Cómo te sientes hoy?",
+      "supplementQuestion": "¿Tomaste tu suplemento hoy?",
+      "supplementQuestionWithName": "¿Tomaste {{name}} hoy?",
       "moods": {
         "0": "Mal",
         "1": "Bajo",
@@ -125,6 +128,8 @@
       "saveEntry": "Guardar Entrada",
       "saveSuccess": "Entrada guardada con éxito",
       "errorSaving": "Error al Guardar",
+      "taken": "Tomado",
+      "notTaken": "No tomado",
       "note": "Nota",
       "notePlaceholder": "Añadir una nota..."
     }

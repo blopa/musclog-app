@@ -24,6 +24,7 @@
       "neck": "Nekomvang",
       "shoulders": "Schouderomvang",
       "mood": "Stemming",
+      "supplement": "Supplement",
       "ffmi": "FFMI",
       "nutrition": "Voeding",
       "exercise": "Oefening",
@@ -115,6 +116,8 @@
       "date": "Datum",
       "time": "Tijd",
       "moodQuestion": "Hoe voel je je vandaag?",
+      "supplementQuestion": "Heb je vandaag je supplement genomen?",
+      "supplementQuestionWithName": "Heb je vandaag {{name}} genomen?",
       "moods": {
         "0": "Slecht",
         "1": "Matig",
@@ -125,6 +128,8 @@
       "saveEntry": "Meting opslaan",
       "saveSuccess": "Meting succesvol opgeslagen",
       "errorSaving": "Fout bij opslaan",
+      "taken": "Genomen",
+      "notTaken": "Niet genomen",
       "note": "Notitie",
       "notePlaceholder": "Voeg een notitie toe..."
     }

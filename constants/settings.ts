@@ -202,6 +202,12 @@ export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
 
 /**
+ * Setting type for showing the daily supplement prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_daily_supplement_prompt';
+
+/**
  * Setting type for always allowing food editing in FoodMealDetailsModal.
  * value: 'true' | 'false'.
  */

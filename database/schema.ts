@@ -322,11 +322,24 @@ export const schema = appSchema({
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. Health Connect) for sync deduplication
+        { name: 'supplement_id', type: 'string', isOptional: true, isIndexed: true },
         // Encrypted at rest (utils/encryption.ts)
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Supplements
+    tableSchema({
+      name: 'supplements',
+      columns: [
+        { name: 'name', type: 'string', isIndexed: true },
+        { name: 'has_reminder', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

@@ -43,6 +43,7 @@ import {
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
@@ -517,6 +518,13 @@ export class SettingsService {
    */
   static async setShowDailyMoodPrompt(value: boolean) {
     await SettingsService.setBooleanSetting(SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the show daily supplement prompt setting
+   */
+  static async setShowDailySupplementPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE, value);
   }
 
   /**

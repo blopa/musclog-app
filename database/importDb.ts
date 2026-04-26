@@ -115,11 +115,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const unit = raw.unit != null ? String(raw.unit) : '';
         const date = Number(raw.date);
         const timezone = raw.timezone != null ? String(raw.timezone) : '';
+        const supplementId = raw.supplement_id != null ? String(raw.supplement_id) : undefined;
         const encrypted = await encryptUserMetricFields({ value, unit, date });
         createOperations.push(
           collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.type = raw.type;
+            rec.supplementId = supplementId;
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
             rec.date = date;

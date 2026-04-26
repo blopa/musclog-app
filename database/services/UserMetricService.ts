@@ -102,6 +102,7 @@ export class UserMetricService {
     date: number;
     timezone: string;
     externalId?: string;
+    supplementId?: string;
   }): Promise<UserMetric> {
     const encrypted = await encryptUserMetricFields({
       value: plain.value,
@@ -113,6 +114,7 @@ export class UserMetricService {
       const newMetric = await database.get<UserMetric>('user_metrics').create((record) => {
         record.type = plain.type as UserMetricType;
         record.externalId = plain.externalId;
+        record.supplementId = plain.supplementId;
         record.valueRaw = encrypted.value;
         record.unitRaw = encrypted.unit;
         record.date = plain.date;
