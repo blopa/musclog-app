@@ -6,24 +6,32 @@
  * @gutenye/ocr-react-native is incompatible with RN 0.76+ on Android.
  */
 
-import { deleteAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system';
-import { cacheDirectory, EncodingType } from 'expo-file-system/legacy';
-
 import { handleError } from '@/utils/handleError';
 
 import type { OcrResult } from './OcrService';
 
 let currentLanguage: string = 'eng';
 let isInitialized = false;
+let ocrInstance: any = null;
 
 const AVAILABLE_LANGUAGES = ['eng', 'chi_sim', 'chi_tra', 'fra', 'deu', 'jpn', 'kor', 'rus', 'spa'];
 
 export async function initializeOcr(language: string = 'eng'): Promise<void> {
-  if (isInitialized && currentLanguage === language) {
+  if (isInitialized && currentLanguage === language && ocrInstance) {
     return;
   }
-  currentLanguage = language;
-  isInitialized = true;
+
+  try {
+    const Ocr = require('@gutenye/ocr-react-native').default;
+
+    ocrInstance = await Ocr.create({ language });
+    currentLanguage = language;
+    isInitialized = true;
+  } catch (error) {
+    handleError(error, 'OcrServiceShared.initializeOcr');
+    console.error('[OCR] Failed to initialize Guten OCR:', error);
+    throw error;
+  }
 }
 
 export async function recognizeText(
@@ -32,29 +40,26 @@ export async function recognizeText(
 ): Promise<OcrResult> {
   const startTime = Date.now();
   try {
-    if (!isInitialized || currentLanguage !== language) {
+    if (!isInitialized || currentLanguage !== language || !ocrInstance) {
       await initializeOcr(language);
     }
 
-    const { Recognizer } = require('@gutenye/ocr-react-native');
-    const recognizer = new Recognizer({ language });
+    // Guten OCR works with file paths.
+    const filePath = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
 
-    const imageData = await readAsStringAsync(imageUri, {
-      encoding: EncodingType.Base64,
-    });
+    const lines = await ocrInstance.detect(filePath);
 
-    const tempFileUri = `${cacheDirectory}ocr_temp_${Date.now()}.png`;
-    await writeAsStringAsync(tempFileUri, imageData, {
-      encoding: EncodingType.Base64,
-    });
-
-    const result = await recognizer.recognize(tempFileUri);
-    await deleteAsync(tempFileUri, { idempotent: true });
+    // Combine lines into a single text string
+    const text = lines.map((l: any) => l.text).join('\n');
 
     return {
-      text: result.text || '',
-      confidence: result.confidence || 0.8,
-      blocks: result.blocks || [],
+      text: text || '',
+      confidence: 0.8, // Guten OCR detect doesn't seem to return global confidence directly
+      blocks: lines.map((l: any) => ({
+        text: l.text,
+        confidence: 0.8,
+        frame: l.frame,
+      })),
       processingTimeMs: Date.now() - startTime,
     };
   } catch (error) {
@@ -69,5 +74,8 @@ export async function getAvailableLanguages(): Promise<string[]> {
 }
 
 export async function terminateOcr(): Promise<void> {
+  // Guten OCR Ocr.ts doesn't have a terminate method, but it might be handled by JS GC
+  // or internal native cleanup.
+  ocrInstance = null;
   isInitialized = false;
 }
