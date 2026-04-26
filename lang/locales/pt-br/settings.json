@@ -213,6 +213,7 @@
       "imageProcessing": "PROCESSAMENTO DE IMAGEM",
       "useOcrBeforeAi": "Usar OCR Antes de Enviar para IA",
       "useOcrBeforeAiSubtitle": "Processar imagens localmente com OCR e enviar texto em vez disso",
+      "useOcrBeforeAiOnDeviceSubtitle": "Obrigatório para Apple Intelligence — o OCR converte imagens em texto antes de enviar.",
       "sendFoundationFoodsToLlm": "Enviar Foundation Foods para IA",
       "sendFoundationFoodsToLlmSubtitle": "Melhorar correspondência de ingredientes usando o banco de dados de foundation foods",
       "getOpenAiKey": "Obter Chave OpenAI",

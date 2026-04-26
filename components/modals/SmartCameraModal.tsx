@@ -73,6 +73,8 @@ type CameraModalProps = {
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
   isAiEnabled?: boolean;
+  /** When false, the meal-photo mode button is hidden and the mode falls back to ai-label-scan. */
+  isMealPhotoEnabled?: boolean;
   useOcrBeforeAi?: boolean;
   logDate?: Date;
   mealTypeForLog?: MealType;
@@ -92,6 +94,7 @@ export default function SmartCameraModal({
   mode = 'barcode-scan',
   hideCameraModePicker = false,
   isAiEnabled = true,
+  isMealPhotoEnabled = true,
   useOcrBeforeAi = false,
   logDate,
   mealTypeForLog,
@@ -107,7 +110,12 @@ export default function SmartCameraModal({
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
-    !isAiEnabled ? 'barcode-scan' : mode || 'ai-meal-photo'
+    // TODO: use helper function to avoid using nested ternary
+    !isAiEnabled
+      ? 'barcode-scan'
+      : !isMealPhotoEnabled && mode === 'ai-meal-photo'
+        ? 'ai-label-scan'
+        : mode || 'ai-meal-photo'
   );
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
@@ -198,10 +206,16 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      const safeMode = !isAiEnabled && mode !== 'barcode-scan' ? 'barcode-scan' : mode;
+      const safeMode =
+        // TODO: use helper function to avoid using nested ternary
+        !isAiEnabled && mode !== 'barcode-scan'
+          ? 'barcode-scan'
+          : !isMealPhotoEnabled && mode === 'ai-meal-photo'
+            ? 'ai-label-scan'
+            : mode;
       setCameraMode(safeMode);
     }
-  }, [mode, isAiEnabled]);
+  }, [mode, isAiEnabled, isMealPhotoEnabled]);
 
   // Show FoodMealDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
   useEffect(() => {
@@ -289,7 +303,7 @@ export default function SmartCameraModal({
       setIsProcessingAi(true);
       try {
         if (cameraMode === 'ai-label-scan') {
-          if (useOcrBeforeAi) {
+          if (useOcrBeforeAi || !isMealPhotoEnabled) {
             const text = await performOcr(fileUri);
             if (!text?.trim()) {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
@@ -1030,8 +1044,8 @@ export default function SmartCameraModal({
                     </Pressable>
                   ) : null}
 
-                  {/* AI Meal Photo — hidden when AI is disabled */}
-                  {isAiEnabled ? (
+                  {/* AI Meal Photo — hidden when AI is disabled or provider doesn't support vision */}
+                  {isAiEnabled && isMealPhotoEnabled ? (
                     <Pressable
                       onPress={() => handleModeChange('ai-meal-photo')}
                       className="flex-1 rounded-xl px-2"

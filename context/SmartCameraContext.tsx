@@ -22,7 +22,7 @@ type SmartCameraContextType = {
 const SmartCameraContext = createContext<SmartCameraContextType | undefined>(undefined);
 
 export function SmartCameraProvider({ children }: { children: ReactNode }) {
-  const { isAiConfigured, useOcrBeforeAi } = useSettings();
+  const { isAiConfigured, isAiMealPhotoEnabled, useOcrBeforeAi } = useSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
@@ -63,6 +63,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
+          isMealPhotoEnabled={isAiMealPhotoEnabled}
           useOcrBeforeAi={useOcrBeforeAi}
           logDate={logDate}
           mealTypeForLog={mealTypeForLog}

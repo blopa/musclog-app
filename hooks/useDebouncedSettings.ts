@@ -225,9 +225,42 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
-  const handleUseOnDeviceAiChange = createSettingHandler(
-    'useOnDeviceAi',
-    SettingsService.setUseOnDeviceAi
+  const handleUseOnDeviceAiChange = useCallback(
+    (newValue: boolean) => {
+      setLocalSettings((prev) => ({
+        ...prev,
+        useOnDeviceAi: newValue,
+        ...(newValue ? { useOcrBeforeAi: true } : {}),
+      }));
+
+      pendingKeysRef.current.add('useOnDeviceAi');
+      pendingValuesRef.current['useOnDeviceAi'] = newValue;
+
+      if (newValue) {
+        pendingKeysRef.current.add('useOcrBeforeAi');
+        pendingValuesRef.current['useOcrBeforeAi'] = true;
+      }
+
+      const schedule = (key: string, save: () => Promise<void>) => {
+        if (timeoutRefs.current[key]) {
+          clearTimeout(timeoutRefs.current[key]);
+        }
+
+        timeoutRefs.current[key] = setTimeout(() => {
+          delete timeoutRefs.current[key];
+          delete pendingValuesRef.current[key];
+          save()
+            .catch((e) => console.error(`[useDebouncedSettings] Error saving ${key}:`, e))
+            .finally(() => pendingKeysRef.current.delete(key));
+        }, debounceMs);
+      };
+
+      schedule('useOnDeviceAi', () => SettingsService.setUseOnDeviceAi(newValue));
+      if (newValue) {
+        schedule('useOcrBeforeAi', () => SettingsService.setUseOcrBeforeAi(true));
+      }
+    },
+    [debounceMs]
   );
   const handleUseMusclogFreeTierChange = createSettingHandler(
     'useMusclogFreeTier',

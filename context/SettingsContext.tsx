@@ -309,6 +309,7 @@ export type SettingsContextType = UseSettingsResult & {
   useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
+  isAiMealPhotoEnabled: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -408,6 +409,34 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.openAiApiKey,
   ]);
 
+  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai.
+  // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
+  // when it would be the active provider.
+  const isAiMealPhotoEnabled = useMemo(() => {
+    if (state.useMusclogFreeTier) {
+      return true;
+    }
+
+    if (state.useOnDeviceAi) {
+      return false;
+    }
+
+    return (
+      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
+      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
+    );
+  }, [
+    state.useMusclogFreeTier,
+    state.useOnDeviceAi,
+    state.enableLocalLlm,
+    state.localLlmBaseUrl,
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
+
   const value = useMemo(
     () => ({
       ...state,
@@ -415,10 +444,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       openAiApiKey: decryptedApiKeys.openAiApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       isAiConfigured,
+      isAiMealPhotoEnabled,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, decryptedApiKeys, isAiConfigured]
+    [state, decryptedApiKeys, isAiConfigured, isAiMealPhotoEnabled]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
