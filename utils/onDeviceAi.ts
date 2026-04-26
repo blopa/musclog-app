@@ -1,4 +1,5 @@
-import { isAvailable, sendMessage } from 'expo-ai-kit';
+import { apple } from '@react-native-ai/apple';
+import { generateText, jsonSchema, Output } from 'ai';
 import { Platform } from 'react-native';
 
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
@@ -13,7 +14,7 @@ export async function isOnDeviceAiCapable(): Promise<boolean> {
   }
 
   try {
-    return await isAvailable();
+    return apple.isAvailable();
   } catch {
     return false;
   }
@@ -29,7 +30,7 @@ export async function isOnDeviceAiAvailable(): Promise<boolean> {
   }
 
   try {
-    return await isAvailable();
+    return apple.isAvailable();
   } catch {
     return false;
   }
@@ -39,6 +40,24 @@ export async function sendOnDeviceMessage(
   messages: OnDeviceMessage[],
   systemPrompt?: string
 ): Promise<string> {
-  const response = await sendMessage(messages, { systemPrompt });
-  return response.text ?? '';
+  const result = await generateText({
+    model: apple(),
+    system: systemPrompt,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+  });
+  return result.text ?? '';
+}
+
+export async function sendOnDeviceStructured<T>(
+  messages: OnDeviceMessage[],
+  systemPrompt: string,
+  schema: object
+): Promise<T | null> {
+  const result = await generateText({
+    model: apple(),
+    system: systemPrompt,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    experimental_output: Output.object({ schema: jsonSchema(schema) }),
+  });
+  return (result.experimental_output as T) ?? null;
 }

@@ -6,7 +6,7 @@ import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
 import { handleError } from './handleError';
-import { sendOnDeviceMessage } from './onDeviceAi';
+import { sendOnDeviceMessage, sendOnDeviceStructured } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -974,47 +974,28 @@ async function generateStructured<T>(
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
 
   if (config.provider === 'on-device') {
-    const schemaStr = JSON.stringify(schema, null, 2);
-    const onDevicePrompt = `${promptWithLang}\n\nYou MUST respond with a valid JSON object only. No explanation, no markdown, no code fences. Your entire response must be parseable JSON matching this structure:\n${schemaStr}`;
     const messages = [{ role: 'user' as const, content: sanitizedUserMessage }];
 
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
       operation: schemaName,
-      payload: { systemPrompt: onDevicePrompt, messages },
+      payload: { systemPrompt: promptWithLang, messages, schema },
       config,
     });
 
     try {
-      const raw = await sendOnDeviceMessage(messages, onDevicePrompt);
+      const result = await sendOnDeviceStructured<T>(messages, promptWithLang, schema);
 
       await logLlmDebugEvent({
         provider: 'on-device',
         direction: 'response',
         operation: schemaName,
-        payload: { text: raw },
+        payload: result,
         config,
       });
 
-      if (!raw?.trim()) {
-        return null;
-      }
-
-      try {
-        const clean = raw.replace(/```json|```/g, '').trim();
-        return JSON.parse(clean) as T;
-      } catch (parseError) {
-        await logLlmDebugEvent({
-          provider: 'on-device',
-          direction: 'response',
-          operation: schemaName,
-          payload: { parseError: String(parseError), rawText: raw },
-          config,
-        });
-
-        return null;
-      }
+      return result;
     } catch (error) {
       handleError(error, `coachAI.generateStructured[${schemaName}]`);
       await logLlmDebugEvent({
