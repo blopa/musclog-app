@@ -9,9 +9,9 @@ import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMe
 import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
+import { AdherenceHistoryChart } from '@/components/progress/AdherenceHistoryChart';
 import { BodyCompProteinChart } from '@/components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '@/components/progress/BodyMetricsCharts';
-import { AdherenceHistoryChart } from '@/components/progress/AdherenceHistoryChart';
 import { MacroMuscleChart } from '@/components/progress/MacroMuscleChart';
 import { MenstrualPerformanceChart } from '@/components/progress/MenstrualPerformanceChart';
 import { MoodCaloriesChart } from '@/components/progress/MoodCaloriesChart';
