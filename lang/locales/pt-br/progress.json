@@ -40,7 +40,9 @@
       "moodHistory": "Humor ao Longo do Tempo",
       "moodCalories": "Humor/Calorias",
       "moodVolume": "Humor/Volume de Treino",
-      "moodMacros": "Humor/Macros"
+      "moodMacros": "Humor/Macros",
+      "waterIntake": "Lembrete de Água",
+      "supplementIntake": "Ingestão de Suplementos"
     },
     "mood": {
       "poor": "Péssimo",

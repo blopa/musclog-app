@@ -26,6 +26,7 @@ import {
 import { database } from '@/database/database-instance';
 import { restoreDatabase } from '@/database/importDb';
 import type {
+  AdherencePoint,
   CorrelationPoint,
   DailyNutrition,
   MoodPoint,
@@ -815,6 +816,26 @@ export default function ProgressWebsitePage() {
     () => (aggregationData?.moodHistory ?? []).map((point) => ({ x: point.date, y: point.mood })),
     [aggregationData?.moodHistory]
   );
+  const waterReminderPoints = useMemo(
+    () =>
+      (aggregationData?.waterIntakeHistory ?? []).map((point: AdherencePoint) => ({
+        x: point.date,
+        y: point.adherence * 100,
+      })),
+    [aggregationData?.waterIntakeHistory]
+  );
+  const supplementReminderSeries = useMemo(
+    () =>
+      (aggregationData?.supplementIntakeSeries ?? []).map((series) => ({
+        supplementId: series.supplementId,
+        supplementName: series.supplementName,
+        points: series.history.map((point) => ({
+          x: point.date,
+          y: point.adherence * 100,
+        })),
+      })),
+    [aggregationData?.supplementIntakeSeries]
+  );
 
   const nutritionItems = useMemo(
     () =>
@@ -885,6 +906,9 @@ export default function ProgressWebsitePage() {
       ))}
     </div>
   );
+  const hasReminderData =
+    waterReminderPoints.length > 0 ||
+    supplementReminderSeries.some((series) => series.points.length > 0);
 
   if (hasImportedData === null) {
     return (
@@ -1386,6 +1410,64 @@ export default function ProgressWebsitePage() {
                   )}
                 </SectionCard>
               </div>
+
+              {hasReminderData ? (
+                <SectionCard
+                  title={t('website.progress.sections.reminders.title')}
+                  subtitle={t('website.progress.sections.reminders.description')}
+                  right={advancedToggle}
+                >
+                  <div className="space-y-6">
+                    {waterReminderPoints.length > 0 ? (
+                      <MiniLineChart
+                        points={waterReminderPoints}
+                        color={CYAN}
+                        fillColor={CYAN}
+                        labels={{
+                          title: t('progress.correlationView.waterIntake'),
+                          minLabel: waterReminderPoints[0]
+                            ? formatDateLabel(locale, waterReminderPoints[0].x)
+                            : '',
+                          maxLabel: waterReminderPoints.at(-1)
+                            ? formatDateLabel(locale, waterReminderPoints.at(-1)!.x)
+                            : '',
+                        }}
+                        valueSuffix="%"
+                        locale={locale}
+                      />
+                    ) : null}
+
+                    {supplementReminderSeries.length > 0 ? (
+                      <div>
+                        <div className="mb-3 text-sm font-semibold text-white">
+                          {t('website.progress.sections.reminders.supplementsTitle')}
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          {supplementReminderSeries.map((series) => (
+                            <MiniLineChart
+                              key={series.supplementId}
+                              points={series.points}
+                              color={BRAND_GREEN}
+                              fillColor={BRAND_GREEN}
+                              labels={{
+                                title: series.supplementName,
+                                minLabel: series.points[0]
+                                  ? formatDateLabel(locale, series.points[0].x)
+                                  : '',
+                                maxLabel: series.points.at(-1)
+                                  ? formatDateLabel(locale, series.points.at(-1)!.x)
+                                  : '',
+                              }}
+                              valueSuffix="%"
+                              locale={locale}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </SectionCard>
+              ) : null}
             </>
           )}
         </div>

@@ -12,6 +12,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 
 import { Button } from '@/components/theme/Button';
 import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -155,9 +156,21 @@ export function HomeWaterPrompt({
     return null;
   }
 
-  const persistAnswer = async (dayStartMs: number, previousAnsweredDayMs: number | null) => {
+  const persistAnswer = async (
+    value: 0 | 1,
+    dayStartMs: number,
+    previousAnsweredDayMs: number | null
+  ) => {
     try {
-      await SettingsService.setLastHomeWaterPromptAnsweredDay(dayStartMs);
+      await Promise.all([
+        UserMetricService.createMetric({
+          type: 'water',
+          value,
+          date: dayStartMs,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+        SettingsService.setLastHomeWaterPromptAnsweredDay(dayStartMs),
+      ]);
     } catch (error) {
       console.error('Error saving home water prompt answer:', error);
       setLastAnsweredDayMs(previousAnsweredDayMs);
@@ -167,7 +180,7 @@ export function HomeWaterPrompt({
     }
   };
 
-  const handleAnswer = () => {
+  const handleAnswer = (value: 0 | 1) => {
     if (isSaving) {
       return;
     }
@@ -177,7 +190,7 @@ export function HomeWaterPrompt({
     setLastAnsweredDayMs(todayDayStartMs);
 
     setTimeout(() => {
-      void persistAnswer(todayDayStartMs, previousAnsweredDayMs);
+      void persistAnswer(value, todayDayStartMs, previousAnsweredDayMs);
     }, 50);
   };
 
@@ -201,7 +214,7 @@ export function HomeWaterPrompt({
           <View className="flex-row gap-3">
             <Button
               label={t('bodyMetrics.addEntry.no')}
-              onPress={handleAnswer}
+              onPress={() => handleAnswer(0)}
               icon={CircleOff}
               variant="outline"
               size="sm"
@@ -211,7 +224,7 @@ export function HomeWaterPrompt({
             />
             <Button
               label={t('bodyMetrics.addEntry.yes')}
-              onPress={handleAnswer}
+              onPress={() => handleAnswer(1)}
               icon={CheckCircle2}
               variant="gradientCta"
               size="sm"

@@ -214,6 +214,11 @@
           "totalEntries": "Tracked periods",
           "averageScore": "Average score"
         },
+        "reminders": {
+          "title": "Reminder adherence",
+          "description": "Water and supplement reminders now show up as completion trends, so you can review consistency alongside your other recovery signals.",
+          "supplementsTitle": "Supplement reminders"
+        },
         "measurements": {
           "title": "Measurements",
           "description": "When circumference logs exist, they are surfaced here as compact trend cards.",

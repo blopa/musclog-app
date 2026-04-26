@@ -11,6 +11,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { BodyCompProteinChart } from '@/components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '@/components/progress/BodyMetricsCharts';
+import { AdherenceHistoryChart } from '@/components/progress/AdherenceHistoryChart';
 import { MacroMuscleChart } from '@/components/progress/MacroMuscleChart';
 import { MenstrualPerformanceChart } from '@/components/progress/MenstrualPerformanceChart';
 import { MoodCaloriesChart } from '@/components/progress/MoodCaloriesChart';
@@ -233,6 +234,17 @@ function ProgressScreenContent({
 }: any) {
   const { dismissAll } = useChartTooltip();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const supplementSeriesDefinitions = Array.from(
+    (['daily', 'weekly', 'monthly'] as const).reduce((map, aggregationKey) => {
+      for (const series of allAggregationData[aggregationKey]?.supplementIntakeSeries ?? []) {
+        if (!map.has(series.supplementId)) {
+          map.set(series.supplementId, series.supplementName);
+        }
+      }
+
+      return map;
+    }, new Map<string, string>())
+  ).map(([supplementId, supplementName]) => ({ supplementId, supplementName }));
 
   return (
     <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
@@ -374,6 +386,46 @@ function ProgressScreenContent({
                       }}
                     />
                   ) : null}
+                  {hasAnyAggregationData((d: any) => d.waterIntakeHistory) ? (
+                    <AdherenceHistoryChart
+                      title={t('progress.correlationView.waterIntake')}
+                      subtitle={t('bodyMetrics.metrics.descriptions.water')}
+                      allData={{
+                        daily: allAggregationData.daily?.waterIntakeHistory ?? [],
+                        weekly: allAggregationData.weekly?.waterIntakeHistory ?? [],
+                        monthly: allAggregationData.monthly?.waterIntakeHistory ?? [],
+                      }}
+                      positiveLabel={t('bodyMetrics.addEntry.yes')}
+                      negativeLabel={t('bodyMetrics.addEntry.no')}
+                      lineColor={theme.colors.status.info}
+                      areaColor={theme.colors.status.info10}
+                    />
+                  ) : null}
+                  {supplementSeriesDefinitions.map(({ supplementId, supplementName }) => (
+                    <AdherenceHistoryChart
+                      key={supplementId}
+                      title={supplementName}
+                      subtitle={t('progress.correlationView.supplementIntake')}
+                      allData={{
+                        daily:
+                          allAggregationData.daily?.supplementIntakeSeries?.find(
+                            (series: any) => series.supplementId === supplementId
+                          )?.history ?? [],
+                        weekly:
+                          allAggregationData.weekly?.supplementIntakeSeries?.find(
+                            (series: any) => series.supplementId === supplementId
+                          )?.history ?? [],
+                        monthly:
+                          allAggregationData.monthly?.supplementIntakeSeries?.find(
+                            (series: any) => series.supplementId === supplementId
+                          )?.history ?? [],
+                      }}
+                      positiveLabel={t('bodyMetrics.addEntry.taken')}
+                      negativeLabel={t('bodyMetrics.addEntry.notTaken')}
+                      lineColor={theme.colors.status.emerald}
+                      areaColor={theme.colors.status.emerald10}
+                    />
+                  ))}
 
                   {data.measurementsHistory
                     ? Object.entries(data.measurementsHistory).map(

@@ -37,6 +37,7 @@ const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   height: 'straighten',
   bmi: 'trending-up',
   mood: 'mood',
+  water: 'water-drop',
   supplement: 'medication',
   chest: 'straighten',
   waist: 'straighten',
@@ -214,6 +215,7 @@ export function useUserMetricDataLogs({
       straighten: { color: theme.colors.accent.tertiary, bg: theme.colors.status.info10 },
       'trending-up': { color: theme.colors.accent.secondary, bg: theme.colors.status.emerald10 },
       mood: { color: theme.colors.macros.fat.text, bg: theme.colors.status.amber10 },
+      'water-drop': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
       'fitness-center': {
         color: theme.colors.status.emeraldLight,
         bg: theme.colors.status.emerald400_10,

@@ -214,6 +214,11 @@
           "totalEntries": "Periodos registrados",
           "averageScore": "Puntuación media"
         },
+        "reminders": {
+          "title": "Adherencia a recordatorios",
+          "description": "Los recordatorios de agua y suplementos también aparecen como tendencias de cumplimiento para revisar tu constancia junto con otras señales de recuperación.",
+          "supplementsTitle": "Recordatorios de suplementos"
+        },
         "measurements": {
           "title": "Mediciones",
           "description": "Cuando existen registros de circunferencias, se muestran aquí como tarjetas compactas de tendencia.",

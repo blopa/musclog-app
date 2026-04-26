@@ -214,6 +214,11 @@
           "totalEntries": "Bijgehouden periodes",
           "averageScore": "Gemiddelde score"
         },
+        "reminders": {
+          "title": "Herinneringsconsistentie",
+          "description": "Water- en supplementherinneringen verschijnen nu ook als nalevingstrends, zodat u uw consistentie naast andere herstelsignalen kunt bekijken.",
+          "supplementsTitle": "Supplementherinneringen"
+        },
         "measurements": {
           "title": "Metingen",
           "description": "Wanneer omtrekmetingen bestaan, verschijnen ze hier als compacte trendkaarten.",

@@ -214,6 +214,11 @@
           "totalEntries": "Períodos rastreados",
           "averageScore": "Pontuação média"
         },
+        "reminders": {
+          "title": "Aderência aos lembretes",
+          "description": "Os lembretes de água e suplementos também aparecem como tendências de conclusão para você revisar sua consistência junto com outros sinais de recuperação.",
+          "supplementsTitle": "Lembretes de suplementos"
+        },
         "measurements": {
           "title": "Medidas",
           "description": "Quando existem registros de circunferência, eles aparecem aqui como cartões compactos de tendência.",
