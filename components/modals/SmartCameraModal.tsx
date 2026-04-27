@@ -52,6 +52,22 @@ import { LogMealModal } from './LogMealModal';
 
 const SMALL_SCREEN_HEIGHT = 700;
 
+const getSafeCameraMode = (
+  mode: CameraMode,
+  isAiEnabled: boolean,
+  isMealPhotoEnabled: boolean
+): CameraMode => {
+  if (!isAiEnabled) {
+    return 'barcode-scan';
+  }
+  
+  if (!isMealPhotoEnabled && mode === 'ai-meal-photo') {
+    return 'ai-label-scan';
+  }
+  
+  return mode || 'ai-meal-photo';
+};
+
 export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
 const getCameraInstructionText = (cameraMode: CameraMode, t: (key: string) => string): string => {
@@ -110,12 +126,7 @@ export default function SmartCameraModal({
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
-    // TODO: use helper function to avoid using nested ternary
-    !isAiEnabled
-      ? 'barcode-scan'
-      : !isMealPhotoEnabled && mode === 'ai-meal-photo'
-        ? 'ai-label-scan'
-        : mode || 'ai-meal-photo'
+    getSafeCameraMode(mode, isAiEnabled, isMealPhotoEnabled)
   );
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
@@ -206,13 +217,7 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      const safeMode =
-        // TODO: use helper function to avoid using nested ternary
-        !isAiEnabled && mode !== 'barcode-scan'
-          ? 'barcode-scan'
-          : !isMealPhotoEnabled && mode === 'ai-meal-photo'
-            ? 'ai-label-scan'
-            : mode;
+      const safeMode = getSafeCameraMode(mode, isAiEnabled, isMealPhotoEnabled);
       setCameraMode(safeMode);
     }
   }, [mode, isAiEnabled, isMealPhotoEnabled]);
