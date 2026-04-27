@@ -26,6 +26,7 @@ import { NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
+import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
 import {
   estimateNutritionFromPhoto,
@@ -37,7 +38,6 @@ import {
 } from '@/utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
-import { performOcr } from '@/utils/ocr';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
 
@@ -304,8 +304,10 @@ export default function SmartCameraModal({
       try {
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi || !isMealPhotoEnabled) {
-            const text = await performOcr(fileUri);
-            if (!text?.trim()) {
+
+            // TODO: pass language to ocrRecognizeText
+            const { text } = await ocrRecognizeText(fileUri);
+            if (!text.trim()) {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
               return;
             }
