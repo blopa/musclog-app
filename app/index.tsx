@@ -7,7 +7,7 @@ export default function Index() {
 
   useEffect(() => {
     // If platform is web, redirect user to home.tsx
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' && !__DEV__) {
       router.replace('/home');
     }
   }, [router]);
@@ -17,5 +17,6 @@ export default function Index() {
     return null;
   }
 
+  // TODO: cant we just do href={Platform.OS === 'web' && !__DEV__ ? '/home' : '/app'}?
   return <Redirect href="/app" />;
 }
