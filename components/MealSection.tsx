@@ -67,8 +67,8 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   const { formatInteger } = useFormatAppNumber();
 
   return (
-    <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
-      <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+    <View className="items-flex-start mt-4 mb-4 flex-row justify-between">
+      <Text className="text-text-primary text-2xl font-bold">{title}</Text>
       <View
         className="flex-row items-end gap-2"
         style={{
@@ -77,7 +77,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
       >
         <View className="items-end">
           <Text
-            className="text-lg text-text-secondary"
+            className="text-text-secondary text-lg"
             style={intuitiveMode ? blurFilter(5) : undefined}
           >
             {intuitiveMode
@@ -97,7 +97,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
                   }),
                 })}
               </Text>
-              <Text className="text-sm text-text-secondary">{' • '}</Text>
+              <Text className="text-text-secondary text-sm">{' • '}</Text>
               <Text className="text-sm" style={{ color: theme.colors.macros.carbs.text }}>
                 {t('common.labelColonValue', {
                   label: t('food.macros.carbsShort'),
@@ -106,7 +106,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
                   }),
                 })}
               </Text>
-              <Text className="text-sm text-text-secondary">{' • '}</Text>
+              <Text className="text-text-secondary text-sm">{' • '}</Text>
               <Text className="text-sm" style={{ color: theme.colors.macros.fat.text }}>
                 {t('common.labelColonValue', {
                   label: t('food.macros.fatShort'),

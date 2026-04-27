@@ -25,7 +25,7 @@ export function MealTypeButton({
     <Pressable
       className={`${
         span === 2 ? 'flex-row' : 'flex-col'
-      } active:bg-bg-card-elevated items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3 active:scale-95`}
+      } active:bg-bg-card-elevated border-border-default bg-bg-overlay items-center justify-center gap-2 rounded-2xl border p-3 active:scale-95`}
       style={{ minHeight: theme.size['22'] }}
       onPress={onPress}
       {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
@@ -36,7 +36,7 @@ export function MealTypeButton({
       >
         <Icon size={span === 2 ? theme.iconSize.sm : theme.iconSize.md} color={iconColor} />
       </View>
-      <Text className="text-xs font-medium text-text-primary">{label}</Text>
+      <Text className="text-text-primary text-xs font-medium">{label}</Text>
     </Pressable>
   );
 }

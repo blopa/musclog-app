@@ -168,17 +168,17 @@ export const NavigationMenu = memo(function NavigationMenu({
                   />
                   {unreadChatMessages > 0 ? (
                     <View
-                      className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
+                      className="absolute -top-1.5 -right-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
                       style={{ minWidth: 14, minHeight: 14 }}
                     >
-                      <Text className="text-[10px] font-bold leading-none text-white">
+                      <Text className="text-[10px] leading-none font-bold text-white">
                         {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
                       </Text>
                     </View>
                   ) : null}
                 </View>
               </View>
-              <Text className="text-xs font-medium text-text-tertiary">
+              <Text className="text-text-tertiary text-xs font-medium">
                 {t('home.navigation.coach')}
               </Text>
             </Pressable>
@@ -320,7 +320,7 @@ export const NavigationMenu = memo(function NavigationMenu({
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 border-t border-border-dark"
+      className="border-border-dark absolute right-0 bottom-0 left-0 border-t"
       style={{
         backgroundColor: theme.colors.background.secondaryDark,
         paddingBottom: insets.bottom,
@@ -362,7 +362,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           onPress={onCameraPress}
         >
           <View
-            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+            className="shadow-accent-primary/50 items-center justify-center rounded-full shadow-lg"
             style={[
               isSmallScreen
                 ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }

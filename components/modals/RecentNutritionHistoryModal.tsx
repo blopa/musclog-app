@@ -103,7 +103,7 @@ export function RecentNutritionHistoryModal({
       title={t('foodSearch.recentHistory')}
       scrollable={false}
     >
-      <View className="flex-1 bg-bg-primary">
+      <View className="bg-bg-primary flex-1">
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
@@ -131,7 +131,7 @@ export function RecentNutritionHistoryModal({
               </>
             ) : (
               <View className="py-8 text-center">
-                <Text className="text-center text-text-tertiary">
+                <Text className="text-text-tertiary text-center">
                   {t('foodSearch.noRecentFoods')}
                 </Text>
               </View>

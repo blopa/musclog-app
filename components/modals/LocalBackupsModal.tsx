@@ -196,10 +196,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         ) : backups.length === 0 ? (
           <View className="items-center justify-center py-12">
             <MaterialIcons name="backup" size={48} color={theme.colors.text.tertiary} />
-            <Text className="mt-4 text-base font-medium text-text-secondary">
+            <Text className="text-text-secondary mt-4 text-base font-medium">
               {t('settings.advancedSettings.localBackups.noBackups')}
             </Text>
-            <Text className="mt-2 text-center text-sm text-text-tertiary">
+            <Text className="text-text-tertiary mt-2 text-center text-sm">
               {t('settings.advancedSettings.localBackups.noBackupsDesc')}
             </Text>
           </View>
@@ -214,13 +214,13 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
               >
                 <View className="flex-row items-center justify-between p-4">
                   <View className="flex-1 gap-1">
-                    <Text className="text-base font-semibold text-text-primary">
+                    <Text className="text-text-primary text-base font-semibold">
                       {t('settings.advancedSettings.localBackups.backupFromTo', {
                         from: backup.fromVersion || '?',
                         to: backup.toVersion || '?',
                       })}
                     </Text>
-                    <Text className="text-sm text-text-secondary">
+                    <Text className="text-text-secondary text-sm">
                       {t('settings.advancedSettings.localBackups.backupDate', {
                         date: format(new Date(backup.createdAt), 'PPPp'),
                       })}

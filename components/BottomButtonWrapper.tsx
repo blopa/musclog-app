@@ -16,7 +16,7 @@ export function BottomButtonWrapper({ effect = 'gradient', children }: BottomBut
 
   const renderContent = () => (
     <View
-      className="px-6 pb-6 pt-6"
+      className="px-6 pt-6 pb-6"
       style={{
         // On web the outer FullScreenModal container already applies paddingBottom: insets.bottom
         // (via viewport-fit=cover + useSafeAreaInsets), so only add extra visual breathing room here.
@@ -35,7 +35,7 @@ export function BottomButtonWrapper({ effect = 'gradient', children }: BottomBut
   };
 
   return (
-    <View className="absolute bottom-0 left-0 right-0" style={wrapperStyle}>
+    <View className="absolute right-0 bottom-0 left-0" style={wrapperStyle}>
       {effect === 'blur' ? (
         <BlurView intensity={60} tint="dark" className="w-full">
           {renderContent()}

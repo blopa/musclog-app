@@ -149,9 +149,9 @@ export function EditPersonalInfoBody({
 
         {!hideDob ? (
           <View className="flex-col gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
+            <Text className="text-text-secondary ml-1 text-sm font-medium">
               <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-text-primary text-lg font-bold">
                   {t('editPersonalInfo.dateOfBirth')}
                 </Text>
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
@@ -169,9 +169,9 @@ export function EditPersonalInfoBody({
 
         {!hideGender ? (
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
+            <Text className="text-text-secondary ml-1 text-sm font-medium">
               <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-text-primary text-lg font-bold">
                   {t('editPersonalInfo.gender')}
                 </Text>
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
@@ -186,13 +186,13 @@ export function EditPersonalInfoBody({
         ) : null}
 
         {hideGender || gender === 'female' || gender === 'other' ? (
-          <View className="mt-2 rounded-2xl border-2 border-white/5 bg-bg-card p-4">
+          <View className="bg-bg-card mt-2 rounded-2xl border-2 border-white/5 p-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-text-primary text-lg font-bold">
                   {t('onboarding.personalInfo.trackCycle')}
                 </Text>
-                <Text className="text-sm text-text-secondary">
+                <Text className="text-text-secondary text-sm">
                   {t('onboarding.personalInfo.trackCycleDescription')}
                 </Text>
               </View>
@@ -214,7 +214,7 @@ export function EditPersonalInfoBody({
       </View>
 
       {!hideSaveButton ? (
-        <View className="bg-transparent px-4 pb-6 pt-3">
+        <View className="bg-transparent px-4 pt-3 pb-6">
           <Button
             label={t('editPersonalInfo.saveChanges')}
             icon={Check}

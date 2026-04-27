@@ -247,7 +247,7 @@ export function ServingSizeSelector({
 
   return (
     <GenericCard variant="default">
-      <View className="mt-6 w-full gap-3 pl-4 pr-4">
+      <View className="mt-6 w-full gap-3 pr-4 pl-4">
         <StepperInput
           label={t('food.foodDetails.servingSize')}
           value={displayValue}

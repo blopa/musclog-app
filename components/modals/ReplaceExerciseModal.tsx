@@ -157,7 +157,7 @@ export function ReplaceExerciseModal({
               placeholderTextColor={theme.colors.text.secondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="w-full rounded-xl pl-12 pr-4"
+              className="w-full rounded-xl pr-4 pl-12"
               style={{
                 backgroundColor: theme.colors.background.secondaryDark,
                 borderWidth: searchQuery ? theme.borderWidth.medium : 0,

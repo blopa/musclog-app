@@ -358,7 +358,7 @@ export default function HomeScreen() {
                           className="h-full w-full items-center justify-center rounded-full"
                           style={{ backgroundColor: theme.colors.background.imageLight }}
                         >
-                          <Text className="text-lg font-bold text-text-primary">
+                          <Text className="text-text-primary text-lg font-bold">
                             {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
                           </Text>
                         </View>
@@ -366,8 +366,8 @@ export default function HomeScreen() {
                     </View>
                   </View>
                   <View>
-                    <Text className="text-sm text-text-secondary">{getTimeBasedGreeting()}</Text>
-                    <Text className="text-xl font-bold text-text-primary">
+                    <Text className="text-text-secondary text-sm">{getTimeBasedGreeting()}</Text>
+                    <Text className="text-text-primary text-xl font-bold">
                       {dbUser?.fullName || 'Guest'}
                     </Text>
                   </View>
@@ -376,17 +376,17 @@ export default function HomeScreen() {
             )}
           </Pressable>
           <View className="items-end gap-2">
-            <Text className="text-xs text-text-secondary opacity-40">
+            <Text className="text-text-secondary text-xs opacity-40">
               {`Musclog v${packageJson.version}`}
             </Text>
             {SHOW_NOTIFICATIONS ? (
               <Pressable
-                className="relative rounded-full bg-bg-overlay p-3"
+                className="bg-bg-overlay relative rounded-full p-3"
                 onPress={() => setIsNotificationsVisible(true)}
               >
                 <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
                 <View
-                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                  className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: theme.colors.status.notificationBadge }}
                 />
               </Pressable>
@@ -471,7 +471,7 @@ export default function HomeScreen() {
         </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+            <Text className="text-text-primary text-2xl font-bold">
               {t('home.sections.recentFoods')}
             </Text>
             <ShowMoreButton
@@ -483,7 +483,7 @@ export default function HomeScreen() {
           {isLoadingRecentFoods ? (
             <View className="gap-3">
               {[1, 2].map((i) => (
-                <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
+                <View key={i} className="bg-bg-overlay flex-row items-center gap-4 rounded-2xl p-5">
                   <View className="flex-row items-center gap-3">
                     <SkeletonLoader
                       width={theme.size['10']}
@@ -555,7 +555,7 @@ export default function HomeScreen() {
         {/* Recent Workouts */}
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+            <Text className="text-text-primary text-2xl font-bold">
               {t('home.sections.recentWorkouts')}
             </Text>
             <ShowMoreButton
@@ -569,7 +569,7 @@ export default function HomeScreen() {
               {[1, 2].map((i) => (
                 <View
                   key={i}
-                  className="rounded-lg border bg-bg-card p-4"
+                  className="bg-bg-card rounded-lg border p-4"
                   style={{ borderColor: theme.colors.background.white5 }}
                 >
                   <View className="flex-row items-center gap-3">

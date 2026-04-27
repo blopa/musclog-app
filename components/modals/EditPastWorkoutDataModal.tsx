@@ -95,7 +95,7 @@ function SetCard({
                 </Pressable>
               </View>
               <Text
-                className="text-xs font-bold uppercase tracking-widest"
+                className="text-xs font-bold tracking-widest uppercase"
                 style={{
                   color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
                 }}
@@ -122,7 +122,7 @@ function SetCard({
             <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
               <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
               <Text
-                className="text-xs font-bold uppercase tracking-wider"
+                className="text-xs font-bold tracking-wider uppercase"
                 style={{ color: theme.colors.status.errorSolid }}
               >
                 {t('workoutDetail.remove')}

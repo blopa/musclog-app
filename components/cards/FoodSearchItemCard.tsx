@@ -41,7 +41,7 @@ export function FoodSearchItemCard({
 
   return (
     <Pressable
-      className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
+      className="border-border-light bg-bg-overlay flex-row items-center gap-3 rounded-2xl border p-3 active:scale-[0.98]"
       onPress={onAddPress}
     >
       {/* Icon/Image */}
@@ -93,7 +93,7 @@ export function FoodSearchItemCard({
       {/* Content */}
       <View className="min-w-0 flex-1">
         <View className="flex-row items-start justify-between">
-          <Text className="flex-1 truncate pr-2 font-semibold text-text-primary" numberOfLines={1}>
+          <Text className="text-text-primary flex-1 truncate pr-2 font-semibold" numberOfLines={1}>
             {food.name}
           </Text>
           {food.grade ? (
@@ -121,14 +121,14 @@ export function FoodSearchItemCard({
           ) : null}
         </View>
         <Text
-          className="truncate text-sm text-text-secondary"
+          className="text-text-secondary truncate text-sm"
           numberOfLines={1}
           style={intuitiveMode ? blurFilter(4) : undefined}
         >
           {food.description}
         </Text>
         <Text
-          className="mt-0.5 text-xs text-text-secondary"
+          className="text-text-secondary mt-0.5 text-xs"
           style={intuitiveMode ? blurFilter(4) : undefined}
         >
           {macroLine}
@@ -137,7 +137,7 @@ export function FoodSearchItemCard({
 
       {/* Add Button */}
       <Pressable
-        className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
+        className="bg-bg-overlay active:bg-accent-primary h-8 w-8 items-center justify-center rounded-full"
         onPress={onAddPress}
         style={{
           backgroundColor: theme.colors.background.secondaryDark,

@@ -30,7 +30,7 @@ export function SameAsYesterdayCard({
     <View style={{ marginTop: theme.spacing.padding.lg }}>
       <View className="mb-3 flex-row items-center gap-2 px-1">
         <History size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
           {t('foodSearch.sameAsYesterday')}
         </Text>
       </View>
@@ -69,7 +69,7 @@ export function SameAsYesterdayCard({
                 }}
               >
                 <Text
-                  className="text-xs font-bold uppercase tracking-tighter"
+                  className="text-xs font-bold tracking-tighter uppercase"
                   style={{
                     color: theme.colors.accent.secondary,
                     marginBottom: theme.spacing.margin['2'],
@@ -122,7 +122,7 @@ export function SameAsYesterdayCard({
                 </View>
               </View>
               <Text
-                className="text-xs font-bold text-text-primary"
+                className="text-text-primary text-xs font-bold"
                 style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
               >
                 {t('foodSearch.totalWithKcal', {
@@ -160,7 +160,7 @@ export function SameAsYesterdayCard({
                       }}
                     />
                     <Text
-                      className="text-sm font-medium text-text-primary"
+                      className="text-text-primary text-sm font-medium"
                       numberOfLines={1}
                       ellipsizeMode="tail"
                       style={{ flex: 1, minWidth: 0 }}
@@ -169,7 +169,7 @@ export function SameAsYesterdayCard({
                     </Text>
                   </View>
                   <Text
-                    className="text-xs text-text-secondary"
+                    className="text-text-secondary text-xs"
                     style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
                   >
                     {intuitiveEatingMode ? '0' : formatInteger(Math.round(item.calories))}{' '}
@@ -204,7 +204,7 @@ export function SameAsYesterdayCard({
               <Plus size={theme.iconSize.xl} color={theme.colors.background.primary} />
             </Pressable>
             <Text
-              className="text-[9px] font-bold uppercase tracking-tighter"
+              className="text-[9px] font-bold tracking-tighter uppercase"
               style={{ color: theme.colors.accent.secondary }}
             >
               {t('foodSearch.addAll')}

@@ -80,7 +80,7 @@ function WorkoutSummaryCard({
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold tracking-wider text-white uppercase"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.totalTime')}
@@ -103,7 +103,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold tracking-wider text-white uppercase"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.volume')}
@@ -124,7 +124,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold tracking-wider text-white uppercase"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.calories')}
@@ -167,14 +167,14 @@ function VolumeTrendCard({
     <GenericCard variant="card">
       <View style={{ padding: theme.spacing.padding.base }}>
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-sm font-bold text-text-primary">
+          <Text className="text-text-primary text-sm font-bold">
             {t('workoutDetail.volumeTrend')}
           </Text>
           <View
             className="rounded px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-[10px] font-bold uppercase text-accent-primary">
+            <Text className="text-accent-primary text-[10px] font-bold uppercase">
               {t('workoutDetail.volumeTrendPercentage', { percentage })}
             </Text>
           </View>
@@ -226,16 +226,16 @@ function SetRow({ set }: SetRowProps) {
         </View>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.weight}</Text>
+        <Text className="text-text-primary text-sm">{set.weight}</Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.reps}</Text>
+        <Text className="text-text-primary text-sm">{set.reps}</Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.partial}</Text>
+        <Text className="text-text-primary text-sm">{set.partial}</Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.repsInReserve}</Text>
+        <Text className="text-text-primary text-sm">{set.repsInReserve}</Text>
       </View>
     </View>
   );
@@ -267,27 +267,27 @@ function SetsTable({ sets }: SetsTableProps) {
         }}
       >
         <View className="w-12 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-text-tertiary text-[10px] font-bold tracking-wider uppercase">
             {t('workoutDetail.set')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-text-tertiary text-[10px] font-bold tracking-wider uppercase">
             {t('workoutDetail.weight')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-text-tertiary text-[10px] font-bold tracking-wider uppercase">
             {t('workoutDetail.reps')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-text-tertiary text-[10px] font-bold tracking-wider uppercase">
             {t('workoutDetail.partial')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-text-tertiary text-[10px] font-bold tracking-wider uppercase">
             {t('workoutDetail.rir')}
           </Text>
         </View>
@@ -336,9 +336,9 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
             })}
           </View>
           <View>
-            <Text className="font-bold text-text-primary">{exercise.name}</Text>
+            <Text className="text-text-primary font-bold">{exercise.name}</Text>
             <Text
-              className="text-[10px] font-medium text-text-tertiary"
+              className="text-text-tertiary text-[10px] font-medium"
               style={{ marginTop: theme.spacing.gap.xs }}
             >
               {t('workoutDetail.minsSpent', { minutes: exercise.timeSpent })}
@@ -384,7 +384,7 @@ function ExercisesSection({ exercises, onEdit, onInfo, onClose }: ExercisesSecti
 
   return (
     <View className="flex-col gap-4">
-      <Text className="px-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+      <Text className="text-text-tertiary px-1 text-xs font-bold tracking-widest uppercase">
         {t('workoutDetail.exercisesCount', { count: exercises.length })}
       </Text>
 
@@ -673,7 +673,7 @@ export default function PastWorkoutDetailModal({
         {allWorkoutMuscles.length > 0 ? (
           <View>
             <View className="mb-2 flex-row items-center justify-between px-1">
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-text-tertiary text-xs font-bold tracking-widest uppercase">
                 {t('workoutDetail.musclesWorked')}
               </Text>
               {!isMusclesCapturing ? (

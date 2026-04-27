@@ -17,7 +17,7 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
   if (intensityMap.size === 0) {
     return (
       <View className="flex-1 items-center justify-center py-12">
-        <Text className="text-sm text-text-tertiary">{t('workoutDetail.noMuscleData')}</Text>
+        <Text className="text-text-tertiary text-sm">{t('workoutDetail.noMuscleData')}</Text>
       </View>
     );
   }
@@ -37,7 +37,7 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
     <View className="flex-row items-start justify-center gap-8 py-4">
       <View className="items-center gap-2">
         <Text
-          className="text-[10px] font-bold uppercase tracking-widest"
+          className="text-[10px] font-bold tracking-widest uppercase"
           style={{ color: theme.colors.text.tertiary }}
         >
           {t('workoutDetail.frontMuscles')}
@@ -46,7 +46,7 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
       </View>
       <View className="items-center gap-2">
         <Text
-          className="text-[10px] font-bold uppercase tracking-widest"
+          className="text-[10px] font-bold tracking-widest uppercase"
           style={{ color: theme.colors.text.tertiary }}
         >
           {t('workoutDetail.backMuscles')}

@@ -95,7 +95,7 @@ export default function HealthConnectScreen() {
                 </GradientText>
               </View>
               <Text
-                className="text-center font-normal leading-relaxed"
+                className="text-center leading-relaxed font-normal"
                 style={{
                   fontSize: theme.typography.fontSize.base,
                   color: theme.colors.text.secondary,

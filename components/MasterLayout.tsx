@@ -25,7 +25,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
 
   return (
     <View
-      className="flex-1 bg-bg-primary"
+      className="bg-bg-primary flex-1"
       style={{
         paddingTop: insets.top,
         // Full-height screens (no app nav) still render edge-to-edge; pad the system nav / home indicator.

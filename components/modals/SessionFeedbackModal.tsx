@@ -40,12 +40,12 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
   return (
     <View className="gap-3">
       <View className="flex-row items-end justify-between">
-        <Text className="text-sm font-semibold text-text-primary">{label}</Text>
+        <Text className="text-text-primary text-sm font-semibold">{label}</Text>
         <View className="flex-row items-baseline">
           <Text className="text-lg font-bold" style={{ color: theme.colors.accent.primary }}>
             {value}
           </Text>
-          <Text className="ml-1 text-xs font-normal text-text-secondary">/10</Text>
+          <Text className="text-text-secondary ml-1 text-xs font-normal">/10</Text>
         </View>
       </View>
 
@@ -64,13 +64,13 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
       {/* Labels */}
       <View className="flex-row justify-between">
         <Text
-          className="font-medium uppercase tracking-wider text-text-secondary"
+          className="text-text-secondary font-medium tracking-wider uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {leftLabel}
         </Text>
         <Text
-          className="font-medium uppercase tracking-wider text-text-secondary"
+          className="text-text-secondary font-medium tracking-wider uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {rightLabel}

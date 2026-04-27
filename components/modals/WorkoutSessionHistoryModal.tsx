@@ -290,34 +290,34 @@ export function WorkoutSessionHistoryModal({
       }
       footer={footerContent}
     >
-      <View className="gap-6 px-4 pb-8 pt-4">
+      <View className="gap-6 px-4 pt-4 pb-8">
         {/* Workout Summary */}
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text
-                className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
+                className="mb-0.5 block text-sm font-bold tracking-wider uppercase"
                 style={{ color: theme.colors.accent.primary }}
               >
                 {isPreview
                   ? t('workoutHistory.previewSubtitle')
                   : t('workoutHistory.workoutInProgress')}
               </Text>
-              <Text className="text-3xl font-bold leading-tight text-text-primary">
+              <Text className="text-text-primary text-3xl leading-tight font-bold">
                 {workoutName}
               </Text>
               {(isPreview ? workoutTemplate?.description : null) ? (
-                <Text className="mt-1 text-sm text-text-secondary">
+                <Text className="text-text-secondary mt-1 text-sm">
                   {workoutTemplate!.description}
                 </Text>
               ) : null}
             </View>
             {!isPreview && shouldShowTimer ? (
               <View className="items-end">
-                <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
+                <Text className="text-text-primary font-mono text-3xl font-bold tracking-tight tabular-nums">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
                 </Text>
-                <Text className="text-sm font-medium text-text-secondary">
+                <Text className="text-text-secondary text-sm font-medium">
                   {t('workoutHistory.duration')}
                 </Text>
               </View>
@@ -341,7 +341,7 @@ export function WorkoutSessionHistoryModal({
                 style={{ backgroundColor: theme.colors.background.white5 }}
               >
                 <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                <Text className="text-sm font-semibold text-text-secondary">
+                <Text className="text-text-secondary text-sm font-semibold">
                   {completedSetsCount} {t('workoutHistory.setsDone')}
                 </Text>
               </View>

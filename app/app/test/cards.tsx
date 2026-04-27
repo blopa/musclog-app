@@ -57,24 +57,24 @@ export default function CardsTestScreen() {
   const theme = useTheme();
   const rotationAnim = React.useRef(new Animated.Value(0)).current;
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
-        <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+      <View className="bg-bg-primary/90 flex-row items-center justify-between px-4 pt-4 pb-2">
+        <Text className="text-text-primary flex-1 text-center text-lg leading-tight font-bold tracking-tight">
           Card Variants
         </Text>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Title Section */}
-        <View className="px-6 pb-2 pt-6">
+        <View className="px-6 pt-6 pb-2">
           <Text
-            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            className="text-text-primary leading-tight font-extrabold tracking-tight"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             Card Components
           </Text>
-          <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
+          <Text className="text-text-secondary pt-3 text-base leading-relaxed font-normal">
             Comprehensive card patterns for the Musclog app, showcasing various designs and use
             cases.
           </Text>
@@ -84,15 +84,15 @@ export default function CardsTestScreen() {
 
         <TestSection title="Rest Timer" subtitle="Testing circular progress logic">
           <View className="items-center justify-center p-4">
-            <Text className="mb-2 text-text-primary">Progress: 1 (Full)</Text>
+            <Text className="text-text-primary mb-2">Progress: 1 (Full)</Text>
             <RestTimer restTime={90} initialRestTime={90} rotationAnim={rotationAnim} />
           </View>
           <View className="items-center justify-center p-4">
-            <Text className="mb-2 text-text-primary">Progress: 0.5 (Half)</Text>
+            <Text className="text-text-primary mb-2">Progress: 0.5 (Half)</Text>
             <RestTimer restTime={45} initialRestTime={90} rotationAnim={rotationAnim} />
           </View>
           <View className="items-center justify-center p-4">
-            <Text className="mb-2 text-text-primary">Progress: 0 (Empty)</Text>
+            <Text className="text-text-primary mb-2">Progress: 0 (Empty)</Text>
             <RestTimer restTime={0} initialRestTime={90} rotationAnim={rotationAnim} />
           </View>
         </TestSection>
@@ -631,8 +631,8 @@ export default function CardsTestScreen() {
         <TestSection title="Generic Card" subtitle="Flexible card wrapper component">
           <GenericCard variant="default" size="default">
             <View className="p-4">
-              <Text className="text-lg font-bold text-text-primary">Default Card</Text>
-              <Text className="mt-2 text-sm text-text-secondary">
+              <Text className="text-text-primary text-lg font-bold">Default Card</Text>
+              <Text className="text-text-secondary mt-2 text-sm">
                 This is a default generic card with custom content.
               </Text>
             </View>
@@ -640,8 +640,8 @@ export default function CardsTestScreen() {
           <View className="mt-4">
             <GenericCard variant="card" size="sm">
               <View className="p-3">
-                <Text className="text-base font-bold text-text-primary">Small Card</Text>
-                <Text className="mt-1 text-xs text-text-secondary">A smaller card variant.</Text>
+                <Text className="text-text-primary text-base font-bold">Small Card</Text>
+                <Text className="text-text-secondary mt-1 text-xs">A smaller card variant.</Text>
               </View>
             </GenericCard>
           </View>
@@ -653,8 +653,8 @@ export default function CardsTestScreen() {
               onPress={() => console.log('Pressed')}
             >
               <View className="p-4">
-                <Text className="text-lg font-bold text-text-primary">Pressable Card</Text>
-                <Text className="mt-2 text-sm text-text-secondary">This card can be pressed.</Text>
+                <Text className="text-text-primary text-lg font-bold">Pressable Card</Text>
+                <Text className="text-text-secondary mt-2 text-sm">This card can be pressed.</Text>
               </View>
             </GenericCard>
           </View>

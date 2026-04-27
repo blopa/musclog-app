@@ -247,7 +247,7 @@ function ProgressScreenContent({
   ).map(([supplementId, supplementName]) => ({ supplementId, supplementName }));
 
   return (
-    <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
+    <View className="bg-bg-primary flex-1" style={{ paddingTop: 8 }}>
       <ProgressDateFilter
         activePreset={preset}
         onPresetChange={changePreset}

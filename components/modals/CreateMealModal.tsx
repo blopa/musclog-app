@@ -639,7 +639,7 @@ export function CreateMealModal({
         ) : undefined
       }
       footer={
-        <View className="px-4 pb-8 pt-2">
+        <View className="px-4 pt-2 pb-8">
           <Button
             label={getSaveLabel()}
             variant="gradientCta"

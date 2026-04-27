@@ -152,7 +152,7 @@ export function HomeSupplementPrompt({
               color={theme.colors.status.emerald}
               style={{ flexShrink: 0 }}
             />
-            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="text-text-secondary flex-1 text-xs font-bold tracking-wider uppercase">
               {t('bodyMetrics.addEntry.supplementQuestionWithName', {
                 name: currentSupplement?.name ?? '',
               })}

@@ -78,11 +78,11 @@ export default function CycleScreen() {
           <View className="px-4 py-8">
             {/* Title */}
             <View className="mb-6 flex-row items-center justify-between">
-              <Text className="text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
+              <Text className="text-text-primary text-4xl font-black">{t('cycle.title')}</Text>
               {cycle ? (
                 <Pressable
                   onPress={() => setIsSettingsModalVisible(true)}
-                  className="h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                  className="bg-bg-overlay h-10 w-10 items-center justify-center rounded-full"
                   hitSlop={8}
                 >
                   <Settings size={20} color={theme.colors.text.secondary} />
@@ -92,21 +92,21 @@ export default function CycleScreen() {
 
             {/* Day counter + phase label */}
             <View className="mb-8 flex-row items-center justify-between">
-              <View className="rounded-2xl bg-bg-overlay px-4 py-3">
-                <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <View className="bg-bg-overlay rounded-2xl px-4 py-3">
+                <Text className="text-text-tertiary text-xs font-bold tracking-widest uppercase">
                   {t('focus.day')}
                 </Text>
-                <Text className="text-2xl font-black text-accent-primary">
+                <Text className="text-accent-primary text-2xl font-black">
                   {cycleDay
                     ? `${cycleDay.toString().padStart(2, '0')}/${cycle?.avgCycleLength}`
                     : '--'}
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
+                <Text className="text-accent-primary text-sm font-bold tracking-widest uppercase">
                   {t('focus.currentPhase')}
                 </Text>
-                <Text className="text-2xl font-black capitalize text-text-primary">
+                <Text className="text-text-primary text-2xl font-black capitalize">
                   {currentPhase || '--'}
                 </Text>
               </View>
@@ -131,28 +131,28 @@ export default function CycleScreen() {
             {/* Cycle Insights & Log */}
             <View className="mb-8">
               <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-2xl font-bold text-text-primary">
+                <Text className="text-text-primary text-2xl font-bold">
                   {t('cycle.insightsAndLog')}
                 </Text>
                 <Pressable
                   onPress={() => setIsLogModalVisible(true)}
-                  className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary"
+                  className="bg-accent-primary h-10 w-10 items-center justify-center rounded-full"
                 >
                   <Plus size={24} color={theme.colors.text.black} />
                 </Pressable>
               </View>
 
               {/* Next Period Prediction */}
-              <View className="mb-4 rounded-2xl border-2 border-white/5 bg-bg-overlay p-5">
+              <View className="bg-bg-overlay mb-4 rounded-2xl border-2 border-white/5 p-5">
                 <View className="mb-4 flex-row items-center gap-4">
-                  <View className="h-10 w-10 items-center justify-center rounded-xl bg-bg-navActive">
+                  <View className="bg-bg-navActive h-10 w-10 items-center justify-center rounded-xl">
                     <Calendar size={20} color={theme.colors.accent.primary} />
                   </View>
                   <View>
-                    <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                    <Text className="text-text-tertiary text-xs font-bold tracking-wider uppercase">
                       {t('cycle.nextPeriod')}
                     </Text>
-                    <Text className="text-lg font-black text-text-primary">
+                    <Text className="text-text-primary text-lg font-black">
                       {nextPeriodDate
                         ? nextPeriodDate.toLocaleDateString(undefined, {
                             month: 'long',
@@ -162,9 +162,9 @@ export default function CycleScreen() {
                     </Text>
                   </View>
                 </View>
-                <View className="h-2 w-full overflow-hidden rounded-full bg-bg-navActive">
+                <View className="bg-bg-navActive h-2 w-full overflow-hidden rounded-full">
                   <View
-                    className="h-full bg-accent-primary"
+                    className="bg-accent-primary h-full"
                     style={{ width: `${cycleProgress}%` }}
                   />
                 </View>
@@ -176,21 +176,21 @@ export default function CycleScreen() {
                   {dailyMetrics.map((metric) => (
                     <View
                       key={metric.id}
-                      className="flex-row items-center justify-between rounded-2xl border-2 border-white/5 bg-bg-card p-5"
+                      className="bg-bg-card flex-row items-center justify-between rounded-2xl border-2 border-white/5 p-5"
                     >
                       <View className="flex-1">
-                        <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                        <Text className="text-text-tertiary mb-1 text-xs font-bold tracking-widest uppercase">
                           {metric.type === 'period_flow'
                             ? t('cycle.flowIntensity')
                             : t('cycle.symptomsTitle')}
                         </Text>
-                        <Text className="text-lg font-black text-text-primary">
+                        <Text className="text-text-primary text-lg font-black">
                           {metric.type === 'period_flow'
                             ? `${formatInteger(Number(metric.value))}/5`
                             : metric.note || '--'}
                         </Text>
                       </View>
-                      <View className="h-10 w-10 items-center justify-center rounded-full bg-bg-navActive">
+                      <View className="bg-bg-navActive h-10 w-10 items-center justify-center rounded-full">
                         <Activity size={20} color={theme.colors.accent.primary} />
                       </View>
                     </View>

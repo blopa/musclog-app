@@ -484,14 +484,14 @@ export default function ExerciseGoalCreationModal({
           {!isLoadingHistory ? (
             <View className="bg-surface-variant rounded-2xl p-4">
               {current1RM !== null ? (
-                <Text className="text-sm text-text-primary">
+                <Text className="text-text-primary text-sm">
                   {t('exerciseGoals.creation.currentEstimated1RM', {
                     value: formatRoundedDecimal(kgToDisplay(current1RM, units), 1),
                     unit: t(weightUnitKey),
                   })}
                 </Text>
               ) : (
-                <Text className="text-sm text-text-secondary">
+                <Text className="text-text-secondary text-sm">
                   {t('exerciseGoals.creation.noHistoryForExercise')}
                 </Text>
               )}
@@ -592,7 +592,7 @@ export default function ExerciseGoalCreationModal({
 
           {projection?.projectedWeeks ? (
             <View className="bg-accent-primary10 mt-4 rounded-xl p-4">
-              <Text className="text-sm font-bold text-accent-primary">
+              <Text className="text-accent-primary text-sm font-bold">
                 {t('exerciseGoals.creation.projectionPreview', {
                   weeks: Math.ceil(projection.projectedWeeks),
                   date: projection.projectedDate?.toLocaleDateString(locale, {
@@ -606,7 +606,7 @@ export default function ExerciseGoalCreationModal({
 
           <View className="bg-surface-variant mt-4 flex-row items-start gap-3 rounded-xl p-4">
             <Lightbulb size={20} color={theme.colors.accent.primary} />
-            <Text className="flex-1 text-sm text-text-secondary">
+            <Text className="text-text-secondary flex-1 text-sm">
               {isRealistic
                 ? t('exerciseGoals.creation.realisticNudge')
                 : t('exerciseGoals.creation.ambitiousNudge')}

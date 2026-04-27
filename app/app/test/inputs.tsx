@@ -87,27 +87,27 @@ export default function InputsTestScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
+      <View className="bg-bg-primary/90 flex-row items-center justify-between px-4 pt-4 pb-2">
         <Pressable className="h-12 w-12 shrink-0 items-center justify-center rounded-full active:bg-white/10">
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
-        <Text className="flex-1 pr-12 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+        <Text className="text-text-primary flex-1 pr-12 text-center text-lg leading-tight font-bold tracking-tight">
           Design System
         </Text>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Title Section */}
-        <View className="px-6 pb-2 pt-6">
+        <View className="px-6 pt-6 pb-2">
           <Text
-            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            className="text-text-primary leading-tight font-extrabold tracking-tight"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             Input Components
           </Text>
-          <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
+          <Text className="text-text-secondary pt-3 text-base leading-relaxed font-normal">
             Comprehensive data entry patterns for the Musclog app, following Material 3 and 12px
             rounded aesthetics.
           </Text>
@@ -236,12 +236,12 @@ export default function InputsTestScreen() {
 
         <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
           <View
-            className="rounded-lg border bg-bg-card p-6"
+            className="bg-bg-card rounded-lg border p-6"
             style={{ borderColor: theme.colors.background.white10 }}
           >
             <View className="mb-6 flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">Workout Difficulty</Text>
-              <Text className="text-xl font-bold text-accent-primary">{difficulty}/10</Text>
+              <Text className="text-text-secondary text-sm font-medium">Workout Difficulty</Text>
+              <Text className="text-accent-primary text-xl font-bold">{difficulty}/10</Text>
             </View>
             <Slider value={difficulty} min={1} max={10} onChange={setDifficulty} />
           </View>
@@ -325,7 +325,7 @@ export default function InputsTestScreen() {
               label="Protein"
               value={weight}
               onChange={setWeight}
-              topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+              topRightElement={<Text className="text-text-secondary text-xs">g</Text>}
               variant="success"
               size="half"
             />
@@ -333,7 +333,7 @@ export default function InputsTestScreen() {
               label="Carbs"
               value={reps}
               onChange={setReps}
-              topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+              topRightElement={<Text className="text-text-secondary text-xs">g</Text>}
               variant="warning"
               size="half"
             />
@@ -343,7 +343,7 @@ export default function InputsTestScreen() {
             label="Fats"
             value={name}
             onChange={setName}
-            topRightElement={<Text className="text-xs text-text-secondary">g</Text>}
+            topRightElement={<Text className="text-text-secondary text-xs">g</Text>}
             variant="error"
             size="full"
           />

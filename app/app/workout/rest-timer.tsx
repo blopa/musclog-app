@@ -358,7 +358,7 @@ export default function RestTimerScreen() {
     <MasterLayout showNavigationMenu={false}>
       <View className="flex-1">
         <View
-          className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
+          className="absolute top-[-20%] right-[-40%] h-[20%] w-[110%] overflow-hidden rounded-full"
           style={{
             ...theme.shadows.purpleGlow,
             backgroundColor: theme.colors.background.purpleBlob,
@@ -404,7 +404,7 @@ export default function RestTimerScreen() {
               <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
                 {t('restTimer.done')}:{' '}
-                <Text className="font-medium text-text-primary">
+                <Text className="text-text-primary font-medium">
                   {completedSet.exercise.name ?? ''}
                 </Text>
               </Text>

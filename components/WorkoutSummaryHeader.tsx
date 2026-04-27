@@ -24,7 +24,7 @@ export function WorkoutSummaryHeader() {
       </GradientText>
 
       {/* Subtitle */}
-      <Text className="mb-10 text-center text-sm font-medium text-text-secondary">
+      <Text className="text-text-secondary mb-10 text-center text-sm font-medium">
         {t('workoutSummary.feedbackSubmitted')}
       </Text>
     </>

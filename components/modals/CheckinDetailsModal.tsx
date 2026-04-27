@@ -277,7 +277,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text
-              className="text-center text-2xl font-black uppercase leading-7 tracking-tighter text-white"
+              className="text-center text-2xl leading-7 font-black tracking-tighter text-white uppercase"
               style={{ fontSize: 28 }}
             >
               {status ? t(`nutrition.checkin.${status}`).replace(' ', '\n') : '---'}
@@ -325,7 +325,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
@@ -348,7 +348,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.target')}
               </Text>
               <Text className="mt-1 text-xl font-bold text-white">
@@ -414,7 +414,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             borderColor: theme.colors.border.accent,
           }}
         >
-          <Text className="text-base font-medium leading-relaxed text-gray-300">
+          <Text className="text-base leading-relaxed font-medium text-gray-300">
             {t('nutrition.checkin.summaryIntro', {
               target: formatInteger(currentGoal?.totalCalories ?? 0),
             })}
@@ -456,7 +456,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
@@ -475,7 +475,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.consistency')}
               </Text>
               <Text className="mt-1 text-xl font-black text-white">
@@ -496,7 +496,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
               <Text className="mt-1 text-xl font-black text-white">
@@ -518,7 +518,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
               <Text className="mt-1 text-xl font-black text-white">

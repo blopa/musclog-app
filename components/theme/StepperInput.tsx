@@ -148,7 +148,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   return (
     <View className="flex flex-col gap-2">
       <Text
-        className="text-xs font-bold uppercase tracking-tighter"
+        className="text-xs font-bold tracking-tighter uppercase"
         style={{ color: theme.colors.accent.primary }}
       >
         {label}
@@ -194,7 +194,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType={maxFractionDigits === 0 ? 'numeric' : 'decimal-pad'}
-              className="min-w-0 flex-1 p-0 text-center font-bold text-text-primary"
+              className="text-text-primary min-w-0 flex-1 p-0 text-center font-bold"
               style={{
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
@@ -206,7 +206,7 @@ export const StepperInput: FC<StepperInputProps> = ({
             />
             {unit ? (
               <Text
-                className="ml-1 mr-2 flex-shrink-0 font-normal text-text-tertiary"
+                className="text-text-tertiary mr-2 ml-1 flex-shrink-0 font-normal"
                 style={{ fontSize: unitFontSize }}
               >
                 {unit}
@@ -222,14 +222,14 @@ export const StepperInput: FC<StepperInputProps> = ({
             onPress={handleValuePress}
           >
             <Text
-              className="text-center font-bold text-text-primary"
+              className="text-text-primary text-center font-bold"
               style={{ fontSize: valueFontSize }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {formatValue(value)}{' '}
               {unit ? (
-                <Text className="font-normal text-text-tertiary" style={{ fontSize: unitFontSize }}>
+                <Text className="text-text-tertiary font-normal" style={{ fontSize: unitFontSize }}>
                   {unit}
                 </Text>
               ) : null}

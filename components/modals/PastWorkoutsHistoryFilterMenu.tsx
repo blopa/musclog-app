@@ -305,7 +305,7 @@ export function PastWorkoutsHistoryFilterMenu({
                 >
                   <Text
                     className={`text-sm font-medium ${
-                      isSelected ? 'font-semibold text-accent-primary' : 'text-text-secondary'
+                      isSelected ? 'text-accent-primary font-semibold' : 'text-text-secondary'
                     }`}
                   >
                     {muscle.label}

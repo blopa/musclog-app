@@ -424,7 +424,7 @@ export default function NutritionGoalsResults() {
               >
                 <MaterialIcons name="auto-awesome" size={14} color={theme.colors.accent.primary} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
+                  className="text-xs font-bold tracking-wider uppercase"
                   style={{
                     color: theme.colors.accent.primary,
                     fontSize: theme.typography.fontSize.xs,
@@ -441,7 +441,7 @@ export default function NutritionGoalsResults() {
               >
                 <MaterialIcons name="tune" size={14} color={theme.colors.status.indigoLight} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
+                  className="text-xs font-bold tracking-wider uppercase"
                   style={{
                     color: theme.colors.status.indigoLight,
                     fontSize: theme.typography.fontSize.xs,
@@ -454,7 +454,7 @@ export default function NutritionGoalsResults() {
             )}
 
             <Text
-              className="mb-2 text-center text-[32px] font-bold leading-[1.1]"
+              className="mb-2 text-center text-[32px] leading-[1.1] font-bold"
               style={{
                 color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize['3xl'],
@@ -474,7 +474,7 @@ export default function NutritionGoalsResults() {
             </Text>
 
             <Text
-              className="max-w-[300px] text-center text-[15px] font-normal leading-relaxed"
+              className="max-w-[300px] text-center text-[15px] leading-relaxed font-normal"
               style={{
                 color: theme.colors.text.secondary,
                 fontSize: theme.typography.fontSize.sm,
@@ -511,7 +511,7 @@ export default function NutritionGoalsResults() {
             />
 
             {/* Bolt Icon */}
-            <View className="absolute right-0 top-0 p-4">
+            <View className="absolute top-0 right-0 p-4">
               <MaterialIcons
                 name="bolt"
                 size={96}
@@ -522,7 +522,7 @@ export default function NutritionGoalsResults() {
 
             <View className="relative z-10">
               <Text
-                className="mb-1 text-sm font-semibold uppercase tracking-widest text-white/80"
+                className="mb-1 text-sm font-semibold tracking-widest text-white/80 uppercase"
                 style={{
                   color: `${theme.colors.text.white}CC`,
                   fontSize: theme.typography.fontSize.sm,
@@ -643,7 +643,7 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-indigo-400"
+                className="mb-1 text-center text-[10px] font-bold tracking-tighter text-indigo-400 uppercase"
                 style={{
                   color: theme.colors.status.indigo,
                   fontSize: theme.typography.fontSize.xxs,
@@ -655,7 +655,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.protein')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg leading-tight font-bold text-white"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -687,7 +687,7 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="text-primary mb-1 text-center text-[10px] font-bold uppercase tracking-tighter"
+                className="text-primary mb-1 text-center text-[10px] font-bold tracking-tighter uppercase"
                 style={{
                   color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.xxs,
@@ -699,7 +699,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg leading-tight font-bold text-white"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -731,7 +731,7 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
+                className="mb-1 text-center text-[10px] font-bold tracking-tighter text-pink-400 uppercase"
                 style={{
                   color: theme.colors.status.pink500,
                   fontSize: theme.typography.fontSize.xxs,
@@ -743,7 +743,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.fats')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg leading-tight font-bold text-white"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -787,7 +787,7 @@ export default function NutritionGoalsResults() {
             <>
               <View className="mb-6 w-full">
                 <Text
-                  className="mb-2 text-center text-xs font-semibold uppercase tracking-wider"
+                  className="mb-2 text-center text-xs font-semibold tracking-wider uppercase"
                   style={{
                     color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xxs,

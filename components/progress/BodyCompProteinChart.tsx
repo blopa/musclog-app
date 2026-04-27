@@ -44,7 +44,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -98,7 +98,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
         ))}
       </View>
       <View style={{ height: 250, position: 'relative' }}>
-        <Text className="mb-2 text-center text-xs text-text-tertiary">
+        <Text className="text-text-tertiary mb-2 text-center text-xs">
           {t('progress.proteinVsWeightChange', { unit: weightLabel })}
         </Text>
         {yAxisLabels.map((label) => (
@@ -150,9 +150,9 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           )}
         </CartesianChart>
         <View className="mt-2 flex-row justify-between px-8">
-          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMin, 0)}g</Text>
-          <Text className="text-[10px] text-text-tertiary">{t('progress.proteinIntake')}</Text>
-          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMax, 0)}g</Text>
+          <Text className="text-text-tertiary text-[10px]">{formatDecimal(xMin, 0)}g</Text>
+          <Text className="text-text-tertiary text-[10px]">{t('progress.proteinIntake')}</Text>
+          <Text className="text-text-tertiary text-[10px]">{formatDecimal(xMax, 0)}g</Text>
         </View>
       </View>
     </ProgressChartSection>

@@ -205,7 +205,7 @@ function MacrosDistributionChart({
 
   return (
     <View className="items-center py-10">
-      <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
+      <Text className="text-text-secondary mb-6 text-sm font-semibold tracking-widest uppercase opacity-60">
         {t('nutritionGoals.macrosDistribution')}
       </Text>
 
@@ -223,7 +223,7 @@ function MacrosDistributionChart({
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.protein.bg }}
           />
-          <Text className="text-xs text-text-secondary">
+          <Text className="text-text-secondary text-xs">
             {formatInteger(Math.round(proteinPercentage))}% {t('food.macros.proteinLegend')}
           </Text>
         </View>
@@ -232,7 +232,7 @@ function MacrosDistributionChart({
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.carbs.bg }}
           />
-          <Text className="text-xs text-text-secondary">
+          <Text className="text-text-secondary text-xs">
             {formatInteger(Math.round(carbsPercentage))}% {t('food.macros.carbsLegend')}
           </Text>
         </View>
@@ -241,7 +241,7 @@ function MacrosDistributionChart({
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: theme.colors.macros.fat.bg }}
           />
-          <Text className="text-xs text-text-secondary">
+          <Text className="text-text-secondary text-xs">
             {formatInteger(Math.round(fatsPercentage))}% {t('food.macros.fatLegend')}
           </Text>
         </View>
@@ -251,7 +251,7 @@ function MacrosDistributionChart({
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: theme.colors.macros.fiber.bg }}
             />
-            <Text className="text-xs text-text-secondary">
+            <Text className="text-text-secondary text-xs">
               {formatInteger(Math.round(fiberPercentage))}% {t('food.macros.fiberLegend')}
             </Text>
           </View>
@@ -698,10 +698,10 @@ export function NutritionGoalsBody({
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false} style={webScrollViewStyle}>
-      <View className="gap-4 px-6 pb-6 pt-2">
+      <View className="gap-4 px-6 pt-2 pb-6">
         {/* Subtitle */}
         {showSubtitle ? (
-          <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
+          <Text className="text-text-secondary mb-2 text-sm">{t('nutritionGoals.subtitle')}</Text>
         ) : null}
 
         {/* Total Daily Calories Card */}
@@ -719,7 +719,7 @@ export function NutritionGoalsBody({
             style={{ position: 'absolute', inset: 0 }}
           />
           <View className="relative z-10 items-center">
-            <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+            <Text className="text-text-secondary mb-1 text-xs font-medium tracking-wider uppercase">
               {t('nutritionGoals.totalDailyCalories')}
             </Text>
             <View className="w-full flex-row items-center justify-center gap-6">
@@ -741,7 +741,7 @@ export function NutritionGoalsBody({
                     onBlur={handleCalorieBlur}
                     onSubmitEditing={handleCalorieSubmit}
                     keyboardType="numeric"
-                    className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
+                    className="text-text-primary p-0 text-center text-5xl font-extrabold tracking-tighter"
                     style={{
                       minWidth: 80,
                       color: theme.colors.text.primary,
@@ -751,12 +751,12 @@ export function NutritionGoalsBody({
                   />
                 ) : (
                   <Pressable onPress={handleCaloriePress}>
-                    <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                    <Text className="text-text-primary text-5xl font-extrabold tracking-tighter">
                       {formatInteger(totalCalories)}
                     </Text>
                   </Pressable>
                 )}
-                <Text className="text-lg font-semibold uppercase text-accent-primary">
+                <Text className="text-accent-primary text-lg font-semibold uppercase">
                   {t('food.common.kcal')}
                 </Text>
               </View>
@@ -775,7 +775,7 @@ export function NutritionGoalsBody({
 
         {/* Eating Phase */}
         <View className="gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">
+          <Text className="text-text-secondary ml-1 text-sm font-medium">
             {t('editFitnessDetails.eatingPhase')}
           </Text>
           <SegmentedControl
@@ -791,7 +791,7 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View className="bg-bg-card flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
@@ -847,7 +847,7 @@ export function NutritionGoalsBody({
 
         {/* Daily Macro Targets */}
         <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          className="text-text-secondary mt-8 mb-2 font-bold tracking-widest uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('nutritionGoals.dailyMacroTargets')}
@@ -976,7 +976,7 @@ export function NutritionGoalsBody({
 
         {/* Target Body Metrics */}
         <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          className="text-text-secondary mt-8 mb-2 font-bold tracking-widest uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('nutritionGoals.targetBodyMetrics')}
@@ -985,7 +985,7 @@ export function NutritionGoalsBody({
           {/* Target Weight */}
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+              <Text className="text-text-secondary text-sm font-medium">
                 {t('nutritionGoals.targetWeight')}
               </Text>
               {targetWeight === null ? (
@@ -1040,7 +1040,7 @@ export function NutritionGoalsBody({
           {/* Target Body Fat */}
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+              <Text className="text-text-secondary text-sm font-medium">
                 {t('nutritionGoals.targetBodyFat')}
               </Text>
               {targetBodyFat === null ? (
@@ -1082,7 +1082,7 @@ export function NutritionGoalsBody({
           {/* Target BMI */}
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+              <Text className="text-text-secondary text-sm font-medium">
                 {t('nutritionGoals.targetBMI')}
               </Text>
               {targetBMI === null ? (
@@ -1134,7 +1134,7 @@ export function NutritionGoalsBody({
           {/* Target FFMI */}
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+              <Text className="text-text-secondary text-sm font-medium">
                 {t('nutritionGoals.targetFFMI')}
               </Text>
               {targetFFMI === null ? (
@@ -1186,7 +1186,7 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View className="bg-bg-card flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
@@ -1254,7 +1254,7 @@ export function NutritionGoalsBody({
               onPress={handleSave}
             />
             <Text
-              className="mt-4 text-center text-text-secondary"
+              className="text-text-secondary mt-4 text-center"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('nutritionGoals.settingsNote')}

@@ -106,7 +106,7 @@ export function InfoCard({
         <View className="flex-1">
           {inlineLabel ? (
             <Text
-              className="font-medium text-text-primary"
+              className="text-text-primary font-medium"
               style={{ fontSize }}
               numberOfLines={expandable && !isExpanded ? 2 : undefined}
               ellipsizeMode="tail"
@@ -120,7 +120,7 @@ export function InfoCard({
             <>
               <View className="flex-row items-center justify-between">
                 <Text
-                  className="font-bold uppercase tracking-wider"
+                  className="font-bold tracking-wider uppercase"
                   style={{ color: accentColor, fontSize }}
                 >
                   {label}
@@ -132,7 +132,7 @@ export function InfoCard({
                 ) : null}
               </View>
               <Text
-                className="mt-0.5 font-medium text-text-primary"
+                className="text-text-primary mt-0.5 font-medium"
                 style={{ fontSize }}
                 numberOfLines={expandable && !isExpanded ? 1 : undefined}
                 ellipsizeMode="tail"

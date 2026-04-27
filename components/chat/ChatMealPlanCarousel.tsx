@@ -84,7 +84,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
           >
             <View className="items-center">
               <Text
-                className="mb-1 text-center text-[11px] font-semibold leading-[14px] text-text-primary"
+                className="text-text-primary mb-1 text-center text-[11px] leading-[14px] font-semibold"
                 numberOfLines={4}
               >
                 {meal.name}
@@ -92,13 +92,13 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
 
               <View className="mb-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
                 <Text
-                  className="text-base font-bold leading-none"
+                  className="text-base leading-none font-bold"
                   style={{ color: theme.colors.text.primary }}
                 >
                   {formatRoundedDecimal(meal.calories, 2)}
                 </Text>
                 <Text
-                  className="text-[10px] font-medium leading-none"
+                  className="text-[10px] leading-none font-medium"
                   style={{ color: theme.colors.text.tertiary }}
                 >
                   {t('common.kcal')}
@@ -114,7 +114,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     P:
                   </Text>
                   <Text
-                    className="text-[10px] font-bold leading-none"
+                    className="text-[10px] leading-none font-bold"
                     style={{ color: theme.colors.accent.primary }}
                   >
                     {t('common.weightFormatG', {
@@ -130,7 +130,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     {t('food.macros.carbsShort')}:
                   </Text>
                   <Text
-                    className="text-[10px] font-bold leading-none"
+                    className="text-[10px] leading-none font-bold"
                     style={{ color: theme.colors.status.indigo }}
                   >
                     {t('common.weightFormatG', {
@@ -146,7 +146,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     {t('food.macros.fatShort')}:
                   </Text>
                   <Text
-                    className="text-[10px] font-bold leading-none"
+                    className="text-[10px] leading-none font-bold"
                     style={{ color: theme.colors.status.warning }}
                   >
                     {t('common.weightFormatG', {
@@ -176,7 +176,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
               <ArrowRight size={16} color={theme.colors.accent.primary} />
             </View>
             <Text
-              className="text-center text-[10px] font-bold leading-tight text-text-primary"
+              className="text-text-primary text-center text-[10px] leading-tight font-bold"
               numberOfLines={2}
             >
               {t('common.seeAll')}

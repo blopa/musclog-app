@@ -244,7 +244,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
         {/* Appearance Section */}
         {HAS_THEMES ? (
           <View>
-            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+            <Text className="text-text-primary mb-3 px-5 text-lg font-bold tracking-tight">
               {t('settings.basicSettings.appearance')}
             </Text>
             <View
@@ -257,7 +257,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                 borderColor: theme.colors.border.light,
               }}
             >
-              <Text className="mb-3 text-sm font-medium text-text-secondary">
+              <Text className="text-text-secondary mb-3 text-sm font-medium">
                 {t('settings.basicSettings.appTheme')}
               </Text>
               <SegmentedControl
@@ -275,7 +275,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary mb-3 px-5 text-lg font-bold tracking-tight">
             {t('editFitnessDetails.units')}
           </Text>
           <View className="gap-2">
@@ -293,7 +293,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
               marginHorizontal: theme.spacing.padding.base,
             }}
           >
-            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+            <Text className="text-text-primary mb-3 px-5 text-lg font-bold tracking-tight">
               {t('settings.basicSettings.foodSearchSource')}
             </Text>
             <View className="gap-2">
@@ -312,7 +312,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary mb-3 px-5 text-lg font-bold tracking-tight">
             {t('settings.basicSettings.localization')}
           </Text>
           <SettingsCard
@@ -340,7 +340,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary mb-3 px-5 text-lg font-bold tracking-tight">
             {t('settings.basicSettings.integrations')}
           </Text>
 
@@ -372,10 +372,10 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                     />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-text-primary">
+                    <Text className="text-text-primary text-base font-semibold">
                       {t('settings.basicSettings.healthData')}
                     </Text>
-                    <Text className="text-xs text-text-secondary">
+                    <Text className="text-text-secondary text-xs">
                       {t('settings.basicSettings.healthDataSubtitle')}
                     </Text>
                   </View>

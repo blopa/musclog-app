@@ -121,16 +121,16 @@ export function CurrentGoalsCard({
         {/* Daily Target */}
         <View className="mb-6">
           <Text
-            className="mb-1 font-medium uppercase tracking-wider text-text-secondary"
+            className="text-text-secondary mb-1 font-medium tracking-wider uppercase"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('currentGoalsCard.dailyTarget')}
           </Text>
           <View className="flex-row items-baseline gap-1">
-            <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
+            <Text className="text-text-primary text-4xl font-extrabold tracking-tighter">
               {formatInteger(goal.calories)}
             </Text>
-            <Text className="text-sm font-bold uppercase text-accent-primary">
+            <Text className="text-accent-primary text-sm font-bold uppercase">
               {t('currentGoalsCard.kcal')}
             </Text>
           </View>
@@ -140,17 +140,17 @@ export function CurrentGoalsCard({
         <View className="border-border flex-row gap-4 border-t pt-4">
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="text-text-secondary font-bold uppercase"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380
                 ? t('currentGoalsCard.proteinShort')
                 : t('currentGoalsCard.protein')}
             </Text>
-            <Text className="font-bold text-text-primary">
+            <Text className="text-text-primary font-bold">
               {formatInteger(goal.protein)}
               <Text
-                className="ml-0.5 text-text-secondary"
+                className="text-text-secondary ml-0.5"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('currentGoalsCard.g')}
@@ -159,15 +159,15 @@ export function CurrentGoalsCard({
           </View>
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="text-text-secondary font-bold uppercase"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380 ? t('currentGoalsCard.carbsShort') : t('currentGoalsCard.carbs')}
             </Text>
-            <Text className="font-bold text-text-primary">
+            <Text className="text-text-primary font-bold">
               {formatInteger(goal.carbs)}
               <Text
-                className="ml-0.5 text-text-secondary"
+                className="text-text-secondary ml-0.5"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('currentGoalsCard.g')}
@@ -176,15 +176,15 @@ export function CurrentGoalsCard({
           </View>
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="text-text-secondary font-bold uppercase"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380 ? t('currentGoalsCard.fatsShort') : t('currentGoalsCard.fats')}
             </Text>
-            <Text className="font-bold text-text-primary">
+            <Text className="text-text-primary font-bold">
               {formatInteger(goal.fat)}
               <Text
-                className="ml-0.5 text-text-secondary"
+                className="text-text-secondary ml-0.5"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('currentGoalsCard.g')}
@@ -198,7 +198,7 @@ export function CurrentGoalsCard({
           <View className="mt-4">
             <View className="flex-row items-center gap-2">
               <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
-              <Text className="text-xs font-semibold text-text-secondary">{goal.goalDate}</Text>
+              <Text className="text-text-secondary text-xs font-semibold">{goal.goalDate}</Text>
             </View>
           </View>
         ) : null}
@@ -217,12 +217,12 @@ export function CurrentGoalsCard({
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="text-text-secondary font-bold uppercase"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-text-primary text-sm font-bold">
                     {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
@@ -239,12 +239,12 @@ export function CurrentGoalsCard({
                 <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="text-text-secondary font-bold uppercase"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-text-primary text-sm font-bold">
                     {formatRoundedDecimal(goal.bodyFat!, 1)}{' '}
                     <Text
                       className="text-text-secondary"
@@ -261,12 +261,12 @@ export function CurrentGoalsCard({
                 <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="text-text-secondary font-bold uppercase"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.ffmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-text-primary text-sm font-bold">
                     {formatRoundedDecimal(goal.ffmi!, 1)}
                   </Text>
                 </View>
@@ -277,12 +277,12 @@ export function CurrentGoalsCard({
                 <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="text-text-secondary font-bold uppercase"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.bmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-text-primary text-sm font-bold">
                     {formatRoundedDecimal(goal.bmi!, 1)}
                   </Text>
                 </View>
@@ -292,7 +292,7 @@ export function CurrentGoalsCard({
         ) : null}
 
         {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
-        <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
+        <View className="absolute top-0 right-0 flex-row items-center gap-1 p-3">
           <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
           {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
         </View>

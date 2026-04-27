@@ -88,7 +88,7 @@ export function TextInput({
     <View className="flex-col gap-2">
       <View className="ml-1 flex-row items-center">
         {Platform.OS === 'web' ? (
-          <Text className="text-sm font-medium text-text-secondary">{label}</Text>
+          <Text className="text-text-secondary text-sm font-medium">{label}</Text>
         ) : (
           <Animated.Text className="text-sm font-medium" style={{ color: labelColor }}>
             {label}
@@ -99,16 +99,16 @@ export function TextInput({
       {Platform.OS === 'web' ? (
         <View
           className={classNames(
-            'w-full flex-row rounded-lg border-2 bg-bg-card px-4',
+            'bg-bg-card w-full flex-row rounded-lg border-2 px-4',
             {
               'min-h-14 items-start py-3': multiline,
               'h-14 items-center': !multiline,
             },
-            'border-white/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
+            'focus-within:border-accent-primary/50 border-white/10 focus-within:shadow-md'
           )}
         >
           <RNTextInput
-            className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
+            className="text-text-primary flex-1 border-none bg-transparent p-0 pr-10"
             placeholder={placeholder}
             placeholderTextColor={theme.colors.text.tertiary}
             value={value}
@@ -127,7 +127,7 @@ export function TextInput({
           {icon ? (
             <View
               className={classNames('absolute right-4 justify-center', {
-                'bottom-0 top-0': !multiline,
+                'top-0 bottom-0': !multiline,
                 'top-3': multiline,
               })}
             >
@@ -137,7 +137,7 @@ export function TextInput({
         </View>
       ) : (
         <Animated.View
-          className={classNames('w-full flex-row rounded-lg border-2 bg-bg-card px-4', {
+          className={classNames('bg-bg-card w-full flex-row rounded-lg border-2 px-4', {
             'min-h-14 items-start py-3': multiline,
             'h-14 items-center': !multiline,
           })}
@@ -152,7 +152,7 @@ export function TextInput({
           }}
         >
           <RNTextInput
-            className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
+            className="text-text-primary flex-1 border-none bg-transparent p-0 pr-10"
             placeholder={placeholder}
             placeholderTextColor={theme.colors.text.tertiary}
             value={value}
@@ -171,7 +171,7 @@ export function TextInput({
           {icon ? (
             <View
               className={classNames('absolute right-4 justify-center', {
-                'bottom-0 top-0': !multiline,
+                'top-0 bottom-0': !multiline,
                 'top-3': multiline,
               })}
             >

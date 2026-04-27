@@ -129,7 +129,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
       title={t('notifications.header.title')}
       headerRight={
         <Pressable onPress={onClearAll}>
-          <Text className="text-sm font-semibold text-text-accent">
+          <Text className="text-text-accent text-sm font-semibold">
             {t('notifications.header.clearAll')}
           </Text>
         </Pressable>
@@ -138,7 +138,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
       <View className="gap-8 p-4">
         {NOTIFICATIONS_DATA.map((section) => (
           <View key={section.section} className="gap-4">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+            <Text className="text-text-secondary text-xs font-semibold tracking-wider uppercase">
               {section.section}
             </Text>
             <View className="gap-3">

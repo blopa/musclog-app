@@ -130,40 +130,40 @@ function BlankWorkoutStats({
 
   return (
     <View
-      className="mt-10 flex-row justify-around rounded-xl border border-border-default bg-bg-card py-4"
+      className="border-border-default bg-bg-card mt-10 flex-row justify-around rounded-xl border py-4"
       style={{ borderColor: theme.colors.background.white5 }}
     >
       <View className="items-center">
         <Clock size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="text-text-secondary mt-1 text-xs font-semibold tracking-wider uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.duration')}
         </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">{durationStr}</Text>
+        <Text className="text-text-primary mt-0.5 text-base font-bold">{durationStr}</Text>
       </View>
       <View className="items-center">
         <Flame size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="text-text-secondary mt-1 text-xs font-semibold tracking-wider uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.calories')}
         </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">
+        <Text className="text-text-primary mt-0.5 text-base font-bold">
           {formatInteger(0, { useGrouping: false })} {t('common.kcal')}
         </Text>
       </View>
       <View className="items-center">
         <BarChart3 size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="text-text-secondary mt-1 text-xs font-semibold tracking-wider uppercase"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.volume')}
         </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">
+        <Text className="text-text-primary mt-0.5 text-base font-bold">
           {formatInteger(0, { useGrouping: false })} {t(weightUnitKey)}
         </Text>
       </View>
@@ -657,9 +657,9 @@ export default function WorkoutSessionScreen() {
     );
   } else if (workoutLog && !error && progress.totalSets === 0) {
     content = (
-      <View className="flex-1 bg-bg-primary">
+      <View className="bg-bg-primary flex-1">
         {/* Header: back + title */}
-        <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
+        <View className="border-border-default flex-row items-center justify-between border-b px-4 py-3">
           <Pressable
             className="h-12 w-12 items-center justify-center"
             onPress={() => setIsEndWorkoutModalVisible(true)}
@@ -667,7 +667,7 @@ export default function WorkoutSessionScreen() {
             <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>
           <Text
-            className="text-lg font-semibold text-text-primary"
+            className="text-text-primary text-lg font-semibold"
             style={{ fontSize: theme.typography.fontSize.lg }}
           >
             {t('freeTraining.blankWorkout')}
@@ -693,7 +693,7 @@ export default function WorkoutSessionScreen() {
               <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
             </View>
             <Text
-              className="mb-2 text-center text-3xl font-bold text-text-primary"
+              className="text-text-primary mb-2 text-center text-3xl font-bold"
               style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
               {t('freeTraining.title')}{' '}
@@ -702,7 +702,7 @@ export default function WorkoutSessionScreen() {
               </Text>
             </Text>
             <Text
-              className="mb-8 text-center text-base text-text-secondary"
+              className="text-text-secondary mb-8 text-center text-base"
               style={{ fontSize: theme.typography.fontSize.base }}
             >
               {t('freeTraining.subtitle')}
@@ -721,7 +721,7 @@ export default function WorkoutSessionScreen() {
               }}
             />
             <Text
-              className="mt-4 text-center text-sm text-text-secondary"
+              className="text-text-secondary mt-4 text-center text-sm"
               style={{ fontSize: theme.typography.fontSize.sm }}
             >
               {t('freeTraining.tip')}
@@ -798,8 +798,8 @@ export default function WorkoutSessionScreen() {
   } else if (!currentSetData && !progress.isComplete) {
     // This happens if exercises are missing or all sets are done but isComplete is somehow false
     content = (
-      <View className="flex-1 bg-bg-primary">
-        <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
+      <View className="bg-bg-primary flex-1">
+        <View className="border-border-default flex-row items-center justify-between border-b px-4 py-3">
           <Pressable
             className="h-12 w-12 items-center justify-center"
             onPress={() => setIsEndWorkoutModalVisible(true)}
@@ -807,7 +807,7 @@ export default function WorkoutSessionScreen() {
             <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>
           <Text
-            className="text-lg font-semibold text-text-primary"
+            className="text-text-primary text-lg font-semibold"
             style={{ fontSize: theme.typography.fontSize.lg }}
           >
             {workoutLog.workoutName || t('freeTraining.title')}
@@ -914,14 +914,14 @@ export default function WorkoutSessionScreen() {
           {/* Exercise Info */}
           <View className="mt-4 px-6">
             <Text
-              className="mb-3 font-bold text-text-primary"
+              className="text-text-primary mb-3 font-bold"
               style={{ fontSize: theme.typography.fontSize['40'] }}
             >
               {currentSetData.exercise.name ?? ''}
             </Text>
             <View className="mb-2 flex-row flex-wrap items-center gap-3">
-              <View className="rounded-full bg-accent-primary px-4 py-1.5">
-                <Text className="text-sm font-bold text-text-black">
+              <View className="bg-accent-primary rounded-full px-4 py-1.5">
+                <Text className="text-text-black text-sm font-bold">
                   {t('workoutSession.setOf', {
                     current: currentSetData.setNumber,
                     total: currentSetData.totalSetsInExercise,
@@ -929,11 +929,11 @@ export default function WorkoutSessionScreen() {
                 </Text>
               </View>
               {currentSetData.setNumber === currentSetData.totalSetsInExercise ? (
-                <Text className="text-sm font-medium text-accent-primary">
+                <Text className="text-accent-primary text-sm font-medium">
                   {t('workoutSession.lastSetForExercise')}
                 </Text>
               ) : null}
-              <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
+              <Text className="text-text-secondary text-lg">{exerciseCategory}</Text>
             </View>
             {currentSetData.notes ? (
               <Pressable
@@ -942,7 +942,7 @@ export default function WorkoutSessionScreen() {
                 onPress={() => setIsNotesExpanded(!isNotesExpanded)}
               >
                 <Text
-                  className="text-sm text-text-secondary"
+                  className="text-text-secondary text-sm"
                   numberOfLines={isNotesExpanded ? undefined : 1}
                   ellipsizeMode="tail"
                 >

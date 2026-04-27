@@ -11,7 +11,7 @@ export function RestOverTitle() {
   return (
     <View className="mx-auto max-w-xs gap-3">
       <View className="flex-row flex-wrap items-center justify-center">
-        <Text className="text-4xl font-extrabold leading-tight tracking-tight text-white">
+        <Text className="text-4xl leading-tight font-extrabold tracking-tight text-white">
           {t('restOver.restTimeIs')}{' '}
         </Text>
         <GradientText

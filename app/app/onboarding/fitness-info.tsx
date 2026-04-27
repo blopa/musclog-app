@@ -68,7 +68,7 @@ export default function FitnessInfo() {
             paddingBottom: theme.spacing.padding.bottomButton,
           }}
         >
-          <View className="px-6 pb-2 pt-4">
+          <View className="px-6 pt-4 pb-2">
             <Text
               className="text-2xl font-bold tracking-tight"
               style={{ color: theme.colors.text.white }}

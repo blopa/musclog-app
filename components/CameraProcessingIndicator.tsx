@@ -128,7 +128,7 @@ export const CameraProcessingIndicator = ({
         </Text>
 
         <Text
-          className="mt-2 text-center text-xs uppercase tracking-widest"
+          className="mt-2 text-center text-xs tracking-widest uppercase"
           style={{ color: theme.colors.accent.secondary }}
         >
           {getSubText()}

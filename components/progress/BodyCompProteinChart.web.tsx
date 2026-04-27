@@ -43,7 +43,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -96,7 +96,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
         ))}
       </View>
       <View style={{ height: 280 }}>
-        <Text className="mb-2 text-center text-xs text-text-tertiary">
+        <Text className="text-text-tertiary mb-2 text-center text-xs">
           {t('progress.proteinVsWeightChange', { unit: weightLabel })}
         </Text>
         <VictoryChart

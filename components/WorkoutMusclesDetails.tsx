@@ -57,7 +57,7 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
       <View ref={captureRef} collapsable={false} className="p-4">
         {hasData ? (
           <>
-            <Text className="mb-1 text-center text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+            <Text className="text-text-tertiary mb-1 text-center text-[10px] font-bold tracking-widest uppercase">
               {t('workoutDetail.muscleBalance')}
             </Text>
             <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
@@ -72,12 +72,12 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
             />
             <View className="mb-4 items-center">
               <View className="bg-background-secondary rounded-full px-4 py-1.5">
-                <Text className="text-xs font-semibold text-text-secondary">
+                <Text className="text-text-secondary text-xs font-semibold">
                   {t('workoutDetail.musclesTargeted', { count: totalMuscles })}
                 </Text>
               </View>
             </View>
-            <View className="mb-4 h-px bg-border-default" />
+            <View className="bg-border-default mb-4 h-px" />
           </>
         ) : null}
         <BodyHighlighter muscleGroups={muscleGroups} />

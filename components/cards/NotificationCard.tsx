@@ -45,9 +45,9 @@ export function NotificationCard({
       {/* Content */}
       <View className="min-w-0 flex-1">
         <View className="mb-2 flex-row items-start justify-between gap-2">
-          <Text className="text-lg font-semibold text-text-primary">{title}</Text>
+          <Text className="text-text-primary text-lg font-semibold">{title}</Text>
           {unread ? (
-            <View className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-accent-secondary" />
+            <View className="bg-accent-secondary mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full" />
           ) : null}
         </View>
         <View className="mb-3">

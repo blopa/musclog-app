@@ -235,7 +235,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         {/* Data Portability Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.advancedSettings.dataPortability')}
@@ -340,7 +340,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         {debouncedAdvancedDataManagement ? (
           <View>
             <Text
-              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+              className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
               style={{ color: theme.colors.text.secondary }}
             >
               {t('settings.advancedSettings.dataManagement')}
@@ -517,7 +517,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         ) : null}
 
         <Text
-          className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+          className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
           style={{ color: theme.colors.status.error }}
         >
           {t('settings.advancedSettings.dangerZone')}

@@ -61,20 +61,20 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">
           <View className="flex-1">
-            <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text>
-            <Text className="text-sm text-text-secondary">{food.category}</Text>
+            <Text className="text-text-primary mb-1 text-2xl font-bold">{food.name}</Text>
+            <Text className="text-text-secondary text-sm">{food.category}</Text>
             {food.source === 'openfood' ||
             food.source === 'usda' ||
             food.source === 'ai' ||
             food.source === 'musclog' ? (
-              <Text className="mt-1 text-xs text-text-tertiary opacity-50">
+              <Text className="text-text-tertiary mt-1 text-xs opacity-50">
                 {getSourceText(food.source, t)}
               </Text>
             ) : null}
           </View>
           <View className="items-end">
             <Text
-              className="text-4xl font-black tracking-tight text-accent-primary"
+              className="text-accent-primary text-4xl font-black tracking-tight"
               style={intuitiveMode ? blurFilter(8) : undefined}
             >
               {intuitiveMode
@@ -83,7 +83,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     useGrouping: false,
                   })}
             </Text>
-            <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
               {t('food.common.kcal')}
             </Text>
           </View>
@@ -123,11 +123,11 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
             <View className="mb-2 flex-row gap-3">
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="text-text-secondary mb-1 text-xs font-medium tracking-wider uppercase">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-text-primary"
+                  className="text-text-primary text-xl font-bold"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {t('common.weightFormatG', {
@@ -137,11 +137,11 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="text-text-secondary mb-1 text-xs font-medium tracking-wider uppercase">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-text-primary"
+                  className="text-text-primary text-xl font-bold"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {t('common.weightFormatG', {
@@ -151,11 +151,11 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="text-text-secondary mb-1 text-xs font-medium tracking-wider uppercase">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-text-primary"
+                  className="text-text-primary text-xl font-bold"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {t('common.weightFormatG', {
@@ -186,7 +186,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-indigo-500" />
                     <Text
-                      className="text-xs text-text-secondary"
+                      className="text-text-secondary text-xs"
                       style={intuitiveMode ? blurFilter(4) : undefined}
                     >
                       {t('food.macros.protein')} (
@@ -194,7 +194,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-text-primary text-xs font-bold"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {
@@ -206,7 +206,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-yellow-500" />
                     <Text
-                      className="text-xs text-text-secondary"
+                      className="text-text-secondary text-xs"
                       style={intuitiveMode ? blurFilter(4) : undefined}
                     >
                       {t('food.macros.fat')} (
@@ -214,7 +214,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-text-primary text-xs font-bold"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {
@@ -226,7 +226,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-emerald-500" />
                     <Text
-                      className="text-xs text-text-secondary"
+                      className="text-text-secondary text-xs"
                       style={intuitiveMode ? blurFilter(4) : undefined}
                     >
                       {t('food.macros.carbs')} (
@@ -234,7 +234,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-text-primary text-xs font-bold"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {

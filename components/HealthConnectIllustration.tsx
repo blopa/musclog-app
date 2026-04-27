@@ -11,7 +11,7 @@ export function HealthConnectIllustration() {
   const theme = useTheme();
   return (
     <View
-      className="relative mb-8 mt-4 w-full items-center justify-center"
+      className="relative mt-4 mb-8 w-full items-center justify-center"
       style={{
         aspectRatio: theme.aspectRatio.square,
         minHeight: ILLUSTRATION_SIZE,

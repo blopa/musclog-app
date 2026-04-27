@@ -60,16 +60,16 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="flex-1 px-4 pb-32 pt-6">
+      <View className="flex-1 px-4 pt-6 pb-32">
         <View className="mb-6 flex-row items-center justify-between">
-          <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <Text className="text-text-secondary text-xs font-bold tracking-widest uppercase">
             {t('exerciseGoals.currentGoals')}
           </Text>
         </View>
 
         {activeGoals.length === 0 && !isLoadingActive ? (
           <View className="bg-surface-variant mb-8 items-center rounded-2xl p-8">
-            <Text className="text-center text-sm text-text-secondary">
+            <Text className="text-text-secondary text-center text-sm">
               {t('exerciseGoals.emptyState')}
             </Text>
           </View>
@@ -88,7 +88,7 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
 
         {historyGoals.length > 0 ? (
           <View>
-            <Text className="mb-6 text-xs font-bold uppercase tracking-widest text-text-secondary">
+            <Text className="text-text-secondary mb-6 text-xs font-bold tracking-widest uppercase">
               {t('exerciseGoals.history')}
             </Text>
             {historyGoals.map((goal, index) => (

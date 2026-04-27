@@ -31,10 +31,10 @@ export function WorkoutTimeTracker({
         <X size={theme.iconSize.xl} color={theme.colors.text.primary} />
       </Pressable>
       <View className="items-center">
-        <Text className="text-5xl font-bold tracking-tight text-text-primary">
+        <Text className="text-text-primary text-5xl font-bold tracking-tight">
           {formatDuration(time.hours, time.minutes, time.seconds)}
         </Text>
-        <Text className="mt-1 text-sm font-semibold tracking-wider text-accent-primary">
+        <Text className="text-accent-primary mt-1 text-sm font-semibold tracking-wider">
           {t('workoutSession.totalTime')}
         </Text>
       </View>

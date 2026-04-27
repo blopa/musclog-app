@@ -112,7 +112,7 @@ export function BarLineChart({
         <View className="mb-4">
           {title ? (
             <Text
-              className="text-xl font-semibold text-text-primary"
+              className="text-text-primary text-xl font-semibold"
               style={{ fontSize: theme.typography.fontSize.xl }}
             >
               {title}
@@ -120,7 +120,7 @@ export function BarLineChart({
           ) : null}
           {subtitle ? (
             <Text
-              className="text-sm text-text-secondary"
+              className="text-text-secondary text-sm"
               style={{ fontSize: theme.typography.fontSize.sm, marginTop: 2 }}
             >
               {subtitle}

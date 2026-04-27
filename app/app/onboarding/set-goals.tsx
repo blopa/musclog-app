@@ -70,7 +70,7 @@ function OrbitalIllustration() {
 
   return (
     <View
-      className="relative mb-2 mt-2 w-full items-center justify-center"
+      className="relative mt-2 mb-2 w-full items-center justify-center"
       style={{ height: Dimensions.get('window').height * 0.3 }}
       onLayout={onLayout}
     >
@@ -136,7 +136,7 @@ function OrbitalIllustration() {
             style={{ position: 'relative', zIndex: 1 }}
           />
           <View
-            className="absolute -right-1 -top-1 h-3 w-3 rounded-full"
+            className="absolute -top-1 -right-1 h-3 w-3 rounded-full"
             style={{
               backgroundColor: theme.colors.text.white,
               width: 12,
@@ -160,7 +160,7 @@ function OrbitalIllustration() {
 
       {/* Glass nodes – design: orange KCAL, indigo PROTEIN, emerald MACROS */}
       <View
-        className="absolute left-[10%] top-[15%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
+        className="absolute top-[15%] left-[10%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
         style={[
           glassNodeStyle,
           { top: '15%', left: '10%', borderRadius: theme.borderRadius['2xl'] },
@@ -189,7 +189,7 @@ function OrbitalIllustration() {
       </View>
 
       <View
-        className="absolute right-[8%] top-[20%] z-30 h-20 w-20 flex-col items-center justify-center overflow-hidden rounded-[2rem]"
+        className="absolute top-[20%] right-[8%] z-30 h-20 w-20 flex-col items-center justify-center overflow-hidden rounded-[2rem]"
         style={[
           glassNodeStyle,
           { top: '20%', right: '8%', borderRadius: theme.borderRadius['3xl'] },
@@ -218,7 +218,7 @@ function OrbitalIllustration() {
       </View>
 
       <View
-        className="absolute bottom-[20%] right-[15%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
+        className="absolute right-[15%] bottom-[20%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
         style={[
           glassNodeStyle,
           { bottom: '20%', right: '15%', borderRadius: theme.borderRadius['2xl'] },
@@ -501,7 +501,7 @@ export default function SetGoals() {
           {/* Header */}
           <View className="mb-4 flex-row flex-wrap items-center justify-center" style={{ gap: 6 }}>
             <Text
-              className="text-center text-[32px] font-bold leading-[1.1]"
+              className="text-center text-[32px] leading-[1.1] font-bold"
               style={{
                 color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize['3xl'],
@@ -522,7 +522,7 @@ export default function SetGoals() {
           </View>
 
           <Text
-            className="mb-8 text-center text-[16px] font-normal leading-relaxed"
+            className="mb-8 text-center text-[16px] leading-relaxed font-normal"
             style={{
               color: theme.colors.text.secondary,
               fontSize: theme.typography.fontSize.sm,

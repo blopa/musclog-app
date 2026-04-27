@@ -457,7 +457,7 @@ export function MicronutrientsExpandableSection({
       <Pressable className="flex-row items-center justify-between py-4" onPress={onToggleMicro}>
         <View className="flex-row items-center gap-2">
           <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          <Text className="text-xl font-bold text-text-primary">
+          <Text className="text-text-primary text-xl font-bold">
             {t('food.newCustomFood.micronutrients')}
           </Text>
         </View>

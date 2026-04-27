@@ -45,13 +45,13 @@ export function HeightPickerInput({
   return (
     <View className={className}>
       {!hideLabel ? (
-        <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+        <Text className="text-text-secondary mb-2 ml-1 text-sm font-medium">
           {label ?? t('editFitnessDetails.height')}
         </Text>
       ) : null}
       <Pressable
         accessibilityRole="button"
-        className="rounded-lg border border-white/10 bg-bg-cardDark"
+        className="bg-bg-cardDark rounded-lg border border-white/10"
         onPress={onPress}
         disabled={disabled}
       >
@@ -68,9 +68,9 @@ export function HeightPickerInput({
             </View>
             <View className="min-w-0 flex-1">
               {showUnsetPlaceholder ? (
-                <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
+                <Text className="text-text-tertiary font-medium">{unsetPlaceholder}</Text>
               ) : (
-                <Text className="font-medium text-text-primary">{display}</Text>
+                <Text className="text-text-primary font-medium">{display}</Text>
               )}
             </View>
           </View>

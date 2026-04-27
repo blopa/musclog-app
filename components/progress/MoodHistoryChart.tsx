@@ -50,7 +50,7 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
         ))}
       </View>
       <View className="items-center justify-center py-10">
-        <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+        <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
       </View>
     </ProgressChartSection>
   );

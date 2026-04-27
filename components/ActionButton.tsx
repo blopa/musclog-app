@@ -55,9 +55,9 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
           strokeWidth={theme.strokeWidth.medium}
         />
       </View>
-      <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
+      <Text className={`text-2xl leading-tight font-bold ${config.textColor}`}>{label}</Text>
       <View
-        className="absolute -bottom-6 -right-6"
+        className="absolute -right-6 -bottom-6"
         style={{ opacity: theme.colors.opacity.veryLight }}
       >
         <Icon

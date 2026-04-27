@@ -68,14 +68,14 @@ export function TrackingMethodButton({
       {IconContainer}
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-text-primary">{title}</Text>
+          <Text className="text-text-primary text-lg font-bold">{title}</Text>
           {badge ? (
             <View
               className="rounded-full px-2 py-0.5"
               style={{ backgroundColor: theme.colors.accent.primary }}
             >
               <Text
-                className="font-extrabold uppercase text-text-black"
+                className="text-text-black font-extrabold uppercase"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {badge}
@@ -83,7 +83,7 @@ export function TrackingMethodButton({
             </View>
           ) : null}
         </View>
-        <Text className="mt-0.5 text-xs text-text-secondary">{description}</Text>
+        <Text className="text-text-secondary mt-0.5 text-xs">{description}</Text>
       </View>
       {highlighted ? (
         <ArrowRight size={theme.iconSize.md} color={theme.colors.accent.primary} />

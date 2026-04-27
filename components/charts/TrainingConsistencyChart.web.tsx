@@ -103,7 +103,7 @@ export function TrainingConsistencyChart({
         <View>
           {title != null ? (
             <Text
-              className="text-lg font-semibold text-text-primary"
+              className="text-text-primary text-lg font-semibold"
               style={{ fontSize: theme.typography?.fontSize?.lg ?? 18, color: textPrimary }}
             >
               {title}
@@ -111,7 +111,7 @@ export function TrainingConsistencyChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="mt-0.5 text-xs uppercase tracking-widest"
+              className="mt-0.5 text-xs tracking-widest uppercase"
               style={{
                 fontSize: theme.typography?.fontSize?.xs ?? 12,
                 color: mutedColor,

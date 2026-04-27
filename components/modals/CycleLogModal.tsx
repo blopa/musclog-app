@@ -193,7 +193,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
 
         {/* Flow Intensity */}
         <View className="mb-6">
-          <Text className="mb-4 text-lg font-bold text-text-primary">
+          <Text className="text-text-primary mb-4 text-lg font-bold">
             {t('cycle.flowIntensity')}
           </Text>
           <View className="flex-row justify-between">
@@ -206,7 +206,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 }`}
               >
                 <Text
-                  className={flow === level ? 'font-bold text-accent-primary' : 'text-text-primary'}
+                  className={flow === level ? 'text-accent-primary font-bold' : 'text-text-primary'}
                 >
                   {level}
                 </Text>
@@ -217,7 +217,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
 
         {/* Symptoms */}
         <View className="mb-2">
-          <Text className="mb-4 text-lg font-bold text-text-primary">
+          <Text className="text-text-primary mb-4 text-lg font-bold">
             {t('cycle.symptomsTitle')}
           </Text>
           <View className="flex-row flex-wrap gap-3">
@@ -234,7 +234,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 <Text
                   className={
                     symptoms.includes(option.value)
-                      ? 'font-bold text-accent-primary'
+                      ? 'text-accent-primary font-bold'
                       : 'text-text-primary'
                   }
                 >

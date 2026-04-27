@@ -254,7 +254,7 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
         {/* Reminders Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.advancedSettings.reminders')}
@@ -278,7 +278,7 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
         {/* Privacy & Diagnostics Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.advancedSettings.privacyDiagnostics')}
@@ -291,7 +291,7 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
         {/* Workouts Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.advancedSettings.workouts')}
@@ -327,7 +327,7 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
         {/* Charts Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.advancedSettings.charts')}

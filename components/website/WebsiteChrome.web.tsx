@@ -254,7 +254,7 @@ export function LanguagePicker() {
         <div
           role="menu"
           aria-label={t('language')}
-          className="absolute right-0 top-full z-[170] mt-3 min-w-[220px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
+          className="absolute top-full right-0 z-[170] mt-3 min-w-[220px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
           style={{
             borderColor: 'rgba(255,255,255,0.1)',
             background: 'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.96) 100%)',
@@ -263,7 +263,7 @@ export function LanguagePicker() {
           }}
         >
           <div
-            className="border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
+            className="border-b px-4 py-3 text-[11px] font-semibold tracking-[0.22em] uppercase"
             style={{ color: BODY_TEXT_SOFT, borderColor: 'rgba(255,255,255,0.08)' }}
           >
             {t('language')}
@@ -280,7 +280,7 @@ export function LanguagePicker() {
                   role="menuitemradio"
                   aria-checked={isSelected}
                   onClick={() => handleLanguageChange(language.code)}
-                  className="hover:bg-white/6 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/6"
                   style={{
                     backgroundColor: isSelected ? 'rgba(34,197,94,0.14)' : 'transparent',
                     color: isSelected ? '#F9FAFB' : BODY_TEXT,
@@ -304,7 +304,7 @@ export function Header() {
 
   return (
     <header
-      className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md"
+      className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md"
       style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -367,7 +367,7 @@ export function Header() {
         <div className="flex items-center gap-2 md:hidden">
           <DownloadModal
             variant="default"
-            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
+            className="hidden min-h-11 shrink-0 px-4 py-2 text-sm font-bold whitespace-nowrap shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
           >
             <Download className="h-4 w-4" />
             <span>{t('download')}</span>
@@ -435,7 +435,7 @@ export function Footer() {
           </a>
           <DownloadModal
             variant="default"
-            className="min-h-10 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)]"
+            className="min-h-10 shrink-0 px-4 py-2 text-sm font-bold whitespace-nowrap shadow-[0_10px_30px_rgba(34,197,94,0.18)]"
           >
             <Download className="h-4 w-4" />
             <span>{navT('download')}</span>

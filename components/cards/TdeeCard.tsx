@@ -36,13 +36,13 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
         {/* Main TDEE value */}
         <Text className="text-3xl font-bold tracking-tight text-white">
           {formatInteger(tdeeValue)}{' '}
-          <Text className="text-lg font-normal text-text-secondary">
+          <Text className="text-text-secondary text-lg font-normal">
             {t('progress.kcalPerDay')}
           </Text>
         </Text>
 
         {/* Subtitle */}
-        <Text className="mt-1 text-sm text-text-secondary">
+        <Text className="text-text-secondary mt-1 text-sm">
           {subtitle || t('progress.currentTdee')}
         </Text>
 
@@ -52,7 +52,7 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
           style={{ backgroundColor: theme.colors.status.emerald400_10 }}
         >
           <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
+            className="text-[10px] font-bold tracking-wider uppercase"
             style={{ color: theme.colors.status.emeraldLight }}
           >
             {tagText || t('progress.basedOnRecentActivity')}

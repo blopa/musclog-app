@@ -48,7 +48,7 @@ export const CameraProcessingIndicator = ({
 
         {/* Gradient spinning ring - CSS animation on web */}
         <View
-          className="absolute inset-0 animate-spin-slow rounded-full border-4 border-transparent"
+          className="animate-spin-slow absolute inset-0 rounded-full border-4 border-transparent"
           style={{
             borderTopColor: theme.colors.accent.secondary,
             borderRightColor: theme.colors.status.indigo,
@@ -88,7 +88,7 @@ export const CameraProcessingIndicator = ({
         </Text>
 
         <Text
-          className="mt-2 text-center text-xs uppercase tracking-widest"
+          className="mt-2 text-center text-xs tracking-widest uppercase"
           style={{ color: theme.colors.accent.secondary }}
         >
           {getSubText()}

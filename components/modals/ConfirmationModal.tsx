@@ -77,7 +77,7 @@ export function ConfirmationModal({
       >
         {/* Modal */}
         <Pressable
-          className="w-full overflow-hidden border border-border-dark"
+          className="border-border-dark w-full overflow-hidden border"
           style={{
             backgroundColor: theme.colors.background.secondaryDark,
             maxWidth: modalMaxWidth,
@@ -103,7 +103,7 @@ export function ConfirmationModal({
               }}
             >
               <Text
-                className="font-bold tracking-tight text-text-primary"
+                className="text-text-primary font-bold tracking-tight"
                 style={{ fontSize: theme.typography.fontSize.lg }}
               >
                 {title}
@@ -140,7 +140,7 @@ export function ConfirmationModal({
                 }}
               >
                 <Text
-                  className="text-sm font-medium leading-relaxed"
+                  className="text-sm leading-relaxed font-medium"
                   style={{
                     color: theme.colors.status.warning,
                   }}

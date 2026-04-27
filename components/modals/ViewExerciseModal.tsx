@@ -458,7 +458,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium tracking-wide uppercase"
                     style={{ color: theme.colors.overlay.white80 }}
                   >
                     {t('exercises.viewExercise.primaryMuscle')}
@@ -475,7 +475,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium tracking-wide uppercase"
                     style={{ color: theme.colors.overlay.white80 }}
                   >
                     {t('exercises.viewExercise.equipment')}
@@ -492,7 +492,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium tracking-wide uppercase"
                     style={{ color: theme.colors.overlay.white80 }}
                   >
                     {t('exercises.viewExercise.mechanic')}
@@ -509,7 +509,7 @@ export default function ViewExerciseModal({
             <GenericCard variant="default" size="sm">
               <View className="p-6">
                 <Text
-                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  className="mb-2 text-xs font-medium tracking-wide uppercase"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exercises.viewExercise.personalBest')}
@@ -534,7 +534,7 @@ export default function ViewExerciseModal({
             <GenericCard variant="default" size="sm">
               <View className="p-6">
                 <Text
-                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  className="mb-2 text-xs font-medium tracking-wide uppercase"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exercises.viewExercise.avgFrequency')}

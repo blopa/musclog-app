@@ -60,11 +60,11 @@ const getSafeCameraMode = (
   if (!isAiEnabled) {
     return 'barcode-scan';
   }
-  
+
   if (!isMealPhotoEnabled && mode === 'ai-meal-photo') {
     return 'ai-label-scan';
   }
-  
+
   return mode || 'ai-meal-photo';
 };
 
@@ -781,7 +781,7 @@ export default function SmartCameraModal({
           <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
             {t('food.aiCamera.permissionRequired')}
           </Text>
-          <Pressable onPress={requestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
+          <Pressable onPress={requestPermission} className="bg-accent-primary rounded-xl px-6 py-3">
             <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
               {t('food.aiCamera.grantPermission')}
             </Text>
@@ -843,7 +843,7 @@ export default function SmartCameraModal({
           </View>
 
           {/* Header */}
-          <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
+          <View className="relative z-20 flex-row items-center justify-between px-4 pt-4 pb-2">
             <Pressable
               onPress={handleClose}
               className="h-10 w-10 items-center justify-center rounded-full"
@@ -898,11 +898,11 @@ export default function SmartCameraModal({
             >
               {/* Corner Markers */}
               <View
-                className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
+                className="absolute -top-1 -left-1 h-8 w-8 rounded-tl-lg border-t-2 border-l-2"
                 style={{ borderColor: theme.colors.accent.primary }}
               />
               <View
-                className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-lg border-r-2 border-t-2"
+                className="absolute -top-1 -right-1 h-8 w-8 rounded-tr-lg border-t-2 border-r-2"
                 style={{ borderColor: theme.colors.accent.primary }}
               />
               <View
@@ -910,13 +910,13 @@ export default function SmartCameraModal({
                 style={{ borderColor: theme.colors.accent.primary }}
               />
               <View
-                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-lg border-b-2 border-r-2"
+                className="absolute -right-1 -bottom-1 h-8 w-8 rounded-br-lg border-r-2 border-b-2"
                 style={{ borderColor: theme.colors.accent.primary }}
               />
 
               {/* Center Line */}
               <View
-                className="absolute left-0 right-0"
+                className="absolute right-0 left-0"
                 style={{
                   top: '50%',
                   height: theme.borderWidth.thin,
@@ -988,7 +988,7 @@ export default function SmartCameraModal({
                       />
                       {!isSmallScreen ? (
                         <Text
-                          className="font-bold uppercase tracking-wide"
+                          className="font-bold tracking-wide uppercase"
                           style={{
                             fontSize: theme.typography.fontSize.xs,
                             color:
@@ -1036,7 +1036,7 @@ export default function SmartCameraModal({
                         />
                         {!isSmallScreen ? (
                           <Text
-                            className="font-bold uppercase tracking-wide"
+                            className="font-bold tracking-wide uppercase"
                             style={{
                               fontSize: theme.typography.fontSize.xs,
                               color:
@@ -1085,7 +1085,7 @@ export default function SmartCameraModal({
                         />
                         {!isSmallScreen ? (
                           <Text
-                            className="font-bold uppercase tracking-wide"
+                            className="font-bold tracking-wide uppercase"
                             style={{
                               fontSize: theme.typography.fontSize.xs,
                               color:

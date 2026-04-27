@@ -87,7 +87,7 @@ export function WorkoutSummaryCelebration({
       contentContainerStyle={{ flexGrow: 1 }}
     >
       <View
-        className="flex-1 bg-bg-primary"
+        className="bg-bg-primary flex-1"
         style={[
           webModalStyle,
           {
@@ -113,7 +113,7 @@ export function WorkoutSummaryCelebration({
           }}
         >
           <Animated.View
-            className="absolute left-1/2 top-1/4 rounded-full blur-3xl"
+            className="absolute top-1/4 left-1/2 rounded-full blur-3xl"
             style={{
               height: theme.size['256'],
               width: theme.size['256'],
@@ -124,7 +124,7 @@ export function WorkoutSummaryCelebration({
             }}
           />
           <Animated.View
-            className="absolute left-1/2 top-1/3 rounded-full blur-3xl"
+            className="absolute top-1/3 left-1/2 rounded-full blur-3xl"
             style={{
               height: theme.size['48'],
               width: theme.size['48'],
@@ -162,21 +162,21 @@ export function WorkoutSummaryCelebration({
                           <Trophy size={20} color={theme.colors.accent.primary} />
                         </View>
                         <View>
-                          <Text className="font-bold text-text-primary">
+                          <Text className="text-text-primary font-bold">
                             {item.exerciseName} Goal
                           </Text>
-                          <Text className="text-xs text-text-secondary">
+                          <Text className="text-text-secondary text-xs">
                             {item.current} / {item.target} {item.unit}
                           </Text>
                         </View>
                       </View>
                       <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
                         <View
-                          className="h-full bg-accent-primary"
+                          className="bg-accent-primary h-full"
                           style={{ width: `${progress}%` }}
                         />
                       </View>
-                      <Text className="mt-2 text-center text-xs font-bold text-accent-primary">
+                      <Text className="text-accent-primary mt-2 text-center text-xs font-bold">
                         {progress === 100
                           ? t('exerciseGoals.card.congratulations')
                           : `${progress}% to Goal`}
@@ -223,7 +223,7 @@ export function WorkoutSummaryCelebration({
 
           {/* Share Summary Link */}
           <Pressable onPress={onShareSummary}>
-            <Text className="text-center text-xs font-medium uppercase tracking-wider text-text-tertiary">
+            <Text className="text-text-tertiary text-center text-xs font-medium tracking-wider uppercase">
               {t('workoutSummary.shareSummary')}
             </Text>
           </Pressable>

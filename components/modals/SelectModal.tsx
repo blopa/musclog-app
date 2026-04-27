@@ -45,7 +45,7 @@ export function SelectModal({
         onPress={onClose}
       >
         <Pressable
-          className="w-full overflow-hidden rounded-xl border border-border-dark"
+          className="border-border-dark w-full overflow-hidden rounded-xl border"
           style={{
             backgroundColor: theme.colors.background.cardElevated,
             maxWidth: theme.size['384'],
@@ -54,10 +54,10 @@ export function SelectModal({
         >
           {/* Header */}
           <View
-            className="border-b border-border-dark px-4 py-5"
+            className="border-border-dark border-b px-4 py-5"
             style={{ backgroundColor: theme.colors.background.cardElevated }}
           >
-            <Text className="text-xl font-bold text-text-primary">{title}</Text>
+            <Text className="text-text-primary text-xl font-bold">{title}</Text>
           </View>
 
           {/* Options */}

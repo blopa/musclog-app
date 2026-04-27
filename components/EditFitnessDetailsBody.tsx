@@ -128,7 +128,7 @@ export function EditFitnessDetailsBody({
         <EditFitnessGoalsBody initialData={goalsInitial} onFormChange={handleFitnessGoalsChange} />
       ) : null}
       {!hideSaveButton ? (
-        <View className="px-4 pb-8 pt-4">
+        <View className="px-4 pt-4 pb-8">
           <Button
             label={t('editFitnessDetails.saveChanges')}
             icon={Save}

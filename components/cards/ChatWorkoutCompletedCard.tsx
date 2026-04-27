@@ -47,7 +47,7 @@ export function ChatWorkoutCompletedCard({
       >
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-3">
-            <Text className="text-lg font-bold leading-tight text-text-primary">{workoutName}</Text>
+            <Text className="text-text-primary text-lg leading-tight font-bold">{workoutName}</Text>
             <View className="mt-1 flex-row items-center gap-1.5">
               <Trophy size={14} color={theme.colors.accent.primary} />
               <Text
@@ -71,25 +71,25 @@ export function ChatWorkoutCompletedCard({
       <View className="flex-row p-4">
         <View className="flex-1">
           <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
+            className="text-[10px] font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.tertiary }}
           >
             {t('workoutSummary.volume')}
           </Text>
-          <Text className="mt-0.5 text-sm font-bold text-text-primary">{volume}</Text>
+          <Text className="text-text-primary mt-0.5 text-sm font-bold">{volume}</Text>
         </View>
         <View className="flex-1">
           <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
+            className="text-[10px] font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.tertiary }}
           >
             {t('workoutSummary.duration')}
           </Text>
-          <Text className="mt-0.5 text-sm font-bold text-text-primary">{duration}</Text>
+          <Text className="text-text-primary mt-0.5 text-sm font-bold">{duration}</Text>
         </View>
         <View className="flex-1">
           <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
+            className="text-[10px] font-bold tracking-wider uppercase"
             style={{ color: theme.colors.text.tertiary }}
           >
             {t('workoutSummary.newPRs')}
@@ -118,7 +118,7 @@ export function ChatWorkoutCompletedCard({
                 borderColor: theme.colors.border.light,
               }}
             >
-              <Text className="text-sm font-bold text-text-primary">
+              <Text className="text-text-primary text-sm font-bold">
                 {t('workoutSummary.viewDetails')}
               </Text>
               <ExternalLink size={14} color={theme.colors.text.primary} />

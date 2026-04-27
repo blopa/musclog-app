@@ -160,7 +160,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
 
         {/* Cycle lengths */}
         <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
+          <Text className="text-text-secondary mb-3 text-base font-semibold">
             {t('onboarding.cycleSetup.length.cycleLength')}
           </Text>
           <View className="flex-row gap-4">
@@ -185,7 +185,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
 
         {/* Birth control */}
         <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
+          <Text className="text-text-secondary mb-3 text-base font-semibold">
             {t('onboarding.cycleSetup.birthControl.title')}
           </Text>
           <PickerButton
@@ -197,7 +197,7 @@ export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetup
 
         {/* Sync goal */}
         <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
+          <Text className="text-text-secondary mb-3 text-base font-semibold">
             {t('onboarding.cycleSetup.goal.title')}
           </Text>
           <PickerButton

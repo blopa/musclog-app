@@ -142,12 +142,12 @@ export function DatePickerModal({
           contentContainerStyle={{ paddingBottom: 8 }}
         >
           {/* Title Section */}
-          <View className="px-4 pb-6 pt-2">
-            <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
+          <View className="px-4 pt-2 pb-6">
+            <Text className="text-accent-primary mb-1 text-sm font-semibold tracking-wider uppercase">
               {t('datePicker.selectDate')}
             </Text>
             <Text
-              className="font-bold leading-tight tracking-tight text-text-primary"
+              className="text-text-primary leading-tight font-bold tracking-tight"
               style={{ fontSize: theme.typography.fontSize['4xl'] }}
             >
               {formatSelectedDate(tempSelectedDate)}
@@ -157,7 +157,7 @@ export function DatePickerModal({
           {/* Calendar */}
           <View className="px-4">
             <View
-              className="rounded-2xl border bg-bg-cardDark p-5"
+              className="bg-bg-cardDark rounded-2xl border p-5"
               style={{ borderColor: theme.colors.background.white5 }}
             >
               {/* Month Navigation */}
@@ -166,7 +166,7 @@ export function DatePickerModal({
                   className="flex-row items-center gap-1 rounded-lg px-2 py-1"
                   onPress={handleMonthYearPickerOpen}
                 >
-                  <Text className="text-base font-semibold text-text-primary">
+                  <Text className="text-text-primary text-base font-semibold">
                     {format(currentMonth, 'MMMM yyyy', { locale })}
                   </Text>
                   <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
@@ -185,7 +185,7 @@ export function DatePickerModal({
               <View className="mb-4 flex-row">
                 {weekDayLetters.map((day, index) => (
                   <View key={index} className="flex-1">
-                    <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    <Text className="text-text-secondary text-center text-xs font-semibold tracking-wide uppercase">
                       {day}
                     </Text>
                   </View>
@@ -230,7 +230,7 @@ export function DatePickerModal({
                       ) : (
                         <View
                           className={`h-10 w-10 items-center justify-center rounded-full ${
-                            isToday ? 'border border-accent-primary' : ''
+                            isToday ? 'border-accent-primary border' : ''
                           }`}
                         >
                           <Text
@@ -331,17 +331,17 @@ export function DatePickerModal({
             onPress={() => setIsMonthYearPickerVisible(false)}
           >
             <Pressable
-              className="w-full max-w-sm rounded-2xl border bg-bg-cardDark p-6"
+              className="bg-bg-cardDark w-full max-w-sm rounded-2xl border p-6"
               style={{ borderColor: theme.colors.background.white10 }}
               onPress={(e) => e.stopPropagation()}
             >
-              <Text className="mb-4 text-lg font-bold text-text-primary">
+              <Text className="text-text-primary mb-4 text-lg font-bold">
                 {t('datePicker.selectMonthYear')}
               </Text>
 
               {/* Month Grid */}
               <View className="mb-6">
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="text-text-secondary mb-3 text-sm font-semibold tracking-wider uppercase">
                   {t('datePicker.month')}
                 </Text>
                 <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
@@ -381,7 +381,7 @@ export function DatePickerModal({
 
               {/* Year List */}
               <View>
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="text-text-secondary mb-3 text-sm font-semibold tracking-wider uppercase">
                   {t('datePicker.year')}
                 </Text>
                 <ScrollView

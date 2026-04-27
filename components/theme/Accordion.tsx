@@ -59,7 +59,7 @@ export function Accordion({
 
   return (
     <View
-      className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}
+      className={`border-border-dark bg-bg-card mb-4 overflow-hidden rounded-lg border ${className}`}
     >
       <Pressable onPress={handlePress} className="overflow-hidden">
         <View className="flex-row items-center justify-between px-4 py-4">
@@ -71,7 +71,7 @@ export function Accordion({
                 {Icon ? (
                   <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 ) : null}
-                <Text className="text-base font-semibold text-text-primary">
+                <Text className="text-text-primary text-base font-semibold">
                   {title}
                   {count !== undefined ? (
                     <>
@@ -94,7 +94,7 @@ export function Accordion({
         </View>
       </Pressable>
       <Animated.View style={animatedContentStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
-        <View className="border-t border-border-dark">{children}</View>
+        <View className="border-border-dark border-t">{children}</View>
       </Animated.View>
     </View>
   );

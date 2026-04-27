@@ -214,7 +214,7 @@ export function TimePickerModal({
       title={title}
       visible={visible}
     >
-      <View className="flex-1 items-center bg-bg-primary px-5 pt-8">
+      <View className="bg-bg-primary flex-1 items-center px-5 pt-8">
         {/* Time display */}
         <View className="mb-8 items-center">
           <View className="flex-row items-end">
@@ -262,7 +262,7 @@ export function TimePickerModal({
           style={{ backgroundColor: cardBg, borderRadius: 24, overflow: 'hidden' }}
         >
           {/* Column labels */}
-          <View className="flex-row px-6 pb-1 pt-5">
+          <View className="flex-row px-6 pt-5 pb-1">
             <Text
               className="flex-1 text-center"
               style={{

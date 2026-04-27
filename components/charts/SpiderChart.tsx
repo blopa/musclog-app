@@ -144,7 +144,7 @@ export function SpiderChart({
         <View className="mb-4 items-center">
           {title != null ? (
             <Text
-              className="text-xl font-semibold text-text-primary"
+              className="text-text-primary text-xl font-semibold"
               style={{ fontSize: theme.typography?.fontSize?.xl ?? 20 }}
             >
               {title}
@@ -152,7 +152,7 @@ export function SpiderChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="mt-1 text-sm uppercase tracking-widest text-text-tertiary"
+              className="text-text-tertiary mt-1 text-sm tracking-widest uppercase"
               style={{
                 fontSize: theme.typography?.fontSize?.sm ?? 14,
                 color: mutedColor,
@@ -274,7 +274,7 @@ export function SpiderChart({
       {/* Footer: Primary Focus & Area to Improve */}
       {primaryFocus != null || areaToImprove != null ? (
         <View
-          className="mt-8 flex-row gap-4 border-t border-border-default pt-6"
+          className="border-border-default mt-8 flex-row gap-4 border-t pt-6"
           style={{
             borderTopColor: gridColor,
             borderTopWidth: 1,

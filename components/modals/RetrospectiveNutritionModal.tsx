@@ -116,14 +116,14 @@ export function RetrospectiveNutritionModal({
               className="mb-6 rounded-lg p-4"
               style={{ backgroundColor: theme.colors.background.card }}
             >
-              <Text className="text-xs font-medium text-text-secondary">
+              <Text className="text-text-secondary text-xs font-medium">
                 {t('nutrition.dateLabel')}
               </Text>
-              <Text className="mt-1 text-lg font-bold text-text-primary">{dateString}</Text>
+              <Text className="text-text-primary mt-1 text-lg font-bold">{dateString}</Text>
             </View>
 
             {/* Instructions */}
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-secondary mb-4 text-sm">
               {t('nutrition.retrospectiveInstructions')}
             </Text>
 
@@ -135,7 +135,7 @@ export function RetrospectiveNutritionModal({
               placeholderTextColor={theme.colors.text.tertiary}
               multiline
               numberOfLines={6}
-              className="mb-4 rounded-lg p-4 text-base text-text-primary"
+              className="text-text-primary mb-4 rounded-lg p-4 text-base"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderWidth: theme.borderWidth.thin,
@@ -150,7 +150,7 @@ export function RetrospectiveNutritionModal({
               <Text className="mb-2 text-xs font-semibold text-blue-500">
                 {t('nutrition.example')}
               </Text>
-              <Text className="text-xs text-text-secondary">
+              <Text className="text-text-secondary text-xs">
                 {t('nutrition.retrospectiveExample')}
               </Text>
             </View>
@@ -194,7 +194,7 @@ export function RetrospectiveNutritionModal({
               opacity: isProcessing ? 0.5 : 1,
             }}
           >
-            <Text className="text-center font-semibold text-text-primary">
+            <Text className="text-text-primary text-center font-semibold">
               {t('common.cancel')}
             </Text>
           </Pressable>

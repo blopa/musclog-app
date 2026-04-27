@@ -324,10 +324,10 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       }
       scrollable={false}
     >
-      <View className="flex-row border-b border-border-light px-4">
+      <View className="border-border-light flex-row border-b px-4">
         <Pressable
           onPress={() => setActiveTab('nutrition')}
-          className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+          className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-accent-primary border-b-2' : ''}`}
         >
           <Text
             className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}
@@ -337,7 +337,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         </Pressable>
         <Pressable
           onPress={() => setActiveTab('fitness')}
-          className={`py-4 ${activeTab === 'fitness' ? 'border-b-2 border-accent-primary' : ''}`}
+          className={`py-4 ${activeTab === 'fitness' ? 'border-accent-primary border-b-2' : ''}`}
         >
           <Text
             className={`text-sm font-semibold ${activeTab === 'fitness' ? 'text-accent-primary' : 'text-text-tertiary'}`}

@@ -42,7 +42,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -81,7 +81,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
         ))}
       </View>
       <View style={{ height: 250, position: 'relative' }}>
-        <Text className="mb-2 text-center text-xs text-text-tertiary">
+        <Text className="text-text-tertiary mb-2 text-center text-xs">
           Volume vs Exhaustion (Bubble size = Calories)
         </Text>
         {yAxisLabels.map((label) => (
@@ -127,9 +127,9 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           )}
         </CartesianChart>
         <View className="mt-2 flex-row justify-between px-8">
-          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMin, 0)}</Text>
-          <Text className="text-[10px] text-text-tertiary">{t('progress.workoutVolume')}</Text>
-          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMax, 0)}</Text>
+          <Text className="text-text-tertiary text-[10px]">{formatDecimal(xMin, 0)}</Text>
+          <Text className="text-text-tertiary text-[10px]">{t('progress.workoutVolume')}</Text>
+          <Text className="text-text-tertiary text-[10px]">{formatDecimal(xMax, 0)}</Text>
         </View>
       </View>
     </ProgressChartSection>

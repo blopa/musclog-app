@@ -62,7 +62,7 @@ const MacroItem = ({
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text
-        className="text-xs text-text-secondary"
+        className="text-text-secondary text-xs"
         style={intuitiveMode ? blurFilter(4) : undefined}
       >
         {t('food.macroValueFormat', {
@@ -148,7 +148,7 @@ export const MealGroupCard = memo(function MealGroupCard({
         <View className="min-w-0 flex-1">
           {/* Meal name + badge */}
           <View className="mb-1 flex-row items-center gap-2">
-            <Text className="flex-1 text-lg font-semibold text-text-primary" numberOfLines={2}>
+            <Text className="text-text-primary flex-1 text-lg font-semibold" numberOfLines={2}>
               {name}
             </Text>
             <View

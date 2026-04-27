@@ -192,7 +192,7 @@ export default function RestOverScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <Animated.View
-        className="absolute right-[-10%] top-[-20%] h-[50%] w-[80%] rounded-full blur-3xl"
+        className="absolute top-[-20%] right-[-10%] h-[50%] w-[80%] rounded-full blur-3xl"
         style={{
           backgroundColor: theme.colors.accent.primary40,
           opacity: pulseAnim,

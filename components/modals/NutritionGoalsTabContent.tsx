@@ -127,13 +127,13 @@ export function NutritionGoalsTabContent({
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="flex-1 px-4 pb-32 pt-6">
+      <View className="flex-1 px-4 pt-6 pb-32">
         {/* Current Goals Section */}
         {currentGoal ? (
           <View className="mb-8">
             <View className="mb-3 flex-row items-center justify-between">
               <Text
-                className="font-bold uppercase tracking-widest text-text-secondary"
+                className="text-text-secondary font-bold tracking-widest uppercase"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('goalsManagement.currentGoals')}
@@ -147,7 +147,7 @@ export function NutritionGoalsTabContent({
                 }}
               >
                 <Text
-                  className="font-bold text-accent-primary"
+                  className="text-accent-primary font-bold"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
                   {t('goalsManagement.active')}
@@ -169,7 +169,7 @@ export function NutritionGoalsTabContent({
         {historyWithRaw.length > 0 ? (
           <View className="mb-6">
             <Text
-              className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
+              className="text-text-secondary mb-6 font-bold tracking-widest uppercase"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('goalsManagement.history')}
@@ -197,8 +197,8 @@ export function NutritionGoalsTabContent({
         {/* Empty state */}
         {!currentGoal && historyWithRaw.length === 0 ? (
           <View className="flex-1 items-center justify-center py-16">
-            <Text className="text-center text-text-secondary">{t('goalsManagement.subtitle')}</Text>
-            <Text className="mt-2 text-center text-xs text-text-tertiary">
+            <Text className="text-text-secondary text-center">{t('goalsManagement.subtitle')}</Text>
+            <Text className="text-text-tertiary mt-2 text-center text-xs">
               {t('goalsManagement.emptyStateMessage')}
             </Text>
           </View>

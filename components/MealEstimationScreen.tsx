@@ -66,10 +66,10 @@ export function MealEstimationScreen({
           <Image source={{ uri: mealImage }} className="h-64 w-full" resizeMode="cover" />
           {/* AI Estimated Badge */}
           <View
-            className="absolute left-4 top-4 rounded-full px-3 py-1.5"
+            className="absolute top-4 left-4 rounded-full px-3 py-1.5"
             style={{ backgroundColor: theme.colors.accent.primary }}
           >
-            <Text className="text-xs font-semibold uppercase text-white">
+            <Text className="text-xs font-semibold text-white uppercase">
               {t('nutrition.aiCamera.modes.mealPhoto')} {t('nutrition.aiCamera.estimated')}
             </Text>
           </View>
@@ -205,7 +205,7 @@ export function MealEstimationScreen({
 
       {/* Bottom Action Button */}
       <View
-        className="w-full px-4 pb-6 pt-4"
+        className="w-full px-4 pt-4 pb-6"
         style={{
           backgroundColor: theme.colors.background.primary,
           borderTopColor: theme.colors.border.default,

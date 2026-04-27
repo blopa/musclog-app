@@ -45,7 +45,7 @@ function ButtonExample({
   const defaultLabel = label || variant.charAt(0).toUpperCase() + variant.slice(1);
   return (
     <View className="mb-4">
-      <Text className="mb-2 text-xs font-semibold text-text-secondary">
+      <Text className="text-text-secondary mb-2 text-xs font-semibold">
         {variant} {size} {disabled ? '(disabled)' : ''}
       </Text>
       <Button
@@ -68,7 +68,7 @@ type SectionProps = {
 function Section({ title, children }: SectionProps) {
   return (
     <View className="mb-8">
-      <Text className="mb-4 text-xl font-bold text-text-primary">{title}</Text>
+      <Text className="text-text-primary mb-4 text-xl font-bold">{title}</Text>
       {children}
     </View>
   );
@@ -78,13 +78,13 @@ export default function ButtonTestScreen() {
   const [pressedCount, setPressedCount] = useState(0);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-6">
           {/* Header */}
           <View className="mb-8">
-            <Text className="mb-2 text-3xl font-bold text-text-primary">Button Component</Text>
-            <Text className="text-base text-text-secondary">
+            <Text className="text-text-primary mb-2 text-3xl font-bold">Button Component</Text>
+            <Text className="text-text-secondary text-base">
               All variants, sizes, and states of the Button component
             </Text>
           </View>
@@ -92,7 +92,7 @@ export default function ButtonTestScreen() {
           {/* Interactive Example */}
           <Section title="Interactive Example">
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">
                 Pressed {pressedCount} times
               </Text>
               <Button
@@ -141,25 +141,25 @@ export default function ButtonTestScreen() {
           {/* Width Variants */}
           <Section title="Width Variants">
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Full Width</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Full Width</Text>
               <Button label="Full Width" variant="accent" width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Flex-1 (50%)</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Flex-1 (50%)</Text>
               <View className="flex-row gap-3">
                 <Button label="Flex-1" variant="accent" width="flex-1" />
                 <Button label="Flex-1" variant="outline" width="flex-1" />
               </View>
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Flex-2 (66%)</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Flex-2 (66%)</Text>
               <View className="flex-row gap-3">
                 <Button label="Flex-2" variant="accent" width="flex-2" />
                 <Button label="Flex-1" variant="outline" width="flex-1" />
               </View>
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Auto Width</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Auto Width</Text>
               <Button label="Auto Width" variant="accent" width="auto" />
             </View>
           </Section>
@@ -167,23 +167,23 @@ export default function ButtonTestScreen() {
           {/* Common Use Cases */}
           <Section title="Common Use Cases">
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Primary Action</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Primary Action</Text>
               <Button label="Save Changes" variant="accent" icon={CheckCircle} width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">
                 Destructive Action
               </Text>
               <Button label="Delete Item" variant="discard" icon={X} width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">
                 Secondary Action
               </Text>
               <Button label="Cancel" variant="outline" width="full" />
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">CTA Button</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">CTA Button</Text>
               <Button label="Get Started" variant="gradientCta" icon={ArrowRight} width="full" />
             </View>
           </Section>
@@ -191,7 +191,7 @@ export default function ButtonTestScreen() {
           {/* Button Groups */}
           <Section title="Button Groups">
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">
                 Modal Footer Style
               </Text>
               <View className="flex-row gap-3">
@@ -200,7 +200,7 @@ export default function ButtonTestScreen() {
               </View>
             </View>
             <View className="mb-4">
-              <Text className="mb-2 text-xs font-semibold text-text-secondary">Action Buttons</Text>
+              <Text className="text-text-secondary mb-2 text-xs font-semibold">Action Buttons</Text>
               <View className="flex-row gap-3">
                 <Button label="Skip" variant="outline" width="flex-1" size="sm" />
                 <Button label="Save" variant="accent" width="flex-1" size="sm" />

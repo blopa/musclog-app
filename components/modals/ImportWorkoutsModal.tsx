@@ -115,7 +115,7 @@ export function ImportWorkoutsModal({
         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
           <View className="flex-1 px-4 py-6">
             {/* Instructions */}
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-secondary mb-4 text-sm">
               {t('workout.import.instructions')}
             </Text>
 
@@ -127,7 +127,7 @@ export function ImportWorkoutsModal({
               placeholderTextColor={theme.colors.text.tertiary}
               multiline
               numberOfLines={8}
-              className="mb-4 rounded-lg p-4 text-base text-text-primary"
+              className="text-text-primary mb-4 rounded-lg p-4 text-base"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderWidth: theme.borderWidth.thin,
@@ -142,11 +142,11 @@ export function ImportWorkoutsModal({
               <Text className="mb-2 text-xs font-semibold text-amber-600">
                 {t('workout.import.supportedFormats')}
               </Text>
-              <Text className="text-xs text-text-secondary">{t('workout.import.formatInfo')}</Text>
+              <Text className="text-text-secondary text-xs">{t('workout.import.formatInfo')}</Text>
             </View>
 
             {/* Character Count */}
-            <Text className="mb-4 text-xs text-text-tertiary">
+            <Text className="text-text-tertiary mb-4 text-xs">
               {t('common.labelColonValue', {
                 label: t('workout.import.characters'),
                 value: String(rawText.length),
@@ -192,7 +192,7 @@ export function ImportWorkoutsModal({
               opacity: isProcessing ? 0.5 : 1,
             }}
           >
-            <Text className="text-center font-semibold text-text-primary">
+            <Text className="text-text-primary text-center font-semibold">
               {t('common.cancel')}
             </Text>
           </Pressable>

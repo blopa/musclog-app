@@ -30,7 +30,7 @@ export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps
       <View className="flex-row items-center justify-between px-4 py-4">
         <Pressable
           onPress={goToPreviousDay}
-          className="rounded-lg p-3 active:bg-bg-secondary"
+          className="active:bg-bg-secondary rounded-lg p-3"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
           <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
@@ -44,7 +44,7 @@ export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps
 
         <Pressable
           onPress={goToNextDay}
-          className="rounded-lg p-3 active:bg-bg-secondary"
+          className="active:bg-bg-secondary rounded-lg p-3"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />

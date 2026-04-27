@@ -22,10 +22,10 @@ export default function SnackbarTestScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
       {/* Header */}
       <View
-        className="border-b bg-bg-primary"
+        className="bg-bg-primary border-b"
         style={{ borderColor: theme.colors.background.buttonCard }}
       >
         <View className="relative flex-row items-center justify-center px-4 py-4">
@@ -36,7 +36,7 @@ export default function SnackbarTestScreen() {
           >
             <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>
-          <Text className="text-xl font-bold text-text-primary">Snackbar Examples</Text>
+          <Text className="text-text-primary text-xl font-bold">Snackbar Examples</Text>
         </View>
       </View>
 
@@ -45,7 +45,7 @@ export default function SnackbarTestScreen() {
         <View className="space-y-8 px-4 py-8">
           {/* Feedback States Section */}
           <View className="gap-6">
-            <Text className="text-4xl font-bold text-text-primary">Feedback States</Text>
+            <Text className="text-text-primary text-4xl font-bold">Feedback States</Text>
 
             <Text
               className="text-lg leading-relaxed"
@@ -73,7 +73,7 @@ export default function SnackbarTestScreen() {
                 >
                   <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
                 </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
+                <Text className="text-text-primary flex-1 text-left text-xl font-semibold">
                   Simulate Successful Save
                 </Text>
                 <ChevronLeft
@@ -99,7 +99,7 @@ export default function SnackbarTestScreen() {
                 >
                   <AlertTriangle size={theme.iconSize.xl} color={theme.colors.status.error} />
                 </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
+                <Text className="text-text-primary flex-1 text-left text-xl font-semibold">
                   Simulate Sync Error
                 </Text>
                 <ChevronLeft

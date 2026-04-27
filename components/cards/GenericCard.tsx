@@ -275,7 +275,7 @@ export function GenericCard({
       {hasGradientBackground ? (
         <>
           <View
-            className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
+            className="absolute -top-10 -right-10 h-40 w-40 rounded-full blur-3xl"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           />
           <View
@@ -285,7 +285,7 @@ export function GenericCard({
         </>
       ) : isTdeeBackground ? (
         <View
-          className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
+          className="absolute -top-12 -right-12 h-48 w-48 rounded-full blur-3xl"
           style={{ backgroundColor: theme.colors.status.emerald400_10 }}
         />
       ) : undefined}

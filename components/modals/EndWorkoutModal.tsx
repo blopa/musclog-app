@@ -123,19 +123,19 @@ export function EndWorkoutModal({
               >
                 <View className="flex-row items-center justify-between p-6">
                   <View className="flex-row items-center gap-3">
-                    <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
+                    <View className="bg-bg-overlay h-12 w-12 items-center justify-center rounded-full">
                       <Flag
                         size={theme.iconSize.sm}
                         color={theme.colors.accent.secondary}
                         fill={theme.colors.accent.secondary}
                       />
                     </View>
-                    <Text className="text-2xl font-bold text-text-primary">
+                    <Text className="text-text-primary text-2xl font-bold">
                       {t('endWorkout.title')}
                     </Text>
                   </View>
                   <Pressable
-                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                    className="active:bg-bg-card-elevated bg-bg-overlay h-10 w-10 items-center justify-center rounded-full"
                     onPress={isBusy ? undefined : onClose}
                     disabled={isBusy}
                   >
@@ -146,7 +146,7 @@ export function EndWorkoutModal({
 
               {/* Content */}
               <View className="p-6">
-                <Text className="text-base leading-relaxed text-text-primary">
+                <Text className="text-text-primary text-base leading-relaxed">
                   {t('endWorkout.confirmation')}
                 </Text>
               </View>

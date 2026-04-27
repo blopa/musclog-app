@@ -191,14 +191,14 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
 
   return (
     <>
-      <View className="gap-8 px-4 pb-6 pt-2">
+      <View className="gap-8 px-4 pt-2 pb-6">
         {/* Goals & Strategy */}
         <View className="gap-4">
-          <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary ml-1 text-xl font-bold tracking-tight">
             {t('editFitnessDetails.goalsStrategy')}
           </Text>
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
+            <Text className="text-text-secondary ml-1 text-sm font-medium">
               {t('editFitnessDetails.weightGoal')}
             </Text>
             <SegmentedControl
@@ -212,7 +212,7 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
             />
           </View>
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
+            <Text className="text-text-secondary ml-1 text-sm font-medium">
               {t('editFitnessDetails.fitnessGoal')}
             </Text>
             <PickerButton
@@ -230,12 +230,12 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
 
         {/* Lifestyle Context */}
         <View className="gap-6">
-          <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary ml-1 text-xl font-bold tracking-tight">
             {t('editFitnessDetails.lifestyleContext')}
           </Text>
 
           <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
+            <Text className="text-text-secondary ml-1 text-sm font-medium">
               {t('editFitnessDetails.activityLevel')}
             </Text>
             <PickerButton

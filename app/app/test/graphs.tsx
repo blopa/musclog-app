@@ -270,13 +270,13 @@ export default function GraphsTestScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
+    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-6">
           {/* Header */}
           <View className="mb-8">
-            <Text className="mb-2 text-3xl font-bold text-text-primary">Graphs Test</Text>
-            <Text className="mb-4 text-base text-text-secondary">
+            <Text className="text-text-primary mb-2 text-3xl font-bold">Graphs Test</Text>
+            <Text className="text-text-secondary mb-4 text-base">
               Test various graph components in the app
             </Text>
             <Button
@@ -289,8 +289,8 @@ export default function GraphsTestScreen() {
 
           {/* Bar + Line Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Bar + Line Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Bar + Line Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to
               see tooltips.
             </Text>
@@ -305,7 +305,7 @@ export default function GraphsTestScreen() {
               />
             </View>
 
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <BarLineChart
                 title="Comprehensive Daily Metrics"
                 subtitle="Steps Taken vs. Heart Rate"
@@ -329,10 +329,10 @@ export default function GraphsTestScreen() {
 
           {/* Stacked Bar + Line Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">
               Stacked Bar + Line Chart
             </Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-secondary mb-4 text-sm">
               Stacked bars (e.g. spending by category) with a line overlay (e.g. heart rate).
             </Text>
             <View className="mb-4 flex-row gap-2">
@@ -344,7 +344,7 @@ export default function GraphsTestScreen() {
                 onPress={generateRandomStackedBarLineData}
               />
             </View>
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <StackedBarLineChart
                 title="Daily Breakdown + Heart Rate"
                 subtitle="Stacked total vs. Avg Heart Rate"
@@ -375,16 +375,16 @@ export default function GraphsTestScreen() {
 
           {/* Health Overview - Dashboard charts */}
           <View className="mb-10">
-            <Text className="mb-2 text-3xl font-bold tracking-tight text-text-primary">
+            <Text className="text-text-primary mb-2 text-3xl font-bold tracking-tight">
               Health Overview
             </Text>
-            <Text className="mb-6 text-base text-text-secondary">
+            <Text className="text-text-secondary mb-6 text-base">
               Daily progress and hormonal cycle tracking.
             </Text>
 
             <View className="flex-row flex-wrap gap-6">
               <View
-                className="flex-1 rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg"
+                className="border-border-default bg-bg-card flex-1 rounded-[2.5rem] border p-6 shadow-lg"
                 style={{ minWidth: 280, maxWidth: 400 }}
               >
                 <ActivityRingsChart
@@ -417,7 +417,7 @@ export default function GraphsTestScreen() {
               </View>
             </View>
 
-            <View className="mt-6 rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg">
+            <View className="border-border-default bg-bg-card mt-6 rounded-[2.5rem] border p-6 shadow-lg">
               <CycleTrackingChart
                 title="Cycle Tracking"
                 phaseLabel="Follicular Phase • Day 12"
@@ -455,8 +455,8 @@ export default function GraphsTestScreen() {
 
           {/* Line Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Line Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Line Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Interactive line chart with touch support and tooltips.
             </Text>
 
@@ -496,7 +496,7 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Line Chart */}
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <LineChart
                 data={lineChartData}
                 height={200}
@@ -521,8 +521,8 @@ export default function GraphsTestScreen() {
 
           {/* Bar Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Bar Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Bar Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Vertical bar chart with theme styling and optional X-axis labels.
             </Text>
 
@@ -536,7 +536,7 @@ export default function GraphsTestScreen() {
               />
             </View>
 
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <BarChart
                 data={barChartData}
                 height={200}
@@ -560,8 +560,8 @@ export default function GraphsTestScreen() {
 
           {/* Stacked Bar Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Stacked Bar Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Stacked Bar Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Each bar has up to 4 colored segments (e.g. spending by category per day).
             </Text>
             <View className="mb-4 flex-row gap-2">
@@ -573,7 +573,7 @@ export default function GraphsTestScreen() {
                 onPress={generateRandomStackedBarData}
               />
             </View>
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <StackedBarChart
                 data={stackedBarData}
                 height={200}
@@ -602,8 +602,8 @@ export default function GraphsTestScreen() {
 
           {/* Area Chart Section (Metabolic Flow style) */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Area Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Area Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Multiple overlapping area series with optional peak marker and legend (e.g. Metabolic
               Flow).
             </Text>
@@ -616,7 +616,7 @@ export default function GraphsTestScreen() {
                 onPress={generateRandomAreaChartData}
               />
             </View>
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <AreaChart
                 title="Metabolic Flow"
                 subtitle="Fat, Carb & Protein Burn"
@@ -642,12 +642,12 @@ export default function GraphsTestScreen() {
 
           {/* Multiple Lines Chart Section (Activity Comparison) */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Multiple Lines Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Multiple Lines Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Up to 4 lines with optional callout labels and legend (e.g. Active vs. Resting
               Energy).
             </Text>
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 rounded-lg border p-4">
               <MultipleLinesChart
                 title="Activity Comparison"
                 subtitle="Active vs. Resting Energy"
@@ -676,10 +676,10 @@ export default function GraphsTestScreen() {
 
           {/* Training Consistency Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">
               Training Consistency Chart
             </Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-secondary mb-4 text-sm">
               Grid of intensity cells (e.g. last 12 weeks) with goal percentage.
             </Text>
             <View className="mb-4 flex-row gap-2">
@@ -691,7 +691,7 @@ export default function GraphsTestScreen() {
                 onPress={generateRandomConsistencyData}
               />
             </View>
-            <View className="rounded-lg border border-border-default bg-bg-card p-6">
+            <View className="border-border-default bg-bg-card rounded-lg border p-6">
               <TrainingConsistencyChart
                 title="Training Consistency"
                 subtitle="Last 12 Weeks"
@@ -716,11 +716,11 @@ export default function GraphsTestScreen() {
 
           {/* Spider Chart Section (Performance Profile) */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Spider Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Spider Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Radar chart for multi-axis comparison (e.g. Performance Profile).
             </Text>
-            <View className="rounded-lg border border-border-default bg-bg-card p-6">
+            <View className="border-border-default bg-bg-card rounded-lg border p-6">
               <SpiderChart
                 title="Performance Profile"
                 subtitle="Weekly Analysis"
@@ -738,8 +738,8 @@ export default function GraphsTestScreen() {
 
           {/* Macros Pizza Chart Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Macros Pizza Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Macros Pizza Chart</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Pie chart showing macronutrient distribution.
             </Text>
 
@@ -755,7 +755,7 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Pizza Chart */}
-            <View className="mb-4 items-center rounded-lg border border-border-default bg-bg-card p-4">
+            <View className="border-border-default bg-bg-card mb-4 items-center rounded-lg border p-4">
               <MacrosPizzaChart
                 protein={macrosData.protein}
                 carbs={macrosData.carbs}
@@ -767,28 +767,28 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Macros Values Display */}
-            <View className="rounded-lg border border-border-default bg-bg-card p-4">
-              <Text className="mb-2 text-sm font-semibold text-text-primary">Current Values:</Text>
+            <View className="border-border-default bg-bg-card rounded-lg border p-4">
+              <Text className="text-text-primary mb-2 text-sm font-semibold">Current Values:</Text>
               <View className="space-y-1">
-                <Text className="text-sm text-text-secondary">Protein: {macrosData.protein}g</Text>
-                <Text className="text-sm text-text-secondary">Carbs: {macrosData.carbs}g</Text>
-                <Text className="text-sm text-text-secondary">Fats: {macrosData.fats}g</Text>
-                <Text className="text-sm text-text-secondary">Fiber: {macrosData.fiber}g</Text>
+                <Text className="text-text-secondary text-sm">Protein: {macrosData.protein}g</Text>
+                <Text className="text-text-secondary text-sm">Carbs: {macrosData.carbs}g</Text>
+                <Text className="text-text-secondary text-sm">Fats: {macrosData.fats}g</Text>
+                <Text className="text-text-secondary text-sm">Fiber: {macrosData.fiber}g</Text>
               </View>
             </View>
           </View>
 
           {/* Multiple Charts Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Multiple Charts</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Multiple Charts</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Display multiple charts together.
             </Text>
 
             <View className="space-y-4">
               {/* Small Line Chart */}
-              <View className="rounded-lg border border-border-default bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">
+              <View className="border-border-default bg-bg-card rounded-lg border p-4">
+                <Text className="text-text-primary mb-2 text-sm font-semibold">
                   Weight Progress
                 </Text>
                 <LineChart
@@ -810,8 +810,8 @@ export default function GraphsTestScreen() {
               </View>
 
               {/* Small Pizza Chart */}
-              <View className="rounded-lg border border-border-default bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">Todays Macros</Text>
+              <View className="border-border-default bg-bg-card rounded-lg border p-4">
+                <Text className="text-text-primary mb-2 text-sm font-semibold">Todays Macros</Text>
                 <View className="items-center">
                   <MacrosPizzaChart
                     protein={85}
@@ -827,15 +827,15 @@ export default function GraphsTestScreen() {
 
           {/* Chart Variants Section */}
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Chart Variants</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
+            <Text className="text-text-primary mb-2 text-lg font-bold">Chart Variants</Text>
+            <Text className="text-text-secondary mb-4 text-sm">
               Different styling and configuration options.
             </Text>
 
             <View className="space-y-4">
               {/* Line Chart with different interpolation */}
-              <View className="rounded-lg border border-border-default bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">Step Chart</Text>
+              <View className="border-border-default bg-bg-card rounded-lg border p-4">
+                <Text className="text-text-primary mb-2 text-sm font-semibold">Step Chart</Text>
                 <LineChart
                   data={[
                     { x: 0, y: 30 },
@@ -852,8 +852,8 @@ export default function GraphsTestScreen() {
               </View>
 
               {/* Pizza Chart without fiber */}
-              <View className="rounded-lg border border-border-default bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">
+              <View className="border-border-default bg-bg-card rounded-lg border p-4">
+                <Text className="text-text-primary mb-2 text-sm font-semibold">
                   Basic Macros (No Fiber)
                 </Text>
                 <View className="items-center">

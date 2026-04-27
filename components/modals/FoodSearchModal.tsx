@@ -161,7 +161,7 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
             }}
           >
             <Text
-              className="whitespace-nowrap text-sm"
+              className="text-sm whitespace-nowrap"
               style={{
                 color: isActive ? theme.colors.accent.secondary : theme.colors.text.secondary,
                 fontWeight: isActive
@@ -193,13 +193,13 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
         {Icon ? <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} /> : null}
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
           {title}
         </Text>
       </View>
       {rightAction ? (
         <Pressable onPress={rightAction.onPress} className="-m-2 p-2">
-          <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
+          <Text className="text-accent-secondary text-xs font-bold">{rightAction.label}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -235,7 +235,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
   });
 
   return (
-    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+    <Pressable className="border-border-light bg-bg-overlay flex-row items-center gap-3 rounded-2xl border p-3 active:scale-[0.98]">
       {/* Icon/Image */}
       <View
         className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
@@ -258,16 +258,16 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
 
       {/* Content */}
       <View className="min-w-0 flex-1">
-        <Text className="flex-1 truncate pr-2 font-semibold text-text-primary" numberOfLines={1}>
+        <Text className="text-text-primary flex-1 truncate pr-2 font-semibold" numberOfLines={1}>
           {mealData.name}
         </Text>
         {mealData.description ? (
-          <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
+          <Text className="text-text-secondary truncate text-sm" numberOfLines={1}>
             {mealData.description}
           </Text>
         ) : null}
         <Text
-          className="mt-0.5 text-sm text-text-secondary"
+          className="text-text-secondary mt-0.5 text-sm"
           style={intuitiveMode ? blurFilter(4) : undefined}
         >
           {intuitiveMode ? '0' : formatRoundedDecimal(mealData.calories, 2)} {t('food.common.kcal')}{' '}
@@ -277,7 +277,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
 
       {/* Add Button */}
       <Pressable
-        className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
+        className="bg-bg-overlay active:bg-accent-primary h-8 w-8 items-center justify-center rounded-full"
         onPress={onAddPress}
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
@@ -919,7 +919,7 @@ export function FoodSearchModal({
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>
-      <Text className="text-sm font-semibold text-accent-secondary">
+      <Text className="text-accent-secondary text-sm font-semibold">
         {t('foodSearch.createFood')}
       </Text>
     </Pressable>
@@ -939,9 +939,9 @@ export function FoodSearchModal({
         scrollable={false}
       >
         <View className="h-4" />
-        <View className="flex-1 bg-bg-primary">
+        <View className="bg-bg-primary flex-1">
           {/* Search Bar */}
-          <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
+          <View className="border-border-light bg-bg-primary border-b px-4 pb-2">
             <View className="relative">
               <View
                 className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3.5"
@@ -959,7 +959,7 @@ export function FoodSearchModal({
                 onChangeText={setSearchQuery}
                 onSubmitEditing={triggerNow}
                 returnKeyType="search"
-                className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
+                className="border-border-light bg-bg-overlay text-text-primary w-full rounded-2xl border py-3.5 pr-10 pl-11 text-base"
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
                   borderColor: searchQuery
@@ -981,7 +981,7 @@ export function FoodSearchModal({
           </View>
 
           {/* Filter Tabs */}
-          <View className="border-b border-border-light bg-bg-primary">
+          <View className="border-border-light bg-bg-primary border-b">
             <UnderlineTabs
               tabs={FILTER_TABS}
               activeTab={activeFilter}
@@ -991,7 +991,7 @@ export function FoodSearchModal({
 
           {/* Content */}
           <ScrollView
-            className="flex-1 bg-bg-primary"
+            className="bg-bg-primary flex-1"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
           >
@@ -1019,10 +1019,10 @@ export function FoodSearchModal({
                           ))
                         ) : (
                           <View className="py-8">
-                            <Text className="text-center text-text-secondary">
+                            <Text className="text-text-secondary text-center">
                               {t('foodSearch.noResultsFor', { query: searchQuery })}
                             </Text>
-                            <Text className="mt-2 text-center text-sm text-text-tertiary">
+                            <Text className="text-text-tertiary mt-2 text-center text-sm">
                               {t('foodSearch.trySomethingElse')}
                             </Text>
                           </View>
@@ -1046,7 +1046,7 @@ export function FoodSearchModal({
                         {isInitialLoad ? (
                           <View className="flex items-center justify-center py-12">
                             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-                            <Text className="mt-2 text-sm text-text-secondary">
+                            <Text className="text-text-secondary mt-2 text-sm">
                               {getSearchingStatusText(isLoadingLocal, isLoadingAPI, t)}
                             </Text>
                             {showCancelSearch ? (
@@ -1070,15 +1070,15 @@ export function FoodSearchModal({
                             resultsBySource.local.length > 0 ? (
                               <View className="mb-4">
                                 <View className="mb-3 flex-row items-center gap-2">
-                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                                  <View className="bg-accent-primary/20 h-0.5 flex-1" />
                                   <View className="flex-row items-center gap-2">
-                                    <Text className="text-xs font-medium uppercase text-accent-primary">
+                                    <Text className="text-accent-primary text-xs font-medium uppercase">
                                       {t('foodSearch.yourFoods', {
                                         count: resultsBySource.local.length,
                                       })}
                                     </Text>
                                   </View>
-                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                                  <View className="bg-accent-primary/20 h-0.5 flex-1" />
                                 </View>
                                 <View className="gap-1.5">
                                   {(resultsBySource.local || []).map((food) => (
@@ -1137,15 +1137,15 @@ export function FoodSearchModal({
                                 return (
                                   <View key="openfood" className="mb-4">
                                     <View className="mb-3 flex-row items-center gap-2">
-                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                      <View className="bg-text-tertiary/30 h-0.5 flex-1" />
                                       <View className="flex-row items-center gap-2">
-                                        <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                        <Text className="text-text-tertiary text-xs font-medium uppercase">
                                           {t('foodSearch.openFoodFacts', {
                                             count: resultsBySource.api.length,
                                           })}
                                         </Text>
                                       </View>
-                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                      <View className="bg-text-tertiary/30 h-0.5 flex-1" />
                                     </View>
                                     {apiError ? (
                                       <View
@@ -1234,15 +1234,15 @@ export function FoodSearchModal({
                               return (
                                 <View key="usda" className="mb-4">
                                   <View className="mb-3 flex-row items-center gap-2">
-                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                    <View className="bg-text-tertiary/30 h-0.5 flex-1" />
                                     <View className="flex-row items-center gap-2">
-                                      <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                      <Text className="text-text-tertiary text-xs font-medium uppercase">
                                         {t('foodSearch.usda', {
                                           count: resultsBySource.usda.length,
                                         })}
                                       </Text>
                                     </View>
-                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                    <View className="bg-text-tertiary/30 h-0.5 flex-1" />
                                   </View>
                                   {usdaError ? (
                                     <View
@@ -1320,7 +1320,7 @@ export function FoodSearchModal({
                         {!isInitialLoad && isLoadingAPI ? (
                           <View className="flex items-center justify-center py-4">
                             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                            <Text className="ml-2 text-xs text-text-secondary">
+                            <Text className="text-text-secondary ml-2 text-xs">
                               {t('foodSearch.searchingAPI')}
                             </Text>
                             {showCancelSearch ? (
@@ -1344,11 +1344,11 @@ export function FoodSearchModal({
                         filteredResults.length === 0 &&
                         searchQuery ? (
                           <View className="py-8 text-center">
-                            <Text className="text-center text-text-secondary">
+                            <Text className="text-text-secondary text-center">
                               {t('foodSearch.noResultsFor', { query: searchQuery })}
                             </Text>
                             {localCount === 0 && apiCount === 0 ? (
-                              <Text className="mt-2 text-center text-sm text-text-tertiary">
+                              <Text className="text-text-tertiary mt-2 text-center text-sm">
                                 {t('foodSearch.trySomethingElse')}
                               </Text>
                             ) : null}
@@ -1373,7 +1373,7 @@ export function FoodSearchModal({
                           </View>
                         ) : favoriteFoodsError ? (
                           <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
+                            <Text className="text-text-tertiary text-center">
                               {t('foodSearch.loadFavoritesError')}
                             </Text>
                           </View>
@@ -1408,7 +1408,7 @@ export function FoodSearchModal({
                           </>
                         ) : (
                           <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
+                            <Text className="text-text-tertiary text-center">
                               {t('foodSearch.noFavoriteFoods')}
                             </Text>
                           </View>
@@ -1422,7 +1422,7 @@ export function FoodSearchModal({
                         {isLoadingMeals ? (
                           <View className="py-4">
                             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                            <Text className="mt-2 text-center text-sm text-text-secondary">
+                            <Text className="text-text-secondary mt-2 text-center text-sm">
                               {t('foodSearch.loadingMeals')}
                             </Text>
                           </View>
@@ -1457,7 +1457,7 @@ export function FoodSearchModal({
                           </>
                         ) : (
                           <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
+                            <Text className="text-text-tertiary text-center">
                               {t('foodSearch.noMeals')}
                             </Text>
                           </View>
@@ -1485,7 +1485,7 @@ export function FoodSearchModal({
                           ))
                         ) : (
                           <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
+                            <Text className="text-text-tertiary text-center">
                               {t('foodSearch.noRecentFoods')}
                             </Text>
                           </View>

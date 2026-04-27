@@ -69,10 +69,10 @@ export function EmptyStateCard({
 
         {/* Content */}
         <View className="flex-col items-center gap-2" style={{ maxWidth: theme.maxWidth['480'] }}>
-          <Text className="text-center text-xl font-bold leading-tight tracking-tight text-text-primary">
+          <Text className="text-text-primary text-center text-xl leading-tight font-bold tracking-tight">
             {title}
           </Text>
-          <Text className="text-center text-sm font-normal leading-relaxed text-text-secondary">
+          <Text className="text-text-secondary text-center text-sm leading-relaxed font-normal">
             {description}
           </Text>
         </View>

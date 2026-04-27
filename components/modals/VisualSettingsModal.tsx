@@ -180,7 +180,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary mb-2 px-1 text-lg font-bold tracking-tight">
             {t('settings.visualSettings.sectionTitle')}
           </Text>
           <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -197,7 +197,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="text-text-primary mb-2 px-1 text-lg font-bold tracking-tight">
             {t('settings.nutritionDisplay.sectionTitle')}
           </Text>
           <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>

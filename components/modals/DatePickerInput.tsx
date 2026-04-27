@@ -81,7 +81,7 @@ export function DatePickerInput({
         className={`flex-row items-center gap-2 ${className ?? ''}`}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
-        <Text className="text-xl font-semibold text-text-primary">{display}</Text>
+        <Text className="text-text-primary text-xl font-semibold">{display}</Text>
         <Edit size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
       </Pressable>
     );
@@ -108,7 +108,7 @@ export function DatePickerInput({
   return (
     <View className={`min-w-0 ${className ?? ''}`}>
       {!hideLabel ? (
-        <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-text-secondary mb-2 text-xs font-bold tracking-wider uppercase">
           {label ?? t('food.foodDetails.date')}
         </Text>
       ) : null}
@@ -147,7 +147,7 @@ export function DatePickerInput({
               <View className={`min-w-0 flex-1 ${alignDateEnd ? 'items-end' : ''}`}>
                 {showUnsetPlaceholder ? (
                   <Text
-                    className={`font-medium text-text-tertiary ${alignDateEnd ? 'text-right' : ''}`}
+                    className={`text-text-tertiary font-medium ${alignDateEnd ? 'text-right' : ''}`}
                     numberOfLines={singleLine ? 1 : undefined}
                     ellipsizeMode="tail"
                   >
@@ -155,7 +155,7 @@ export function DatePickerInput({
                   </Text>
                 ) : singleLine ? (
                   <Text
-                    className={`font-semibold text-text-primary ${alignDateEnd ? 'text-right' : ''}`}
+                    className={`text-text-primary font-semibold ${alignDateEnd ? 'text-right' : ''}`}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
@@ -166,14 +166,14 @@ export function DatePickerInput({
                 ) : (
                   <>
                     <Text
-                      className={`font-medium text-text-primary ${alignDateEnd ? 'text-right' : ''}`}
+                      className={`text-text-primary font-medium ${alignDateEnd ? 'text-right' : ''}`}
                     >
                       {isSameDay(selectedDate, new Date())
                         ? t('food.foodDetails.today')
                         : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
                     </Text>
                     <Text
-                      className={`text-xs text-text-secondary ${alignDateEnd ? 'text-right' : ''}`}
+                      className={`text-text-secondary text-xs ${alignDateEnd ? 'text-right' : ''}`}
                     >
                       {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
                     </Text>
@@ -192,7 +192,7 @@ export function DatePickerInput({
               hitSlop={8}
             >
               <SquarePen size={theme.iconSize.xs} color={theme.colors.accent.secondary} />
-              <Text className="text-sm font-medium text-accent-secondary">
+              <Text className="text-accent-secondary text-sm font-medium">
                 {clearLabel ?? t('datePicker.clearDate')}
               </Text>
             </Pressable>

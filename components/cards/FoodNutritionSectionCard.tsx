@@ -99,7 +99,7 @@ export function FoodNutritionSectionCard({
         {canEdit && mode !== 'meal' ? (
           <Pressable
             onPress={onEditPress}
-            className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
+            className="bg-bg-overlay absolute right-3 bottom-3 z-10 h-9 w-9 items-center justify-center rounded-full"
             style={{
               elevation: 2,
               shadowColor: theme.colors.text.black,
@@ -122,7 +122,7 @@ export function FoodNutritionSectionCard({
           }}
         >
           <AlertTriangle size={theme.iconSize.sm} color={theme.colors.status.warning} />
-          <Text className="flex-1 text-xs text-text-secondary">
+          <Text className="text-text-secondary flex-1 text-xs">
             {t('food.foodDetails.incompleteNutritionWarning')}
           </Text>
         </View>
@@ -191,16 +191,16 @@ export function FoodNutritionSectionCard({
       ) : null}
 
       {showAdditionalNutrition ? (
-        <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-          <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
+        <View className="border-border-light bg-bg-overlay mt-4 rounded-2xl border p-4">
+          <Text className="text-text-secondary mb-3 text-sm font-bold tracking-wider uppercase">
             {t('food.foodDetails.additionalNutrition')}
           </Text>
           <View className="gap-2">
             {nutritionalData.fiber > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
+                <Text className="text-text-secondary text-sm">{t('food.macros.fiber')}</Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -212,9 +212,9 @@ export function FoodNutritionSectionCard({
             ) : null}
             {(nutritionalData.sugar ?? 0) > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.sugars')}</Text>
+                <Text className="text-text-secondary text-sm">{t('food.foodDetails.sugars')}</Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -226,11 +226,11 @@ export function FoodNutritionSectionCard({
             ) : null}
             {nutritionalData.saturatedFat > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
+                <Text className="text-text-secondary text-sm">
                   {t('food.foodDetails.saturatedFat')}
                 </Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -242,9 +242,9 @@ export function FoodNutritionSectionCard({
             ) : null}
             {nutritionalData.sodium > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
+                <Text className="text-text-secondary text-sm">{t('food.foodDetails.salt')}</Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -256,9 +256,9 @@ export function FoodNutritionSectionCard({
             ) : null}
             {(nutritionalData.alcohol ?? 0) > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.macros.alcohol')}</Text>
+                <Text className="text-text-secondary text-sm">{t('food.macros.alcohol')}</Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -270,11 +270,11 @@ export function FoodNutritionSectionCard({
             ) : null}
             {(nutritionalData.potassium ?? 0) > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
+                <Text className="text-text-secondary text-sm">
                   {t('food.foodDetails.potassium')}
                 </Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -289,11 +289,11 @@ export function FoodNutritionSectionCard({
             ) : null}
             {(nutritionalData.magnesium ?? 0) > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
+                <Text className="text-text-secondary text-sm">
                   {t('food.foodDetails.magnesium')}
                 </Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -308,9 +308,9 @@ export function FoodNutritionSectionCard({
             ) : null}
             {(nutritionalData.zinc ?? 0) > 0 ? (
               <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.zinc')}</Text>
+                <Text className="text-text-secondary text-sm">{t('food.foodDetails.zinc')}</Text>
                 <Text
-                  className="text-sm font-medium text-text-primary"
+                  className="text-text-primary text-sm font-medium"
                   style={intuitiveMode ? blurFilter(4) : undefined}
                 >
                   {intuitiveMode
@@ -323,7 +323,7 @@ export function FoodNutritionSectionCard({
             {isLoadingDetails ? (
               <View className="mt-2 flex-row items-center justify-center gap-2">
                 <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                <Text className="text-xs text-text-secondary">
+                <Text className="text-text-secondary text-xs">
                   {t('food.foodDetails.loadingMoreDetails')}
                 </Text>
               </View>
@@ -331,10 +331,10 @@ export function FoodNutritionSectionCard({
           </View>
         </View>
       ) : showLoadingOnly ? (
-        <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+        <View className="border-border-light bg-bg-overlay mt-4 rounded-2xl border p-4">
           <View className="flex-row items-center justify-center gap-2">
             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-            <Text className="text-xs text-text-secondary">
+            <Text className="text-text-secondary text-xs">
               {t('food.foodDetails.loadingDetails')}
             </Text>
           </View>
