@@ -5,6 +5,7 @@ import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionLog from '@/database/models/NutritionLog';
+import Supplement from '@/database/models/Supplement';
 import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -144,6 +145,19 @@ export interface MoodMacrosPoint {
   fat: number;
 }
 
+export interface AdherencePoint {
+  date: number;
+  adherence: number;
+}
+
+export interface SupplementIntakeSeries {
+  supplementId: string;
+  supplementName: string;
+  history: AdherencePoint[];
+  adherenceRate: number;
+  totalEntries: number;
+}
+
 export type TimeAggregation = 'daily' | 'weekly' | 'monthly';
 
 export interface ProgressData {
@@ -164,6 +178,8 @@ export interface ProgressData {
   moodCaloriesHistory: MoodCaloriesPoint[];
   moodVolumeHistory: MoodVolumePoint[];
   moodMacrosHistory: MoodMacrosPoint[];
+  waterIntakeHistory: AdherencePoint[];
+  supplementIntakeSeries: SupplementIntakeSeries[];
 }
 
 export class ProgressService {
@@ -243,6 +259,26 @@ export class ProgressService {
     const moodMetrics = await UserMetricService.getMetricsHistory('mood', dateRange);
     const moodPoints = await this.decryptMetricPoints(moodMetrics, false);
 
+    const waterMetrics = await UserMetricService.getMetricsHistory('water', dateRange);
+    const waterPoints = await this.decryptMetricPoints(waterMetrics, false);
+
+    const supplementMetrics = await UserMetricService.getMetricsHistory('supplement', dateRange);
+    const supplementNameById =
+      supplementMetrics.length > 0
+        ? new Map(
+            (
+              await database
+                .get<Supplement>('supplements')
+                .query(Q.sortBy('created_at', Q.asc))
+                .fetch()
+            ).map((supplement) => [supplement.id, supplement.name] as const)
+          )
+        : new Map<string, string>();
+    const supplementPoints = await this.decryptSupplementMetricPoints(
+      supplementMetrics,
+      supplementNameById
+    );
+
     // 5b. Calculate FFMI
     const ffmiHistory = this.calculateFFMIHistory(weightPoints, fatPoints, heightCm, isImperial);
 
@@ -319,6 +355,11 @@ export class ProgressService {
       nutritionDaily,
       aggregation
     );
+    const waterIntakeHistory = this.calculateAdherenceHistory(waterPoints, aggregation);
+    const supplementIntakeSeries = this.calculateSupplementIntakeSeries(
+      supplementPoints,
+      aggregation
+    );
 
     return {
       weightHistory: finalWeightPoints,
@@ -338,6 +379,8 @@ export class ProgressService {
       moodCaloriesHistory,
       moodVolumeHistory,
       moodMacrosHistory,
+      waterIntakeHistory,
+      supplementIntakeSeries,
     };
   }
 
@@ -364,6 +407,36 @@ export class ProgressService {
         return { date: m.date, value };
       })
     );
+    return points.sort((a, b) => a.date - b.date);
+  }
+
+  private static async decryptSupplementMetricPoints(
+    metrics: UserMetric[],
+    supplementNameById: Map<string, string>
+  ): Promise<(MetricPoint & { supplementId: string; supplementName: string })[]> {
+    const points = await Promise.all(
+      metrics.map(async (metric) => {
+        const [decrypted, note] = await Promise.all([metric.getDecrypted(), metric.getNote()]);
+        const trimmedNote = note?.trim();
+        const metricSupplementId = metric.supplementId?.trim();
+        const supplementName =
+          (metricSupplementId ? supplementNameById.get(metricSupplementId) : undefined) ||
+          trimmedNote ||
+          metricSupplementId ||
+          'Supplement';
+        const supplementId =
+          metricSupplementId ||
+          (trimmedNote ? `legacy:${trimmedNote.toLowerCase()}` : `legacy:${metric.id}`);
+
+        return {
+          date: metric.date,
+          value: decrypted.value,
+          supplementId,
+          supplementName,
+        };
+      })
+    );
+
     return points.sort((a, b) => a.date - b.date);
   }
 
@@ -1202,5 +1275,81 @@ export class ProgressService {
         fat: data.fat / data.nutCount,
       }))
       .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateAdherenceHistory(
+    points: MetricPoint[],
+    aggregation: TimeAggregation
+  ): AdherencePoint[] {
+    const grouped = new Map<number, { positiveCount: number; totalCount: number }>();
+
+    for (const point of points) {
+      const start = this.getStartOfAggregation(point.date, aggregation);
+      const existing = grouped.get(start) || { positiveCount: 0, totalCount: 0 };
+      existing.positiveCount += point.value > 0 ? 1 : 0;
+      existing.totalCount += 1;
+      grouped.set(start, existing);
+    }
+
+    return Array.from(grouped.entries())
+      .filter(([, data]) => data.totalCount > 0)
+      .map(([date, data]) => ({
+        date,
+        adherence: data.positiveCount / data.totalCount,
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateSupplementIntakeSeries(
+    points: (MetricPoint & { supplementId: string; supplementName: string })[],
+    aggregation: TimeAggregation
+  ): SupplementIntakeSeries[] {
+    const seriesMap = new Map<
+      string,
+      {
+        supplementName: string;
+        positiveCount: number;
+        totalCount: number;
+        grouped: Map<number, { positiveCount: number; totalCount: number }>;
+      }
+    >();
+
+    for (const point of points) {
+      const existing = seriesMap.get(point.supplementId) || {
+        supplementName: point.supplementName,
+        positiveCount: 0,
+        totalCount: 0,
+        grouped: new Map<number, { positiveCount: number; totalCount: number }>(),
+      };
+
+      existing.supplementName = point.supplementName;
+      existing.positiveCount += point.value > 0 ? 1 : 0;
+      existing.totalCount += 1;
+
+      const start = this.getStartOfAggregation(point.date, aggregation);
+      const groupedPoint = existing.grouped.get(start) || { positiveCount: 0, totalCount: 0 };
+      groupedPoint.positiveCount += point.value > 0 ? 1 : 0;
+      groupedPoint.totalCount += 1;
+      existing.grouped.set(start, groupedPoint);
+
+      seriesMap.set(point.supplementId, existing);
+    }
+
+    return Array.from(seriesMap.entries())
+      .map(([supplementId, series]) => ({
+        supplementId,
+        supplementName: series.supplementName,
+        history: Array.from(series.grouped.entries())
+          .filter(([, data]) => data.totalCount > 0)
+          .map(([date, data]) => ({
+            date,
+            adherence: data.positiveCount / data.totalCount,
+          }))
+          .sort((a, b) => a.date - b.date),
+        adherenceRate: series.totalCount > 0 ? series.positiveCount / series.totalCount : 0,
+        totalEntries: series.totalCount,
+      }))
+      .filter((series) => series.history.length > 0)
+      .sort((a, b) => a.supplementName.localeCompare(b.supplementName));
   }
 }

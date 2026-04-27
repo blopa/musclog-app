@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.6.12",
+    "version": "2.7.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -56,8 +56,14 @@
           "ios": {
             "deploymentTarget": "16.0",
             "extraPods": [
-              { "name": "GoogleMLKit/MLKitCore", "version": "8.0.0" },
-              { "name": "GoogleMLKit/BarcodeScanning", "version": "8.0.0" }
+              {
+                "name": "GoogleMLKit/MLKitCore",
+                "version": "8.0.0"
+              },
+              {
+                "name": "GoogleMLKit/BarcodeScanning",
+                "version": "8.0.0"
+              }
             ]
           },
           "gradleProperties": {
@@ -120,7 +126,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "226",
+      "buildNumber": "228",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
@@ -130,7 +136,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 226,
+      "versionCode": 228,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"

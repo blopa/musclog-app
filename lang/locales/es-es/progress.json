@@ -40,7 +40,9 @@
       "moodHistory": "Ánimo a lo largo del Tiempo",
       "moodCalories": "Ánimo/Calorías",
       "moodVolume": "Ánimo/Volumen de Entrenamiento",
-      "moodMacros": "Ánimo/Macros"
+      "moodMacros": "Ánimo/Macros",
+      "waterIntake": "Recordatorio de Agua",
+      "supplementIntake": "Ingesta de Suplementos"
     },
     "mood": {
       "poor": "Mal",

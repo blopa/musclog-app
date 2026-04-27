@@ -40,7 +40,9 @@
       "moodHistory": "Stemming over de tijd",
       "moodCalories": "Stemming/Calorieën",
       "moodVolume": "Stemming/Workoutvolume",
-      "moodMacros": "Stemming/Macro's"
+      "moodMacros": "Stemming/Macro's",
+      "waterIntake": "Waterherinnering",
+      "supplementIntake": "Supplementinname"
     },
     "mood": {
       "poor": "Slecht",

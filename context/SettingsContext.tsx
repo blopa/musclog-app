@@ -46,6 +46,7 @@ import {
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -102,6 +103,7 @@ type SettingsState = {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showDailyWaterPrompt: boolean;
   showDailySupplementPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
@@ -152,6 +154,7 @@ const DEFAULT_STATE: SettingsState = {
   chartTooltipPosition: 'right',
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
+  showDailyWaterPrompt: true,
   showDailySupplementPrompt: true,
   alwaysAllowFoodEditing: false,
   showWeightPrediction: true,
@@ -263,6 +266,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
+    showDailyWaterPrompt: getBoolean(map, SHOW_DAILY_WATER_PROMPT_SETTING_TYPE, true),
     showDailySupplementPrompt: getBoolean(map, SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE, true),
     alwaysAllowFoodEditing: getBoolean(map, ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false),
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
@@ -305,6 +309,7 @@ export type SettingsContextType = UseSettingsResult & {
   useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
   isAiConfigured: boolean;
+  isAiMealPhotoEnabled: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -313,6 +318,7 @@ export type SettingsContextType = UseSettingsResult & {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showDailyWaterPrompt: boolean;
   showDailySupplementPrompt: boolean;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
@@ -403,6 +409,34 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.openAiApiKey,
   ]);
 
+  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai.
+  // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
+  // when it would be the active provider.
+  const isAiMealPhotoEnabled = useMemo(() => {
+    if (state.useMusclogFreeTier) {
+      return true;
+    }
+
+    if (state.useOnDeviceAi) {
+      return false;
+    }
+
+    return (
+      (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
+      (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
+    );
+  }, [
+    state.useMusclogFreeTier,
+    state.useOnDeviceAi,
+    state.enableLocalLlm,
+    state.localLlmBaseUrl,
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
+
   const value = useMemo(
     () => ({
       ...state,
@@ -410,10 +444,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       openAiApiKey: decryptedApiKeys.openAiApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       isAiConfigured,
+      isAiMealPhotoEnabled,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, decryptedApiKeys, isAiConfigured]
+    [state, decryptedApiKeys, isAiConfigured, isAiMealPhotoEnabled]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

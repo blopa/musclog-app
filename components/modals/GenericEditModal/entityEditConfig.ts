@@ -88,6 +88,7 @@ const USER_METRIC_TYPES = [
   'neck',
   'shoulders',
   'mood',
+  'water',
   'supplement',
   'ffmi',
   'nutrition',

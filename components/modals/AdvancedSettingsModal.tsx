@@ -6,6 +6,7 @@ import {
   Bug,
   ChevronRight,
   Coffee,
+  Droplets,
   Dumbbell,
   Pill,
 } from 'lucide-react-native';
@@ -37,6 +38,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleChartTooltipPositionChange,
     showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
     handleShowDailyMoodPromptChange,
+    showDailyWaterPrompt: debouncedShowDailyWaterPrompt,
+    handleShowDailyWaterPromptChange,
     showDailySupplementPrompt: debouncedShowDailySupplementPrompt,
     handleShowDailySupplementPromptChange,
     alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
@@ -101,6 +104,27 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       ),
       value: debouncedShowDailyMoodPrompt,
       onValueChange: handleShowDailyMoodPromptChange,
+    },
+    {
+      key: 'daily-water-prompt',
+      label: t('settings.advancedSettings.dailyWaterPrompt'),
+      subtitle: t('settings.advancedSettings.dailyWaterPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.info10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Droplets size={theme.iconSize.xl} color={theme.colors.status.info} />
+        </View>
+      ),
+      value: debouncedShowDailyWaterPrompt,
+      onValueChange: handleShowDailyWaterPromptChange,
     },
     {
       key: 'daily-supplement-prompt',

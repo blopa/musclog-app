@@ -1368,3 +1368,16 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     targetFFMI,
   };
 }
+
+/**
+ * https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/#:~:text=The%20percentage%20of%20water%20intake,aforementioned%20beverages)%20%5B5%5D.
+ * https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food,kcal%20energy%20expended%20%5B1%5D.
+ **/
+export function getProposedDailyWaterIntake(tdee: number): number {
+  if (!Number.isFinite(tdee) || tdee <= 0) {
+    return 0;
+  }
+
+  // Approximate beverage target: 0.75 ml per kcal of daily energy expenditure.
+  return (tdee * 0.75) / 1000;
+}

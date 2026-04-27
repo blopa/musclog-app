@@ -6,7 +6,7 @@ import i18n from '@/lang/lang';
 
 import { configureBasicGenAI } from './gemini';
 import { handleError } from './handleError';
-import { sendOnDeviceMessage } from './onDeviceAi';
+import { sendOnDeviceMessage, sendOnDeviceStructured } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
@@ -730,7 +730,24 @@ async function sendViaOnDevice(
       { role: 'user' as const, content: userMessage },
     ];
 
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'request',
+      operation: 'sendCoachMessage',
+      payload: { systemPrompt, messages },
+      config,
+    });
+
     const raw = await sendOnDeviceMessage(messages, systemPrompt);
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'response',
+      operation: 'sendCoachMessage',
+      payload: { text: raw },
+      config,
+    });
+
     return {
       msg4User: raw || i18n.t('errors.aiProcessingError'),
       sumMsg: raw?.slice(0, 120) ?? '',
@@ -955,6 +972,44 @@ async function generateStructured<T>(
 
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
+
+  if (config.provider === 'on-device') {
+    const messages = [{ role: 'user' as const, content: sanitizedUserMessage }];
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'request',
+      operation: schemaName,
+      payload: { systemPrompt: promptWithLang, messages, schema },
+      config,
+    });
+
+    try {
+      const result = await sendOnDeviceStructured<T>(messages, promptWithLang, schema);
+
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: schemaName,
+        payload: result,
+        config,
+      });
+
+      return result;
+    } catch (error) {
+      handleError(error, `coachAI.generateStructured[${schemaName}]`);
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: schemaName,
+        payload: { error: String(error) },
+        config,
+      });
+
+      return null;
+    }
+  }
+
   if (config.provider === 'gemini') {
     const requestPayload = {
       model: config.model,
@@ -1232,10 +1287,6 @@ export async function trackMeal(
   userMessage: string,
   base64Image?: string
 ): Promise<TrackMealResponse | null> {
-  if (config.provider === 'on-device') {
-    return null;
-  }
-
   try {
     const lang = config.language ?? 'en-US';
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
@@ -1247,6 +1298,11 @@ export async function trackMeal(
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (base64Image) {
+      if (config.provider === 'on-device') {
+        // TODO: for now, on-device cant parse images
+        return null;
+      }
+
       const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
       const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
       return await generateWithImageStructured<TrackMealResponse>(
@@ -1268,7 +1324,7 @@ export async function trackMeal(
       'trackMeal'
     );
   } catch (error) {
-    console.error('[coachAI] trackMeal error:', error);
+    handleError(error, 'coachAI.trackMeal');
     return null;
   }
 }
@@ -1362,10 +1418,6 @@ export async function generateMealPlan(
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<GenerateMealPlanResponse | null> {
-  if (config.provider === 'on-device') {
-    return null;
-  }
-
   try {
     const lang = config.language ?? 'en-US';
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
@@ -1395,7 +1447,7 @@ export async function generateMealPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] generateMealPlan error:', error);
+    handleError(error, 'coachAI.generateMealPlan');
     return null;
   }
 }
@@ -1408,11 +1460,6 @@ export async function generateWorkoutPlan(
   history: ChatHistoryEntry[],
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
-  if (config.provider === 'on-device') {
-    // TODO: temporarily disable it for on-device
-    return null;
-  }
-
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);
@@ -1439,7 +1486,7 @@ export async function generateWorkoutPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] generateWorkoutPlan error:', error);
+    handleError(error, 'coachAI.generateWorkoutPlan');
     return null;
   }
 }
@@ -1592,6 +1639,7 @@ export async function estimateNutritionFromPhoto(
   context?: MealPhotoContext | null
 ): Promise<TrackMealResponse | null> {
   if (config.provider === 'on-device') {
+    // TODO: for now, on-device cant parse images
     return null;
   }
 
@@ -1646,8 +1694,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] estimateNutritionFromPhoto error:', error);
-    // TODO: show a snackbar
+    handleError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
 }

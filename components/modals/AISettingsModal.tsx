@@ -685,9 +685,12 @@ export function AISettingsModal({
               {
                 key: 'use-ocr-before-ai',
                 label: t('settings.aiSettings.useOcrBeforeAi'),
-                subtitle: t('settings.aiSettings.useOcrBeforeAiSubtitle'),
+                subtitle: debouncedUseOnDeviceAi
+                  ? t('settings.aiSettings.useOcrBeforeAiOnDeviceSubtitle')
+                  : t('settings.aiSettings.useOcrBeforeAiSubtitle'),
                 value: debouncedUseOcrBeforeAi,
                 onValueChange: handleUseOcrBeforeAiChange,
+                disabled: debouncedUseOnDeviceAi,
                 icon: (
                   <View
                     style={{

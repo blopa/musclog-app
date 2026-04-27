@@ -406,7 +406,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     }
 
     // uncomment this when debugging Apple Intelligence
-    // await SettingsService.setDumpLlmRequests(true);
+    await SettingsService.setDumpLlmRequests(true);
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');

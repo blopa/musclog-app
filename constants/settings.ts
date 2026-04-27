@@ -202,10 +202,23 @@ export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
 
 /**
+ * Setting type for showing the daily water prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_WATER_PROMPT_SETTING_TYPE = 'show_daily_water_prompt';
+
+/**
  * Setting type for showing the daily supplement prompt on the home screen.
  * value: 'true' | 'false'.
  */
 export const SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_daily_supplement_prompt';
+
+/**
+ * Stores the local-day start timestamp for the last answered home water prompt.
+ * value: stringified local midnight timestamp in ms.
+ */
+export const LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE =
+  'last_home_water_prompt_answered_day';
 
 /**
  * Setting type for always allowing food editing in FoodMealDetailsModal.

@@ -18,6 +18,7 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
   LOCAL_LLM_API_KEY_SETTING_TYPE,
   LOCAL_LLM_BASE_URL_SETTING_TYPE,
   LOCAL_LLM_MODEL_SETTING_TYPE,
@@ -44,6 +45,7 @@ import {
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
@@ -521,10 +523,46 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the show daily water prompt setting
+   */
+  static async setShowDailyWaterPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_WATER_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the show daily supplement prompt setting
    */
   static async setShowDailySupplementPrompt(value: boolean) {
     await SettingsService.setBooleanSetting(SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the show daily water prompt setting.
+   */
+  static async getShowDailyWaterPrompt(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(SHOW_DAILY_WATER_PROMPT_SETTING_TYPE, true);
+  }
+
+  /**
+   * Persist the local-day timestamp for the last answered home water prompt.
+   */
+  static async setLastHomeWaterPromptAnsweredDay(dayStartMs: number) {
+    await SettingsService.setStringSetting(
+      LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
+      dayStartMs.toString()
+    );
+  }
+
+  /**
+   * Get the local-day timestamp for the last answered home water prompt.
+   */
+  static async getLastHomeWaterPromptAnsweredDay(): Promise<number | null> {
+    const raw = await SettingsService.getStringSetting(
+      LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
+      ''
+    );
+    const parsed = Number.parseInt(raw, 10);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   /**
