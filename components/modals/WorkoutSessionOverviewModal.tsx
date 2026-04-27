@@ -24,7 +24,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
-const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.png');
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercise-fallback.png');
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 

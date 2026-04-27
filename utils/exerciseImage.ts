@@ -1,6 +1,6 @@
 import { version as APP_VERSION } from '@/package.json';
 
-export const FALLBACK_EXERCISE_IMAGE = require('../assets/exercises/fallback.png');
+export const FALLBACK_EXERCISE_IMAGE = require('../assets/exercise-fallback.png');
 
 const GITHUB_BASE_URL = `https://raw.githubusercontent.com/blopa/musclog-app/refs/tags/${APP_VERSION}/assets/exercises`;
 

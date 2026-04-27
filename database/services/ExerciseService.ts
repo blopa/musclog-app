@@ -680,7 +680,7 @@ export class ExerciseService {
         const imageUrl = exercise.imageUrl ?? '';
         const filename = imageUrl.split('/exercises/').pop() ?? '';
 
-        if (filename === 'fallback.png') {
+        if (filename === 'exercise-fallback.png' || filename === 'fallback.png') {
           await exercise.update((e) => {
             e.imageUrl = undefined;
           });
