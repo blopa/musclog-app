@@ -1,9 +1,10 @@
 /**
- * OCR Service - Platform-agnostic interface
- * Both iOS and Android: Uses Guten OCR (ONNX Runtime)
- * - Works perfectly on iOS arm64 simulators on Apple Silicon
- * - No architecture compatibility issues
- * - Fully offline, on-device processing
+ * OCR Service - platform-agnostic interface.
+ *
+ * Callers should pass the app language/locale tag (for example `en-US` or
+ * `pt-BR`). Platform-specific implementations can map that to their OCR
+ * engine's expected language code, or ignore it when the engine only supports
+ * auto-detection.
  */
 
 export interface OcrResult {
@@ -51,7 +52,7 @@ export interface OcrElement {
 /**
  * Recognize text from an image
  * @param imageUri Path to the image (file path or URI)
- * @param language Optional language code (defaults to 'eng' for English)
+ * @param language Optional app language/locale tag (for example `en-US`)
  * @returns Promise resolving to OCR result with recognized text
  */
 export function recognizeText(imageUri: string, language?: string): Promise<OcrResult> {
@@ -60,7 +61,7 @@ export function recognizeText(imageUri: string, language?: string): Promise<OcrR
 
 /**
  * Get available languages for OCR
- * @returns Promise resolving to array of available language codes
+ * @returns Promise resolving to array of supported OCR language codes
  */
 export function getAvailableLanguages(): Promise<string[]> {
   throw new Error('Not implemented - use platform-specific implementation');
@@ -68,7 +69,7 @@ export function getAvailableLanguages(): Promise<string[]> {
 
 /**
  * Initialize OCR worker (must be called before using recognizeText)
- * @param language Language code to initialize (defaults to 'eng')
+ * @param language Optional app language/locale tag (for example `en-US`)
  */
 export async function initializeOcr(language?: string): Promise<void> {
   throw new Error('Not implemented - use platform-specific implementation');

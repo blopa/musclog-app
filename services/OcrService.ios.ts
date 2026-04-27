@@ -10,14 +10,13 @@
 
 import Ocr from '@gutenye/ocr-react-native';
 
-import { EN_US } from '@/lang/lang';
 import { handleError } from '@/utils/handleError';
 
 import type { OcrResult } from './OcrService';
 
 let ocrInstance: Awaited<ReturnType<typeof Ocr.create>> | null = null;
 
-export async function initializeOcr(language: string = EN_US): Promise<void> {
+export async function initializeOcr(_language?: string): Promise<void> {
   if (ocrInstance) {
     return;
   }
@@ -25,10 +24,7 @@ export async function initializeOcr(language: string = EN_US): Promise<void> {
   ocrInstance = await Ocr.create({});
 }
 
-export async function recognizeText(
-  imageUri: string,
-  language: string = EN_US
-): Promise<OcrResult> {
+export async function recognizeText(imageUri: string, _language?: string): Promise<OcrResult> {
   const startTime = Date.now();
   try {
     if (!ocrInstance) {

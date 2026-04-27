@@ -11,19 +11,15 @@ import {
   recognizeText as mlkitRecognizeText,
 } from 'rn-mlkit-ocr';
 
-import { EN_US } from '@/lang/lang';
 import { handleError } from '@/utils/handleError';
 
 import type { OcrResult } from './OcrService';
 
-export async function initializeOcr(language: string = EN_US): Promise<void> {
+export async function initializeOcr(_language?: string): Promise<void> {
   // rn-mlkit-ocr initializes on first use.
 }
 
-export async function recognizeText(
-  imageUri: string,
-  language: string = EN_US
-): Promise<OcrResult> {
+export async function recognizeText(imageUri: string, _language?: string): Promise<OcrResult> {
   const startTime = Date.now();
 
   try {

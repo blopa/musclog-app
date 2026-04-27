@@ -102,7 +102,7 @@ export default function SmartCameraModal({
   onBarcodeScanned,
 }: CameraModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
@@ -304,9 +304,8 @@ export default function SmartCameraModal({
       try {
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi || !isMealPhotoEnabled) {
-
-            // TODO: pass language to ocrRecognizeText
-            const { text } = await ocrRecognizeText(fileUri);
+            const ocrLanguage = i18n.resolvedLanguage ?? i18n.language;
+            const { text } = await ocrRecognizeText(fileUri, ocrLanguage);
             if (!text.trim()) {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
               return;
@@ -442,12 +441,14 @@ export default function SmartCameraModal({
     },
     [
       cameraMode,
-      t,
-      formatRoundedDecimal,
-      useOcrBeforeAi,
       aiContext,
-      mapTrackMealResponseToMeal,
+      formatRoundedDecimal,
+      i18n.language,
+      i18n.resolvedLanguage,
       macroEstimateToSearchResultProduct,
+      mapTrackMealResponseToMeal,
+      t,
+      useOcrBeforeAi,
     ]
   );
 
