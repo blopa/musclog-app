@@ -2,30 +2,30 @@
  * Shared OCR Service Implementation using Guten OCR (@gutenye/ocr-react-native)
  * Uses ONNX Runtime for on-device processing — works on iOS including arm64 simulators.
  *
- * Not used on Android (rn-mlkit-ocr is used there instead) because
- * @gutenye/ocr-react-native is incompatible with RN 0.76+ on Android.
+ * This file is named .ios.ts to ensure it is only included in the iOS bundle,
+ * as @gutenye/ocr-react-native is incompatible with RN 0.76+ on Android.
  */
+
+import Ocr from '@gutenye/ocr-react-native';
 
 import { handleError } from '@/utils/handleError';
 
 import type { OcrResult } from './OcrService';
 
-let currentLanguage: string = 'eng';
 let isInitialized = false;
 let ocrInstance: any = null;
 
 const AVAILABLE_LANGUAGES = ['eng', 'chi_sim', 'chi_tra', 'fra', 'deu', 'jpn', 'kor', 'rus', 'spa'];
 
-export async function initializeOcr(language: string = 'eng'): Promise<void> {
-  if (isInitialized && currentLanguage === language && ocrInstance) {
+export async function initializeOcr(_language: string = 'eng'): Promise<void> {
+  if (isInitialized && ocrInstance) {
     return;
   }
 
   try {
-    const Ocr = require('@gutenye/ocr-react-native').default;
-
-    ocrInstance = await Ocr.create({ language });
-    currentLanguage = language;
+    // Note: language parameter is currently ignored by @gutenye/ocr-react-native
+    // unless custom model paths are provided. It uses default models bundled with the package.
+    ocrInstance = await Ocr.create({});
     isInitialized = true;
   } catch (error) {
     handleError(error, 'OcrServiceShared.initializeOcr');
@@ -40,7 +40,7 @@ export async function recognizeText(
 ): Promise<OcrResult> {
   const startTime = Date.now();
   try {
-    if (!isInitialized || currentLanguage !== language || !ocrInstance) {
+    if (!isInitialized || !ocrInstance) {
       await initializeOcr(language);
     }
 
@@ -57,7 +57,7 @@ export async function recognizeText(
       confidence: 0.8, // Guten OCR detect doesn't seem to return global confidence directly
       blocks: lines.map((l: any) => ({
         text: l.text,
-        confidence: 0.8,
+        confidence: l.score || 0.8,
         frame: l.frame,
       })),
       processingTimeMs: Date.now() - startTime,
@@ -74,8 +74,6 @@ export async function getAvailableLanguages(): Promise<string[]> {
 }
 
 export async function terminateOcr(): Promise<void> {
-  // Guten OCR Ocr.ts doesn't have a terminate method, but it might be handled by JS GC
-  // or internal native cleanup.
   ocrInstance = null;
   isInitialized = false;
 }
