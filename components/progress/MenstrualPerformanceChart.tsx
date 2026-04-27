@@ -41,7 +41,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -101,7 +101,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
             }
             return (
               <View key={p} className="items-center">
-                <Text className="text-text-tertiary text-[8px] tracking-tighter uppercase">
+                <Text className="text-[8px] uppercase tracking-tighter text-text-tertiary">
                   {t(`cycle.phase.${p}`)}
                 </Text>
                 <View

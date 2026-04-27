@@ -54,12 +54,12 @@ function WorkoutInfo({
       <GenericCard variant="card" size="default">
         <View className="p-6">
           <View className="mb-2 flex-row items-start justify-between">
-            <View className="bg-bg-secondary h-8 w-32 rounded" />
-            <View className="bg-bg-secondary h-6 w-20 rounded-full" />
+            <View className="h-8 w-32 rounded bg-bg-secondary" />
+            <View className="h-6 w-20 rounded-full bg-bg-secondary" />
           </View>
           <View className="flex-row items-center gap-4">
-            <View className="bg-bg-secondary h-5 w-24 rounded" />
-            <View className="bg-bg-secondary h-5 w-24 rounded" />
+            <View className="h-5 w-24 rounded bg-bg-secondary" />
+            <View className="h-5 w-24 rounded bg-bg-secondary" />
           </View>
         </View>
       </GenericCard>
@@ -70,11 +70,11 @@ function WorkoutInfo({
     <GenericCard variant="card" size="default">
       <View className="p-6">
         <View className="mb-2 flex-row items-start justify-between">
-          <Text className="text-text-primary text-3xl font-extrabold tracking-tight">
+          <Text className="text-3xl font-extrabold tracking-tight text-text-primary">
             {workoutLog?.workoutName || t('workout.workout')}
           </Text>
-          <View className="bg-accent-primary/10 rounded-full px-3 py-1">
-            <Text className="text-text-accent text-xs font-bold tracking-widest uppercase">
+          <View className="rounded-full bg-accent-primary/10 px-3 py-1">
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-accent">
               In Progress
             </Text>
           </View>
@@ -82,21 +82,21 @@ function WorkoutInfo({
 
         <View className="flex-row flex-wrap items-center gap-3">
           {workoutLog?.type && isWorkoutType(workoutLog.type) ? (
-            <View className="bg-bg-secondary rounded-full px-3 py-1">
-              <Text className="text-text-secondary text-xs font-medium">
+            <View className="rounded-full bg-bg-secondary px-3 py-1">
+              <Text className="text-xs font-medium text-text-secondary">
                 {t(`workout.type.${workoutLog.type}`)}
               </Text>
             </View>
           ) : null}
           <View className="flex-row items-center gap-2">
             <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            <Text className="text-text-secondary text-sm font-medium">
+            <Text className="text-sm font-medium text-text-secondary">
               {t('workout.inProgress')}
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
             <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-            <Text className="text-text-secondary text-sm font-medium">
+            <Text className="text-sm font-medium text-text-secondary">
               {t('workout.exercises', { count: exerciseCount })}
             </Text>
           </View>
@@ -147,7 +147,7 @@ function ExerciseCard({
         <View className="flex-row items-center justify-between">
           <View className="flex-1 flex-row items-center gap-4">
             <View
-              className={`border-border-default bg-bg-secondary h-16 w-16 overflow-hidden rounded-lg border ${
+              className={`h-16 w-16 overflow-hidden rounded-lg border border-border-default bg-bg-secondary ${
                 isSkipped ? 'opacity-60' : ''
               }`}
             >
@@ -160,10 +160,10 @@ function ExerciseCard({
 
             <View className="flex-1">
               <View className="flex-row items-center gap-2">
-                <Text className={`text-lg leading-tight font-bold ${titleClassName}`}>{name}</Text>
+                <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
                 {isSkipped ? (
-                  <View className="bg-bg-secondary rounded px-2 py-1">
-                    <Text className="text-text-muted text-[10px] font-bold">
+                  <View className="rounded bg-bg-secondary px-2 py-1">
+                    <Text className="text-[10px] font-bold text-text-muted">
                       {t('workout.skipped')}
                     </Text>
                   </View>
@@ -176,7 +176,7 @@ function ExerciseCard({
                     key={i}
                     className={`h-1.5 w-6 rounded-full ${
                       isSkipped
-                        ? 'border-border-light border'
+                        ? 'border border-border-light'
                         : i < setsCompleted
                           ? 'bg-accent-primary'
                           : 'bg-bg-secondary'
@@ -232,7 +232,7 @@ function ExerciseList({
   return (
     <>
       <View className="gap-3">
-        <Text className="text-text-muted px-2 text-xs font-bold tracking-widest uppercase">
+        <Text className="px-2 text-xs font-bold uppercase tracking-widest text-text-muted">
           {t('workout.workoutSequence')}
         </Text>
         <View className="gap-3">
@@ -436,7 +436,7 @@ export default function WorkoutSessionOverviewModal({
         />
       }
     >
-      <View className="bg-bg-primary flex-1">
+      <View className="flex-1 bg-bg-primary">
         <BottomPopUpMenu
           visible={isMenuVisible}
           onClose={() => setIsMenuVisible(false)}

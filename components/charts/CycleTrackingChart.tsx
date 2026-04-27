@@ -82,7 +82,7 @@ export function CycleTrackingChart({
         <View>
           {title != null ? (
             <Text
-              className="text-text-primary text-2xl font-semibold"
+              className="text-2xl font-semibold text-text-primary"
               style={{ fontSize: theme.typography.fontSize['2xl'] ?? 24 }}
             >
               {title}
@@ -115,20 +115,20 @@ export function CycleTrackingChart({
         </View>
         {badge != null ? (
           <View
-            className="border-border-default mt-4 rounded-2xl border px-5 py-2 md:mt-0"
+            className="mt-4 rounded-2xl border border-border-default px-5 py-2 md:mt-0"
             style={{
               backgroundColor: theme.colors.background.primary,
               borderColor: theme.colors.border.light,
             }}
           >
             <Text
-              className="text-text-tertiary text-[10px] tracking-tighter uppercase"
+              className="text-[10px] uppercase tracking-tighter text-text-tertiary"
               style={{ fontSize: 10 }}
             >
               {badge.title}
             </Text>
             <Text
-              className="text-text-primary font-bold"
+              className="font-bold text-text-primary"
               style={{ fontSize: theme.typography.fontSize.sm, fontWeight: '700' }}
             >
               {badge.value}
@@ -138,7 +138,7 @@ export function CycleTrackingChart({
       </View>
 
       <View
-        className="border-border-default relative mb-4 w-full rounded-full border p-1"
+        className="relative mb-4 w-full rounded-full border border-border-default p-1"
         style={{
           height: barHeight,
           backgroundColor: theme.colors.background.primary,

@@ -67,7 +67,7 @@ export function TimePickerInput({
         className={`flex-row items-center gap-2 ${className ?? ''}`}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
-        <Text className="text-text-primary text-xl font-semibold">{display}</Text>
+        <Text className="text-xl font-semibold text-text-primary">{display}</Text>
         <Edit size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
       </Pressable>
     );
@@ -93,7 +93,7 @@ export function TimePickerInput({
   return (
     <View className={className}>
       {!hideLabel ? (
-        <Text className="text-text-secondary mb-2 text-xs font-bold tracking-wider uppercase">
+        <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
           {label ?? t('food.foodDetails.time')}
         </Text>
       ) : null}
@@ -119,15 +119,15 @@ export function TimePickerInput({
               </View>
               <View className="min-w-0 flex-1">
                 {showUnsetPlaceholder ? (
-                  <Text className="text-text-tertiary font-medium">{unsetPlaceholder}</Text>
+                  <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
                 ) : (
                   <>
-                    <Text className="text-text-primary font-medium">
+                    <Text className="font-medium text-text-primary">
                       {matchesNow
                         ? t('timePicker.now')
                         : format(selectedTime, 'p', { locale: dateFnsLocale })}
                     </Text>
-                    <Text className="text-text-secondary text-xs">
+                    <Text className="text-xs text-text-secondary">
                       {matchesNow
                         ? format(selectedTime, 'p', { locale: dateFnsLocale })
                         : format(selectedTime, 'zzzz', { locale: dateFnsLocale })}
@@ -147,7 +147,7 @@ export function TimePickerInput({
               hitSlop={8}
             >
               <SquarePen size={theme.iconSize.xs} color={theme.colors.accent.secondary} />
-              <Text className="text-accent-secondary text-sm font-medium">
+              <Text className="text-sm font-medium text-accent-secondary">
                 {clearLabel ?? t('timePicker.clearTime')}
               </Text>
             </Pressable>

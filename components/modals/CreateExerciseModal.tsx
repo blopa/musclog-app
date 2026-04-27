@@ -199,7 +199,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Muscle Target Section */}
           <View style={{ gap: theme.spacing.gap.base }}>
-            <Text className="text-text-primary text-lg font-bold tracking-tight">
+            <Text className="text-lg font-bold tracking-tight text-text-primary">
               {t('exercises.createExercise.muscleTarget')}
             </Text>
 
@@ -207,11 +207,11 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             <View>
               <Pressable onPress={() => setIsPickerVisible(true)}>
                 <View className="flex-col gap-2">
-                  <Text className="text-text-secondary ml-1 text-sm font-medium">
+                  <Text className="ml-1 text-sm font-medium text-text-secondary">
                     {t('exercises.createExercise.primaryMuscleGroup')}
                   </Text>
                   <View
-                    className="bg-bg-card h-14 w-full flex-row items-center justify-between rounded-lg border px-4"
+                    className="h-14 w-full flex-row items-center justify-between rounded-lg border bg-bg-card px-4"
                     style={{ borderColor: theme.colors.background.white10 }}
                   >
                     <Text
@@ -232,7 +232,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
             {/* Secondary Muscles */}
             <View style={{ gap: theme.spacing.gap.sm }}>
-              <Text className="text-text-secondary ml-1 text-sm font-medium">
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
                 {t('exercises.createExercise.secondaryMuscles')}
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -285,7 +285,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Add Visuals Section */}
           <View style={{ gap: theme.spacing.gap.md }}>
-            <Text className="text-text-primary text-lg font-bold tracking-tight">
+            <Text className="text-lg font-bold tracking-tight text-text-primary">
               {t('exercises.createExercise.addVisuals')}
             </Text>
             <View className="flex-row gap-4">

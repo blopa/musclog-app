@@ -282,9 +282,9 @@ export default function ProfileScreen() {
         ) : null}
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-6">
-          <Text className="text-text-primary text-4xl font-bold">{t('profile.header.title')}</Text>
+          <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
           <Pressable
-            className="active:bg-bg-card-elevated bg-bg-overlay h-12 w-12 items-center justify-center rounded-full"
+            className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
             onPress={() => router.navigate('/app/settings')}
           >
             <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -332,18 +332,18 @@ export default function ProfileScreen() {
                     ) : null}
                   </View>
                   <Pressable
-                    className="border-bg-primary absolute right-0 bottom-0 h-10 w-10 items-center justify-center rounded-full border-2"
+                    className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
                     style={{ backgroundColor: theme.colors.accent.primary }}
                     onPress={() => setIsEditPersonalVisible(true)}
                   >
                     <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
                   </Pressable>
                 </View>
-                <Text className="text-text-primary mb-3 text-center text-3xl font-bold">
+                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
                   {dbUser?.fullName || t('profile.loading')}
                 </Text>
                 {dbUser?.fitnessGoal ? (
-                  <Text className="text-text-primary text-center text-base">
+                  <Text className="text-center text-base text-text-primary">
                     {t('profile.goal')}:{' '}
                     {t(
                       `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
@@ -358,7 +358,7 @@ export default function ProfileScreen() {
         {/* Current Stats Section */}
         <View className="mb-8 px-4">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-text-primary text-2xl font-bold">
+            <Text className="text-2xl font-bold text-text-primary">
               {t('profile.currentStats')}
             </Text>
             <ShowMoreButton
@@ -414,16 +414,16 @@ export default function ProfileScreen() {
                   <BrainCircuit size={theme.iconSize.md} color={theme.colors.status.info} />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-text-secondary text-sm">
+                  <Text className="text-sm text-text-secondary">
                     {t('profile.weightPrediction.title')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
-                    <Text className="text-text-primary text-2xl font-bold">
+                    <Text className="text-2xl font-bold text-text-primary">
                       {formatDecimal(kgToDisplay(weightPrediction.predictedWeightKg, units), 1)}
                     </Text>
-                    <Text className="text-text-secondary text-base">{weightUnit}</Text>
+                    <Text className="text-base text-text-secondary">{weightUnit}</Text>
                   </View>
-                  <Text className="text-text-secondary mt-0.5 text-xs">
+                  <Text className="mt-0.5 text-xs text-text-secondary">
                     {t('profile.weightPrediction.subtitle')}
                   </Text>
                 </View>
@@ -434,7 +434,7 @@ export default function ProfileScreen() {
 
         {/* Management Section */}
         <View className="mb-8 px-4">
-          <Text className="text-text-primary mb-4 text-2xl font-bold">
+          <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('profile.management')}
           </Text>
           <View className="gap-3">

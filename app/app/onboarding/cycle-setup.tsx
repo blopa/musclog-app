@@ -59,7 +59,7 @@ export default function CycleSetup() {
         >
           {t('onboarding.cycleSetup.length.title')}
         </Text>
-        <Text className="text-text-secondary mb-8 text-lg">
+        <Text className="mb-8 text-lg text-text-secondary">
           {t('onboarding.cycleSetup.length.description')}
         </Text>
         <EditCycleSetupData onFormChange={setCurrentFormData} />

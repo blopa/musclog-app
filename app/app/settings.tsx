@@ -69,7 +69,7 @@ export default function SettingsScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="border-border-light bg-bg-primary border-b">
+      <View className="border-b border-border-light bg-bg-primary">
         <View className="flex-row items-center gap-4 px-4 py-4">
           <Pressable
             className="-ml-2 rounded-full p-2"
@@ -80,7 +80,7 @@ export default function SettingsScreen() {
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
           </Pressable>
           <View className="flex-1">
-            <Text className="text-text-primary text-xl font-bold tracking-tight">
+            <Text className="text-xl font-bold tracking-tight text-text-primary">
               {t('settings.title')}
             </Text>
           </View>

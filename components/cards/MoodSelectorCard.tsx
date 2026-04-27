@@ -30,7 +30,7 @@ export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodS
               color={theme.colors.text.tertiary}
               style={{ flexShrink: 0 }}
             />
-            <Text className="text-text-secondary flex-1 text-xs font-bold tracking-wider uppercase">
+            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
           </View>
@@ -38,7 +38,7 @@ export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodS
             className="flex-shrink-0 rounded px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-accent-primary text-xs font-bold" numberOfLines={1}>
+            <Text className="text-xs font-bold text-accent-primary" numberOfLines={1}>
               {t(`bodyMetrics.addEntry.moods.${value}`)}
             </Text>
           </View>

@@ -18,7 +18,7 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
       onPress={() => onValueChange(!value)}
     >
       <View
-        className={`bg-bg-card h-6 w-6 items-center justify-center border border-white/20 ${
+        className={`h-6 w-6 items-center justify-center border border-white/20 bg-bg-card ${
           type === 'radio' ? 'rounded-full' : 'rounded'
         }`}
       >
@@ -33,7 +33,7 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
           )
         ) : null}
       </View>
-      <Text className="text-text-primary text-sm font-medium">{label}</Text>
+      <Text className="text-sm font-medium text-text-primary">{label}</Text>
     </Pressable>
   );
 }

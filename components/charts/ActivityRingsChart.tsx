@@ -85,7 +85,7 @@ export function ActivityRingsChart({
         <View className="mb-6 w-full">
           {title != null ? (
             <Text
-              className="text-text-primary text-xl font-semibold"
+              className="text-xl font-semibold text-text-primary"
               style={{ fontSize: theme.typography.fontSize.xl }}
             >
               {title}
@@ -93,7 +93,7 @@ export function ActivityRingsChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="text-text-tertiary mt-1 text-xs tracking-widest uppercase"
+              className="mt-1 text-xs uppercase tracking-widest text-text-tertiary"
               style={{ marginTop: 4, letterSpacing: 4 }}
             >
               {subtitle}
@@ -158,7 +158,7 @@ export function ActivityRingsChart({
             {centerValue}
           </Text>
           <Text
-            className="text-text-tertiary mt-1 text-[10px] font-bold uppercase"
+            className="mt-1 text-[10px] font-bold uppercase text-text-tertiary"
             style={{ marginTop: 4, fontSize: 10 }}
           >
             {resolvedCenterLabel}
@@ -168,7 +168,7 @@ export function ActivityRingsChart({
 
       {displayRings.length > 0 ? (
         <View
-          className="border-border-default mt-8 w-full flex-row border-t pt-6"
+          className="mt-8 w-full flex-row border-t border-border-default pt-6"
           style={{
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,
@@ -195,7 +195,7 @@ export function ActivityRingsChart({
                 {ring.value}
               </Text>
               <Text
-                className="text-text-tertiary text-[9px] uppercase"
+                className="text-[9px] uppercase text-text-tertiary"
                 style={{ fontSize: 9, marginTop: 2 }}
               >
                 {ring.label}

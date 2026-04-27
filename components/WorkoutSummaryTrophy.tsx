@@ -97,7 +97,7 @@ export function WorkoutSummaryTrophy() {
 
       {/* Stars */}
       <Animated.View
-        className="absolute -top-2 -right-2"
+        className="absolute -right-2 -top-2"
         style={{
           transform: [{ scale: star1Anim }, { rotate: '12deg' }],
         }}
@@ -121,7 +121,7 @@ export function WorkoutSummaryTrophy() {
         />
       </Animated.View>
       <Animated.View
-        className="absolute top-0 -left-2"
+        className="absolute -left-2 top-0"
         style={{
           transform: [{ scale: star3Anim }, { rotate: '-45deg' }],
         }}

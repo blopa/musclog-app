@@ -9,7 +9,7 @@ import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
 export const GoogleGeminiIllustration = () => {
   const theme = useTheme();
   return (
-    <View className="mt-2 mb-6">
+    <View className="mb-6 mt-2">
       <View
         className="relative w-full"
         style={{
@@ -46,7 +46,7 @@ export const GoogleGeminiIllustration = () => {
         </View>
         {/* Main card */}
         <View
-          className="bg-bg-cardDark relative flex-1 rounded-2xl border border-white/5"
+          className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark"
           style={{ overflow: 'hidden' }}
         >
           {/* Background image */}
@@ -73,7 +73,7 @@ export const GoogleGeminiIllustration = () => {
           />
           {/* Bottom buttons overlay */}
           <View
-            className="absolute right-0 left-0 flex-row items-center justify-center"
+            className="absolute left-0 right-0 flex-row items-center justify-center"
             style={{ bottom: theme.spacing.padding.base }}
           >
             {/* Single pill container */}

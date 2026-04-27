@@ -14,7 +14,7 @@ export default function ShowMoreButton({
 }: ShowMoreButtonProps) {
   return (
     <Pressable onPress={onPress} {...rest}>
-      <Text className={className ?? 'text-text-accent text-sm font-medium'}>{label}</Text>
+      <Text className={className ?? 'text-sm font-medium text-text-accent'}>{label}</Text>
     </Pressable>
   );
 }

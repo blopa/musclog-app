@@ -35,42 +35,42 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
   const componentStack = errorInfo?.componentStack;
 
   return (
-    <View className="bg-bg-primary flex-1 items-center justify-center p-6">
-      <Text className="text-text-primary mb-2 text-center text-xl font-semibold">
+    <View className="flex-1 items-center justify-center bg-bg-primary p-6">
+      <Text className="mb-2 text-center text-xl font-semibold text-text-primary">
         {t('errors.somethingWentWrong')}
       </Text>
-      <Text className="text-text-secondary mb-4 text-center text-sm">{errorMessage}</Text>
+      <Text className="mb-4 text-center text-sm text-text-secondary">{errorMessage}</Text>
 
       {__DEV__ ? (
         <View className="mb-4 w-full">
           <Pressable
             onPress={() => setShowDetails(!showDetails)}
-            className="bg-bg-secondary mb-2 rounded p-2"
+            className="mb-2 rounded bg-bg-secondary p-2"
           >
-            <Text className="text-text-primary text-center text-sm">
+            <Text className="text-center text-sm text-text-primary">
               {showDetails ? t('common.hide') : t('common.show')} {t('common.debugDetails')}
             </Text>
           </Pressable>
 
           {showDetails ? (
-            <ScrollView className="bg-bg-secondary max-h-64 w-full rounded p-3">
-              <Text className="text-text-primary mb-2 font-mono text-xs">
+            <ScrollView className="max-h-64 w-full rounded bg-bg-secondary p-3">
+              <Text className="mb-2 font-mono text-xs text-text-primary">
                 {t('common.errorMessage')}: {errorMessage}
               </Text>
 
               {errorStack ? (
-                <Text className="text-text-primary mb-2 font-mono text-xs">
+                <Text className="mb-2 font-mono text-xs text-text-primary">
                   {t('common.errorStack')}:{errorStack}
                 </Text>
               ) : null}
 
               {componentStack ? (
-                <Text className="text-text-primary mb-2 font-mono text-xs">
+                <Text className="mb-2 font-mono text-xs text-text-primary">
                   {t('common.componentStack')}:{componentStack}
                 </Text>
               ) : null}
 
-              <Text className="text-text-primary font-mono text-xs">
+              <Text className="font-mono text-xs text-text-primary">
                 {t('common.userAgent')}:{' '}
                 {typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A'}
               </Text>
@@ -81,7 +81,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
 
       <Pressable
         onPress={handleReload}
-        className="bg-accent-primary rounded-lg px-6 py-3 active:opacity-80"
+        className="rounded-lg bg-accent-primary px-6 py-3 active:opacity-80"
       >
         <Text className="text-base font-semibold text-white">{t('errors.reload')}</Text>
       </Pressable>

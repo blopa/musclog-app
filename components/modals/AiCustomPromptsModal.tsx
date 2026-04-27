@@ -61,7 +61,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
       headerRight={
         <Pressable
           onPress={() => setIsAddModalVisible(true)}
-          className="active:bg-bg-overlay h-10 w-10 items-center justify-center rounded-full"
+          className="h-10 w-10 items-center justify-center rounded-full active:bg-bg-overlay"
         >
           <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
@@ -73,7 +73,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
       >
         {prompts.length === 0 ? (
           <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-text-secondary text-center">
+            <Text className="text-center text-text-secondary">
               {t('settings.aiSettings.noPrompts')}
             </Text>
             <View className="mt-6">
@@ -91,19 +91,19 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
               <GenericCard key={prompt.id} variant="card">
                 <View className="p-4">
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-text-primary flex-1 text-lg font-bold" numberOfLines={1}>
+                    <Text className="flex-1 text-lg font-bold text-text-primary" numberOfLines={1}>
                       {prompt.name}
                     </Text>
                     <View className="flex-row items-center gap-2">
                       <Pressable
                         onPress={() => setEditingPrompt(prompt)}
-                        className="active:bg-bg-overlay h-8 w-8 items-center justify-center rounded-full"
+                        className="h-8 w-8 items-center justify-center rounded-full active:bg-bg-overlay"
                       >
                         <Edit2 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                       </Pressable>
                       <Pressable
                         onPress={() => setPromptToDelete(prompt)}
-                        className="active:bg-bg-overlay h-8 w-8 items-center justify-center rounded-full"
+                        className="h-8 w-8 items-center justify-center rounded-full active:bg-bg-overlay"
                       >
                         <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error20} />
                       </Pressable>
@@ -134,11 +134,11 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
                     </View>
                   </View>
 
-                  <Text className="text-text-secondary mt-2 text-sm" numberOfLines={3}>
+                  <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
                     {prompt.content}
                   </Text>
 
-                  <View className="border-border-light mt-4 border-t pt-2">
+                  <View className="mt-4 border-t border-border-light pt-2">
                     <ToggleInput
                       items={[
                         {

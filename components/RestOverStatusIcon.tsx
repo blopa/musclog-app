@@ -55,7 +55,7 @@ export function RestOverStatusIcon() {
       </View>
       {/* Red Alert Badge */}
       <View
-        className="absolute -top-1 -right-1 z-20 h-8 w-8 items-center justify-center rounded-full border-4"
+        className="absolute -right-1 -top-1 z-20 h-8 w-8 items-center justify-center rounded-full border-4"
         style={{
           backgroundColor: theme.colors.status.error,
           borderColor: theme.colors.background.primary,

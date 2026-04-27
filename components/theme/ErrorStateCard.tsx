@@ -34,18 +34,18 @@ export function ErrorStateCard({
 
       {/* Content */}
       <View className="items-center">
-        <Text className="text-text-primary mb-1 text-center font-bold">{title}</Text>
-        <Text className="text-text-secondary text-center text-sm">{description}</Text>
+        <Text className="mb-1 text-center font-bold text-text-primary">{title}</Text>
+        <Text className="text-center text-sm text-text-secondary">{description}</Text>
       </View>
 
       {/* Button */}
       {onButtonPress ? (
         <Pressable
-          className="border-accent-primary mt-2 flex-row items-center gap-2 rounded-lg border px-6 py-2 active:scale-95"
+          className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
           onPress={onButtonPress}
         >
           <RefreshCw size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-          <Text className="text-accent-primary text-sm font-bold">{defaultButtonLabel}</Text>
+          <Text className="text-sm font-bold text-accent-primary">{defaultButtonLabel}</Text>
         </Pressable>
       ) : null}
     </View>

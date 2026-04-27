@@ -219,7 +219,7 @@ export function BrowseTemplatesModal({
               }}
             >
               <Text
-                className="text-[10px] font-bold tracking-wider uppercase"
+                className="text-[10px] font-bold uppercase tracking-wider"
                 style={{ color: difficultyColors.text }}
               >
                 {t(`workouts.browseTemplatesModal.tabs.${template.difficulty.toLowerCase()}`)}
@@ -228,21 +228,21 @@ export function BrowseTemplatesModal({
           </View>
 
           {/* Title */}
-          <Text className="text-text-primary mb-4 text-lg font-bold">{template.title}</Text>
+          <Text className="mb-4 text-lg font-bold text-text-primary">{template.title}</Text>
 
           {/* Stats */}
           <View className="flex-row items-center gap-6 border-t border-white/5 pt-3">
             <View className="flex-col gap-0.5">
-              <Text className="text-text-secondary text-[10px] font-semibold tracking-widest uppercase">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.duration')}
               </Text>
               <View className="flex-row items-center gap-1.5">
                 <MaterialIcons name="schedule" size={16} color={theme.colors.accent.primary} />
-                <Text className="text-text-secondary text-sm font-medium">{template.duration}</Text>
+                <Text className="text-sm font-medium text-text-secondary">{template.duration}</Text>
               </View>
             </View>
             <View className="flex-col gap-0.5">
-              <Text className="text-text-secondary text-[10px] font-semibold tracking-widest uppercase">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.exercises')}
               </Text>
               <View className="flex-row items-center gap-1.5">
@@ -251,13 +251,13 @@ export function BrowseTemplatesModal({
                   size={16}
                   color={theme.colors.accent.primary}
                 />
-                <Text className="text-text-secondary text-sm font-medium">
+                <Text className="text-sm font-medium text-text-secondary">
                   {template.exercises}
                 </Text>
               </View>
             </View>
             <View className="flex-col gap-0.5">
-              <Text className="text-text-secondary text-[10px] font-semibold tracking-widest uppercase">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.sets')}
               </Text>
               <View className="flex-row items-center gap-1.5">
@@ -266,7 +266,7 @@ export function BrowseTemplatesModal({
                   size={16}
                   color={theme.colors.accent.primary}
                 />
-                <Text className="text-text-secondary text-sm font-medium">{template.sets}</Text>
+                <Text className="text-sm font-medium text-text-secondary">{template.sets}</Text>
               </View>
             </View>
           </View>
@@ -283,7 +283,7 @@ export function BrowseTemplatesModal({
       scrollable={false}
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="bg-bg-primary px-4 pt-6 pb-4">
+        <View className="bg-bg-primary px-4 pb-4 pt-6">
           {/* Search Bar */}
           <View className="mb-5">
             <TextInput

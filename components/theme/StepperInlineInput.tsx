@@ -150,7 +150,7 @@ export function StepperInlineInput({
   );
 
   return (
-    <View className="bg-bg-card flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 p-5">
+    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
       <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
         {Icon ? (
           <View

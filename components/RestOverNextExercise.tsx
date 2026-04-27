@@ -32,7 +32,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
           style={{ backgroundColor: theme.colors.accent.primary }}
         />
         <View className="flex-1">
-          <Text className="text-accent-primary text-xs font-bold tracking-widest uppercase opacity-80">
+          <Text className="text-xs font-bold uppercase tracking-widest text-accent-primary opacity-80">
             {t('restOver.upNext')}
           </Text>
           <Text className="text-xl font-bold text-white">{exercise.name}</Text>
@@ -41,7 +41,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
       <View className="flex-row items-center justify-between border-t border-white/10 pt-3">
         <View className="flex-col items-start">
           <Text
-            className="font-bold text-white/40 uppercase"
+            className="font-bold uppercase text-white/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.weight')}
@@ -50,7 +50,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         </View>
         <View className="flex-col items-start">
           <Text
-            className="font-bold text-white/40 uppercase"
+            className="font-bold uppercase text-white/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.reps')}
@@ -59,7 +59,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
         </View>
         <View className="flex-col items-start">
           <Text
-            className="font-bold text-white/40 uppercase"
+            className="font-bold uppercase text-white/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.set')}

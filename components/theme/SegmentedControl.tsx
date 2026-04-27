@@ -75,7 +75,7 @@ export function SegmentedControl({
               >
                 <View className="flex-row items-center justify-center gap-1.5">
                   {option.icon}
-                  <Text className="text-text-primary text-center text-xs font-bold">
+                  <Text className="text-center text-xs font-bold text-text-primary">
                     {option.label}
                   </Text>
                 </View>

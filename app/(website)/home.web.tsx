@@ -57,14 +57,14 @@ export function CTA() {
     <section className="relative overflow-hidden px-4 py-16 md:py-20">
       <SectionBackground variant="grid" />
       <div
-        className="pointer-events-none absolute top-1/2 left-1/2 h-[440px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[440px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
         style={{
           background:
             'radial-gradient(circle, rgba(0,255,163,0.12) 0%, rgba(34,197,94,0.08) 34%, rgba(0,0,0,0) 72%)',
         }}
         aria-hidden="true"
       />
-      <div className="relative z-10 container mx-auto">
+      <div className="container relative z-10 mx-auto">
         <div
           className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r p-10 md:p-16"
           style={{
@@ -75,10 +75,10 @@ export function CTA() {
           <div className="from-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
 
           <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
-            <h2 className="text-3xl font-extrabold text-balance text-white md:text-4xl lg:text-5xl">
+            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl lg:text-5xl">
               {t('title')}
             </h2>
-            <p className="text-lg font-medium text-balance text-white/90">{t('description')}</p>
+            <p className="text-balance text-lg font-medium text-white/90">{t('description')}</p>
             <div className="flex flex-wrap justify-center gap-4">
               <DownloadModal variant="white">
                 <Download className="h-4 w-4" />
@@ -151,20 +151,20 @@ export function FeatureGrid() {
     <section className="bg-card/50 relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="grid" />
       <div
-        className="pointer-events-none absolute top-[54%] left-1/2 h-[640px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
+        className="pointer-events-none absolute left-1/2 top-[54%] h-[640px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
         style={{
           background:
             'radial-gradient(circle, rgba(0,255,163,0.15) 0%, rgba(34,197,94,0.11) 32%, rgba(0,0,0,0) 74%)',
         }}
         aria-hidden="true"
       />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-3xl font-extrabold text-balance text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
           <p
-            className="mx-auto max-w-2xl text-base text-balance md:text-lg"
+            className="mx-auto max-w-2xl text-balance text-base md:text-lg"
             style={{ color: BODY_TEXT_SOFT }}
           >
             {t('description')}
@@ -237,14 +237,14 @@ export function Features() {
   return (
     <section id="features" className="relative overflow-hidden py-16 md:py-20">
       <SectionBackground variant="dots" />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-3xl font-extrabold text-balance text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
           <p
-            className="mx-auto max-w-xl text-base text-balance md:text-lg"
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
             style={{ color: BODY_TEXT }}
           >
             {t('description')}
@@ -256,7 +256,7 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="space-y-4 rounded-2xl border bg-black/32 p-7 transition-colors hover:border-white/20"
+              className="bg-black/32 space-y-4 rounded-2xl border p-7 transition-colors hover:border-white/20"
               style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
             >
               <div
@@ -305,7 +305,7 @@ export function Testimonial() {
     <section className="relative overflow-hidden py-16 md:py-20">
       <DotPattern className="text-primary/50" />
       <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
           {/* Quote Icon */}
           <div className="flex justify-center">
@@ -313,7 +313,7 @@ export function Testimonial() {
           </div>
 
           {/* Quote Text */}
-          <blockquote className="text-2xl leading-relaxed font-bold text-balance text-white md:text-3xl lg:text-4xl">
+          <blockquote className="text-balance text-2xl font-bold leading-relaxed text-white md:text-3xl lg:text-4xl">
             {t('quote')}
           </blockquote>
 
@@ -374,7 +374,7 @@ export function Stats() {
     >
       <DotPattern className="text-primary/40" />
       <div className="from-background/80 to-background/80 absolute inset-0 bg-gradient-to-r via-transparent" />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
@@ -425,20 +425,20 @@ export function HowItWorks() {
       <SectionBackground variant="grid" />
       <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
       <div
-        className="pointer-events-none absolute top-[48%] left-1/2 h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
+        className="pointer-events-none absolute left-1/2 top-[48%] h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
         style={{
           background:
             'radial-gradient(circle, rgba(0,255,163,0.10) 0%, rgba(34,197,94,0.07) 34%, rgba(0,0,0,0) 72%)',
         }}
         aria-hidden="true"
       />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-3xl font-extrabold text-balance text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
             {t('title')}
           </h2>
           <p
-            className="mx-auto max-w-xl text-base text-balance md:text-lg"
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
             style={{ color: '#D1D5DB' }}
           >
             {t('description')}
@@ -451,7 +451,7 @@ export function HowItWorks() {
               {/* Connector line for desktop */}
               {index < steps.length - 1 ? (
                 <div
-                  className="absolute top-12 left-[62%] hidden h-px w-[76%] md:block"
+                  className="absolute left-[62%] top-12 hidden h-px w-[76%] md:block"
                   style={{
                     background:
                       'linear-gradient(90deg, rgba(34,197,94,0.24) 0%, rgba(209,213,219,0.18) 100%)',
@@ -472,7 +472,7 @@ export function HowItWorks() {
                     <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
                   </div>
                   <span
-                    className="absolute top-0 right-0 flex h-8 w-8 translate-x-1/4 -translate-y-1/4 items-center justify-center rounded-full text-[11px] font-bold"
+                    className="absolute right-0 top-0 flex h-8 w-8 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full text-[11px] font-bold"
                     style={{ backgroundColor: BRAND_GREEN_BRIGHT, color: '#000000' }}
                   >
                     {item.step}
@@ -494,9 +494,9 @@ export function HowItWorks() {
 export function Hero() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
   return (
-    <section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-20">
+    <section className="relative overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32">
       <HeroBackground />
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="container relative z-10 mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Content */}
           <div className="space-y-6">
@@ -524,7 +524,7 @@ export function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-4xl leading-tight font-extrabold text-balance text-white md:text-6xl lg:text-[4.6rem]">
+            <h1 className="text-balance text-4xl font-extrabold leading-tight text-white md:text-6xl lg:text-[4.6rem]">
               {t('title1')}
               <br />
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('title2')}</span>

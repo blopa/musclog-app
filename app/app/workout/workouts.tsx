@@ -329,29 +329,29 @@ export default function WorkoutsScreen() {
           <View className="mx-4 mb-8 gap-4">
             {/* Interrupted Session Banner */}
             {interruptedWorkoutLog ? (
-              <View className="bg-bg-primary z-10">
+              <View className="z-10 bg-bg-primary">
                 <View
-                  className="bg-bg-card flex-row items-center gap-4 rounded-xl border p-4 shadow-sm"
+                  className="flex-row items-center gap-4 rounded-xl border bg-bg-card p-4 shadow-sm"
                   style={{ borderColor: theme.colors.background.white5 }}
                 >
-                  <View className="bg-accent-primary/10 h-10 w-10 items-center justify-center rounded-full">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary/10">
                     <Repeat size={theme.iconSize.md} color={theme.colors.accent.primary} />
                   </View>
                   <View className="flex-1">
                     <View className="flex-row items-center justify-between">
                       <Text
-                        className="text-text-primary flex-1 text-base font-bold"
+                        className="flex-1 text-base font-bold text-text-primary"
                         numberOfLines={1}
                       >
                         {interruptedWorkoutLog.workoutName ?? t('freeTraining.title')}
                       </Text>
-                      <View className="bg-accent-primary/10 ml-2 rounded-full px-2 py-0.5">
-                        <Text className="text-text-accent text-[10px] font-bold tracking-wider uppercase">
+                      <View className="ml-2 rounded-full bg-accent-primary/10 px-2 py-0.5">
+                        <Text className="text-[10px] font-bold uppercase tracking-wider text-text-accent">
                           {t('workout.inProgress')}
                         </Text>
                       </View>
                     </View>
-                    <Text className="text-text-secondary text-xs" numberOfLines={1}>
+                    <Text className="text-xs text-text-secondary" numberOfLines={1}>
                       {t('workouts.interruptedSession.description')}
                     </Text>
                     <View className="mt-3 flex-row gap-2">
@@ -396,7 +396,7 @@ export default function WorkoutsScreen() {
               <>
                 {/* Featured Workout Skeleton */}
                 <View
-                  className="bg-bg-card rounded-lg border p-5"
+                  className="rounded-lg border bg-bg-card p-5"
                   style={{ borderColor: theme.colors.background.white5 }}
                 >
                   <View className="mb-4 flex-row items-start justify-between">
@@ -429,7 +429,7 @@ export default function WorkoutsScreen() {
                 {[1, 2, 3].map((i) => (
                   <View
                     key={i}
-                    className="bg-bg-card rounded-lg border p-4"
+                    className="rounded-lg border bg-bg-card p-4"
                     style={{ borderColor: theme.colors.background.white5 }}
                   >
                     <View className="flex-row items-center gap-3">

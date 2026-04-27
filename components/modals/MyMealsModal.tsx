@@ -481,9 +481,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         />
       }
     >
-      <View className="bg-bg-primary flex-1">
+      <View className="flex-1 bg-bg-primary">
         {/* Header */}
-        <View className="px-4 pt-6 pb-4">
+        <View className="px-4 pb-4 pt-6">
           {/* Search Input */}
           <TextInput
             label=""

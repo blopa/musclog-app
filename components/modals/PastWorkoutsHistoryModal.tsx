@@ -46,7 +46,7 @@ function SearchAndFilterHeader({
 
   return (
     <View
-      className="px-4 pt-4 pb-4"
+      className="px-4 pb-4 pt-4"
       style={{
         backgroundColor: theme.colors.background.darkBackground,
       }}
@@ -306,7 +306,7 @@ function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMo
   return (
     <View>
       <Text
-        className="mb-3 px-1 font-bold tracking-widest uppercase"
+        className="mb-3 px-1 font-bold uppercase tracking-widest"
         style={{
           fontSize: theme.typography.fontSize.xs,
           color: theme.colors.text.secondary,

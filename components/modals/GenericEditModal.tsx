@@ -130,7 +130,7 @@ export function GenericEditModal({
     if (field.key === 'value' && formValues.type === 'supplement') {
       return (
         <View key={field.key} className="gap-2">
-          <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+          <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
           <SegmentedControl
             options={[
               { label: t('bodyMetrics.addEntry.notTaken'), value: '0' },
@@ -146,7 +146,7 @@ export function GenericEditModal({
     if (field.key === 'value' && formValues.type === 'mood') {
       return (
         <View key={field.key} className="gap-2">
-          <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+          <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
           <SegmentedControl
             options={[0, 1, 2, 3, 4].map((moodValue) => ({
               label: t(`bodyMetrics.addEntry.moods.${moodValue}`),
@@ -240,7 +240,7 @@ export function GenericEditModal({
         if (options.length <= 3) {
           return (
             <View key={field.key} className="gap-2">
-              <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+              <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
               <SegmentedControl
                 options={options.map((opt) => ({
                   label: t(opt.label, opt.label),
@@ -274,16 +274,16 @@ export function GenericEditModal({
 
         return (
           <View key={field.key} className="gap-2">
-            <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
             <Pressable
               onPress={() => {
                 setCurrentSelectFieldKey(field.key);
                 setSelectMenuVisible(true);
               }}
-              className="border-border-default bg-bg-overlay overflow-hidden rounded-lg border active:opacity-70"
+              className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
             >
               <View className="flex-row items-center justify-between px-4 py-3">
-                <Text className="text-text-primary min-w-0 flex-1 text-base">{selectedLabel}</Text>
+                <Text className="min-w-0 flex-1 text-base text-text-primary">{selectedLabel}</Text>
                 <View className="shrink-0 justify-center pl-2">
                   <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
                 </View>
@@ -387,7 +387,7 @@ export function GenericEditModal({
     >
       {isLoading ? (
         <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-text-secondary text-base">{t('common.loading')}</Text>
+          <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
         <ScrollView className="px-4 py-6">

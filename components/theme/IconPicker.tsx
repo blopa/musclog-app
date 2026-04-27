@@ -52,10 +52,10 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
 
   return (
     <View className="gap-2">
-      {label ? <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text> : null}
+      {label ? <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text> : null}
       <Pressable
         onPress={() => setModalVisible(true)}
-        className="border-border-default bg-bg-overlay overflow-hidden rounded-lg border active:opacity-70"
+        className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
       >
         <View className="flex-row items-center justify-between px-4 py-3">
           <View className="min-w-0 flex-1 flex-row items-center gap-3">
@@ -69,7 +69,7 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
                 color={theme.colors.accent.primary}
               />
             </View>
-            <Text className="text-text-primary text-base">
+            <Text className="text-base text-text-primary">
               {selectedIcon || t('common.selectIcon')}
             </Text>
           </View>

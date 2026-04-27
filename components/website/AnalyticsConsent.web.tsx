@@ -69,7 +69,7 @@ export function AnalyticsConsent() {
   }
 
   return (
-    <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-[180] flex justify-center p-4 md:p-6">
+    <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-[180] flex justify-center p-4 md:p-6">
       <div
         role="dialog"
         aria-label={t('ariaLabel')}
@@ -105,7 +105,7 @@ export function AnalyticsConsent() {
           <button
             type="button"
             onClick={reject}
-            className="flex-1 rounded-full border px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/8 sm:flex-none"
+            className="hover:bg-white/8 flex-1 rounded-full border px-4 py-2 text-sm font-semibold text-white transition-colors sm:flex-none"
             style={{ borderColor: 'rgba(255,255,255,0.16)' }}
           >
             {t('reject')}

@@ -48,7 +48,7 @@ export function FilterTabs({
           <Pressable
             key={tab.id}
             className={`flex-row items-center rounded-full px-6 py-2.5 ${
-              isActive ? 'bg-accent-primary' : 'border-border-light bg-bg-filterTab border'
+              isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
             style={{
               marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0,

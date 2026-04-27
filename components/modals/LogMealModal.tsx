@@ -157,14 +157,14 @@ export function LogMealModal({
       scrollable
       closable={!isLogging}
     >
-      <View className="mt-6 mb-6 gap-6 px-4">
+      <View className="mb-6 mt-6 gap-6 px-4">
         <MealNutritionHighlightCard
           header={
             <View className="mb-4 flex-row items-start justify-between">
               <View className="flex-1">
                 <View className="mb-2 flex-row items-center gap-2">
                   <Text
-                    className="text-xs font-semibold tracking-wider uppercase"
+                    className="text-xs font-semibold uppercase tracking-wider"
                     style={{
                       color: theme.colors.text.secondary,
                       backgroundColor: theme.colors.background.white5,
@@ -187,7 +187,7 @@ export function LogMealModal({
                   ) : null}
                 </View>
                 <Text
-                  className="mb-1 text-2xl leading-tight font-bold tracking-tight"
+                  className="mb-1 text-2xl font-bold leading-tight tracking-tight"
                   style={{ color: theme.colors.text.primary }}
                 >
                   {meal.name}
@@ -225,7 +225,7 @@ export function LogMealModal({
         {/* Meal Type Selector */}
         <View>
           <Text
-            className="mb-3 text-xs font-bold tracking-wider uppercase"
+            className="mb-3 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('meals.mealType')}

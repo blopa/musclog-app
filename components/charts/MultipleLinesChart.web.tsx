@@ -110,7 +110,7 @@ export function MultipleLinesChart({
         <View className="mb-6">
           {title != null ? (
             <Text
-              className="text-text-primary text-xl font-semibold"
+              className="text-xl font-semibold text-text-primary"
               style={{ fontSize: theme.typography.fontSize.xl }}
             >
               {title}
@@ -118,7 +118,7 @@ export function MultipleLinesChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="text-text-secondary mt-0.5 text-sm"
+              className="mt-0.5 text-sm text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.sm, marginTop: 2 }}
             >
               {subtitle}
@@ -393,7 +393,7 @@ export function MultipleLinesChart({
 
       {series.length > 0 ? (
         <View
-          className="border-border-default flex-row items-center justify-around border-t pt-6"
+          className="flex-row items-center justify-around border-t border-border-default pt-6"
           style={{
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,

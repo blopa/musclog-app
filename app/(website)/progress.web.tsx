@@ -139,7 +139,7 @@ function PresetPill({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-full border px-3 py-2 text-xs font-bold tracking-[0.18em] uppercase transition-colors"
+      className="rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] transition-colors"
       style={{
         backgroundColor: active ? BRAND_GREEN : 'rgba(255,255,255,0.04)',
         borderColor: active ? BRAND_GREEN : 'rgba(255,255,255,0.1)',
@@ -213,7 +213,7 @@ function StatCard({
           {icon}
         </div>
         <span
-          className="text-[11px] font-semibold tracking-[0.22em] uppercase"
+          className="text-[11px] font-semibold uppercase tracking-[0.22em]"
           style={{ color: SOFT_TEXT }}
         >
           {label}
@@ -517,23 +517,23 @@ function EmptyState({
   fileName: string | null;
 }) {
   return (
-    <main className="relative overflow-hidden pt-24 pb-24 md:pt-28">
+    <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
       <GridPattern className="text-primary/35" />
       <FloatingShapes />
       <div
-        className="absolute top-36 left-1/4 h-72 w-72 rounded-full blur-[120px]"
+        className="absolute left-1/4 top-36 h-72 w-72 rounded-full blur-[120px]"
         style={{ backgroundColor: 'rgba(0,255,163,0.10)' }}
       />
       <div
-        className="absolute right-1/4 bottom-16 h-64 w-64 rounded-full blur-[100px]"
+        className="absolute bottom-16 right-1/4 h-64 w-64 rounded-full blur-[100px]"
         style={{ backgroundColor: 'rgba(34,211,238,0.08)' }}
       />
 
-      <div className="relative z-10 container mx-auto max-w-6xl px-4">
+      <div className="container relative z-10 mx-auto max-w-6xl px-4">
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
             <div
-              className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold tracking-[0.22em] uppercase"
+              className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
               style={{
                 borderColor: 'rgba(34,197,94,0.22)',
                 color: BRAND_GREEN_BRIGHT,
@@ -596,7 +596,7 @@ function EmptyState({
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <div
-                  className="text-sm font-semibold tracking-[0.22em] uppercase"
+                  className="text-sm font-semibold uppercase tracking-[0.22em]"
                   style={{ color: BRAND_GREEN_BRIGHT }}
                 >
                   {t('website.progress.importCard.badge')}
@@ -616,7 +616,7 @@ function EmptyState({
 
             <label className="mt-6 block">
               <span
-                className="mb-2 block text-xs font-semibold tracking-[0.18em] uppercase"
+                className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em]"
                 style={{ color: SOFT_TEXT }}
               >
                 {t('website.progress.importCard.passphraseLabel')}
@@ -626,7 +626,7 @@ function EmptyState({
                 value={decryptionPhrase}
                 onChange={(event) => onPhraseChange(event.target.value)}
                 placeholder={t('website.progress.importCard.passphrasePlaceholder')}
-                className="w-full rounded-2xl border px-4 py-3 text-sm text-white transition-colors outline-none"
+                className="w-full rounded-2xl border px-4 py-3 text-sm text-white outline-none transition-colors"
                 style={{
                   backgroundColor: 'rgba(255,255,255,0.05)',
                   borderColor: 'rgba(255,255,255,0.10)',
@@ -967,19 +967,19 @@ export default function ProgressWebsitePage() {
         onChange={handleFileSelected}
       />
 
-      <main className="relative overflow-hidden pt-24 pb-24 md:pt-28">
+      <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
         <GridPattern className="text-primary/35" />
         <FloatingShapes />
         <div
-          className="absolute top-28 left-1/4 h-72 w-72 rounded-full blur-[120px]"
+          className="absolute left-1/4 top-28 h-72 w-72 rounded-full blur-[120px]"
           style={{ backgroundColor: 'rgba(0,255,163,0.08)' }}
         />
         <div
-          className="absolute right-1/4 bottom-24 h-72 w-72 rounded-full blur-[120px]"
+          className="absolute bottom-24 right-1/4 h-72 w-72 rounded-full blur-[120px]"
           style={{ backgroundColor: 'rgba(34,211,238,0.08)' }}
         />
 
-        <div className="relative z-10 container mx-auto max-w-7xl space-y-8 px-4">
+        <div className="container relative z-10 mx-auto max-w-7xl space-y-8 px-4">
           <section
             className="rounded-[32px] border p-6 md:p-8"
             style={{
@@ -990,7 +990,7 @@ export default function ProgressWebsitePage() {
             <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div>
                 <div
-                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold tracking-[0.22em] uppercase"
+                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
                   style={{
                     borderColor: 'rgba(34,197,94,0.22)',
                     color: BRAND_GREEN_BRIGHT,
@@ -1340,7 +1340,7 @@ export default function ProgressWebsitePage() {
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="rounded-2xl bg-white/[0.03] p-4">
                           <div
-                            className="text-xs tracking-[0.18em] uppercase"
+                            className="text-xs uppercase tracking-[0.18em]"
                             style={{ color: SOFT_TEXT }}
                           >
                             {t('website.progress.sections.mood.totalEntries')}
@@ -1351,7 +1351,7 @@ export default function ProgressWebsitePage() {
                         </div>
                         <div className="rounded-2xl bg-white/[0.03] p-4">
                           <div
-                            className="text-xs tracking-[0.18em] uppercase"
+                            className="text-xs uppercase tracking-[0.18em]"
                             style={{ color: SOFT_TEXT }}
                           >
                             {t('website.progress.sections.mood.averageScore')}

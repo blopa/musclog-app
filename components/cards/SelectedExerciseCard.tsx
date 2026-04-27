@@ -55,7 +55,7 @@ export function SelectedExerciseCard({
         {/* Exercise Info */}
         <View className="min-w-0 flex-1">
           <Text
-            className="mb-0.5 font-extrabold tracking-widest uppercase"
+            className="mb-0.5 font-extrabold uppercase tracking-widest"
             style={{
               fontSize: theme.typography.fontSize.xxs + 2, // 10px
               color: theme.colors.accent.primary,
@@ -64,7 +64,7 @@ export function SelectedExerciseCard({
             Selected Exercise
           </Text>
           <Text
-            className="leading-tight font-bold"
+            className="font-bold leading-tight"
             numberOfLines={1}
             style={{
               fontSize: theme.typography.fontSize.lg,

@@ -150,11 +150,11 @@ export default function Terms() {
       <Head>
         <title>{t('pageTitle')}</title>
       </Head>
-      <main className="relative overflow-hidden pt-24 pb-20">
+      <main className="relative overflow-hidden pb-20 pt-24">
         <DotPattern className="text-primary/30" />
         <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 container mx-auto max-w-5xl px-4">
+        <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
             <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">

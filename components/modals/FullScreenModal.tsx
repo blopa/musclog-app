@@ -74,7 +74,7 @@ export function FullScreenModal({
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       <View
-        className="bg-bg-primary flex-1"
+        className="flex-1 bg-bg-primary"
         pointerEvents="auto"
         style={[
           webModalStyle,
@@ -86,7 +86,7 @@ export function FullScreenModal({
       >
         {/* Header */}
         {showHeader ? (
-          <View className="border-border-light bg-bg-primary border-b">
+          <View className="border-b border-border-light bg-bg-primary">
             <LinearGradient
               colors={
                 withGradient
@@ -113,9 +113,9 @@ export function FullScreenModal({
                 </Pressable>
               ) : null}
               <View style={{ flex: 1 }}>
-                <Text className="text-text-primary text-xl font-bold tracking-tight">{title}</Text>
+                <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
                 {subtitle ? (
-                  <Text className="text-text-secondary mt-0.5 text-sm font-normal">{subtitle}</Text>
+                  <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
                 ) : null}
               </View>
               {headerRight ? <View style={{ marginRight: -8 }}>{headerRight}</View> : null}

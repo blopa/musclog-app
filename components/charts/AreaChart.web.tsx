@@ -129,7 +129,7 @@ export function AreaChart({
         <View style={{ marginBottom: 0 }}>
           {title != null ? (
             <Text
-              className="text-text-primary text-xl font-semibold"
+              className="text-xl font-semibold text-text-primary"
               style={{ fontSize: theme.typography.fontSize.xl }}
             >
               {title}
@@ -137,7 +137,7 @@ export function AreaChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="text-text-secondary mt-0.5 text-sm"
+              className="mt-0.5 text-sm text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.sm, marginTop: 0 }}
             >
               {subtitle}
@@ -386,7 +386,7 @@ export function AreaChart({
 
       {series.length > 0 ? (
         <View
-          className="border-border-default flex-row justify-around border-t"
+          className="flex-row justify-around border-t border-border-default"
           style={{
             marginTop: 14,
             paddingTop: 10,

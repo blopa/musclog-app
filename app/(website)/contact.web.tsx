@@ -58,21 +58,21 @@ export default function Contact() {
       <Head>
         <title>{t('pageTitle')}</title>
       </Head>
-      <main className="relative overflow-hidden pt-28 pb-20">
+      <main className="relative overflow-hidden pb-20 pt-28">
         <GridPattern className="text-primary/50" />
         <FloatingShapes />
 
         <div
-          className="absolute top-40 left-1/4 h-72 w-72 rounded-full blur-[100px]"
+          className="absolute left-1/4 top-40 h-72 w-72 rounded-full blur-[100px]"
           style={{ backgroundColor: 'rgba(0,255,163,0.10)' }}
         />
         <div
-          className="absolute right-1/4 bottom-20 h-64 w-64 rounded-full blur-[80px]"
+          className="absolute bottom-20 right-1/4 h-64 w-64 rounded-full blur-[80px]"
           style={{ backgroundColor: 'rgba(6,182,212,0.10)' }}
         />
         <div className="from-background/30 to-background/30 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 container mx-auto max-w-5xl px-4">
+        <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-12 text-center">
             <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
@@ -109,7 +109,7 @@ export default function Contact() {
                         setForm({ ...form, name: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none"
+                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
                       style={{
                         backgroundColor: 'rgba(255,255,255,0.05)',
                         borderColor: 'rgba(255,255,255,0.12)',
@@ -129,7 +129,7 @@ export default function Contact() {
                         setForm({ ...form, email: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none"
+                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
                       style={{
                         backgroundColor: 'rgba(255,255,255,0.05)',
                         borderColor: 'rgba(255,255,255,0.12)',
@@ -151,7 +151,7 @@ export default function Contact() {
                       setForm({ ...form, subject: (e.target as HTMLInputElement).value })
                     }
                     required
-                    className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none"
+                    className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.05)',
                       borderColor: 'rgba(255,255,255,0.12)',
@@ -172,7 +172,7 @@ export default function Contact() {
                       setForm({ ...form, message: (e.target as HTMLTextAreaElement).value })
                     }
                     required
-                    className="w-full resize-none rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none"
+                    className="w-full resize-none rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.05)',
                       borderColor: 'rgba(255,255,255,0.12)',
@@ -256,7 +256,7 @@ export default function Contact() {
                   style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                 >
                   <p
-                    className="mb-3 text-xs font-semibold tracking-widest uppercase"
+                    className="mb-3 text-xs font-semibold uppercase tracking-widest"
                     style={{ color: MUTED }}
                   >
                     {t('connect.follow')}

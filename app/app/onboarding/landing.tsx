@@ -133,7 +133,7 @@ export default function LandingScreen() {
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
         {/* Import Button - Top Right */}
         <TouchableOpacity
-          className="absolute top-4 right-4 z-10 rounded-lg p-2"
+          className="absolute right-4 top-4 z-10 rounded-lg p-2"
           style={{
             backgroundColor: theme.colors.background.black30,
             opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
@@ -176,7 +176,7 @@ export default function LandingScreen() {
             <View className="mt-4 items-center gap-2">
               {/* App Name */}
               <Text
-                className="leading-none font-black tracking-tight"
+                className="font-black leading-none tracking-tight"
                 style={{
                   color: theme.colors.text.white,
                   fontSize: theme.typography.fontSize['4xl'],
@@ -215,7 +215,7 @@ export default function LandingScreen() {
           </View>
 
           {/* Loading state or button block */}
-          <View className="gap-3 pt-4 pb-8">
+          <View className="gap-3 pb-8 pt-4">
             {isInitializing ? (
               <View className="items-center gap-4">
                 {initPhase === 'migrating' ? (

@@ -66,7 +66,7 @@ export default function NewNumericalInput({
   return (
     <View className="w-full">
       <Text
-        className={`text-xs font-semibold tracking-wide uppercase ${isCompact ? 'mb-1.5' : 'mb-3'}`}
+        className={`text-xs font-semibold uppercase tracking-wide ${isCompact ? 'mb-1.5' : 'mb-3'}`}
         style={{ color: theme.colors.background.workoutIcon }}
       >
         {label}

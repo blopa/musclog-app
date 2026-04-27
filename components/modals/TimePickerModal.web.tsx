@@ -191,7 +191,7 @@ export function TimePickerModal({
           />
           <Pressable onPress={onClose} className="py-2">
             <Text
-              className="font-semibold tracking-widest uppercase"
+              className="font-semibold uppercase tracking-widest"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.white, 0.4),
@@ -204,7 +204,7 @@ export function TimePickerModal({
         </View>
       }
     >
-      <View className="bg-bg-primary flex-1 flex-col items-center justify-start gap-8 pt-4 pb-8">
+      <View className="flex-1 flex-col items-center justify-start gap-8 bg-bg-primary pb-8 pt-4">
         {/* Time display */}
         <View className="items-center gap-2">
           <View className="flex-row items-end">
@@ -275,7 +275,7 @@ export function TimePickerModal({
           <View className="relative" style={{ height: PICKER_VIEW_HEIGHT }}>
             {/* Selection highlight */}
             <View
-              className="absolute right-0 left-0 rounded-xl"
+              className="absolute left-0 right-0 rounded-xl"
               style={{
                 top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
                 height: ITEM_HEIGHT,

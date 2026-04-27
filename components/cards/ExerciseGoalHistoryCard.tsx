@@ -41,7 +41,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
     <View className="relative mb-6 flex-row gap-4">
       {!isLast ? (
         <View
-          className="absolute top-10 left-[19px]"
+          className="absolute left-[19px] top-10"
           style={{
             bottom: -24,
             width: 0.5,
@@ -51,7 +51,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
       ) : null}
 
       <View
-        className="bg-bg-card relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border"
+        className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-bg-card"
         style={{ borderColor: theme.colors.accent.secondary }}
       >
         <History size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -59,9 +59,9 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
 
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
-          <Text className="text-text-secondary text-xs font-semibold">{dateRange}</Text>
+          <Text className="text-xs font-semibold text-text-secondary">{dateRange}</Text>
           <View className="bg-surface-variant rounded-full px-2 py-0.5">
-            <Text className="text-text-secondary text-[10px] font-bold tracking-wider uppercase">
+            <Text className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
               {t(`exerciseGoals.goalTypes.${goal.goalType}`)}
             </Text>
           </View>
@@ -69,15 +69,15 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
 
         <GenericCard variant="card">
           <View className="p-3">
-            <Text className="text-text-primary text-base font-bold">
+            <Text className="text-base font-bold text-text-primary">
               {goal.exerciseNameSnapshot || t('exerciseGoals.goalTypes.consistency')}
             </Text>
             {goal.goalType === '1rm' ? (
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
               </Text>
             ) : (
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {goal.targetSessionsPerWeek} sessions per week
               </Text>
             )}

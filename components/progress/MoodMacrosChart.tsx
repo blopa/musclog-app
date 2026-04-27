@@ -54,7 +54,7 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
       <ProgressChartSection title={t('progress.correlationView.moodMacros')}>
         {aggregationToggle}
         <View className="items-center justify-center py-10">
-          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );

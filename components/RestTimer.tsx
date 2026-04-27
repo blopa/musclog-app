@@ -86,7 +86,7 @@ export function RestTimer({ restTime, rotationAnim, initialRestTime }: RestTimer
       {/* Timer Text */}
       <View className="absolute inset-0 items-center justify-center">
         <Text
-          className="text-text-primary leading-none font-bold tracking-tighter tabular-nums"
+          className="font-bold tabular-nums leading-none tracking-tighter text-text-primary"
           style={{ fontSize: theme.typography.fontSize['7xl'] }}
         >
           {formatRestTime(restTime)}
@@ -95,7 +95,7 @@ export function RestTimer({ restTime, rotationAnim, initialRestTime }: RestTimer
           <Animated.View style={{ transform: [{ rotate: spin }] }}>
             <Activity size={theme.iconSize.lg} color={theme.colors.text.secondary} />
           </Animated.View>
-          <Text className="text-text-secondary text-lg font-medium tracking-wide">
+          <Text className="text-lg font-medium tracking-wide text-text-secondary">
             {t('restTimer.resting')}
           </Text>
         </View>

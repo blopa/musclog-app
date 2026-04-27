@@ -48,7 +48,7 @@ export function CenteredModal({
         <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
         <View className="flex-1 items-center justify-center p-4" pointerEvents="box-none">
           <View
-            className="border-border-dark w-full overflow-hidden rounded-xl border"
+            className="w-full overflow-hidden rounded-xl border border-border-dark"
             style={{
               backgroundColor: theme.colors.background.cardElevated,
               maxWidth: maxWidth || theme.size['384'],
@@ -70,9 +70,9 @@ export function CenteredModal({
             >
               <View className="flex-row items-center justify-between px-4 py-5">
                 <View className="flex-1">
-                  <Text className="text-text-primary text-xl font-bold">{title}</Text>
+                  <Text className="text-xl font-bold text-text-primary">{title}</Text>
                   {subtitle ? (
-                    <Text className="text-text-secondary mt-1 text-xs font-medium">{subtitle}</Text>
+                    <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
                   ) : null}
                 </View>
                 <Pressable
@@ -90,7 +90,7 @@ export function CenteredModal({
 
             {/* Footer */}
             {footer ? (
-              <View className="border-border-dark bg-bg-overlay/50 border-t px-4 py-4">
+              <View className="border-t border-border-dark bg-bg-overlay/50 px-4 py-4">
                 {footer}
               </View>
             ) : null}

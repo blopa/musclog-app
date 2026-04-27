@@ -416,7 +416,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
         {/* Create Set Card */}
         <View
-          className="bg-bg-card rounded-2xl border p-5"
+          className="rounded-2xl border bg-bg-card p-5"
           style={{ borderColor: theme.colors.background.white5 }}
         >
           <View className="mb-6 flex-row items-center justify-between">

@@ -65,12 +65,12 @@ export function CaloriesRemainingCard({
         <View className="mb-6">
           <View className="flex-row items-start justify-between">
             <View className="flex-1">
-              <Text className="text-text-secondary mb-2 text-sm">{t('food.calories')}</Text>
+              <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
               <View className="mb-1 flex-row items-baseline gap-2">
-                <Text className="text-text-primary text-6xl font-bold">
+                <Text className="text-6xl font-bold text-text-primary">
                   {formatInteger(Math.round(calories.consumed), { useGrouping: false })}
                 </Text>
-                <Text className="text-text-secondary text-2xl">
+                <Text className="text-2xl text-text-secondary">
                   / {formatInteger(Math.round(calories.total), { useGrouping: false })}
                 </Text>
                 <Text

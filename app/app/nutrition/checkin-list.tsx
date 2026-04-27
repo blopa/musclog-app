@@ -88,7 +88,7 @@ export default function CheckinListScreen() {
     <MasterLayout>
       <ScrollView className="flex-1" contentContainerStyle={{ padding: theme.spacing.margin.lg }}>
         <AnimatedContent>
-          <Text className="text-text-primary mb-6 text-3xl font-bold">
+          <Text className="mb-6 text-3xl font-bold text-text-primary">
             {t('nutrition.checkin.title')}
           </Text>
 
@@ -96,7 +96,7 @@ export default function CheckinListScreen() {
           <View className="mb-8">
             <View className="mb-4 flex-row items-center gap-2">
               <Calendar size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('nutrition.checkin.nextMilestones')}
               </Text>
             </View>
@@ -106,20 +106,20 @@ export default function CheckinListScreen() {
                 <Pressable
                   key={c.id}
                   onPress={() => setSelectedCheckinId(c.id)}
-                  className="bg-bg-card overflow-hidden rounded-2xl shadow-sm"
+                  className="overflow-hidden rounded-2xl bg-bg-card shadow-sm"
                 >
                   <View className="flex-row items-center justify-between p-4">
                     <View className="min-w-0 flex-1">
-                      <Text className="text-text-primary mb-1 text-lg font-bold">
+                      <Text className="mb-1 text-lg font-bold text-text-primary">
                         {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
                       </Text>
-                      <Text className="text-text-secondary text-sm">
+                      <Text className="text-sm text-text-secondary">
                         {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                       </Text>
                     </View>
                     <View className="shrink-0 flex-row items-center gap-3 pl-2">
-                      <View className="bg-accent-primary rounded-full px-4 py-2">
-                        <Text className="text-bg-primary text-sm font-bold">
+                      <View className="rounded-full bg-accent-primary px-4 py-2">
+                        <Text className="text-sm font-bold text-bg-primary">
                           {t('nutrition.checkin.prepareNow')}
                         </Text>
                       </View>
@@ -129,8 +129,8 @@ export default function CheckinListScreen() {
                 </Pressable>
               ))
             ) : (
-              <View className="border-border-dark bg-bg-card items-center justify-center rounded-2xl border border-dashed p-8">
-                <Text className="text-text-secondary text-center">
+              <View className="items-center justify-center rounded-2xl border border-dashed border-border-dark bg-bg-card p-8">
+                <Text className="text-center text-text-secondary">
                   {t('nutrition.checkin.noMilestones')}
                 </Text>
               </View>
@@ -142,15 +142,15 @@ export default function CheckinListScreen() {
             <View className="mb-4 flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
                 <History size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+                <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                   {t('nutrition.checkin.history')}
                 </Text>
               </View>
               <Pressable
                 onPress={() => setIsYearModalVisible(true)}
-                className="bg-bg-overlay rounded-full px-3 py-1"
+                className="rounded-full bg-bg-overlay px-3 py-1"
               >
-                <Text className="text-text-primary text-xs font-bold">{selectedYear}</Text>
+                <Text className="text-xs font-bold text-text-primary">{selectedYear}</Text>
               </Pressable>
             </View>
 
@@ -160,14 +160,14 @@ export default function CheckinListScreen() {
                   <Pressable
                     key={c.id}
                     onPress={() => setSelectedCheckinId(c.id)}
-                    className="bg-bg-card overflow-hidden rounded-2xl"
+                    className="overflow-hidden rounded-2xl bg-bg-card"
                   >
                     <View className="flex-row items-center justify-between p-4">
                       <View className="min-w-0 flex-1">
-                        <Text className="text-text-primary mb-1 font-bold">
+                        <Text className="mb-1 font-bold text-text-primary">
                           {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
                         </Text>
-                        <Text className="text-text-secondary text-xs">
+                        <Text className="text-xs text-text-secondary">
                           {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                         </Text>
                       </View>

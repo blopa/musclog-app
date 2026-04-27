@@ -97,7 +97,7 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
       footer={footer}
       scrollable
     >
-      <View className="items-center px-4 pt-8 pb-6">
+      <View className="items-center px-4 pb-6 pt-8">
         <LinearGradient
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}

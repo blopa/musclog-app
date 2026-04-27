@@ -16,7 +16,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
   const renderStat = (label: string, value: string, colorClass: string) => (
     <View className="flex-1 items-center justify-center p-2">
-      <Text className="text-text-tertiary text-[10px] tracking-wider uppercase">{label}</Text>
+      <Text className="text-[10px] uppercase tracking-wider text-text-tertiary">{label}</Text>
       <Text className={`text-lg font-bold ${colorClass}`}>{value}</Text>
     </View>
   );
@@ -35,17 +35,17 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       {avg ? (
         <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
-            <Text className="text-text-primary mt-2 mb-1 ml-2 text-sm font-bold">
+            <Text className="mb-1 ml-2 mt-2 text-sm font-bold text-text-primary">
               {t('progress.averageIntakeTitle')}
             </Text>
-            <Text className="text-text-tertiary mb-2 ml-2 text-[10px] tracking-wider uppercase">
+            <Text className="mb-2 ml-2 text-[10px] uppercase tracking-wider text-text-tertiary">
               {t('progress.averageIntakeSubtitle', { count: avg.dayCount })}
             </Text>
-            <View className="border-border-light border-b py-3">
-              <Text className="text-text-tertiary text-center text-[10px] tracking-wider uppercase">
+            <View className="border-b border-border-light py-3">
+              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
                 {t('progress.nutritionView.calories')}
               </Text>
-              <Text className="text-accent-primary text-center text-xl font-bold">
+              <Text className="text-center text-xl font-bold text-accent-primary">
                 {formatInteger(Math.round(avg.calories))} {t('progress.kcal')}
               </Text>
             </View>
@@ -77,31 +77,31 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
-          <Text className="text-text-primary mt-2 mb-2 ml-2 text-sm font-bold">
+          <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
             {t('progress.metabolicSummary')}
           </Text>
           <View className="flex-row flex-wrap">
             {hasEmpiricalTdee ? (
-              <View className="border-border-light flex-1 items-center justify-center border-r p-2">
-                <Text className="text-text-tertiary text-center text-[10px] tracking-wider uppercase">
+              <View className="flex-1 items-center justify-center border-r border-border-light p-2">
+                <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
                   {t('progress.empiricalTdee')}
                 </Text>
-                <Text className="text-accent-primary text-lg font-bold">
+                <Text className="text-lg font-bold text-accent-primary">
                   {formatInteger(Math.round(insights.empiricalTdee))}
                 </Text>
-                <Text className="text-text-tertiary text-center text-[8px] uppercase">
+                <Text className="text-center text-[8px] uppercase text-text-tertiary">
                   {t('progress.basedOnRecentActivity')}
                 </Text>
               </View>
             ) : null}
             <View className="flex-1 items-center justify-center p-2">
-              <Text className="text-text-tertiary text-center text-[10px] tracking-wider uppercase">
+              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
                 {t('progress.statisticalTdee')}
               </Text>
-              <Text className="text-accent-secondary text-lg font-bold">
+              <Text className="text-lg font-bold text-accent-secondary">
                 {formatInteger(Math.round(insights.statisticalTdee))}
               </Text>
-              <Text className="text-text-tertiary text-center text-[8px] uppercase">
+              <Text className="text-center text-[8px] uppercase text-text-tertiary">
                 {t('progress.basedOnActivityLevel')}
               </Text>
             </View>
@@ -139,14 +139,14 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
-          <Text className="text-text-primary mt-2 mb-2 ml-2 text-sm font-bold">
+          <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
             {t('progress.bodyFatGoalWeights')}
           </Text>
           <View className="flex-row flex-wrap">
             {[5, 10, 15, 20].map((bf) => (
               <View key={bf} className="flex-1 items-center justify-center p-2">
-                <Text className="text-text-tertiary text-[10px]">{bf}%</Text>
-                <Text className="text-text-primary text-lg font-bold">
+                <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
+                <Text className="text-lg font-bold text-text-primary">
                   {formatDecimal((insights.targetWeights as any)[`bf${bf}`], 1)}
                 </Text>
               </View>

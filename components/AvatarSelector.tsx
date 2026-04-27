@@ -43,9 +43,9 @@ export function AvatarSelector({
 
   return (
     <View className="flex-col gap-2">
-      <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+      <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
 
-      <View className="bg-bg-card flex-row items-center gap-4 rounded-2xl border border-white/10 p-4">
+      <View className="flex-row items-center gap-4 rounded-2xl border border-white/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}
         <View className="flex-shrink-0">
           <View
@@ -76,7 +76,7 @@ export function AvatarSelector({
             <Pressable
               key={icon}
               className={`h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                selectedAvatar === icon ? 'border-transparent' : 'bg-bg-card border-transparent'
+                selectedAvatar === icon ? 'border-transparent' : 'border-transparent bg-bg-card'
               }`}
               onPress={() => onAvatarSelect(icon)}
             >
@@ -96,11 +96,11 @@ export function AvatarSelector({
       {/* Color Selection */}
       {showColorPicker ? (
         <View className="flex-col gap-2">
-          <Text className="text-text-secondary ml-1 text-sm font-medium">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">
             {t('editPersonalInfo.chooseColor')}
           </Text>
           <View
-            className="bg-bg-card rounded-2xl border border-white/10"
+            className="rounded-2xl border border-white/10 bg-bg-card"
             style={{
               paddingHorizontal: theme.spacing.padding['3half'],
             }}

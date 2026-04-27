@@ -133,13 +133,13 @@ export function PhaseWheel({
 
       {/* Center overlay */}
       <View className="absolute items-center justify-center">
-        <View className="bg-accent-primary mb-2 h-14 w-14 items-center justify-center rounded-full">
+        <View className="mb-2 h-14 w-14 items-center justify-center rounded-full bg-accent-primary">
           <Zap size={28} color={theme.colors.text.black} />
         </View>
-        <Text className="text-text-tertiary text-[10px] font-bold tracking-widest uppercase">
+        <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
           {t('focus.energyLevel')}
         </Text>
-        <Text className="text-text-primary text-3xl font-black capitalize">
+        <Text className="text-3xl font-black capitalize text-text-primary">
           {energyLevel || '--'}
         </Text>
       </View>

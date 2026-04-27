@@ -90,7 +90,7 @@ export function AiCustomPromptEditModal({
 
         <View className="gap-2">
           <Text
-            className="text-xs font-bold tracking-wider uppercase"
+            className="text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.aiSettings.promptContext')}
@@ -114,7 +114,7 @@ export function AiCustomPromptEditModal({
           ]}
         />
 
-        <View className="mt-2 mb-4 flex-row gap-4">
+        <View className="mb-4 mt-2 flex-row gap-4">
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
           <Button
             label={t('save')}

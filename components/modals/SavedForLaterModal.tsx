@@ -149,23 +149,23 @@ export function SavedForLaterModal({
         <GenericCard variant="card">
           <View className="flex-row items-center justify-between p-4">
             <View className="flex-1 pr-4">
-              <Text className="text-text-primary text-lg font-bold" numberOfLines={1}>
+              <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
                 {item.group.name}
               </Text>
-              <Text className="text-text-secondary text-xs">
+              <Text className="text-xs text-text-secondary">
                 {originalDate} • {mealTypeLabel}
               </Text>
               <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
-                <Text className="text-accent-primary text-sm font-semibold">
+                <Text className="text-sm font-semibold text-accent-primary">
                   {formatInteger(Math.round(item.nutrients.calories))} kcal
                 </Text>
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-xs text-text-secondary">
                   {Math.round(item.nutrients.protein)}g P
                 </Text>
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-xs text-text-secondary">
                   {Math.round(item.nutrients.carbs)}g C
                 </Text>
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-xs text-text-secondary">
                   {Math.round(item.nutrients.fat)}g F
                 </Text>
               </View>

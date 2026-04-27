@@ -95,10 +95,10 @@ export function EditPhysicalStatsBody({
 
   return (
     <>
-      <View className="gap-8 px-4 pt-2 pb-6">
+      <View className="gap-8 px-4 pb-6 pt-2">
         {/* Units */}
         <View className="gap-2">
-          <Text className="text-text-tertiary ml-1 text-sm font-semibold">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
             {t('editFitnessDetails.units')}
           </Text>
           <SegmentedControl
@@ -137,7 +137,7 @@ export function EditPhysicalStatsBody({
 
         {/* Date of Birth */}
         <View className="gap-2">
-          <Text className="text-text-tertiary ml-1 text-sm font-semibold">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
             {t('editPersonalInfo.dateOfBirth')}
           </Text>
           <DatePickerInput
@@ -151,7 +151,7 @@ export function EditPhysicalStatsBody({
 
         {/* Gender */}
         <View className="gap-2">
-          <Text className="text-text-tertiary ml-1 text-sm font-semibold">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
             {t('editFitnessDetails.gender')}
           </Text>
           <SegmentedControl
@@ -167,7 +167,7 @@ export function EditPhysicalStatsBody({
 
         {/* Body Stats */}
         <View className="gap-4">
-          <Text className="text-text-primary ml-1 text-xl font-bold tracking-tight">
+          <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
             {t('editFitnessDetails.bodyStats')}
           </Text>
           <View className="flex-row gap-4">
@@ -180,7 +180,7 @@ export function EditPhysicalStatsBody({
                 keyboardType="numeric"
                 selectTextOnFocus={true}
                 icon={
-                  <Text className="text-text-tertiary text-center text-sm font-medium">
+                  <Text className="text-center text-sm font-medium text-text-tertiary">
                     {getWeightUnit(units)}
                   </Text>
                 }
@@ -208,7 +208,7 @@ export function EditPhysicalStatsBody({
                   keyboardType="numeric"
                   selectTextOnFocus={true}
                   icon={
-                    <Text className="text-text-tertiary text-center text-sm font-medium">cm</Text>
+                    <Text className="text-center text-sm font-medium text-text-tertiary">cm</Text>
                   }
                 />
               )}
@@ -218,7 +218,7 @@ export function EditPhysicalStatsBody({
           {/* Fat Percentage */}
           <View className="mt-4">
             <View className="flex-row items-center justify-between">
-              <Text className="text-text-secondary text-sm font-medium">
+              <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
               {fatPercentage === null ? (

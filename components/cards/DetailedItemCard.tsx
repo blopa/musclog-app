@@ -26,7 +26,7 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
     <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
       <View className="flex-row items-center gap-4 p-4">
         {/* Media */}
-        <View className="bg-bg-overlay relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
+        <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
           {typeof item.media === 'object' && 'icon' in item.media ? (
             <item.media.icon
               size={theme.iconSize.xl}
@@ -53,10 +53,10 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
         {/* Info */}
         <View className="min-w-0 flex-1 gap-1">
           {ctaLabel}
-          <Text className="text-text-primary mt-1 truncate text-lg leading-tight font-bold">
+          <Text className="mt-1 truncate text-lg font-bold leading-tight text-text-primary">
             {item.name}
           </Text>
-          {description ? <Text className="text-text-secondary text-sm">{description}</Text> : null}
+          {description ? <Text className="text-sm text-text-secondary">{description}</Text> : null}
 
           <View className="mt-1 flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">

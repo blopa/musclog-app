@@ -36,8 +36,8 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
               <IconComponent size={theme.iconSize.xl} color={entry.iconColor} />
             </View>
             <View className="flex-1">
-              <Text className="text-text-secondary mb-1 text-xs font-medium">{entry.date}</Text>
-              <Text className="text-text-primary text-xl font-extrabold tracking-tight">
+              <Text className="mb-1 text-xs font-medium text-text-secondary">{entry.date}</Text>
+              <Text className="text-xl font-extrabold tracking-tight text-text-primary">
                 {entry.value}
               </Text>
             </View>
@@ -76,10 +76,10 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                 className="flex-row items-center rounded-full px-2.5 py-1"
                 style={{ backgroundColor: theme.colors.status.gray10 }}
               >
-                <Text className="text-text-tertiary text-xs font-bold">{entry.note}</Text>
+                <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>
             ) : null}
-            <Text className="text-text-tertiary text-[10px] font-medium">{entry.note}</Text>
+            <Text className="text-[10px] font-medium text-text-tertiary">{entry.note}</Text>
           </View>
         </View>
       </GenericCard>

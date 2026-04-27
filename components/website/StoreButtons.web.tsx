@@ -64,7 +64,7 @@ function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: Sto
       <span className="shrink-0">{logo}</span>
       <span className="flex flex-col items-start">
         <span className="text-[11px] leading-none text-gray-200">{title}</span>
-        <span className="text-lg leading-tight font-bold text-white">{storeName}</span>
+        <span className="text-lg font-bold leading-tight text-white">{storeName}</span>
       </span>
     </>
   );
@@ -239,7 +239,7 @@ export function StoreButtons() {
                 ref={qrPopoverRef}
                 role="dialog"
                 aria-labelledby="store-qr-popover-title"
-                className="fixed z-[170] w-[min(calc(100vw-2rem),30rem)] rounded-3xl border border-white/12 bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
+                className="border-white/12 fixed z-[170] w-[min(calc(100vw-2rem),30rem)] rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
                 style={{
                   top: qrButtonRef.current
                     ? qrButtonRef.current.getBoundingClientRect().bottom + 12

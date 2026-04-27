@@ -61,7 +61,7 @@ export function MacroCard({
     <GenericCard variant="default" size="sm">
       <View className="p-4">
         <View className="mb-1 flex-row items-baseline gap-1">
-          <Text className="text-text-secondary text-sm">{displayName}</Text>
+          <Text className="text-sm text-text-secondary">{displayName}</Text>
           <Text className="text-sm font-semibold" style={{ color }}>
             {percentage % 1 === 0
               ? formatInteger(percentage, { useGrouping: false })
@@ -72,15 +72,15 @@ export function MacroCard({
 
         {forceVertical ? (
           <View className="mb-3">
-            <Text className="text-text-primary text-2xl font-bold">{amount}</Text>
-            <Text className="text-text-secondary text-sm">
+            <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
+            <Text className="text-sm text-text-secondary">
               / {t('common.weightFormatG', { value: formatInteger(goal, { useGrouping: false }) })}
             </Text>
           </View>
         ) : (
           <View className="mb-3 flex-row items-baseline gap-1">
-            <Text className="text-text-primary text-2xl font-bold">{amount}</Text>
-            <Text className="text-text-secondary text-sm">
+            <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
+            <Text className="text-sm text-text-secondary">
               / {t('common.weightFormatG', { value: formatInteger(goal, { useGrouping: false }) })}
             </Text>
           </View>

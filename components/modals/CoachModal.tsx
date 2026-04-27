@@ -312,7 +312,7 @@ const renderBubble = (
         {!!currentMessage?.workout ? renderCustomView(props) : null}
         {!!currentMessage?.createdAt ? (
           <Text
-            className="mt-1 mr-1 text-right text-xs"
+            className="mr-1 mt-1 text-right text-xs"
             style={{ color: theme.colors.text.tertiary }}
           >
             {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
@@ -411,7 +411,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
   if (isToday) {
     return (
       <View className="my-6 items-center">
-        <View className="bg-bg-card rounded-full px-3 py-1">
+        <View className="rounded-full bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('coach.todayAt', {
               time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
@@ -588,7 +588,7 @@ const renderInputToolbar = (
             />
             <Pressable
               onPress={onRemoveImage}
-              className="absolute -top-2 -right-2 rounded-full p-1 shadow-sm"
+              className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
               style={{ backgroundColor: theme.colors.background.gray700 }}
             >
               <X size={12} color={theme.colors.text.white} />
@@ -609,7 +609,7 @@ const renderInputToolbar = (
               className="h-1.5 w-1.5 rounded-full"
               style={{ backgroundColor: theme.colors.accent.primary }}
             />
-            <Text className="text-text-primary text-xs font-medium">
+            <Text className="text-xs font-medium text-text-primary">
               {getPendingIntentionDisplayText(pendingIntention, t)}
             </Text>
             <Pressable onPress={onClearIntention} className="p-0.5">
@@ -1168,7 +1168,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       >
         <Pressable
           onPress={handleGenerateWorkouts}
-          className="bg-bg-card flex-row items-center gap-2 rounded-full border px-4 py-2 whitespace-nowrap active:scale-95"
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
             borderColor:
               pendingIntention === GENERATE_MY_WORKOUTS
@@ -1182,13 +1182,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           }}
         >
           <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-text-primary text-sm font-medium">
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.createWorkout')}
           </Text>
         </Pressable>
         <Pressable
           onPress={handleGenerateMealPlan}
-          className="bg-bg-card flex-row items-center gap-2 rounded-full border px-4 py-2 whitespace-nowrap active:scale-95"
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
             borderColor:
               pendingIntention === GENERATE_MEAL_PLAN
@@ -1202,13 +1202,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           }}
         >
           <ClipboardList size={theme.iconSize.md} color={theme.colors.status.success} />
-          <Text className="text-text-primary text-sm font-medium">
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.mealPlan')}
           </Text>
         </Pressable>
         <Pressable
           onPress={handleAnalyzeProgress}
-          className="bg-bg-card flex-row items-center gap-2 rounded-full border px-4 py-2 whitespace-nowrap active:scale-95"
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
             borderColor:
               pendingIntention === ANALYZE_PROGRESS
@@ -1222,13 +1222,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           }}
         >
           <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
-          <Text className="text-text-primary text-sm font-medium">
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.analyzeProgress')}
           </Text>
         </Pressable>
         <Pressable
           onPress={handleTrackMeal}
-          className="bg-bg-card flex-row items-center gap-2 rounded-full border px-4 py-2 whitespace-nowrap active:scale-95"
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
             borderColor:
               pendingIntention === TRACK_MEAL
@@ -1242,13 +1242,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           }}
         >
           <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-text-primary text-sm font-medium">
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.trackMeal')}
           </Text>
         </Pressable>
         <Pressable
           onPress={handleNutritionCheck}
-          className="bg-bg-card flex-row items-center gap-2 rounded-full border px-4 py-2 whitespace-nowrap active:scale-95"
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
             borderColor:
               pendingIntention === NUTRITION_CHECK
@@ -1262,7 +1262,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           }}
         >
           <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
-          <Text className="text-text-primary text-sm font-medium">
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.nutritionCheck')}
           </Text>
         </Pressable>
@@ -1469,7 +1469,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       headerRight={headerRight}
       scrollable={false}
     >
-      <View className="bg-bg-primary flex-1">
+      <View className="flex-1 bg-bg-primary">
         <View
           className="flex-row items-center gap-3 border-b px-4 py-3"
           style={{
@@ -1490,7 +1490,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               resizeMode="cover"
             />
             <View
-              className="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2"
+              className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
               style={{
                 backgroundColor: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
                 borderColor: theme.colors.background.primary,
@@ -1500,7 +1500,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           </View>
           <View className="flex-1">
             <View className="flex-row flex-wrap items-baseline gap-1.5">
-              <Text className="text-text-primary text-lg font-bold">{t('coach.name')}</Text>
+              <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>

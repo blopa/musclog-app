@@ -130,10 +130,10 @@ export function CurrentExerciseGoalCard({
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.secondary} />
             </View>
             <View>
-              <Text className="text-text-primary text-lg font-bold">
+              <Text className="text-lg font-bold text-text-primary">
                 {goal.exerciseNameSnapshot}
               </Text>
-              <Text className="text-text-secondary text-xs">
+              <Text className="text-xs text-text-secondary">
                 {t('exerciseGoals.goalTypes.1rm')}
               </Text>
             </View>
@@ -144,11 +144,11 @@ export function CurrentExerciseGoalCard({
         {!projection ? (
           <>
             <View className="mb-4">
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
               </Text>
             </View>
-            <Text className="text-text-tertiary text-center text-sm italic">
+            <Text className="text-center text-sm italic text-text-tertiary">
               {t('exerciseGoals.card.noHistory')}
             </Text>
           </>
@@ -156,16 +156,16 @@ export function CurrentExerciseGoalCard({
           <>
             <View className="mb-4">
               <View className="mb-1 flex-row justify-between">
-                <Text className="text-text-secondary text-sm">
+                <Text className="text-sm text-text-secondary">
                   {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
                 </Text>
-                <Text className="text-text-primary text-sm font-bold">
+                <Text className="text-sm font-bold text-text-primary">
                   {formatRoundedDecimal(projection.progressPercent, 2)}%
                 </Text>
               </View>
               <View className="bg-surface-variant h-2 w-full overflow-hidden rounded-full">
                 <View
-                  className="bg-accent-primary h-full"
+                  className="h-full bg-accent-primary"
                   style={{ width: `${projection.progressPercent}%` }}
                 />
               </View>
@@ -173,16 +173,16 @@ export function CurrentExerciseGoalCard({
 
             <View className="mb-4 flex-row justify-between">
               <View>
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-xs text-text-secondary">
                   {t('exerciseGoals.card.currentEstimate')}
                 </Text>
-                <Text className="text-text-primary text-base font-bold">
+                <Text className="text-base font-bold text-text-primary">
                   {formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)}{' '}
                   {t(weightUnitKey)}
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-text-secondary text-xs">
+                <Text className="text-xs text-text-secondary">
                   {t('exerciseGoals.card.deltaSinceStart', {
                     value: formatDisplayWeightKg(
                       locale,
@@ -240,15 +240,15 @@ export function CurrentExerciseGoalCard({
                 </Text>
               </View>
             ) : projection.status === 'insufficient_data' ? (
-              <Text className="text-text-tertiary text-center text-sm italic">
+              <Text className="text-center text-sm italic text-text-tertiary">
                 {t('exerciseGoals.card.insufficientData')}
               </Text>
             ) : projection.status === 'no_history' ? (
-              <Text className="text-text-tertiary text-center text-sm italic">
+              <Text className="text-center text-sm italic text-text-tertiary">
                 {t('exerciseGoals.card.noHistory')}
               </Text>
             ) : projection.projectedWeeks && projection.projectedDate ? (
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('exerciseGoals.card.projectedDate', {
                   weeks: Math.ceil(projection.projectedWeeks),
                   date: projection.projectedDate.toLocaleDateString(locale, {
@@ -277,10 +277,10 @@ export function CurrentExerciseGoalCard({
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View>
-              <Text className="text-text-primary text-lg font-bold">
+              <Text className="text-lg font-bold text-text-primary">
                 {t('exerciseGoals.goalTypes.consistency')}
               </Text>
-              <Text className="text-text-secondary text-xs">
+              <Text className="text-xs text-text-secondary">
                 {t('exerciseGoals.card.sessionsThisWeek', {
                   count: sessionsThisWeek,
                   target: goal.targetSessionsPerWeek,
@@ -291,7 +291,7 @@ export function CurrentExerciseGoalCard({
           <MenuButton onPress={() => setMenuVisible(true)} />
         </View>
 
-        <Text className="text-text-secondary text-sm">
+        <Text className="text-sm text-text-secondary">
           Target: {goal.targetSessionsPerWeek} sessions per week
         </Text>
       </View>

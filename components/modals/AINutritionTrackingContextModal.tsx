@@ -96,7 +96,7 @@ export function AINutritionTrackingContextModal({
       <View className="pt-2">
         {/* Describe Your Meal Section */}
         <View className="mb-6">
-          <Text className="text-text-secondary mb-2 ml-1 text-xs font-bold tracking-widest uppercase">
+          <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
             {describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
           </Text>
           <View
@@ -108,7 +108,7 @@ export function AINutritionTrackingContextModal({
             collapsable={false}
           >
             <RNTextInput
-              className="text-text-primary w-full bg-transparent"
+              className="w-full bg-transparent text-text-primary"
               style={{
                 minHeight: theme.size['100'],
                 fontSize: theme.typography.fontSize.sm,
@@ -127,7 +127,7 @@ export function AINutritionTrackingContextModal({
 
         {/* Quick Tags Section */}
         <View className="mb-8">
-          <Text className="text-text-secondary mb-3 ml-1 text-xs font-bold tracking-widest uppercase">
+          <Text className="mb-3 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
             {t('food.aiNutritionContext.quickTags')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -138,7 +138,7 @@ export function AINutritionTrackingContextModal({
                   key={tag}
                   onPress={() => handleToggleTag(tag)}
                   className={`flex-row items-center rounded-full px-4 py-2.5 ${
-                    isSelected ? 'bg-accent-primary' : 'border-border-light bg-bg-filterTab border'
+                    isSelected ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
                   }`}
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                 >
@@ -167,7 +167,7 @@ export function AINutritionTrackingContextModal({
               borderColor: theme.colors.background.white5,
             }}
           >
-            <Text className="text-text-primary text-center text-sm font-bold">
+            <Text className="text-center text-sm font-bold text-text-primary">
               {t('food.aiNutritionContext.cancel')}
             </Text>
           </Pressable>

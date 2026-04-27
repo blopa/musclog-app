@@ -68,7 +68,7 @@ export function Slider({
       {/* Custom background track (only for gradient variant) */}
       {variant === 'gradient' ? (
         <View
-          className="absolute right-0.5 left-0.5 h-1.5 rounded-full"
+          className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
           style={{ backgroundColor: trackColor || theme.colors.background.white10 }}
         />
       ) : null}

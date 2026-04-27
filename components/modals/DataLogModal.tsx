@@ -1181,14 +1181,14 @@ export function DataLogModal({
           </View>
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
-              <Text className="text-text-primary flex-1 text-base leading-snug font-semibold">
+              <Text className="flex-1 text-base font-semibold leading-snug text-text-primary">
                 {item.name}
               </Text>
               {(variant === 'meal' || variant === 'food') && item.isFavorite ? (
                 <MaterialIcons name="star" size={16} color={theme.colors.accent.secondary} />
               ) : null}
             </View>
-            <Text className="text-text-secondary text-sm font-medium tracking-wider">
+            <Text className="text-sm font-medium tracking-wider text-text-secondary">
               {translations.formatItemSubtitle
                 ? translations.formatItemSubtitle(item)
                 : translations.formatCaloriesMacros({
@@ -1437,7 +1437,7 @@ export function DataLogModal({
                 className="flex flex-col gap-2"
               >
                 <View>
-                  <Text className="text-text-secondary text-sm font-bold tracking-wider uppercase">
+                  <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
                     {dayData.date}
                   </Text>
                 </View>
@@ -1465,7 +1465,7 @@ export function DataLogModal({
         {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
           <View className="mt-12 flex flex-col items-center justify-center opacity-40">
             <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
-            <Text className="text-text-tertiary mt-2 text-sm font-medium">
+            <Text className="mt-2 text-sm font-medium text-text-tertiary">
               {translations.endOfHistoryText}
             </Text>
           </View>

@@ -110,7 +110,7 @@ export function GoalHistoryCard({
       {/* Timeline line */}
       {!isLast ? (
         <View
-          className="absolute top-10 left-[19px]"
+          className="absolute left-[19px] top-10"
           style={{
             bottom: -24,
             width: 0.5,
@@ -121,7 +121,7 @@ export function GoalHistoryCard({
 
       {/* Timeline dot */}
       <View
-        className="bg-bg-card relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border"
+        className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-bg-card"
         style={{ borderColor: theme.colors.border.emerald }}
       >
         <History size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -130,7 +130,7 @@ export function GoalHistoryCard({
       {/* Content */}
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
-          <Text className="text-text-secondary text-xs font-semibold">{goal.dateRange}</Text>
+          <Text className="text-xs font-semibold text-text-secondary">{goal.dateRange}</Text>
           <View className="flex-row items-center gap-1">
             <EatingPhaseBadge phase={goal.phase} variant="compact" showBorder={true} />
             {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
@@ -152,10 +152,10 @@ export function GoalHistoryCard({
           <View className="p-3">
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
-                <Text className="text-text-primary text-lg font-bold">
+                <Text className="text-lg font-bold text-text-primary">
                   {formatInteger(goal.calories)}{' '}
                   <Text
-                    className="text-text-secondary font-normal"
+                    className="font-normal text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xs }}
                   >
                     {t('goalHistoryCard.kcal')}
@@ -174,7 +174,7 @@ export function GoalHistoryCard({
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-text-secondary text-xs font-bold">
+                <Text className="text-xs font-bold text-text-secondary">
                   {weightDisplay} {t(weightUnitKey)}
                 </Text>
                 {goal.bodyFat != null ? (

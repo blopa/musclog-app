@@ -57,10 +57,10 @@ function ExerciseListItem({
   return (
     <Pressable
       onPress={onPress}
-      className="active:bg-bg-overlay flex-row items-center gap-4 px-4 py-3"
+      className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay"
     >
       <View
-        className="bg-bg-card h-14 w-14 overflow-hidden rounded-lg"
+        className="h-14 w-14 overflow-hidden rounded-lg bg-bg-card"
         style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}
       >
         <Image
@@ -70,17 +70,17 @@ function ExerciseListItem({
         />
       </View>
       <View className="flex-1">
-        <Text className="text-text-primary text-base font-medium">{name}</Text>
+        <Text className="text-base font-medium text-text-primary">{name}</Text>
         <View className="mt-1 flex-row items-center gap-2">
           <View
             className={`rounded-full px-2 py-0.5 ${
               tag.variant === 'primary'
-                ? 'border-accent-primary/30 bg-accent-primary/20 border'
-                : 'border-border-dark bg-bg-card border'
+                ? 'border border-accent-primary/30 bg-accent-primary/20'
+                : 'border border-border-dark bg-bg-card'
             }`}
           >
             <Text
-              className="font-bold tracking-wider uppercase"
+              className="font-bold uppercase tracking-wider"
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color:
@@ -291,7 +291,7 @@ export default function ExercisesModal({
             {[1, 2, 3, 4].map((i) => (
               <View
                 key={i}
-                className="border-border-dark bg-bg-card mb-4 overflow-hidden rounded-lg border"
+                className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card"
               >
                 <View className="flex-row items-center justify-between px-4 py-4">
                   <View className="flex-row items-center gap-3">
@@ -331,7 +331,7 @@ export default function ExercisesModal({
                   onToggle={() => toggleAccordion(group)}
                 >
                   {groupExercises.length === 0 ? (
-                    <View className="border-border-dark border-t px-4 py-2">
+                    <View className="border-t border-border-dark px-4 py-2">
                       <Text className="text-sm" style={{ color: theme.colors.status.customGreen }}>
                         {t('exercises.emptyGroupMessage', {
                           muscleGroup: config.name.toLowerCase(),

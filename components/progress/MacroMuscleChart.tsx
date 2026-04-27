@@ -46,7 +46,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -105,7 +105,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           yDomain={[0, maxY]}
         />
         <View className="mt-4 px-2">
-          <Text className="text-text-tertiary mb-2 text-[10px] font-bold tracking-wider uppercase">
+          <Text className="mb-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
             {t('progress.muscleGroupVolumeOverlay')}
           </Text>
           <View className="flex-row flex-wrap gap-4">
@@ -125,7 +125,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
                       ][i % 3],
                     }}
                   />
-                  <Text className="text-text-secondary text-[10px]">
+                  <Text className="text-[10px] text-text-secondary">
                     {t('common.labelColonValue', {
                       label: t(getMuscleGroupTranslationKey(mg)),
                       value: `${formatInteger(Math.round(maxVol))} ${weightLabel}`,

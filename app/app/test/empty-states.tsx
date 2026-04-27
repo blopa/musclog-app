@@ -14,16 +14,16 @@ import { TestSection } from './components/TestSection';
 export default function EmptyStatesTestScreen() {
   const theme = useTheme();
   return (
-    <SafeAreaView className="bg-bg-primary flex-1" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
-      <View className="bg-bg-primary/90 flex-row items-center justify-between px-4 pt-4 pb-2">
+      <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable
           className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
           style={{ backgroundColor: theme.colors.background.white10 }}
         >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
-        <Text className="text-text-primary flex-1 text-center text-lg leading-tight font-bold tracking-tight">
+        <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
           System Specs
         </Text>
         <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/10">
@@ -33,14 +33,14 @@ export default function EmptyStatesTestScreen() {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Title Section */}
-        <View className="px-6 pt-6 pb-2">
+        <View className="px-6 pb-2 pt-6">
           <Text
-            className="text-text-primary leading-tight font-extrabold tracking-tight"
+            className="font-extrabold leading-tight tracking-tight text-text-primary"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             System States
           </Text>
-          <Text className="text-text-secondary pt-3 text-base leading-relaxed font-normal">
+          <Text className="pt-3 text-base font-normal leading-relaxed text-text-secondary">
             Empty states, loading indicators, and error feedback patterns for the Musclog app.
           </Text>
         </View>
@@ -75,7 +75,7 @@ export default function EmptyStatesTestScreen() {
           <View className="gap-4">
             {/* Workout Card Skeleton */}
             <View
-              className="bg-bg-card flex-col gap-4 rounded-lg border p-4"
+              className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
               style={{ borderColor: theme.colors.background.white5 }}
             >
               <View className="flex-row items-center gap-3">
@@ -105,7 +105,7 @@ export default function EmptyStatesTestScreen() {
 
             {/* Food Item Skeleton */}
             <View
-              className="bg-bg-card flex-row items-center justify-between rounded-lg border p-4"
+              className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
               style={{ borderColor: theme.colors.background.white5 }}
             >
               <View className="flex-row items-center gap-3">

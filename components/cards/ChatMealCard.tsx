@@ -60,9 +60,9 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
       }}
     >
       {/* Summary header */}
-      <View className="flex-row items-baseline justify-between px-4 pt-4 pb-2">
+      <View className="flex-row items-baseline justify-between px-4 pb-2 pt-4">
         <Text
-          className="text-xs font-bold tracking-wider uppercase"
+          className="text-xs font-bold uppercase tracking-wider"
           style={{ color: theme.colors.text.tertiary }}
         >
           {t('meals.chatMealCard.mealCount', { count: meals.length })}
@@ -95,7 +95,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
             {/* Meal type label + calories */}
             <View className="mb-2 flex-row items-baseline justify-between">
               <Text
-                className="text-xs font-bold tracking-wider uppercase"
+                className="text-xs font-bold uppercase tracking-wider"
                 style={{ color: theme.colors.text.tertiary }}
               >
                 {getMealLabel(meal.mealType)}

@@ -564,15 +564,15 @@ export default function BodyMetricsHistoryModal({
                 <View className="p-5">
                   <View className="mb-6 flex-row items-center justify-between">
                     <View>
-                      <Text className="text-text-secondary mb-1 text-xs font-medium tracking-wider uppercase">
+                      <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                         {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                       </Text>
                       <View className="flex-row items-baseline gap-1">
-                        <Text className="text-text-primary text-3xl font-extrabold">
+                        <Text className="text-3xl font-extrabold text-text-primary">
                           {currentMetric.current}
                         </Text>
                         {currentMetric.unit && currentMetric.unit.length > 0 ? (
-                          <Text className="text-text-tertiary ml-1 text-lg font-medium">
+                          <Text className="ml-1 text-lg font-medium text-text-tertiary">
                             {currentMetric.unit}
                           </Text>
                         ) : null}
@@ -678,7 +678,7 @@ export default function BodyMetricsHistoryModal({
             ) : (
               <GenericCard variant="card" size="default">
                 <View className="p-5">
-                  <Text className="text-text-secondary text-center">
+                  <Text className="text-center text-text-secondary">
                     {t('bodyMetrics.noDataAvailable')}
                   </Text>
                 </View>
@@ -689,7 +689,7 @@ export default function BodyMetricsHistoryModal({
           {/* History Section */}
           <View className="mb-6">
             <View className="mb-4 flex-row items-center justify-between px-1">
-              <Text className="text-text-primary text-lg font-bold">
+              <Text className="text-lg font-bold text-text-primary">
                 {t('bodyMetrics.history.title')}
               </Text>
               <Pressable
@@ -776,7 +776,7 @@ export default function BodyMetricsHistoryModal({
                 ) : null}
               </View>
             ) : (
-              <Text className="text-text-secondary py-4 text-center">
+              <Text className="py-4 text-center text-text-secondary">
                 {t('bodyMetrics.noHistoryDataAvailable')}
               </Text>
             )}

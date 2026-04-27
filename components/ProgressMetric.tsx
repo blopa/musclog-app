@@ -27,7 +27,7 @@ export function ProgressMetric({
   return (
     <View className="flex-1">
       <View className="mb-2 flex-row items-baseline gap-1">
-        <Text className="text-text-primary text-5xl font-bold">{formatValue(value)}</Text>
+        <Text className="text-5xl font-bold text-text-primary">{formatValue(value)}</Text>
         <Text className="text-sm uppercase" style={{ color: theme.colors.overlay.white70 }}>
           {unit}
         </Text>
@@ -37,7 +37,7 @@ export function ProgressMetric({
           className="h-2 overflow-hidden rounded-full"
           style={{ backgroundColor: theme.colors.overlay.white30 }}
         >
-          <View className="bg-text-primary h-full rounded-full" style={{ width: `${progress}%` }} />
+          <View className="h-full rounded-full bg-text-primary" style={{ width: `${progress}%` }} />
         </View>
       </View>
       <Text className="text-sm" style={{ color: theme.colors.overlay.white70 }}>

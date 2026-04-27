@@ -48,7 +48,7 @@ export function MealNutritionHighlightCard({
     <GenericCard variant="highlighted" backgroundVariant="gradient">
       <View className="relative">
         <View
-          className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
+          className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
           style={{ backgroundColor: theme.colors.accent.primary }}
         />
 

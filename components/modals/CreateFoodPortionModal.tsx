@@ -100,7 +100,7 @@ export function CreateFoodPortionModal({
         <View className="flex-col gap-6">
           {/* Portion Name Input */}
           <View className="space-y-2">
-            <Text className="text-text-muted px-1 text-[10px] font-bold tracking-[0.15em] uppercase">
+            <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
               {t('portionName')}
             </Text>
             <TextInput
@@ -125,7 +125,7 @@ export function CreateFoodPortionModal({
 
           {/* Icon Selection */}
           <View className="space-y-3">
-            <Text className="text-text-muted px-1 text-[10px] font-bold tracking-[0.15em] uppercase">
+            <Text className="px-1 text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
               {t('selectIcon')}
             </Text>
             <AvatarSelector

@@ -60,14 +60,14 @@ type MenuItemProps = {
 function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
   return (
     <Pressable
-      className="active:bg-bg-card-elevated bg-bg-overlay flex-row items-center gap-4 rounded-2xl p-4"
+      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
       onPress={onPress}
       disabled={isLoading}
     >
       <View className="bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full">
         {icon}
       </View>
-      <Text className="text-text-primary flex-1 text-lg font-semibold">{label}</Text>
+      <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
       {isLoading ? <ActivityIndicator size="small" color="#10B981" /> : null}
     </Pressable>
   );
@@ -136,7 +136,7 @@ export function UserMenuModal({
           ]}
         >
           {/* Modal Content */}
-          <View className="border-border-dark bg-bg-card overflow-hidden rounded-b-3xl border-b">
+          <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
             {/* Gradient Header */}
             <LinearGradient
               colors={[
@@ -146,7 +146,7 @@ export function UserMenuModal({
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="border-border-dark border-b"
+              className="border-b border-border-dark"
             >
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-row items-center gap-4">
@@ -178,19 +178,19 @@ export function UserMenuModal({
                       <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
                     ) : (
                       <View className="h-full w-full items-center justify-center rounded-full">
-                        <Text className="text-text-primary text-lg font-bold">
+                        <Text className="text-lg font-bold text-text-primary">
                           {user.name?.charAt(0).toUpperCase() || 'G'}
                         </Text>
                       </View>
                     )}
                   </View>
                   <View>
-                    <Text className="text-text-secondary text-sm">{t('userMenu.greeting')}</Text>
-                    <Text className="text-text-primary text-xl font-bold">{user.name}</Text>
+                    <Text className="text-sm text-text-secondary">{t('userMenu.greeting')}</Text>
+                    <Text className="text-xl font-bold text-text-primary">{user.name}</Text>
                   </View>
                 </View>
                 <Pressable
-                  className="active:bg-bg-card-elevated bg-bg-overlay h-10 w-10 items-center justify-center rounded-full"
+                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
                   onPress={onClose}
                 >
                   <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -314,13 +314,13 @@ export function UserMenuModal({
 
               {onDebugMenuPress ? (
                 <Pressable
-                  className="active:bg-bg-card-elevated bg-bg-overlay flex-row items-center gap-4 rounded-2xl p-4"
+                  className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
                   disabled={loadingItem === 'debug'}
                   onPress={() => {
                     navigateAndClose('debug', onDebugMenuPress);
                   }}
                 >
-                  <Text className="text-text-primary flex-1 text-lg font-semibold">
+                  <Text className="flex-1 text-lg font-semibold text-text-primary">
                     {t('userMenu.debugPage')}
                   </Text>
                   {loadingItem === 'debug' ? (

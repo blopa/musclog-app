@@ -26,14 +26,14 @@ export function DateTimeSelectorCard({
 
   const content = (
     <View className="flex-col gap-2">
-      <Text className="text-text-secondary ml-1 text-sm font-medium">{label}</Text>
+      <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
       <Pressable
-        className="bg-bg-card h-14 w-full overflow-hidden rounded-lg border-2 border-white/10 active:opacity-80"
+        className="h-14 w-full overflow-hidden rounded-lg border-2 border-white/10 bg-bg-card active:opacity-80"
         onPress={onEdit}
       >
         <View className="h-14 flex-row items-center justify-between px-4">
           <View className="min-w-0 flex-1 pr-2">
-            <Text className="text-text-primary text-base">{formattedValue}</Text>
+            <Text className="text-base text-text-primary">{formattedValue}</Text>
           </View>
           <View className="shrink-0 justify-center">
             <Icon size={theme.iconSize.lg} color={theme.colors.text.tertiary} />

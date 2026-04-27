@@ -129,7 +129,7 @@ function WebSelect<T extends string | number>({
 
       {open ? (
         <div
-          className="absolute top-[calc(100%+8px)] right-0 left-0 z-30 overflow-hidden rounded-xl border p-1 shadow-2xl backdrop-blur-xl"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-xl border p-1 shadow-2xl backdrop-blur-xl"
           style={{
             backgroundColor: 'rgba(8,18,14,0.96)',
             borderColor: 'rgba(0,255,163,0.22)',
@@ -241,20 +241,20 @@ export default function Calculator() {
       <Head>
         <title>{t('pageTitle')}</title>
       </Head>
-      <main className="relative overflow-hidden pt-28 pb-20">
+      <main className="relative overflow-hidden pb-20 pt-28">
         <GridPattern className="text-primary/50" />
         <FloatingShapes />
         <div
-          className="absolute top-32 left-1/4 h-72 w-72 rounded-full blur-[100px]"
+          className="absolute left-1/4 top-32 h-72 w-72 rounded-full blur-[100px]"
           style={{ backgroundColor: 'rgba(0,255,163,0.08)' }}
         />
         <div
-          className="absolute right-1/4 bottom-32 h-64 w-64 rounded-full blur-[80px]"
+          className="absolute bottom-32 right-1/4 h-64 w-64 rounded-full blur-[80px]"
           style={{ backgroundColor: 'rgba(6,182,212,0.08)' }}
         />
         <div className="from-background/30 to-background/30 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 container mx-auto max-w-6xl px-4">
+        <div className="container relative z-10 mx-auto max-w-6xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
             <h1 className="mb-3 text-4xl font-black tracking-tight text-white md:text-6xl">
@@ -536,7 +536,7 @@ export default function Calculator() {
                     {t('results.bmr')}
                   </p>
                   <p className="text-3xl font-black text-white">{fmt(bmr)}</p>
-                  <p className="mt-2 text-[9px] leading-relaxed uppercase" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmrDesc')}
                   </p>
                 </div>
@@ -545,7 +545,7 @@ export default function Calculator() {
                   style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <div
-                    className="absolute top-3 right-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-widest"
+                    className="absolute right-3 top-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-widest"
                     style={{
                       backgroundColor: 'rgba(0,255,163,0.15)',
                       border: '1px solid rgba(0,255,163,0.3)',
@@ -563,7 +563,7 @@ export default function Calculator() {
                   <p className="text-3xl font-black" style={{ color: BRAND_GREEN_BRIGHT }}>
                     {fmt(tdee)}
                   </p>
-                  <p className="mt-2 text-[9px] leading-relaxed uppercase" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.tdeeDesc')}
                   </p>
                 </div>
@@ -582,7 +582,7 @@ export default function Calculator() {
                     {t('results.bmi')}
                   </p>
                   <p className="text-3xl font-black text-white">{fmt(bmi, 1)}</p>
-                  <p className="mt-2 text-[9px] leading-relaxed uppercase" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmiDesc')}
                   </p>
                 </div>
@@ -599,7 +599,7 @@ export default function Calculator() {
                   <p className="text-3xl font-black text-white">
                     {ffmi !== null ? fmt(ffmi, 1) : '–'}
                   </p>
-                  <p className="mt-2 text-[9px] leading-relaxed uppercase" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.ffmiDesc')}
                   </p>
                 </div>
@@ -720,7 +720,7 @@ export default function Calculator() {
                   </p>
                   <div className="text-right">
                     <p
-                      className="text-[9px] font-semibold tracking-widest uppercase"
+                      className="text-[9px] font-semibold uppercase tracking-widest"
                       style={{ color: MUTED }}
                     >
                       {t('results.tdee')}

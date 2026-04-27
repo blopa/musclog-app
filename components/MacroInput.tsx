@@ -74,7 +74,7 @@ export function MacroInput({
 
   return (
     <View
-      className="bg-bg-card overflow-hidden rounded-xl border border-white/10"
+      className="overflow-hidden rounded-xl border border-white/10 bg-bg-card"
       style={
         {
           width: size === 'half' ? '47%' : '100%',
@@ -89,7 +89,7 @@ export function MacroInput({
       }
     >
       <View className="mb-1 flex-row items-start justify-between">
-        <Text className="text-text-secondary text-xs font-bold tracking-widest uppercase">
+        <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
           {label}
         </Text>
         {topRightElement}
@@ -103,14 +103,14 @@ export function MacroInput({
         selectTextOnFocus
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="text-text-primary w-full border-0 bg-transparent p-0 font-bold"
+        className="w-full border-0 bg-transparent p-0 font-bold text-text-primary"
         style={{
           fontSize: config.fontSize,
         }}
       />
       {isFocused ? (
         <View
-          className="absolute right-0 bottom-0 left-0 h-1 rounded-b-xl"
+          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
           style={{ backgroundColor: highlightColor }}
         />
       ) : null}

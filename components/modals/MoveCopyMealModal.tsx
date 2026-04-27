@@ -150,7 +150,7 @@ export function MoveCopyMealModal({
           <View className="gap-2">
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-xs font-bold tracking-wider uppercase"
+                className="text-xs font-bold uppercase tracking-wider"
                 style={{ color: theme.colors.text.secondary }}
               >
                 {t('food.actions.splitPercentage')}
@@ -212,7 +212,7 @@ export function MoveCopyMealModal({
         {/* Target Meal Type */}
         <View className="gap-2">
           <Text
-            className="text-xs font-bold tracking-wider uppercase"
+            className="text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('food.actions.targetMealType')}

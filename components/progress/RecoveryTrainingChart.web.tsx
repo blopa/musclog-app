@@ -41,7 +41,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           ))}
         </View>
         <View className="items-center justify-center py-10">
-          <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>
     );
@@ -80,7 +80,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
         ))}
       </View>
       <View style={{ height: 280 }}>
-        <Text className="text-text-tertiary mb-2 text-center text-xs">
+        <Text className="mb-2 text-center text-xs text-text-tertiary">
           Volume vs Exhaustion (Bubble size = Calories)
         </Text>
         <VictoryChart

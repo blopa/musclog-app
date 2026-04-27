@@ -53,8 +53,8 @@ export function WorkoutFoodEmptyState({ type, onButtonPress }: WorkoutFoodEmptyS
             <Icon size={20} color={theme.colors.text.tertiary} />
           </View>
           <View className="flex-1 flex-col">
-            <Text className="text-text-primary text-sm font-semibold">{config.title}</Text>
-            <Text className="text-text-secondary text-xs">{config.description}</Text>
+            <Text className="text-sm font-semibold text-text-primary">{config.title}</Text>
+            <Text className="text-xs text-text-secondary">{config.description}</Text>
           </View>
         </View>
         <Button

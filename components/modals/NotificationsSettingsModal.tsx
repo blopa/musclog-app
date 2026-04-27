@@ -190,7 +190,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         {notifications ? (
           <View className="gap-4">
             <Text
-              className="px-8 text-xs font-bold tracking-wider uppercase"
+              className="px-8 text-xs font-bold uppercase tracking-wider"
               style={{ color: theme.colors.text.secondary }}
             >
               {t('settings.notificationsSettings.title')}

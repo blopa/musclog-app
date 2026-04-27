@@ -270,7 +270,7 @@ export default function WorkoutSummaryScreen() {
 
   if (isLoading) {
     return (
-      <View className="bg-bg-primary flex-1 items-center justify-center">
+      <View className="flex-1 items-center justify-center bg-bg-primary">
         <ActivityIndicator size="large" color={theme.colors.accent.primary} />
       </View>
     );
@@ -278,7 +278,7 @@ export default function WorkoutSummaryScreen() {
 
   if (error) {
     return (
-      <View className="bg-bg-primary flex-1 items-center justify-center px-6">
+      <View className="flex-1 items-center justify-center bg-bg-primary px-6">
         <ErrorStateCard
           icon={WifiOff}
           title={error}

@@ -1266,8 +1266,8 @@ export default function FoodScreen() {
 
   return (
     <MasterLayout>
-      <View className="bg-bg-primary flex-1">
-        <View className="border-border-dark bg-bg-primary border-b">
+      <View className="flex-1 bg-bg-primary">
+        <View className="border-b border-border-dark bg-bg-primary">
           <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
         </View>
 
@@ -1279,7 +1279,7 @@ export default function FoodScreen() {
               <>
                 {/* Calories Card Skeleton */}
                 <View
-                  className="bg-bg-card rounded-lg border p-5"
+                  className="rounded-lg border bg-bg-card p-5"
                   style={{ borderColor: theme.colors.background.white5 }}
                 >
                   <View className="mb-4 flex-row items-center justify-between">
@@ -1317,7 +1317,7 @@ export default function FoodScreen() {
                 {[1, 2, 3].map((i) => (
                   <View
                     key={i}
-                    className="bg-bg-card flex-row items-center justify-between rounded-lg border p-4"
+                    className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
                     style={{ borderColor: theme.colors.background.white5 }}
                   >
                     <View className="flex-row items-center gap-3">

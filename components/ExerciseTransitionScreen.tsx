@@ -44,15 +44,15 @@ export function ExerciseTransitionScreen({
   return (
     <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
       {/* Header: Total Time */}
-      <View className="z-10 flex items-center justify-center px-4 pt-6 pb-2">
+      <View className="z-10 flex items-center justify-center px-4 pb-2 pt-6">
         <Text
-          className="text-4xl leading-none font-bold tracking-tight tabular-nums"
+          className="text-4xl font-bold tabular-nums leading-none tracking-tight"
           style={{ color: theme.colors.text.primary }}
         >
           {totalTime}
         </Text>
         <Text
-          className="mt-1.5 text-xs font-semibold tracking-widest uppercase"
+          className="mt-1.5 text-xs font-semibold uppercase tracking-widest"
           style={{ color: theme.colors.accent.primary }}
         >
           {t('exerciseTransition.totalTime')}
@@ -92,7 +92,7 @@ export function ExerciseTransitionScreen({
         <View className="mt-2 flex-row items-center gap-4">
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
           <Text
-            className="text-xs font-bold tracking-widest uppercase"
+            className="text-xs font-bold uppercase tracking-widest"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('exerciseTransition.upNext')}
@@ -123,9 +123,9 @@ export function ExerciseTransitionScreen({
                 end={{ x: 0, y: 0 }}
                 className="absolute inset-0"
               />
-              <View className="absolute right-0 bottom-0 left-0 flex flex-col items-start gap-1 p-5">
+              <View className="absolute bottom-0 left-0 right-0 flex flex-col items-start gap-1 p-5">
                 <Text
-                  className="text-2xl leading-tight font-bold text-white"
+                  className="text-2xl font-bold leading-tight text-white"
                   style={{
                     textShadowColor: theme.colors.overlay.black90,
                     textShadowOffset: { width: 0, height: 1 },
@@ -135,7 +135,7 @@ export function ExerciseTransitionScreen({
                   {nextExercise.name}
                 </Text>
                 <Text
-                  className="text-sm font-semibold tracking-wide uppercase"
+                  className="text-sm font-semibold uppercase tracking-wide"
                   style={{
                     color: theme.colors.accent.primary,
                     textShadowColor: theme.colors.overlay.black60,
@@ -159,7 +159,7 @@ export function ExerciseTransitionScreen({
               >
                 <View className="flex flex-col">
                   <Text
-                    className="mb-1 text-[10px] font-semibold tracking-wider uppercase"
+                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.target')}
@@ -203,7 +203,7 @@ export function ExerciseTransitionScreen({
                 </View>
                 <View className="flex flex-col items-end">
                   <Text
-                    className="mb-1 text-[10px] font-semibold tracking-wider uppercase"
+                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.rest')}
@@ -225,7 +225,7 @@ export function ExerciseTransitionScreen({
               {/* Equipment */}
               <View className="flex flex-col gap-2">
                 <Text
-                  className="text-[10px] font-semibold tracking-wider uppercase"
+                  className="text-[10px] font-semibold uppercase tracking-wider"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exerciseTransition.equipment')}
@@ -267,7 +267,7 @@ export function ExerciseTransitionScreen({
 
       {/* Footer - gradient CTA per design */}
       <View
-        className="z-10 w-full px-5 pt-4 pb-8"
+        className="z-10 w-full px-5 pb-8 pt-4"
         style={{
           backgroundColor: theme.colors.background.primary,
           borderTopWidth: 1,

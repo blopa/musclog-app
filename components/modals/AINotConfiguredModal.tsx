@@ -56,7 +56,7 @@ export function AINotConfiguredModal({
       scrollable={false}
       footer={footer}
     >
-      <View className="flex-1 justify-start px-5 pt-3 pb-4">
+      <View className="flex-1 justify-start px-5 pb-4 pt-3">
         <View pointerEvents="none" style={{ height: theme.spacing.padding['3xl'] }} />
         <View className="mb-6 items-center">
           <View className="relative">
@@ -82,7 +82,7 @@ export function AINotConfiguredModal({
               />
             </LinearGradient>
             <View
-              className="bg-bg-card absolute -right-1 -bottom-1 h-10 w-10 items-center justify-center rounded-full border-2 shadow-sm"
+              className="absolute -bottom-1 -right-1 h-10 w-10 items-center justify-center rounded-full border-2 bg-bg-card shadow-sm"
               style={{ borderColor: theme.colors.background.primary }}
             >
               <Wand2 size={20} color={theme.colors.status.purple} />
@@ -117,10 +117,10 @@ export function AINotConfiguredModal({
               <KeyRound size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-text-primary text-lg leading-snug font-bold">
+              <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipApiKey')}
               </Text>
-              <Text className="text-text-tertiary mt-0.5 text-sm">
+              <Text className="mt-0.5 text-sm text-text-tertiary">
                 {t('ai.providers.openAIGemini')}
               </Text>
             </View>
@@ -146,10 +146,10 @@ export function AINotConfiguredModal({
               <Sparkles size={theme.iconSize.md} color={theme.colors.status.purple} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-text-primary text-lg leading-snug font-bold">
+              <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipFeatures')}
               </Text>
-              <Text className="text-text-secondary mt-1 text-sm leading-relaxed">
+              <Text className="mt-1 text-sm leading-relaxed text-text-secondary">
                 {t('ai.settings.notConfigured')}
               </Text>
             </View>

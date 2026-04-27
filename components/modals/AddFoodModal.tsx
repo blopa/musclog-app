@@ -108,7 +108,7 @@ export function AddFoodModal({
             <View>
               <View className="mb-4 flex-row items-center gap-2">
                 <Clock size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
+                <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
                   {t('food.addFoodModal.trackByMealType')}
                 </Text>
               </View>
@@ -153,7 +153,7 @@ export function AddFoodModal({
           <View>
             <View className="mb-4 flex-row items-center gap-2">
               <QrCode size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-              <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
+              <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
                 {t('food.addFoodModal.trackingMethod')}
               </Text>
             </View>

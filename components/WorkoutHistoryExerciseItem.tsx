@@ -69,21 +69,21 @@ export function ExerciseItem({
         {/* Exercise Info */}
         <View className="flex-1">
           <View className="mb-1 flex-row items-center gap-2">
-            <Text className="text-text-secondary text-sm font-bold uppercase">{exercise.time}</Text>
+            <Text className="text-sm font-bold uppercase text-text-secondary">{exercise.time}</Text>
             <View
               className="h-1 w-1 rounded-full"
               style={{ backgroundColor: theme.colors.text.gray300 }}
             />
-            <Text className="text-text-secondary text-sm font-medium">
+            <Text className="text-sm font-medium text-text-secondary">
               {t('workoutHistory.exercise', { number: exercise.exerciseNumber })}
             </Text>
           </View>
-          <Text className="text-text-primary text-lg font-bold">{exercise.name}</Text>
+          <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
         </View>
 
         {/* Exercise Image */}
         {exercise.image ? (
-          <View className="border-border-light h-8 w-8 overflow-hidden rounded-lg border">
+          <View className="h-8 w-8 overflow-hidden rounded-lg border border-border-light">
             <Image source={exercise.image} className="h-full w-full" resizeMode="cover" />
           </View>
         ) : null}
@@ -107,23 +107,23 @@ export function ExerciseItem({
             }}
           >
             <View className="w-8 items-center py-2">
-              <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 #
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('workoutSession.weight')}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                 {t('workoutSession.reps')}
               </Text>
             </View>
             {!isPreview ? (
               <View className="flex-1 items-center py-2">
-                <Text className="text-text-secondary text-sm font-semibold tracking-wider uppercase">
+                <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
                   {t('workoutSession.partials')}
                 </Text>
               </View>
@@ -146,7 +146,7 @@ export function ExerciseItem({
           {/* Progress Bars */}
           {exercise.setProgress && exercise.setProgress.length > 0 ? (
             <View
-              className="flex-row items-end gap-1 border-t px-4 pt-1 pb-3"
+              className="flex-row items-end gap-1 border-t px-4 pb-3 pt-1"
               style={{
                 borderTopColor: theme.colors.border.light,
                 height: theme.size['12'],

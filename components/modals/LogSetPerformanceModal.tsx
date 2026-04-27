@@ -48,8 +48,8 @@ type StatCardProps = {
 function StatCard({ label, value, suffix, muted }: StatCardProps) {
   const theme = useTheme();
   return (
-    <View className="border-border-accent bg-bg-overlay flex-1 rounded-xl border p-4">
-      <Text className="text-text-secondary mb-1 text-xs font-semibold tracking-wider uppercase">
+    <View className="flex-1 rounded-xl border border-border-accent bg-bg-overlay p-4">
+      <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
         {label}
       </Text>
       <View className="flex-row items-baseline gap-1">
@@ -59,7 +59,7 @@ function StatCard({ label, value, suffix, muted }: StatCardProps) {
         >
           {value}
         </Text>
-        {suffix ? <Text className="text-text-secondary text-sm font-medium">{suffix}</Text> : null}
+        {suffix ? <Text className="text-sm font-medium text-text-secondary">{suffix}</Text> : null}
       </View>
     </View>
   );
@@ -205,9 +205,9 @@ export function LogSetPerformanceModal({
           </View>
 
           {/* RPE Section */}
-          <View className="border-border-accent bg-bg-overlay rounded-xl border p-5">
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-5">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-text-secondary text-sm font-bold tracking-wide uppercase">
+              <Text className="text-sm font-bold uppercase tracking-wide text-text-secondary">
                 {t('logSetPerformance.difficulty')}
               </Text>
               <Text
@@ -233,19 +233,19 @@ export function LogSetPerformanceModal({
             {/* RPE Labels */}
             <View className="flex-row justify-between">
               <Text
-                className="text-text-secondary font-medium tracking-wider uppercase"
+                className="font-medium uppercase tracking-wider text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('logSetPerformance.easy')}
               </Text>
               <Text
-                className="text-text-secondary font-medium tracking-wider uppercase"
+                className="font-medium uppercase tracking-wider text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('logSetPerformance.moderate')}
               </Text>
               <Text
-                className="text-text-secondary font-medium tracking-wider uppercase"
+                className="font-medium uppercase tracking-wider text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('logSetPerformance.failure')}

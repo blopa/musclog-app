@@ -39,7 +39,7 @@ export function DotPattern({ className = '' }: { className?: string }) {
 function HeroHexWatermark() {
   return (
     <svg
-      className="absolute top-[210px] left-[-64px] h-[260px] w-[260px] text-emerald-400/12"
+      className="text-emerald-400/12 absolute left-[-64px] top-[210px] h-[260px] w-[260px]"
       viewBox="0 0 220 220"
       fill="none"
       aria-hidden="true"
@@ -65,7 +65,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       aria-hidden="true"
     >
       <svg
-        className="text-primary/10 absolute -top-20 -right-20 h-96 w-96"
+        className="text-primary/10 absolute -right-20 -top-20 h-96 w-96"
         viewBox="0 0 200 200"
         fill="none"
       >
@@ -75,7 +75,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       </svg>
 
       <svg
-        className="text-primary/10 absolute top-1/3 -left-10 h-64 w-64"
+        className="text-primary/10 absolute -left-10 top-1/3 h-64 w-64"
         viewBox="0 0 100 100"
         fill="none"
       >
@@ -92,7 +92,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       </svg>
 
       <svg
-        className="text-primary/10 absolute right-1/4 bottom-0 h-80 w-80"
+        className="text-primary/10 absolute bottom-0 right-1/4 h-80 w-80"
         viewBox="0 0 100 100"
         fill="none"
       >
@@ -123,7 +123,7 @@ export function HeroBackground() {
       <div className="from-background to-background/50 absolute inset-0 bg-gradient-to-r via-transparent" />
 
       <div
-        className="absolute top-12 right-[14%] h-[520px] w-[520px] rounded-full blur-[150px]"
+        className="absolute right-[14%] top-12 h-[520px] w-[520px] rounded-full blur-[150px]"
         style={{ backgroundColor: 'rgba(0, 255, 163, 0.14)' }}
       />
       <div

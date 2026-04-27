@@ -498,7 +498,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             marginBottom: 2,
           }}
         >
-          <Text className="text-text-secondary text-xs font-bold tracking-wider uppercase">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
             {t('goalsManagement.goalWizard.targetDate.label')}
           </Text>
         </View>

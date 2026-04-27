@@ -110,7 +110,7 @@ export function DailySummaryCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
               <Text
-                className="text-text-on-colorful text-5xl font-extrabold tracking-tighter"
+                className="text-5xl font-extrabold tracking-tighter text-text-on-colorful"
                 style={intuitiveMode ? blurFilter(8) : undefined}
               >
                 {intuitiveMode ? '00' : formatInteger(Math.round(calories.consumed))}

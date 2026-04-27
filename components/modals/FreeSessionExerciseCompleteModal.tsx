@@ -106,10 +106,10 @@ export function FreeSessionExerciseCompleteModal({
       closable={false}
     >
       <View className="flex-1 px-4">
-        <View className="flex-row items-center justify-between pt-2 pb-4">
+        <View className="flex-row items-center justify-between pb-4 pt-2">
           <View className="flex-1 items-center justify-center px-2">
             <Text
-              className="text-[14px] font-bold tracking-widest uppercase"
+              className="text-[14px] font-bold uppercase tracking-widest"
               style={{ color: emerald }}
             >
               {t('freeTraining.inProgress')}
@@ -220,7 +220,7 @@ export function FreeSessionExerciseCompleteModal({
                 >
                   {exerciseName}
                 </Text>
-                <View className="mt-1 mb-3 flex-row items-center">
+                <View className="mb-3 mt-1 flex-row items-center">
                   <CheckCircle
                     size={theme.iconSize.sm}
                     color={emerald}
@@ -237,7 +237,7 @@ export function FreeSessionExerciseCompleteModal({
                 </View>
                 <View className="mt-1 border-t pt-3" style={{ borderColor: borderDark }}>
                   <Text
-                    className="mb-1 text-xs font-semibold tracking-wider uppercase"
+                    className="mb-1 text-xs font-semibold uppercase tracking-wider"
                     style={{ color: textMuted, fontSize: theme.typography.fontSize.xs }}
                   >
                     {t('freeTraining.exerciseComplete.totalVolume')}

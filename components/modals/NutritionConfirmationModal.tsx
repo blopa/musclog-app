@@ -44,39 +44,39 @@ export function NutritionConfirmationModal({
       style={{ backgroundColor: theme.colors.background.card }}
     >
       <View className="mb-2 flex-row items-center justify-between">
-        <Text className="text-text-primary flex-1 text-sm font-semibold">{item.productTitle}</Text>
-        <Text className="text-text-secondary text-xs">{mealTypeToString(item.mealType)}</Text>
+        <Text className="flex-1 text-sm font-semibold text-text-primary">{item.productTitle}</Text>
+        <Text className="text-xs text-text-secondary">{mealTypeToString(item.mealType)}</Text>
       </View>
 
       <View className="space-y-1">
         <View className="flex-row justify-between">
-          <Text className="text-text-secondary text-xs">{t('nutrition.calories')}:</Text>
-          <Text className="text-text-primary text-xs font-medium">
+          <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
+          <Text className="text-xs font-medium text-text-primary">
             {formatRoundedDecimal(item.calories, 2)} kcal
           </Text>
         </View>
         <View className="flex-row justify-between">
-          <Text className="text-text-secondary text-xs">{t('nutrition.protein')}:</Text>
-          <Text className="text-text-primary text-xs font-medium">
+          <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
+          <Text className="text-xs font-medium text-text-primary">
             {t('common.weightFormatG', { value: formatRoundedDecimal(item.protein, 2) })}
           </Text>
         </View>
         <View className="flex-row justify-between">
-          <Text className="text-text-secondary text-xs">{t('nutrition.carbs')}:</Text>
-          <Text className="text-text-primary text-xs font-medium">
+          <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
+          <Text className="text-xs font-medium text-text-primary">
             {t('common.weightFormatG', { value: formatRoundedDecimal(item.carbs, 2) })}
           </Text>
         </View>
         <View className="flex-row justify-between">
-          <Text className="text-text-secondary text-xs">{t('nutrition.fat')}:</Text>
-          <Text className="text-text-primary text-xs font-medium">
+          <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
+          <Text className="text-xs font-medium text-text-primary">
             {t('common.weightFormatG', { value: formatRoundedDecimal(item.fat, 2) })}
           </Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
-            <Text className="text-text-secondary text-xs">{t('nutrition.fiber')}:</Text>
-            <Text className="text-text-primary text-xs font-medium">
+            <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
+            <Text className="text-xs font-medium text-text-primary">
               {t('common.weightFormatG', { value: formatRoundedDecimal(item.fiber, 2) })}
             </Text>
           </View>
@@ -99,37 +99,37 @@ export function NutritionConfirmationModal({
           className="mb-6 rounded-lg p-4"
           style={{ backgroundColor: theme.colors.background.card }}
         >
-          <Text className="text-text-primary mb-3 font-semibold">{t('nutrition.dailyTotals')}</Text>
+          <Text className="mb-3 font-semibold text-text-primary">{t('nutrition.dailyTotals')}</Text>
           <View className="space-y-2">
             <View className="flex-row justify-between">
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('common.labelWithColon', { label: t('nutrition.calories') })}
               </Text>
-              <Text className="text-text-primary text-sm font-semibold">
+              <Text className="text-sm font-semibold text-text-primary">
                 {formatRoundedDecimal(totals.totalCalories, 2)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('common.labelWithColon', { label: t('nutrition.protein') })}
               </Text>
-              <Text className="text-text-primary text-sm font-semibold">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalProtein, 2) })}
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('common.labelWithColon', { label: t('nutrition.carbs') })}
               </Text>
-              <Text className="text-text-primary text-sm font-semibold">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalCarbs, 2) })}
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-text-secondary text-sm">
+              <Text className="text-sm text-text-secondary">
                 {t('common.labelWithColon', { label: t('nutrition.fat') })}
               </Text>
-              <Text className="text-text-primary text-sm font-semibold">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t('common.weightFormatG', { value: formatRoundedDecimal(totals.totalFat, 2) })}
               </Text>
             </View>
@@ -137,7 +137,7 @@ export function NutritionConfirmationModal({
         </View>
 
         {/* Entry Count */}
-        <Text className="text-text-secondary mb-4 text-xs">
+        <Text className="mb-4 text-xs text-text-secondary">
           {t('common.labelColonValue', {
             label: t('nutrition.entriesCount'),
             value: String(entries.length),
@@ -181,7 +181,7 @@ export function NutritionConfirmationModal({
             opacity: isLoading ? 0.5 : 1,
           }}
         >
-          <Text className="text-text-primary text-center font-semibold">{t('common.cancel')}</Text>
+          <Text className="text-center font-semibold text-text-primary">{t('common.cancel')}</Text>
         </Pressable>
       </View>
     </FullScreenModal>

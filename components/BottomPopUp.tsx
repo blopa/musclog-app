@@ -152,7 +152,7 @@ export function BottomPopUp({
           pointerEvents="box-none"
         >
           <Animated.View
-            className="border-border-dark border-t"
+            className="border-t border-border-dark"
             style={[
               {
                 transform: [{ translateY: slideAnim }],
@@ -176,21 +176,21 @@ export function BottomPopUp({
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="border-border-dark border-b"
+              className="border-b border-border-dark"
             >
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-1 flex-row items-center gap-3">
                   {headerIcon ? <View>{headerIcon}</View> : null}
                   <View className="flex-1">
-                    <Text className="text-text-primary text-2xl font-bold">{title}</Text>
+                    <Text className="text-2xl font-bold text-text-primary">{title}</Text>
                     {subtitle ? (
-                      <Text className="text-text-secondary mt-1 text-sm">{subtitle}</Text>
+                      <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
                     ) : null}
                   </View>
                 </View>
                 {onClose ? (
                   <Pressable
-                    className="active:bg-bg-card-elevated bg-bg-overlay h-10 w-10 items-center justify-center rounded-full"
+                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
                     onPress={() => onClose?.()}
                     {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                   >
@@ -229,7 +229,7 @@ export function BottomPopUp({
             {/* Footer */}
             {footer ? (
               <View
-                className="border-border-dark border-t px-6 pt-2"
+                className="border-t border-border-dark px-6 pt-2"
                 style={{
                   paddingBottom: contentBottomPadding,
                 }}

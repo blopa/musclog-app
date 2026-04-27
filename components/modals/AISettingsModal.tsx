@@ -78,7 +78,7 @@ function AIIntegrationCard({
   return (
     <View>
       <Text
-        className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
+        className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
         style={{ color: sectionTitleColor }}
       >
         {sectionTitle}
@@ -142,7 +142,7 @@ function AIIntegrationCard({
             ) : null}
 
             {/* Save Button */}
-            <View className="mt-3 mb-2">
+            <View className="mb-2 mt-3">
               <Button
                 label={
                   hasUnsavedChanges ? t('settings.aiSettings.save') : t('settings.aiSettings.saved')
@@ -157,12 +157,12 @@ function AIIntegrationCard({
           </View>
 
           {/* Model Selector */}
-          <Pressable onPress={onModelPress} className="active:bg-bg-overlay overflow-hidden">
+          <Pressable onPress={onModelPress} className="overflow-hidden active:bg-bg-overlay">
             <View className="flex-row items-center justify-between p-4">
               <View className="min-w-0 flex-1">
-                <Text className="text-text-primary text-sm font-medium">{modelLabel}</Text>
+                <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
                 <Text
-                  className="text-accent-primary text-xs"
+                  className="text-xs text-accent-primary"
                   style={{
                     marginTop: theme.spacing.padding.xsHalf,
                   }}
@@ -467,7 +467,7 @@ export function AISettingsModal({
         {/* Musclog Free Tier Section */}
         <View className="gap-3">
           <Text
-            className="px-5 text-xs font-bold tracking-wider uppercase"
+            className="px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.accent.primary }}
           >
             {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
@@ -592,7 +592,7 @@ export function AISettingsModal({
             {Platform.OS === 'ios' && isOnDeviceCapable ? (
               <View className="gap-3">
                 <Text
-                  className="px-5 text-xs font-bold tracking-wider uppercase"
+                  className="px-5 text-xs font-bold uppercase tracking-wider"
                   style={{ color: theme.colors.accent.primary }}
                 >
                   {t('settings.aiSettings.onDeviceAi.sectionTitle')}
@@ -637,7 +637,7 @@ export function AISettingsModal({
         {/* Insights & Alerts Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.aiSettings.insightsAlerts')}
@@ -648,13 +648,13 @@ export function AISettingsModal({
         {/* Memory Settings Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.aiSettings.memorySettings')}
           </Text>
           <View
-            className="bg-bg-card rounded-lg border p-4"
+            className="rounded-lg border bg-bg-card p-4"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,
@@ -666,7 +666,7 @@ export function AISettingsModal({
               onChange={handleMaxAiMemoriesChange}
               min={1}
             />
-            <Text className="text-text-secondary mt-3 text-xs">
+            <Text className="mt-3 text-xs text-text-secondary">
               {t('settings.aiSettings.maxAiMemoriesSubtitle')}
             </Text>
           </View>
@@ -675,7 +675,7 @@ export function AISettingsModal({
         {/* Image Processing Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.aiSettings.imageProcessing')}
@@ -737,14 +737,14 @@ export function AISettingsModal({
         {/* Custom Prompts Section */}
         <View>
           <Text
-            className="mb-2 px-5 text-xs font-bold tracking-wider uppercase"
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('settings.aiSettings.customPrompts')}
           </Text>
           <Pressable
             onPress={() => setIsCustomPromptsVisible(true)}
-            className="bg-bg-card active:bg-bg-overlay overflow-hidden rounded-lg border"
+            className="overflow-hidden rounded-lg border bg-bg-card active:bg-bg-overlay"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,
@@ -765,10 +765,10 @@ export function AISettingsModal({
                   <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </View>
                 <View>
-                  <Text className="text-text-primary text-sm font-medium">
+                  <Text className="text-sm font-medium text-text-primary">
                     {t('settings.aiSettings.manageCustomPrompts')}
                   </Text>
-                  <Text className="text-text-secondary text-xs" style={{ marginTop: 2 }}>
+                  <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
                     {t('settings.aiSettings.customPromptsSubtitle')}
                   </Text>
                 </View>

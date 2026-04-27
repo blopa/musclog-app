@@ -600,7 +600,7 @@ export default function CreateCustomFoodModal({
       }
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="gap-6 px-4 pt-6 pb-40">
+        <View className="gap-6 px-4 pb-40 pt-6">
           {/* Food Name */}
           <TextInput
             label={t('food.newCustomFood.foodName')}
@@ -689,7 +689,7 @@ export default function CreateCustomFoodModal({
 
           {/* Portion Sizes */}
           <View>
-            <Text className="text-text-secondary mb-2 ml-1 text-sm font-medium">
+            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
               {t('food.newCustomFood.portionSizes')}
             </Text>
             {isLoadingPortions ? (
@@ -701,7 +701,7 @@ export default function CreateCustomFoodModal({
                 }}
               >
                 {selectedPortionsOrdered.length === 0 ? (
-                  <Text className="text-text-tertiary mb-1 ml-1 text-sm">
+                  <Text className="mb-1 ml-1 text-sm text-text-tertiary">
                     {t('food.newCustomFood.selectPortionSizes')}
                   </Text>
                 ) : null}
@@ -742,7 +742,7 @@ export default function CreateCustomFoodModal({
                         />
                       </View>
                       <Text
-                        className="text-text-primary min-w-0 flex-1 text-base font-medium"
+                        className="min-w-0 flex-1 text-base font-medium text-text-primary"
                         numberOfLines={2}
                       >
                         {portion.name}
@@ -814,7 +814,7 @@ export default function CreateCustomFoodModal({
           {/* Macronutrients Header */}
           <View className="flex-row items-center gap-2">
             <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-            <Text className="text-text-primary text-xl font-bold">
+            <Text className="text-xl font-bold text-text-primary">
               {t('food.newCustomFood.macronutrients')}
             </Text>
           </View>
@@ -833,7 +833,7 @@ export default function CreateCustomFoodModal({
                   backgroundColor: theme.colors.accent.primary10,
                 }}
               >
-                <Text className="text-accent-primary text-xs font-medium">
+                <Text className="text-xs font-medium text-accent-primary">
                   {t('food.common.kcal')}
                 </Text>
               </View>
@@ -898,7 +898,7 @@ export default function CreateCustomFoodModal({
             >
               <View className="flex-row items-center gap-2">
                 <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                <Text className="text-text-primary text-xl font-bold">
+                <Text className="text-xl font-bold text-text-primary">
                   {t('food.newCustomFood.micronutrients')}
                 </Text>
               </View>

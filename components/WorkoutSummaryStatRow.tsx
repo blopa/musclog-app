@@ -34,7 +34,7 @@ export function WorkoutSummaryStatRow({
         <View className="rounded-lg p-2" style={{ backgroundColor: iconBgColor }}>
           <Icon size={theme.iconSize.lg} color={iconColor} />
         </View>
-        <Text className="text-text-secondary font-medium">{label}</Text>
+        <Text className="font-medium text-text-secondary">{label}</Text>
       </View>
       <View className="flex-row items-center gap-1">
         {showStarIcon ? (
@@ -44,9 +44,9 @@ export function WorkoutSummaryStatRow({
             fill={theme.colors.status.amber}
           />
         ) : null}
-        <Text className="text-text-primary text-2xl font-bold tracking-tight">{value}</Text>
+        <Text className="text-2xl font-bold tracking-tight text-text-primary">{value}</Text>
         {valueSuffix ? (
-          <Text className="text-text-tertiary text-sm font-normal">{valueSuffix}</Text>
+          <Text className="text-sm font-normal text-text-tertiary">{valueSuffix}</Text>
         ) : null}
       </View>
     </View>

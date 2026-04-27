@@ -72,12 +72,12 @@ export function MacrosPizzaChart({
       {showInsight ? (
         <View className="absolute items-center">
           <Text
-            className="text-text-secondary font-bold uppercase"
+            className="font-bold uppercase text-text-secondary"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {insightMessage?.title || t('nutritionGoals.balance')}
           </Text>
-          <Text className="text-md text-text-primary font-bold">
+          <Text className="text-md font-bold text-text-primary">
             {insightMessage?.subtitle || t('nutritionGoals.optimal')}
           </Text>
         </View>

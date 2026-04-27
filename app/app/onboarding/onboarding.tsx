@@ -84,7 +84,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
           {title}
         </GradientText>
         <Text
-          className="px-2 text-base leading-relaxed font-normal"
+          className="px-2 text-base font-normal leading-relaxed"
           style={{ color: theme.colors.text.secondary }}
         >
           {description}
@@ -163,7 +163,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
             {/* Floating Badge Overlay */}
             {badge ? (
               <View
-                className="absolute right-6 bottom-6 left-6 flex-row items-center gap-4 rounded-xl border p-4"
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
               >
                 <LinearGradient
@@ -220,7 +220,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           {title}
         </GradientText>
         <Text
-          className="px-2 text-base leading-relaxed font-normal"
+          className="px-2 text-base font-normal leading-relaxed"
           style={{ color: theme.colors.text.secondary }}
         >
           {description}
@@ -299,7 +299,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
             {/* Floating Badge Overlay */}
             {badge ? (
               <View
-                className="absolute right-6 bottom-6 left-6 flex-row items-center gap-4 rounded-xl border p-4"
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
               >
                 <LinearGradient
@@ -356,7 +356,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
           {title}
         </GradientText>
         <Text
-          className="px-2 text-base leading-relaxed font-normal"
+          className="px-2 text-base font-normal leading-relaxed"
           style={{ color: theme.colors.text.secondary }}
         >
           {description}
@@ -435,7 +435,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
             {/* Floating Badge Overlay */}
             {badge ? (
               <View
-                className="absolute right-6 bottom-6 left-6 flex-row items-center gap-4 rounded-xl border p-4"
+                className="absolute bottom-6 left-6 right-6 flex-row items-center gap-4 rounded-xl border p-4"
                 style={{ borderColor: theme.colors.background.white10 }}
               >
                 <LinearGradient
@@ -492,7 +492,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
           {title}
         </GradientText>
         <Text
-          className="px-2 text-base leading-relaxed font-normal"
+          className="px-2 text-base font-normal leading-relaxed"
           style={{ color: theme.colors.text.secondary }}
         >
           {description}
@@ -604,7 +604,7 @@ export default function OnboardingScreen() {
 
       {/* Footer / Navigation */}
       <View className="w-full max-w-md self-center">
-        <View className="flex-col items-center gap-8 px-6 pt-4 pb-8">
+        <View className="flex-col items-center gap-8 px-6 pb-8 pt-4">
           {/* Page Indicators */}
           <PageIndicators totalPages={4} currentPage={currentStep} />
 

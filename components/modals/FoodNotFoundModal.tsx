@@ -81,16 +81,16 @@ export function FoodNotFoundModal({
             onSearchAgain?.();
             onClose();
           }}
-          className="border-border-default bg-bg-overlay flex-row items-center gap-4 rounded-2xl border p-4"
+          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
         >
           <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
             <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-text-primary text-lg font-bold">
+            <Text className="text-lg font-bold text-text-primary">
               {t('nutrition.searchAgain')}
             </Text>
-            <Text className="text-text-secondary text-xs">{t('nutrition.searchAgainDesc')}</Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.searchAgainDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
@@ -101,7 +101,7 @@ export function FoodNotFoundModal({
             onCreateCustom?.();
             onClose();
           }}
-          className="border-border-default bg-bg-overlay flex-row items-center gap-4 rounded-2xl border p-4"
+          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
         >
           <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
             <Edit
@@ -110,10 +110,10 @@ export function FoodNotFoundModal({
             />
           </View>
           <View className="flex-1">
-            <Text className="text-text-primary text-lg font-bold">
+            <Text className="text-lg font-bold text-text-primary">
               {t('nutrition.createCustom')}
             </Text>
-            <Text className="text-text-secondary text-xs">{t('nutrition.createCustomDesc')}</Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.createCustomDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>

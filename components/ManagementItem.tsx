@@ -23,7 +23,7 @@ export function ManagementItem({
   const theme = useTheme();
   return (
     <Pressable
-      className="active:bg-bg-card-elevated border-border-default bg-bg-overlay flex-row items-center gap-4 rounded-2xl border p-4"
+      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
       onPress={onPress}
     >
       <View
@@ -35,8 +35,8 @@ export function ManagementItem({
         <Icon size={theme.iconSize.md} color={iconColor} />
       </View>
       <View className="flex-1">
-        <Text className="text-text-primary text-lg font-semibold">{title}</Text>
-        <Text className="text-text-secondary mt-0.5 text-sm">{description}</Text>
+        <Text className="text-lg font-semibold text-text-primary">{title}</Text>
+        <Text className="mt-0.5 text-sm text-text-secondary">{description}</Text>
       </View>
       <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
     </Pressable>

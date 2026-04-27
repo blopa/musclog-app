@@ -2184,7 +2184,7 @@ export function FoodMealDetailsModal({
               color={theme.colors.accent.primary}
               fill={isFavorite ? theme.colors.accent.primary : 'none'}
             />
-            <Text className="text-accent-primary text-sm font-medium">
+            <Text className="text-sm font-medium text-accent-primary">
               {t('food.foodDetails.addFavorite')}
             </Text>
           </Pressable>
@@ -2198,7 +2198,7 @@ export function FoodMealDetailsModal({
               color={theme.colors.accent.primary}
               fill={isFavorite ? theme.colors.accent.primary : 'none'}
             />
-            <Text className="text-accent-primary text-sm font-medium">
+            <Text className="text-sm font-medium text-accent-primary">
               {t('food.foodDetails.addFavorite')}
             </Text>
           </Pressable>
@@ -2281,7 +2281,7 @@ export function FoodMealDetailsModal({
 
           {/* Meal Selection */}
           <View>
-            <Text className="text-text-secondary mb-3 text-xs font-bold tracking-wider uppercase">
+            <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('food.foodDetails.meal')}
             </Text>
             <FilterTabs
@@ -2407,12 +2407,12 @@ export function FoodMealDetailsModal({
             {/* Macronutrients - card layout like CreateCustomFoodModal */}
             <View className="flex-row items-center gap-2">
               <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-              <Text className="text-text-primary text-xl font-bold">
+              <Text className="text-xl font-bold text-text-primary">
                 {t('food.newCustomFood.macronutrients')}
               </Text>
             </View>
 
-            <Text className="text-text-secondary text-xs font-bold tracking-widest uppercase">
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
               {t('food.foodDetails.macrosPer100g')}
             </Text>
 
@@ -2429,7 +2429,7 @@ export function FoodMealDetailsModal({
                     backgroundColor: theme.colors.accent.primary10,
                   }}
                 >
-                  <Text className="text-accent-primary text-xs font-medium">
+                  <Text className="text-xs font-medium text-accent-primary">
                     {t('food.common.kcal')}
                   </Text>
                 </View>
