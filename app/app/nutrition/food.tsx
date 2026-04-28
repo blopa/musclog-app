@@ -37,6 +37,7 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
+import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -50,11 +51,13 @@ import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import {
   ChatService,
+  NutritionGoalService,
   NutritionService,
   SavedForLaterService,
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -69,6 +72,7 @@ import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 import { handleError } from '@/utils/handleError';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
@@ -122,6 +126,7 @@ export default function FoodScreen() {
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
+  const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
     log: NutritionLog;
     food: Food | null;
@@ -211,6 +216,7 @@ export default function FoodScreen() {
     enableReactivity: true,
     visible: true,
   });
+  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
 
   const [resolvedLogs, setResolvedLogs] = useState<
     {
@@ -232,6 +238,28 @@ export default function FoodScreen() {
 
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
+
+  const handleSaveCurrentNutritionGoal = useCallback(
+    async (goals: NutritionGoals) => {
+      if (!currentNutritionGoal) {
+        return;
+      }
+
+      try {
+        await NutritionGoalService.updateGoal(
+          currentNutritionGoal.id,
+          nutritionGoalsToInput(goals)
+        );
+        setIsEditCurrentGoalVisible(false);
+      } catch (error) {
+        await handleError(error, 'food.saveCurrentNutritionGoal', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+          consoleMessage: 'Failed to update current nutrition goal:',
+        });
+      }
+    },
+    [currentNutritionGoal, t]
+  );
 
   const checkSavedMeals = useCallback(async () => {
     try {
@@ -1855,10 +1883,22 @@ export default function FoodScreen() {
         tab="nutrition"
       />
 
+      {currentNutritionGoal ? (
+        <NutritionGoalsModal
+          visible={isEditCurrentGoalVisible}
+          onClose={() => setIsEditCurrentGoalVisible(false)}
+          onSave={handleSaveCurrentNutritionGoal}
+          initialGoals={nutritionGoalToInitialValues(currentNutritionGoal)}
+          isEditing={true}
+        />
+      ) : null}
+
       <DailySummaryBottomMenu
         visible={isDailySummaryMenuVisible}
         onClose={() => setIsDailySummaryMenuVisible(false)}
+        onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
         onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        showEditCurrentGoal={currentNutritionGoal != null}
       />
 
       {/* Food Menu Modal */}
