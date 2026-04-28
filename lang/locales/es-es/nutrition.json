@@ -1,5 +1,9 @@
 {
   "nutrition": {
+    "title": "Nutrición",
+    "food": {
+      "title": "Alimento"
+    },
     "analyze": "Analizar",
     "calories": "Calorías",
     "carbs": "Carbohidratos",

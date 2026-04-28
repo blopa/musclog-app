@@ -25,6 +25,7 @@ import exercisesRuRu from '@/data/exercisesRuRu.json';
 import enUsAccessToken from './locales/en-us/access_token.json';
 import enUsAddMeal from './locales/en-us/addMeal.json';
 import enUsAi from './locales/en-us/ai.json';
+import enUsApp from './locales/en-us/app.json';
 import enUsBodyFat from './locales/en-us/body_fat.json';
 import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
 import enUsCamera from './locales/en-us/camera.json';
@@ -98,6 +99,7 @@ import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import esEsAccessToken from './locales/es-es/access_token.json';
 import esEsAddMeal from './locales/es-es/addMeal.json';
 import esEsAi from './locales/es-es/ai.json';
+import esEsApp from './locales/es-es/app.json';
 import esEsBodyFat from './locales/es-es/body_fat.json';
 import esEsBodyMetrics from './locales/es-es/bodyMetrics.json';
 import esEsCamera from './locales/es-es/camera.json';
@@ -171,6 +173,7 @@ import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
 import nlNlAi from './locales/nl-nl/ai.json';
+import nlNlApp from './locales/nl-nl/app.json';
 import nlNlBodyFat from './locales/nl-nl/body_fat.json';
 import nlNlBodyMetrics from './locales/nl-nl/bodyMetrics.json';
 import nlNlCamera from './locales/nl-nl/camera.json';
@@ -244,6 +247,7 @@ import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
 import ptBrAi from './locales/pt-br/ai.json';
+import ptBrApp from './locales/pt-br/app.json';
 import ptBrBodyFat from './locales/pt-br/body_fat.json';
 import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
 import ptBrCamera from './locales/pt-br/camera.json';
@@ -317,6 +321,7 @@ import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
 import ruRuAi from './locales/ru-ru/ai.json';
+import ruRuApp from './locales/ru-ru/app.json';
 import ruRuBodyFat from './locales/ru-ru/body_fat.json';
 import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
 import ruRuCamera from './locales/ru-ru/camera.json';
@@ -411,6 +416,7 @@ const resources = {
       ...enUsAccessToken,
       ...enUsAddMeal,
       ...enUsAi,
+      ...enUsApp,
       ...enUsBodyMetrics,
       ...enUsBodyFat,
       ...enUsCamera,
@@ -488,6 +494,7 @@ const resources = {
       ...esEsAccessToken,
       ...esEsAddMeal,
       ...esEsAi,
+      ...esEsApp,
       ...esEsBodyMetrics,
       ...esEsBodyFat,
       ...esEsCamera,
@@ -565,6 +572,7 @@ const resources = {
       ...nlNlAccessToken,
       ...nlNlAddMeal,
       ...nlNlAi,
+      ...nlNlApp,
       ...nlNlBodyMetrics,
       ...nlNlBodyFat,
       ...nlNlCamera,
@@ -642,6 +650,7 @@ const resources = {
       ...ptBrAccessToken,
       ...ptBrAddMeal,
       ...ptBrAi,
+      ...ptBrApp,
       ...ptBrBodyMetrics,
       ...ptBrBodyFat,
       ...ptBrCamera,
@@ -719,6 +728,7 @@ const resources = {
       ...ruRuAccessToken,
       ...ruRuAddMeal,
       ...ruRuAi,
+      ...ruRuApp,
       ...ruRuBodyMetrics,
       ...ruRuBodyFat,
       ...ruRuCamera,
