@@ -118,7 +118,7 @@ export function FullScreenModal({
                   <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
                 ) : null}
               </View>
-              {headerRight ? <View style={{ marginRight: -8 }}>{headerRight}</View> : null}
+              {headerRight ? <View>{headerRight}</View> : null}
             </LinearGradient>
           </View>
         ) : null}

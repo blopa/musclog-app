@@ -59,7 +59,7 @@ export function MenuButton({
       )}
       onPress={onPress}
       style={style}
-      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      hitSlop={12}
     >
       <Icon size={config.iconSize} color={iconColor} />
     </Pressable>

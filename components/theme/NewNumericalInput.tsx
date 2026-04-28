@@ -78,7 +78,7 @@ export default function NewNumericalInput({
         <Pressable
           onPress={handleDecrement}
           className="flex-shrink-0"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={12}
         >
           <Minus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
@@ -96,7 +96,7 @@ export default function NewNumericalInput({
         <Pressable
           onPress={handleIncrement}
           className="flex-shrink-0"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={12}
         >
           <Plus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>

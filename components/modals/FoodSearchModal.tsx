@@ -198,7 +198,7 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
         </Text>
       </View>
       {rightAction ? (
-        <Pressable onPress={rightAction.onPress} className="-m-2 p-2">
+        <Pressable onPress={rightAction.onPress} className="p-3">
           <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}
@@ -971,7 +971,7 @@ export function FoodSearchModal({
               <Pressable
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
-                hitSlop={8}
+                hitSlop={12}
               >
                 <View className="rounded-lg p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
