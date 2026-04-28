@@ -1132,6 +1132,7 @@ async function generateWithImageStructured<T>(
   const sanitizedSuffix = userMessageSuffix?.trim()
     ? wrapUserContent(userMessageSuffix.trim())
     : '';
+
   const userText =
     'Analyze this image and return the structured data.' +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
@@ -1649,10 +1650,12 @@ export async function estimateNutritionFromPhoto(
     const includeFoundationFoods = providerConfig.enableFoundationFoods
       ? await SettingsService.getSendFoundationFoodsToLlm()
       : false;
+
     const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
+
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
 

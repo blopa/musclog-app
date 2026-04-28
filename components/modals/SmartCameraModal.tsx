@@ -55,13 +55,13 @@ const SMALL_SCREEN_HEIGHT = 700;
 const getSafeCameraMode = (
   mode: CameraMode,
   isAiEnabled: boolean,
-  isMealPhotoEnabled: boolean
+  isAIVisionEnabled: boolean
 ): CameraMode => {
   if (!isAiEnabled) {
     return 'barcode-scan';
   }
 
-  if (!isMealPhotoEnabled && mode === 'ai-meal-photo') {
+  if (!isAIVisionEnabled && mode === 'ai-meal-photo') {
     return 'ai-label-scan';
   }
 
@@ -90,7 +90,7 @@ type CameraModalProps = {
   hideCameraModePicker?: boolean;
   isAiEnabled?: boolean;
   /** When false, the meal-photo mode button is hidden and the mode falls back to ai-label-scan. */
-  isMealPhotoEnabled?: boolean;
+  isAIVisionEnabled?: boolean;
   useOcrBeforeAi?: boolean;
   logDate?: Date;
   mealTypeForLog?: MealType;
@@ -110,7 +110,7 @@ export default function SmartCameraModal({
   mode = 'barcode-scan',
   hideCameraModePicker = false,
   isAiEnabled = true,
-  isMealPhotoEnabled = true,
+  isAIVisionEnabled = true,
   useOcrBeforeAi = false,
   logDate,
   mealTypeForLog,
@@ -126,7 +126,7 @@ export default function SmartCameraModal({
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
-    getSafeCameraMode(mode, isAiEnabled, isMealPhotoEnabled)
+    getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
   );
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
@@ -217,10 +217,10 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      const safeMode = getSafeCameraMode(mode, isAiEnabled, isMealPhotoEnabled);
+      const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
       setCameraMode(safeMode);
     }
-  }, [mode, isAiEnabled, isMealPhotoEnabled]);
+  }, [mode, isAiEnabled, isAIVisionEnabled]);
 
   // Show FoodMealDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
   useEffect(() => {
@@ -308,7 +308,7 @@ export default function SmartCameraModal({
       setIsProcessingAi(true);
       try {
         if (cameraMode === 'ai-label-scan') {
-          if (useOcrBeforeAi || !isMealPhotoEnabled) {
+          if (useOcrBeforeAi || !isAIVisionEnabled) {
             const ocrLanguage = i18n.resolvedLanguage ?? i18n.language;
             const { text } = await ocrRecognizeText(fileUri, ocrLanguage);
             if (!text.trim()) {
@@ -334,6 +334,7 @@ export default function SmartCameraModal({
                   fat: result.fat,
                 })
               );
+
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
               setIsFoodDetailsModalVisible(true);
             } else {
@@ -355,6 +356,7 @@ export default function SmartCameraModal({
               base64,
               aiContext ?? undefined
             );
+
             if (result) {
               showSnackbar(
                 'success',
@@ -366,6 +368,7 @@ export default function SmartCameraModal({
                   fat: result.fat,
                 })
               );
+
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
               setIsFoodDetailsModalVisible(true);
             } else {
@@ -1053,7 +1056,7 @@ export default function SmartCameraModal({
                   ) : null}
 
                   {/* AI Meal Photo — hidden when AI is disabled or provider doesn't support vision */}
-                  {isAiEnabled && isMealPhotoEnabled ? (
+                  {isAiEnabled && isAIVisionEnabled ? (
                     <Pressable
                       onPress={() => handleModeChange('ai-meal-photo')}
                       className="flex-1 rounded-xl px-2"
