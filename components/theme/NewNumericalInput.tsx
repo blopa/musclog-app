@@ -75,11 +75,7 @@ export default function NewNumericalInput({
         className={`flex w-full flex-row items-center justify-between rounded-2xl ${isCompact ? 'gap-0.5 px-2.5 py-1.5' : 'gap-2 px-4 py-3'}`}
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
-        <Pressable
-          onPress={handleDecrement}
-          className="flex-shrink-0"
-          hitSlop={12}
-        >
+        <Pressable onPress={handleDecrement} className="flex-shrink-0" hitSlop={12}>
           <Minus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
         <TextInput
@@ -93,11 +89,7 @@ export default function NewNumericalInput({
           placeholderTextColor={theme.colors.text.secondary}
           selectTextOnFocus={true}
         />
-        <Pressable
-          onPress={handleIncrement}
-          className="flex-shrink-0"
-          hitSlop={12}
-        >
+        <Pressable onPress={handleIncrement} className="flex-shrink-0" hitSlop={12}>
           <Plus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
       </View>
