@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachProvider } from '@/components/CoachContext';
+import { DocumentTitle } from '@/components/DocumentTitle';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
@@ -27,7 +28,6 @@ import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
 import { UnreadChatProvider } from '@/context/UnreadChatContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { handleError } from '@/utils/handleError';
 
 // Fix NativeWind className support on iOS for these components
@@ -53,9 +53,6 @@ const queryClient = new QueryClient({
 // Inner component that has access to theme context
 function AppContent() {
   const { theme, isDark } = useThemeContext();
-
-  // Set document title based on current route (web only)
-  useDocumentTitle();
 
   // On web, run the pre-migration backup check before <Migrations> mounts so
   // that JS-level data transformations in Migrations.tsx cannot run first.
@@ -100,6 +97,7 @@ function AppContent() {
 
   return (
     <>
+      <DocumentTitle />
       {Platform.OS !== 'web' ? <SystemBars style={isDark ? 'light' : 'dark'} /> : null}
       <Migrations />
       <LanguageInitializer />
