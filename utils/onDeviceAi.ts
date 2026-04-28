@@ -13,7 +13,7 @@ export async function isOnDeviceAiCapable(): Promise<boolean> {
  * Requires iPhone 15 Pro+ running iOS 26+ with Apple Intelligence enabled.
  */
 export async function isOnDeviceAiAvailable(): Promise<boolean> {
-    return false;
+  return false;
 }
 
 export async function sendOnDeviceMessage(
