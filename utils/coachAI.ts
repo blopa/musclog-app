@@ -192,7 +192,7 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     maxCharBudget: 8000,
     promptComplexity: 'standard',
     enableContextInjection: true,
-    enableFoundationFoods: true,
+    enableFoundationFoods: false,
     enableMemories: true,
   },
   gateway: {
