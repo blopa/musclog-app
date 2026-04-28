@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
@@ -15,6 +14,7 @@ import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
 import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
 import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
+import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
@@ -163,18 +163,6 @@ export default function HomeScreen() {
   const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
   const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
   const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
-
-  // TODO: move this into a DailySummaryBottomMenu.tsx component
-  const dailySummaryMenuItems: BottomPopUpMenuItem[] = [
-    {
-      icon: Scale,
-      iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
-      title: t('settings.advancedSettings.manageGoalsData'),
-      description: t('settings.advancedSettings.manageGoalsDataSubtitle'),
-      onPress: () => setIsGoalsManagementModalVisible(true),
-    },
-  ];
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -723,11 +711,10 @@ export default function HomeScreen() {
       {/* My Meals Modal */}
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />
 
-      <BottomPopUpMenu
+      <DailySummaryBottomMenu
         visible={isDailySummaryMenuVisible}
         onClose={handleCloseDailySummaryMenu}
-        title={t('dailySummaryCard.dailySummary')}
-        items={dailySummaryMenuItems}
+        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
       />
 
       {/* Goals Management Modal */}

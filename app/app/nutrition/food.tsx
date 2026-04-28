@@ -18,11 +18,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { MealGroupCard } from '@/components/cards/MealGroupCard';
 import { useCoach } from '@/components/CoachContext';
+import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MealSection } from '@/components/MealSection';
@@ -145,17 +146,6 @@ export default function FoodScreen() {
   }, [selectedDate, setCurrentDate]);
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
 
-  // TODO: move this into a DailySummaryBottomMenu.tsx component
-  const dailySummaryMenuItems: BottomPopUpMenuItem[] = [
-    {
-      icon: Scale,
-      iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
-      title: t('settings.advancedSettings.manageGoalsData'),
-      description: t('settings.advancedSettings.manageGoalsDataSubtitle'),
-      onPress: () => setIsGoalsManagementModalVisible(true),
-    },
-  ];
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [isCreateMealModalVisible, setIsCreateMealModalVisible] = useState(false);
   const [createMealInitialFoods, setCreateMealInitialFoods] = useState<
@@ -1865,11 +1855,10 @@ export default function FoodScreen() {
         tab="nutrition"
       />
 
-      <BottomPopUpMenu
+      <DailySummaryBottomMenu
         visible={isDailySummaryMenuVisible}
         onClose={() => setIsDailySummaryMenuVisible(false)}
-        title={t('dailySummaryCard.dailySummary')}
-        items={dailySummaryMenuItems}
+        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
       />
 
       {/* Food Menu Modal */}
