@@ -18,7 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
-import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { MealGroupCard } from '@/components/cards/MealGroupCard';
@@ -119,6 +119,7 @@ export default function FoodScreen() {
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
+  const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
     log: NutritionLog;
@@ -143,6 +144,18 @@ export default function FoodScreen() {
     return () => setCurrentDate(undefined);
   }, [selectedDate, setCurrentDate]);
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
+
+  // TODO: move this into a DailySummaryBottomMenu.tsx component
+  const dailySummaryMenuItems: BottomPopUpMenuItem[] = [
+    {
+      icon: Scale,
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
+      title: t('settings.advancedSettings.manageGoalsData'),
+      description: t('settings.advancedSettings.manageGoalsDataSubtitle'),
+      onPress: () => setIsGoalsManagementModalVisible(true),
+    },
+  ];
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [isCreateMealModalVisible, setIsCreateMealModalVisible] = useState(false);
   const [createMealInitialFoods, setCreateMealInitialFoods] = useState<
@@ -1383,7 +1396,7 @@ export default function FoodScreen() {
                     nutritionDisplay={nutritionDisplay}
                     menuButton={
                       <MenuButton
-                        onPress={() => setIsGoalsManagementModalVisible(true)}
+                        onPress={() => setIsDailySummaryMenuVisible(true)}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -1850,6 +1863,13 @@ export default function FoodScreen() {
         visible={isGoalsManagementModalVisible}
         onClose={() => setIsGoalsManagementModalVisible(false)}
         tab="nutrition"
+      />
+
+      <BottomPopUpMenu
+        visible={isDailySummaryMenuVisible}
+        onClose={() => setIsDailySummaryMenuVisible(false)}
+        title={t('dailySummaryCard.dailySummary')}
+        items={dailySummaryMenuItems}
       />
 
       {/* Food Menu Modal */}
