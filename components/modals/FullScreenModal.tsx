@@ -105,9 +105,9 @@ export function FullScreenModal({
             >
               {closable ? (
                 <Pressable
-                  style={{ marginLeft: -8, padding: 8, borderRadius: 9999 }}
+                  style={{ padding: 12, borderRadius: 9999 }}
                   onPress={onClose}
-                  hitSlop={10}
+                  hitSlop={12}
                 >
                   <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
