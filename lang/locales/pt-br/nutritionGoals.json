@@ -125,7 +125,7 @@
     "goalMode": "Modo de meta",
     "manual": "Manual",
     "dynamic": "Dinâmico",
-    "dynamicInfo": "As metas diárias são calculadas automaticamente a cada dia com base nos seus últimos 30 dias de dados de peso e nutrição. Defina sua fase alimentar para controlar se você está em déficit, manutenção ou superávit.",
+    "dynamicInfo": "As metas diárias são calculadas automaticamente a cada dia com base nos seus últimos 30 dias de dados de peso e nutrição. Defina sua fase alimentar para controlar se você está em déficit, manutenção ou superávit, e informe tanto o peso alvo quanto a data alvo para ativar as metas dinâmicas.",
     "dynamicBadge": "Dinâmico",
     "dynamicRequiredFields": "O peso alvo e a data alvo são obrigatórios para metas dinâmicas."
   }

@@ -19,18 +19,10 @@ type NutritionGoalsModalProps = {
   isEditing?: boolean;
 };
 
-// Re-export for convenience
-export type { NutritionGoals, NutritionGoalsInitialValues };
-
-export function NutritionGoalsModal({
-  visible,
-  onClose,
-  onSave,
-  initialGoals,
-  isEditing = false,
-}: NutritionGoalsModalProps) {
-  const { t } = useTranslation();
-  const [currentGoals, setCurrentGoals] = useState<NutritionGoals>(() => ({
+function buildNutritionGoalsFromInitialValues(
+  initialGoals: NutritionGoalsInitialValues
+): NutritionGoals {
+  return {
     totalCalories: initialGoals.totalCalories,
     protein: initialGoals.protein,
     carbs: initialGoals.carbs,
@@ -44,7 +36,23 @@ export function NutritionGoalsModal({
     targetDate: initialGoals.targetDate ?? null,
     goalStartDate: initialGoals.goalStartDate ?? null,
     isDynamic: initialGoals.isDynamic ?? false,
-  }));
+  };
+}
+
+// Re-export for convenience
+export type { NutritionGoals, NutritionGoalsInitialValues };
+
+export function NutritionGoalsModal({
+  visible,
+  onClose,
+  onSave,
+  initialGoals,
+  isEditing = false,
+}: NutritionGoalsModalProps) {
+  const { t } = useTranslation();
+  const [currentGoals, setCurrentGoals] = useState<NutritionGoals>(() =>
+    buildNutritionGoalsFromInitialValues(initialGoals)
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -52,6 +60,14 @@ export function NutritionGoalsModal({
       setIsSaving(false);
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    setCurrentGoals(buildNutritionGoalsFromInitialValues(initialGoals));
+  }, [initialGoals, visible]);
 
   const handleSave = async (goals: NutritionGoals) => {
     if (isSaving) {
