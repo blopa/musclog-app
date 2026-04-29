@@ -390,6 +390,13 @@ export function NutritionGoalsBody({
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
   }, [defaultGoalStartDate, initialGoals.goalStartDate]);
 
+  // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals)
+  useEffect(() => {
+    if (isDynamic && targetWeight === null) {
+      setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
+    }
+  }, [isDynamic, targetWeight, units]);
+
   // Load user's height once on mount so we can derive BMI and FFMI
   useEffect(() => {
     UserMetricService.getLatest('height').then((metric) => {
@@ -637,6 +644,8 @@ export function NutritionGoalsBody({
     onFormChange,
     units,
   ]);
+
+  const isDynamicValid = !isDynamic || (targetWeight !== null && targetDate !== null);
 
   const handleSave = useCallback(() => {
     onSave?.({
@@ -1028,6 +1037,9 @@ export function NutritionGoalsBody({
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetWeight')}
+                {isDynamic ? (
+                  <Text style={{ color: theme.colors.status.error }}> *</Text>
+                ) : null}
               </Text>
               {targetWeight === null ? (
                 <Pressable
@@ -1041,7 +1053,7 @@ export function NutritionGoalsBody({
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
-              ) : (
+              ) : !isDynamic ? (
                 <Pressable onPress={() => setTargetWeight(null)} className="active:opacity-70">
                   <Text
                     className="text-sm font-medium"
@@ -1050,7 +1062,7 @@ export function NutritionGoalsBody({
                     {t('common.clear')}
                   </Text>
                 </Pressable>
-              )}
+              ) : null}
             </View>
             {targetWeight !== null ? (
               <StepperInlineInput
@@ -1227,7 +1239,15 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View
+            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border bg-bg-card p-4"
+            style={{
+              borderColor:
+                isDynamic && targetDate === null
+                  ? theme.colors.status.error
+                  : theme.colors.border.emerald,
+            }}
+          >
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
@@ -1238,7 +1258,12 @@ export function NutritionGoalsBody({
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
+                <Text className="font-semibold text-white">
+                  {t('nutritionGoals.targetDate')}
+                  {isDynamic ? (
+                    <Text style={{ color: theme.colors.status.error }}> *</Text>
+                  ) : null}
+                </Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
@@ -1260,7 +1285,7 @@ export function NutritionGoalsBody({
                   onPress={() => setIsTargetDatePickerVisible(true)}
                   onClear={() => setTargetDate(null)}
                   clearLabel={t('nutritionGoals.targetDateClear')}
-                  showClearButton
+                  showClearButton={!isDynamic}
                 />
               </View>
             </View>
@@ -1285,6 +1310,14 @@ export function NutritionGoalsBody({
             className="mt-8 border-t pt-6"
             style={{ borderTopColor: theme.colors.background.white5 }}
           >
+            {isDynamic && !isDynamicValid ? (
+              <Text
+                className="mb-4 text-center"
+                style={{ color: theme.colors.status.error, fontSize: theme.typography.fontSize.sm }}
+              >
+                {t('nutritionGoals.dynamicRequiredFields')}
+              </Text>
+            ) : null}
             <Button
               label={t('nutritionGoals.saveGoals')}
               icon={ChevronRight}
@@ -1293,6 +1326,7 @@ export function NutritionGoalsBody({
               size="md"
               width="full"
               onPress={handleSave}
+              disabled={!isDynamicValid}
             />
             <Text
               className="mt-4 text-center text-text-secondary"
