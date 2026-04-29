@@ -34,7 +34,7 @@ export function nutritionGoalsToInput(goals: NutritionGoals) {
     fats: goals.fats,
     fiber: goals.fiber,
     eatingPhase: goals.eatingPhase,
-    targetWeight: goals.targetWeight ?? undefined,
+    targetWeight: goals.targetWeight ?? null,
     targetBodyFat: goals.targetBodyFat ?? undefined,
     targetBMI: goals.targetBMI ?? undefined,
     targetFFMI: goals.targetFFMI ?? undefined,

@@ -433,7 +433,8 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           min: 0,
           step: 0.1,
           unit: weightUnitLabel,
-          required: true,
+          clearable: true,
+          unsetPlaceholder: 'exerciseGoals.creation.notSet',
         },
         {
           type: 'number',
@@ -461,6 +462,9 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           type: 'date',
           key: 'targetDate',
           label: 'nutritionGoals.targetDate',
+          clearable: true,
+          clearLabel: 'goalsManagement.manageGoalData.clear',
+          unsetPlaceholder: 'goalsManagement.manageGoalData.notSet',
         },
       ];
 
@@ -610,7 +614,7 @@ export async function getInitialValues(
         fiber: recordAny.fiber ?? 0,
         eatingPhase: recordAny.eatingPhase ?? 'maintain',
         isDynamic: recordAny.isDynamic ?? false,
-        targetWeight: recordAny.targetWeight ?? 0,
+        targetWeight: recordAny.targetWeight > 0 ? recordAny.targetWeight : null,
         targetBodyFat: recordAny.targetBodyFat ?? undefined,
         targetBMI: recordAny.targetBmi ?? undefined,
         targetFFMI: recordAny.targetFfmi ?? undefined,
@@ -740,7 +744,7 @@ export async function saveRecord(
       break;
 
     case 'nutritionGoal': {
-      let targetWeightKg = values.targetWeight as number | undefined;
+      let targetWeightKg = values.targetWeight as number | null | undefined;
       if (context?.units && targetWeightKg != null) {
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
@@ -755,7 +759,7 @@ export async function saveRecord(
           fiber: values.fiber as number | undefined,
           eatingPhase: values.eatingPhase as any,
           isDynamic: values.isDynamic !== undefined ? Boolean(values.isDynamic) : undefined,
-          targetWeight: targetWeightKg,
+          targetWeight: targetWeightKg ?? null,
           targetBodyFat: values.targetBodyFat as number | undefined,
           targetBMI: values.targetBMI as number | undefined,
           targetFFMI: values.targetFFMI as number | undefined,
@@ -952,7 +956,7 @@ export async function createRecord(
     }
 
     case 'nutritionGoal': {
-      let targetWeightKg = values.targetWeight as number;
+      let targetWeightKg = values.targetWeight as number | null | undefined;
       if (context?.units && targetWeightKg != null) {
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
@@ -965,7 +969,7 @@ export async function createRecord(
         fiber: (values.fiber as number) ?? 0,
         eatingPhase: values.eatingPhase as any,
         isDynamic: Boolean(values.isDynamic),
-        targetWeight: targetWeightKg,
+        targetWeight: targetWeightKg ?? null,
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,

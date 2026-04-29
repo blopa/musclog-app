@@ -71,7 +71,31 @@ export function GenericEditModal({
     }));
   };
 
+  const isNutritionGoalForm =
+    fields.some((field) => field.key === 'isDynamic') &&
+    fields.some((field) => field.key === 'eatingPhase');
+
+  const validateForm = (): boolean => {
+    if (isNutritionGoalForm && formValues.isDynamic) {
+      const targetWeight = formValues.targetWeight;
+      const hasTargetWeight =
+        typeof targetWeight === 'number' ? targetWeight > 0 : targetWeight != null;
+      const hasTargetDate = formValues.targetDate != null;
+
+      if (!hasTargetWeight || !hasTargetDate) {
+        showSnackbar('error', t('nutritionGoals.dynamicRequiredFields'));
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSaving(true);
     try {
       await onSave(formValues);
@@ -180,34 +204,76 @@ export function GenericEditModal({
 
       case 'number': {
         const numberField = field as NumberFieldConfig;
+        const isUnset = value == null;
         const numValue = (value as number) ?? numberField.min ?? 0;
         const step = numberField.step ?? 1;
         const maxFractionDigits = numberField.maxFractionDigits ?? (step % 1 === 0 ? 0 : 1);
+
+        if (numberField.clearable && isUnset) {
+          return (
+            <View key={field.key} className="gap-2">
+              <View className="flex-row items-center justify-between">
+                <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+                <Pressable
+                  onPress={() => handleFieldChange(field.key, numberField.min ?? 0)}
+                  className="active:opacity-70"
+                >
+                  <Text className="text-sm font-medium text-accent-secondary">
+                    {t('common.select')}
+                  </Text>
+                </Pressable>
+              </View>
+              <View className="rounded-lg border border-border-default bg-bg-overlay px-4 py-3">
+                <Text className="text-base text-text-tertiary">
+                  {numberField.unsetPlaceholder
+                    ? t(numberField.unsetPlaceholder, numberField.unsetPlaceholder)
+                    : t('exerciseGoals.creation.notSet')}
+                </Text>
+              </View>
+            </View>
+          );
+        }
+
         return (
-          <StepperInput
-            key={field.key}
-            label={label}
-            value={numValue}
-            unit={numberField.unit}
-            maxFractionDigits={maxFractionDigits}
-            onIncrement={() => {
-              const max = numberField.max ?? Infinity;
-              const newValue = Math.min(numValue + step, max);
-              handleFieldChange(field.key, newValue);
-            }}
-            onDecrement={() => {
-              const min = numberField.min ?? 0;
-              const newValue = Math.max(numValue - step, min);
-              handleFieldChange(field.key, newValue);
-            }}
-            onChangeValue={(newValue) => {
-              // Clamp value to min/max bounds
-              const min = numberField.min ?? 0;
-              const max = numberField.max ?? Infinity;
-              const clampedValue = Math.max(min, Math.min(newValue, max));
-              handleFieldChange(field.key, clampedValue);
-            }}
-          />
+          <View key={field.key} className="gap-2">
+            {numberField.clearable ? (
+              <View className="flex-row items-center justify-between">
+                <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+                <Pressable
+                  onPress={() => handleFieldChange(field.key, null)}
+                  className="active:opacity-70"
+                >
+                  <Text className="text-sm font-medium text-accent-secondary">
+                    {numberField.clearLabel
+                      ? t(numberField.clearLabel, numberField.clearLabel)
+                      : t('common.clear')}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
+            <StepperInput
+              label={numberField.clearable ? '' : label}
+              value={numValue}
+              unit={numberField.unit}
+              maxFractionDigits={maxFractionDigits}
+              onIncrement={() => {
+                const max = numberField.max ?? Infinity;
+                const newValue = Math.min(numValue + step, max);
+                handleFieldChange(field.key, newValue);
+              }}
+              onDecrement={() => {
+                const min = numberField.min ?? 0;
+                const newValue = Math.max(numValue - step, min);
+                handleFieldChange(field.key, newValue);
+              }}
+              onChangeValue={(newValue) => {
+                const min = numberField.min ?? 0;
+                const max = numberField.max ?? Infinity;
+                const clampedValue = Math.max(min, Math.min(newValue, max));
+                handleFieldChange(field.key, clampedValue);
+              }}
+            />
+          </View>
         );
       }
 
@@ -303,6 +369,7 @@ export function GenericEditModal({
       }
 
       case 'date': {
+        const dateField = field;
         // Convert timestamp to Date object, or use current date as default
         const timestamp = (value as number) ?? Date.now();
         const dateValue = new Date(timestamp);
@@ -312,10 +379,27 @@ export function GenericEditModal({
             <DatePickerInput
               label={label}
               selectedDate={dateValue}
+              unset={value == null}
+              unsetPlaceholder={
+                'unsetPlaceholder' in dateField && dateField.unsetPlaceholder
+                  ? t(dateField.unsetPlaceholder, dateField.unsetPlaceholder)
+                  : undefined
+              }
               onPress={() => {
                 setCurrentDateFieldKey(field.key);
                 setDatePickerVisible(true);
               }}
+              onClear={
+                'clearable' in dateField && dateField.clearable
+                  ? () => handleFieldChange(field.key, null)
+                  : undefined
+              }
+              clearLabel={
+                'clearLabel' in dateField && dateField.clearLabel
+                  ? t(dateField.clearLabel, dateField.clearLabel)
+                  : undefined
+              }
+              showClearButton={Boolean('clearable' in dateField && dateField.clearable)}
             />
             <DatePickerModal
               visible={datePickerVisible ? currentDateFieldKey === field.key : false}

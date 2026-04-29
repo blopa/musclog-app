@@ -19,7 +19,7 @@ export interface NutritionGoalInput {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
-  targetWeight?: number;
+  targetWeight?: number | null;
   targetBodyFat?: number;
   targetBMI?: number;
   targetFFMI?: number;
@@ -201,7 +201,7 @@ export class NutritionGoalService {
         }
 
         if (updates.targetWeight !== undefined) {
-          record.targetWeight = updates.targetWeight;
+          record.targetWeight = updates.targetWeight ?? 0;
         }
 
         if (updates.targetBodyFat !== undefined) {
