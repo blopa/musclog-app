@@ -121,6 +121,12 @@
         "title": "Aangepast",
         "subtitle": "Jouw plan"
       }
-    }
+    },
+    "goalMode": "Doelmodus",
+    "manual": "Handmatig",
+    "dynamic": "Dynamisch",
+    "dynamicInfo": "Dagelijkse doelen worden elke dag automatisch berekend op basis van je gewichts- en voedingsgegevens van de afgelopen 30 dagen. Stel je eetfase in om te bepalen of je in een cut, onderhoud of bulk zit.",
+    "dynamicBadge": "Dynamisch",
+    "dynamicRequiredFields": "Doelgewicht en doeldatum zijn verplicht voor dynamische doelen."
   }
 }

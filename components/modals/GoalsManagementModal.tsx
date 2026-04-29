@@ -194,6 +194,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       targetBMI: nutritionGoals.targetBMI ?? undefined,
       targetFFMI: nutritionGoals.targetFFMI ?? undefined,
       targetDate: nutritionGoals.targetDate ?? null,
+      isDynamic: nutritionGoals.isDynamic ?? false,
     };
 
     try {
