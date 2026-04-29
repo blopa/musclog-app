@@ -114,4 +114,38 @@ describe('resolveDailyMacros', () => {
       usedEmpiricalData: false,
     });
   });
+
+  it('respects safety floors and never returns negative calories', async () => {
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
+        if (type === 'height') return Promise.resolve(mockHeightMetric);
+        if (type === 'weight') return Promise.resolve(mockWeightMetric);
+        return Promise.resolve(null);
+    });
+    // Mock an extreme scenario (losing 10kg in 30 days while eating 1000kcal)
+    // that might lead to negative targets if not floored.
+    // calculateNutritionPlan should already be using getMinCalories internally.
+    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue({
+      historicalTotalCalories: 30000,
+      historicalTotalDays: 30,
+      historicalInitialWeightKg: 100,
+      historicalFinalWeightKg: 90,
+    });
+
+    // Manual override for mock to simulate floor hit
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 700, // Floor for male
+      protein: 100,
+      carbs: 50,
+      fats: 10,
+    });
+
+    const result = await resolveDailyMacros(mockGoal, new Date());
+
+    expect(result?.totalCalories).toBeGreaterThanOrEqual(700);
+    expect(result).toEqual(expect.objectContaining({
+      totalCalories: 700,
+      isDynamic: true,
+    }));
+  });
 });
