@@ -6,6 +6,7 @@ import { database } from '@/database';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
 import { localCalendarDayDate } from '@/utils/calendarDate';
+import { resolveDailyMacros, type ResolvedMacros } from '@/utils/dynamicNutritionTarget';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
@@ -21,6 +22,8 @@ export interface UseCurrentNutritionGoalParams {
 // Return type for current mode
 export type UseCurrentNutritionGoalResultCurrent = {
   goal: NutritionGoal | null;
+  /** For dynamic goals: computed macros for the resolved date. Null for static goals. */
+  resolvedMacros: ResolvedMacros | null;
   isLoading: boolean;
 };
 
@@ -58,6 +61,7 @@ export function useCurrentNutritionGoal({
 }: UseCurrentNutritionGoalParams = {}): UseCurrentNutritionGoalResult {
   // State for current mode
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
+  const [resolvedMacros, setResolvedMacros] = useState<ResolvedMacros | null>(null);
   const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
   const displayDateRef = useRef<Date>(localCalendarDayDate(date ?? new Date()));
 
@@ -193,6 +197,24 @@ export function useCurrentNutritionGoal({
     return () => subscription.unsubscribe();
   }, [date, mode]);
 
+  // Current mode: resolve dynamic macros whenever the goal or date changes
+  useEffect(() => {
+    if (mode !== 'current') {
+      return;
+    }
+
+    if (!goal?.isDynamic) {
+      setResolvedMacros(null);
+      return;
+    }
+
+    resolveDailyMacros(goal, displayDateRef.current)
+      .then(setResolvedMacros)
+      .catch(() => {
+        setResolvedMacros(null);
+      });
+  }, [goal?.id, goal?.isDynamic, date, mode, goal]);
+
   // History mode: Observe for new goals to trigger reload (reactivity)
   useEffect(() => {
     if (mode !== 'history') {
@@ -234,9 +256,10 @@ export function useCurrentNutritionGoal({
   const currentResult = useMemo(
     () => ({
       goal,
+      resolvedMacros,
       isLoading: isLoadingCurrent,
     }),
-    [goal, isLoadingCurrent]
+    [goal, resolvedMacros, isLoadingCurrent]
   );
 
   // History mode result

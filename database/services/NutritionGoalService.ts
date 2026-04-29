@@ -24,6 +24,7 @@ export interface NutritionGoalInput {
   targetBMI?: number;
   targetFFMI?: number;
   targetDate?: number | null;
+  isDynamic?: boolean;
 }
 
 export class NutritionGoalService {
@@ -101,6 +102,7 @@ export class NutritionGoalService {
         r.targetBmi = data.targetBMI ?? null;
         r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
+        r.isDynamic = data.isDynamic ?? false;
         r.effectiveUntil = null;
         r.createdAt = now;
         r.updatedAt = now;
@@ -207,6 +209,11 @@ export class NutritionGoalService {
         if (updates.targetDate !== undefined) {
           record.targetDate = updates.targetDate ?? null;
         }
+
+        if (updates.isDynamic !== undefined) {
+          record.isDynamic = updates.isDynamic;
+        }
+
         record.updatedAt = Date.now();
       });
 
@@ -234,6 +241,7 @@ export class NutritionGoalService {
       throw new Error('Cannot regenerate check-ins for a deleted goal');
     }
 
+    // TODO: do not use dynamic import
     const { UserService } = require('./UserService');
     const user = await UserService.getCurrentUser();
 

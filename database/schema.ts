@@ -439,6 +439,7 @@ export const schema = appSchema({
         { name: 'target_ffmi', type: 'number', isOptional: true },
         { name: 'target_date', type: 'number', isOptional: true },
         { name: 'effective_until', type: 'number', isOptional: true },
+        { name: 'is_dynamic', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

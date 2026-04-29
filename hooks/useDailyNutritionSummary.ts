@@ -18,7 +18,11 @@ export function useDailyNutritionSummary({
   enableReactivity,
   visible,
 }: UseDailyNutritionSummaryParams) {
-  const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
+  const {
+    goal: nutritionGoal,
+    resolvedMacros,
+    isLoading: isLoadingGoal,
+  } = useCurrentNutritionGoal({
     mode: 'current',
     date,
     enableReactivity,
@@ -39,32 +43,32 @@ export function useDailyNutritionSummary({
   });
 
   const calories = useMemo(() => {
-    const goal = nutritionGoal?.totalCalories ?? 0;
+    const goal = resolvedMacros?.totalCalories ?? nutritionGoal?.totalCalories ?? 0;
     const consumed = Math.round(dailyNutrients.calories);
     const remaining = goal - consumed;
     return { consumed, remaining, goal };
-  }, [nutritionGoal, dailyNutrients]);
+  }, [nutritionGoal, resolvedMacros, dailyNutrients]);
 
   const macros = useMemo(
     () => ({
       protein: {
         value: Math.round(dailyNutrients.protein),
-        goal: nutritionGoal?.protein ?? 0,
+        goal: resolvedMacros?.protein ?? nutritionGoal?.protein ?? 0,
       },
       carbs: {
         value: Math.round(dailyNutrients.carbs),
-        goal: nutritionGoal?.carbs ?? 0,
+        goal: resolvedMacros?.carbs ?? nutritionGoal?.carbs ?? 0,
       },
       fat: {
         value: Math.round(dailyNutrients.fat),
-        goal: nutritionGoal?.fats ?? 0,
+        goal: resolvedMacros?.fats ?? nutritionGoal?.fats ?? 0,
       },
       fiber: {
         value: Math.round(dailyNutrients.fiber),
-        goal: nutritionGoal?.fiber ?? 0,
+        goal: resolvedMacros?.fiber ?? nutritionGoal?.fiber ?? 0,
       },
     }),
-    [dailyNutrients, nutritionGoal]
+    [dailyNutrients, nutritionGoal, resolvedMacros]
   );
 
   const secondaryNutrients = useMemo(
@@ -79,6 +83,7 @@ export function useDailyNutritionSummary({
     macros,
     secondaryNutrients,
     nutritionGoal,
+    resolvedMacros,
     dailyNutrients,
     logs,
     totalCount,
