@@ -1,5 +1,9 @@
 {
   "workout": {
+    "title": "Workout",
+    "workouts": {
+      "title": "Workouts"
+    },
     "import": {
       "characters": "Tekens",
       "emptyData": "Plak of voer workoutgegevens in.",

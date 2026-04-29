@@ -5,7 +5,13 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
-import { localCalendarDayDate } from '@/utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+} from '@/utils/calendarDate';
+import { resolveDailyMacros, type ResolvedMacros } from '@/utils/dynamicNutritionTarget';
+import { HISTORICAL_NUTRITION_LOOKBACK_DAYS } from '@/utils/historicalNutritionParams';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
@@ -21,6 +27,8 @@ export interface UseCurrentNutritionGoalParams {
 // Return type for current mode
 export type UseCurrentNutritionGoalResultCurrent = {
   goal: NutritionGoal | null;
+  /** For dynamic goals: computed macros for the resolved date. Null for static goals. */
+  resolvedMacros: ResolvedMacros | null;
   isLoading: boolean;
 };
 
@@ -28,6 +36,8 @@ export type UseCurrentNutritionGoalResultCurrent = {
 export type UseCurrentNutritionGoalResultHistory = {
   goals: NutritionGoal[];
   current: NutritionGoal | null; // The active goal (effective_until IS NULL)
+  /** For dynamic current goal: computed macros for today. Null for static goals. */
+  resolvedMacros: ResolvedMacros | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
@@ -58,12 +68,18 @@ export function useCurrentNutritionGoal({
 }: UseCurrentNutritionGoalParams = {}): UseCurrentNutritionGoalResult {
   // State for current mode
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
+  const [resolvedMacros, setResolvedMacros] = useState<ResolvedMacros | null>(null);
   const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
+  const [currentResolutionVersion, setCurrentResolutionVersion] = useState(0);
   const displayDateRef = useRef<Date>(localCalendarDayDate(date ?? new Date()));
 
   // State for history mode
   const [goals, setGoals] = useState<NutritionGoal[]>([]);
   const [currentGoal, setCurrentGoal] = useState<NutritionGoal | null>(null);
+  const [currentGoalResolvedMacros, setCurrentGoalResolvedMacros] = useState<ResolvedMacros | null>(
+    null
+  );
+  const [historyResolutionVersion, setHistoryResolutionVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -155,7 +171,7 @@ export function useCurrentNutritionGoal({
     }
   }, [isLoadingMore, hasMore, visible, currentOffset, batchSize]);
 
-  // Current mode: Resolve goal for display date (date or today), react to goals and date changes
+  // Current mode: resolve goal for display date, subscribe to changes when enableReactivity is true
   useEffect(() => {
     if (mode !== 'current') {
       return;
@@ -178,12 +194,19 @@ export function useCurrentNutritionGoal({
     setIsLoadingCurrent(true);
     fetchGoalForDate();
 
-    const query = database
+    if (!enableReactivity) {
+      return;
+    }
+
+    const goalQuery = database
       .get<NutritionGoal>('nutrition_goals')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    const subscription = query.observe().subscribe({
-      next: () => fetchGoalForDate(),
+    const subscription = goalQuery.observe().subscribe({
+      next: () => {
+        fetchGoalForDate();
+        setCurrentResolutionVersion((version) => version + 1);
+      },
       error: () => {
         setGoal(null);
         setIsLoadingCurrent(false);
@@ -191,7 +214,114 @@ export function useCurrentNutritionGoal({
     });
 
     return () => subscription.unsubscribe();
-  }, [date, mode]);
+  }, [date, mode, enableReactivity]);
+
+  useEffect(() => {
+    if (mode !== 'current' || !enableReactivity || !goal?.isDynamic) {
+      return;
+    }
+
+    const asOfDayMs = displayDateRef.current.getTime();
+    const historyStartMs = localDayKeyPlusCalendarDays(
+      asOfDayMs,
+      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
+    );
+
+    const latestHeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'height'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestWeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestBodyFatQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const historicalMetricQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', Q.oneOf(['weight', 'body_fat'])),
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+    const logQuery = database
+      .get('nutrition_logs')
+      .query(
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const subscriptions = [
+      latestHeightQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      latestWeightQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      latestBodyFatQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      historicalMetricQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      logQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+    ];
+
+    return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }, [date, mode, enableReactivity, goal]);
+
+  // Current mode: resolve dynamic macros whenever the goal or date changes
+  useEffect(() => {
+    if (mode !== 'current') {
+      return;
+    }
+
+    if (!goal?.isDynamic) {
+      setResolvedMacros(null);
+      return;
+    }
+
+    let cancelled = false;
+    resolveDailyMacros(goal, displayDateRef.current)
+      .then((nextResolvedMacros) => {
+        if (!cancelled) {
+          setResolvedMacros(nextResolvedMacros);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setResolvedMacros(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [goal, date, mode, currentResolutionVersion]);
 
   // History mode: Observe for new goals to trigger reload (reactivity)
   useEffect(() => {
@@ -230,13 +360,119 @@ export function useCurrentNutritionGoal({
     return () => subscription.unsubscribe();
   }, [mode, enableReactivity, visible, loadInitialGoals]);
 
+  useEffect(() => {
+    if (mode !== 'history' || !visible || !enableReactivity || !currentGoal?.isDynamic) {
+      return;
+    }
+
+    const todayDayMs = localDayStartMs(new Date());
+    const historyStartMs = localDayKeyPlusCalendarDays(
+      todayDayMs,
+      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
+    );
+    const latestHeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'height'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestWeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestBodyFatQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const historicalMetricQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', Q.oneOf(['weight', 'body_fat'])),
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+    const logQuery = database
+      .get('nutrition_logs')
+      .query(
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const subscriptions = [
+      latestHeightQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      latestWeightQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      latestBodyFatQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      historicalMetricQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      logQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+    ];
+
+    return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }, [mode, visible, enableReactivity, currentGoal]);
+
+  useEffect(() => {
+    if (mode !== 'history') {
+      return;
+    }
+
+    if (!currentGoal?.isDynamic) {
+      setCurrentGoalResolvedMacros(null);
+      return;
+    }
+
+    let cancelled = false;
+    resolveDailyMacros(currentGoal, new Date())
+      .then((nextResolvedMacros) => {
+        if (!cancelled) {
+          setCurrentGoalResolvedMacros(nextResolvedMacros);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCurrentGoalResolvedMacros(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentGoal, mode, historyResolutionVersion]);
+
   // Current mode result
   const currentResult = useMemo(
     () => ({
       goal,
+      resolvedMacros,
       isLoading: isLoadingCurrent,
     }),
-    [goal, isLoadingCurrent]
+    [goal, resolvedMacros, isLoadingCurrent]
   );
 
   // History mode result
@@ -244,13 +480,23 @@ export function useCurrentNutritionGoal({
     () => ({
       goals,
       current: currentGoal,
+      resolvedMacros: currentGoalResolvedMacros,
       isLoading,
       isLoadingMore,
       hasMore,
       loadMore,
       refresh: loadInitialGoals,
     }),
-    [goals, currentGoal, isLoading, isLoadingMore, hasMore, loadMore, loadInitialGoals]
+    [
+      goals,
+      currentGoal,
+      currentGoalResolvedMacros,
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+      loadInitialGoals,
+    ]
   );
 
   // Return appropriate type based on mode

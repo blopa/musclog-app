@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
+import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
@@ -16,9 +17,10 @@ export type NutritionGoalDisplayItem = {
   icon: string;
   iconColor: string;
   iconBgColor: string;
-  goalCalories: number;
+  goalCalories?: number;
   goalEatingPhase: string;
-  goalTargetWeight: number;
+  goalTargetWeight?: number | null;
+  isDynamic?: boolean;
 };
 
 export type NutritionGoalDayGroup = {
@@ -64,13 +66,14 @@ function goalToDisplayItem(
   const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy', { locale });
   return {
     id: goal.id,
-    name: `${phaseLabel} • ${dateLabel}`,
+    name: `${goal.isDynamic ? `${t('nutritionGoals.dynamicBadge')} • ` : ''}${phaseLabel} • ${dateLabel}`,
     icon: ICON,
     iconColor: iconColors.color,
     iconBgColor: iconColors.bg,
-    goalCalories: Math.round(goal.totalCalories),
+    goalCalories: goal.isDynamic ? undefined : Math.round(goal.totalCalories),
     goalEatingPhase: phaseLabel,
-    goalTargetWeight: goal.targetWeight,
+    goalTargetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
+    isDynamic: goal.isDynamic,
   };
 }
 

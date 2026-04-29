@@ -1,5 +1,9 @@
 {
   "nutrition": {
+    "title": "Voeding",
+    "food": {
+      "title": "Voedsel"
+    },
     "analyze": "Analyseren",
     "calories": "Calorieën",
     "carbs": "Koolhydraten",

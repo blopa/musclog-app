@@ -14,6 +14,7 @@ import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
 import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
 import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
+import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
@@ -21,7 +22,7 @@ import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
 import { NotificationsModal } from '@/components/modals/NotificationsModal';
-import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
+import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '@/components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '@/components/modals/PastWorkoutsHistoryModal';
 import { UserMenuModal } from '@/components/modals/UserMenuModal';
@@ -35,6 +36,7 @@ import { isStaticExport } from '@/constants/platform';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
@@ -47,6 +49,7 @@ import packageJson from '@/package.json';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
@@ -63,6 +66,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
+  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
@@ -121,9 +125,11 @@ export default function HomeScreen() {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
+  const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
+  const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
@@ -155,8 +161,10 @@ export default function HomeScreen() {
   const handleCloseWorkoutHistory = useCallback(() => setIsWorkoutHistoryVisible(false), []);
   const handleCloseAddFood = useCallback(() => setIsAddFoodVisible(false), []);
   const handleCloseNutritionGoals = useCallback(() => setIsNutritionGoalsVisible(false), []);
+  const handleCloseEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(false), []);
   const handleCloseFoodSearch = useCallback(() => setIsFoodSearchVisible(false), []);
   const handleCloseMyMeals = useCallback(() => setIsMyMealsVisible(false), []);
+  const handleCloseDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(false), []);
   const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
   const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
   const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
@@ -195,9 +203,9 @@ export default function HomeScreen() {
   }, []);
 
   const handleSaveNutritionGoals = useCallback(
-    async (goals: any) => {
+    async (goals: NutritionGoals) => {
       try {
-        const savedGoal = await NutritionGoalService.saveGoals(goals);
+        const savedGoal = await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
         await NutritionGoalService.regenerateCheckins(savedGoal.id);
         setIsNutritionGoalsVisible(false);
       } catch (error) {
@@ -208,6 +216,29 @@ export default function HomeScreen() {
       }
     },
     [t]
+  );
+
+  const handleSaveCurrentNutritionGoal = useCallback(
+    async (goals: NutritionGoals) => {
+      if (!currentNutritionGoal) {
+        return;
+      }
+
+      try {
+        await NutritionGoalService.updateGoal(
+          currentNutritionGoal.id,
+          nutritionGoalsToInput(goals),
+          true
+        );
+        setIsEditCurrentGoalVisible(false);
+      } catch (error) {
+        await handleError(error, 'index.saveCurrentNutritionGoal', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+          consoleMessage: 'Failed to update current nutrition goal:',
+        });
+      }
+    },
+    [currentNutritionGoal, t]
   );
 
   const handleFoodSearchCreatePress = useCallback(() => {
@@ -432,7 +463,7 @@ export default function HomeScreen() {
                 nutritionDisplay={nutritionDisplay}
                 menuButton={
                   <MenuButton
-                    onPress={() => setIsGoalsManagementModalVisible(true)}
+                    onPress={() => setIsDailySummaryMenuVisible(true)}
                     size="sm"
                     color={theme.colors.text.primary}
                   />
@@ -695,6 +726,18 @@ export default function HomeScreen() {
         initialGoals={nutritionGoalsDefaults}
       />
 
+      <NutritionGoalsModal
+        visible={isEditCurrentGoalVisible}
+        onClose={handleCloseEditCurrentGoal}
+        onSave={handleSaveCurrentNutritionGoal}
+        initialGoals={
+          currentNutritionGoal
+            ? nutritionGoalToInitialValues(currentNutritionGoal)
+            : nutritionGoalsDefaults
+        }
+        isEditing={true}
+      />
+
       {/* Food Search Modal */}
       <FoodSearchModal
         visible={isFoodSearchVisible}
@@ -707,6 +750,14 @@ export default function HomeScreen() {
 
       {/* My Meals Modal */}
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />
+
+      <DailySummaryBottomMenu
+        visible={isDailySummaryMenuVisible}
+        onClose={handleCloseDailySummaryMenu}
+        onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
+        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        showEditCurrentGoal={currentNutritionGoal != null}
+      />
 
       {/* Goals Management Modal */}
       <GoalsManagementModal

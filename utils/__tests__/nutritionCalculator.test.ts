@@ -28,7 +28,7 @@ import {
   inchesToCm,
   isValidBodyFat,
   lbsToKg,
-  MIN_CALORIES,
+  MIN_CALORIES_FEMALE,
   normalizeFitnessGoal,
   normalizeWeightGoal,
   type NutritionCalculatorInput,
@@ -1521,12 +1521,12 @@ describe('calculateTargetCalories', () => {
   });
 
   it('never goes below MIN_CALORIES safety floor', () => {
-    expect(calculateTargetCalories(1500, 'lose')).toBe(MIN_CALORIES);
-    expect(calculateTargetCalories(1200, 'lose')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(1500, 'lose')).toBe(MIN_CALORIES_FEMALE);
+    expect(calculateTargetCalories(1200, 'lose')).toBe(MIN_CALORIES_FEMALE);
   });
 
   it('returns MIN_CALORIES when TDEE itself is at floor', () => {
-    expect(calculateTargetCalories(MIN_CALORIES, 'lose')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(MIN_CALORIES_FEMALE, 'lose')).toBe(MIN_CALORIES_FEMALE);
   });
 });
 
@@ -1826,7 +1826,7 @@ describe('calculateNutritionPlan', () => {
       activityLevel: 1,
       weightGoal: 'lose',
     });
-    expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES);
+    expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES_FEMALE);
   });
 
   it('handles female gender correctly', () => {
@@ -2521,7 +2521,7 @@ describe('calculateNutritionPlan – diverse scenarios', () => {
     const plan = calculateNutritionPlan(input);
     expect(plan.bmr).toBeGreaterThan(0);
     expect(plan.tdee).toBeGreaterThanOrEqual(plan.bmr);
-    expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES);
+    expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES_FEMALE);
     expect(plan.protein).toBeGreaterThan(0);
     expect(plan.carbs).toBeGreaterThan(0);
     expect(plan.fats).toBeGreaterThan(0);

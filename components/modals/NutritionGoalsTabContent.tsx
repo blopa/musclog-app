@@ -10,17 +10,19 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
+import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 interface GoalHistoryItem {
-  id: number;
+  id: string;
   dateRange: string;
   phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  weight: number;
+  weight: number | null;
   bodyFat?: number | null;
+  isDynamic?: boolean;
 }
 
 interface CurrentGoal {
@@ -34,6 +36,7 @@ interface CurrentGoal {
   ffmi?: number | null;
   bmi?: number | null;
   goalDate?: string;
+  isDynamic?: boolean;
 }
 
 interface NutritionGoalsTabContentProps {
@@ -57,7 +60,7 @@ export function NutritionGoalsTabContent({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
 
-  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
+  const { goals, current, resolvedMacros, isLoading, refresh } = useCurrentNutritionGoal({
     mode: 'history',
     visible,
   });
@@ -73,25 +76,26 @@ export function NutritionGoalsTabContent({
 
     return {
       phase: convertEatingPhaseToUI(current.eatingPhase),
-      calories: current.totalCalories,
-      protein: current.protein,
-      carbs: current.carbs,
-      fat: current.fats,
-      targetWeight: current.targetWeight,
+      calories: resolvedMacros?.totalCalories ?? current.totalCalories,
+      protein: resolvedMacros?.protein ?? current.protein,
+      carbs: resolvedMacros?.carbs ?? current.carbs,
+      fat: resolvedMacros?.fats ?? current.fats,
+      targetWeight: normalizeNutritionGoalTargetWeight(current.targetWeight) ?? undefined,
       bodyFat: current.targetBodyFat,
       bmi: current.targetBmi,
       ffmi: current.targetFfmi,
       goalDate: current.targetDate
         ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
         : undefined,
+      isDynamic: current.isDynamic,
     };
-  }, [current, dateFnsLocale]);
+  }, [current, resolvedMacros, dateFnsLocale]);
 
   const historyWithRaw = useMemo(
     () =>
       goals
         .filter((goal) => goal.effectiveUntil !== null)
-        .map((goal, index) => {
+        .map((goal) => {
           const startDate = new Date(goal.createdAt);
           const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
           const dateRange =
@@ -101,15 +105,16 @@ export function NutritionGoalsTabContent({
               : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
 
           const display: GoalHistoryItem = {
-            id: parseInt(goal.id, 10) || index,
+            id: goal.id,
             dateRange,
             phase: convertEatingPhaseToUI(goal.eatingPhase),
             calories: goal.totalCalories,
             protein: goal.protein,
             carbs: goal.carbs,
             fat: goal.fats,
-            weight: goal.targetWeight,
+            weight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
             bodyFat: goal.targetBodyFat,
+            isDynamic: goal.isDynamic,
           };
 
           return { display, raw: goal };

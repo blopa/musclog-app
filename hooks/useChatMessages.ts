@@ -52,6 +52,7 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
+import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
@@ -535,12 +536,16 @@ export function useChatMessages(
           let macroTargets;
           const currentGoal = await NutritionGoalService.getCurrent();
           if (currentGoal) {
+            const resolved = currentGoal.isDynamic
+              ? await resolveDailyMacros(currentGoal, new Date())
+              : null;
+
             macroTargets = {
-              calories: currentGoal.totalCalories,
-              protein: currentGoal.protein,
-              carbs: currentGoal.carbs,
-              fat: currentGoal.fats,
-              fiber: currentGoal.fiber,
+              calories: resolved?.totalCalories ?? currentGoal.totalCalories,
+              protein: resolved?.protein ?? currentGoal.protein,
+              carbs: resolved?.carbs ?? currentGoal.carbs,
+              fat: resolved?.fats ?? currentGoal.fats,
+              fiber: resolved?.fiber ?? currentGoal.fiber,
             };
           } else {
             // Calculate one on the spot

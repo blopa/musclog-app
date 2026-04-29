@@ -5,6 +5,7 @@ import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -73,7 +74,9 @@ export function FullScreenModal({
       onShow={onShow}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
-      <View
+      <SwipeToReturnWrapper
+        onClose={onClose}
+        enabled={closable}
         className="flex-1 bg-bg-primary"
         pointerEvents="auto"
         style={[
@@ -105,9 +108,9 @@ export function FullScreenModal({
             >
               {closable ? (
                 <Pressable
-                  style={{ marginLeft: -8, padding: 8, borderRadius: 9999 }}
+                  style={{ padding: 12, borderRadius: 9999 }}
                   onPress={onClose}
-                  hitSlop={10}
+                  hitSlop={12}
                 >
                   <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
@@ -118,7 +121,7 @@ export function FullScreenModal({
                   <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
                 ) : null}
               </View>
-              {headerRight ? <View style={{ marginRight: -8 }}>{headerRight}</View> : null}
+              {headerRight ? <View>{headerRight}</View> : null}
             </LinearGradient>
           </View>
         ) : null}
@@ -151,7 +154,7 @@ export function FullScreenModal({
             </BottomButtonWrapper>
           ) : null}
         </View>
-      </View>
+      </SwipeToReturnWrapper>
     </Modal>
   );
 }

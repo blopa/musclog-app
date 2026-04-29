@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { type EatingPhase } from '@/database/models';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
@@ -20,6 +19,7 @@ import {
   getEffectiveKcalPerKgWeightLoss,
   getMinCalories,
 } from '@/utils/nutritionCalculator';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -39,22 +39,6 @@ interface GoalsManagementModalProps {
   visible: boolean;
   onClose: () => void;
   tab: 'nutrition' | 'fitness';
-}
-
-function goalToFormData(goal: NutritionGoal): NutritionGoalsInitialValues {
-  return {
-    totalCalories: goal.totalCalories,
-    protein: goal.protein,
-    carbs: goal.carbs,
-    fats: goal.fats,
-    fiber: goal.fiber,
-    eatingPhase: goal.eatingPhase as EatingPhase,
-    targetWeight: goal.targetWeight,
-    targetBodyFat: goal.targetBodyFat,
-    targetBMI: goal.targetBmi,
-    targetFFMI: goal.targetFfmi,
-    targetDate: goal.targetDate ?? null,
-  };
 }
 
 export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
@@ -101,7 +85,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     if (!currentNutritionGoal) {
       return undefined;
     }
-    return goalToFormData(currentNutritionGoal);
+    return nutritionGoalToInitialValues(currentNutritionGoal);
   }, [currentNutritionGoal]);
 
   const defaultEatingPhase =
@@ -198,19 +182,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
-    const input = {
-      totalCalories: nutritionGoals.totalCalories,
-      protein: nutritionGoals.protein,
-      carbs: nutritionGoals.carbs,
-      fats: nutritionGoals.fats,
-      fiber: nutritionGoals.fiber,
-      eatingPhase: nutritionGoals.eatingPhase,
-      targetWeight: nutritionGoals.targetWeight ?? undefined,
-      targetBodyFat: nutritionGoals.targetBodyFat ?? undefined,
-      targetBMI: nutritionGoals.targetBMI ?? undefined,
-      targetFFMI: nutritionGoals.targetFFMI ?? undefined,
-      targetDate: nutritionGoals.targetDate ?? null,
-    };
+    const input = nutritionGoalsToInput(nutritionGoals);
 
     try {
       if (isEditing && selectedGoal) {
@@ -254,7 +226,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
 
   const editModalInitialGoals = useMemo(() => {
     if (isEditing && selectedGoal) {
-      return goalToFormData(selectedGoal);
+      return nutritionGoalToInitialValues(selectedGoal);
     }
 
     if (pendingWizardPrefill) {

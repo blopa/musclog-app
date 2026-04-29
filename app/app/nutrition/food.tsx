@@ -1,4 +1,3 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useRouter } from 'expo-router';
 import {
   ArrowRight,
@@ -16,13 +15,14 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { MealGroupCard } from '@/components/cards/MealGroupCard';
 import { useCoach } from '@/components/CoachContext';
+import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MealSection } from '@/components/MealSection';
@@ -36,6 +36,7 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
+import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -49,11 +50,13 @@ import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import {
   ChatService,
+  NutritionGoalService,
   NutritionService,
   SavedForLaterService,
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
+import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -68,6 +71,7 @@ import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 import { handleError } from '@/utils/handleError';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
 /**
  * Check if there are duplicate foods among UNGROUPED items only.
@@ -119,7 +123,9 @@ export default function FoodScreen() {
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
+  const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
+  const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
     log: NutritionLog;
     food: Food | null;
@@ -143,6 +149,7 @@ export default function FoodScreen() {
     return () => setCurrentDate(undefined);
   }, [selectedDate, setCurrentDate]);
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
+
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [isCreateMealModalVisible, setIsCreateMealModalVisible] = useState(false);
   const [createMealInitialFoods, setCreateMealInitialFoods] = useState<
@@ -203,11 +210,13 @@ export default function FoodScreen() {
     refresh,
     totalCount,
     nutritionGoal,
+    resolvedMacros,
   } = useDailyNutritionSummary({
     date: selectedDate,
     enableReactivity: true,
     visible: true,
   });
+  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
 
   const [resolvedLogs, setResolvedLogs] = useState<
     {
@@ -229,6 +238,29 @@ export default function FoodScreen() {
 
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
+
+  const handleSaveCurrentNutritionGoal = useCallback(
+    async (goals: NutritionGoals) => {
+      if (!currentNutritionGoal) {
+        return;
+      }
+
+      try {
+        await NutritionGoalService.updateGoal(
+          currentNutritionGoal.id,
+          nutritionGoalsToInput(goals),
+          true
+        );
+        setIsEditCurrentGoalVisible(false);
+      } catch (error) {
+        await handleError(error, 'food.saveCurrentNutritionGoal', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+          consoleMessage: 'Failed to update current nutrition goal:',
+        });
+      }
+    },
+    [currentNutritionGoal, t]
+  );
 
   const checkSavedMeals = useCallback(async () => {
     try {
@@ -286,18 +318,24 @@ export default function FoodScreen() {
     };
   }, [logs]);
 
-  // Calculate calories consumed and macros
+  // Calculate calories consumed and macros — prefer resolved macros for dynamic goals
+  const effectiveGoalCalories =
+    resolvedMacros?.totalCalories ?? nutritionGoal?.totalCalories ?? 2500;
+  const effectiveGoalProtein = resolvedMacros?.protein ?? nutritionGoal?.protein ?? 150;
+  const effectiveGoalCarbs = resolvedMacros?.carbs ?? nutritionGoal?.carbs ?? 250;
+  const effectiveGoalFats = resolvedMacros?.fats ?? nutritionGoal?.fats ?? 80;
+  const effectiveGoalFiber = resolvedMacros?.fiber ?? nutritionGoal?.fiber ?? 0;
+
   const caloriesData = useMemo(() => {
-    const totalCalories = nutritionGoal?.totalCalories || 2500;
     const consumedCalories = dailyNutrients?.calories || 0;
-    const percentage = Math.round((consumedCalories / totalCalories) * 100);
+    const percentage = Math.round((consumedCalories / effectiveGoalCalories) * 100);
 
     return {
       consumed: consumedCalories,
-      total: totalCalories,
+      total: effectiveGoalCalories,
       percentage,
     };
-  }, [dailyNutrients, nutritionGoal]);
+  }, [dailyNutrients, effectiveGoalCalories]);
 
   // ALL logs by meal type — used by action handlers (delete all, move, copy, split, scale, etc.)
   const mealsByType = useMemo(() => {
@@ -1354,6 +1392,19 @@ export default function FoodScreen() {
               <AnimatedContent style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
                   {/* Daily Summary Card */}
+                  {nutritionGoal?.isDynamic ? (
+                    <View
+                      className="mb-1 self-start rounded-full px-2 py-0.5"
+                      style={{ backgroundColor: theme.colors.status.emerald20 }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{ color: theme.colors.status.emeraldLight }}
+                      >
+                        {t('nutritionGoals.dynamicBadge')}
+                      </Text>
+                    </View>
+                  ) : null}
                   <DailySummaryCard
                     calories={{
                       consumed: caloriesData.consumed,
@@ -1363,19 +1414,19 @@ export default function FoodScreen() {
                     macros={{
                       protein: {
                         value: dailyNutrients?.protein || 0,
-                        goal: nutritionGoal?.protein || 150,
+                        goal: effectiveGoalProtein,
                       },
                       carbs: {
                         value: dailyNutrients?.carbs || 0,
-                        goal: nutritionGoal?.carbs || 250,
+                        goal: effectiveGoalCarbs,
                       },
                       fats: {
                         value: dailyNutrients?.fat || 0,
-                        goal: nutritionGoal?.fats || 80,
+                        goal: effectiveGoalFats,
                       },
                       fiber: {
                         value: dailyNutrients?.fiber || 0,
-                        goal: nutritionGoal?.fiber || 0,
+                        goal: effectiveGoalFiber,
                       },
                     }}
                     secondaryNutrients={secondaryNutrients}
@@ -1383,7 +1434,7 @@ export default function FoodScreen() {
                     nutritionDisplay={nutritionDisplay}
                     menuButton={
                       <MenuButton
-                        onPress={() => setIsGoalsManagementModalVisible(true)}
+                        onPress={() => setIsDailySummaryMenuVisible(true)}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -1850,6 +1901,24 @@ export default function FoodScreen() {
         visible={isGoalsManagementModalVisible}
         onClose={() => setIsGoalsManagementModalVisible(false)}
         tab="nutrition"
+      />
+
+      {currentNutritionGoal ? (
+        <NutritionGoalsModal
+          visible={isEditCurrentGoalVisible}
+          onClose={() => setIsEditCurrentGoalVisible(false)}
+          onSave={handleSaveCurrentNutritionGoal}
+          initialGoals={nutritionGoalToInitialValues(currentNutritionGoal)}
+          isEditing={true}
+        />
+      ) : null}
+
+      <DailySummaryBottomMenu
+        visible={isDailySummaryMenuVisible}
+        onClose={() => setIsDailySummaryMenuVisible(false)}
+        onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
+        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        showEditCurrentGoal={currentNutritionGoal != null}
       />
 
       {/* Food Menu Modal */}

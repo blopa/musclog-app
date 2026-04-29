@@ -16,15 +16,16 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 import { GenericCard } from './GenericCard';
 
 interface GoalHistoryItem {
-  id: number;
+  id: string;
   dateRange: string;
   phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;
   fat: number;
-  weight: number;
+  weight: number | null;
   bodyFat?: number | null;
+  isDynamic?: boolean;
 }
 
 interface GoalHistoryCardProps {
@@ -49,7 +50,8 @@ export function GoalHistoryCard({
   const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const weightDisplay = formatDisplayWeightKg(locale, units, goal.weight);
+  const weightDisplay =
+    goal.weight != null ? formatDisplayWeightKg(locale, units, goal.weight) : null;
   const [menuVisible, setMenuVisible] = useState(false);
   const wasRegenerating = useRef(false);
 
@@ -152,31 +154,41 @@ export function GoalHistoryCard({
           <View className="p-3">
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
-                <Text className="text-lg font-bold text-text-primary">
-                  {formatInteger(goal.calories)}{' '}
-                  <Text
-                    className="font-normal text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}
-                  >
-                    {t('goalHistoryCard.kcal')}
+                {goal.isDynamic ? (
+                  <Text className="text-lg font-bold text-text-primary">
+                    {t('goalHistoryCard.dynamic')}
                   </Text>
-                </Text>
-                <Text
-                  className="text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}
-                >
-                  {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
-                  {formatInteger(goal.carbs)}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
-                  {formatInteger(goal.fat)}
-                  {t('goalHistoryCard.g')}
-                </Text>
+                ) : (
+                  <>
+                    <Text className="text-lg font-bold text-text-primary">
+                      {formatInteger(goal.calories)}{' '}
+                      <Text
+                        className="font-normal text-text-secondary"
+                        style={{ fontSize: theme.typography.fontSize.xs }}
+                      >
+                        {t('goalHistoryCard.kcal')}
+                      </Text>
+                    </Text>
+                    <Text
+                      className="text-text-secondary"
+                      style={{ fontSize: theme.typography.fontSize.xs }}
+                    >
+                      {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
+                      {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
+                      {formatInteger(goal.carbs)}
+                      {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
+                      {formatInteger(goal.fat)}
+                      {t('goalHistoryCard.g')}
+                    </Text>
+                  </>
+                )}
               </View>
               <View className="items-end">
-                <Text className="text-xs font-bold text-text-secondary">
-                  {weightDisplay} {t(weightUnitKey)}
-                </Text>
+                {weightDisplay != null ? (
+                  <Text className="text-xs font-bold text-text-secondary">
+                    {weightDisplay} {t(weightUnitKey)}
+                  </Text>
+                ) : null}
                 {goal.bodyFat != null ? (
                   <Text
                     className="text-text-secondary"

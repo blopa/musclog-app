@@ -121,6 +121,12 @@
         "title": "Personalizado",
         "subtitle": "Tu Plan"
       }
-    }
+    },
+    "goalMode": "Modo de objetivo",
+    "manual": "Manual",
+    "dynamic": "Dinámico",
+    "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus últimos 30 días de datos de peso y nutrición. Establece tu fase alimentaria para controlar si estás en déficit, mantenimiento o superávit, y añade tanto un peso objetivo como una fecha objetivo para activar los objetivos dinámicos.",
+    "dynamicBadge": "Dinámico",
+    "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos."
   }
 }

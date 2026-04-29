@@ -58,6 +58,28 @@ export class UserMetricService {
   }
 
   /**
+   * Get the latest metric value for a specific type on or before a given day.
+   * Uses metric date first, then updated_at to break ties on the same day.
+   */
+  static async getLatestOnOrBefore(
+    type: UserMetricType | string,
+    maxDate: number
+  ): Promise<UserMetric | null> {
+    const metrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', type),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(maxDate)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+    return metrics[0] ?? null;
+  }
+
+  /**
    * Get metrics history with pagination support.
    */
   static async getMetricsHistory(

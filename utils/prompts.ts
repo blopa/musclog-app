@@ -27,6 +27,7 @@ import {
   localDayStartMs,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
@@ -836,12 +837,13 @@ export const getMealCritiquePrompt = async (
 
   let nutritionGoalInfo = '';
   if (nutritionGoal) {
+    const macros = (await resolveDailyMacros(nutritionGoal, new Date())) ?? nutritionGoal;
     nutritionGoalInfo = [
       'Daily nutrition targets:',
-      `- Calories: ${formatAppInteger(language, Math.round(nutritionGoal.totalCalories))} kcal`,
-      `- Protein: ${formatAppInteger(language, Math.round(nutritionGoal.protein))}g`,
-      `- Carbs: ${formatAppInteger(language, Math.round(nutritionGoal.carbs))}g`,
-      `- Fat: ${formatAppInteger(language, Math.round(nutritionGoal.fats))}g`,
+      `- Calories: ${formatAppInteger(language, Math.round(macros.totalCalories))} kcal`,
+      `- Protein: ${formatAppInteger(language, Math.round(macros.protein))}g`,
+      `- Carbs: ${formatAppInteger(language, Math.round(macros.carbs))}g`,
+      `- Fat: ${formatAppInteger(language, Math.round(macros.fats))}g`,
     ].join('\n');
   }
 
@@ -1381,6 +1383,7 @@ export const getGenerateWorkoutPlanFunctions = ():
           workoutPlan: {
             type: 'array',
             description: 'Array of individual workouts in the plan',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1400,6 +1403,7 @@ export const getGenerateWorkoutPlanFunctions = ():
                   type: 'array',
                   description:
                     'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1456,6 +1460,7 @@ export const getCalculateNextWorkoutVolumeFunctions = ():
           workoutVolume: {
             type: 'array',
             description: 'Recommended volume adjustments per exercise',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1466,6 +1471,7 @@ export const getCalculateNextWorkoutVolumeFunctions = ():
                 sets: {
                   type: 'array',
                   description: 'Recommended sets with reps and weight',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1511,6 +1517,7 @@ export const getParsePastWorkoutsFunctions = ():
         properties: {
           pastWorkouts: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1532,6 +1539,7 @@ export const getParsePastWorkoutsFunctions = ():
                 },
                 exercises: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1546,6 +1554,7 @@ export const getParsePastWorkoutsFunctions = ():
                       },
                       sets: {
                         type: 'array',
+                        minItems: 1,
                         items: {
                           type: 'object',
                           properties: {
@@ -1585,6 +1594,7 @@ export const getParsePastNutritionFunctions = ():
         properties: {
           pastNutrition: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1652,6 +1662,7 @@ export const getParseRetrospectiveNutritionFunctions = ():
         properties: {
           nutritionEntries: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1745,6 +1756,7 @@ export const getGenerateMealPlanFunctions = (
           meals: {
             type: 'array',
             description: 'List of meals for the 3-day plan',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1757,6 +1769,7 @@ export const getGenerateMealPlanFunctions = (
                 description: { type: 'string', description: 'Brief description of the meal' },
                 ingredients: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: ingredientProperties,
@@ -1816,6 +1829,7 @@ export const getTrackMealFunctions = (
           meals: {
             type: 'array',
             description: 'List of meals identified in the message. Use one entry per meal type.',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1832,6 +1846,7 @@ export const getTrackMealFunctions = (
                 ingredients: {
                   type: 'array',
                   description: 'List of ingredients in this meal',
+                  minItems: 1,
                   items: ingredientSchema,
                 },
               },

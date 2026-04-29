@@ -63,7 +63,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
-          isMealPhotoEnabled={isAiMealPhotoEnabled}
+          isAIVisionEnabled={isAiMealPhotoEnabled}
           useOcrBeforeAi={useOcrBeforeAi}
           logDate={logDate}
           mealTypeForLog={mealTypeForLog}
