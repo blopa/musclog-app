@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
+import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
@@ -18,7 +19,7 @@ export type NutritionGoalDisplayItem = {
   iconBgColor: string;
   goalCalories?: number;
   goalEatingPhase: string;
-  goalTargetWeight: number;
+  goalTargetWeight?: number | null;
   isDynamic?: boolean;
 };
 
@@ -71,7 +72,7 @@ function goalToDisplayItem(
     iconBgColor: iconColors.bg,
     goalCalories: goal.isDynamic ? undefined : Math.round(goal.totalCalories),
     goalEatingPhase: phaseLabel,
-    goalTargetWeight: goal.targetWeight,
+    goalTargetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
     isDynamic: goal.isDynamic,
   };
 }

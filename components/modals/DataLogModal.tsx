@@ -354,17 +354,21 @@ export function getDataLogModalTranslations(
         const targetWeight =
           units != null && item.goalTargetWeight != null
             ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
-            : Number((item.goalTargetWeight ?? 0).toFixed(1));
+            : item.goalTargetWeight != null
+              ? Number(item.goalTargetWeight.toFixed(1))
+              : null;
 
         if (item.isDynamic) {
-          return `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''} • ${targetWeight} ${unitLabel}`;
+          return targetWeight != null
+            ? `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''} • ${targetWeight} ${unitLabel}`
+            : `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''}`;
         }
 
         return t('goalsManagement.manageGoalData.subtitleFormat', {
           calories: Number((item.goalCalories ?? 0).toFixed(0)),
           phase: item.goalEatingPhase ?? '',
-          targetWeight,
-          unit: unitLabel,
+          targetWeight: targetWeight ?? t('exerciseGoals.creation.notSet'),
+          unit: targetWeight != null ? unitLabel : '',
         });
       },
     };

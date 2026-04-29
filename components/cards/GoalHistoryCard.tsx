@@ -23,7 +23,7 @@ interface GoalHistoryItem {
   protein: number;
   carbs: number;
   fat: number;
-  weight: number;
+  weight: number | null;
   bodyFat?: number | null;
   isDynamic?: boolean;
 }
@@ -50,7 +50,8 @@ export function GoalHistoryCard({
   const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const weightDisplay = formatDisplayWeightKg(locale, units, goal.weight);
+  const weightDisplay =
+    goal.weight != null ? formatDisplayWeightKg(locale, units, goal.weight) : null;
   const [menuVisible, setMenuVisible] = useState(false);
   const wasRegenerating = useRef(false);
 
@@ -183,9 +184,11 @@ export function GoalHistoryCard({
                 )}
               </View>
               <View className="items-end">
-                <Text className="text-xs font-bold text-text-secondary">
-                  {weightDisplay} {t(weightUnitKey)}
-                </Text>
+                {weightDisplay != null ? (
+                  <Text className="text-xs font-bold text-text-secondary">
+                    {weightDisplay} {t(weightUnitKey)}
+                  </Text>
+                ) : null}
                 {goal.bodyFat != null ? (
                   <Text
                     className="text-text-secondary"

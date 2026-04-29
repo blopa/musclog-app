@@ -4,12 +4,26 @@ import { endOfDay } from 'date-fns';
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import {
+  isDynamicNutritionGoalValid,
+  normalizeNutritionGoalTargetWeight,
+} from '@/utils/nutritionGoalHelpers';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionCheckinService } from './NutritionCheckinService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
+}
+
+function assertValidDynamicGoal(goal: {
+  isDynamic?: boolean;
+  targetWeight?: number | null;
+  targetDate?: number | null;
+}): void {
+  if (!isDynamicNutritionGoalValid(goal)) {
+    throw new Error('Target weight and target date are required for dynamic goals.');
+  }
 }
 
 export interface NutritionGoalInput {
@@ -73,6 +87,13 @@ export class NutritionGoalService {
     data: NutritionGoalInput,
     shouldDeleteCheckins = true
   ): Promise<NutritionGoal> {
+    const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(data.targetWeight);
+    assertValidDynamicGoal({
+      isDynamic: data.isDynamic,
+      targetWeight: normalizedTargetWeight,
+      targetDate: data.targetDate ?? null,
+    });
+
     const now = Date.now();
     const supersededGoalIds: string[] = [];
 
@@ -97,7 +118,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight ?? 0;
+        r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
         r.targetFfmi = data.targetFFMI ?? null;
@@ -175,6 +196,15 @@ export class NutritionGoalService {
         throw new Error('Cannot update deleted goal');
       }
 
+      assertValidDynamicGoal({
+        isDynamic: updates.isDynamic ?? goal.isDynamic,
+        targetWeight:
+          updates.targetWeight !== undefined
+            ? normalizeNutritionGoalTargetWeight(updates.targetWeight)
+            : normalizeNutritionGoalTargetWeight(goal.targetWeight),
+        targetDate: updates.targetDate !== undefined ? updates.targetDate ?? null : goal.targetDate,
+      });
+
       await goal.update((record) => {
         if (updates.totalCalories !== undefined) {
           record.totalCalories = updates.totalCalories;
@@ -201,7 +231,7 @@ export class NutritionGoalService {
         }
 
         if (updates.targetWeight !== undefined) {
-          record.targetWeight = updates.targetWeight ?? 0;
+          record.targetWeight = normalizeNutritionGoalTargetWeight(updates.targetWeight) ?? 0;
         }
 
         if (updates.targetBodyFat !== undefined) {
@@ -348,6 +378,13 @@ export class NutritionGoalService {
    * and creates the new goal with the correct effectiveUntil.
    */
   static async addGoalAtDate(data: NutritionGoalInput, startDate: number): Promise<NutritionGoal> {
+    const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(data.targetWeight);
+    assertValidDynamicGoal({
+      isDynamic: data.isDynamic,
+      targetWeight: normalizedTargetWeight,
+      targetDate: data.targetDate ?? null,
+    });
+
     return await database.write(async () => {
       const now = Date.now();
 
@@ -381,7 +418,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight ?? 0;
+        r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
         r.targetFfmi = data.targetFFMI ?? null;

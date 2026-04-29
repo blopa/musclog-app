@@ -47,6 +47,7 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
 } from '@/utils/nutritionCalculator';
+import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
 import {
   displayToKg,
   kgToDisplay,
@@ -683,7 +684,11 @@ export function NutritionGoalsBody({
     units,
   ]);
 
-  const isDynamicValid = !isDynamic || (targetWeight !== null && targetDate !== null);
+  const isDynamicValid = isDynamicNutritionGoalValid({
+    isDynamic,
+    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
+    targetDate,
+  });
 
   const handleSave = useCallback(() => {
     onSave?.({

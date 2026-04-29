@@ -8,6 +8,8 @@ import {
   type NutritionGoalsInitialValues,
 } from '@/components/NutritionGoalsBody';
 import { Button } from '@/components/theme/Button';
+import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
+import { showSnackbar } from '@/utils/snackbarService';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -54,6 +56,7 @@ export function NutritionGoalsModal({
     buildNutritionGoalsFromInitialValues(initialGoals)
   );
   const [isSaving, setIsSaving] = useState(false);
+  const isCurrentGoalsValid = isDynamicNutritionGoalValid(currentGoals);
 
   useEffect(() => {
     if (!visible) {
@@ -74,12 +77,18 @@ export function NutritionGoalsModal({
       return;
     }
 
+    if (!isDynamicNutritionGoalValid(goals)) {
+      showSnackbar('error', t('nutritionGoals.dynamicRequiredFields'));
+      return;
+    }
+
     setIsSaving(true);
     // Small delay to allow React to render the loading state before heavy save work starts.
     await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
     try {
       await onSave?.(goals);
+      onClose();
     } finally {
       setIsSaving(false);
     }
@@ -106,7 +115,7 @@ export function NutritionGoalsModal({
           width="full"
           onPress={handleFloatingSave}
           loading={isSaving}
-          disabled={isSaving}
+          disabled={isSaving || !isCurrentGoalsValid}
         />
       }
     >

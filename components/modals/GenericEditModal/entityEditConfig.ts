@@ -856,10 +856,12 @@ export function getCreateInitialValues(
         fats: 0,
         fiber: 0,
         eatingPhase: 'maintain',
-        targetWeight: 0,
+        isDynamic: false,
+        targetWeight: null,
         targetBodyFat: undefined,
         targetBMI: undefined,
         targetFFMI: undefined,
+        targetDate: null,
       };
 
     case 'nutritionCheckin':

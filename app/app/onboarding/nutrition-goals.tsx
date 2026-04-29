@@ -20,6 +20,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
+import { isDynamicNutritionGoalValid, normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -102,7 +103,7 @@ export default function NutritionGoalsScreen() {
         fats: resolvedMacros?.fats ?? goal.fats,
         fiber: resolvedMacros?.fiber ?? goal.fiber,
         eatingPhase: goal.eatingPhase as EatingPhase,
-        targetWeight: goal.targetWeight,
+        targetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
         targetBodyFat: goal.targetBodyFat,
         targetBMI: goal.targetBmi,
         targetFFMI: goal.targetFfmi,
@@ -116,6 +117,11 @@ export default function NutritionGoalsScreen() {
 
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {
+      if (!isDynamicNutritionGoalValid(goals)) {
+        showSnackbar('error', t('nutritionGoals.dynamicRequiredFields'));
+        return;
+      }
+
       try {
         const newGoal = await NutritionGoalService.saveGoals({
           totalCalories: goals.totalCalories,
@@ -234,7 +240,7 @@ export default function NutritionGoalsScreen() {
             size="md"
             width="full"
             onPress={() => currentGoals && handleSave(currentGoals)}
-            disabled={!currentGoals}
+            disabled={!currentGoals || !isDynamicNutritionGoalValid(currentGoals)}
           />
           <View style={{ height: theme.spacing.margin.md }} />
         </BottomButtonWrapper>

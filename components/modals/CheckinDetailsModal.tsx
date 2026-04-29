@@ -26,6 +26,10 @@ import {
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import {
+  isDynamicNutritionGoalValid,
+  normalizeNutritionGoalTargetWeight,
+} from '@/utils/nutritionGoalHelpers';
+import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
@@ -84,7 +88,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       fats: resolvedMacros?.fats ?? currentGoal.fats,
       fiber: resolvedMacros?.fiber ?? currentGoal.fiber,
       eatingPhase: currentGoal.eatingPhase as EatingPhase,
-      targetWeight: currentGoal.targetWeight,
+      targetWeight: normalizeNutritionGoalTargetWeight(currentGoal.targetWeight),
       targetBodyFat: currentGoal.targetBodyFat,
       targetBMI: currentGoal.targetBmi,
       targetFFMI: currentGoal.targetFfmi,
@@ -125,6 +129,14 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   };
 
   const handleGoalsSave = async (goals: NutritionGoals) => {
+    if (!isDynamicNutritionGoalValid(goals)) {
+      handleError(new Error(t('nutritionGoals.dynamicRequiredFields')), 'CheckinDetailsModal.validate', {
+        snackbarMessage: t('nutritionGoals.dynamicRequiredFields'),
+      });
+
+      return;
+    }
+
     try {
       const newGoal = await NutritionGoalService.saveGoals({
         totalCalories: goals.totalCalories,

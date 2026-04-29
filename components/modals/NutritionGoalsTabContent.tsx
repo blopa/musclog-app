@@ -10,6 +10,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
+import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 interface GoalHistoryItem {
   id: string;
@@ -19,7 +20,7 @@ interface GoalHistoryItem {
   protein: number;
   carbs: number;
   fat: number;
-  weight: number;
+  weight: number | null;
   bodyFat?: number | null;
   isDynamic?: boolean;
 }
@@ -79,7 +80,7 @@ export function NutritionGoalsTabContent({
       protein: resolvedMacros?.protein ?? current.protein,
       carbs: resolvedMacros?.carbs ?? current.carbs,
       fat: resolvedMacros?.fats ?? current.fats,
-      targetWeight: current.targetWeight,
+      targetWeight: normalizeNutritionGoalTargetWeight(current.targetWeight) ?? undefined,
       bodyFat: current.targetBodyFat,
       bmi: current.targetBmi,
       ffmi: current.targetFfmi,
@@ -94,7 +95,7 @@ export function NutritionGoalsTabContent({
     () =>
       goals
         .filter((goal) => goal.effectiveUntil !== null)
-        .map((goal, index) => {
+        .map((goal) => {
           const startDate = new Date(goal.createdAt);
           const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
           const dateRange =
@@ -111,7 +112,7 @@ export function NutritionGoalsTabContent({
             protein: goal.protein,
             carbs: goal.carbs,
             fat: goal.fats,
-            weight: goal.targetWeight,
+            weight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
             bodyFat: goal.targetBodyFat,
             isDynamic: goal.isDynamic,
           };
