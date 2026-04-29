@@ -12,7 +12,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
 
 interface GoalHistoryItem {
-  id: number;
+  id: string;
   dateRange: string;
   phase: EatingPhaseUI;
   calories: number;
@@ -108,7 +108,7 @@ export function NutritionGoalsTabContent({
               : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
 
           const display: GoalHistoryItem = {
-            id: parseInt(goal.id, 10) || index,
+            id: goal.id,
             dateRange,
             phase: convertEatingPhaseToUI(goal.eatingPhase),
             calories: goal.totalCalories,

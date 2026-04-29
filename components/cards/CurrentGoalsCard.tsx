@@ -138,7 +138,10 @@ export function CurrentGoalsCard({
           {goal.isDynamic ? (
             <Text
               className="mt-1"
-              style={{ color: theme.colors.status.emeraldLight, fontSize: theme.typography.fontSize.xs }}
+              style={{
+                color: theme.colors.status.emeraldLight,
+                fontSize: theme.typography.fontSize.xs,
+              }}
             >
               {t('currentGoalsCard.dynamicNote')}
             </Text>

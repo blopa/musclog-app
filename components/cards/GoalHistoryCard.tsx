@@ -16,7 +16,7 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 import { GenericCard } from './GenericCard';
 
 interface GoalHistoryItem {
-  id: number;
+  id: string;
   dateRange: string;
   phase: EatingPhaseUI;
   calories: number;

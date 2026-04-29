@@ -52,9 +52,9 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
+import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { generateUUID } from '@/utils/uuid';

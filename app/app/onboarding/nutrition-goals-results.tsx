@@ -107,7 +107,11 @@ export default function NutritionGoalsResults() {
   const parsedPlan = storedPlan;
 
   // For manual entry, load saved goal from DB
-  const { goal: savedGoal, resolvedMacros: savedGoalMacros, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
+  const {
+    goal: savedGoal,
+    resolvedMacros: savedGoalMacros,
+    isLoading: isLoadingGoal,
+  } = useCurrentNutritionGoal({
     mode: 'current',
   });
 

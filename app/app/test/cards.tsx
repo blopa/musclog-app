@@ -145,7 +145,7 @@ export default function CardsTestScreen() {
         <TestSection title="Goal History" subtitle="Timeline of past goals">
           <GoalHistoryCard
             goal={{
-              id: 1,
+              id: '1',
               dateRange: 'Jan 2024 - Mar 2024',
               phase: 'cutting',
               calories: 2000,
@@ -159,7 +159,7 @@ export default function CardsTestScreen() {
           />
           <GoalHistoryCard
             goal={{
-              id: 2,
+              id: '2',
               dateRange: 'Apr 2024 - Jun 2024',
               phase: 'maintenance',
               calories: 2300,

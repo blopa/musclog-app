@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -14,7 +14,7 @@ import { FullScreenModal } from './FullScreenModal';
 type NutritionGoalsModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSave?: (goals: NutritionGoals) => void;
+  onSave?: (goals: NutritionGoals) => void | Promise<void>;
   initialGoals: NutritionGoalsInitialValues;
   isEditing?: boolean;
 };
@@ -31,24 +31,43 @@ export function NutritionGoalsModal({
 }: NutritionGoalsModalProps) {
   const { t } = useTranslation();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | undefined>(undefined);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = (goals: NutritionGoals) => {
-    onSave?.(goals);
-    onClose();
+  useEffect(() => {
+    if (!visible) {
+      setIsSaving(false);
+    }
+  }, [visible]);
+
+  const handleSave = async (goals: NutritionGoals) => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    // Small delay to allow React to render the loading state before heavy save work starts.
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
+
+    try {
+      await onSave?.(goals);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleFloatingSave = () => {
+  const handleFloatingSave = async () => {
     if (currentGoals) {
-      handleSave(currentGoals);
+      await handleSave(currentGoals);
     }
   };
 
   return (
     <FullScreenModal
       visible={visible}
-      onClose={onClose}
+      onClose={isSaving ? () => {} : onClose}
       title={isEditing ? t('nutritionGoals.editTitle') : t('nutritionGoals.title')}
       scrollable={false}
+      closable={!isSaving}
       footer={
         <Button
           label={isEditing ? t('nutritionGoals.updateGoal') : t('nutritionGoals.saveGoals')}
@@ -58,6 +77,8 @@ export function NutritionGoalsModal({
           size="md"
           width="full"
           onPress={handleFloatingSave}
+          loading={isSaving}
+          disabled={!currentGoals || isSaving}
         />
       }
     >

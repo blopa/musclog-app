@@ -1,8 +1,8 @@
 import type NutritionGoal from '@/database/models/NutritionGoal';
 import { UserMetricService, UserService } from '@/database/services';
 
-import { getHistoricalNutritionParams } from './historicalNutritionParams';
 import { localDayStartMs } from './calendarDate';
+import { getHistoricalNutritionParams } from './historicalNutritionParams';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
