@@ -463,8 +463,8 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           key: 'targetDate',
           label: 'nutritionGoals.targetDate',
           clearable: true,
-          clearLabel: 'goalsManagement.manageGoalData.clear',
-          unsetPlaceholder: 'goalsManagement.manageGoalData.notSet',
+          clearLabel: 'goalsManagement.manageGoalData.targetDate.clear',
+          unsetPlaceholder: 'goalsManagement.manageGoalData.targetDate.notSet',
         },
       ];
 

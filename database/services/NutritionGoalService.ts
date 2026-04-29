@@ -299,21 +299,27 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
+
+      // TODO: do not use dynamic import
       const {
         calculateNutritionPlan,
         eatingPhaseToWeightGoal,
         generateWeeklyCheckins,
       } = require('../../utils/nutritionCalculator');
+      const { storedWeightToKg, storedHeightToCm } = require('../../utils/unitConversion');
 
       const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
       const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
       const bodyFatDecrypted =
         bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
 
+      const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
+      const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
+
       const plan = calculateNutritionPlan({
         gender: user.gender,
-        weightKg: weightDecrypted.value,
-        heightCm: heightDecrypted.value,
+        weightKg,
+        heightCm,
         age: user.getAge(),
         activityLevel: user.activityLevel as any,
         weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
@@ -326,7 +332,7 @@ export class NutritionGoalService {
         plan,
         goal.createdAt,
         goal.targetDate ?? localDayKeyPlusCalendarDays(localDayStartFromUtcMs(goal.createdAt), 90),
-        heightDecrypted.value / 100,
+        heightCm / 100,
         bodyFatDecrypted?.value ?? null
       );
 
