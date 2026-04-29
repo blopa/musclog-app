@@ -754,10 +754,14 @@ export async function saveRecord(
           fats: values.fats as number | undefined,
           fiber: values.fiber as number | undefined,
           eatingPhase: values.eatingPhase as any,
+          isDynamic: values.isDynamic !== undefined ? Boolean(values.isDynamic) : undefined,
           targetWeight: targetWeightKg,
           targetBodyFat: values.targetBodyFat as number | undefined,
           targetBMI: values.targetBMI as number | undefined,
           targetFFMI: values.targetFFMI as number | undefined,
+          targetDate: values.targetDate !== undefined
+            ? (values.targetDate as number | null | undefined) ?? null
+            : undefined,
         },
         true
       );
