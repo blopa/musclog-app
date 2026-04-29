@@ -24,6 +24,7 @@ export default class NutritionGoal extends Model {
   @field('target_ffmi') targetFfmi?: number | null;
   @field('target_date') targetDate?: number | null;
   @field('effective_until') effectiveUntil?: number | null;
+  @field('is_dynamic') isDynamic!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

@@ -27,6 +27,7 @@ import {
   localDayStartMs,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
@@ -836,12 +837,13 @@ export const getMealCritiquePrompt = async (
 
   let nutritionGoalInfo = '';
   if (nutritionGoal) {
+    const macros = (await resolveDailyMacros(nutritionGoal, new Date())) ?? nutritionGoal;
     nutritionGoalInfo = [
       'Daily nutrition targets:',
-      `- Calories: ${formatAppInteger(language, Math.round(nutritionGoal.totalCalories))} kcal`,
-      `- Protein: ${formatAppInteger(language, Math.round(nutritionGoal.protein))}g`,
-      `- Carbs: ${formatAppInteger(language, Math.round(nutritionGoal.carbs))}g`,
-      `- Fat: ${formatAppInteger(language, Math.round(nutritionGoal.fats))}g`,
+      `- Calories: ${formatAppInteger(language, Math.round(macros.totalCalories))} kcal`,
+      `- Protein: ${formatAppInteger(language, Math.round(macros.protein))}g`,
+      `- Carbs: ${formatAppInteger(language, Math.round(macros.carbs))}g`,
+      `- Fat: ${formatAppInteger(language, Math.round(macros.fats))}g`,
     ].join('\n');
   }
 

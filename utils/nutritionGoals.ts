@@ -17,6 +17,7 @@ export function nutritionGoalToInitialValues(goal: NutritionGoal): NutritionGoal
     targetBMI: goal.targetBmi,
     targetFFMI: goal.targetFfmi,
     targetDate: goal.targetDate ?? null,
+    isDynamic: goal.isDynamic ?? false,
   };
 }
 
@@ -33,5 +34,6 @@ export function nutritionGoalsToInput(goals: NutritionGoals) {
     targetBMI: goals.targetBMI ?? undefined,
     targetFFMI: goals.targetFFMI ?? undefined,
     targetDate: goals.targetDate ?? null,
+    isDynamic: goals.isDynamic ?? false,
   };
 }

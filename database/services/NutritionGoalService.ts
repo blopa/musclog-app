@@ -24,6 +24,7 @@ export interface NutritionGoalInput {
   targetBMI?: number;
   targetFFMI?: number;
   targetDate?: number | null;
+  isDynamic?: boolean;
 }
 
 export class NutritionGoalService {
@@ -101,6 +102,7 @@ export class NutritionGoalService {
         r.targetBmi = data.targetBMI ?? null;
         r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
+        r.isDynamic = data.isDynamic ?? false;
         r.effectiveUntil = null;
         r.createdAt = now;
         r.updatedAt = now;
@@ -177,36 +179,51 @@ export class NutritionGoalService {
         if (updates.totalCalories !== undefined) {
           record.totalCalories = updates.totalCalories;
         }
+
         if (updates.protein !== undefined) {
           record.protein = updates.protein;
         }
+
         if (updates.carbs !== undefined) {
           record.carbs = updates.carbs;
         }
+
         if (updates.fats !== undefined) {
           record.fats = updates.fats;
         }
+
         if (updates.fiber !== undefined) {
           record.fiber = updates.fiber;
         }
+
         if (updates.eatingPhase !== undefined) {
           record.eatingPhase = updates.eatingPhase;
         }
+
         if (updates.targetWeight !== undefined) {
           record.targetWeight = updates.targetWeight;
         }
+
         if (updates.targetBodyFat !== undefined) {
           record.targetBodyFat = updates.targetBodyFat;
         }
+
         if (updates.targetBMI !== undefined) {
           record.targetBmi = updates.targetBMI;
         }
+
         if (updates.targetFFMI !== undefined) {
           record.targetFfmi = updates.targetFFMI;
         }
+
         if (updates.targetDate !== undefined) {
           record.targetDate = updates.targetDate ?? null;
         }
+
+        if (updates.isDynamic !== undefined) {
+          record.isDynamic = updates.isDynamic;
+        }
+
         record.updatedAt = Date.now();
       });
 
@@ -234,6 +251,7 @@ export class NutritionGoalService {
       throw new Error('Cannot regenerate check-ins for a deleted goal');
     }
 
+    // TODO: do not use dynamic import
     const { UserService } = require('./UserService');
     const user = await UserService.getCurrentUser();
 
