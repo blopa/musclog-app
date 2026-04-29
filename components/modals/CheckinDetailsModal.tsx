@@ -138,6 +138,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         targetBMI: goals.targetBMI ?? undefined,
         targetFFMI: goals.targetFFMI ?? undefined,
         targetDate: goals.targetDate ?? null,
+        isDynamic: goals.isDynamic ?? false,
       });
 
       // Generate new check-ins for the new goal
