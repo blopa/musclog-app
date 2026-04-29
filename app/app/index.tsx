@@ -60,6 +60,9 @@ declare global {
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
 
+// Module-level cache to skip onboarding check after first confirmation in the current session
+let hasConfirmedOnboarding = false;
+
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -123,7 +126,7 @@ export default function HomeScreen() {
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
-  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(!hasConfirmedOnboarding);
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
@@ -314,6 +317,8 @@ export default function HomeScreen() {
             console.error('Error restoring onboarding step, falling back to landing', e);
             router.replace('/app/onboarding/landing');
           }
+        } else {
+          hasConfirmedOnboarding = true;
         }
       } catch (error) {
         handleError(error, 'index.checkOnboardingStatus');
@@ -323,18 +328,24 @@ export default function HomeScreen() {
       }
     };
 
-    checkOnboarding();
+    if (!hasConfirmedOnboarding) {
+      checkOnboarding();
+    } else {
+      setIsCheckingOnboarding(false);
+    }
   }, [router, navigationState?.key]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {
     return (
-      <View
-        className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}
-      >
-        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-      </View>
+      <MasterLayout>
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: theme.colors.background.primary }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </MasterLayout>
     );
   }
 
