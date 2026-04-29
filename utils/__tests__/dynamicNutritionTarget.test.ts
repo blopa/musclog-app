@@ -8,7 +8,7 @@ jest.mock('@/database/services', () => ({
     getCurrentUser: jest.fn(),
   },
   UserMetricService: {
-    getLatest: jest.fn(),
+    getLatestOnOrBefore: jest.fn(),
   },
 }));
 
@@ -58,7 +58,7 @@ describe('resolveDailyMacros', () => {
 
   it('resolves macros using empirical data when available', async () => {
     (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
       if (type === 'height') {
         return Promise.resolve(mockHeightMetric);
       }
@@ -95,7 +95,7 @@ describe('resolveDailyMacros', () => {
 
   it('falls back to formula-based TDEE when historical data is missing', async () => {
     (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
       if (type === 'height') {
         return Promise.resolve(mockHeightMetric);
       }
@@ -126,7 +126,7 @@ describe('resolveDailyMacros', () => {
   });
   it('respects safety floors and never returns negative calories', async () => {
     (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
       if (type === 'height') {
         return Promise.resolve(mockHeightMetric);
       }
@@ -161,6 +161,47 @@ describe('resolveDailyMacros', () => {
         totalCalories: 700,
         isDynamic: true,
       })
+    );
+  });
+
+  it('queries metrics as of the viewed day instead of using unrestricted latest values', async () => {
+    const viewedDate = new Date('2026-02-11T15:00:00.000Z');
+
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
+    });
+    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 2500,
+      protein: 200,
+      carbs: 250,
+      fats: 80,
+    });
+
+    await resolveDailyMacros(mockGoal, viewedDate);
+
+    expect(UserMetricService.getLatestOnOrBefore).toHaveBeenCalledTimes(3);
+    expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
+      1,
+      'weight',
+      expect.any(Number)
+    );
+    expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
+      2,
+      'height',
+      expect.any(Number)
+    );
+    expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
+      3,
+      'body_fat',
+      expect.any(Number)
     );
   });
 });

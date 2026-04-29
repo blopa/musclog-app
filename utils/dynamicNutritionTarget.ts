@@ -2,6 +2,7 @@ import type NutritionGoal from '@/database/models/NutritionGoal';
 import { UserMetricService, UserService } from '@/database/services';
 
 import { getHistoricalNutritionParams } from './historicalNutritionParams';
+import { localDayStartMs } from './calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -34,11 +35,13 @@ export async function resolveDailyMacros(
     return null;
   }
 
+  const asOfDayMs = localDayStartMs(date);
+
   const [user, weightMetric, heightMetric, bodyFatMetric, historicalParams] = await Promise.all([
     UserService.getCurrentUser(),
-    UserMetricService.getLatest('weight'),
-    UserMetricService.getLatest('height'),
-    UserMetricService.getLatest('body_fat'),
+    UserMetricService.getLatestOnOrBefore('weight', asOfDayMs),
+    UserMetricService.getLatestOnOrBefore('height', asOfDayMs),
+    UserMetricService.getLatestOnOrBefore('body_fat', asOfDayMs),
     getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
   ]);
 

@@ -380,6 +380,7 @@ export class NutritionGoalService {
         r.targetBmi = data.targetBMI ?? null;
         r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
+        r.isDynamic = data.isDynamic ?? false;
         r.effectiveUntil = newEffectiveUntil;
         r.createdAt = startDate;
         r.updatedAt = now;
