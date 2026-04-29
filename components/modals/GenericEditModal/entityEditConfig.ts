@@ -367,6 +367,12 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
     case 'nutritionGoal':
       return [
         {
+          type: 'boolean',
+          key: 'isDynamic',
+          label: 'nutritionGoals.dynamic',
+          subtitle: 'nutritionGoals.dynamicInfo',
+        },
+        {
           type: 'number',
           key: 'totalCalories',
           label: 'currentGoalsCard.dailyTarget',
@@ -450,6 +456,11 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'currentGoalsCard.ffmi',
           min: 0,
           step: 0.1,
+        },
+        {
+          type: 'date',
+          key: 'targetDate',
+          label: 'nutritionGoals.targetDate',
         },
       ];
 
@@ -598,10 +609,12 @@ export async function getInitialValues(
         fats: recordAny.fats ?? 0,
         fiber: recordAny.fiber ?? 0,
         eatingPhase: recordAny.eatingPhase ?? 'maintain',
+        isDynamic: recordAny.isDynamic ?? false,
         targetWeight: recordAny.targetWeight ?? 0,
         targetBodyFat: recordAny.targetBodyFat ?? undefined,
         targetBMI: recordAny.targetBmi ?? undefined,
         targetFFMI: recordAny.targetFfmi ?? undefined,
+        targetDate: recordAny.targetDate ?? null,
       };
 
     case 'chatMessage':
@@ -947,10 +960,12 @@ export async function createRecord(
         fats: values.fats as number,
         fiber: (values.fiber as number) ?? 0,
         eatingPhase: values.eatingPhase as any,
+        isDynamic: Boolean(values.isDynamic),
         targetWeight: targetWeightKg,
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
+        targetDate: (values.targetDate as number | null | undefined) ?? null,
       });
 
       await NutritionGoalService.regenerateCheckins(savedGoal.id);

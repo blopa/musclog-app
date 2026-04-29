@@ -65,6 +65,7 @@ export function useCurrentNutritionGoal({
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
   const [resolvedMacros, setResolvedMacros] = useState<ResolvedMacros | null>(null);
   const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
+  const [currentResolutionVersion, setCurrentResolutionVersion] = useState(0);
   const displayDateRef = useRef<Date>(localCalendarDayDate(date ?? new Date()));
 
   // State for history mode
@@ -73,6 +74,7 @@ export function useCurrentNutritionGoal({
   const [currentGoalResolvedMacros, setCurrentGoalResolvedMacros] = useState<ResolvedMacros | null>(
     null
   );
+  const [historyResolutionVersion, setHistoryResolutionVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -106,15 +108,6 @@ export function useCurrentNutritionGoal({
       // Get current goal (effective_until IS NULL)
       const current = await NutritionGoalService.getCurrent();
       setCurrentGoal(current);
-
-      // Resolve macros for the current goal if it is dynamic
-      if (current?.isDynamic) {
-        resolveDailyMacros(current, new Date())
-          .then(setCurrentGoalResolvedMacros)
-          .catch(() => setCurrentGoalResolvedMacros(null));
-      } else {
-        setCurrentGoalResolvedMacros(null);
-      }
 
       // Check if there are more goals
       if (goalHistory.length < initialLimit) {
@@ -200,19 +193,32 @@ export function useCurrentNutritionGoal({
       return;
     }
 
-    const query = database
+    const goalQuery = database
       .get<NutritionGoal>('nutrition_goals')
       .query(Q.where('deleted_at', Q.eq(null)));
+    const metricQuery = database.get('user_metrics').query(Q.where('deleted_at', Q.eq(null)));
+    const logQuery = database.get('nutrition_logs').query(Q.where('deleted_at', Q.eq(null)));
 
-    const subscription = query.observe().subscribe({
-      next: () => fetchGoalForDate(),
-      error: () => {
-        setGoal(null);
-        setIsLoadingCurrent(false);
-      },
-    });
+    const subscriptions = [
+      goalQuery.observe().subscribe({
+        next: () => {
+          fetchGoalForDate();
+          setCurrentResolutionVersion((version) => version + 1);
+        },
+        error: () => {
+          setGoal(null);
+          setIsLoadingCurrent(false);
+        },
+      }),
+      metricQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      logQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+    ];
 
-    return () => subscription.unsubscribe();
+    return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
   }, [date, mode, enableReactivity]);
 
   // Current mode: resolve dynamic macros whenever the goal or date changes
@@ -231,7 +237,7 @@ export function useCurrentNutritionGoal({
       .catch(() => {
         setResolvedMacros(null);
       });
-  }, [goal, date, mode]);
+  }, [goal, date, mode, currentResolutionVersion]);
 
   // History mode: Observe for new goals to trigger reload (reactivity)
   useEffect(() => {
@@ -269,6 +275,43 @@ export function useCurrentNutritionGoal({
 
     return () => subscription.unsubscribe();
   }, [mode, enableReactivity, visible, loadInitialGoals]);
+
+  useEffect(() => {
+    if (mode !== 'history' || !visible || !enableReactivity) {
+      return;
+    }
+
+    const metricQuery = database.get('user_metrics').query(Q.where('deleted_at', Q.eq(null)));
+    const logQuery = database.get('nutrition_logs').query(Q.where('deleted_at', Q.eq(null)));
+
+    const subscriptions = [
+      metricQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      logQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+    ];
+
+    return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }, [mode, visible, enableReactivity]);
+
+  useEffect(() => {
+    if (mode !== 'history') {
+      return;
+    }
+
+    if (!currentGoal?.isDynamic) {
+      setCurrentGoalResolvedMacros(null);
+      return;
+    }
+
+    resolveDailyMacros(currentGoal, new Date())
+      .then(setCurrentGoalResolvedMacros)
+      .catch(() => {
+        setCurrentGoalResolvedMacros(null);
+      });
+  }, [currentGoal, mode, historyResolutionVersion]);
 
   // Current mode result
   const currentResult = useMemo(

@@ -145,9 +145,9 @@ describe('resolveDailyMacros', () => {
       historicalFinalWeightKg: 90,
     });
 
-    // Manual override for mock to simulate floor hit
+    // Manual override for mock to simulate the calculator applying the floor.
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
-      targetCalories: 700, // Floor for male
+      targetCalories: 1500,
       protein: 100,
       carbs: 50,
       fats: 10,
@@ -155,10 +155,10 @@ describe('resolveDailyMacros', () => {
 
     const result = await resolveDailyMacros(mockGoal, new Date());
 
-    expect(result?.totalCalories).toBeGreaterThanOrEqual(700);
+    expect(result?.totalCalories).toBeGreaterThanOrEqual(1500);
     expect(result).toEqual(
       expect.objectContaining({
-        totalCalories: 700,
+        totalCalories: 1500,
         isDynamic: true,
       })
     );

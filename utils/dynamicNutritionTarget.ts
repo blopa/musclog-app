@@ -20,10 +20,9 @@ export interface ResolvedMacros {
   usedEmpiricalData: boolean;
 }
 
-// Cache resolved macros per (goalId, localDayStartMs) for 5 minutes to avoid
-// redundant DB reads when WatermelonDB subscriptions fire for unrelated changes.
-const cache = new Map<string, { result: ResolvedMacros; ts: number }>();
-const CACHE_TTL_MS = 5 * 60 * 1000;
+// Deduplicate concurrent requests for the same goal/day without caching stale results
+// across later metric or nutrition-log updates.
+const inFlight = new Map<string, Promise<ResolvedMacros | null>>();
 
 /**
  * Resolves today's effective macros for a dynamic nutrition goal.
@@ -41,67 +40,74 @@ export async function resolveDailyMacros(
   }
 
   const asOfDayMs = localDayStartMs(date);
-  const cacheKey = `${goal.id}:${asOfDayMs}`;
-  const hit = cache.get(cacheKey);
-  if (hit && Date.now() - hit.ts < CACHE_TTL_MS) {
-    return hit.result;
+  const requestKey = `${goal.id}:${goal.updatedAt}:${asOfDayMs}`;
+  const existing = inFlight.get(requestKey);
+  if (existing) {
+    return existing;
   }
 
-  const [user, weightMetric, heightMetric, bodyFatMetric, historicalParams] = await Promise.all([
-    UserService.getCurrentUser(),
-    UserMetricService.getLatestOnOrBefore('weight', asOfDayMs),
-    UserMetricService.getLatestOnOrBefore('height', asOfDayMs),
-    UserMetricService.getLatestOnOrBefore('body_fat', asOfDayMs),
-    getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
-  ]);
+  const request = (async () => {
+    const [user, weightMetric, heightMetric, bodyFatMetric, historicalParams] = await Promise.all([
+      UserService.getCurrentUser(),
+      UserMetricService.getLatestOnOrBefore('weight', asOfDayMs),
+      UserMetricService.getLatestOnOrBefore('height', asOfDayMs),
+      UserMetricService.getLatestOnOrBefore('body_fat', asOfDayMs),
+      getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
+    ]);
 
-  if (!user) {
-    return null;
+    if (!user) {
+      return null;
+    }
+
+    let weightKg = 70;
+    if (weightMetric) {
+      const d = await weightMetric.getDecrypted();
+      weightKg = storedWeightToKg(d.value, d.unit);
+    }
+
+    let heightCm = 170;
+    if (heightMetric) {
+      const d = await heightMetric.getDecrypted();
+      heightCm = storedHeightToCm(d.value, d.unit);
+    }
+
+    let bodyFatPercent: number | undefined;
+    if (bodyFatMetric) {
+      const d = await bodyFatMetric.getDecrypted();
+      bodyFatPercent = d.value;
+    }
+
+    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
+
+    const plan = calculateNutritionPlan({
+      gender: user.gender ?? 'male',
+      weightKg,
+      heightCm,
+      age: user.getAge(),
+      activityLevel,
+      weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
+      fitnessGoal: user.fitnessGoal ?? 'general',
+      liftingExperience: user.liftingExperience ?? 'intermediate',
+      bodyFatPercent,
+      ...(historicalParams ?? {}),
+    });
+
+    return {
+      totalCalories: Math.round(plan.targetCalories),
+      protein: Math.round(plan.protein),
+      carbs: Math.round(plan.carbs),
+      fats: Math.round(plan.fats),
+      fiber: fiberFromCalories(plan.targetCalories),
+      isDynamic: true as const,
+      usedEmpiricalData: historicalParams !== null,
+    };
+  })();
+
+  inFlight.set(requestKey, request);
+
+  try {
+    return await request;
+  } finally {
+    inFlight.delete(requestKey);
   }
-
-  let weightKg = 70;
-  if (weightMetric) {
-    const d = await weightMetric.getDecrypted();
-    weightKg = storedWeightToKg(d.value, d.unit);
-  }
-
-  let heightCm = 170;
-  if (heightMetric) {
-    const d = await heightMetric.getDecrypted();
-    heightCm = storedHeightToCm(d.value, d.unit);
-  }
-
-  let bodyFatPercent: number | undefined;
-  if (bodyFatMetric) {
-    const d = await bodyFatMetric.getDecrypted();
-    bodyFatPercent = d.value;
-  }
-
-  const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
-
-  const plan = calculateNutritionPlan({
-    gender: user.gender ?? 'male',
-    weightKg,
-    heightCm,
-    age: user.getAge(),
-    activityLevel,
-    weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
-    fitnessGoal: user.fitnessGoal ?? 'general',
-    liftingExperience: user.liftingExperience ?? 'intermediate',
-    bodyFatPercent,
-    ...(historicalParams ?? {}),
-  });
-
-  const result: ResolvedMacros = {
-    totalCalories: Math.round(plan.targetCalories),
-    protein: Math.round(plan.protein),
-    carbs: Math.round(plan.carbs),
-    fats: Math.round(plan.fats),
-    fiber: fiberFromCalories(plan.targetCalories),
-    isDynamic: true,
-    usedEmpiricalData: historicalParams !== null,
-  };
-
-  cache.set(cacheKey, { result, ts: Date.now() });
-  return result;
 }

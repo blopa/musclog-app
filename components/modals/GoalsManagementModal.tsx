@@ -80,13 +80,15 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
 
   const currentNutritionGoal =
     'current' in nutritionGoalResult ? nutritionGoalResult.current : null;
+  const currentNutritionGoalResolvedMacros =
+    'resolvedMacros' in nutritionGoalResult ? nutritionGoalResult.resolvedMacros : null;
 
   const currentGoalsData = useMemo<NutritionGoalsInitialValues | undefined>(() => {
     if (!currentNutritionGoal) {
       return undefined;
     }
-    return nutritionGoalToInitialValues(currentNutritionGoal);
-  }, [currentNutritionGoal]);
+    return nutritionGoalToInitialValues(currentNutritionGoal, currentNutritionGoalResolvedMacros);
+  }, [currentNutritionGoal, currentNutritionGoalResolvedMacros]);
 
   const defaultEatingPhase =
     pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
@@ -239,7 +241,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
 
   const editModalInitialGoals = useMemo(() => {
     if (isEditing && selectedGoal) {
-      return nutritionGoalToInitialValues(selectedGoal);
+      const resolvedForSelectedGoal =
+        selectedGoal.id === currentNutritionGoal?.id ? currentNutritionGoalResolvedMacros : null;
+      return nutritionGoalToInitialValues(selectedGoal, resolvedForSelectedGoal);
     }
 
     if (pendingWizardPrefill) {
@@ -290,7 +294,16 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     }
 
     return currentGoalsData ?? computedDefaults;
-  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults, planData]);
+  }, [
+    isEditing,
+    selectedGoal,
+    currentNutritionGoal,
+    currentNutritionGoalResolvedMacros,
+    pendingWizardPrefill,
+    currentGoalsData,
+    computedDefaults,
+    planData,
+  ]);
 
   return (
     <FullScreenModal

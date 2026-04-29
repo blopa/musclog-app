@@ -216,7 +216,8 @@ export default function FoodScreen() {
     enableReactivity: true,
     visible: true,
   });
-  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
+  const { goal: currentNutritionGoal, resolvedMacros: currentNutritionGoalResolvedMacros } =
+    useCurrentNutritionGoal();
 
   const [resolvedLogs, setResolvedLogs] = useState<
     {
@@ -1907,7 +1908,10 @@ export default function FoodScreen() {
           visible={isEditCurrentGoalVisible}
           onClose={() => setIsEditCurrentGoalVisible(false)}
           onSave={handleSaveCurrentNutritionGoal}
-          initialGoals={nutritionGoalToInitialValues(currentNutritionGoal)}
+          initialGoals={nutritionGoalToInitialValues(
+            currentNutritionGoal,
+            currentNutritionGoalResolvedMacros
+          )}
           isEditing={true}
         />
       ) : null}

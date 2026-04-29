@@ -47,7 +47,12 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
 } from '@/utils/nutritionCalculator';
-import { displayToKg, kgToDisplay, storedHeightToCm } from '@/utils/unitConversion';
+import {
+  displayToKg,
+  kgToDisplay,
+  storedHeightToCm,
+  storedWeightToKg,
+} from '@/utils/unitConversion';
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -375,20 +380,51 @@ export function NutritionGoalsBody({
     }
   }, [eatingPhase]);
 
-  // Sync targetWeight from initialGoals when it or units change (e.g. modal opened with saved goal)
   useEffect(() => {
-    if (initialGoals?.targetWeight != null) {
-      setTargetWeight(kgToDisplay(initialGoals.targetWeight, units));
-    }
-  }, [initialGoals?.targetWeight, units]);
-
-  useEffect(() => {
+    setTotalCalories(initialGoals.totalCalories);
+    setProtein(initialGoals.protein);
+    setCarbs(initialGoals.carbs);
+    setFats(initialGoals.fats);
+    setFiber(initialGoals.fiber);
+    setEatingPhase(initialGoals.eatingPhase);
+    setTargetWeight(
+      initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
+    );
+    setTargetBodyFat(initialGoals.targetBodyFat ?? null);
+    setTargetBMI(initialGoals.targetBMI ?? null);
+    setTargetFFMI(initialGoals.targetFFMI ?? null);
     setTargetDate(initialGoals.targetDate ?? null);
-  }, [initialGoals.targetDate]);
-
-  useEffect(() => {
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
-  }, [defaultGoalStartDate, initialGoals.goalStartDate]);
+    setIsDynamic(initialGoals.isDynamic ?? false);
+    setCalorieInputValue(initialGoals.totalCalories.toString());
+    preciseMacros.current = {
+      protein: initialGoals.protein,
+      carbs: initialGoals.carbs,
+      fats: initialGoals.fats,
+      fiber: initialGoals.fiber,
+    };
+    macrosArePristine.current = true;
+    previousEatingPhase.current = initialGoals.eatingPhase;
+    isManualCalorieUpdate.current = false;
+    syncMacroRatios();
+  }, [
+    defaultGoalStartDate,
+    initialGoals.carbs,
+    initialGoals.eatingPhase,
+    initialGoals.fats,
+    initialGoals.fiber,
+    initialGoals.goalStartDate,
+    initialGoals.isDynamic,
+    initialGoals.protein,
+    initialGoals.targetBMI,
+    initialGoals.targetBodyFat,
+    initialGoals.targetDate,
+    initialGoals.targetFFMI,
+    initialGoals.targetWeight,
+    initialGoals.totalCalories,
+    syncMacroRatios,
+    units,
+  ]);
 
   // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals).
   // Prefer the user's actual current weight; fall back to the generic default only if unavailable.
@@ -423,7 +459,7 @@ export function NutritionGoalsBody({
       }
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
-          setLatestWeightKg(dec.value);
+          setLatestWeightKg(storedWeightToKg(dec.value, dec.unit));
         }
       });
     });

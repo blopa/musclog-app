@@ -33,7 +33,7 @@ export default function NutritionGoalsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { goal, isLoading } = useCurrentNutritionGoal();
+  const { goal, resolvedMacros, isLoading } = useCurrentNutritionGoal();
   const { defaults: computedDefaults, isLoading: isLoadingDefaults } = useDefaultNutritionGoals();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
@@ -96,11 +96,11 @@ export default function NutritionGoalsScreen() {
 
     if (goal) {
       return {
-        totalCalories: goal.totalCalories,
-        protein: goal.protein,
-        carbs: goal.carbs,
-        fats: goal.fats,
-        fiber: goal.fiber,
+        totalCalories: resolvedMacros?.totalCalories ?? goal.totalCalories,
+        protein: resolvedMacros?.protein ?? goal.protein,
+        carbs: resolvedMacros?.carbs ?? goal.carbs,
+        fats: resolvedMacros?.fats ?? goal.fats,
+        fiber: resolvedMacros?.fiber ?? goal.fiber,
         eatingPhase: goal.eatingPhase as EatingPhase,
         targetWeight: goal.targetWeight,
         targetBodyFat: goal.targetBodyFat,
@@ -112,7 +112,7 @@ export default function NutritionGoalsScreen() {
     }
 
     return computedDefaults;
-  }, [goal, storedPlanGoals, computedDefaults]);
+  }, [goal, resolvedMacros, storedPlanGoals, computedDefaults]);
 
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {
