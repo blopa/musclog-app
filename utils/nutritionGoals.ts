@@ -17,6 +17,7 @@ export function nutritionGoalToInitialValues(goal: NutritionGoal): NutritionGoal
     targetBMI: goal.targetBmi,
     targetFFMI: goal.targetFfmi,
     targetDate: goal.targetDate ?? null,
+    goalStartDate: goal.createdAt,
     isDynamic: goal.isDynamic ?? false,
   };
 }

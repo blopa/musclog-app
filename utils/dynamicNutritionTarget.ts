@@ -20,6 +20,11 @@ export interface ResolvedMacros {
   usedEmpiricalData: boolean;
 }
 
+// Cache resolved macros per (goalId, localDayStartMs) for 5 minutes to avoid
+// redundant DB reads when WatermelonDB subscriptions fire for unrelated changes.
+const cache = new Map<string, { result: ResolvedMacros; ts: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 /**
  * Resolves today's effective macros for a dynamic nutrition goal.
  * Returns null when called on a non-dynamic goal (caller should read goal fields directly).
@@ -36,6 +41,11 @@ export async function resolveDailyMacros(
   }
 
   const asOfDayMs = localDayStartMs(date);
+  const cacheKey = `${goal.id}:${asOfDayMs}`;
+  const hit = cache.get(cacheKey);
+  if (hit && Date.now() - hit.ts < CACHE_TTL_MS) {
+    return hit.result;
+  }
 
   const [user, weightMetric, heightMetric, bodyFatMetric, historicalParams] = await Promise.all([
     UserService.getCurrentUser(),
@@ -82,7 +92,7 @@ export async function resolveDailyMacros(
     ...(historicalParams ?? {}),
   });
 
-  return {
+  const result: ResolvedMacros = {
     totalCalories: Math.round(plan.targetCalories),
     protein: Math.round(plan.protein),
     carbs: Math.round(plan.carbs),
@@ -91,4 +101,7 @@ export async function resolveDailyMacros(
     isDynamic: true,
     usedEmpiricalData: historicalParams !== null,
   };
+
+  cache.set(cacheKey, { result, ts: Date.now() });
+  return result;
 }

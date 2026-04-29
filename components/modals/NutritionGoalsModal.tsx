@@ -30,7 +30,21 @@ export function NutritionGoalsModal({
   isEditing = false,
 }: NutritionGoalsModalProps) {
   const { t } = useTranslation();
-  const [currentGoals, setCurrentGoals] = useState<NutritionGoals | undefined>(undefined);
+  const [currentGoals, setCurrentGoals] = useState<NutritionGoals>(() => ({
+    totalCalories: initialGoals.totalCalories,
+    protein: initialGoals.protein,
+    carbs: initialGoals.carbs,
+    fats: initialGoals.fats,
+    fiber: initialGoals.fiber,
+    eatingPhase: initialGoals.eatingPhase,
+    targetWeight: initialGoals.targetWeight ?? null,
+    targetBodyFat: initialGoals.targetBodyFat ?? null,
+    targetBMI: initialGoals.targetBMI ?? null,
+    targetFFMI: initialGoals.targetFFMI ?? null,
+    targetDate: initialGoals.targetDate ?? null,
+    goalStartDate: initialGoals.goalStartDate ?? null,
+    isDynamic: initialGoals.isDynamic ?? false,
+  }));
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -56,9 +70,7 @@ export function NutritionGoalsModal({
   };
 
   const handleFloatingSave = async () => {
-    if (currentGoals) {
-      await handleSave(currentGoals);
-    }
+    await handleSave(currentGoals);
   };
 
   return (
@@ -78,7 +90,7 @@ export function NutritionGoalsModal({
           width="full"
           onPress={handleFloatingSave}
           loading={isSaving}
-          disabled={!currentGoals || isSaving}
+          disabled={isSaving}
         />
       }
     >

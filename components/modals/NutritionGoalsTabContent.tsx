@@ -21,6 +21,7 @@ interface GoalHistoryItem {
   fat: number;
   weight: number;
   bodyFat?: number | null;
+  isDynamic?: boolean;
 }
 
 interface CurrentGoal {
@@ -58,14 +59,9 @@ export function NutritionGoalsTabContent({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
 
-  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
+  const { goals, current, resolvedMacros, isLoading, refresh } = useCurrentNutritionGoal({
     mode: 'history',
     visible,
-  });
-
-  const { resolvedMacros } = useCurrentNutritionGoal({
-    mode: 'current',
-    enableReactivity: visible,
   });
 
   if (refreshRef) {
@@ -117,6 +113,7 @@ export function NutritionGoalsTabContent({
             fat: goal.fats,
             weight: goal.targetWeight,
             bodyFat: goal.targetBodyFat,
+            isDynamic: goal.isDynamic,
           };
 
           return { display, raw: goal };

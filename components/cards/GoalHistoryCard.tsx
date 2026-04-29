@@ -25,6 +25,7 @@ interface GoalHistoryItem {
   fat: number;
   weight: number;
   bodyFat?: number | null;
+  isDynamic?: boolean;
 }
 
 interface GoalHistoryCardProps {
@@ -152,26 +153,34 @@ export function GoalHistoryCard({
           <View className="p-3">
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
-                <Text className="text-lg font-bold text-text-primary">
-                  {formatInteger(goal.calories)}{' '}
-                  <Text
-                    className="font-normal text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}
-                  >
-                    {t('goalHistoryCard.kcal')}
+                {goal.isDynamic ? (
+                  <Text className="text-lg font-bold text-text-primary">
+                    {t('goalHistoryCard.dynamic')}
                   </Text>
-                </Text>
-                <Text
-                  className="text-text-secondary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}
-                >
-                  {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
-                  {formatInteger(goal.carbs)}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
-                  {formatInteger(goal.fat)}
-                  {t('goalHistoryCard.g')}
-                </Text>
+                ) : (
+                  <>
+                    <Text className="text-lg font-bold text-text-primary">
+                      {formatInteger(goal.calories)}{' '}
+                      <Text
+                        className="font-normal text-text-secondary"
+                        style={{ fontSize: theme.typography.fontSize.xs }}
+                      >
+                        {t('goalHistoryCard.kcal')}
+                      </Text>
+                    </Text>
+                    <Text
+                      className="text-text-secondary"
+                      style={{ fontSize: theme.typography.fontSize.xs }}
+                    >
+                      {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
+                      {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
+                      {formatInteger(goal.carbs)}
+                      {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
+                      {formatInteger(goal.fat)}
+                      {t('goalHistoryCard.g')}
+                    </Text>
+                  </>
+                )}
               </View>
               <View className="items-end">
                 <Text className="text-xs font-bold text-text-secondary">

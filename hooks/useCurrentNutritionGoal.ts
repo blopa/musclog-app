@@ -31,6 +31,8 @@ export type UseCurrentNutritionGoalResultCurrent = {
 export type UseCurrentNutritionGoalResultHistory = {
   goals: NutritionGoal[];
   current: NutritionGoal | null; // The active goal (effective_until IS NULL)
+  /** For dynamic current goal: computed macros for today. Null for static goals. */
+  resolvedMacros: ResolvedMacros | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
@@ -68,6 +70,9 @@ export function useCurrentNutritionGoal({
   // State for history mode
   const [goals, setGoals] = useState<NutritionGoal[]>([]);
   const [currentGoal, setCurrentGoal] = useState<NutritionGoal | null>(null);
+  const [currentGoalResolvedMacros, setCurrentGoalResolvedMacros] = useState<ResolvedMacros | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -101,6 +106,15 @@ export function useCurrentNutritionGoal({
       // Get current goal (effective_until IS NULL)
       const current = await NutritionGoalService.getCurrent();
       setCurrentGoal(current);
+
+      // Resolve macros for the current goal if it is dynamic
+      if (current?.isDynamic) {
+        resolveDailyMacros(current, new Date())
+          .then(setCurrentGoalResolvedMacros)
+          .catch(() => setCurrentGoalResolvedMacros(null));
+      } else {
+        setCurrentGoalResolvedMacros(null);
+      }
 
       // Check if there are more goals
       if (goalHistory.length < initialLimit) {
@@ -159,7 +173,7 @@ export function useCurrentNutritionGoal({
     }
   }, [isLoadingMore, hasMore, visible, currentOffset, batchSize]);
 
-  // Current mode: Resolve goal for display date (date or today), react to goals and date changes
+  // Current mode: resolve goal for display date, subscribe to changes when enableReactivity is true
   useEffect(() => {
     if (mode !== 'current') {
       return;
@@ -182,6 +196,10 @@ export function useCurrentNutritionGoal({
     setIsLoadingCurrent(true);
     fetchGoalForDate();
 
+    if (!enableReactivity) {
+      return;
+    }
+
     const query = database
       .get<NutritionGoal>('nutrition_goals')
       .query(Q.where('deleted_at', Q.eq(null)));
@@ -195,7 +213,7 @@ export function useCurrentNutritionGoal({
     });
 
     return () => subscription.unsubscribe();
-  }, [date, mode]);
+  }, [date, mode, enableReactivity]);
 
   // Current mode: resolve dynamic macros whenever the goal or date changes
   useEffect(() => {
@@ -213,7 +231,7 @@ export function useCurrentNutritionGoal({
       .catch(() => {
         setResolvedMacros(null);
       });
-  }, [goal?.id, goal?.isDynamic, date, mode, goal]);
+  }, [goal, date, mode]);
 
   // History mode: Observe for new goals to trigger reload (reactivity)
   useEffect(() => {
@@ -267,13 +285,23 @@ export function useCurrentNutritionGoal({
     () => ({
       goals,
       current: currentGoal,
+      resolvedMacros: currentGoalResolvedMacros,
       isLoading,
       isLoadingMore,
       hasMore,
       loadMore,
       refresh: loadInitialGoals,
     }),
-    [goals, currentGoal, isLoading, isLoadingMore, hasMore, loadMore, loadInitialGoals]
+    [
+      goals,
+      currentGoal,
+      currentGoalResolvedMacros,
+      isLoading,
+      isLoadingMore,
+      hasMore,
+      loadMore,
+      loadInitialGoals,
+    ]
   );
 
   // Return appropriate type based on mode

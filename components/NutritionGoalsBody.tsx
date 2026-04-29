@@ -390,12 +390,14 @@ export function NutritionGoalsBody({
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
   }, [defaultGoalStartDate, initialGoals.goalStartDate]);
 
-  // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals)
+  // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals).
+  // Prefer the user's actual current weight; fall back to the generic default only if unavailable.
   useEffect(() => {
     if (isDynamic && targetWeight === null) {
-      setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
+      const fallbackKg = latestWeightKg ?? defaultTargetWeightKg;
+      setTargetWeight(kgToDisplay(fallbackKg, units));
     }
-  }, [isDynamic, targetWeight, units]);
+  }, [isDynamic, targetWeight, latestWeightKg, units]);
 
   // Load user's height once on mount so we can derive BMI and FFMI
   useEffect(() => {
