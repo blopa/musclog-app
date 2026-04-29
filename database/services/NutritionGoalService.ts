@@ -202,7 +202,8 @@ export class NutritionGoalService {
           updates.targetWeight !== undefined
             ? normalizeNutritionGoalTargetWeight(updates.targetWeight)
             : normalizeNutritionGoalTargetWeight(goal.targetWeight),
-        targetDate: updates.targetDate !== undefined ? updates.targetDate ?? null : goal.targetDate,
+        targetDate:
+          updates.targetDate !== undefined ? (updates.targetDate ?? null) : goal.targetDate,
       });
 
       await goal.update((record) => {
@@ -329,7 +330,6 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
-
       // TODO: do not use dynamic import
       const {
         calculateNutritionPlan,

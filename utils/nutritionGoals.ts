@@ -3,19 +3,15 @@ import {
   type NutritionGoalsInitialValues,
 } from '@/components/modals/NutritionGoalsModal';
 import { type EatingPhase, type NutritionGoal } from '@/database/models';
-import type { ResolvedMacros } from '@/utils/dynamicNutritionTarget';
 import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
-export function nutritionGoalToInitialValues(
-  goal: NutritionGoal,
-  resolvedMacros?: ResolvedMacros | null
-): NutritionGoalsInitialValues {
+export function nutritionGoalToInitialValues(goal: NutritionGoal): NutritionGoalsInitialValues {
   return {
-    totalCalories: resolvedMacros?.totalCalories ?? goal.totalCalories,
-    protein: resolvedMacros?.protein ?? goal.protein,
-    carbs: resolvedMacros?.carbs ?? goal.carbs,
-    fats: resolvedMacros?.fats ?? goal.fats,
-    fiber: resolvedMacros?.fiber ?? goal.fiber,
+    totalCalories: goal.totalCalories,
+    protein: goal.protein,
+    carbs: goal.carbs,
+    fats: goal.fats,
+    fiber: goal.fiber,
     eatingPhase: goal.eatingPhase as EatingPhase,
     targetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
     targetBodyFat: goal.targetBodyFat,

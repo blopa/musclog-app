@@ -66,8 +66,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
-  const { goal: currentNutritionGoal, resolvedMacros: currentNutritionGoalResolvedMacros } =
-    useCurrentNutritionGoal();
+  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
@@ -732,7 +731,7 @@ export default function HomeScreen() {
         onSave={handleSaveCurrentNutritionGoal}
         initialGoals={
           currentNutritionGoal
-            ? nutritionGoalToInitialValues(currentNutritionGoal, currentNutritionGoalResolvedMacros)
+            ? nutritionGoalToInitialValues(currentNutritionGoal)
             : nutritionGoalsDefaults
         }
         isEditing={true}

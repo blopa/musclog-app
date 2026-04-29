@@ -17,8 +17,5 @@ export function isDynamicNutritionGoalValid(
     return true;
   }
 
-  return (
-    normalizeNutritionGoalTargetWeight(goal.targetWeight) != null &&
-    goal.targetDate != null
-  );
+  return normalizeNutritionGoalTargetWeight(goal.targetWeight) != null && goal.targetDate != null;
 }

@@ -309,6 +309,7 @@ export function NutritionGoalsBody({
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null);
   const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
+  const didAutofillDynamicTargetWeight = useRef(false);
   const isInitialMount = useRef(true);
   const isManualCalorieUpdate = useRef(false);
   const macrosArePristine = useRef(true);
@@ -397,6 +398,7 @@ export function NutritionGoalsBody({
     setTargetDate(initialGoals.targetDate ?? null);
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
     setIsDynamic(initialGoals.isDynamic ?? false);
+    didAutofillDynamicTargetWeight.current = false;
     setCalorieInputValue(initialGoals.totalCalories.toString());
     preciseMacros.current = {
       protein: initialGoals.protein,
@@ -432,7 +434,14 @@ export function NutritionGoalsBody({
   useEffect(() => {
     if (isDynamic && targetWeight === null) {
       const fallbackKg = latestWeightKg ?? defaultTargetWeightKg;
+      didAutofillDynamicTargetWeight.current = true;
       setTargetWeight(kgToDisplay(fallbackKg, units));
+      return;
+    }
+
+    if (isDynamic && latestWeightKg != null && didAutofillDynamicTargetWeight.current) {
+      setTargetWeight(kgToDisplay(latestWeightKg, units));
+      didAutofillDynamicTargetWeight.current = false;
     }
   }, [isDynamic, targetWeight, latestWeightKg, units]);
 
@@ -1084,7 +1093,10 @@ export function NutritionGoalsBody({
               </Text>
               {targetWeight === null ? (
                 <Pressable
-                  onPress={() => setTargetWeight(kgToDisplay(defaultTargetWeightKg, units))}
+                  onPress={() => {
+                    didAutofillDynamicTargetWeight.current = false;
+                    setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
+                  }}
                   className="active:opacity-70"
                 >
                   <Text
@@ -1095,7 +1107,13 @@ export function NutritionGoalsBody({
                   </Text>
                 </Pressable>
               ) : !isDynamic ? (
-                <Pressable onPress={() => setTargetWeight(null)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => {
+                    didAutofillDynamicTargetWeight.current = false;
+                    setTargetWeight(null);
+                  }}
+                  className="active:opacity-70"
+                >
                   <Text
                     className="text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
@@ -1116,17 +1134,22 @@ export function NutritionGoalsBody({
                 maxFractionDigits={1}
                 icon={showIcons ? Scale : undefined}
                 iconSize="sm"
-                onIncrement={() =>
+                onIncrement={() => {
+                  didAutofillDynamicTargetWeight.current = false;
                   setTargetWeight(
                     Math.min(kgToDisplay(200, units), Math.round((targetWeight + 1) * 10) / 10)
-                  )
-                }
-                onDecrement={() =>
+                  );
+                }}
+                onDecrement={() => {
+                  didAutofillDynamicTargetWeight.current = false;
                   setTargetWeight(
                     Math.max(kgToDisplay(30, units), Math.round((targetWeight - 1) * 10) / 10)
-                  )
-                }
-                onChangeValue={setTargetWeight}
+                  );
+                }}
+                onChangeValue={(value) => {
+                  didAutofillDynamicTargetWeight.current = false;
+                  setTargetWeight(value);
+                }}
               />
             ) : null}
           </View>

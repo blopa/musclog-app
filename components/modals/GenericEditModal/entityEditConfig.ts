@@ -763,9 +763,10 @@ export async function saveRecord(
           targetBodyFat: values.targetBodyFat as number | undefined,
           targetBMI: values.targetBMI as number | undefined,
           targetFFMI: values.targetFFMI as number | undefined,
-          targetDate: values.targetDate !== undefined
-            ? (values.targetDate as number | null | undefined) ?? null
-            : undefined,
+          targetDate:
+            values.targetDate !== undefined
+              ? ((values.targetDate as number | null | undefined) ?? null)
+              : undefined,
         },
         true
       );

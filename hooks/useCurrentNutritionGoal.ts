@@ -5,8 +5,13 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
-import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+} from '@/utils/calendarDate';
 import { resolveDailyMacros, type ResolvedMacros } from '@/utils/dynamicNutritionTarget';
+import { HISTORICAL_NUTRITION_LOOKBACK_DAYS } from '@/utils/historicalNutritionParams';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
@@ -174,6 +179,10 @@ export function useCurrentNutritionGoal({
 
     displayDateRef.current = localCalendarDayDate(date ?? new Date());
     const asOfDayMs = displayDateRef.current.getTime();
+    const historyStartMs = localDayKeyPlusCalendarDays(
+      asOfDayMs,
+      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
+    );
 
     const fetchGoalForDate = () => {
       NutritionGoalService.getGoalForDate(displayDateRef.current)
@@ -197,15 +206,51 @@ export function useCurrentNutritionGoal({
     const goalQuery = database
       .get<NutritionGoal>('nutrition_goals')
       .query(Q.where('deleted_at', Q.eq(null)));
-    const metricQuery = database.get('user_metrics').query(
-      Q.where('type', Q.oneOf(['weight', 'height', 'body_fat'])),
-      Q.where('date', Q.lte(asOfDayMs)),
-      Q.where('deleted_at', Q.eq(null))
-    );
-    const logQuery = database.get('nutrition_logs').query(
-      Q.where('date', Q.lte(asOfDayMs)),
-      Q.where('deleted_at', Q.eq(null))
-    );
+    const latestHeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'height'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestWeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestBodyFatQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const historicalMetricQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', Q.oneOf(['weight', 'body_fat'])),
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+    const logQuery = database
+      .get('nutrition_logs')
+      .query(
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
 
     const subscriptions = [
       goalQuery.observe().subscribe({
@@ -218,7 +263,16 @@ export function useCurrentNutritionGoal({
           setIsLoadingCurrent(false);
         },
       }),
-      metricQuery.observe().subscribe({
+      latestHeightQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      latestWeightQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      latestBodyFatQuery.observe().subscribe({
+        next: () => setCurrentResolutionVersion((version) => version + 1),
+      }),
+      historicalMetricQuery.observe().subscribe({
         next: () => setCurrentResolutionVersion((version) => version + 1),
       }),
       logQuery.observe().subscribe({
@@ -301,18 +355,67 @@ export function useCurrentNutritionGoal({
     }
 
     const todayDayMs = localDayStartMs(new Date());
-    const metricQuery = database.get('user_metrics').query(
-      Q.where('type', Q.oneOf(['weight', 'height', 'body_fat'])),
-      Q.where('date', Q.lte(todayDayMs)),
-      Q.where('deleted_at', Q.eq(null))
+    const historyStartMs = localDayKeyPlusCalendarDays(
+      todayDayMs,
+      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
     );
-    const logQuery = database.get('nutrition_logs').query(
-      Q.where('date', Q.lte(todayDayMs)),
-      Q.where('deleted_at', Q.eq(null))
-    );
+    const latestHeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'height'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestWeightQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const latestBodyFatQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      );
+    const historicalMetricQuery = database
+      .get('user_metrics')
+      .query(
+        Q.where('type', Q.oneOf(['weight', 'body_fat'])),
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
+    const logQuery = database
+      .get('nutrition_logs')
+      .query(
+        Q.where('date', Q.gte(historyStartMs)),
+        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('deleted_at', Q.eq(null))
+      );
 
     const subscriptions = [
-      metricQuery.observe().subscribe({
+      latestHeightQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      latestWeightQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      latestBodyFatQuery.observe().subscribe({
+        next: () => setHistoryResolutionVersion((version) => version + 1),
+      }),
+      historicalMetricQuery.observe().subscribe({
         next: () => setHistoryResolutionVersion((version) => version + 1),
       }),
       logQuery.observe().subscribe({

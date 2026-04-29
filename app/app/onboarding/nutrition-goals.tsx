@@ -20,7 +20,6 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
-import { isDynamicNutritionGoalValid, normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -28,13 +27,17 @@ import {
   NutritionPlan,
   planToInitialGoals,
 } from '@/utils/nutritionCalculator';
+import {
+  isDynamicNutritionGoalValid,
+  normalizeNutritionGoalTargetWeight,
+} from '@/utils/nutritionGoalHelpers';
 import { showSnackbar } from '@/utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { goal, resolvedMacros, isLoading } = useCurrentNutritionGoal();
+  const { goal, isLoading } = useCurrentNutritionGoal();
   const { defaults: computedDefaults, isLoading: isLoadingDefaults } = useDefaultNutritionGoals();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
@@ -97,11 +100,11 @@ export default function NutritionGoalsScreen() {
 
     if (goal) {
       return {
-        totalCalories: resolvedMacros?.totalCalories ?? goal.totalCalories,
-        protein: resolvedMacros?.protein ?? goal.protein,
-        carbs: resolvedMacros?.carbs ?? goal.carbs,
-        fats: resolvedMacros?.fats ?? goal.fats,
-        fiber: resolvedMacros?.fiber ?? goal.fiber,
+        totalCalories: goal.totalCalories,
+        protein: goal.protein,
+        carbs: goal.carbs,
+        fats: goal.fats,
+        fiber: goal.fiber,
         eatingPhase: goal.eatingPhase as EatingPhase,
         targetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
         targetBodyFat: goal.targetBodyFat,
@@ -113,7 +116,7 @@ export default function NutritionGoalsScreen() {
     }
 
     return computedDefaults;
-  }, [goal, resolvedMacros, storedPlanGoals, computedDefaults]);
+  }, [goal, storedPlanGoals, computedDefaults]);
 
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {

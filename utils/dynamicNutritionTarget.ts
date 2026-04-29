@@ -148,7 +148,9 @@ export async function resolveDailyMacros(
       }
 
       const candidates = [Math.max(phaseLowerBound, low - 1), low, phaseUpperBound]
-        .filter((value, index, values) => value <= phaseUpperBound && values.indexOf(value) === index)
+        .filter(
+          (value, index, values) => value <= phaseUpperBound && values.indexOf(value) === index
+        )
         .map((value) => ({
           calories: value,
           delta: Math.abs(projectWeightForCalories(value) - normalizedTargetWeight),

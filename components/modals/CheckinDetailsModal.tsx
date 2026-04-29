@@ -19,21 +19,12 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
-import {
-  localCalendarDayPlusDays,
-  localDayKeyPlusCalendarDaysFromNow,
-  localDayStartMs,
-} from '@/utils/calendarDate';
+import { localCalendarDayPlusDays, localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
-import {
-  calculateNutritionPlan,
-  eatingPhaseToWeightGoal,
-  generateWeeklyCheckins,
-} from '@/utils/nutritionCalculator';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -49,7 +40,7 @@ type CheckinModalProps = {
 export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { goal: currentGoal, resolvedMacros } = useCurrentNutritionGoal();
+  const { goal: currentGoal } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
@@ -82,11 +73,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     }
 
     return {
-      totalCalories: resolvedMacros?.totalCalories ?? currentGoal.totalCalories,
-      protein: resolvedMacros?.protein ?? currentGoal.protein,
-      carbs: resolvedMacros?.carbs ?? currentGoal.carbs,
-      fats: resolvedMacros?.fats ?? currentGoal.fats,
-      fiber: resolvedMacros?.fiber ?? currentGoal.fiber,
+      totalCalories: currentGoal.totalCalories,
+      protein: currentGoal.protein,
+      carbs: currentGoal.carbs,
+      fats: currentGoal.fats,
+      fiber: currentGoal.fiber,
       eatingPhase: currentGoal.eatingPhase as EatingPhase,
       targetWeight: normalizeNutritionGoalTargetWeight(currentGoal.targetWeight),
       targetBodyFat: currentGoal.targetBodyFat,
@@ -95,7 +86,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       targetDate: currentGoal.targetDate ?? null,
       isDynamic: currentGoal.isDynamic,
     };
-  }, [currentGoal, resolvedMacros, computedDefaults]);
+  }, [currentGoal, computedDefaults]);
 
   useEffect(() => {
     async function loadData() {
@@ -130,9 +121,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
   const handleGoalsSave = async (goals: NutritionGoals) => {
     if (!isDynamicNutritionGoalValid(goals)) {
-      handleError(new Error(t('nutritionGoals.dynamicRequiredFields')), 'CheckinDetailsModal.validate', {
-        snackbarMessage: t('nutritionGoals.dynamicRequiredFields'),
-      });
+      handleError(
+        new Error(t('nutritionGoals.dynamicRequiredFields')),
+        'CheckinDetailsModal.validate',
+        {
+          snackbarMessage: t('nutritionGoals.dynamicRequiredFields'),
+        }
+      );
 
       return;
     }
@@ -152,41 +147,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         targetDate: goals.targetDate ?? null,
         isDynamic: goals.isDynamic ?? false,
       });
-
-      // Generate new check-ins for the new goal
-      const userMetric = await UserMetricService.getLatest('weight');
-      const heightMetric = await UserMetricService.getLatest('height');
-      const bodyFatMetric = await UserMetricService.getLatest('body_fat');
-
-      if (userMetric && heightMetric) {
-        const userDecrypted = await userMetric.getDecrypted();
-        const heightDecrypted = await heightMetric.getDecrypted();
-        const bodyFatDecrypted = bodyFatMetric ? await bodyFatMetric.getDecrypted() : null;
-
-        const plan = calculateNutritionPlan({
-          gender: 'other',
-          weightKg: userDecrypted.value,
-          heightCm: heightDecrypted.value,
-          age: 25,
-          activityLevel: 2,
-          weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
-          fitnessGoal: 'general',
-          liftingExperience: 'intermediate',
-          bodyFatPercent: bodyFatDecrypted?.value,
-        });
-
-        const checkins = generateWeeklyCheckins(
-          plan,
-          Date.now(),
-          goals.targetDate ?? localDayKeyPlusCalendarDaysFromNow(90),
-          heightDecrypted.value / 100,
-          bodyFatDecrypted?.value ?? null
-        );
-
-        if (checkins.length > 0) {
-          await NutritionCheckinService.createBatch(newGoal.id, checkins);
-        }
-      }
+      await NutritionGoalService.regenerateCheckins(newGoal.id);
 
       onClose();
     } catch (e) {
