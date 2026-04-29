@@ -34,6 +34,7 @@ interface CurrentGoal {
   ffmi?: number | null;
   bmi?: number | null;
   goalDate?: string;
+  isDynamic?: boolean;
 }
 
 interface NutritionGoalsTabContentProps {
@@ -62,6 +63,11 @@ export function NutritionGoalsTabContent({
     visible,
   });
 
+  const { resolvedMacros } = useCurrentNutritionGoal({
+    mode: 'current',
+    enableReactivity: visible,
+  });
+
   if (refreshRef) {
     refreshRef.current = refresh;
   }
@@ -73,10 +79,10 @@ export function NutritionGoalsTabContent({
 
     return {
       phase: convertEatingPhaseToUI(current.eatingPhase),
-      calories: current.totalCalories,
-      protein: current.protein,
-      carbs: current.carbs,
-      fat: current.fats,
+      calories: resolvedMacros?.totalCalories ?? current.totalCalories,
+      protein: resolvedMacros?.protein ?? current.protein,
+      carbs: resolvedMacros?.carbs ?? current.carbs,
+      fat: resolvedMacros?.fats ?? current.fats,
       targetWeight: current.targetWeight,
       bodyFat: current.targetBodyFat,
       bmi: current.targetBmi,
@@ -84,8 +90,9 @@ export function NutritionGoalsTabContent({
       goalDate: current.targetDate
         ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
         : undefined,
+      isDynamic: current.isDynamic,
     };
-  }, [current, dateFnsLocale]);
+  }, [current, resolvedMacros, dateFnsLocale]);
 
   const historyWithRaw = useMemo(
     () =>

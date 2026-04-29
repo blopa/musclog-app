@@ -107,6 +107,7 @@ export default function NutritionGoalsScreen() {
         targetBMI: goal.targetBmi,
         targetFFMI: goal.targetFfmi,
         targetDate: goal.targetDate ?? null,
+        isDynamic: goal.isDynamic,
       };
     }
 

@@ -15,6 +15,8 @@
     "g": "g",
     "kg": "kg",
     "lbs": "lbs",
-    "percent": "%"
+    "percent": "%",
+    "dynamic": "Dinâmico",
+    "dynamicNote": "Calculado automaticamente para hoje com base nos seus dados recentes"
   }
 }

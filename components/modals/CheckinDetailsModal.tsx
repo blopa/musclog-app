@@ -45,7 +45,7 @@ type CheckinModalProps = {
 export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { goal: currentGoal } = useCurrentNutritionGoal();
+  const { goal: currentGoal, resolvedMacros } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
@@ -78,19 +78,20 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     }
 
     return {
-      totalCalories: currentGoal.totalCalories,
-      protein: currentGoal.protein,
-      carbs: currentGoal.carbs,
-      fats: currentGoal.fats,
-      fiber: currentGoal.fiber,
+      totalCalories: resolvedMacros?.totalCalories ?? currentGoal.totalCalories,
+      protein: resolvedMacros?.protein ?? currentGoal.protein,
+      carbs: resolvedMacros?.carbs ?? currentGoal.carbs,
+      fats: resolvedMacros?.fats ?? currentGoal.fats,
+      fiber: resolvedMacros?.fiber ?? currentGoal.fiber,
       eatingPhase: currentGoal.eatingPhase as EatingPhase,
       targetWeight: currentGoal.targetWeight,
       targetBodyFat: currentGoal.targetBodyFat,
       targetBMI: currentGoal.targetBmi,
       targetFFMI: currentGoal.targetFfmi,
       targetDate: currentGoal.targetDate ?? null,
+      isDynamic: currentGoal.isDynamic,
     };
-  }, [currentGoal, computedDefaults]);
+  }, [currentGoal, resolvedMacros, computedDefaults]);
 
   useEffect(() => {
     async function loadData() {

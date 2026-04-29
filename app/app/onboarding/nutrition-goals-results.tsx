@@ -107,7 +107,7 @@ export default function NutritionGoalsResults() {
   const parsedPlan = storedPlan;
 
   // For manual entry, load saved goal from DB
-  const { goal: savedGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
+  const { goal: savedGoal, resolvedMacros: savedGoalMacros, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
     mode: 'current',
   });
 
@@ -146,21 +146,27 @@ export default function NutritionGoalsResults() {
     }
 
     if (savedGoal) {
+      const effectiveProtein = savedGoalMacros?.protein ?? savedGoal.protein;
+      const effectiveCarbs = savedGoalMacros?.carbs ?? savedGoal.carbs;
+      const effectiveFats = savedGoalMacros?.fats ?? savedGoal.fats;
+      const effectiveFiber = savedGoalMacros?.fiber ?? savedGoal.fiber;
+      const effectiveCalories = savedGoalMacros?.totalCalories ?? savedGoal.totalCalories;
+
       const totalMacroCals =
-        savedGoal.protein * CALORIES_FOR_PROTEIN +
-        savedGoal.carbs * CALORIES_FOR_CARBS +
-        savedGoal.fats * CALORIES_FOR_FAT +
-        savedGoal.fiber * CALORIES_FOR_FIBER;
-      const effectiveTotal = totalMacroCals > 0 ? totalMacroCals : savedGoal.totalCalories || 1;
+        effectiveProtein * CALORIES_FOR_PROTEIN +
+        effectiveCarbs * CALORIES_FOR_CARBS +
+        effectiveFats * CALORIES_FOR_FAT +
+        effectiveFiber * CALORIES_FOR_FIBER;
+      const effectiveTotal = totalMacroCals > 0 ? totalMacroCals : effectiveCalories || 1;
 
       return {
-        targetCalories: savedGoal.totalCalories,
-        protein: savedGoal.protein,
-        carbs: savedGoal.carbs,
-        fats: savedGoal.fats,
-        proteinPct: Math.round((savedGoal.protein * CALORIES_FOR_PROTEIN * 100) / effectiveTotal),
-        carbsPct: Math.round((savedGoal.carbs * CALORIES_FOR_CARBS * 100) / effectiveTotal),
-        fatsPct: Math.round((savedGoal.fats * CALORIES_FOR_FAT * 100) / effectiveTotal),
+        targetCalories: effectiveCalories,
+        protein: effectiveProtein,
+        carbs: effectiveCarbs,
+        fats: effectiveFats,
+        proteinPct: Math.round((effectiveProtein * CALORIES_FOR_PROTEIN * 100) / effectiveTotal),
+        carbsPct: Math.round((effectiveCarbs * CALORIES_FOR_CARBS * 100) / effectiveTotal),
+        fatsPct: Math.round((effectiveFats * CALORIES_FOR_FAT * 100) / effectiveTotal),
         goalLabel: null,
         startWeight: 0,
         projectedWeight: 0,
@@ -171,7 +177,7 @@ export default function NutritionGoalsResults() {
     }
 
     return null;
-  }, [parsedPlan, savedGoal]);
+  }, [parsedPlan, savedGoal, savedGoalMacros]);
 
   // Build projection chart data (marker in display unit)
   const projectionLength = 10;
