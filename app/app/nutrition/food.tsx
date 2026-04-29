@@ -1,4 +1,3 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useRouter } from 'expo-router';
 import {
   ArrowRight,
@@ -16,7 +15,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -211,6 +210,7 @@ export default function FoodScreen() {
     refresh,
     totalCount,
     nutritionGoal,
+    resolvedMacros,
   } = useDailyNutritionSummary({
     date: selectedDate,
     enableReactivity: true,
@@ -317,18 +317,24 @@ export default function FoodScreen() {
     };
   }, [logs]);
 
-  // Calculate calories consumed and macros
+  // Calculate calories consumed and macros — prefer resolved macros for dynamic goals
+  const effectiveGoalCalories =
+    resolvedMacros?.totalCalories ?? nutritionGoal?.totalCalories ?? 2500;
+  const effectiveGoalProtein = resolvedMacros?.protein ?? nutritionGoal?.protein ?? 150;
+  const effectiveGoalCarbs = resolvedMacros?.carbs ?? nutritionGoal?.carbs ?? 250;
+  const effectiveGoalFats = resolvedMacros?.fats ?? nutritionGoal?.fats ?? 80;
+  const effectiveGoalFiber = resolvedMacros?.fiber ?? nutritionGoal?.fiber ?? 0;
+
   const caloriesData = useMemo(() => {
-    const totalCalories = nutritionGoal?.totalCalories || 2500;
     const consumedCalories = dailyNutrients?.calories || 0;
-    const percentage = Math.round((consumedCalories / totalCalories) * 100);
+    const percentage = Math.round((consumedCalories / effectiveGoalCalories) * 100);
 
     return {
       consumed: consumedCalories,
-      total: totalCalories,
+      total: effectiveGoalCalories,
       percentage,
     };
-  }, [dailyNutrients, nutritionGoal]);
+  }, [dailyNutrients, effectiveGoalCalories]);
 
   // ALL logs by meal type — used by action handlers (delete all, move, copy, split, scale, etc.)
   const mealsByType = useMemo(() => {
@@ -1385,6 +1391,19 @@ export default function FoodScreen() {
               <AnimatedContent style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
                   {/* Daily Summary Card */}
+                  {nutritionGoal?.isDynamic ? (
+                    <View
+                      className="mb-1 self-start rounded-full px-2 py-0.5"
+                      style={{ backgroundColor: theme.colors.status.emerald20 }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{ color: theme.colors.status.emeraldLight }}
+                      >
+                        {t('nutritionGoals.dynamicBadge')}
+                      </Text>
+                    </View>
+                  ) : null}
                   <DailySummaryCard
                     calories={{
                       consumed: caloriesData.consumed,
@@ -1394,19 +1413,19 @@ export default function FoodScreen() {
                     macros={{
                       protein: {
                         value: dailyNutrients?.protein || 0,
-                        goal: nutritionGoal?.protein || 150,
+                        goal: effectiveGoalProtein,
                       },
                       carbs: {
                         value: dailyNutrients?.carbs || 0,
-                        goal: nutritionGoal?.carbs || 250,
+                        goal: effectiveGoalCarbs,
                       },
                       fats: {
                         value: dailyNutrients?.fat || 0,
-                        goal: nutritionGoal?.fats || 80,
+                        goal: effectiveGoalFats,
                       },
                       fiber: {
                         value: dailyNutrients?.fiber || 0,
-                        goal: nutritionGoal?.fiber || 0,
+                        goal: effectiveGoalFiber,
                       },
                     }}
                     secondaryNutrients={secondaryNutrients}

@@ -350,16 +350,27 @@ export function getDataLogModalTranslations(
       deleteTitle: t('goalsManagement.manageGoalData.deleteGoal'),
       deleteDesc: t('goalsManagement.manageGoalData.deleteGoalDesc'),
       formatCaloriesMacros: () => '',
-      formatItemSubtitle: (item) =>
-        t('goalsManagement.manageGoalData.subtitleFormat', {
+      formatItemSubtitle: (item) => {
+        const targetWeight =
+          units != null && item.goalTargetWeight != null
+            ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
+            : item.goalTargetWeight != null
+              ? Number(item.goalTargetWeight.toFixed(1))
+              : null;
+
+        if (item.isDynamic) {
+          return targetWeight != null
+            ? `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''} • ${targetWeight} ${unitLabel}`
+            : `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''}`;
+        }
+
+        return t('goalsManagement.manageGoalData.subtitleFormat', {
           calories: Number((item.goalCalories ?? 0).toFixed(0)),
           phase: item.goalEatingPhase ?? '',
-          targetWeight:
-            units != null && item.goalTargetWeight != null
-              ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
-              : Number((item.goalTargetWeight ?? 0).toFixed(1)),
-          unit: unitLabel,
-        }),
+          targetWeight: targetWeight ?? t('exerciseGoals.creation.notSet'),
+          unit: targetWeight != null ? unitLabel : '',
+        });
+      },
     };
   }
 
@@ -528,6 +539,7 @@ export type DataLogDisplayItem = {
   goalCalories?: number; // Optional - only nutrition goals have this
   goalEatingPhase?: string; // Optional - only nutrition goals have this
   goalTargetWeight?: number; // Optional - only nutrition goals have this
+  isDynamic?: boolean; // Optional - only dynamic nutrition goals have this
   checkinTargetWeight?: number; // Optional - only nutrition check-ins have this
   checkinTargetBodyFat?: number; // Optional - only nutrition check-ins have this
   status?: string; // Optional - only nutrition check-ins have this

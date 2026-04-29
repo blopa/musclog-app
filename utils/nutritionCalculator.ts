@@ -132,14 +132,29 @@ export const ADAPTIVE_THERMOGENESIS_KCAL_PER_KG = 20.0;
  * Default minimum calorie floor when gender/BMR are not provided (backward compatibility).
  * Prefer getMinCalories(gender, bmr) when available.
  */
-export const MIN_CALORIES = 1200;
+export const MIN_CALORIES_FEMALE = 1200;
+export const MIN_CALORIES_MALE = 1500;
+
+/**
+ * Get gender-specific minimum calorie floor.
+ */
+function getGenderMinCalories(gender: Gender): number {
+  switch (gender) {
+    case 'female':
+      return MIN_CALORIES_FEMALE;
+    case 'male':
+      return MIN_CALORIES_MALE;
+    default:
+      return (MIN_CALORIES_FEMALE + MIN_CALORIES_MALE) / 2;
+  }
+}
 
 /**
  * Evidence-based minimum daily calorie intake (IOM/National Academies; common practice 1200 female, 1500 male).
  * Never below 80% of BMR when BMR is provided, to avoid extreme restriction.
  */
 export function getMinCalories(gender: Gender, bmr?: number): number {
-  const genderFloor = gender === 'female' ? 1200 : gender === 'male' ? 1500 : 1350;
+  const genderFloor = getGenderMinCalories(gender);
   const bmrFloor = bmr !== undefined ? bmr * 0.8 : 0;
   return Math.round(Math.max(genderFloor, bmrFloor));
 }
@@ -712,7 +727,10 @@ export function calculateTargetCalories(
       ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent)
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
   const floor =
-    options?.gender !== undefined ? getMinCalories(options.gender, options.bmr) : MIN_CALORIES;
+    options?.gender !== undefined
+      ? getMinCalories(options.gender, options.bmr)
+      : MIN_CALORIES_FEMALE;
+
   return Math.max(floor, Math.round(tdee + adjustment));
 }
 
@@ -1033,6 +1051,7 @@ export function ffmiFromWeightHeightAndBodyFat(
   if (heightM <= 0) {
     return 0;
   }
+
   const ffm = weightKg * (1 - bodyFatPercent / 100);
   return parseFloat((ffm / (heightM * heightM)).toFixed(1));
 }

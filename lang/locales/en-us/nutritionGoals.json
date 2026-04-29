@@ -121,6 +121,12 @@
         "title": "Custom",
         "subtitle": "Your Plan"
       }
-    }
+    },
+    "goalMode": "Goal Mode",
+    "manual": "Manual",
+    "dynamic": "Dynamic",
+    "dynamicInfo": "Daily targets are auto-calculated each day from your last 30 days of weight and nutrition data. Set your eating phase to control whether you're in a cut, maintain, or bulk, and add both a target weight and target date to enable dynamic goals.",
+    "dynamicBadge": "Dynamic",
+    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals."
   }
 }

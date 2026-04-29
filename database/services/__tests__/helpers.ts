@@ -90,6 +90,7 @@ export function createMockNutritionGoal(overrides: Partial<any> = {}) {
     targetFfmi: 20,
     targetDate: null,
     effectiveUntil: null,
+    isDynamic: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,

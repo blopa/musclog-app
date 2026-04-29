@@ -27,6 +27,10 @@ import {
   NutritionPlan,
   planToInitialGoals,
 } from '@/utils/nutritionCalculator';
+import {
+  isDynamicNutritionGoalValid,
+  normalizeNutritionGoalTargetWeight,
+} from '@/utils/nutritionGoalHelpers';
 import { showSnackbar } from '@/utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
@@ -102,11 +106,12 @@ export default function NutritionGoalsScreen() {
         fats: goal.fats,
         fiber: goal.fiber,
         eatingPhase: goal.eatingPhase as EatingPhase,
-        targetWeight: goal.targetWeight,
+        targetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
         targetBodyFat: goal.targetBodyFat,
         targetBMI: goal.targetBmi,
         targetFFMI: goal.targetFfmi,
         targetDate: goal.targetDate ?? null,
+        isDynamic: goal.isDynamic,
       };
     }
 
@@ -115,6 +120,11 @@ export default function NutritionGoalsScreen() {
 
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {
+      if (!isDynamicNutritionGoalValid(goals)) {
+        showSnackbar('error', t('nutritionGoals.dynamicRequiredFields'));
+        return;
+      }
+
       try {
         const newGoal = await NutritionGoalService.saveGoals({
           totalCalories: goals.totalCalories,
@@ -128,6 +138,7 @@ export default function NutritionGoalsScreen() {
           targetBMI: goals.targetBMI ?? undefined,
           targetFFMI: goals.targetFFMI ?? undefined,
           targetDate: goals.targetDate ?? null,
+          isDynamic: goals.isDynamic ?? false,
         });
 
         // Generate new check-ins for the new goal
@@ -232,7 +243,7 @@ export default function NutritionGoalsScreen() {
             size="md"
             width="full"
             onPress={() => currentGoals && handleSave(currentGoals)}
-            disabled={!currentGoals}
+            disabled={!currentGoals || !isDynamicNutritionGoalValid(currentGoals)}
           />
           <View style={{ height: theme.spacing.margin.md }} />
         </BottomButtonWrapper>

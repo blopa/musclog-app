@@ -47,7 +47,13 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
 } from '@/utils/nutritionCalculator';
-import { displayToKg, kgToDisplay, storedHeightToCm } from '@/utils/unitConversion';
+import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
+import {
+  displayToKg,
+  kgToDisplay,
+  storedHeightToCm,
+  storedWeightToKg,
+} from '@/utils/unitConversion';
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -71,6 +77,7 @@ export type NutritionGoals = {
   targetFFMI: number | null;
   targetDate?: number | null;
   goalStartDate?: number | null;
+  isDynamic?: boolean;
 };
 
 export type NutritionGoalsInitialValues = Partial<NutritionGoals> & {
@@ -80,6 +87,7 @@ export type NutritionGoalsInitialValues = Partial<NutritionGoals> & {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
+  isDynamic?: boolean;
 };
 
 type NutritionGoalsModalBodyProps = {
@@ -297,9 +305,11 @@ export function NutritionGoalsBody({
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
+  const [isDynamic, setIsDynamic] = useState(initialGoals.isDynamic ?? false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null);
   const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
+  const didAutofillDynamicTargetWeight = useRef(false);
   const isInitialMount = useRef(true);
   const isManualCalorieUpdate = useRef(false);
   const macrosArePristine = useRef(true);
@@ -372,20 +382,68 @@ export function NutritionGoalsBody({
     }
   }, [eatingPhase]);
 
-  // Sync targetWeight from initialGoals when it or units change (e.g. modal opened with saved goal)
   useEffect(() => {
-    if (initialGoals?.targetWeight != null) {
-      setTargetWeight(kgToDisplay(initialGoals.targetWeight, units));
-    }
-  }, [initialGoals?.targetWeight, units]);
-
-  useEffect(() => {
+    setTotalCalories(initialGoals.totalCalories);
+    setProtein(initialGoals.protein);
+    setCarbs(initialGoals.carbs);
+    setFats(initialGoals.fats);
+    setFiber(initialGoals.fiber);
+    setEatingPhase(initialGoals.eatingPhase);
+    setTargetWeight(
+      initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
+    );
+    setTargetBodyFat(initialGoals.targetBodyFat ?? null);
+    setTargetBMI(initialGoals.targetBMI ?? null);
+    setTargetFFMI(initialGoals.targetFFMI ?? null);
     setTargetDate(initialGoals.targetDate ?? null);
-  }, [initialGoals.targetDate]);
-
-  useEffect(() => {
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
-  }, [defaultGoalStartDate, initialGoals.goalStartDate]);
+    setIsDynamic(initialGoals.isDynamic ?? false);
+    didAutofillDynamicTargetWeight.current = false;
+    setCalorieInputValue(initialGoals.totalCalories.toString());
+    preciseMacros.current = {
+      protein: initialGoals.protein,
+      carbs: initialGoals.carbs,
+      fats: initialGoals.fats,
+      fiber: initialGoals.fiber,
+    };
+    macrosArePristine.current = true;
+    previousEatingPhase.current = initialGoals.eatingPhase;
+    isManualCalorieUpdate.current = false;
+    syncMacroRatios();
+  }, [
+    defaultGoalStartDate,
+    initialGoals.carbs,
+    initialGoals.eatingPhase,
+    initialGoals.fats,
+    initialGoals.fiber,
+    initialGoals.goalStartDate,
+    initialGoals.isDynamic,
+    initialGoals.protein,
+    initialGoals.targetBMI,
+    initialGoals.targetBodyFat,
+    initialGoals.targetDate,
+    initialGoals.targetFFMI,
+    initialGoals.targetWeight,
+    initialGoals.totalCalories,
+    syncMacroRatios,
+    units,
+  ]);
+
+  // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals).
+  // Prefer the user's actual current weight; fall back to the generic default only if unavailable.
+  useEffect(() => {
+    if (isDynamic && targetWeight === null) {
+      const fallbackKg = latestWeightKg ?? defaultTargetWeightKg;
+      didAutofillDynamicTargetWeight.current = true;
+      setTargetWeight(kgToDisplay(fallbackKg, units));
+      return;
+    }
+
+    if (isDynamic && latestWeightKg != null && didAutofillDynamicTargetWeight.current) {
+      setTargetWeight(kgToDisplay(latestWeightKg, units));
+      didAutofillDynamicTargetWeight.current = false;
+    }
+  }, [isDynamic, targetWeight, latestWeightKg, units]);
 
   // Load user's height once on mount so we can derive BMI and FFMI
   useEffect(() => {
@@ -411,7 +469,7 @@ export function NutritionGoalsBody({
       }
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
-          setLatestWeightKg(dec.value);
+          setLatestWeightKg(storedWeightToKg(dec.value, dec.unit));
         }
       });
     });
@@ -614,6 +672,7 @@ export function NutritionGoalsBody({
         targetFFMI,
         targetDate,
         goalStartDate,
+        isDynamic,
       });
     }
   }, [
@@ -629,9 +688,16 @@ export function NutritionGoalsBody({
     targetFFMI,
     targetDate,
     goalStartDate,
+    isDynamic,
     onFormChange,
     units,
   ]);
+
+  const isDynamicValid = isDynamicNutritionGoalValid({
+    isDynamic,
+    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
+    targetDate,
+  });
 
   const handleSave = useCallback(() => {
     onSave?.({
@@ -647,6 +713,7 @@ export function NutritionGoalsBody({
       targetFFMI,
       targetDate,
       goalStartDate,
+      isDynamic,
     } as NutritionGoals);
   }, [
     carbs,
@@ -654,6 +721,7 @@ export function NutritionGoalsBody({
     fats,
     fiber,
     goalStartDate,
+    isDynamic,
     onSave,
     protein,
     targetBMI,
@@ -704,74 +772,104 @@ export function NutritionGoalsBody({
           <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
         ) : null}
 
-        {/* Total Daily Calories Card */}
-        <View
-          className="relative mb-6 overflow-hidden rounded-2xl border p-6"
-          style={{
-            borderColor: theme.colors.border.emerald,
-            backgroundColor: theme.colors.background.cardElevated,
-          }}
-        >
-          <LinearGradient
-            colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ position: 'absolute', inset: 0 }}
+        {/* Goal Mode: Manual / Dynamic */}
+        <View className="gap-2">
+          <Text className="ml-1 text-sm font-medium text-text-secondary">
+            {t('nutritionGoals.goalMode')}
+          </Text>
+          <SegmentedControl
+            options={[
+              { label: t('nutritionGoals.manual'), value: 'manual' },
+              { label: t('nutritionGoals.dynamic'), value: 'dynamic' },
+            ]}
+            value={isDynamic ? 'dynamic' : 'manual'}
+            onValueChange={(val) => setIsDynamic(val === 'dynamic')}
           />
-          <View className="relative z-10 items-center">
-            <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-              {t('nutritionGoals.totalDailyCalories')}
-            </Text>
-            <View className="w-full flex-row items-center justify-center gap-6">
-              <Pressable
-                onPress={() => handleCaloriesChange(totalCalories - CALORIES_STEP)}
-                className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                style={{ backgroundColor: theme.colors.background.white10 }}
-                hitSlop={12}
-              >
-                <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              </Pressable>
+        </View>
 
-              <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
-                {isCalorieEditing ? (
-                  <TextInput
-                    ref={calorieInputRef}
-                    value={calorieInputValue}
-                    onChangeText={setCalorieInputValue}
-                    onBlur={handleCalorieBlur}
-                    onSubmitEditing={handleCalorieSubmit}
-                    keyboardType="numeric"
-                    className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
-                    style={{
-                      minWidth: 80,
-                      color: theme.colors.text.primary,
-                    }}
-                    returnKeyType="done"
-                    selectTextOnFocus
-                  />
-                ) : (
-                  <Pressable onPress={handleCaloriePress}>
-                    <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                      {formatInteger(totalCalories)}
-                    </Text>
-                  </Pressable>
-                )}
-                <Text className="text-lg font-semibold uppercase text-accent-primary">
-                  {t('food.common.kcal')}
-                </Text>
+        {/* Dynamic mode info callout */}
+        {isDynamic ? (
+          <View
+            className="rounded-xl border p-4"
+            style={{
+              borderColor: theme.colors.border.emerald,
+              backgroundColor: theme.colors.status.emerald10,
+            }}
+          >
+            <Text className="text-sm text-text-secondary">{t('nutritionGoals.dynamicInfo')}</Text>
+          </View>
+        ) : null}
+
+        {/* Total Daily Calories Card */}
+        {!isDynamic ? (
+          <View
+            className="relative mb-6 overflow-hidden rounded-2xl border p-6"
+            style={{
+              borderColor: theme.colors.border.emerald,
+              backgroundColor: theme.colors.background.cardElevated,
+            }}
+          >
+            <LinearGradient
+              colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ position: 'absolute', inset: 0 }}
+            />
+            <View className="relative z-10 items-center">
+              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                {t('nutritionGoals.totalDailyCalories')}
+              </Text>
+              <View className="w-full flex-row items-center justify-center gap-6">
+                <Pressable
+                  onPress={() => handleCaloriesChange(totalCalories - CALORIES_STEP)}
+                  className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
+                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  hitSlop={12}
+                >
+                  <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                </Pressable>
+
+                <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
+                  {isCalorieEditing ? (
+                    <TextInput
+                      ref={calorieInputRef}
+                      value={calorieInputValue}
+                      onChangeText={setCalorieInputValue}
+                      onBlur={handleCalorieBlur}
+                      onSubmitEditing={handleCalorieSubmit}
+                      keyboardType="numeric"
+                      className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
+                      style={{
+                        minWidth: 80,
+                        color: theme.colors.text.primary,
+                      }}
+                      returnKeyType="done"
+                      selectTextOnFocus
+                    />
+                  ) : (
+                    <Pressable onPress={handleCaloriePress}>
+                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                        {formatInteger(totalCalories)}
+                      </Text>
+                    </Pressable>
+                  )}
+                  <Text className="text-lg font-semibold uppercase text-accent-primary">
+                    {t('food.common.kcal')}
+                  </Text>
+                </View>
+
+                <Pressable
+                  onPress={() => handleCaloriesChange(totalCalories + CALORIES_STEP)}
+                  className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
+                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  hitSlop={12}
+                >
+                  <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                </Pressable>
               </View>
-
-              <Pressable
-                onPress={() => handleCaloriesChange(totalCalories + CALORIES_STEP)}
-                className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                style={{ backgroundColor: theme.colors.background.white10 }}
-                hitSlop={12}
-              >
-                <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              </Pressable>
             </View>
           </View>
-        </View>
+        ) : null}
 
         {/* Eating Phase */}
         <View className="gap-2">
@@ -845,134 +943,138 @@ export function NutritionGoalsBody({
           />
         ) : null}
 
-        {/* Daily Macro Targets */}
-        <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}
-        >
-          {t('nutritionGoals.dailyMacroTargets')}
-        </Text>
-        <View className="gap-4">
-          <StepperInlineInput
-            label={t('nutritionGoals.protein')}
-            subtitle={t('nutritionGoals.kcalPerGram.protein')}
-            value={protein}
-            unit="g"
-            maxFractionDigits={0}
-            icon={showIcons ? Beef : undefined}
-            iconSize="sm"
-            onIncrement={() => {
-              const next = Math.min(macroMax.protein, protein + 1);
-              preciseMacros.current.protein = next;
-              macrosArePristine.current = false;
-              setProtein(next);
-              syncMacroRatios();
-            }}
-            onDecrement={() => {
-              const next = Math.max(0, protein - 1);
-              preciseMacros.current.protein = next;
-              macrosArePristine.current = false;
-              setProtein(next);
-              syncMacroRatios();
-            }}
-            onChangeValue={(val) => {
-              preciseMacros.current.protein = val;
-              macrosArePristine.current = false;
-              setProtein(val);
-              syncMacroRatios();
-            }}
-          />
-          <StepperInlineInput
-            label={t('nutritionGoals.carbohydrates')}
-            subtitle={t('nutritionGoals.kcalPerGram.carbs')}
-            value={carbs}
-            unit="g"
-            maxFractionDigits={0}
-            icon={showIcons ? Wheat : undefined}
-            iconSize="sm"
-            onIncrement={() => {
-              const next = Math.min(macroMax.carbs, carbs + 1);
-              preciseMacros.current.carbs = next;
-              macrosArePristine.current = false;
-              setCarbs(next);
-              syncMacroRatios();
-            }}
-            onDecrement={() => {
-              const next = Math.max(0, carbs - 1);
-              preciseMacros.current.carbs = next;
-              macrosArePristine.current = false;
-              setCarbs(next);
-              syncMacroRatios();
-            }}
-            onChangeValue={(val) => {
-              preciseMacros.current.carbs = val;
-              macrosArePristine.current = false;
-              setCarbs(val);
-              syncMacroRatios();
-            }}
-          />
-          <StepperInlineInput
-            label={t('nutritionGoals.fats')}
-            subtitle={t('nutritionGoals.kcalPerGram.fats')}
-            value={fats}
-            unit="g"
-            maxFractionDigits={0}
-            icon={showIcons ? Droplet : undefined}
-            iconSize="sm"
-            onIncrement={() => {
-              const next = Math.min(macroMax.fats, fats + 1);
-              preciseMacros.current.fats = next;
-              macrosArePristine.current = false;
-              setFats(next);
-              syncMacroRatios();
-            }}
-            onDecrement={() => {
-              const next = Math.max(0, fats - 1);
-              preciseMacros.current.fats = next;
-              macrosArePristine.current = false;
-              setFats(next);
-              syncMacroRatios();
-            }}
-            onChangeValue={(val) => {
-              preciseMacros.current.fats = val;
-              macrosArePristine.current = false;
-              setFats(val);
-              syncMacroRatios();
-            }}
-          />
-          <StepperInlineInput
-            label={t('food.macros.fiber')}
-            subtitle={t('nutritionGoals.kcalPerGram.fiber')}
-            value={fiber}
-            unit="g"
-            maxFractionDigits={0}
-            icon={showIcons ? Leaf : undefined}
-            iconSize="sm"
-            onIncrement={() => {
-              const next = Math.min(macroMax.fiber, fiber + 1);
-              preciseMacros.current.fiber = next;
-              macrosArePristine.current = false;
-              setFiber(next);
-              syncMacroRatios();
-            }}
-            onDecrement={() => {
-              const next = Math.max(0, fiber - 1);
-              preciseMacros.current.fiber = next;
-              macrosArePristine.current = false;
-              setFiber(next);
-              syncMacroRatios();
-            }}
-            onChangeValue={(val) => {
-              preciseMacros.current.fiber = val;
-              macrosArePristine.current = false;
-              setFiber(val);
-              syncMacroRatios();
-            }}
-          />
-        </View>
+        {/* Daily Macro Targets — hidden in dynamic mode */}
+        {!isDynamic ? (
+          <>
+            <Text
+              className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+              style={{ fontSize: theme.typography.fontSize.xs }}
+            >
+              {t('nutritionGoals.dailyMacroTargets')}
+            </Text>
+            <View className="gap-4">
+              <StepperInlineInput
+                label={t('nutritionGoals.protein')}
+                subtitle={t('nutritionGoals.kcalPerGram.protein')}
+                value={protein}
+                unit="g"
+                maxFractionDigits={0}
+                icon={showIcons ? Beef : undefined}
+                iconSize="sm"
+                onIncrement={() => {
+                  const next = Math.min(macroMax.protein, protein + 1);
+                  preciseMacros.current.protein = next;
+                  macrosArePristine.current = false;
+                  setProtein(next);
+                  syncMacroRatios();
+                }}
+                onDecrement={() => {
+                  const next = Math.max(0, protein - 1);
+                  preciseMacros.current.protein = next;
+                  macrosArePristine.current = false;
+                  setProtein(next);
+                  syncMacroRatios();
+                }}
+                onChangeValue={(val) => {
+                  preciseMacros.current.protein = val;
+                  macrosArePristine.current = false;
+                  setProtein(val);
+                  syncMacroRatios();
+                }}
+              />
+              <StepperInlineInput
+                label={t('nutritionGoals.carbohydrates')}
+                subtitle={t('nutritionGoals.kcalPerGram.carbs')}
+                value={carbs}
+                unit="g"
+                maxFractionDigits={0}
+                icon={showIcons ? Wheat : undefined}
+                iconSize="sm"
+                onIncrement={() => {
+                  const next = Math.min(macroMax.carbs, carbs + 1);
+                  preciseMacros.current.carbs = next;
+                  macrosArePristine.current = false;
+                  setCarbs(next);
+                  syncMacroRatios();
+                }}
+                onDecrement={() => {
+                  const next = Math.max(0, carbs - 1);
+                  preciseMacros.current.carbs = next;
+                  macrosArePristine.current = false;
+                  setCarbs(next);
+                  syncMacroRatios();
+                }}
+                onChangeValue={(val) => {
+                  preciseMacros.current.carbs = val;
+                  macrosArePristine.current = false;
+                  setCarbs(val);
+                  syncMacroRatios();
+                }}
+              />
+              <StepperInlineInput
+                label={t('nutritionGoals.fats')}
+                subtitle={t('nutritionGoals.kcalPerGram.fats')}
+                value={fats}
+                unit="g"
+                maxFractionDigits={0}
+                icon={showIcons ? Droplet : undefined}
+                iconSize="sm"
+                onIncrement={() => {
+                  const next = Math.min(macroMax.fats, fats + 1);
+                  preciseMacros.current.fats = next;
+                  macrosArePristine.current = false;
+                  setFats(next);
+                  syncMacroRatios();
+                }}
+                onDecrement={() => {
+                  const next = Math.max(0, fats - 1);
+                  preciseMacros.current.fats = next;
+                  macrosArePristine.current = false;
+                  setFats(next);
+                  syncMacroRatios();
+                }}
+                onChangeValue={(val) => {
+                  preciseMacros.current.fats = val;
+                  macrosArePristine.current = false;
+                  setFats(val);
+                  syncMacroRatios();
+                }}
+              />
+              <StepperInlineInput
+                label={t('food.macros.fiber')}
+                subtitle={t('nutritionGoals.kcalPerGram.fiber')}
+                value={fiber}
+                unit="g"
+                maxFractionDigits={0}
+                icon={showIcons ? Leaf : undefined}
+                iconSize="sm"
+                onIncrement={() => {
+                  const next = Math.min(macroMax.fiber, fiber + 1);
+                  preciseMacros.current.fiber = next;
+                  macrosArePristine.current = false;
+                  setFiber(next);
+                  syncMacroRatios();
+                }}
+                onDecrement={() => {
+                  const next = Math.max(0, fiber - 1);
+                  preciseMacros.current.fiber = next;
+                  macrosArePristine.current = false;
+                  setFiber(next);
+                  syncMacroRatios();
+                }}
+                onChangeValue={(val) => {
+                  preciseMacros.current.fiber = val;
+                  macrosArePristine.current = false;
+                  setFiber(val);
+                  syncMacroRatios();
+                }}
+              />
+            </View>
 
-        {/* Macros Distribution Chart */}
-        <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
+            {/* Macros Distribution Chart */}
+            <MacrosDistributionChart protein={protein} carbs={carbs} fats={fats} fiber={fiber} />
+          </>
+        ) : null}
 
         {/* Target Body Metrics */}
         <Text
@@ -987,10 +1089,14 @@ export function NutritionGoalsBody({
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetWeight')}
+                {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
               </Text>
               {targetWeight === null ? (
                 <Pressable
-                  onPress={() => setTargetWeight(kgToDisplay(defaultTargetWeightKg, units))}
+                  onPress={() => {
+                    didAutofillDynamicTargetWeight.current = false;
+                    setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
+                  }}
                   className="active:opacity-70"
                 >
                   <Text
@@ -1000,8 +1106,14 @@ export function NutritionGoalsBody({
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
-              ) : (
-                <Pressable onPress={() => setTargetWeight(null)} className="active:opacity-70">
+              ) : !isDynamic ? (
+                <Pressable
+                  onPress={() => {
+                    didAutofillDynamicTargetWeight.current = false;
+                    setTargetWeight(null);
+                  }}
+                  className="active:opacity-70"
+                >
                   <Text
                     className="text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
@@ -1009,7 +1121,7 @@ export function NutritionGoalsBody({
                     {t('common.clear')}
                   </Text>
                 </Pressable>
-              )}
+              ) : null}
             </View>
             {targetWeight !== null ? (
               <StepperInlineInput
@@ -1022,17 +1134,22 @@ export function NutritionGoalsBody({
                 maxFractionDigits={1}
                 icon={showIcons ? Scale : undefined}
                 iconSize="sm"
-                onIncrement={() =>
+                onIncrement={() => {
+                  didAutofillDynamicTargetWeight.current = false;
                   setTargetWeight(
                     Math.min(kgToDisplay(200, units), Math.round((targetWeight + 1) * 10) / 10)
-                  )
-                }
-                onDecrement={() =>
+                  );
+                }}
+                onDecrement={() => {
+                  didAutofillDynamicTargetWeight.current = false;
                   setTargetWeight(
                     Math.max(kgToDisplay(30, units), Math.round((targetWeight - 1) * 10) / 10)
-                  )
-                }
-                onChangeValue={setTargetWeight}
+                  );
+                }}
+                onChangeValue={(value) => {
+                  didAutofillDynamicTargetWeight.current = false;
+                  setTargetWeight(value);
+                }}
               />
             ) : null}
           </View>
@@ -1186,7 +1303,15 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View
+            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border bg-bg-card p-4"
+            style={{
+              borderColor:
+                isDynamic && targetDate === null
+                  ? theme.colors.status.error
+                  : theme.colors.border.emerald,
+            }}
+          >
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
@@ -1197,7 +1322,10 @@ export function NutritionGoalsBody({
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
+                <Text className="font-semibold text-white">
+                  {t('nutritionGoals.targetDate')}
+                  {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
+                </Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
@@ -1219,7 +1347,7 @@ export function NutritionGoalsBody({
                   onPress={() => setIsTargetDatePickerVisible(true)}
                   onClear={() => setTargetDate(null)}
                   clearLabel={t('nutritionGoals.targetDateClear')}
-                  showClearButton
+                  showClearButton={!isDynamic}
                 />
               </View>
             </View>
@@ -1244,6 +1372,14 @@ export function NutritionGoalsBody({
             className="mt-8 border-t pt-6"
             style={{ borderTopColor: theme.colors.background.white5 }}
           >
+            {isDynamic && !isDynamicValid ? (
+              <Text
+                className="mb-4 text-center"
+                style={{ color: theme.colors.status.error, fontSize: theme.typography.fontSize.sm }}
+              >
+                {t('nutritionGoals.dynamicRequiredFields')}
+              </Text>
+            ) : null}
             <Button
               label={t('nutritionGoals.saveGoals')}
               icon={ChevronRight}
@@ -1252,6 +1388,7 @@ export function NutritionGoalsBody({
               size="md"
               width="full"
               onPress={handleSave}
+              disabled={!isDynamicValid}
             />
             <Text
               className="mt-4 text-center text-text-secondary"
