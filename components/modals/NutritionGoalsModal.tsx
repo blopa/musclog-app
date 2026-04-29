@@ -88,7 +88,6 @@ export function NutritionGoalsModal({
 
     try {
       await onSave?.(goals);
-      onClose();
     } finally {
       setIsSaving(false);
     }
