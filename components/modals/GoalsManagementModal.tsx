@@ -19,7 +19,7 @@ import {
   getEffectiveKcalPerKgWeightLoss,
   getMinCalories,
 } from '@/utils/nutritionCalculator';
-import { nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -182,20 +182,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
-    const input = {
-      totalCalories: nutritionGoals.totalCalories,
-      protein: nutritionGoals.protein,
-      carbs: nutritionGoals.carbs,
-      fats: nutritionGoals.fats,
-      fiber: nutritionGoals.fiber,
-      eatingPhase: nutritionGoals.eatingPhase,
-      targetWeight: nutritionGoals.targetWeight ?? undefined,
-      targetBodyFat: nutritionGoals.targetBodyFat ?? undefined,
-      targetBMI: nutritionGoals.targetBMI ?? undefined,
-      targetFFMI: nutritionGoals.targetFFMI ?? undefined,
-      targetDate: nutritionGoals.targetDate ?? null,
-      isDynamic: nutritionGoals.isDynamic ?? false,
-    };
+    const input = nutritionGoalsToInput(nutritionGoals);
 
     try {
       if (isEditing && selectedGoal) {

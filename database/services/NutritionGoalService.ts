@@ -34,9 +34,9 @@ export interface NutritionGoalInput {
   fiber: number;
   eatingPhase: EatingPhase;
   targetWeight?: number | null;
-  targetBodyFat?: number;
-  targetBMI?: number;
-  targetFFMI?: number;
+  targetBodyFat?: number | null;
+  targetBMI?: number | null;
+  targetFFMI?: number | null;
   targetDate?: number | null;
   isDynamic?: boolean;
 }
@@ -363,7 +363,9 @@ export class NutritionGoalService {
         goal.createdAt,
         goal.targetDate ?? localDayKeyPlusCalendarDays(localDayStartFromUtcMs(goal.createdAt), 90),
         heightCm / 100,
-        bodyFatDecrypted?.value ?? null
+        bodyFatDecrypted?.value ?? null,
+        7,
+        normalizeNutritionGoalTargetWeight(goal.targetWeight)
       );
 
       if (checkins.length > 0) {

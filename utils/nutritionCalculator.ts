@@ -1119,6 +1119,7 @@ export interface WeeklyCheckinData {
  * @param heightM - User's height in meters (for BMI/FFMI calculations)
  * @param currentBodyFatPercent - Current body fat percentage (null if unknown)
  * @param frequencyDays - How often to check in (default 7 days)
+ * @param finalTargetWeightKg
  * @returns Array of check-in data, one per interval (excluding final week which is the goal itself)
  */
 export function generateWeeklyCheckins(
@@ -1127,7 +1128,8 @@ export function generateWeeklyCheckins(
   endDate: number,
   heightM: number,
   currentBodyFatPercent: number | null,
-  frequencyDays: number = 7
+  frequencyDays: number = 7,
+  finalTargetWeightKg?: number | null
 ): WeeklyCheckinData[] {
   const startDayKey = localDayStartFromUtcMs(startDate);
   const endDayKey = localDayStartFromUtcMs(endDate);
@@ -1145,15 +1147,22 @@ export function generateWeeklyCheckins(
 
   const currentWeightKg = plan.currentWeightKg;
   const dailyWeightChangeKg = plan.weeklyWeightChangeKg / 7;
-  const isCutting = plan.targetCalories < plan.tdee;
-  const isBulking = plan.targetCalories > plan.tdee;
+  const hasExplicitTargetWeight =
+    typeof finalTargetWeightKg === 'number' && Number.isFinite(finalTargetWeightKg);
+  const totalWeightChangeKg = hasExplicitTargetWeight
+    ? finalTargetWeightKg - currentWeightKg
+    : dailyWeightChangeKg * totalCalendarDays;
+  const isCutting = totalWeightChangeKg < 0;
+  const isBulking = totalWeightChangeKg > 0;
 
   for (let interval = 1; interval < totalIntervals; interval++) {
     const checkinDate = localDayKeyPlusCalendarDays(startDayKey, interval * frequencyDays);
     const daysElapsed = interval * frequencyDays;
-    const intermediateWeight = parseFloat(
-      (currentWeightKg + dailyWeightChangeKg * daysElapsed).toFixed(1)
-    );
+    const progress = totalCalendarDays > 0 ? daysElapsed / totalCalendarDays : 0;
+    const interpolatedWeight = hasExplicitTargetWeight
+      ? currentWeightKg + totalWeightChangeKg * progress
+      : currentWeightKg + dailyWeightChangeKg * daysElapsed;
+    const intermediateWeight = parseFloat(interpolatedWeight.toFixed(1));
 
     let intermediateBodyFat: number | undefined;
     if (currentBodyFatPercent !== null && currentBodyFatPercent > 0) {

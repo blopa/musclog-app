@@ -32,9 +32,9 @@ export function nutritionGoalsToInput(goals: NutritionGoals) {
     fiber: goals.fiber,
     eatingPhase: goals.eatingPhase,
     targetWeight: normalizeNutritionGoalTargetWeight(goals.targetWeight),
-    targetBodyFat: goals.targetBodyFat ?? undefined,
-    targetBMI: goals.targetBMI ?? undefined,
-    targetFFMI: goals.targetFFMI ?? undefined,
+    targetBodyFat: goals.targetBodyFat ?? null,
+    targetBMI: goals.targetBMI ?? null,
+    targetFFMI: goals.targetFFMI ?? null,
     targetDate: goals.targetDate ?? null,
     isDynamic: goals.isDynamic ?? false,
   };

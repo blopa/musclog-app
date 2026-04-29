@@ -248,7 +248,8 @@ export default function FoodScreen() {
       try {
         await NutritionGoalService.updateGoal(
           currentNutritionGoal.id,
-          nutritionGoalsToInput(goals)
+          nutritionGoalsToInput(goals),
+          true
         );
         setIsEditCurrentGoalVisible(false);
       } catch (error) {

@@ -178,11 +178,6 @@ export function useCurrentNutritionGoal({
     }
 
     displayDateRef.current = localCalendarDayDate(date ?? new Date());
-    const asOfDayMs = displayDateRef.current.getTime();
-    const historyStartMs = localDayKeyPlusCalendarDays(
-      asOfDayMs,
-      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
-    );
 
     const fetchGoalForDate = () => {
       NutritionGoalService.getGoalForDate(displayDateRef.current)
@@ -206,6 +201,32 @@ export function useCurrentNutritionGoal({
     const goalQuery = database
       .get<NutritionGoal>('nutrition_goals')
       .query(Q.where('deleted_at', Q.eq(null)));
+
+    const subscription = goalQuery.observe().subscribe({
+      next: () => {
+        fetchGoalForDate();
+        setCurrentResolutionVersion((version) => version + 1);
+      },
+      error: () => {
+        setGoal(null);
+        setIsLoadingCurrent(false);
+      },
+    });
+
+    return () => subscription.unsubscribe();
+  }, [date, mode, enableReactivity]);
+
+  useEffect(() => {
+    if (mode !== 'current' || !enableReactivity || !goal?.isDynamic) {
+      return;
+    }
+
+    const asOfDayMs = displayDateRef.current.getTime();
+    const historyStartMs = localDayKeyPlusCalendarDays(
+      asOfDayMs,
+      -HISTORICAL_NUTRITION_LOOKBACK_DAYS
+    );
+
     const latestHeightQuery = database
       .get('user_metrics')
       .query(
@@ -253,16 +274,6 @@ export function useCurrentNutritionGoal({
       );
 
     const subscriptions = [
-      goalQuery.observe().subscribe({
-        next: () => {
-          fetchGoalForDate();
-          setCurrentResolutionVersion((version) => version + 1);
-        },
-        error: () => {
-          setGoal(null);
-          setIsLoadingCurrent(false);
-        },
-      }),
       latestHeightQuery.observe().subscribe({
         next: () => setCurrentResolutionVersion((version) => version + 1),
       }),
@@ -281,7 +292,7 @@ export function useCurrentNutritionGoal({
     ];
 
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }, [date, mode, enableReactivity]);
+  }, [date, mode, enableReactivity, goal]);
 
   // Current mode: resolve dynamic macros whenever the goal or date changes
   useEffect(() => {
@@ -350,7 +361,7 @@ export function useCurrentNutritionGoal({
   }, [mode, enableReactivity, visible, loadInitialGoals]);
 
   useEffect(() => {
-    if (mode !== 'history' || !visible || !enableReactivity) {
+    if (mode !== 'history' || !visible || !enableReactivity || !currentGoal?.isDynamic) {
       return;
     }
 
@@ -424,7 +435,7 @@ export function useCurrentNutritionGoal({
     ];
 
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }, [mode, visible, enableReactivity]);
+  }, [mode, visible, enableReactivity, currentGoal]);
 
   useEffect(() => {
     if (mode !== 'history') {
