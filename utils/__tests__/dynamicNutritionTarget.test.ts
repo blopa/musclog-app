@@ -1,7 +1,7 @@
-import { resolveDailyMacros } from '../dynamicNutritionTarget';
 import { UserMetricService, UserService } from '@/database/services';
-import { getHistoricalNutritionParams } from '../historicalNutritionParams';
-import { calculateNutritionPlan } from '../nutritionCalculator';
+import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
+import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
 
 jest.mock('@/database/services', () => ({
   UserService: {
@@ -18,7 +18,9 @@ jest.mock('../historicalNutritionParams', () => ({
 
 jest.mock('../nutritionCalculator', () => ({
   calculateNutritionPlan: jest.fn(),
-  eatingPhaseToWeightGoal: jest.fn((p) => (p === 'cut' ? 'lose' : p === 'bulk' ? 'gain' : 'maintain')),
+  eatingPhaseToWeightGoal: jest.fn((p) =>
+    p === 'cut' ? 'lose' : p === 'bulk' ? 'gain' : 'maintain'
+  ),
   fiberFromCalories: jest.fn((c) => 25),
 }));
 
@@ -57,9 +59,13 @@ describe('resolveDailyMacros', () => {
   it('resolves macros using empirical data when available', async () => {
     (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
-        if (type === 'height') return Promise.resolve(mockHeightMetric);
-        if (type === 'weight') return Promise.resolve(mockWeightMetric);
-        return Promise.resolve(null);
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
     });
     (getHistoricalNutritionParams as jest.Mock).mockResolvedValue({
       historicalTotalCalories: 60000,
@@ -90,9 +96,13 @@ describe('resolveDailyMacros', () => {
   it('falls back to formula-based TDEE when historical data is missing', async () => {
     (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
-        if (type === 'height') return Promise.resolve(mockHeightMetric);
-        if (type === 'weight') return Promise.resolve(mockWeightMetric);
-        return Promise.resolve(null);
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
     });
     (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
@@ -113,5 +123,44 @@ describe('resolveDailyMacros', () => {
       isDynamic: true,
       usedEmpiricalData: false,
     });
+  });
+  it('respects safety floors and never returns negative calories', async () => {
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatest as jest.Mock).mockImplementation((type) => {
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
+    });
+    // Mock an extreme scenario (losing 10kg in 30 days while eating 1000kcal)
+    // that might lead to negative targets if not floored.
+    // calculateNutritionPlan should already be using getMinCalories internally.
+    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue({
+      historicalTotalCalories: 30000,
+      historicalTotalDays: 30,
+      historicalInitialWeightKg: 100,
+      historicalFinalWeightKg: 90,
+    });
+
+    // Manual override for mock to simulate floor hit
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 700, // Floor for male
+      protein: 100,
+      carbs: 50,
+      fats: 10,
+    });
+
+    const result = await resolveDailyMacros(mockGoal, new Date());
+
+    expect(result?.totalCalories).toBeGreaterThanOrEqual(700);
+    expect(result).toEqual(
+      expect.objectContaining({
+        totalCalories: 700,
+        isDynamic: true,
+      })
+    );
   });
 });

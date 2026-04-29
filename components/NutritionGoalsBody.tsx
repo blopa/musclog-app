@@ -1037,9 +1037,7 @@ export function NutritionGoalsBody({
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetWeight')}
-                {isDynamic ? (
-                  <Text style={{ color: theme.colors.status.error }}> *</Text>
-                ) : null}
+                {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
               </Text>
               {targetWeight === null ? (
                 <Pressable
@@ -1260,9 +1258,7 @@ export function NutritionGoalsBody({
               <View className="min-w-0 flex-1">
                 <Text className="font-semibold text-white">
                   {t('nutritionGoals.targetDate')}
-                  {isDynamic ? (
-                    <Text style={{ color: theme.colors.status.error }}> *</Text>
-                  ) : null}
+                  {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
                 </Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
