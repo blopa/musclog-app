@@ -1,9 +1,8 @@
-import * as ExpoLinking from 'expo-linking';
-import { useRootNavigationState, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
+import { AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -50,18 +49,9 @@ import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
-import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
-
-// Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
-declare global {
-  var __PENDING_WIDGET_ACTION: string | undefined;
-}
 
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
-
-// Module-level cache to skip onboarding check after first confirmation in the current session
-let hasConfirmedOnboarding = false;
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -76,8 +66,6 @@ export default function HomeScreen() {
   const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
-
-  const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
 
@@ -126,7 +114,6 @@ export default function HomeScreen() {
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
-  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(!hasConfirmedOnboarding);
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
@@ -253,101 +240,6 @@ export default function HomeScreen() {
     setIsFoodSearchVisible(false);
     openCamera({ mode: 'barcode-scan', mealType: selectedMealType });
   }, [openCamera, selectedMealType]);
-
-  // Handle widget action stored by +native-intent.tsx on cold start (camera only —
-  // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
-  useEffect(() => {
-    if (!navigationState?.key) {
-      return;
-    }
-
-    const action = global.__PENDING_WIDGET_ACTION;
-    if (!action) {
-      return;
-    }
-
-    global.__PENDING_WIDGET_ACTION = undefined;
-
-    if (action === 'open-camera') {
-      openCamera({ mode: 'barcode-scan' });
-    }
-  }, [navigationState?.key, openCamera]);
-
-  // Handle widget deep link when app is already running (warm start)
-  useEffect(() => {
-    const handleUrl = ({ url }: { url: string }) => {
-      const { queryParams } = ExpoLinking.parse(url);
-      if (queryParams?.action === 'open-camera') {
-        openCamera({ mode: 'barcode-scan' });
-      } else if (queryParams?.action === 'open-nutrition') {
-        router.navigate('/app/nutrition/food');
-      }
-    };
-
-    const subscription = ExpoLinking.addEventListener('url', handleUrl);
-    return () => subscription.remove();
-  }, [openCamera, router]);
-
-  // Check onboarding status on mount — wait until navigator is ready to avoid
-  // "Attempted to navigate before mounting the Root Layout component" on cold start
-  useEffect(() => {
-    if (!navigationState?.key) {
-      return;
-    }
-
-    const checkOnboarding = async () => {
-      try {
-        const completed = await isOnboardingCompleted();
-
-        if (!completed) {
-          try {
-            const saved = await getCurrentOnboardingStep();
-            if (saved) {
-              if (saved === '/app/onboarding/connect-with-google') {
-                router.replace('/app/onboarding/fitness-info');
-              } else {
-                const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-                router.replace(normalizedSaved as never);
-              }
-            } else {
-              router.replace('/app/onboarding/landing');
-            }
-          } catch (e) {
-            handleError(e, 'index.restoreOnboardingStep');
-            console.error('Error restoring onboarding step, falling back to landing', e);
-            router.replace('/app/onboarding/landing');
-          }
-        } else {
-          hasConfirmedOnboarding = true;
-        }
-      } catch (error) {
-        handleError(error, 'index.checkOnboardingStatus');
-        console.error('Error checking onboarding status:', error);
-      } finally {
-        setIsCheckingOnboarding(false);
-      }
-    };
-
-    if (!hasConfirmedOnboarding) {
-      checkOnboarding();
-    } else {
-      setIsCheckingOnboarding(false);
-    }
-  }, [router, navigationState?.key]);
-
-  // Show loading spinner while checking onboarding
-  if (isCheckingOnboarding) {
-    return (
-      <MasterLayout>
-        <View
-          className="flex-1 items-center justify-center"
-          style={{ backgroundColor: theme.colors.background.primary }}
-        >
-          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-        </View>
-      </MasterLayout>
-    );
-  }
 
   return (
     <MasterLayout>
