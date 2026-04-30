@@ -121,6 +121,8 @@ async function resolveDynamicGoalLike(
 ): Promise<ResolvedMacros | null> {
   const asOfDayMs = localDayStartMs(date);
   const asOfMetricMaxMs = localDayClosedRangeMaxMs(date);
+  const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(goal.targetWeight);
+  const hasExplicitTrajectoryTarget = normalizedTargetWeight != null && goal.targetDate != null;
 
   const [
     user,
@@ -134,7 +136,9 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('weight', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('height', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
-    getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
+    hasExplicitTrajectoryTarget
+      ? Promise.resolve(null)
+      : getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
     SettingsService.getDisableMinimumCalories(),
   ]);
 
@@ -180,7 +184,6 @@ async function resolveDynamicGoalLike(
   });
 
   let targetCalories = Math.round(basePlan.targetCalories);
-  const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(goal.targetWeight);
   const remainingDays =
     goal.targetDate != null
       ? differenceInCalendarDays(new Date(goal.targetDate), new Date(asOfDayMs))
