@@ -1,8 +1,7 @@
 import { Redirect, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
 
-import { getColor } from '@/theme';
+import { SplashLoading } from '@/components/SplashLoading';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 
 export default function Index() {
@@ -21,12 +20,5 @@ export default function Index() {
     return <Redirect href="/home" />;
   }
 
-  return (
-    <View
-      className="flex-1 items-center justify-center"
-      style={{ backgroundColor: getColor('background.primary') }}
-    >
-      <ActivityIndicator size="large" color={getColor('accent.primary')} />
-    </View>
-  );
+  return <SplashLoading />;
 }
