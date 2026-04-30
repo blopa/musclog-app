@@ -882,12 +882,16 @@ export function NutritionGoalsBody({
               backgroundColor: theme.colors.status.emerald10,
             }}
           >
-            <Text className="text-sm text-text-secondary">{t('nutritionGoals.dynamicInfo')}</Text>
+            <Text className="text-sm text-text-secondary">
+              {t('nutritionGoals.dynamicInfo', {
+                kcal: formatInteger(effectiveCalories),
+              })}
+            </Text>
           </View>
         ) : null}
 
         {/* Total Daily Calories Card */}
-        {!isDynamic || isDynamicValid || isResolvingDynamicPreview ? (
+        {!isDynamic ? (
           <View
             className="relative mb-6 overflow-hidden rounded-2xl border p-6"
             style={{
