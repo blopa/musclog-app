@@ -2870,6 +2870,12 @@ describe('getCalorieAdjustment', () => {
     expect(getCalorieAdjustment('lose', 80)).toBe(-440);
   });
 
+  it('uses the composition-aware loss model when body fat is available', () => {
+    const withBodyFat = getCalorieAdjustment('lose', 86.7, 25, 'male');
+    const withoutBodyFat = getCalorieAdjustment('lose', 86.7);
+    expect(withBodyFat).not.toBe(withoutBodyFat);
+  });
+
   it('surplus is clamped to minimum 150 for very light person', () => {
     // 2.75 * 40 = 110 < 150 → clamped to 150
     expect(getCalorieAdjustment('gain', 40)).toBe(150);

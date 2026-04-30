@@ -253,8 +253,11 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
               planData.bodyFatPercent != null
                 ? planData.currentWeightKg * (planData.bodyFatPercent / 100)
                 : planData.currentWeightKg * 0.25;
+
             const kcalPerKg = getEffectiveKcalPerKgWeightLoss(fatMassKg, weightDeltaKg);
+            console.log('THE KCAL PER KG', kcalPerKg);
             const dailyDeficit = (Math.abs(weightDeltaKg) * kcalPerKg) / daysToGoal;
+
             const minCals = disableMinimumCalories
               ? 0
               : getMinCalories(planData.gender, planData.bmr);

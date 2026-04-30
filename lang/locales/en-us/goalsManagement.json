@@ -80,7 +80,7 @@
         "notSet": "No specific date",
         "clear": "Clear date",
         "warningLabel": "Aggressive Timeline",
-        "warningMessage": "This target asks for about {{weeklyLoss}} kg per week, which is faster than the suggested upper range of about {{suggestedMaxWeeklyLoss}} kg per week for your current body weight. We'll still calculate calories for it, but a more realistic target date would be around {{estimatedDate}}."
+        "warningMessage": "Requested pace: about {{weeklyLoss}} kg per week. Suggested upper range for your current body weight: about {{suggestedMaxWeeklyLoss}} kg per week. We'll still calculate calories for it, but a more realistic target date would be around {{estimatedDate}}."
       }
     },
     "manageCheckinData": {

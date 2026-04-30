@@ -80,7 +80,7 @@
         "notSet": "Sin fecha específica",
         "clear": "Borrar fecha",
         "warningLabel": "Plazo Agresivo",
-        "warningMessage": "Este objetivo requiere aproximadamente {{weeklyLoss}} kg por semana, lo que es más rápido que el límite sugerido de alrededor de {{suggestedMaxWeeklyLoss}} kg por semana para tu peso corporal actual. Aun así calcularemos las calorías, pero una fecha objetivo más realista sería alrededor de {{estimatedDate}}."
+        "warningMessage": "Ritmo solicitado: aproximadamente {{weeklyLoss}} kg por semana. Límite superior sugerido para tu peso corporal actual: aproximadamente {{suggestedMaxWeeklyLoss}} kg por semana. Aun así calcularemos las calorías, pero una fecha objetivo más realista sería alrededor de {{estimatedDate}}."
       }
     },
     "manageCheckinData": {

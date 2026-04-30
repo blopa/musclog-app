@@ -1,14 +1,23 @@
-import { addMonths, addWeeks } from 'date-fns';
-import { ChevronLeft, Lightbulb, Scale, TrendingDown, TrendingUp } from 'lucide-react-native';
+import { addMonths, addWeeks, differenceInCalendarDays } from 'date-fns';
+import {
+  AlertTriangle,
+  ChevronLeft,
+  Lightbulb,
+  Scale,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { InfoCard } from '@/components/cards/InfoCard';
 import { type NutritionGoals } from '@/components/NutritionGoalsBody';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { type EatingPhase } from '@/database/models';
 import { UserMetricService } from '@/database/services';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
@@ -126,8 +135,9 @@ function GoalOptionCard({ icon, title, description, selected, onPress }: GoalOpt
 
 export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { units, weightUnit } = useSettings();
+  const { formatDecimal } = useFormatAppNumber();
 
   const defaultWeightDisplay = units === 'imperial' ? 154 : 70;
 
@@ -487,6 +497,35 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   const renderTargetDateStep = () => {
     const estimatedDate = calculateEstimatedTargetDate();
     const displayDate = targetDate ?? estimatedDate ?? addMonths(new Date(), 3);
+    const targetDateWarning = (() => {
+      if (goalType !== 'lose' || currentWeightKg == null || targetDate == null) {
+        return null;
+      }
+
+      const goalWeightKg = displayToKg(goalWeightDisplay, units);
+      const weightToLoseKg = currentWeightKg - goalWeightKg;
+      const daysToGoal = differenceInCalendarDays(targetDate, new Date());
+      if (weightToLoseKg <= 0 || daysToGoal <= 0) {
+        return null;
+      }
+
+      const weeklyLossKg = (weightToLoseKg * 7) / daysToGoal;
+      const suggestedMaxWeeklyLossKg = currentWeightKg * 0.01;
+      if (weeklyLossKg <= suggestedMaxWeeklyLossKg) {
+        return null;
+      }
+
+      return {
+        weeklyLossKg,
+        suggestedMaxWeeklyLossKg,
+        estimatedDate:
+          estimatedDate?.toLocaleDateString(i18n.resolvedLanguage ?? i18n.language, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }) ?? null,
+      };
+    })();
 
     return (
       <View style={{ gap: 12 }}>
@@ -541,6 +580,25 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             },
           ]}
         />
+
+        {targetDateWarning ? (
+          <InfoCard
+            variant="warning"
+            icon={AlertTriangle}
+            label={t('goalsManagement.goalWizard.targetDate.warningLabel')}
+            message={t('goalsManagement.goalWizard.targetDate.warningMessage', {
+              weeklyLoss: formatDecimal(targetDateWarning.weeklyLossKg, 2),
+              suggestedMaxWeeklyLoss: formatDecimal(
+                targetDateWarning.suggestedMaxWeeklyLossKg,
+                2
+              ),
+              estimatedDate:
+                targetDateWarning.estimatedDate ??
+                t('goalsManagement.goalWizard.targetDate.notSet'),
+            })}
+            expandable={false}
+          />
+        ) : null}
       </View>
     );
   };

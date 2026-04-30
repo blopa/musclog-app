@@ -80,7 +80,7 @@
         "notSet": "Geen specifieke datum",
         "clear": "Datum wissen",
         "warningLabel": "Agressieve Tijdlijn",
-        "warningMessage": "Dit doel vraagt om ongeveer {{weeklyLoss}} kg per week, wat sneller is dan de voorgestelde bovengrens van ongeveer {{suggestedMaxWeeklyLoss}} kg per week voor je huidige lichaamsgewicht. We berekenen hiervoor nog steeds calorieën, maar een realistischere streefdatum zou rond {{estimatedDate}} liggen."
+        "warningMessage": "Gevraagd tempo: ongeveer {{weeklyLoss}} kg per week. Voorgestelde bovengrens voor je huidige lichaamsgewicht: ongeveer {{suggestedMaxWeeklyLoss}} kg per week. We berekenen hiervoor nog steeds calorieën, maar een realistischere streefdatum zou rond {{estimatedDate}} liggen."
       }
     },
     "manageCheckinData": {

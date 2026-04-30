@@ -282,6 +282,7 @@ export function getEffectiveKcalPerKgWeightLoss(
   if (dBw >= 0 || initialFatMassKg <= 0) {
     return RHO_FAT_KCAL_PER_KG;
   }
+
   const forbesC = getForbesC(gender);
   const arg =
     (1 / forbesC) *
@@ -302,7 +303,7 @@ export function getEffectiveKcalPerKgWeightLoss(
 }
 
 /** Default kcal per kg for weight loss when body composition unknown (7700 ≈ classic rule). */
-const DEFAULT_KCAL_PER_KG_LOSS = 7700;
+export const DEFAULT_KCAL_PER_KG_LOSS = 7700;
 
 /**
  * Fat/lean split of a weight change (Hall/Forbes for loss; experience-dependent for gain).
@@ -380,17 +381,35 @@ const DEFAULT_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
  * Personalized calorie adjustment (relative to TDEE) from weight goal and body weight.
  * Based on ~0.5% body weight per week for loss, ~0.25% for gain (sustainable rates).
  * Clamped to safe bounds (deficit 250–750 kcal, surplus 150–400 kcal).
+ *
+ * TODO: bodyFatPercent should be a "nice to have", most people wont have this information
  */
 export function getCalorieAdjustment(
   weightGoal: WeightGoal,
   weightKg: number,
-  _bodyFatPercent?: number
+  bodyFatPercent?: number,
+  gender?: Gender
 ): number {
   if (weightGoal === 'maintain') {
     return 0;
   }
+
   if (weightGoal === 'lose') {
-    const deficit = 5.5 * weightKg; // 0.005 * weightKg * 7700 / 7
+    let deficit = 5.5 * weightKg; // 0.005 * weightKg * 7700 / 7 fallback
+
+    if (isValidBodyFat(bodyFatPercent)) {
+      const weeklyLossKg = weightKg * 0.005; // ~0.5% BW per week
+      const initialFatMassKg = weightKg * (bodyFatPercent / 100);
+
+      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(
+        initialFatMassKg,
+        -weeklyLossKg,
+        gender
+      );
+
+      deficit = (weeklyLossKg * kcalPerKg) / 7;
+    }
+
     return -Math.max(250, Math.min(750, Math.round(deficit)));
   }
   // gain
@@ -727,7 +746,12 @@ export function calculateTargetCalories(
 ): number {
   const adjustment =
     options?.weightKg !== undefined && options.weightKg > 0
-      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent)
+      ? getCalorieAdjustment(
+          weightGoal,
+          options.weightKg,
+          options.bodyFatPercent,
+          options.gender
+        )
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
 
   // TODO: move this to a helper function to avoid using nested ternary
