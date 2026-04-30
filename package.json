@@ -71,7 +71,7 @@
     "@babel/plugin-transform-private-property-in-object": "7.28.6",
     "@ericblade/quagga2": "^1.12.1",
     "@expo/vector-icons": "15.1.1",
-    "@google/genai": "1.50.1",
+    "@google/genai": "1.51.0",
     "@gutenye/ocr-react-native": "^1.4.8",
     "@kingstinct/react-native-healthkit": "^14.0.0",
     "@mjcdev/react-body-highlighter": "^0.0.4",
@@ -88,7 +88,7 @@
     "@shopify/react-native-skia": "2.4.18",
     "@tanstack/react-query": "^5.100.6",
     "@zxing/library": "0.23.0",
-    "ai": "^6.0.170",
+    "ai": "^6.0.172",
     "buffer": "6.0.3",
     "classnames": "2.5.1",
     "convert": "^7.0.0",
@@ -169,7 +169,7 @@
     "victory": "37.3.6",
     "victory-native": "41.20.2",
     "xlsx": "0.18.5",
-    "zod": "^4.3.6"
+    "zod": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
@@ -181,7 +181,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "~19.2.3",
     "chroma-js": "^3.2.0",
-    "eas-cli": "18.8.1",
+    "eas-cli": "18.9.1",
     "eslint": "9.39.4",
     "eslint-config-expo": "55.0.0",
     "eslint-config-prettier": "10.1.8",
