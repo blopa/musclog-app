@@ -93,6 +93,16 @@ export default function HomeScreen() {
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         syncToday();
+        // Drain pending widget action set by redirectSystemPath when Android
+        // recreates the activity while the JS process is still alive (the
+        // cold-start useEffect won't re-run because its deps haven't changed).
+        const pendingAction = global.__PENDING_WIDGET_ACTION;
+        if (pendingAction) {
+          global.__PENDING_WIDGET_ACTION = undefined;
+          if (pendingAction === 'open-camera') {
+            openCamera({ mode: 'barcode-scan' });
+          }
+        }
       }
     });
 
@@ -101,7 +111,7 @@ export default function HomeScreen() {
       appSub.remove();
       clearInterval(intervalId);
     };
-  }, []);
+  }, [openCamera]);
 
   const {
     calories: dailyCalories,
@@ -251,7 +261,6 @@ export default function HomeScreen() {
 
   // Handle widget action stored by +native-intent.tsx on cold start (camera only —
   // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
-  // TODO: shouldn't this be a useOnScreenFocus or something?
   useEffect(() => {
     if (!navigationState?.key) {
       return;
