@@ -401,11 +401,7 @@ export function getCalorieAdjustment(
       const weeklyLossKg = weightKg * 0.005; // ~0.5% BW per week
       const initialFatMassKg = weightKg * (bodyFatPercent / 100);
 
-      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(
-        initialFatMassKg,
-        -weeklyLossKg,
-        gender
-      );
+      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender);
 
       deficit = (weeklyLossKg * kcalPerKg) / 7;
     }
@@ -746,12 +742,7 @@ export function calculateTargetCalories(
 ): number {
   const adjustment =
     options?.weightKg !== undefined && options.weightKg > 0
-      ? getCalorieAdjustment(
-          weightGoal,
-          options.weightKg,
-          options.bodyFatPercent,
-          options.gender
-        )
+      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent, options.gender)
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
 
   // TODO: move this to a helper function to avoid using nested ternary

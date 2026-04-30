@@ -588,10 +588,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             label={t('goalsManagement.goalWizard.targetDate.warningLabel')}
             message={t('goalsManagement.goalWizard.targetDate.warningMessage', {
               weeklyLoss: formatDecimal(targetDateWarning.weeklyLossKg, 2),
-              suggestedMaxWeeklyLoss: formatDecimal(
-                targetDateWarning.suggestedMaxWeeklyLossKg,
-                2
-              ),
+              suggestedMaxWeeklyLoss: formatDecimal(targetDateWarning.suggestedMaxWeeklyLossKg, 2),
               estimatedDate:
                 targetDateWarning.estimatedDate ??
                 t('goalsManagement.goalWizard.targetDate.notSet'),

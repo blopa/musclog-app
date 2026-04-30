@@ -17,6 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   Platform,
   Pressable,
   ScrollView,
@@ -40,6 +41,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import i18n from '@/lang/lang';
 import { localDayStartMs } from '@/utils/calendarDate';
+import { type ResolvedMacros, resolveDynamicGoalPreview } from '@/utils/dynamicNutritionTarget';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -306,6 +308,8 @@ export function NutritionGoalsBody({
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
   const [isDynamic, setIsDynamic] = useState(initialGoals.isDynamic ?? false);
+  const [dynamicPreview, setDynamicPreview] = useState<ResolvedMacros | null>(null);
+  const [isResolvingDynamicPreview, setIsResolvingDynamicPreview] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null);
   const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
@@ -398,6 +402,8 @@ export function NutritionGoalsBody({
     setTargetDate(initialGoals.targetDate ?? null);
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
     setIsDynamic(initialGoals.isDynamic ?? false);
+    setDynamicPreview(null);
+    setIsResolvingDynamicPreview(false);
     didAutofillDynamicTargetWeight.current = false;
     setCalorieInputValue(initialGoals.totalCalories.toString());
     preciseMacros.current = {
@@ -691,15 +697,66 @@ export function NutritionGoalsBody({
     syncMacroRatios();
   }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
+  const isDynamicValid = isDynamicNutritionGoalValid({
+    isDynamic,
+    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
+    targetDate,
+  });
+
+  useEffect(() => {
+    if (!isDynamic || !isDynamicValid || targetWeight == null || targetDate == null) {
+      setDynamicPreview(null);
+      setIsResolvingDynamicPreview(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsResolvingDynamicPreview(true);
+
+    resolveDynamicGoalPreview(
+      {
+        eatingPhase,
+        targetWeight: displayToKg(targetWeight, units),
+        targetDate,
+      },
+      new Date()
+    )
+      .then((preview) => {
+        if (!cancelled) {
+          setDynamicPreview(preview);
+          setIsResolvingDynamicPreview(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDynamicPreview(null);
+          setIsResolvingDynamicPreview(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eatingPhase, isDynamic, isDynamicValid, targetDate, targetWeight, units]);
+
+  const effectiveCalories = isDynamic
+    ? (dynamicPreview?.totalCalories ?? totalCalories)
+    : totalCalories;
+  const effectiveProtein = isDynamic ? (dynamicPreview?.protein ?? protein) : protein;
+  const effectiveCarbs = isDynamic ? (dynamicPreview?.carbs ?? carbs) : carbs;
+  const effectiveFats = isDynamic ? (dynamicPreview?.fats ?? fats) : fats;
+  const effectiveFiber = isDynamic ? (dynamicPreview?.fiber ?? fiber) : fiber;
+  const effectiveTdeeEstimate = isDynamic ? (dynamicPreview?.tdee ?? tdeeEstimate) : tdeeEstimate;
+
   // Call onFormChange whenever form data changes
   useEffect(() => {
     if (onFormChange) {
       onFormChange({
-        totalCalories,
-        protein,
-        carbs,
-        fats,
-        fiber,
+        totalCalories: effectiveCalories,
+        protein: effectiveProtein,
+        carbs: effectiveCarbs,
+        fats: effectiveFats,
+        fiber: effectiveFiber,
         eatingPhase,
         targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
         targetBodyFat,
@@ -711,11 +768,11 @@ export function NutritionGoalsBody({
       });
     }
   }, [
-    totalCalories,
-    protein,
-    carbs,
-    fats,
-    fiber,
+    effectiveCalories,
+    effectiveProtein,
+    effectiveCarbs,
+    effectiveFats,
+    effectiveFiber,
     eatingPhase,
     targetWeight,
     targetBodyFat,
@@ -728,19 +785,13 @@ export function NutritionGoalsBody({
     units,
   ]);
 
-  const isDynamicValid = isDynamicNutritionGoalValid({
-    isDynamic,
-    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
-    targetDate,
-  });
-
   const handleSave = useCallback(() => {
     onSave?.({
-      totalCalories,
-      protein,
-      carbs,
-      fats,
-      fiber,
+      totalCalories: effectiveCalories,
+      protein: effectiveProtein,
+      carbs: effectiveCarbs,
+      fats: effectiveFats,
+      fiber: effectiveFiber,
       eatingPhase,
       targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
       targetBodyFat,
@@ -751,20 +802,20 @@ export function NutritionGoalsBody({
       isDynamic,
     } as NutritionGoals);
   }, [
-    carbs,
+    effectiveCalories,
+    effectiveCarbs,
+    effectiveFats,
+    effectiveFiber,
+    effectiveProtein,
     eatingPhase,
-    fats,
-    fiber,
     goalStartDate,
     isDynamic,
     onSave,
-    protein,
     targetBMI,
     targetBodyFat,
     targetDate,
     targetFFMI,
     targetWeight,
-    totalCalories,
     units,
   ]);
 
@@ -836,7 +887,7 @@ export function NutritionGoalsBody({
         ) : null}
 
         {/* Total Daily Calories Card */}
-        {!isDynamic ? (
+        {!isDynamic || isDynamicValid || isResolvingDynamicPreview ? (
           <View
             className="relative mb-6 overflow-hidden rounded-2xl border p-6"
             style={{
@@ -856,16 +907,29 @@ export function NutritionGoalsBody({
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
                 <Pressable
-                  onPress={() => handleCaloriesChange(totalCalories - CALORIES_STEP)}
+                  onPress={() => {
+                    if (!isDynamic) {
+                      handleCaloriesChange(totalCalories - CALORIES_STEP);
+                    }
+                  }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                   style={{ backgroundColor: theme.colors.background.white10 }}
                   hitSlop={12}
+                  disabled={isDynamic}
                 >
                   <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
 
                 <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
-                  {isCalorieEditing ? (
+                  {isDynamic ? (
+                    isResolvingDynamicPreview ? (
+                      <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                    ) : (
+                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                        {formatInteger(effectiveCalories)}
+                      </Text>
+                    )
+                  ) : isCalorieEditing ? (
                     <TextInput
                       ref={calorieInputRef}
                       value={calorieInputValue}
@@ -894,36 +958,41 @@ export function NutritionGoalsBody({
                 </View>
 
                 <Pressable
-                  onPress={() => handleCaloriesChange(totalCalories + CALORIES_STEP)}
+                  onPress={() => {
+                    if (!isDynamic) {
+                      handleCaloriesChange(totalCalories + CALORIES_STEP);
+                    }
+                  }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                   style={{ backgroundColor: theme.colors.background.white10 }}
                   hitSlop={12}
+                  disabled={isDynamic}
                 >
                   <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
 
-              {tdeeEstimate != null ? (
+              {effectiveTdeeEstimate != null ? (
                 <View className="mt-3 items-center gap-1">
                   <Text className="text-xs text-text-secondary">
-                    {t('nutritionGoals.tdeeHint', { kcal: formatInteger(tdeeEstimate) })}
+                    {t('nutritionGoals.tdeeHint', { kcal: formatInteger(effectiveTdeeEstimate) })}
                   </Text>
-                  {Math.abs(totalCalories - tdeeEstimate) >= 10 ? (
+                  {Math.abs(effectiveCalories - effectiveTdeeEstimate) >= 10 ? (
                     <Text
                       className="text-xs font-semibold"
                       style={{
                         color:
-                          totalCalories < tdeeEstimate
+                          effectiveCalories < effectiveTdeeEstimate
                             ? theme.colors.status.error
                             : theme.colors.status.emeraldLight,
                       }}
                     >
-                      {totalCalories < tdeeEstimate
+                      {effectiveCalories < effectiveTdeeEstimate
                         ? t('nutritionGoals.calorieDeficit', {
-                            kcal: formatInteger(tdeeEstimate - totalCalories),
+                            kcal: formatInteger(effectiveTdeeEstimate - effectiveCalories),
                           })
                         : t('nutritionGoals.calorieSurplus', {
-                            kcal: formatInteger(totalCalories - tdeeEstimate),
+                            kcal: formatInteger(effectiveCalories - effectiveTdeeEstimate),
                           })}
                     </Text>
                   ) : (

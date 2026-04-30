@@ -7,6 +7,7 @@ import NutritionGoal from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services';
 import {
   localCalendarDayDate,
+  localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from '@/utils/calendarDate';
@@ -222,6 +223,7 @@ export function useCurrentNutritionGoal({
     }
 
     const asOfDayMs = displayDateRef.current.getTime();
+    const asOfMetricMaxMs = localDayClosedRangeMaxMs(displayDateRef.current);
     const historyStartMs = localDayKeyPlusCalendarDays(
       asOfDayMs,
       -HISTORICAL_NUTRITION_LOOKBACK_DAYS
@@ -231,7 +233,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'height'),
-        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('date', Q.lte(asOfMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -241,7 +243,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('date', Q.lte(asOfMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -251,7 +253,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
-        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('date', Q.lte(asOfMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -262,7 +264,7 @@ export function useCurrentNutritionGoal({
       .query(
         Q.where('type', Q.oneOf(['weight', 'body_fat'])),
         Q.where('date', Q.gte(historyStartMs)),
-        Q.where('date', Q.lte(asOfDayMs)),
+        Q.where('date', Q.lte(asOfMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null))
       );
     const logQuery = database
@@ -366,6 +368,7 @@ export function useCurrentNutritionGoal({
     }
 
     const todayDayMs = localDayStartMs(new Date());
+    const todayMetricMaxMs = localDayClosedRangeMaxMs(new Date());
     const historyStartMs = localDayKeyPlusCalendarDays(
       todayDayMs,
       -HISTORICAL_NUTRITION_LOOKBACK_DAYS
@@ -374,7 +377,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'height'),
-        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('date', Q.lte(todayMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -384,7 +387,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('date', Q.lte(todayMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -394,7 +397,7 @@ export function useCurrentNutritionGoal({
       .get('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
-        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('date', Q.lte(todayMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
@@ -405,7 +408,7 @@ export function useCurrentNutritionGoal({
       .query(
         Q.where('type', Q.oneOf(['weight', 'body_fat'])),
         Q.where('date', Q.gte(historyStartMs)),
-        Q.where('date', Q.lte(todayDayMs)),
+        Q.where('date', Q.lte(todayMetricMaxMs)),
         Q.where('deleted_at', Q.eq(null))
       );
     const logQuery = database

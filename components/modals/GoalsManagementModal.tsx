@@ -11,15 +11,13 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useSettings } from '@/hooks/useSettings';
 import { localDayStartMs } from '@/utils/calendarDate';
+import {
+  resolveDynamicGoalPreview,
+  resolveGoalTrajectoryCalories,
+} from '@/utils/dynamicNutritionTarget';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
-import {
-  calculateMacros,
-  fiberFromCalories,
-  getEffectiveKcalPerKgGain,
-  getEffectiveKcalPerKgWeightLoss,
-  getMinCalories,
-} from '@/utils/nutritionCalculator';
+import { calculateMacros, fiberFromCalories } from '@/utils/nutritionCalculator';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -184,9 +182,31 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
-    const input = nutritionGoalsToInput(nutritionGoals);
+    let input = nutritionGoalsToInput(nutritionGoals);
 
     try {
+      if (input.isDynamic && input.targetWeight != null && input.targetDate != null) {
+        const resolved = await resolveDynamicGoalPreview(
+          {
+            eatingPhase: input.eatingPhase,
+            targetWeight: input.targetWeight,
+            targetDate: input.targetDate,
+          },
+          new Date()
+        );
+
+        if (resolved) {
+          input = {
+            ...input,
+            totalCalories: resolved.totalCalories,
+            protein: resolved.protein,
+            carbs: resolved.carbs,
+            fats: resolved.fats,
+            fiber: resolved.fiber,
+          };
+        }
+      }
+
       if (isEditing && selectedGoal) {
         await NutritionGoalService.updateGoal(selectedGoal.id, input, true);
       } else {
@@ -246,29 +266,23 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         const weightDeltaKg = targetWeight - planData.currentWeightKg;
 
         if (daysToGoal > 0 && Math.abs(weightDeltaKg) >= 0.1) {
-          let dateAwareCalories: number;
+          const dateAwareCalories = resolveGoalTrajectoryCalories({
+            tdee: planData.tdee,
+            bmr: planData.bmr,
+            eatingPhase,
+            currentWeightKg: planData.currentWeightKg,
+            targetWeightKg: targetWeight,
+            remainingDays: daysToGoal,
+            gender: planData.gender,
+            liftingExperience: planData.liftingExperience,
+            bodyFatPercent: planData.bodyFatPercent,
+            disableMinimumCalories,
+          });
 
-          if (weightDeltaKg < 0) {
-            const fatMassKg =
-              planData.bodyFatPercent != null
-                ? planData.currentWeightKg * (planData.bodyFatPercent / 100)
-                : planData.currentWeightKg * 0.25;
-
-            const kcalPerKg = getEffectiveKcalPerKgWeightLoss(fatMassKg, weightDeltaKg);
-            console.log('THE KCAL PER KG', kcalPerKg);
-            const dailyDeficit = (Math.abs(weightDeltaKg) * kcalPerKg) / daysToGoal;
-
-            const minCals = disableMinimumCalories
-              ? 0
-              : getMinCalories(planData.gender, planData.bmr);
-            dateAwareCalories = Math.max(minCals, Math.round(planData.tdee - dailyDeficit));
-          } else {
-            const kcalPerKg = getEffectiveKcalPerKgGain(planData.liftingExperience);
-            const dailySurplus = Math.min((weightDeltaKg * kcalPerKg) / daysToGoal, 1000);
-            dateAwareCalories = Math.round(planData.tdee + dailySurplus);
-          }
-
-          const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal);
+          const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal, {
+            weightKg: planData.currentWeightKg,
+            bodyFatPercent: planData.bodyFatPercent,
+          });
           return {
             ...base,
             totalCalories: dateAwareCalories,
