@@ -10,10 +10,6 @@ export default function Index() {
   const navigationState = useRootNavigationState();
 
   useEffect(() => {
-    if (Platform.OS === 'web' && !__DEV__) {
-      return;
-    }
-
     if (!navigationState?.key) {
       return;
     }
