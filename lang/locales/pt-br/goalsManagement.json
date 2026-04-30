@@ -78,7 +78,9 @@
         "subtitle": "Definir um prazo ajuda a acompanhar seu progresso ao longo do tempo.",
         "label": "Data-Alvo",
         "notSet": "Sem data específica",
-        "clear": "Limpar data"
+        "clear": "Limpar data",
+        "warningLabel": "Prazo Agressivo",
+        "warningMessage": "Essa meta exige cerca de {{weeklyLoss}} kg por semana, o que é mais rápido do que o limite sugerido de aproximadamente {{suggestedMaxWeeklyLoss}} kg por semana para o seu peso corporal atual. Ainda assim vamos calcular as calorias para isso, mas uma data-alvo mais realista seria por volta de {{estimatedDate}}."
       }
     },
     "manageCheckinData": {

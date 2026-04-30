@@ -78,7 +78,9 @@
         "subtitle": "Setting a deadline helps you track your progress over time.",
         "label": "Target Date",
         "notSet": "No specific date",
-        "clear": "Clear date"
+        "clear": "Clear date",
+        "warningLabel": "Aggressive Timeline",
+        "warningMessage": "This target asks for about {{weeklyLoss}} kg per week, which is faster than the suggested upper range of about {{suggestedMaxWeeklyLoss}} kg per week for your current body weight. We'll still calculate calories for it, but a more realistic target date would be around {{estimatedDate}}."
       }
     },
     "manageCheckinData": {

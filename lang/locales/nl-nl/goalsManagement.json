@@ -78,7 +78,9 @@
         "subtitle": "Het instellen van een deadline helpt je om je voortgang over de tijd bij te houden.",
         "label": "Streefdatum",
         "notSet": "Geen specifieke datum",
-        "clear": "Datum wissen"
+        "clear": "Datum wissen",
+        "warningLabel": "Agressieve Tijdlijn",
+        "warningMessage": "Dit doel vraagt om ongeveer {{weeklyLoss}} kg per week, wat sneller is dan de voorgestelde bovengrens van ongeveer {{suggestedMaxWeeklyLoss}} kg per week voor je huidige lichaamsgewicht. We berekenen hiervoor nog steeds calorieën, maar een realistischere streefdatum zou rond {{estimatedDate}} liggen."
       }
     },
     "manageCheckinData": {
