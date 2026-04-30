@@ -105,6 +105,7 @@ type NutritionGoalsModalBodyProps = {
   showSaveButton?: boolean;
   showSubtitle?: boolean;
   showGoalStartDate?: boolean;
+  hideEatingPhase?: boolean;
 };
 
 function getMacroInsight(
@@ -284,6 +285,7 @@ export function NutritionGoalsBody({
   showSaveButton = true,
   showSubtitle = true,
   showGoalStartDate = false,
+  hideEatingPhase = false,
 }: NutritionGoalsModalBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -1055,20 +1057,22 @@ export function NutritionGoalsBody({
         ) : null}
 
         {/* Eating Phase */}
-        <View className="gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">
-            {t('editFitnessDetails.eatingPhase')}
-          </Text>
-          <SegmentedControl
-            options={[
-              { label: t('editFitnessDetails.cut'), value: 'cut' },
-              { label: t('editFitnessDetails.maintain'), value: 'maintain' },
-              { label: t('editFitnessDetails.bulk'), value: 'bulk' },
-            ]}
-            value={eatingPhase}
-            onValueChange={(val) => setEatingPhase(val as EatingPhase)}
-          />
-        </View>
+        {!hideEatingPhase ? (
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('editFitnessDetails.eatingPhase')}
+            </Text>
+            <SegmentedControl
+              options={[
+                { label: t('editFitnessDetails.cut'), value: 'cut' },
+                { label: t('editFitnessDetails.maintain'), value: 'maintain' },
+                { label: t('editFitnessDetails.bulk'), value: 'bulk' },
+              ]}
+              value={eatingPhase}
+              onValueChange={(val) => setEatingPhase(val as EatingPhase)}
+            />
+          </View>
+        ) : null}
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (

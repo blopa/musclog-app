@@ -384,6 +384,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         onSave={handleSaveNutritionGoals}
         initialGoals={editModalInitialGoals}
         isEditing={isEditing}
+        hideEatingPhase={!!pendingWizardPrefill}
       />
 
       <ExerciseGoalCreationModal
