@@ -1,34 +1,18 @@
-import '@/database';
-import '@/lang/lang';
-import '@/global.css';
-
-import * as Sentry from '@sentry/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
-import { Stack } from 'expo-router';
+import { Stack, usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { cssInterop } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { FlatList, Platform, ScrollView, SectionList, TouchableOpacity, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { CoachProvider } from '@/components/CoachContext';
 import { DocumentTitle } from '@/components/DocumentTitle';
-import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
-import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { Migrations } from '@/components/Migrations';
-import { isStaticExport } from '@/constants/platform';
-import { SettingsProvider } from '@/context/SettingsContext';
-import { SmartCameraProvider } from '@/context/SmartCameraContext';
-import { SnackbarProvider } from '@/context/SnackbarContext';
-import { ThemeProvider, useThemeContext } from '@/context/ThemeContext';
-import { UnreadChatProvider } from '@/context/UnreadChatContext';
-import { WebModalShellProvider } from '@/context/WebModalShellContext';
+import { useThemeContext } from '@/context/ThemeContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
-import { handleError } from '@/utils/handleError';
+import { isOnboardingCompleted } from '@/utils/onboardingService';
 
 // Fix NativeWind className support on iOS for these components
 // These components don't properly support className on iOS without cssInterop
@@ -38,21 +22,13 @@ cssInterop(FlatList, { className: 'style' });
 cssInterop(ScrollView, { className: 'style' });
 cssInterop(SectionList, { className: 'style' });
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: isStaticExport ? 0 : 2,
-      staleTime: isStaticExport ? Infinity : 0,
-      refetchOnWindowFocus: !isStaticExport,
-      refetchOnReconnect: !isStaticExport,
-      refetchOnMount: !isStaticExport,
-    },
-  },
-});
-
 // Inner component that has access to theme context
 function AppContent() {
   const { theme, isDark } = useThemeContext();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const navigationState = useRootNavigationState();
 
   // On web, run the pre-migration backup check before <Migrations> mounts so
   // that JS-level data transformations in Migrations.tsx cannot run first.
@@ -68,6 +44,27 @@ function AppContent() {
       .catch((err) => console.warn('[WebBackup] Startup check failed:', err))
       .finally(() => setWebBackupDone(true));
   }, []);
+
+  // Onboarding Guard
+  useEffect(() => {
+    if (!navigationState?.key) {
+      return;
+    }
+
+    // Don't guard onboarding routes
+    if (pathname.startsWith('/app/onboarding')) {
+      return;
+    }
+
+    const checkGuard = async () => {
+      const completed = await isOnboardingCompleted();
+      if (!completed) {
+        router.replace('/app/onboarding/landing');
+      }
+    };
+
+    checkGuard();
+  }, [pathname, navigationState?.key, router]);
 
   useEffect(() => {
     // Lock orientation to portrait on phones, allow all orientations on tablets
@@ -100,7 +97,6 @@ function AppContent() {
       <DocumentTitle />
       {Platform.OS !== 'web' ? <SystemBars style={isDark ? 'light' : 'dark'} /> : null}
       <Migrations />
-      <LanguageInitializer />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -113,46 +109,10 @@ function AppContent() {
   );
 }
 
-function RootLayout() {
+export default function AppLayout() {
   return (
-    <GestureHandlerRootView
-      style={Platform.OS === 'web' ? { flex: 1, minHeight: '100%', width: '100%' } : { flex: 1 }}
-    >
-      <WebModalShellProvider>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaProvider>
-            <Sentry.ErrorBoundary
-              onError={(error, errorInfo) => {
-                handleError(error, 'app._layout.errorBoundary');
-              }}
-              fallback={({ error, resetError }) => (
-                <ErrorFallbackScreen
-                  error={error instanceof Error ? error : new Error(String(error))}
-                  resetError={resetError}
-                />
-              )}
-            >
-              <SettingsProvider>
-                <MenstrualCycleProvider>
-                  <ThemeProvider>
-                    <UnreadChatProvider>
-                      <SnackbarProvider>
-                        <SmartCameraProvider>
-                          <CoachProvider>
-                            <AppContent />
-                          </CoachProvider>
-                        </SmartCameraProvider>
-                      </SnackbarProvider>
-                    </UnreadChatProvider>
-                  </ThemeProvider>
-                </MenstrualCycleProvider>
-              </SettingsProvider>
-            </Sentry.ErrorBoundary>
-          </SafeAreaProvider>
-        </QueryClientProvider>
-      </WebModalShellProvider>
-    </GestureHandlerRootView>
+    <MenstrualCycleProvider>
+      <AppContent />
+    </MenstrualCycleProvider>
   );
 }
-
-export default RootLayout;
