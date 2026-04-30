@@ -203,17 +203,21 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  // Phase 2: First delete all existing records to free up IDs
-  if (recordsToDelete.length > 0) {
-    await database.write(async () => {
-      await database.batch(...recordsToDelete.map((r) => r.prepareDestroyPermanently()));
-    });
-  }
+  // Phase 2+3: Delete existing records and create new ones in a single atomic batch.
+  // Keeping these in separate transactions leaves the DB in an empty intermediate state
+  // between the two writes. Active WatermelonDB observers fire after Phase 2, re-query
+  // the now-empty collections, and can leave the JS record cache out of sync with SQLite
+  // by the time Phase 3 creates the new records — causing "sent over the bridge, but
+  // it's not cached" errors. A combined batch means observers fire exactly once, after
+  // all records are already in the cache.
+  const replaceOps = [
+    ...recordsToDelete.map((r) => r.prepareDestroyPermanently()),
+    ...createOperations,
+  ];
 
-  // Phase 3: Then create all new records with the freed-up IDs
-  if (createOperations.length > 0) {
+  if (replaceOps.length > 0) {
     await database.write(async () => {
-      await database.batch(...createOperations);
+      await database.batch(...replaceOps);
     });
   }
 

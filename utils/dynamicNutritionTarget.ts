@@ -1,7 +1,7 @@
 import { differenceInCalendarDays } from 'date-fns';
 
 import type NutritionGoal from '@/database/models/NutritionGoal';
-import { UserMetricService, UserService } from '@/database/services';
+import { SettingsService, UserMetricService, UserService } from '@/database/services';
 
 import { localDayStartMs } from './calendarDate';
 import { getHistoricalNutritionParams } from './historicalNutritionParams';
@@ -54,12 +54,20 @@ export async function resolveDailyMacros(
   }
 
   const request = (async () => {
-    const [user, weightMetric, heightMetric, bodyFatMetric, historicalParams] = await Promise.all([
+    const [
+      user,
+      weightMetric,
+      heightMetric,
+      bodyFatMetric,
+      historicalParams,
+      disableMinimumCalories,
+    ] = await Promise.all([
       UserService.getCurrentUser(),
       UserMetricService.getLatestOnOrBefore('weight', asOfDayMs),
       UserMetricService.getLatestOnOrBefore('height', asOfDayMs),
       UserMetricService.getLatestOnOrBefore('body_fat', asOfDayMs),
       getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
+      SettingsService.getDisableMinimumCalories(),
     ]);
 
     if (!user) {
@@ -99,6 +107,7 @@ export async function resolveDailyMacros(
       fitnessGoal,
       liftingExperience,
       bodyFatPercent,
+      disableMinimumCalories,
       ...(historicalParams ?? {}),
     });
 
@@ -111,7 +120,7 @@ export async function resolveDailyMacros(
 
     if (normalizedTargetWeight != null && remainingDays > 0) {
       const tdee = basePlan.tdee;
-      const minCalories = getMinCalories(gender, basePlan.bmr);
+      const minCalories = disableMinimumCalories ? 0 : getMinCalories(gender, basePlan.bmr);
       const phaseLowerBound =
         goal.eatingPhase === 'bulk' ? Math.max(minCalories, Math.ceil(tdee)) : minCalories;
       let phaseUpperBound =

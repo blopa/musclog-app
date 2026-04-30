@@ -9,6 +9,9 @@ import {
 } from '@/utils/nutritionCalculator';
 
 jest.mock('@/database/services', () => ({
+  SettingsService: {
+    getDisableMinimumCalories: jest.fn(() => Promise.resolve(false)),
+  },
   UserService: {
     getCurrentUser: jest.fn(),
   },

@@ -486,6 +486,7 @@ export function NutritionGoalsBody({
   }, []);
 
   const { user } = useUser();
+  const { disableMinimumCalories } = useSettings();
 
   // Recalculate macros when eating phase changes if inputs are still pristine
   useEffect(() => {
@@ -519,6 +520,7 @@ export function NutritionGoalsBody({
         fitnessGoal,
         liftingExperience,
         bodyFatPercent: latestBodyFatPercent ?? undefined,
+        disableMinimumCalories,
       });
 
       const fiberValue = fiberFromCalories(plan.targetCalories);
@@ -541,7 +543,15 @@ export function NutritionGoalsBody({
     } catch {
       // ignore
     }
-  }, [eatingPhase, user, latestWeightKg, userHeightM, latestBodyFatPercent, syncMacroRatios]);
+  }, [
+    disableMinimumCalories,
+    eatingPhase,
+    user,
+    latestWeightKg,
+    userHeightM,
+    latestBodyFatPercent,
+    syncMacroRatios,
+  ]);
 
   const handleCaloriesChange = useCallback(
     (newCalories: number) => {

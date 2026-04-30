@@ -1528,6 +1528,11 @@ describe('calculateTargetCalories', () => {
   it('returns MIN_CALORIES when TDEE itself is at floor', () => {
     expect(calculateTargetCalories(MIN_CALORIES_FEMALE, 'lose')).toBe(MIN_CALORIES_FEMALE);
   });
+
+  it('allows going below the calorie floor when explicitly disabled', () => {
+    expect(calculateTargetCalories(1500, 'lose', { disableMinimumCalories: true })).toBe(1000);
+    expect(calculateTargetCalories(1200, 'lose', { disableMinimumCalories: true })).toBe(700);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1827,6 +1832,19 @@ describe('calculateNutritionPlan', () => {
       weightGoal: 'lose',
     });
     expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES_FEMALE);
+  });
+
+  it('allows nutrition plans below the default floor when the safeguard is disabled', () => {
+    const plan = calculateNutritionPlan({
+      ...baseInput,
+      weightKg: 40,
+      heightCm: 150,
+      age: 60,
+      activityLevel: 1,
+      weightGoal: 'lose',
+      disableMinimumCalories: true,
+    });
+    expect(plan.targetCalories).toBeLessThan(MIN_CALORIES_FEMALE);
   });
 
   it('handles female gender correctly', () => {

@@ -1,5 +1,6 @@
 import {
   Activity,
+  AlertTriangle,
   AlignHorizontalJustifyStart,
   AlignLeft,
   BrainCircuit,
@@ -19,6 +20,7 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { ManageSupplementsModal } from './ManageSupplementsModal';
 
@@ -46,6 +48,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleAlwaysAllowFoodEditingChange,
     showWeightPrediction: debouncedShowWeightPrediction,
     handleShowWeightPredictionChange,
+    disableMinimumCalories: debouncedDisableMinimumCalories,
+    handleDisableMinimumCaloriesChange,
     intuitiveEatingMode: debouncedIntuitiveEatingMode,
     handleIntuitiveEatingModeChange,
     progressionMode: debouncedProgressionMode,
@@ -243,6 +247,41 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
   ];
 
   const [showManageSupplementsModal, setShowManageSupplementsModal] = useState(false);
+  const [disableMinimumCaloriesConfirmVisible, setDisableMinimumCaloriesConfirmVisible] =
+    useState(false);
+
+  const handleDisableMinimumCaloriesToggle = (value: boolean) => {
+    if (value && !debouncedDisableMinimumCalories) {
+      setDisableMinimumCaloriesConfirmVisible(true);
+      return;
+    }
+
+    handleDisableMinimumCaloriesChange(value);
+  };
+
+  const nutritionItems = [
+    {
+      key: 'disable-minimum-calories',
+      label: t('settings.advancedSettings.disableMinimumCalories'),
+      subtitle: t('settings.advancedSettings.disableMinimumCaloriesSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.warning10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <AlertTriangle size={theme.iconSize.xl} color={theme.colors.status.warning} />
+        </View>
+      ),
+      value: debouncedDisableMinimumCalories,
+      onValueChange: handleDisableMinimumCaloriesToggle,
+    },
+  ];
 
   return (
     <FullScreenModal
@@ -335,9 +374,30 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
           <ToggleInput items={chartTooltipPositionItems} />
         </View>
 
+        {/* Nutrition Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.advancedSettings.nutrition')}
+          </Text>
+          <ToggleInput items={nutritionItems} />
+        </View>
+
         <ManageSupplementsModal
           visible={showManageSupplementsModal}
           onClose={() => setShowManageSupplementsModal(false)}
+        />
+        <ConfirmationModal
+          visible={disableMinimumCaloriesConfirmVisible}
+          onClose={() => setDisableMinimumCaloriesConfirmVisible(false)}
+          onConfirm={() => handleDisableMinimumCaloriesChange(true)}
+          title={t('settings.advancedSettings.disableMinimumCaloriesConfirmTitle')}
+          message={t('settings.advancedSettings.disableMinimumCaloriesConfirmMessage')}
+          warning={t('settings.advancedSettings.disableMinimumCaloriesWarning')}
+          confirmLabel={t('settings.advancedSettings.disableMinimumCaloriesConfirmButton')}
+          variant="destructive"
         />
       </View>
     </FullScreenModal>

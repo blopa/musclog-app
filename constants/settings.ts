@@ -239,6 +239,13 @@ export const SHOW_WEIGHT_PREDICTION_SETTING_TYPE = 'show_weight_prediction';
 export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption';
 
 /**
+ * Setting type for disabling the minimum calorie floor in nutrition calculations.
+ * When enabled, calorie targets are allowed to go below the default gender/BMR floor.
+ * value: 'true' | 'false'.
+ */
+export const DISABLE_MINIMUM_CALORIES_SETTING_TYPE = 'disable_minimum_calories';
+
+/**
  * Setting type for intuitive eating mode.
  * When enabled, the daily summary card hides consumed amounts and shows '??' instead.
  * value: 'true' | 'false'.
@@ -309,6 +316,7 @@ export type UseSettingsResult = {
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
+  disableMinimumCalories: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */

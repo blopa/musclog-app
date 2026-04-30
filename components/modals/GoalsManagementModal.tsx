@@ -9,6 +9,7 @@ import NutritionGoal from '@/database/models/NutritionGoal';
 import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
+import { useSettings } from '@/hooks/useSettings';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
@@ -43,6 +44,7 @@ interface GoalsManagementModalProps {
 
 export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
   const { t } = useTranslation();
+  const { disableMinimumCalories } = useSettings();
   const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
   const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
   const [wizardModalVisible, setWizardModalVisible] = useState(false);
@@ -253,7 +255,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
                 : planData.currentWeightKg * 0.25;
             const kcalPerKg = getEffectiveKcalPerKgWeightLoss(fatMassKg, weightDeltaKg);
             const dailyDeficit = (Math.abs(weightDeltaKg) * kcalPerKg) / daysToGoal;
-            const minCals = getMinCalories(planData.gender, planData.bmr);
+            const minCals = disableMinimumCalories
+              ? 0
+              : getMinCalories(planData.gender, planData.bmr);
             dateAwareCalories = Math.max(minCals, Math.round(planData.tdee - dailyDeficit));
           } else {
             const kcalPerKg = getEffectiveKcalPerKgGain(planData.liftingExperience);
@@ -277,7 +281,15 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     }
 
     return currentGoalsData ?? computedDefaults;
-  }, [isEditing, selectedGoal, pendingWizardPrefill, currentGoalsData, computedDefaults, planData]);
+  }, [
+    disableMinimumCalories,
+    isEditing,
+    selectedGoal,
+    pendingWizardPrefill,
+    currentGoalsData,
+    computedDefaults,
+    planData,
+  ]);
 
   return (
     <FullScreenModal

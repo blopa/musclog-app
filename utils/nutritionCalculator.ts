@@ -48,6 +48,8 @@ export interface NutritionCalculatorInput {
   historicalInitialFatPercent?: number;
   /** (Optional) User's ending body fat % at the end of the period */
   historicalFinalFatPercent?: number;
+  /** Disable the minimum calorie floor for this calculation. */
+  disableMinimumCalories?: boolean;
 }
 
 export interface NutritionPlan {
@@ -711,6 +713,7 @@ export interface TargetCaloriesOptions {
   bmr?: number;
   weightKg?: number;
   bodyFatPercent?: number;
+  disableMinimumCalories?: boolean;
 }
 
 /**
@@ -726,8 +729,11 @@ export function calculateTargetCalories(
     options?.weightKg !== undefined && options.weightKg > 0
       ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent)
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
-  const floor =
-    options?.gender !== undefined
+
+  // TODO: move this to a helper function to avoid using nested ternary
+  const floor = options?.disableMinimumCalories
+    ? 0
+    : options?.gender !== undefined
       ? getMinCalories(options.gender, options.bmr)
       : MIN_CALORIES_FEMALE;
 
@@ -1247,6 +1253,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     historicalFinalWeightKg,
     historicalInitialFatPercent,
     historicalFinalFatPercent,
+    disableMinimumCalories,
   } = input;
 
   const useBodyFat = isValidBodyFat(bodyFatPercent);
@@ -1281,6 +1288,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     bmr,
     weightKg,
     bodyFatPercent,
+    disableMinimumCalories,
   });
 
   // Step 4 – Macros (driven by fitness goal for split; FFM-based protein when body fat available)
@@ -1311,6 +1319,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
       bmr: bmrLow,
       weightKg,
       bodyFatPercent,
+      disableMinimumCalories,
     });
 
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
@@ -1322,6 +1331,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
       bmr: bmrHigh,
       weightKg,
       bodyFatPercent,
+      disableMinimumCalories,
     });
   }
 
