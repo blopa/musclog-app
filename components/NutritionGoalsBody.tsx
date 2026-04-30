@@ -553,6 +553,31 @@ export function NutritionGoalsBody({
     syncMacroRatios,
   ]);
 
+  const tdeeEstimate = useMemo<number | null>(() => {
+    if (!user || latestWeightKg == null || userHeightM == null) {
+      return null;
+    }
+
+    try {
+      const plan = calculateNutritionPlan({
+        gender: user.gender ?? 'other',
+        weightKg: latestWeightKg,
+        heightCm: userHeightM * 100,
+        age: user.getAge(),
+        activityLevel: Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5,
+        weightGoal: 'maintain',
+        fitnessGoal: user.fitnessGoal ?? 'general',
+        liftingExperience: user.liftingExperience ?? 'intermediate',
+        bodyFatPercent: latestBodyFatPercent ?? undefined,
+        disableMinimumCalories,
+      });
+
+      return plan.tdee;
+    } catch {
+      return null;
+    }
+  }, [user, latestWeightKg, userHeightM, latestBodyFatPercent, disableMinimumCalories]);
+
   const handleCaloriesChange = useCallback(
     (newCalories: number) => {
       const sanitized = Math.max(0, newCalories);
@@ -877,6 +902,37 @@ export function NutritionGoalsBody({
                   <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
+
+              {tdeeEstimate != null ? (
+                <View className="mt-3 items-center gap-1">
+                  <Text className="text-xs text-text-secondary">
+                    {t('nutritionGoals.tdeeHint', { kcal: formatInteger(tdeeEstimate) })}
+                  </Text>
+                  {Math.abs(totalCalories - tdeeEstimate) >= 10 ? (
+                    <Text
+                      className="text-xs font-semibold"
+                      style={{
+                        color:
+                          totalCalories < tdeeEstimate
+                            ? theme.colors.status.error
+                            : theme.colors.status.emeraldLight,
+                      }}
+                    >
+                      {totalCalories < tdeeEstimate
+                        ? t('nutritionGoals.calorieDeficit', {
+                            kcal: formatInteger(tdeeEstimate - totalCalories),
+                          })
+                        : t('nutritionGoals.calorieSurplus', {
+                            kcal: formatInteger(totalCalories - tdeeEstimate),
+                          })}
+                    </Text>
+                  ) : (
+                    <Text className="text-xs font-semibold text-accent-primary">
+                      {t('nutritionGoals.atMaintenance')}
+                    </Text>
+                  )}
+                </View>
+              ) : null}
             </View>
           </View>
         ) : null}
