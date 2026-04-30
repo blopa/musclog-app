@@ -44,7 +44,9 @@ function GlobalListeners() {
   const router = useRouter();
   const { openCamera } = useSmartCamera();
 
-  // Handle widget action stored by +native-intent.tsx on cold start
+  // Handle widget action stored by +native-intent.tsx on cold start (camera only —
+  // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
+  // TODO: shouldn't this be a useOnScreenFocus or something?
   useEffect(() => {
     const action = global.__PENDING_WIDGET_ACTION;
     if (!action) {

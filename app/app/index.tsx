@@ -241,6 +241,7 @@ export default function HomeScreen() {
     openCamera({ mode: 'barcode-scan', mealType: selectedMealType });
   }, [openCamera, selectedMealType]);
 
+
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>

@@ -1,18 +1,16 @@
-import { Redirect, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Redirect, useRootNavigationState, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 
-import { useTheme } from '@/hooks/useTheme';
+import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
 
 export default function Index() {
-  const theme = useTheme();
   const router = useRouter();
-  const [target, setTarget] = useState<string | null>(null);
+  const navigationState = useRootNavigationState();
 
   useEffect(() => {
-    if (Platform.OS === 'web' && !__DEV__) {
-      setTarget('/home');
+    if (!navigationState?.key) {
       return;
     }
 
@@ -20,40 +18,42 @@ export default function Index() {
       try {
         const completed = await isOnboardingCompleted();
 
-        if (completed) {
-          setTarget('/app');
-        } else {
-          const saved = await getCurrentOnboardingStep();
-          if (saved) {
-            if (saved === '/app/onboarding/connect-with-google') {
-              setTarget('/app/onboarding/fitness-info');
+        if (!completed) {
+          try {
+            const saved = await getCurrentOnboardingStep();
+            if (saved) {
+              if (saved === '/app/onboarding/connect-with-google') {
+                router.replace('/app/onboarding/fitness-info');
+              } else {
+                const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
+                router.replace(normalizedSaved as never);
+              }
             } else {
-              const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-              setTarget(normalizedSaved);
+              router.replace('/app/onboarding/landing');
             }
-          } else {
-            setTarget('/app/onboarding/landing');
+          } catch (e) {
+            handleError(e, 'index.restoreOnboardingStep');
+            router.replace('/app/onboarding/landing');
           }
+        } else {
+          router.replace('/app');
         }
       } catch (error) {
-        console.error('Error checking onboarding status in root index:', error);
-        setTarget('/app/onboarding/landing');
+        handleError(error, 'index.checkOnboardingStatus');
+        router.replace('/app');
       }
     };
 
     checkOnboarding();
-  }, []);
+  }, [navigationState?.key, router]);
 
-  if (!target) {
-    return (
-      <View
-        className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}
-      >
-        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-      </View>
-    );
+  if (Platform.OS === 'web' && !__DEV__) {
+    return <Redirect href="/home" />;
   }
 
-  return <Redirect href={target as any} />;
+  return (
+    <View className="flex-1 items-center justify-center" style={{ backgroundColor: '#0a1f1a' }}>
+      <ActivityIndicator size="large" color="#4EDEA3" />
+    </View>
+  );
 }
