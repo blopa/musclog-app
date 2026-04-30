@@ -2,8 +2,7 @@ import { Redirect, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { handleError } from '@/utils/handleError';
-import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
+import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 
 export default function Index() {
   const router = useRouter();
@@ -14,37 +13,7 @@ export default function Index() {
       return;
     }
 
-    const checkOnboarding = async () => {
-      try {
-        const completed = await isOnboardingCompleted();
-
-        if (!completed) {
-          try {
-            const saved = await getCurrentOnboardingStep();
-            if (saved) {
-              if (saved === '/app/onboarding/connect-with-google') {
-                router.replace('/app/onboarding/fitness-info');
-              } else {
-                const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-                router.replace(normalizedSaved as never);
-              }
-            } else {
-              router.replace('/app/onboarding/landing');
-            }
-          } catch (e) {
-            handleError(e, 'index.web.restoreOnboardingStep');
-            router.replace('/app/onboarding/landing');
-          }
-        } else {
-          router.replace('/app');
-        }
-      } catch (error) {
-        handleError(error, 'index.web.checkOnboardingStatus');
-        router.replace('/app');
-      }
-    };
-
-    checkOnboarding();
+    runEntryOnboardingRedirect(router, 'index.web');
   }, [navigationState?.key, router]);
 
   if (!__DEV__) {

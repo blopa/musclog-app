@@ -27,13 +27,7 @@ function isValidAction(action: string | null): action is ValidAction {
   return VALID_ACTIONS.includes(action as ValidAction);
 }
 
-export const redirectSystemPath = async ({
-  path,
-  initial,
-}: {
-  path: string;
-  initial: boolean;
-}) => {
+export const redirectSystemPath = async ({ path, initial }: { path: string; initial: boolean }) => {
   try {
     if (path.includes('action=')) {
       const fullUrl = `http://localhost${path.startsWith('/') ? path : `/${path}`}`;
@@ -47,7 +41,8 @@ export const redirectSystemPath = async ({
       }
 
       // Widget shortcuts should stay inert until the user has completed onboarding.
-      if (!(await isOnboardingCompleted())) {
+      const completed = await isOnboardingCompleted();
+      if (!completed) {
         return null;
       }
 
