@@ -1,4 +1,5 @@
 import convert from 'convert';
+import { differenceInCalendarDays } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
@@ -41,9 +42,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import i18n from '@/lang/lang';
 import { localDayStartMs } from '@/utils/calendarDate';
-import { type ResolvedMacros, resolveDynamicGoalPreview } from '@/utils/dynamicNutritionTarget';
+import {
+  type ResolvedMacros,
+  resolveDynamicGoalPreview,
+  resolveGoalTrajectoryCalories,
+} from '@/utils/dynamicNutritionTarget';
 import {
   bmiFromWeightAndHeightM,
+  calculateMacros,
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   ffmiFromWeightHeightAndBodyFat,
@@ -529,22 +535,57 @@ export function NutritionGoalsBody({
         disableMinimumCalories,
       });
 
-      const fiberValue = fiberFromCalories(plan.targetCalories);
+      // When a target weight and date are set, use the date-aware calorie function
+      // (same as the wizard) so switching phases recalculates correctly for the goal.
+      let finalCalories = plan.targetCalories;
+      if (eatingPhase !== 'maintain' && targetDate != null && targetWeight != null) {
+        const targetWeightKg = displayToKg(targetWeight, units);
+        const daysToGoal = differenceInCalendarDays(new Date(targetDate), new Date());
+        const weightDeltaKg = targetWeightKg - latestWeightKg;
+        const directionMatches =
+          (eatingPhase === 'cut' && weightDeltaKg < -0.1) ||
+          (eatingPhase === 'bulk' && weightDeltaKg > 0.1);
+
+        if (daysToGoal > 0 && directionMatches) {
+          finalCalories = resolveGoalTrajectoryCalories({
+            tdee: plan.tdee,
+            bmr: plan.bmr,
+            eatingPhase,
+            currentWeightKg: latestWeightKg,
+            targetWeightKg,
+            remainingDays: daysToGoal,
+            gender,
+            liftingExperience,
+            bodyFatPercent: latestBodyFatPercent ?? undefined,
+            disableMinimumCalories,
+          });
+        }
+      }
+
+      const macros =
+        finalCalories !== plan.targetCalories
+          ? calculateMacros(finalCalories, fitnessGoal, {
+              weightKg: latestWeightKg,
+              bodyFatPercent: latestBodyFatPercent ?? undefined,
+            })
+          : { protein: plan.protein, carbs: plan.carbs, fats: plan.fats };
+
+      const fiberValue = fiberFromCalories(finalCalories);
 
       preciseMacros.current = {
-        protein: plan.protein,
-        carbs: plan.carbs,
-        fats: plan.fats,
+        protein: macros.protein,
+        carbs: macros.carbs,
+        fats: macros.fats,
         fiber: fiberValue,
       };
 
       isManualCalorieUpdate.current = true;
-      setTotalCalories(plan.targetCalories);
-      setProtein(plan.protein);
-      setCarbs(plan.carbs);
-      setFats(plan.fats);
+      setTotalCalories(finalCalories);
+      setProtein(macros.protein);
+      setCarbs(macros.carbs);
+      setFats(macros.fats);
       setFiber(fiberValue);
-      setCalorieInputValue(plan.targetCalories.toString());
+      setCalorieInputValue(finalCalories.toString());
       syncMacroRatios();
     } catch {
       // ignore
@@ -557,6 +598,9 @@ export function NutritionGoalsBody({
     userHeightM,
     latestBodyFatPercent,
     syncMacroRatios,
+    targetDate,
+    targetWeight,
+    units,
   ]);
 
   const tdeeEstimate = useMemo<number | null>(() => {
