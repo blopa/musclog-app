@@ -71,17 +71,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   };
 
-  // Phase 1: Prepare create operations and collect existing records to delete.
+  // Phase 1: Prepare create operations.
   // Reads and async encryption happen here so the write blocks stay synchronous-safe.
   const createOperations: any[] = [];
-  const recordsToDelete: any[] = [];
 
   for (const tableName of RESTORE_ORDER) {
     const collection = database.get(tableName as any);
-
-    // Collect all existing records for deletion (will delete in separate transaction)
-    const existing = await collection.query().fetch();
-    recordsToDelete.push(...existing);
 
     // Access table data using type assertion since tableName is dynamic
     const rows = (dbData as Record<string, unknown>)[tableName];
@@ -203,21 +198,23 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  // Phase 2+3: Delete existing records and create new ones in a single atomic batch.
-  // Keeping these in separate transactions leaves the DB in an empty intermediate state
-  // between the two writes. Active WatermelonDB observers fire after Phase 2, re-query
-  // the now-empty collections, and can leave the JS record cache out of sync with SQLite
-  // by the time Phase 3 creates the new records — causing "sent over the bridge, but
-  // it's not cached" errors. A combined batch means observers fire exactly once, after
-  // all records are already in the cache.
-  const replaceOps = [
-    ...recordsToDelete.map((r) => r.prepareDestroyPermanently()),
-    ...createOperations,
-  ];
+  // Phase 2: Wipe the database completely before restoring.
+  // unsafeResetDatabase() clears both the underlying adapter (LokiJS on web, SQLite on
+  // native) and WatermelonDB's JS record caches in one step. This avoids two bugs that
+  // arise from manual delete+create approaches:
+  //   1. "sent over the bridge, but it's not cached" — observers fire between the delete
+  //      and create transactions and leave the JS cache out of sync with the adapter.
+  //   2. "Duplicate key" — LokiJS does not guarantee destroy-before-create ordering
+  //      within a combined batch, so re-inserting the same IDs fails.
+  // On web, unsafeResetDatabase() must be called inside a write block.
+  await database.write(async () => {
+    await database.unsafeResetDatabase();
+  });
 
-  if (replaceOps.length > 0) {
+  // Phase 3: Populate the fresh database with the backup data.
+  if (createOperations.length > 0) {
     await database.write(async () => {
-      await database.batch(...replaceOps);
+      await database.batch(...createOperations);
     });
   }
 
