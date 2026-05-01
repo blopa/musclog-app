@@ -899,14 +899,14 @@ export function calculateTargetCalories(
   const { weightKg, targetWeightKg, daysToGoal, bodyFatPercent, gender, liftingExperience } =
     options ?? {};
 
-  let adjustment: number;
   if (
     weightGoal !== 'maintain' &&
     weightKg !== undefined && weightKg > 0 &&
     targetWeightKg !== undefined &&
     daysToGoal !== undefined && daysToGoal > 0
   ) {
-    adjustment = getExactCalorieAdjustment(
+    // Exact-formula path: no floor — caller has opted into unconstrained math.
+    return Math.round(tdee + getExactCalorieAdjustment(
       weightGoal,
       weightKg,
       targetWeightKg,
@@ -914,12 +914,13 @@ export function calculateTargetCalories(
       bodyFatPercent,
       gender,
       liftingExperience,
-    );
-  } else if (weightKg !== undefined && weightKg > 0) {
-    adjustment = getCalorieAdjustment(weightGoal, weightKg, bodyFatPercent, gender, clampCalories);
-  } else {
-    adjustment = DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0;
+    ));
   }
+
+  const adjustment =
+    weightKg !== undefined && weightKg > 0
+      ? getCalorieAdjustment(weightGoal, weightKg, bodyFatPercent, gender, clampCalories)
+      : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
 
   const floor = getMinimumCalorieFloor(options);
 
