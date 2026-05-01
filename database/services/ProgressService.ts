@@ -720,7 +720,7 @@ export class ProgressService {
 
     const statisticalTdee = calculateTDEE({
       bmr,
-      activityLevel: user?.activityLevel || 3,
+      activityLevel: user?.activityLevel || 2,
     });
 
     const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;

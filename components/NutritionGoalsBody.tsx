@@ -519,7 +519,7 @@ export function NutritionGoalsBody({
     const heightCm = userHeightM * 100;
     const age = user.getAge();
     const fitnessGoal = user.fitnessGoal ?? 'general';
-    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
+    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
     const liftingExperience = user.liftingExperience ?? 'intermediate';
     const gender = user.gender ?? 'other';
 
@@ -616,7 +616,7 @@ export function NutritionGoalsBody({
         weightKg: latestWeightKg,
         heightCm: userHeightM * 100,
         age: user.getAge(),
-        activityLevel: Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5,
+        activityLevel: Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5,
         weightGoal: 'maintain',
         fitnessGoal: user.fitnessGoal ?? 'general',
         liftingExperience: user.liftingExperience ?? 'intermediate',

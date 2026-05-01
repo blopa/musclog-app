@@ -442,6 +442,9 @@
       "saveForLaterDesc": "Quitar del registro y guardar en comidas temporales",
       "saveForLaterSuccess": "Comida guardada para después",
       "saveForLaterError": "Error al guardar la comida para después",
+      "saveForLaterPercentageLabel": "Porcentaje a guardar",
+      "saveForLaterPortionHint": "El {{remaining}}% restante permanecerá en tu {{mealType}}",
+      "saveForLaterPortionHintAll": "Toda la comida se guardará para después",
       "savedMealDefaultName": "Comida Guardada del {{date}} - {{mealType}}",
       "savedForLaterModal": {
         "title": "Guardadas para Después",

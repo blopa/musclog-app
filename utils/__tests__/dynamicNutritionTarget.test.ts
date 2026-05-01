@@ -50,7 +50,7 @@ describe('resolveDailyMacros', () => {
   const mockUser = {
     gender: 'male',
     getAge: () => 30,
-    activityLevel: 3,
+    activityLevel: 2,
     fitnessGoal: 'hypertrophy',
     liftingExperience: 'intermediate',
   };
@@ -324,7 +324,7 @@ describe('resolveDailyMacros', () => {
 
     expect(calculateNutritionPlan).toHaveBeenCalledWith(
       expect.objectContaining({
-        activityLevel: 3,
+        activityLevel: 2,
         gender: 'other',
       })
     );

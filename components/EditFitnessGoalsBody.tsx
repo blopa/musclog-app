@@ -42,7 +42,7 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
   const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>(
     initialData?.fitnessGoal ?? 'general'
   );
-  const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 3);
+  const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 2);
   const [experience, setExperience] = useState<LiftingExperience>(
     initialData?.experience ?? 'intermediate'
   );

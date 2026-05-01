@@ -732,6 +732,22 @@ export interface TargetCaloriesOptions {
 }
 
 /**
+ * Get the minimum calorie floor based on options.
+ * Returns 0 if minimum calories are disabled, otherwise uses gender-specific minimums.
+ */
+function getMinimumCalorieFloor(options?: TargetCaloriesOptions): number {
+  if (options?.disableMinimumCalories) {
+    return 0;
+  }
+  
+  if (options?.gender !== undefined) {
+    return getMinCalories(options.gender, options.bmr);
+  }
+  
+  return MIN_CALORIES_FEMALE;
+}
+
+/**
  * Calculate the daily calorie target by adjusting TDEE for the weight goal.
  * Applies a safety floor via getMinCalories when gender/bmr provided, else MIN_CALORIES.
  */
@@ -745,12 +761,7 @@ export function calculateTargetCalories(
       ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent, options.gender)
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
 
-  // TODO: move this to a helper function to avoid using nested ternary
-  const floor = options?.disableMinimumCalories
-    ? 0
-    : options?.gender !== undefined
-      ? getMinCalories(options.gender, options.bmr)
-      : MIN_CALORIES_FEMALE;
+  const floor = getMinimumCalorieFloor(options);
 
   return Math.max(floor, Math.round(tdee + adjustment));
 }

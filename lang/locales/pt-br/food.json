@@ -442,6 +442,9 @@
       "saveForLaterDesc": "Remover do registro e salvar em refeições temporárias",
       "saveForLaterSuccess": "Refeição salva para depois",
       "saveForLaterError": "Falha ao salvar refeição para depois",
+      "saveForLaterPercentageLabel": "Porcentagem a salvar",
+      "saveForLaterPortionHint": "Os {{remaining}}% restantes permanecerão na sua {{mealType}}",
+      "saveForLaterPortionHintAll": "Toda a refeição será salva para depois",
       "savedMealDefaultName": "Refeição salva de {{date}} - {{mealType}}",
       "savedForLaterModal": {
         "title": "Salvas para Depois",

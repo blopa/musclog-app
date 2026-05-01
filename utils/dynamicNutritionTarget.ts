@@ -164,7 +164,7 @@ async function resolveDynamicGoalLike(
     bodyFatPercent = d.value;
   }
 
-  const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
+  const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
   const gender = user.gender ?? 'other';
   const fitnessGoal = user.fitnessGoal ?? 'general';
   const liftingExperience = user.liftingExperience ?? 'intermediate';

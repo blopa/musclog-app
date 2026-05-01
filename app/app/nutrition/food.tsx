@@ -38,6 +38,7 @@ import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
 import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
+import { SaveForLaterPortionModal } from '@/components/modals/SaveForLaterPortionModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
@@ -188,6 +189,13 @@ export default function FoodScreen() {
   const [isSavedForLaterModalVisible, setIsSavedForLaterModalVisible] = useState(false);
   const [hasSavedForLaterItems, setHasSavedForLaterItems] = useState(false);
   const [isSaveForLaterLoading, setIsSaveForLaterLoading] = useState(false);
+  const [isSaveForLaterPortionVisible, setIsSaveForLaterPortionVisible] = useState(false);
+  const [saveForLaterPendingLogs, setSaveForLaterPendingLogs] = useState<NutritionLog[] | null>(
+    null
+  );
+  const [saveForLaterPendingMealType, setSaveForLaterPendingMealType] = useState<MealType | null>(
+    null
+  );
 
   // Meal Group action states
   const [isMealGroupScaleModalVisible, setIsMealGroupScaleModalVisible] = useState(false);
@@ -585,7 +593,17 @@ export default function FoodScreen() {
     setIsMealGroupInsightsVisible(true);
   };
 
-  const handleSaveMealForLater = async (logs: NutritionLog[], mealType: MealType) => {
+  const requestSaveForLater = (logs: NutritionLog[], mealType: MealType) => {
+    setSaveForLaterPendingLogs(logs);
+    setSaveForLaterPendingMealType(mealType);
+    setIsSaveForLaterPortionVisible(true);
+  };
+
+  const handleSaveMealForLater = async (
+    logs: NutritionLog[],
+    mealType: MealType,
+    percentage: number = 100
+  ) => {
     setIsSaveForLaterLoading(true);
     try {
       const dateStr = formatLocalCalendarDayIso(new Date(selectedDate));
@@ -598,7 +616,8 @@ export default function FoodScreen() {
         logs,
         defaultName,
         mealType,
-        selectedDate.getTime()
+        selectedDate.getTime(),
+        percentage
       );
 
       showSnackbar('success', t('food.mealGroup.saveForLaterSuccess'));
@@ -831,10 +850,10 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.accent.primary10,
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
-      onPress: async () => {
+      onPress: () => {
         setIsFoodMenuVisible(false);
         if (selectedFoodItem) {
-          await handleSaveMealForLater([selectedFoodItem.log], selectedFoodItem.log.type);
+          requestSaveForLater([selectedFoodItem.log], selectedFoodItem.log.type);
           setSelectedFoodItem(null);
         }
       },
@@ -1279,11 +1298,11 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.accent.primary10,
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
-      onPress: async () => {
+      onPress: () => {
         setIsMealMenuVisible(false);
         if (selectedMealForMenu) {
           const mealFoods = mealsByType[selectedMealForMenu] || [];
-          await handleSaveMealForLater(
+          requestSaveForLater(
             mealFoods.map((e) => e.log),
             selectedMealForMenu
           );
@@ -2066,6 +2085,29 @@ export default function FoodScreen() {
         isLoading={isFoodSplitLoading}
       />
 
+      {/* Save for Later Portion Modal */}
+      <SaveForLaterPortionModal
+        visible={isSaveForLaterPortionVisible}
+        onClose={() => {
+          setIsSaveForLaterPortionVisible(false);
+          setSaveForLaterPendingLogs(null);
+          setSaveForLaterPendingMealType(null);
+        }}
+        onConfirm={async (percentage) => {
+          if (saveForLaterPendingLogs && saveForLaterPendingMealType) {
+            await handleSaveMealForLater(
+              saveForLaterPendingLogs,
+              saveForLaterPendingMealType,
+              percentage
+            );
+          }
+          setSaveForLaterPendingLogs(null);
+          setSaveForLaterPendingMealType(null);
+        }}
+        isLoading={isSaveForLaterLoading}
+        mealType={saveForLaterPendingMealType || undefined}
+      />
+
       {/* Food Details Modal (edit/duplicate mode) */}
       <SavedForLaterModal
         visible={isSavedForLaterModalVisible}
@@ -2194,10 +2236,10 @@ export default function FoodScreen() {
             iconBgColor: theme.colors.accent.primary10,
             title: t('food.mealGroup.saveForLater'),
             description: t('food.mealGroup.saveForLaterDesc'),
-            onPress: async () => {
+            onPress: () => {
               setIsMealGroupMenuVisible(false);
               if (selectedMealGroup) {
-                await handleSaveMealForLater(
+                requestSaveForLater(
                   selectedMealGroup.entries.map((e) => e.log),
                   selectedMealGroup.entries[0]?.log.type || 'other'
                 );

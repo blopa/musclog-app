@@ -48,7 +48,7 @@ const DEFAULT_FORM: FormState = {
   heightCm: 188,
   bodyFatPercent: 12,
   liftingExperience: 'intermediate',
-  activityLevel: 3,
+  activityLevel: 2,
   weightGoal: 'maintain',
   fitnessGoal: 'general',
 };

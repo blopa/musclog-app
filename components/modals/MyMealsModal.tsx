@@ -449,7 +449,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
 
   const showLoading = isLoading || isTransforming || isGeneratingMealAI;
 
-  // Helper functions to avoid nested ternaries
   const getEmptyStateTitle = () => {
     if (searchQuery.trim()) {
       return t('meals.noMealsFound');

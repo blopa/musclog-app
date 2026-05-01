@@ -442,6 +442,9 @@
       "saveForLaterDesc": "Удалить из журнала и сохранить во временные блюда",
       "saveForLaterSuccess": "Блюдо сохранено на потом",
       "saveForLaterError": "Не удалось сохранить блюдо на потом",
+      "saveForLaterPercentageLabel": "Процент для сохранения",
+      "saveForLaterPortionHint": "Оставшиеся {{remaining}}% останутся в вашей {{mealType}}",
+      "saveForLaterPortionHintAll": "Вся еда будет сохранена на потом",
       "savedMealDefaultName": "Сохранённое блюдо от {{date}} — {{mealType}}",
       "savedForLaterModal": {
         "title": "Сохранённые на потом",
