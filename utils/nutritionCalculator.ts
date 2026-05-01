@@ -382,6 +382,17 @@ const DEFAULT_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
  * Falls back to a moderate 0.5%/week when body fat is unknown.
  * When body fat is available, leaner users get a smaller recommended rate
  * while higher-body-fat users can tolerate a slightly larger deficit.
+ * Params:
+ * - bodyFatPercent: Optional body fat percentage (0-100)
+ * - gender: Optional gender ('male' or 'female')
+ *
+ * Returns:
+ * - Recommended weekly loss rate as a fraction of body weight
+ *
+ * SCIENTIFIC BASIS:
+ * - Rates (0.35% - 0.65%): Based on Garthe et al. (2011) to maximize lean mass retention.
+ *   https://pmc.ncbi.nlm.nih.gov/articles/PMC9012799/
+ * - Body Fat Thresholds: American Council on Exercise (ACE) clinical classifications.
  */
 function getRecommendedWeeklyLossRate(bodyFatPercent?: number, gender?: Gender): number {
   const fallbackRate = 0.005;
@@ -390,9 +401,16 @@ function getRecommendedWeeklyLossRate(bodyFatPercent?: number, gender?: Gender):
     return fallbackRate;
   }
 
+  // ACE Essential Fat threshold (defense against further fat loss)
   const leanThreshold = gender === 'female' ? 20 : 10;
+
+  // ACE Obese threshold (ample adipose tissue available for mobilization)
   const highThreshold = gender === 'female' ? 32 : 25;
+
+  // 0.35% weekly: Highly conservative rate for lean athletes to spare muscle
   const minRate = 0.0035;
+
+  // 0.65% weekly: Safe upper limit for higher body fat without muscle catabolism
   const maxRate = 0.0065;
 
   if (bodyFatPercent <= leanThreshold) {
@@ -411,8 +429,22 @@ function getRecommendedWeeklyLossRate(bodyFatPercent?: number, gender?: Gender):
  * Personalized calorie adjustment (relative to TDEE) from weight goal and body weight.
  * Uses a weight-based fallback by default so body fat remains a true "nice to have".
  * When body fat is available and valid, it refines the recommended rate of loss and
- * the energy density of tissue lost. Gain stays based on ~0.25% body weight/week.
- * Clamped to safe bounds (deficit 250–750 kcal, surplus 150–400 kcal).
+ * the energy density of tissue lost.
+ *
+ * Params:
+ * - weightGoal: User's weight goal ('lose', 'maintain', 'gain')
+ * - weightKg: User's current weight in kilograms
+ * - bodyFatPercent: Optional body fat percentage (0-100)
+ * - gender: Optional gender ('male' or 'female')
+ *
+ * Returns:
+ * - Calorie adjustment relative to TDEE
+ *
+ * SCIENTIFIC BASIS:
+ * - Tissue Energy Density (Forbes Curve): Leaner individuals lose a higher ratio of muscle to fat.
+ *   Forbes (1987) / Hall (2011) Dynamic Energy Balance Model: https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/
+ * - Lean Bulking Surplus: ~0.25% body weight gain per week minimizes fat spillover.
+ *   Iraki et al. (2019): https://jissn.biomedcentral.com/articles/10.1186/s12970-019-0297-8
  */
 export function getCalorieAdjustment(
   weightGoal: WeightGoal,
@@ -430,14 +462,23 @@ export function getCalorieAdjustment(
 
     if (isValidBodyFat(bodyFatPercent)) {
       const initialFatMassKg = weightKg * (bodyFatPercent / 100);
+
+      // Calculates the true energy density of lost tissue based on the Forbes Curve,
+      // accounting for the fact that muscle (1800 kcal/kg) and fat (9400 kcal/kg) burn differently.
       const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender);
       deficit = (weeklyLossKg * kcalPerKg) / 7;
     }
 
+    // Deficit clamp (250-750 kcal): Prevents severe metabolic adaptation / adaptive thermogenesis
     return -Math.max(250, Math.min(750, Math.round(deficit)));
   }
+
   // gain
-  const surplus = 2.75 * weightKg; // ~0.25% BW per week
+  // Mathematical derivation for ~0.25% BW per week:
+  // (0.0025 * weightKg * 7700 kcal/kg) / 7 days = 2.75 * weightKg
+  const surplus = 2.75 * weightKg;
+
+  // Surplus clamp (150-400 kcal): Surpluses > 500 kcal mostly increase fat mass, not muscle.
   return Math.max(150, Math.min(400, Math.round(surplus)));
 }
 
