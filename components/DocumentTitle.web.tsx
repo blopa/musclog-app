@@ -21,11 +21,11 @@ export function DocumentTitle() {
   const title =
     routeTitles[pathname] ||
     routeTitles[Object.keys(routeTitles).find((route) => pathname.startsWith(route)) || ''] ||
-    'Musclog';
+    'App';
 
   return (
     <Head>
-      <title>{title}</title>
+      <title>{`Musclog - ${title}`}</title>
     </Head>
   );
 }
