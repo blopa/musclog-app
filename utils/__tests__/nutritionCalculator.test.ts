@@ -2870,10 +2870,22 @@ describe('getCalorieAdjustment', () => {
     expect(getCalorieAdjustment('lose', 80)).toBe(-440);
   });
 
+  it('treats body fat as optional and keeps the weight-based fallback when absent', () => {
+    expect(getCalorieAdjustment('lose', 80, undefined, 'male')).toBe(-440);
+    expect(getCalorieAdjustment('lose', 80, undefined, 'female')).toBe(-440);
+  });
+
   it('uses the composition-aware loss model when body fat is available', () => {
     const withBodyFat = getCalorieAdjustment('lose', 86.7, 25, 'male');
     const withoutBodyFat = getCalorieAdjustment('lose', 86.7);
     expect(withBodyFat).not.toBe(withoutBodyFat);
+  });
+
+  it('recommends a smaller cut for leaner users when body fat is available', () => {
+    const leaner = getCalorieAdjustment('lose', 80, 10, 'male');
+    const higherBodyFat = getCalorieAdjustment('lose', 80, 25, 'male');
+
+    expect(Math.abs(leaner)).toBeLessThan(Math.abs(higherBodyFat));
   });
 
   it('surplus is clamped to minimum 150 for very light person', () => {

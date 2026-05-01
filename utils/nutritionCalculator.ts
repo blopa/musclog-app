@@ -378,11 +378,41 @@ const DEFAULT_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
 };
 
 /**
+ * Target weekly loss rate as a fraction of body weight.
+ * Falls back to a moderate 0.5%/week when body fat is unknown.
+ * When body fat is available, leaner users get a smaller recommended rate
+ * while higher-body-fat users can tolerate a slightly larger deficit.
+ */
+function getRecommendedWeeklyLossRate(bodyFatPercent?: number, gender?: Gender): number {
+  const fallbackRate = 0.005;
+
+  if (!isValidBodyFat(bodyFatPercent)) {
+    return fallbackRate;
+  }
+
+  const leanThreshold = gender === 'female' ? 20 : 10;
+  const highThreshold = gender === 'female' ? 32 : 25;
+  const minRate = 0.0035;
+  const maxRate = 0.0065;
+
+  if (bodyFatPercent <= leanThreshold) {
+    return minRate;
+  }
+
+  if (bodyFatPercent >= highThreshold) {
+    return maxRate;
+  }
+
+  const progress = (bodyFatPercent - leanThreshold) / (highThreshold - leanThreshold);
+  return minRate + progress * (maxRate - minRate);
+}
+
+/**
  * Personalized calorie adjustment (relative to TDEE) from weight goal and body weight.
- * Based on ~0.5% body weight per week for loss, ~0.25% for gain (sustainable rates).
+ * Uses a weight-based fallback by default so body fat remains a true "nice to have".
+ * When body fat is available and valid, it refines the recommended rate of loss and
+ * the energy density of tissue lost. Gain stays based on ~0.25% body weight/week.
  * Clamped to safe bounds (deficit 250–750 kcal, surplus 150–400 kcal).
- *
- * TODO: bodyFatPercent should be a "nice to have", most people wont have this information
  */
 export function getCalorieAdjustment(
   weightGoal: WeightGoal,
@@ -395,14 +425,12 @@ export function getCalorieAdjustment(
   }
 
   if (weightGoal === 'lose') {
-    let deficit = 5.5 * weightKg; // 0.005 * weightKg * 7700 / 7 fallback
+    const weeklyLossKg = weightKg * getRecommendedWeeklyLossRate(bodyFatPercent, gender);
+    let deficit = (weeklyLossKg * DEFAULT_KCAL_PER_KG_LOSS) / 7;
 
     if (isValidBodyFat(bodyFatPercent)) {
-      const weeklyLossKg = weightKg * 0.005; // ~0.5% BW per week
       const initialFatMassKg = weightKg * (bodyFatPercent / 100);
-
       const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender);
-
       deficit = (weeklyLossKg * kcalPerKg) / 7;
     }
 
