@@ -354,7 +354,7 @@ export class NutritionGoalService {
         weightKg,
         heightCm,
         age: user.getAge(),
-        activityLevel: user.activityLevel as any,
+        activityLevel: (user.activityLevel || 2) as any,
         weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
         fitnessGoal: user.fitnessGoal,
         liftingExperience: user.liftingExperience,

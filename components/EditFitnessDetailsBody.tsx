@@ -58,7 +58,7 @@ export function EditFitnessDetailsBody({
   const goalsRef = useRef<FitnessGoals>({
     weightGoal: initialData?.weightGoal ?? 'maintain',
     fitnessGoal: initialData?.fitnessGoal ?? 'general',
-    activityLevel: initialData?.activityLevel ?? 3,
+    activityLevel: initialData?.activityLevel ?? 2,
     experience: initialData?.experience ?? 'intermediate',
   });
 

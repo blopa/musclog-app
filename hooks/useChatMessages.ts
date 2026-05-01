@@ -569,7 +569,7 @@ export function useChatMessages(
                 weightKg,
                 heightCm,
                 age: user.getAge(),
-                activityLevel: (user.activityLevel as any) || 3,
+                activityLevel: (user.activityLevel as any) || 2,
                 weightGoal: user.weightGoal || eatingPhaseToWeightGoal(user.fitnessGoal as any),
                 fitnessGoal: user.fitnessGoal,
                 liftingExperience: user.liftingExperience,
