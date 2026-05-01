@@ -129,7 +129,7 @@
     "goalMode": "Modo de objetivo",
     "manual": "Manual",
     "dynamic": "Dinámico",
-    "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus datos actuales y del plazo de tu objetivo. Tu objetivo actual de calorías es {{kcal}} kcal. Establece tu fase alimentaria para controlar si estás en déficit, mantenimiento o superávit, y añade tanto un peso objetivo como una fecha objetivo para activar los objetivos dinámicos.",
+    "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus datos actuales y del plazo de tu objetivo. Tu objetivo actual de calorías es {{kcal}} kcal.",
     "dynamicBadge": "Dinámico",
     "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos."
   }
