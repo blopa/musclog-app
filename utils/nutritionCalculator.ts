@@ -501,6 +501,54 @@ export function getCalorieAdjustment(
 }
 
 /**
+ * Exact daily calorie adjustment derived directly from a user-specified target weight and timeframe.
+ * No coaching clamps are applied — returns the mathematically required deficit or surplus.
+ *
+ * Loss: uses the Forbes Curve (Hall 2008) energy density when body fat is available;
+ *       falls back to 7700 kcal/kg otherwise.
+ * Gain: uses experience-weighted tissue synthesis cost (getEffectiveKcalPerKgGain).
+ */
+export function getExactCalorieAdjustment(
+  weightGoal: 'lose' | 'gain',
+  currentWeightKg: number,
+  targetWeightKg: number,
+  daysToGoal: number,
+  bodyFatPercent?: number,
+  gender?: Gender,
+  liftingExperience?: LiftingExperience,
+): number {
+  if (daysToGoal <= 0) {
+    return 0;
+  }
+
+  if (weightGoal === 'lose') {
+    const weeklyLossKg = ((currentWeightKg - targetWeightKg) / daysToGoal) * 7;
+    if (weeklyLossKg <= 0) {
+      return 0;
+    }
+
+    let kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
+    if (isValidBodyFat(bodyFatPercent)) {
+      const initialFatMassKg = currentWeightKg * (bodyFatPercent! / 100);
+      const totalDeltaKg = targetWeightKg - currentWeightKg; // negative
+      // Pass full-timeframe delta so Forbes Curve sees the whole trajectory depth
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, totalDeltaKg, gender, false);
+    }
+
+    return -Math.round((weeklyLossKg * kcalPerKg) / 7);
+  }
+
+  // gain
+  const weeklyGainKg = ((targetWeightKg - currentWeightKg) / daysToGoal) * 7;
+  if (weeklyGainKg <= 0) {
+    return 0;
+  }
+
+  const kcalPerKg = getEffectiveKcalPerKgGain(liftingExperience);
+  return Math.round((weeklyGainKg * kcalPerKg) / 7);
+}
+
+/**
  * Human-readable i18n label key per weight goal (for results screen).
  */
 const WEIGHT_GOAL_LABELS: Record<WeightGoal, string> = {
@@ -816,6 +864,10 @@ export interface TargetCaloriesOptions {
   weightKg?: number;
   bodyFatPercent?: number;
   disableMinimumCalories?: boolean;
+  /** When provided together with daysToGoal, triggers exact-formula adjustment (no coaching clamps). */
+  targetWeightKg?: number;
+  daysToGoal?: number;
+  liftingExperience?: LiftingExperience;
 }
 
 /**
@@ -844,10 +896,30 @@ export function calculateTargetCalories(
   options?: TargetCaloriesOptions
 ): number {
   const clampCalories = !options?.disableMinimumCalories;
-  const adjustment =
-    options?.weightKg !== undefined && options.weightKg > 0
-      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent, options.gender, clampCalories)
-      : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
+  const { weightKg, targetWeightKg, daysToGoal, bodyFatPercent, gender, liftingExperience } =
+    options ?? {};
+
+  let adjustment: number;
+  if (
+    weightGoal !== 'maintain' &&
+    weightKg !== undefined && weightKg > 0 &&
+    targetWeightKg !== undefined &&
+    daysToGoal !== undefined && daysToGoal > 0
+  ) {
+    adjustment = getExactCalorieAdjustment(
+      weightGoal,
+      weightKg,
+      targetWeightKg,
+      daysToGoal,
+      bodyFatPercent,
+      gender,
+      liftingExperience,
+    );
+  } else if (weightKg !== undefined && weightKg > 0) {
+    adjustment = getCalorieAdjustment(weightGoal, weightKg, bodyFatPercent, gender, clampCalories);
+  } else {
+    adjustment = DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0;
+  }
 
   const floor = getMinimumCalorieFloor(options);
 
