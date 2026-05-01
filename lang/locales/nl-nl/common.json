@@ -112,6 +112,33 @@
     "errorMessage": "Foutmelding",
     "errorStack": "Error Stack",
     "componentStack": "Component Stack",
-    "userAgent": "User Agent"
+    "userAgent": "User Agent",
+    "app": {
+      "title": "Musclog - Fitness- en voedingstracker"
+    },
+    "nutrition": {
+      "title": "Musclog - Voeding",
+      "food": {
+        "title": "Musclog - Voeding"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Workout",
+      "workouts": {
+        "title": "Musclog - Workouts"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Voortgang"
+    },
+    "profile": {
+      "title": "Musclog - Profiel"
+    },
+    "settings": {
+      "title": "Musclog - Instellingen"
+    },
+    "cycle": {
+      "title": "Musclog - Cyclus"
+    }
   }
 }

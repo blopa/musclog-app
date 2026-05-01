@@ -112,6 +112,33 @@
     "errorMessage": "Mensaje de error",
     "errorStack": "Pila de errores",
     "componentStack": "Pila de componentes",
-    "userAgent": "Agente de usuario"
+    "userAgent": "Agente de usuario",
+    "app": {
+      "title": "Musclog - Seguimiento de Fitness y Nutrición"
+    },
+    "nutrition": {
+      "title": "Musclog - Nutrición",
+      "food": {
+        "title": "Musclog - Comida"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Entrenamiento",
+      "workouts": {
+        "title": "Musclog - Entrenamientos"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Progreso"
+    },
+    "profile": {
+      "title": "Musclog - Perfil"
+    },
+    "settings": {
+      "title": "Musclog - Ajustes"
+    },
+    "cycle": {
+      "title": "Musclog - Ciclo"
+    }
   }
 }
