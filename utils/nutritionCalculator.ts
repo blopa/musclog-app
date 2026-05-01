@@ -252,9 +252,11 @@ function lambertW(z: number): number {
   if (z < -1 / Math.E) {
     return NaN;
   }
+
   if (z === 0) {
     return 0;
   }
+
   let w = z < 1 ? z : Math.log(z);
   for (let i = 0; i < 30; i++) {
     const ew = Math.exp(w);
@@ -262,9 +264,11 @@ function lambertW(z: number): number {
     if (Math.abs(f) < 1e-10) {
       return w;
     }
+
     const fp = ew * (w + 1);
     w = w - f / fp;
   }
+
   return w;
 }
 
@@ -277,8 +281,7 @@ export function getEffectiveKcalPerKgWeightLoss(
   initialFatMassKg: number,
   deltaWeightKg: number,
   gender?: Gender,
-  // TODO: implement usage of clampCalories
-  clampCalories?: boolean = true
+  clampCalories: boolean = true
 ): number {
   const dBw = deltaWeightKg;
   if (dBw >= 0 || initialFatMassKg <= 0) {
@@ -300,6 +303,10 @@ export function getEffectiveKcalPerKgWeightLoss(
   const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (forbesC / dBw) * w;
   const effective =
     RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
+
+  if (!clampCalories) {
+    return effective;
+  }
 
   return Math.max(1000, Math.min(9500, effective)); // clamp to plausible range
 }
@@ -453,8 +460,7 @@ export function getCalorieAdjustment(
   weightKg: number,
   bodyFatPercent?: number,
   gender?: Gender,
-  // TODO: implement usage of clampCalories
-  clampCalories?: boolean = true
+  clampCalories: boolean = true
 ): number {
   if (weightGoal === 'maintain') {
     return 0;
@@ -469,11 +475,15 @@ export function getCalorieAdjustment(
 
       // Calculates the true energy density of lost tissue based on the Forbes Curve,
       // accounting for the fact that muscle (1800 kcal/kg) and fat (9400 kcal/kg) burn differently.
-      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender);
+      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender, clampCalories);
       deficit = (weeklyLossKg * kcalPerKg) / 7;
     }
 
     // Deficit clamp (250-750 kcal): Prevents severe metabolic adaptation / adaptive thermogenesis
+    if (!clampCalories) {
+      return -Math.round(deficit);
+    }
+
     return -Math.max(250, Math.min(750, Math.round(deficit)));
   }
 
@@ -483,6 +493,10 @@ export function getCalorieAdjustment(
   const surplus = 2.75 * weightKg;
 
   // Surplus clamp (150-400 kcal): Surpluses > 500 kcal mostly increase fat mass, not muscle.
+  if (!clampCalories) {
+    return Math.round(surplus);
+  }
+
   return Math.max(150, Math.min(400, Math.round(surplus)));
 }
 
@@ -829,9 +843,10 @@ export function calculateTargetCalories(
   weightGoal: WeightGoal,
   options?: TargetCaloriesOptions
 ): number {
+  const clampCalories = !options?.disableMinimumCalories;
   const adjustment =
     options?.weightKg !== undefined && options.weightKg > 0
-      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent, options.gender)
+      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent, options.gender, clampCalories)
       : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
 
   const floor = getMinimumCalorieFloor(options);
@@ -935,6 +950,7 @@ export interface WeightProjectionOptions {
   weightGoal?: WeightGoal;
   liftingExperience?: LiftingExperience;
   gender?: Gender;
+  disableMinimumCalories?: boolean;
 }
 
 /**
@@ -963,6 +979,7 @@ export function calculateWeightProjection(
   const dailyDelta = targetCalories - tdee;
   const useBodyFat = isValidBodyFat(options?.bodyFatPercent);
   const bodyFatPercent = options?.bodyFatPercent ?? 0;
+  const clampCalories = !options?.disableMinimumCalories;
 
   if (dailyDelta === 0) {
     return {
@@ -978,7 +995,7 @@ export function calculateWeightProjection(
     if (useBodyFat) {
       const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
       const roughDeltaKg = (dailyDelta * PROJECTION_DAYS) / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender);
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender, clampCalories);
     } else {
       kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
     }
@@ -1038,6 +1055,7 @@ export function computeWeightChangeFromCalorieDelta(
     return 0;
   }
 
+  const clampCalories = !options?.disableMinimumCalories;
   let kcalPerKg: number;
   if (totalDeltaKcal > 0) {
     kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
@@ -1045,7 +1063,7 @@ export function computeWeightChangeFromCalorieDelta(
     if (isValidBodyFat(options?.bodyFatPercent)) {
       const initialFatMassKg = currentWeightKg * (options!.bodyFatPercent! / 100);
       const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender);
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender, clampCalories);
     } else {
       kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
     }
@@ -1399,6 +1417,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     weightGoal,
     liftingExperience: input.liftingExperience,
     gender,
+    disableMinimumCalories,
   });
 
   // Goal label key (for i18n) – from weight goal
