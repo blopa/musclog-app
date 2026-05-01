@@ -442,6 +442,9 @@
       "saveForLaterDesc": "Remove from log and save to temporary meals",
       "saveForLaterSuccess": "Meal saved for later",
       "saveForLaterError": "Failed to save meal for later",
+      "saveForLaterPercentageLabel": "Percentage to save",
+      "saveForLaterPortionHint": "The remaining {{remaining}}% will stay in your {{mealType}}",
+      "saveForLaterPortionHintAll": "The entire meal will be saved for later",
       "savedMealDefaultName": "Saved Meal from {{date}} - {{mealType}}",
       "savedForLaterModal": {
         "title": "Saved for Later",

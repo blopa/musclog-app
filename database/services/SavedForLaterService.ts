@@ -20,10 +20,13 @@ export class SavedForLaterService {
     logs: NutritionLog[],
     name: string,
     originalMealType: MealType,
-    originalDate: number
+    originalDate: number,
+    percentage: number = 100
   ): Promise<SavedForLaterGroup> {
     return await database.write(async () => {
       const now = Date.now();
+      const saveFactor = Math.min(percentage, 100) / 100;
+      const remainFactor = 1 - saveFactor;
 
       // 1. Prepare the group
       const group = database
@@ -36,12 +39,12 @@ export class SavedForLaterService {
           record.updatedAt = now;
         });
 
-      // 2. Create items for each log
+      // 2. Create items for each log, scaled to the saved percentage
       const itemsPrepared = logs.map((log) =>
         database.get<SavedForLaterItem>('saved_for_later_items').prepareCreate((item) => {
           item.groupId = group.id;
           item.foodId = log.foodId;
-          item.amount = log.amount;
+          item.amount = log.amount * saveFactor;
           item.portionId = log.portionId || undefined;
           item.loggedFoodNameRaw = log.loggedFoodNameRaw || undefined;
           item.loggedCaloriesRaw = log.loggedCaloriesRaw || '';
@@ -57,15 +60,23 @@ export class SavedForLaterService {
         })
       );
 
-      // 3. Prepare deletion of original logs
-      const logsToDelete = logs.map((log) =>
-        log.prepareUpdate((record) => {
-          record.deletedAt = now;
-          record.updatedAt = now;
-        })
-      );
+      // 3. For a full save (100%), delete originals; for partial, reduce their amounts
+      const logsToProcess =
+        remainFactor <= 0
+          ? logs.map((log) =>
+              log.prepareUpdate((record) => {
+                record.deletedAt = now;
+                record.updatedAt = now;
+              })
+            )
+          : logs.map((log) =>
+              log.prepareUpdate((record) => {
+                record.amount = log.amount * remainFactor;
+                record.updatedAt = now;
+              })
+            );
 
-      await database.batch(group, ...itemsPrepared, ...logsToDelete);
+      await database.batch(group, ...itemsPrepared, ...logsToProcess);
 
       triggerWidgetUpdate();
       return group;
