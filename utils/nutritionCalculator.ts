@@ -276,7 +276,9 @@ function lambertW(z: number): number {
 export function getEffectiveKcalPerKgWeightLoss(
   initialFatMassKg: number,
   deltaWeightKg: number,
-  gender?: Gender
+  gender?: Gender,
+  // TODO: implement usage of clampCalories
+  clampCalories?: boolean = true
 ): number {
   const dBw = deltaWeightKg;
   if (dBw >= 0 || initialFatMassKg <= 0) {
@@ -450,7 +452,9 @@ export function getCalorieAdjustment(
   weightGoal: WeightGoal,
   weightKg: number,
   bodyFatPercent?: number,
-  gender?: Gender
+  gender?: Gender,
+  // TODO: implement usage of clampCalories
+  clampCalories?: boolean = true
 ): number {
   if (weightGoal === 'maintain') {
     return 0;
