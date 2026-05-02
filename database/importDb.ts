@@ -13,6 +13,7 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
+import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService } from './services';
 
@@ -198,7 +199,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  // TODO: before deleting the database, make a backup of the current database and save it, like we do when we have a migration
+  // Phase 1.5: Create a pre-restore backup of the current database.
+  await createPreRestoreBackup();
 
   // Phase 2: Wipe the database completely before restoring.
   // unsafeResetDatabase() clears both the underlying adapter (LokiJS on web, SQLite on

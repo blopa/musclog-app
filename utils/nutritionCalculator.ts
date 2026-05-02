@@ -339,8 +339,7 @@ export function getEffectiveKcalPerKgWeightLoss(
     return DEFAULT_KCAL_PER_KG_LOSS;
   }
 
-  const effective =
-    RHO_FAT_KCAL_PER_KG * (1 - leanFraction) + RHO_LEAN_KCAL_PER_KG * leanFraction;
+  const effective = RHO_FAT_KCAL_PER_KG * (1 - leanFraction) + RHO_LEAN_KCAL_PER_KG * leanFraction;
 
   if (!clampCalories) {
     return effective;
@@ -530,7 +529,13 @@ export function getCalorieAdjustment(
 
   if (weightGoal === 'lose') {
     const weeklyLossKg = weightKg * getRecommendedWeeklyLossRate(bodyFatPercent, gender);
-    const kcalPerKg = resolveKcalPerKgLoss(weightKg, -weeklyLossKg, bodyFatPercent, gender, clampCalories);
+    const kcalPerKg = resolveKcalPerKgLoss(
+      weightKg,
+      -weeklyLossKg,
+      bodyFatPercent,
+      gender,
+      clampCalories
+    );
     const deficit = (weeklyLossKg * kcalPerKg) / 7;
 
     // Deficit clamp (250-750 kcal): Prevents severe metabolic adaptation / adaptive thermogenesis
@@ -582,7 +587,13 @@ export function getExactCalorieAdjustment(
     }
 
     const totalDeltaKg = targetWeightKg - currentWeightKg; // negative; full-timeframe delta for Forbes depth
-    const kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, totalDeltaKg, bodyFatPercent, gender, false);
+    const kcalPerKg = resolveKcalPerKgLoss(
+      currentWeightKg,
+      totalDeltaKg,
+      bodyFatPercent,
+      gender,
+      false
+    );
     return -Math.round((weeklyLossKg * kcalPerKg) / 7);
   }
 
@@ -1167,7 +1178,13 @@ export function calculateWeightProjection(
   let kcalPerKg: number;
   if (dailyDelta < 0) {
     const roughDeltaKg = (dailyDelta * PROJECTION_DAYS) / DEFAULT_KCAL_PER_KG_LOSS;
-    kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, roughDeltaKg, options?.bodyFatPercent, options?.gender, clampCalories);
+    kcalPerKg = resolveKcalPerKgLoss(
+      currentWeightKg,
+      roughDeltaKg,
+      options?.bodyFatPercent,
+      options?.gender,
+      clampCalories
+    );
   } else {
     kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
   }
@@ -1230,7 +1247,13 @@ export function computeWeightChangeFromCalorieDelta(
     kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
   } else {
     const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
-    kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, roughDeltaKg, options?.bodyFatPercent, options?.gender, clampCalories);
+    kcalPerKg = resolveKcalPerKgLoss(
+      currentWeightKg,
+      roughDeltaKg,
+      options?.bodyFatPercent,
+      options?.gender,
+      clampCalories
+    );
   }
 
   return totalDeltaKcal / kcalPerKg;
@@ -1564,7 +1587,12 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const tdee = calculateTDEE(sharedTdeeParams);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
-  const baseTargetCaloriesOpts: TargetCaloriesOptions = { gender, weightKg, bodyFatPercent, disableMinimumCalories };
+  const baseTargetCaloriesOpts: TargetCaloriesOptions = {
+    gender,
+    weightKg,
+    bodyFatPercent,
+    disableMinimumCalories,
+  };
   const calculateTargetCaloriesForBmr = (tdeeValue: number, bmrValue: number): number =>
     calculateTargetCalories(tdeeValue, weightGoal, { ...baseTargetCaloriesOpts, bmr: bmrValue });
   const targetCalories = calculateTargetCaloriesForBmr(tdee, bmr);

@@ -90,7 +90,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     targetWeight,
     bodyWeight,
     loadMultiplier = 1.0,
-    userGender = 'male',
+    userGender = 'other',
     hasPerformed1RMDate = null,
   } = inputs;
 
@@ -312,7 +312,7 @@ export function estimateConservativeTargetDate(
   targetWeight: number,
   bodyWeight: number,
   loadMultiplier: number = 1.0,
-  userGender: 'male' | 'female' | 'other' = 'male'
+  userGender: 'male' | 'female' | 'other' = 'other'
 ): Date {
   if (current1RM <= 0 || targetWeight <= current1RM) {
     return new Date();
@@ -342,7 +342,7 @@ export function isProgressionRateRealistic(
   bodyWeight: number,
   requiredRatePerWeek: number,
   loadMultiplier: number = 1.0,
-  userGender: 'male' | 'female' | 'other' = 'male'
+  userGender: 'male' | 'female' | 'other' = 'other'
 ): boolean {
   if (currentWeight <= 0) {
     return true;
