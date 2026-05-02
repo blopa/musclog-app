@@ -206,12 +206,14 @@ export default function ProfileScreen() {
 
     // Gender stat (from user)
     if (dbUser) {
+      // TODO: use a helper function to avoid nested ternary
       const genderKey =
         dbUser.gender === 'male'
           ? 'profile.gender.male'
           : dbUser.gender === 'female'
             ? 'profile.gender.female'
             : 'profile.gender.other';
+
       statsArray.push({
         id: 'gender',
         titleKey: 'profile.stats.gender',
