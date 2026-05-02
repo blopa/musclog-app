@@ -273,6 +273,35 @@ function lambertW(z: number): number {
 }
 
 /**
+ * Forbes/Lambert W core: fraction of weight change that is lean tissue (ΔFFM/ΔBW).
+ * Returns null when the inputs are degenerate (non-negative delta, no fat mass, or NaN from W).
+ * All callers that need the Hall (2008) energy-density blend go through this.
+ */
+function forbesDeltaLeanFraction(
+  initialFatMassKg: number,
+  deltaWeightKg: number,
+  gender?: Gender
+): number | null {
+  if (deltaWeightKg >= 0 || initialFatMassKg <= 0) {
+    return null;
+  }
+
+  const forbesC = getForbesC(gender);
+  const arg =
+    (1 / forbesC) *
+    Math.exp(deltaWeightKg / forbesC) *
+    initialFatMassKg *
+    Math.exp(initialFatMassKg / forbesC);
+
+  const w = lambertW(arg);
+  if (Number.isNaN(w)) {
+    return null;
+  }
+
+  return 1 + initialFatMassKg / deltaWeightKg - (forbesC / deltaWeightKg) * w;
+}
+
+/**
  * Effective metabolizable energy (kcal) per kg of weight loss — Hall (2008) + Forbes (2007).
  *
  * The classic 7700 kcal/kg rule assumes every kg lost is pure fat (~9440 kcal/kg). In reality,
@@ -301,26 +330,17 @@ export function getEffectiveKcalPerKgWeightLoss(
   gender?: Gender,
   clampCalories: boolean = true
 ): number {
-  const dBw = deltaWeightKg;
-  if (dBw >= 0 || initialFatMassKg <= 0) {
+  if (deltaWeightKg >= 0 || initialFatMassKg <= 0) {
     return RHO_FAT_KCAL_PER_KG;
   }
 
-  const forbesC = getForbesC(gender);
-  const arg =
-    (1 / forbesC) *
-    Math.exp(dBw / forbesC) *
-    initialFatMassKg *
-    Math.exp(initialFatMassKg / forbesC);
-
-  const w = lambertW(arg);
-  if (Number.isNaN(w)) {
+  const leanFraction = forbesDeltaLeanFraction(initialFatMassKg, deltaWeightKg, gender);
+  if (leanFraction === null) {
     return DEFAULT_KCAL_PER_KG_LOSS;
   }
 
-  const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (forbesC / dBw) * w;
   const effective =
-    RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
+    RHO_FAT_KCAL_PER_KG * (1 - leanFraction) + RHO_LEAN_KCAL_PER_KG * leanFraction;
 
   if (!clampCalories) {
     return effective;
@@ -331,6 +351,44 @@ export function getEffectiveKcalPerKgWeightLoss(
 
 /** Default kcal per kg for weight loss when body composition unknown (7700 ≈ classic rule). */
 export const DEFAULT_KCAL_PER_KG_LOSS = 7700;
+
+/** Fat mass in kg: body weight × body fat fraction. */
+function fatMassKg(weightKg: number, bodyFatPercent: number): number {
+  return weightKg * (bodyFatPercent / 100);
+}
+
+/**
+ * Resolves effective kcal/kg for weight loss given body composition context.
+ * When body fat is valid, uses the Hall/Forbes composition-aware model; otherwise
+ * falls back to the classic 7700 kcal/kg rule.
+ */
+function resolveKcalPerKgLoss(
+  weightKg: number,
+  deltaWeightKg: number,
+  bodyFatPercent?: number,
+  gender?: Gender,
+  clampCalories: boolean = true
+): number {
+  if (isValidBodyFat(bodyFatPercent)) {
+    return getEffectiveKcalPerKgWeightLoss(
+      fatMassKg(weightKg, bodyFatPercent),
+      deltaWeightKg,
+      gender,
+      clampCalories
+    );
+  }
+
+  return DEFAULT_KCAL_PER_KG_LOSS;
+}
+
+/** Body fat percentage from fat mass and total body weight, clamped to a valid percentage range. */
+function bodyFatPercentFromFatMass(fatMassKgValue: number, weightKg: number): number {
+  if (weightKg <= 0) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, (fatMassKgValue / weightKg) * 100));
+}
 
 /**
  * Fat/lean split of a weight change (Hall/Forbes for loss; experience-dependent for gain).
@@ -355,31 +413,17 @@ export function getWeightChangeComposition(
   }
 
   // Loss: Hall/Forbes ΔFFM/ΔBW
-  const dBw = deltaWeightKg;
-  if (initialFatMassKg <= 0) {
+  const leanFraction =
+    initialFatMassKg > 0 ? forbesDeltaLeanFraction(initialFatMassKg, deltaWeightKg, gender) : null;
+
+  if (leanFraction === null) {
     return {
       fatChangeKg: parseFloat((0.75 * deltaWeightKg).toFixed(2)),
       leanChangeKg: parseFloat((0.25 * deltaWeightKg).toFixed(2)),
     };
   }
 
-  const forbesC = getForbesC(gender);
-  const arg =
-    (1 / forbesC) *
-    Math.exp(dBw / forbesC) *
-    initialFatMassKg *
-    Math.exp(initialFatMassKg / forbesC);
-  const w = lambertW(arg);
-
-  if (Number.isNaN(w)) {
-    return {
-      fatChangeKg: parseFloat((0.75 * deltaWeightKg).toFixed(2)),
-      leanChangeKg: parseFloat((0.25 * deltaWeightKg).toFixed(2)),
-    };
-  }
-
-  const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (forbesC / dBw) * w;
-  const leanChangeKg = parseFloat((deltaLOverDeltaBW * deltaWeightKg).toFixed(2));
+  const leanChangeKg = parseFloat((leanFraction * deltaWeightKg).toFixed(2));
   const fatChangeKg = parseFloat((deltaWeightKg - leanChangeKg).toFixed(2));
   return { fatChangeKg, leanChangeKg };
 }
@@ -486,21 +530,8 @@ export function getCalorieAdjustment(
 
   if (weightGoal === 'lose') {
     const weeklyLossKg = weightKg * getRecommendedWeeklyLossRate(bodyFatPercent, gender);
-    let deficit = (weeklyLossKg * DEFAULT_KCAL_PER_KG_LOSS) / 7;
-
-    if (isValidBodyFat(bodyFatPercent)) {
-      const initialFatMassKg = weightKg * (bodyFatPercent / 100);
-
-      // Calculates the true energy density of lost tissue based on the Forbes Curve,
-      // accounting for the fact that muscle (1800 kcal/kg) and fat (9400 kcal/kg) burn differently.
-      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(
-        initialFatMassKg,
-        -weeklyLossKg,
-        gender,
-        clampCalories
-      );
-      deficit = (weeklyLossKg * kcalPerKg) / 7;
-    }
+    const kcalPerKg = resolveKcalPerKgLoss(weightKg, -weeklyLossKg, bodyFatPercent, gender, clampCalories);
+    const deficit = (weeklyLossKg * kcalPerKg) / 7;
 
     // Deficit clamp (250-750 kcal): Prevents severe metabolic adaptation / adaptive thermogenesis
     if (!clampCalories) {
@@ -550,14 +581,8 @@ export function getExactCalorieAdjustment(
       return 0;
     }
 
-    let kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
-    if (isValidBodyFat(bodyFatPercent)) {
-      const initialFatMassKg = currentWeightKg * (bodyFatPercent! / 100);
-      const totalDeltaKg = targetWeightKg - currentWeightKg; // negative
-      // Pass full-timeframe delta so Forbes Curve sees the whole trajectory depth
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, totalDeltaKg, gender, false);
-    }
-
+    const totalDeltaKg = targetWeightKg - currentWeightKg; // negative; full-timeframe delta for Forbes depth
+    const kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, totalDeltaKg, bodyFatPercent, gender, false);
     return -Math.round((weeklyLossKg * kcalPerKg) / 7);
   }
 
@@ -929,12 +954,7 @@ export function getEffectiveKcalPerKgGoalChange(
       return null;
     }
 
-    if (isValidBodyFat(bodyFatPercent)) {
-      const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
-      return getEffectiveKcalPerKgWeightLoss(initialFatMassKg, deltaWeightKg, gender, false);
-    }
-
-    return DEFAULT_KCAL_PER_KG_LOSS;
+    return resolveKcalPerKgLoss(currentWeightKg, deltaWeightKg, bodyFatPercent, gender, false);
   }
 
   if (weightGoal === 'gain') {
@@ -1133,8 +1153,6 @@ export function calculateWeightProjection(
   options?: WeightProjectionOptions
 ): WeightProjection {
   const dailyDelta = targetCalories - tdee;
-  const useBodyFat = isValidBodyFat(options?.bodyFatPercent);
-  const bodyFatPercent = options?.bodyFatPercent ?? 0;
   const clampCalories = !options?.disableMinimumCalories;
 
   if (dailyDelta === 0) {
@@ -1148,18 +1166,8 @@ export function calculateWeightProjection(
   // Steady-state kcal per kg (fat+lean composition-aware for cuts; build cost for gains).
   let kcalPerKg: number;
   if (dailyDelta < 0) {
-    if (useBodyFat) {
-      const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
-      const roughDeltaKg = (dailyDelta * PROJECTION_DAYS) / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(
-        initialFatMassKg,
-        roughDeltaKg,
-        options?.gender,
-        clampCalories
-      );
-    } else {
-      kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
-    }
+    const roughDeltaKg = (dailyDelta * PROJECTION_DAYS) / DEFAULT_KCAL_PER_KG_LOSS;
+    kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, roughDeltaKg, options?.bodyFatPercent, options?.gender, clampCalories);
   } else {
     kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
   }
@@ -1221,18 +1229,8 @@ export function computeWeightChangeFromCalorieDelta(
   if (totalDeltaKcal > 0) {
     kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
   } else {
-    if (isValidBodyFat(options?.bodyFatPercent)) {
-      const initialFatMassKg = currentWeightKg * (options!.bodyFatPercent! / 100);
-      const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(
-        initialFatMassKg,
-        roughDeltaKg,
-        options?.gender,
-        clampCalories
-      );
-    } else {
-      kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
-    }
+    const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
+    kcalPerKg = resolveKcalPerKgLoss(currentWeightKg, roughDeltaKg, options?.bodyFatPercent, options?.gender, clampCalories);
   }
 
   return totalDeltaKcal / kcalPerKg;
@@ -1566,13 +1564,10 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const tdee = calculateTDEE(sharedTdeeParams);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
-  const targetCalories = calculateTargetCalories(tdee, weightGoal, {
-    gender,
-    bmr,
-    weightKg,
-    bodyFatPercent,
-    disableMinimumCalories,
-  });
+  const baseTargetCaloriesOpts: TargetCaloriesOptions = { gender, weightKg, bodyFatPercent, disableMinimumCalories };
+  const calculateTargetCaloriesForBmr = (tdeeValue: number, bmrValue: number): number =>
+    calculateTargetCalories(tdeeValue, weightGoal, { ...baseTargetCaloriesOpts, bmr: bmrValue });
+  const targetCalories = calculateTargetCaloriesForBmr(tdee, bmr);
 
   // Step 4 – Macros (driven by fitness goal for split; FFM-based protein when body fat available)
   const macros = calculateMacros(targetCalories, fitnessGoal, { weightKg, bodyFatPercent });
@@ -1598,25 +1593,13 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
     const tdeeLow = calculateTDEE({ ...sharedTdeeParams, bmr: bmrLow });
-    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, {
-      gender,
-      bmr: bmrLow,
-      weightKg,
-      bodyFatPercent,
-      disableMinimumCalories,
-    });
+    minTargetCalories = calculateTargetCaloriesForBmr(tdeeLow, bmrLow);
 
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
     const tdeeHigh = calculateTDEE({ ...sharedTdeeParams, bmr: bmrHigh });
-    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, {
-      gender,
-      bmr: bmrHigh,
-      weightKg,
-      bodyFatPercent,
-      disableMinimumCalories,
-    });
+    maxTargetCalories = calculateTargetCaloriesForBmr(tdeeHigh, bmrHigh);
   }
 
   const dailyDelta = targetCalories - tdee;
@@ -1627,7 +1610,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   let estimatedFatChangeKg: number | undefined;
   let estimatedLeanChangeKg: number | undefined;
   if (totalWeightChangeKg !== 0) {
-    const initialFatMassKg = useBodyFat ? weightKg * (bodyFatPercent! / 100) : weightKg * 0.25;
+    const initialFatMassKg = useBodyFat ? fatMassKg(weightKg, bodyFatPercent!) : weightKg * 0.25;
     const comp = getWeightChangeComposition(
       initialFatMassKg,
       totalWeightChangeKg,
@@ -1647,21 +1630,17 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   let targetBodyFat: number | undefined;
   if (useBodyFat) {
     if (weightGoal === 'lose' && estimatedFatChangeKg !== undefined) {
-      const newFatMassKg = weightKg * (bodyFatPercent! / 100) + estimatedFatChangeKg;
+      const newFatMassKg = fatMassKg(weightKg, bodyFatPercent!) + estimatedFatChangeKg;
       targetBodyFat = parseFloat(
-        Math.max(0, Math.min(100, (newFatMassKg / projection.projectedWeightKg) * 100)).toFixed(1)
+        bodyFatPercentFromFatMass(newFatMassKg, projection.projectedWeightKg).toFixed(1)
       );
     } else if (weightGoal === 'maintain') {
       targetBodyFat = bodyFatPercent;
-    } else if (weightGoal === 'gain') {
-      const { fatChangeKg } = getWeightChangeComposition(
-        weightKg * (bodyFatPercent! / 100),
-        totalWeightChangeKg,
-        input.liftingExperience,
-        gender
+    } else if (weightGoal === 'gain' && estimatedFatChangeKg !== undefined) {
+      const newFatMassKg = fatMassKg(weightKg, bodyFatPercent!) + estimatedFatChangeKg;
+      targetBodyFat = parseFloat(
+        bodyFatPercentFromFatMass(newFatMassKg, projection.projectedWeightKg).toFixed(1)
       );
-      const newFatMassKg = weightKg * (bodyFatPercent! / 100) + fatChangeKg;
-      targetBodyFat = parseFloat(((newFatMassKg / projection.projectedWeightKg) * 100).toFixed(1));
     }
   }
 
