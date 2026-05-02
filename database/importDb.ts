@@ -13,6 +13,7 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
+import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService } from './services';
 
@@ -199,7 +200,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   // Phase 1.5: Create a pre-restore backup of the current database.
-  const { createPreRestoreBackup } = require('./preMigrationBackup');
   await createPreRestoreBackup();
 
   // Phase 2: Wipe the database completely before restoring.
