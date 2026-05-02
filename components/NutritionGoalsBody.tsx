@@ -54,6 +54,7 @@ import {
   eatingPhaseToWeightGoal,
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
+  getEffectiveKcalPerKgGoalChange,
 } from '@/utils/nutritionCalculator';
 import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
 import {
@@ -630,6 +631,43 @@ export function NutritionGoalsBody({
     }
   }, [user, latestWeightKg, userHeightM, latestBodyFatPercent, disableMinimumCalories]);
 
+  const effectiveKcalPerKgHint = useMemo(() => {
+    if (
+      latestWeightKg == null ||
+      targetWeight == null ||
+      eatingPhase === 'maintain' ||
+      (targetDate ?? null) == null
+    ) {
+      return null;
+    }
+
+    const targetWeightKg = displayToKg(targetWeight, units);
+    const kcalPerKg = getEffectiveKcalPerKgGoalChange(
+      eatingPhaseToWeightGoal(eatingPhase),
+      latestWeightKg,
+      targetWeightKg,
+      latestBodyFatPercent ?? undefined,
+      user?.gender ?? 'other',
+      user?.liftingExperience ?? 'intermediate'
+    );
+
+    if (kcalPerKg == null || !Number.isFinite(kcalPerKg)) {
+      return null;
+    }
+
+    const value = units === 'imperial' ? kcalPerKg * 0.453592 : kcalPerKg;
+    return Math.round(value);
+  }, [
+    eatingPhase,
+    latestBodyFatPercent,
+    latestWeightKg,
+    targetDate,
+    targetWeight,
+    units,
+    user?.gender,
+    user?.liftingExperience,
+  ]);
+
   const handleCaloriesChange = useCallback(
     (newCalories: number) => {
       const sanitized = Math.max(0, newCalories);
@@ -1050,6 +1088,16 @@ export function NutritionGoalsBody({
                       {t('nutritionGoals.atMaintenance')}
                     </Text>
                   )}
+                  {effectiveKcalPerKgHint != null ? (
+                    <Text className="text-center text-[11px] text-text-secondary">
+                      {t(
+                        units === 'imperial'
+                          ? 'nutritionGoals.kcalPerLbTissueHint'
+                          : 'nutritionGoals.kcalPerKgTissueHint',
+                        { kcal: formatInteger(effectiveKcalPerKgHint) }
+                      )}
+                    </Text>
+                  ) : null}
                 </View>
               ) : null}
             </View>

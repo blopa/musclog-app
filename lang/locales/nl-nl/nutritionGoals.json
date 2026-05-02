@@ -5,6 +5,8 @@
     "dailyMacroTargets": "Dagelijkse macrodoelen",
     "totalDailyCalories": "Totaal dagelijkse calorieën",
     "tdeeHint": "TDEE: {{kcal}} kcal",
+    "kcalPerKgTissueHint": "Gebaseerd op {{kcal}} kcal per 1 kg weefsel",
+    "kcalPerLbTissueHint": "Gebaseerd op {{kcal}} kcal per 1 lb weefsel",
     "calorieDeficit": "−{{kcal}} kcal tekort",
     "calorieSurplus": "+{{kcal}} kcal overschot",
     "atMaintenance": "Op onderhoud",

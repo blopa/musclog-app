@@ -5,6 +5,8 @@
     "dailyMacroTargets": "Дневные целевые макросы",
     "totalDailyCalories": "Общие дневные калории",
     "tdeeHint": "TDEE: {{kcal}} ккал",
+    "kcalPerKgTissueHint": "На основе {{kcal}} ккал на 1 кг ткани",
+    "kcalPerLbTissueHint": "На основе {{kcal}} ккал на 1 фунт ткани",
     "calorieDeficit": "−{{kcal}} ккал дефицит",
     "calorieSurplus": "+{{kcal}} ккал профицит",
     "atMaintenance": "На поддержании",

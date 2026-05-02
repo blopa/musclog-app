@@ -5,6 +5,8 @@
     "dailyMacroTargets": "Daily Macro Targets",
     "totalDailyCalories": "Total Daily Calories",
     "tdeeHint": "TDEE: {{kcal}} kcal",
+    "kcalPerKgTissueHint": "Based on {{kcal}} kcal per 1 kg of tissue",
+    "kcalPerLbTissueHint": "Based on {{kcal}} kcal per 1 lb of tissue",
     "calorieDeficit": "−{{kcal}} kcal deficit",
     "calorieSurplus": "+{{kcal}} kcal surplus",
     "atMaintenance": "At maintenance",

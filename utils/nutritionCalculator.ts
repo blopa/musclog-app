@@ -871,6 +871,53 @@ export interface TargetCaloriesOptions {
 }
 
 /**
+ * Effective kcal per kg implied by the goal-change model for a given target weight.
+ * Loss uses the Hall/Forbes composition-aware estimate when body fat is available,
+ * otherwise it falls back to the classic 7700 kcal/kg rule. Gain uses the
+ * experience-weighted tissue build cost.
+ */
+export function getEffectiveKcalPerKgGoalChange(
+  weightGoal: WeightGoal,
+  currentWeightKg: number,
+  targetWeightKg: number,
+  bodyFatPercent?: number,
+  gender?: Gender,
+  liftingExperience?: LiftingExperience
+): number | null {
+  if (weightGoal === 'maintain' || currentWeightKg <= 0 || targetWeightKg <= 0) {
+    return null;
+  }
+
+  const deltaWeightKg = targetWeightKg - currentWeightKg;
+  if (deltaWeightKg === 0) {
+    return null;
+  }
+
+  if (weightGoal === 'lose') {
+    if (deltaWeightKg >= 0) {
+      return null;
+    }
+
+    if (isValidBodyFat(bodyFatPercent)) {
+      const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
+      return getEffectiveKcalPerKgWeightLoss(initialFatMassKg, deltaWeightKg, gender, false);
+    }
+
+    return DEFAULT_KCAL_PER_KG_LOSS;
+  }
+
+  if (weightGoal === 'gain') {
+    if (deltaWeightKg <= 0) {
+      return null;
+    }
+
+    return getEffectiveKcalPerKgGain(liftingExperience);
+  }
+
+  return null;
+}
+
+/**
  * Get the minimum calorie floor based on options.
  * Returns 0 if minimum calories are disabled, otherwise uses gender-specific minimums.
  */
