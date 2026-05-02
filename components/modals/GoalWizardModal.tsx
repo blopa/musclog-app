@@ -41,6 +41,16 @@ const EATING_PHASE_MAP: Record<GoalType, EatingPhase> = {
   gain: 'bulk',
 };
 
+const getGoalWeightTipKey = (goalType: GoalType | null, units: 'metric' | 'imperial'): string => {
+  if (goalType === 'gain') {
+    return units === 'imperial'
+      ? 'goalsManagement.goalWizard.goalWeight.tipGainImperial'
+      : 'goalsManagement.goalWizard.goalWeight.tipGain';
+  }
+
+  return 'goalsManagement.goalWizard.goalWeight.tipLoseBF';
+};
+
 type GoalOptionCardProps = {
   icon: React.ReactNode;
   title: string;
@@ -377,13 +387,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
     const currentWeightDisplay =
       currentWeightKg !== null ? Math.round(kgToDisplay(currentWeightKg, units) * 10) / 10 : null;
 
-    const tipKey =
-      // TODO: use a helper function instead of nested ternary
-      goalType === 'gain'
-        ? units === 'imperial'
-          ? 'goalsManagement.goalWizard.goalWeight.tipGainImperial'
-          : 'goalsManagement.goalWizard.goalWeight.tipGain'
-        : 'goalsManagement.goalWizard.goalWeight.tipLoseBF';
+    const tipKey = getGoalWeightTipKey(goalType, units);
 
     return (
       <View style={{ gap: 16 }}>
