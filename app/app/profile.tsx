@@ -50,6 +50,17 @@ import {
 import { handleError } from '@/utils/handleError';
 import { kgToDisplay } from '@/utils/unitConversion';
 
+const getGenderKey = (gender: string): string => {
+  switch (gender) {
+    case 'male':
+      return 'profile.gender.male';
+    case 'female':
+      return 'profile.gender.female';
+    default:
+      return 'profile.gender.other';
+  }
+};
+
 export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -206,13 +217,7 @@ export default function ProfileScreen() {
 
     // Gender stat (from user)
     if (dbUser) {
-      // TODO: use a helper function to avoid nested ternary
-      const genderKey =
-        dbUser.gender === 'male'
-          ? 'profile.gender.male'
-          : dbUser.gender === 'female'
-            ? 'profile.gender.female'
-            : 'profile.gender.other';
+      const genderKey = getGenderKey(dbUser.gender);
 
       statsArray.push({
         id: 'gender',
