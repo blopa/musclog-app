@@ -71,7 +71,8 @@
         "label": "Peso Objetivo",
         "currentWeightLabel": "Tu peso actual",
         "tipLoseBF": "Apuntar a un 0,5–1% de tu peso corporal por semana es un ritmo sostenible que ayuda a preservar la masa muscular durante una definición.",
-        "tipGain": "Ganar 0,25–0,5 kg por semana mantiene la ganancia de grasa al mínimo mientras permite un crecimiento muscular constante."
+        "tipGain": "Ganar 0,25–0,5 kg por semana mantiene la ganancia de grasa al mínimo mientras permite un crecimiento muscular constante.",
+        "tipGainImperial": "Ganar 0,55–1,1 lbs por semana mantiene la ganancia de grasa al mínimo mientras permite un crecimiento muscular constante."
       },
       "targetDate": {
         "title": "¿Cuándo quieres alcanzar tu objetivo?",
@@ -80,7 +81,7 @@
         "notSet": "Sin fecha específica",
         "clear": "Borrar fecha",
         "warningLabel": "Plazo Agresivo",
-        "warningMessage": "Ritmo solicitado: aproximadamente {{weeklyLoss}} kg por semana. Límite superior sugerido para tu peso corporal actual: aproximadamente {{suggestedMaxWeeklyLoss}} kg por semana. Aun así calcularemos las calorías, pero una fecha objetivo más realista sería alrededor de {{estimatedDate}}."
+        "warningMessage": "Ritmo solicitado: aproximadamente {{weeklyLoss}} {{unit}} por semana. Límite superior sugerido para tu peso corporal actual: aproximadamente {{suggestedMaxWeeklyLoss}} {{unit}} por semana. Aun así calcularemos las calorías, pero una fecha objetivo más realista sería alrededor de {{estimatedDate}}."
       }
     },
     "manageCheckinData": {

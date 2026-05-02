@@ -493,7 +493,12 @@ export function getCalorieAdjustment(
 
       // Calculates the true energy density of lost tissue based on the Forbes Curve,
       // accounting for the fact that muscle (1800 kcal/kg) and fat (9400 kcal/kg) burn differently.
-      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, -weeklyLossKg, gender, clampCalories);
+      const kcalPerKg = getEffectiveKcalPerKgWeightLoss(
+        initialFatMassKg,
+        -weeklyLossKg,
+        gender,
+        clampCalories
+      );
       deficit = (weeklyLossKg * kcalPerKg) / 7;
     }
 
@@ -533,7 +538,7 @@ export function getExactCalorieAdjustment(
   daysToGoal: number,
   bodyFatPercent?: number,
   gender?: Gender,
-  liftingExperience?: LiftingExperience,
+  liftingExperience?: LiftingExperience
 ): number {
   if (daysToGoal <= 0) {
     return 0;
@@ -951,11 +956,11 @@ function getMinimumCalorieFloor(options?: TargetCaloriesOptions): number {
   if (options?.disableMinimumCalories) {
     return 0;
   }
-  
+
   if (options?.gender !== undefined) {
     return getMinCalories(options.gender, options.bmr);
   }
-  
+
   return MIN_CALORIES_FEMALE;
 }
 
@@ -974,20 +979,25 @@ export function calculateTargetCalories(
 
   if (
     weightGoal !== 'maintain' &&
-    weightKg !== undefined && weightKg > 0 &&
+    weightKg !== undefined &&
+    weightKg > 0 &&
     targetWeightKg !== undefined &&
-    daysToGoal !== undefined && daysToGoal > 0
+    daysToGoal !== undefined &&
+    daysToGoal > 0
   ) {
     // Exact-formula path: no floor — caller has opted into unconstrained math.
-    return Math.round(tdee + getExactCalorieAdjustment(
-      weightGoal,
-      weightKg,
-      targetWeightKg,
-      daysToGoal,
-      bodyFatPercent,
-      gender,
-      liftingExperience,
-    ));
+    return Math.round(
+      tdee +
+        getExactCalorieAdjustment(
+          weightGoal,
+          weightKg,
+          targetWeightKg,
+          daysToGoal,
+          bodyFatPercent,
+          gender,
+          liftingExperience
+        )
+    );
   }
 
   const adjustment =
@@ -1141,7 +1151,12 @@ export function calculateWeightProjection(
     if (useBodyFat) {
       const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
       const roughDeltaKg = (dailyDelta * PROJECTION_DAYS) / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender, clampCalories);
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(
+        initialFatMassKg,
+        roughDeltaKg,
+        options?.gender,
+        clampCalories
+      );
     } else {
       kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
     }
@@ -1209,7 +1224,12 @@ export function computeWeightChangeFromCalorieDelta(
     if (isValidBodyFat(options?.bodyFatPercent)) {
       const initialFatMassKg = currentWeightKg * (options!.bodyFatPercent! / 100);
       const roughDeltaKg = totalDeltaKcal / DEFAULT_KCAL_PER_KG_LOSS;
-      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg, options?.gender, clampCalories);
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(
+        initialFatMassKg,
+        roughDeltaKg,
+        options?.gender,
+        clampCalories
+      );
     } else {
       kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
     }

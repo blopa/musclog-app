@@ -19,9 +19,9 @@ import {
   FORBES_C_MALE,
   generateWeeklyCheckins,
   getCalorieAdjustment,
-  getExactCalorieAdjustment,
   getEffectiveKcalPerKgGain,
   getEffectiveKcalPerKgWeightLoss,
+  getExactCalorieAdjustment,
   getGainFatFraction,
   getMinCalories,
   getProposedDailyWaterIntake,
@@ -1537,7 +1537,9 @@ describe('calculateTargetCalories', () => {
 
   it('uses exact formula when targetWeightKg and daysToGoal are supplied', () => {
     // weeklyLoss = (80-74)/84*7 = 0.5 kg/week; deficit = 0.5*7700/7 = 550
-    expect(calculateTargetCalories(2500, 'lose', { weightKg: 80, targetWeightKg: 74, daysToGoal: 84 })).toBe(1950);
+    expect(
+      calculateTargetCalories(2500, 'lose', { weightKg: 80, targetWeightKg: 74, daysToGoal: 84 })
+    ).toBe(1950);
   });
 
   it('exact path: gain uses experience-weighted synthesis cost', () => {
@@ -1564,7 +1566,11 @@ describe('calculateTargetCalories', () => {
   it('exact path: maintain ignores targetWeightKg and returns TDEE', () => {
     // maintain branch bypasses getExactCalorieAdjustment entirely → adjustment = 0
     expect(
-      calculateTargetCalories(2500, 'maintain', { weightKg: 80, targetWeightKg: 70, daysToGoal: 84 })
+      calculateTargetCalories(2500, 'maintain', {
+        weightKg: 80,
+        targetWeightKg: 70,
+        daysToGoal: 84,
+      })
     ).toBe(2500);
   });
 });
@@ -3012,17 +3018,23 @@ describe('getExactCalorieAdjustment', () => {
 
   it('gain (intermediate) uses 6370 kcal/kg synthesis cost', () => {
     // weeklyGain = (76-70)/84*7 = 0.5; surplus = 0.5*6370/7 = 455
-    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')).toBe(455);
+    expect(
+      getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')
+    ).toBe(455);
   });
 
   it('gain (beginner) uses 5876 kcal/kg (more lean gain → cheaper)', () => {
     // surplus = 0.5*5876/7 ≈ 420
-    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'beginner')).toBe(420);
+    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'beginner')).toBe(
+      420
+    );
   });
 
   it('gain (advanced) uses 6864 kcal/kg (more fat gain → more expensive)', () => {
     // surplus = 0.5*6864/7 ≈ 490
-    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'advanced')).toBe(490);
+    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'advanced')).toBe(
+      490
+    );
   });
 
   it('gain ordering: beginner < intermediate < advanced (fat-fraction cost)', () => {
@@ -3035,12 +3047,22 @@ describe('getExactCalorieAdjustment', () => {
 
   it('gain is NOT clamped — can exceed the old 400 kcal ceiling', () => {
     // All experience levels at 0.5 kg/week produce > 400 kcal surplus
-    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')).toBeGreaterThan(400);
+    expect(
+      getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')
+    ).toBeGreaterThan(400);
   });
 
   it('gain defaults to intermediate when liftingExperience is undefined', () => {
     const defaultResult = getExactCalorieAdjustment('gain', 70, 76, 84);
-    const intermediateResult = getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate');
+    const intermediateResult = getExactCalorieAdjustment(
+      'gain',
+      70,
+      76,
+      84,
+      undefined,
+      undefined,
+      'intermediate'
+    );
     expect(defaultResult).toBe(intermediateResult);
   });
 });

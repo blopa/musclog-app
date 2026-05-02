@@ -378,8 +378,11 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
       currentWeightKg !== null ? Math.round(kgToDisplay(currentWeightKg, units) * 10) / 10 : null;
 
     const tipKey =
+      // TODO: use a helper function instead of nested ternary
       goalType === 'gain'
-        ? 'goalsManagement.goalWizard.goalWeight.tipGain'
+        ? units === 'imperial'
+          ? 'goalsManagement.goalWizard.goalWeight.tipGainImperial'
+          : 'goalsManagement.goalWizard.goalWeight.tipGain'
         : 'goalsManagement.goalWizard.goalWeight.tipLoseBF';
 
     return (
@@ -587,8 +590,12 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             icon={AlertTriangle}
             label={t('goalsManagement.goalWizard.targetDate.warningLabel')}
             message={t('goalsManagement.goalWizard.targetDate.warningMessage', {
-              weeklyLoss: formatDecimal(targetDateWarning.weeklyLossKg, 2),
-              suggestedMaxWeeklyLoss: formatDecimal(targetDateWarning.suggestedMaxWeeklyLossKg, 2),
+              weeklyLoss: formatDecimal(kgToDisplay(targetDateWarning.weeklyLossKg, units), 2),
+              suggestedMaxWeeklyLoss: formatDecimal(
+                kgToDisplay(targetDateWarning.suggestedMaxWeeklyLossKg, units),
+                2
+              ),
+              unit: weightUnit,
               estimatedDate:
                 targetDateWarning.estimatedDate ??
                 t('goalsManagement.goalWizard.targetDate.notSet'),
