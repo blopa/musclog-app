@@ -31,7 +31,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
   const [bodyWeight, setBodyWeight] = useState(0);
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
-  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
+  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('other');
   const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
   const [recentAverage1RM, setRecentAverage1RM] = useState<number | null>(null);
   const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(
@@ -74,7 +74,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         setRecentAverage1RM(recentAverage?.average1RM ?? null);
         setBodyWeight(bw);
         setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
-        setUserGender(user?.gender ?? 'male');
+        setUserGender(user?.gender ?? 'other');
       } else if (goal.goalType === 'consistency') {
         const now = new Date();
         const weekStartMs = localDayStartMs(now) - 6 * 86_400_000;

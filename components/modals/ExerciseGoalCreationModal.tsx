@@ -153,7 +153,7 @@ export default function ExerciseGoalCreationModal({
   const [exerciseDataPoints, setExerciseDataPoints] = useState<ProgressiveOverloadDataPoint[]>([]);
   const [current1RM, setCurrent1RM] = useState<number | null>(null);
   const [bodyWeight, setBodyWeight] = useState(0);
-  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('male');
+  const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('other');
 
   useEffect(() => {
     if (!visible) {
@@ -187,7 +187,7 @@ export default function ExerciseGoalCreationModal({
         .then(([data, recentAverage, bw, user]) => {
           setExerciseDataPoints(data);
           setBodyWeight(bw);
-          setUserGender(user?.gender ?? 'male');
+          setUserGender(user?.gender ?? 'other');
 
           const recent1RM = recentAverage?.average1RM;
           let nextTargetDisplay: string | undefined;
