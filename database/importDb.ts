@@ -198,7 +198,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  // TODO: before deleting the database, make a backup of the current database and save it, like we do when we have a migration
+  // Phase 1.5: Create a pre-restore backup of the current database.
+  const { createPreRestoreBackup } = require('./preMigrationBackup');
+  await createPreRestoreBackup();
 
   // Phase 2: Wipe the database completely before restoring.
   // unsafeResetDatabase() clears both the underlying adapter (LokiJS on web, SQLite on

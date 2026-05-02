@@ -694,7 +694,7 @@ export class ProgressService {
       finalWeight = convert(finalWeight, 'lb').to('kg') as number;
     }
 
-    const gender = user?.gender || 'male';
+    const gender = user?.gender || 'other';
     const weightKg =
       finalWeight ||
       (isImperial

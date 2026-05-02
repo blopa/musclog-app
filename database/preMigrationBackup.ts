@@ -121,6 +121,43 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
  */
 export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
 
+/**
+ * Explicitly create a backup before restoring a database dump.
+ * This ensures the user can undo a restore if they accidentally imported the wrong file.
+ */
+export async function createPreRestoreBackup(): Promise<void> {
+  try {
+    if (!cacheDirectory) {
+      throw new Error('Cache directory is not available');
+    }
+
+    const jsonString = await dumpDatabase();
+    const createdAt = new Date().toISOString();
+    const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
+    const fileName = `${timestamp}-pre-restore.json`;
+    const uri = `${cacheDirectory}${fileName}`;
+
+    await writeAsStringAsync(uri, jsonString);
+
+    const existing = await getStoredBackups();
+    const next = await pruneOldBackups([
+      {
+        uri,
+        createdAt,
+        fromVersion: null,
+        toVersion: null,
+      },
+      ...existing,
+    ]);
+    await writeStoredBackups(next);
+
+    console.log(`[PreRestoreBackup] Created: ${uri}`);
+  } catch (error) {
+    console.error('[PreRestoreBackup] Failed to create backup:', error);
+    handleError(error, 'database.preRestoreBackup');
+  }
+}
+
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
