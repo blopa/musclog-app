@@ -273,9 +273,27 @@ function lambertW(z: number): number {
 }
 
 /**
- * Effective metabolizable energy (kcal) per kg of weight loss from Hall (2008) + Hall (2007) Forbes extension.
- * initialFatMassKg = current fat mass (kg), deltaWeightKg = planned weight change (negative for loss).
- * Returns kcal per kg so that (deficit in kcal) / (this value) = weight loss in kg.
+ * Effective metabolizable energy (kcal) per kg of weight loss — Hall (2008) + Forbes (2007).
+ *
+ * The classic 7700 kcal/kg rule assumes every kg lost is pure fat (~9440 kcal/kg). In reality,
+ * weight loss is always a mix of fat and lean tissue (muscle, glycogen, water). The actual split
+ * depends on how lean you currently are: leaner people lose a higher proportion of lean mass per
+ * kg because the body protects fat stores more aggressively and sacrifices more muscle instead.
+ *
+ * This function computes the blended energy density:
+ *   effective = 9440 × (fat fraction) + 1820 × (lean fraction)
+ *
+ * The fat/lean split is derived from the Forbes curve (Hall 2007, PMC2376748): ΔFFM/ΔBW as a
+ * function of initial fat mass, solved via Lambert W. The leaner the person, the lower the result
+ * (e.g. ~5800 kcal/kg at ~15% BF vs ~7700 kcal/kg when body fat % is unknown).
+ *
+ * Falls back to DEFAULT_KCAL_PER_KG_LOSS (7700) when body fat is unavailable or math degenerates.
+ *
+ * @param initialFatMassKg - Current fat mass in kg (currentWeight × bodyFat%)
+ * @param deltaWeightKg    - Planned weight change in kg (negative for loss)
+ * @param gender
+ * @param clampCalories
+ * @returns kcal per kg, so that totalDeficit / returnValue = weight change in kg
  */
 export function getEffectiveKcalPerKgWeightLoss(
   initialFatMassKg: number,
@@ -872,9 +890,17 @@ export interface TargetCaloriesOptions {
 
 /**
  * Effective kcal per kg implied by the goal-change model for a given target weight.
- * Loss uses the Hall/Forbes composition-aware estimate when body fat is available,
- * otherwise it falls back to the classic 7700 kcal/kg rule. Gain uses the
- * experience-weighted tissue build cost.
+ *
+ * Loss: uses the Hall (2008) + Forbes (2007) composition-aware estimate when body fat % is
+ * available. Because weight loss is a mix of fat (~9440 kcal/kg) and lean tissue (~1820 kcal/kg),
+ * the blended rate is lower than the classic 7700 rule whenever lean loss is significant — i.e.
+ * for leaner individuals. Falls back to 7700 kcal/kg when body fat is unknown.
+ *
+ * Gain: uses an experience-weighted tissue build cost (fat + lean mix via getEffectiveKcalPerKgGain).
+ * Beginners build more lean mass per kg gained (~60% lean / 40% fat), so their cost is higher;
+ * advanced lifters gain more fat per kg (~40% lean / 60% fat), so their cost is lower.
+ *
+ * Returns null for maintenance or when inputs are invalid.
  */
 export function getEffectiveKcalPerKgGoalChange(
   weightGoal: WeightGoal,
