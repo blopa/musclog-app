@@ -116,6 +116,53 @@ export async function deleteBackup(uri: string): Promise<void> {
  */
 export async function createPreMigrationBackup(_event?: unknown): Promise<void> {}
 
+/**
+ * Create a backup before restoring a database dump on Web.
+ * Stores the current database content in localStorage.
+ */
+export async function createPreRestoreBackup(): Promise<void> {
+  if (isStaticExport || typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return;
+  }
+
+  try {
+    const jsonString = await dumpDatabase();
+    const hash = await computeHash(jsonString);
+    const createdAt = new Date().toISOString();
+
+    // Store content — handle QuotaExceededError by clearing older backups first.
+    try {
+      localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+    } catch {
+      const existing = await getStoredBackups();
+      for (const b of existing) {
+        const h = b.uri.replace('web-backup://', '');
+        localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${h}`);
+      }
+      localStorage.removeItem(WEB_BACKUPS_KEY);
+      try {
+        localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+      } catch {
+        console.warn('[WebBackup] Database dump too large for localStorage, skipping backup');
+        return;
+      }
+    }
+
+    // Update metadata index.
+    const existing = await getStoredBackups();
+    const next = pruneOldBackups([
+      { uri: `web-backup://${hash}`, createdAt, fromVersion: null, toVersion: null },
+      ...existing,
+    ]);
+    saveBackupIndex(next);
+
+    console.log(`[WebBackup] Created pre-restore backup (hash: ${hash})`);
+  } catch (error) {
+    console.error('[WebBackup] Failed to create pre-restore backup:', error);
+    handleError(error, 'preMigrationBackup.web.preRestore');
+  }
+}
+
 // ─── Web migration check ───────────────────────────────────────────────────
 
 /**
