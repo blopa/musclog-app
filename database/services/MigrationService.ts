@@ -30,6 +30,7 @@ import {
   WorkoutTemplateSet,
 } from '@/database/models';
 import i18n from '@/lang/lang';
+import { isProduction } from '@/utils/app';
 import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
@@ -1869,7 +1870,7 @@ export class MigrationService {
       console.log('Database exists... Starting migration from old database...');
 
       // Debug: List all tables in development mode
-      if (__DEV__) {
+      if (!isProduction()) {
         try {
           const tables = await this.getOldDatabaseTables();
           console.log('🔍 Old database tables:', tables);

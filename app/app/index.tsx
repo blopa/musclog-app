@@ -46,6 +46,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
+import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
@@ -629,7 +630,7 @@ export default function HomeScreen() {
         }}
         onCoachPress={openCoach}
         onCyclePress={() => router.navigate('/app/cycle')}
-        {...(__DEV__ && {
+        {...(!isProduction() && {
           onDebugMenuPress: () => router.navigate('/app/test/debug'),
         })}
       />

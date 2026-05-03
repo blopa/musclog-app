@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 
 import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
+import { isProduction } from '@/utils/app';
 
 import { configureBasicGenAI } from './gemini';
 import { handleError } from './handleError';
@@ -218,7 +219,7 @@ function buildOpenAIClient(config: CoachAIConfig): OpenAI {
   // In web dev mode, route gateway requests through a local CORS proxy —
   // Cloudflare AI Gateway doesn't return CORS headers for browser preflights.
   const devWebProxyFetch =
-    __DEV__ && config.provider === 'gateway'
+    !isProduction() && config.provider === 'gateway'
       ? (url: RequestInfo | URL, init?: RequestInit) =>
           fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
       : undefined;

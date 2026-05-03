@@ -152,7 +152,7 @@ existing `dumpDatabase` function.**
 In the root layout's startup effect (before any database-touching components render):
 
 ```typescript
-import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup.web';
+import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
 
 // In the root layout component, before rendering children:
 const [dbReady, setDbReady] = useState(false);

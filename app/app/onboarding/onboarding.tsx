@@ -14,6 +14,7 @@ import PreRegistrationIntro from '@/components/PreRegistrationIntro';
 import { Button } from '@/components/theme/Button';
 import { PageIndicators } from '@/components/theme/PageIndicators';
 import { useTheme } from '@/hooks/useTheme';
+import { isProduction } from '@/utils/app';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -516,7 +517,7 @@ export default function OnboardingScreen() {
       pagerRef.current?.setPage(nextStep);
     } else {
       // Navigate to home when on last step
-      if (!__DEV__ && Platform.OS === 'web') {
+      if (isProduction() && Platform.OS === 'web') {
         router.navigate('/app/onboarding/fitness-info');
       } else {
         router.navigate('/app/onboarding/health-connect');
@@ -543,7 +544,7 @@ export default function OnboardingScreen() {
           <MaybeLaterButton
             onPress={() => {
               // Navigate to home or skip onboarding
-              if (!__DEV__ && Platform.OS === 'web') {
+              if (isProduction() && Platform.OS === 'web') {
                 router.navigate('/app/onboarding/fitness-info');
               } else {
                 router.navigate('/app/onboarding/health-connect');

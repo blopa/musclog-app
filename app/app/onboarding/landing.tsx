@@ -16,6 +16,7 @@ import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 
@@ -42,7 +43,7 @@ export default function LandingScreen() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        if (__DEV__) {
+        if (!isProduction()) {
           const result = await verifyDatabaseTables();
           if (!result.success) {
             console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');

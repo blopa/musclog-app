@@ -1,3 +1,5 @@
+import { isProduction } from '@/utils/app';
+
 import { captureException } from './sentry';
 import { showSnackbar } from './snackbarService';
 
@@ -31,7 +33,7 @@ export async function handleError(
     await captureException(error, { data: { context } });
   }
 
-  if (__DEV__) {
+  if (!isProduction()) {
     console.error(consoleMessage || `Error in ${context}:`, error);
   }
 

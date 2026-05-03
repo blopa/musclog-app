@@ -3,6 +3,7 @@ import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 
 import { isStaticExport } from '@/constants/platform';
+import { isProduction } from '@/utils/app';
 
 let isInitialized = false;
 
@@ -16,7 +17,7 @@ export function initializeSentry() {
 
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? undefined,
-    environment: __DEV__ ? 'development' : 'production',
+    environment: isProduction() ? 'production' : 'development',
     // Keep payloads intentionally minimal for privacy.
     sendDefaultPii: false,
     enableAutoSessionTracking: false,

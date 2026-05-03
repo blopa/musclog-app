@@ -174,6 +174,6 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 }
 
 export function shouldSeedDevData() {
-  // return __DEV__;
+  // return !isProduction();
   return false;
 }
