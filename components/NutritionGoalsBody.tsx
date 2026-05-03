@@ -1,4 +1,5 @@
 import convert from 'convert';
+import { differenceInCalendarDays } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
@@ -17,6 +18,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   Platform,
   Pressable,
   ScrollView,
@@ -41,11 +43,18 @@ import { useUser } from '@/hooks/useUser';
 import i18n from '@/lang/lang';
 import { localDayStartMs } from '@/utils/calendarDate';
 import {
+  type ResolvedMacros,
+  resolveDynamicGoalPreview,
+  resolveGoalTrajectoryCalories,
+} from '@/utils/dynamicNutritionTarget';
+import {
   bmiFromWeightAndHeightM,
+  calculateMacros,
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
+  getEffectiveKcalPerKgGoalChange,
 } from '@/utils/nutritionCalculator';
 import { isDynamicNutritionGoalValid } from '@/utils/nutritionGoalHelpers';
 import {
@@ -97,6 +106,7 @@ type NutritionGoalsModalBodyProps = {
   showSaveButton?: boolean;
   showSubtitle?: boolean;
   showGoalStartDate?: boolean;
+  hideEatingPhase?: boolean;
 };
 
 function getMacroInsight(
@@ -276,6 +286,7 @@ export function NutritionGoalsBody({
   showSaveButton = true,
   showSubtitle = true,
   showGoalStartDate = false,
+  hideEatingPhase = false,
 }: NutritionGoalsModalBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -306,6 +317,8 @@ export function NutritionGoalsBody({
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
   const [isDynamic, setIsDynamic] = useState(initialGoals.isDynamic ?? false);
+  const [dynamicPreview, setDynamicPreview] = useState<ResolvedMacros | null>(null);
+  const [isResolvingDynamicPreview, setIsResolvingDynamicPreview] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const [latestWeightKg, setLatestWeightKg] = useState<number | null>(null);
   const [latestBodyFatPercent, setLatestBodyFatPercent] = useState<number | null>(null);
@@ -398,6 +411,8 @@ export function NutritionGoalsBody({
     setTargetDate(initialGoals.targetDate ?? null);
     setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
     setIsDynamic(initialGoals.isDynamic ?? false);
+    setDynamicPreview(null);
+    setIsResolvingDynamicPreview(false);
     didAutofillDynamicTargetWeight.current = false;
     setCalorieInputValue(initialGoals.totalCalories.toString());
     preciseMacros.current = {
@@ -486,6 +501,7 @@ export function NutritionGoalsBody({
   }, []);
 
   const { user } = useUser();
+  const { disableMinimumCalories } = useSettings();
 
   // Recalculate macros when eating phase changes if inputs are still pristine
   useEffect(() => {
@@ -504,7 +520,7 @@ export function NutritionGoalsBody({
     const heightCm = userHeightM * 100;
     const age = user.getAge();
     const fitnessGoal = user.fitnessGoal ?? 'general';
-    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
+    const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
     const liftingExperience = user.liftingExperience ?? 'intermediate';
     const gender = user.gender ?? 'other';
 
@@ -519,29 +535,138 @@ export function NutritionGoalsBody({
         fitnessGoal,
         liftingExperience,
         bodyFatPercent: latestBodyFatPercent ?? undefined,
+        disableMinimumCalories,
       });
 
-      const fiberValue = fiberFromCalories(plan.targetCalories);
+      // When a target weight and date are set, use the date-aware calorie function
+      // (same as the wizard) so switching phases recalculates correctly for the goal.
+      let finalCalories = plan.targetCalories;
+      if (eatingPhase !== 'maintain' && targetDate != null && targetWeight != null) {
+        const targetWeightKg = displayToKg(targetWeight, units);
+        const daysToGoal = differenceInCalendarDays(new Date(targetDate), new Date());
+        const weightDeltaKg = targetWeightKg - latestWeightKg;
+        const directionMatches =
+          (eatingPhase === 'cut' && weightDeltaKg < -0.1) ||
+          (eatingPhase === 'bulk' && weightDeltaKg > 0.1);
+
+        if (daysToGoal > 0 && directionMatches) {
+          finalCalories = resolveGoalTrajectoryCalories({
+            tdee: plan.tdee,
+            bmr: plan.bmr,
+            eatingPhase,
+            currentWeightKg: latestWeightKg,
+            targetWeightKg,
+            remainingDays: daysToGoal,
+            gender,
+            liftingExperience,
+            bodyFatPercent: latestBodyFatPercent ?? undefined,
+            disableMinimumCalories,
+          });
+        }
+      }
+
+      const macros =
+        finalCalories !== plan.targetCalories
+          ? calculateMacros(finalCalories, fitnessGoal, {
+              weightKg: latestWeightKg,
+              bodyFatPercent: latestBodyFatPercent ?? undefined,
+            })
+          : { protein: plan.protein, carbs: plan.carbs, fats: plan.fats };
+
+      const fiberValue = fiberFromCalories(finalCalories);
 
       preciseMacros.current = {
-        protein: plan.protein,
-        carbs: plan.carbs,
-        fats: plan.fats,
+        protein: macros.protein,
+        carbs: macros.carbs,
+        fats: macros.fats,
         fiber: fiberValue,
       };
 
       isManualCalorieUpdate.current = true;
-      setTotalCalories(plan.targetCalories);
-      setProtein(plan.protein);
-      setCarbs(plan.carbs);
-      setFats(plan.fats);
+      setTotalCalories(finalCalories);
+      setProtein(macros.protein);
+      setCarbs(macros.carbs);
+      setFats(macros.fats);
       setFiber(fiberValue);
-      setCalorieInputValue(plan.targetCalories.toString());
+      setCalorieInputValue(finalCalories.toString());
       syncMacroRatios();
     } catch {
       // ignore
     }
-  }, [eatingPhase, user, latestWeightKg, userHeightM, latestBodyFatPercent, syncMacroRatios]);
+  }, [
+    disableMinimumCalories,
+    eatingPhase,
+    user,
+    latestWeightKg,
+    userHeightM,
+    latestBodyFatPercent,
+    syncMacroRatios,
+    targetDate,
+    targetWeight,
+    units,
+  ]);
+
+  const tdeeEstimate = useMemo<number | null>(() => {
+    if (!user || latestWeightKg == null || userHeightM == null) {
+      return null;
+    }
+
+    try {
+      const plan = calculateNutritionPlan({
+        gender: user.gender ?? 'other',
+        weightKg: latestWeightKg,
+        heightCm: userHeightM * 100,
+        age: user.getAge(),
+        activityLevel: Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5,
+        weightGoal: 'maintain',
+        fitnessGoal: user.fitnessGoal ?? 'general',
+        liftingExperience: user.liftingExperience ?? 'intermediate',
+        bodyFatPercent: latestBodyFatPercent ?? undefined,
+        disableMinimumCalories,
+      });
+
+      return plan.tdee;
+    } catch {
+      return null;
+    }
+  }, [user, latestWeightKg, userHeightM, latestBodyFatPercent, disableMinimumCalories]);
+
+  const effectiveKcalPerKgHint = useMemo(() => {
+    if (
+      latestWeightKg == null ||
+      targetWeight == null ||
+      eatingPhase === 'maintain' ||
+      (targetDate ?? null) == null
+    ) {
+      return null;
+    }
+
+    const targetWeightKg = displayToKg(targetWeight, units);
+    const kcalPerKg = getEffectiveKcalPerKgGoalChange(
+      eatingPhaseToWeightGoal(eatingPhase),
+      latestWeightKg,
+      targetWeightKg,
+      latestBodyFatPercent ?? undefined,
+      user?.gender ?? 'other',
+      user?.liftingExperience ?? 'intermediate'
+    );
+
+    if (kcalPerKg == null || !Number.isFinite(kcalPerKg)) {
+      return null;
+    }
+
+    const value = units === 'imperial' ? kcalPerKg * 0.453592 : kcalPerKg;
+    return Math.round(value);
+  }, [
+    eatingPhase,
+    latestBodyFatPercent,
+    latestWeightKg,
+    targetDate,
+    targetWeight,
+    units,
+    user?.gender,
+    user?.liftingExperience,
+  ]);
 
   const handleCaloriesChange = useCallback(
     (newCalories: number) => {
@@ -656,15 +781,66 @@ export function NutritionGoalsBody({
     syncMacroRatios();
   }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
+  const isDynamicValid = isDynamicNutritionGoalValid({
+    isDynamic,
+    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
+    targetDate,
+  });
+
+  useEffect(() => {
+    if (!isDynamic || !isDynamicValid || targetWeight == null || targetDate == null) {
+      setDynamicPreview(null);
+      setIsResolvingDynamicPreview(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsResolvingDynamicPreview(true);
+
+    resolveDynamicGoalPreview(
+      {
+        eatingPhase,
+        targetWeight: displayToKg(targetWeight, units),
+        targetDate,
+      },
+      new Date()
+    )
+      .then((preview) => {
+        if (!cancelled) {
+          setDynamicPreview(preview);
+          setIsResolvingDynamicPreview(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDynamicPreview(null);
+          setIsResolvingDynamicPreview(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eatingPhase, isDynamic, isDynamicValid, targetDate, targetWeight, units]);
+
+  const effectiveCalories = isDynamic
+    ? (dynamicPreview?.totalCalories ?? totalCalories)
+    : totalCalories;
+  const effectiveProtein = isDynamic ? (dynamicPreview?.protein ?? protein) : protein;
+  const effectiveCarbs = isDynamic ? (dynamicPreview?.carbs ?? carbs) : carbs;
+  const effectiveFats = isDynamic ? (dynamicPreview?.fats ?? fats) : fats;
+  const effectiveFiber = isDynamic ? (dynamicPreview?.fiber ?? fiber) : fiber;
+  const effectiveTdeeEstimate = isDynamic ? (dynamicPreview?.tdee ?? tdeeEstimate) : tdeeEstimate;
+
   // Call onFormChange whenever form data changes
   useEffect(() => {
     if (onFormChange) {
       onFormChange({
-        totalCalories,
-        protein,
-        carbs,
-        fats,
-        fiber,
+        totalCalories: effectiveCalories,
+        protein: effectiveProtein,
+        carbs: effectiveCarbs,
+        fats: effectiveFats,
+        fiber: effectiveFiber,
         eatingPhase,
         targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
         targetBodyFat,
@@ -676,11 +852,11 @@ export function NutritionGoalsBody({
       });
     }
   }, [
-    totalCalories,
-    protein,
-    carbs,
-    fats,
-    fiber,
+    effectiveCalories,
+    effectiveProtein,
+    effectiveCarbs,
+    effectiveFats,
+    effectiveFiber,
     eatingPhase,
     targetWeight,
     targetBodyFat,
@@ -693,19 +869,13 @@ export function NutritionGoalsBody({
     units,
   ]);
 
-  const isDynamicValid = isDynamicNutritionGoalValid({
-    isDynamic,
-    targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
-    targetDate,
-  });
-
   const handleSave = useCallback(() => {
     onSave?.({
-      totalCalories,
-      protein,
-      carbs,
-      fats,
-      fiber,
+      totalCalories: effectiveCalories,
+      protein: effectiveProtein,
+      carbs: effectiveCarbs,
+      fats: effectiveFats,
+      fiber: effectiveFiber,
       eatingPhase,
       targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
       targetBodyFat,
@@ -716,20 +886,20 @@ export function NutritionGoalsBody({
       isDynamic,
     } as NutritionGoals);
   }, [
-    carbs,
+    effectiveCalories,
+    effectiveCarbs,
+    effectiveFats,
+    effectiveFiber,
+    effectiveProtein,
     eatingPhase,
-    fats,
-    fiber,
     goalStartDate,
     isDynamic,
     onSave,
-    protein,
     targetBMI,
     targetBodyFat,
     targetDate,
     targetFFMI,
     targetWeight,
-    totalCalories,
     units,
   ]);
 
@@ -796,7 +966,11 @@ export function NutritionGoalsBody({
               backgroundColor: theme.colors.status.emerald10,
             }}
           >
-            <Text className="text-sm text-text-secondary">{t('nutritionGoals.dynamicInfo')}</Text>
+            <Text className="text-sm text-text-secondary">
+              {t('nutritionGoals.dynamicInfo', {
+                kcal: formatInteger(effectiveCalories),
+              })}
+            </Text>
           </View>
         ) : null}
 
@@ -821,16 +995,29 @@ export function NutritionGoalsBody({
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
                 <Pressable
-                  onPress={() => handleCaloriesChange(totalCalories - CALORIES_STEP)}
+                  onPress={() => {
+                    if (!isDynamic) {
+                      handleCaloriesChange(totalCalories - CALORIES_STEP);
+                    }
+                  }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                   style={{ backgroundColor: theme.colors.background.white10 }}
                   hitSlop={12}
+                  disabled={isDynamic}
                 >
                   <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
 
                 <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
-                  {isCalorieEditing ? (
+                  {isDynamic ? (
+                    isResolvingDynamicPreview ? (
+                      <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                    ) : (
+                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                        {formatInteger(effectiveCalories)}
+                      </Text>
+                    )
+                  ) : isCalorieEditing ? (
                     <TextInput
                       ref={calorieInputRef}
                       value={calorieInputValue}
@@ -859,33 +1046,81 @@ export function NutritionGoalsBody({
                 </View>
 
                 <Pressable
-                  onPress={() => handleCaloriesChange(totalCalories + CALORIES_STEP)}
+                  onPress={() => {
+                    if (!isDynamic) {
+                      handleCaloriesChange(totalCalories + CALORIES_STEP);
+                    }
+                  }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
                   style={{ backgroundColor: theme.colors.background.white10 }}
                   hitSlop={12}
+                  disabled={isDynamic}
                 >
                   <Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
+
+              {effectiveTdeeEstimate != null ? (
+                <View className="mt-3 items-center gap-1">
+                  <Text className="text-xs text-text-secondary">
+                    {t('nutritionGoals.tdeeHint', { kcal: formatInteger(effectiveTdeeEstimate) })}
+                  </Text>
+                  {Math.abs(effectiveCalories - effectiveTdeeEstimate) >= 10 ? (
+                    <Text
+                      className="text-xs font-semibold"
+                      style={{
+                        color:
+                          effectiveCalories < effectiveTdeeEstimate
+                            ? theme.colors.status.error
+                            : theme.colors.status.emeraldLight,
+                      }}
+                    >
+                      {effectiveCalories < effectiveTdeeEstimate
+                        ? t('nutritionGoals.calorieDeficit', {
+                            kcal: formatInteger(effectiveTdeeEstimate - effectiveCalories),
+                          })
+                        : t('nutritionGoals.calorieSurplus', {
+                            kcal: formatInteger(effectiveCalories - effectiveTdeeEstimate),
+                          })}
+                    </Text>
+                  ) : (
+                    <Text className="text-xs font-semibold text-accent-primary">
+                      {t('nutritionGoals.atMaintenance')}
+                    </Text>
+                  )}
+                  {effectiveKcalPerKgHint != null ? (
+                    <Text className="text-center text-[11px] text-text-secondary">
+                      {t(
+                        units === 'imperial'
+                          ? 'nutritionGoals.kcalPerLbTissueHint'
+                          : 'nutritionGoals.kcalPerKgTissueHint',
+                        { kcal: formatInteger(effectiveKcalPerKgHint) }
+                      )}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
             </View>
           </View>
         ) : null}
 
         {/* Eating Phase */}
-        <View className="gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">
-            {t('editFitnessDetails.eatingPhase')}
-          </Text>
-          <SegmentedControl
-            options={[
-              { label: t('editFitnessDetails.cut'), value: 'cut' },
-              { label: t('editFitnessDetails.maintain'), value: 'maintain' },
-              { label: t('editFitnessDetails.bulk'), value: 'bulk' },
-            ]}
-            value={eatingPhase}
-            onValueChange={(val) => setEatingPhase(val as EatingPhase)}
-          />
-        </View>
+        {!hideEatingPhase ? (
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('editFitnessDetails.eatingPhase')}
+            </Text>
+            <SegmentedControl
+              options={[
+                { label: t('editFitnessDetails.cut'), value: 'cut' },
+                { label: t('editFitnessDetails.maintain'), value: 'maintain' },
+                { label: t('editFitnessDetails.bulk'), value: 'bulk' },
+              ]}
+              value={eatingPhase}
+              onValueChange={(val) => setEatingPhase(val as EatingPhase)}
+            />
+          </View>
+        ) : null}
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (

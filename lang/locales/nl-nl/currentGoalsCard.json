@@ -17,6 +17,6 @@
     "lbs": "lbs",
     "percent": "%",
     "dynamic": "Dynamisch",
-    "dynamicNote": "Automatisch berekend voor vandaag op basis van je recente gegevens"
+    "dynamicNote": "Automatisch berekend voor vandaag op basis van je doelinstellingen"
   }
 }

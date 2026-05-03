@@ -4,6 +4,12 @@
     "subtitle": "Define tus metas para la nutrición y la composición corporal.",
     "dailyMacroTargets": "Objetivos Diarios de Macros",
     "totalDailyCalories": "Calorías Diarias Totales",
+    "tdeeHint": "GET: {{kcal}} kcal",
+    "kcalPerKgTissueHint": "Basado en {{kcal}} kcal por 1 kg de tejido (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "Basado en {{kcal}} kcal por 1 lb de tejido (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} kcal déficit",
+    "calorieSurplus": "+{{kcal}} kcal superávit",
+    "atMaintenance": "En mantenimiento",
     "targetBodyMetrics": "Métricas Corporales Objetivo",
     "macrosDistribution": "Distribución de Macros",
     "balance": "Equilibrio",
@@ -125,7 +131,7 @@
     "goalMode": "Modo de objetivo",
     "manual": "Manual",
     "dynamic": "Dinámico",
-    "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus últimos 30 días de datos de peso y nutrición. Establece tu fase alimentaria para controlar si estás en déficit, mantenimiento o superávit, y añade tanto un peso objetivo como una fecha objetivo para activar los objetivos dinámicos.",
+    "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus datos actuales y del plazo de tu objetivo. Tu objetivo actual de calorías es {{kcal}} kcal.",
     "dynamicBadge": "Dinámico",
     "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos."
   }

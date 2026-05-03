@@ -1,4 +1,4 @@
-import { useRootNavigationState, useRouter } from 'expo-router';
+import { Redirect, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 import { SplashLoading } from '@/components/SplashLoading';
@@ -9,12 +9,16 @@ export default function Index() {
   const navigationState = useRootNavigationState();
 
   useEffect(() => {
-    if (!navigationState?.key) {
+    if (!__DEV__ || !navigationState?.key) {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'index');
+    runEntryOnboardingRedirect(router, 'index.web');
   }, [navigationState?.key, router]);
+
+  if (!__DEV__) {
+    return <Redirect href="/home" />;
+  }
 
   return <SplashLoading />;
 }

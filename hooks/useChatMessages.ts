@@ -30,6 +30,7 @@ import {
   ChatService,
   NutritionGoalService,
   NutritionService,
+  SettingsService,
   UserMetricService,
   UserService,
 } from '@/database/services';
@@ -555,6 +556,7 @@ export function useChatMessages(
               UserMetricService.getLatest('height'),
             ]);
             if (user && latestWeight) {
+              const disableMinimumCalories = await SettingsService.getDisableMinimumCalories();
               const { value: weightKg } = await latestWeight.getDecrypted();
               let heightCm = 170;
               if (latestHeight) {
@@ -567,10 +569,11 @@ export function useChatMessages(
                 weightKg,
                 heightCm,
                 age: user.getAge(),
-                activityLevel: (user.activityLevel as any) || 3,
+                activityLevel: (user.activityLevel as any) || 2,
                 weightGoal: user.weightGoal || eatingPhaseToWeightGoal(user.fitnessGoal as any),
                 fitnessGoal: user.fitnessGoal,
                 liftingExperience: user.liftingExperience,
+                disableMinimumCalories,
               });
               macroTargets = {
                 calories: plan.targetCalories,

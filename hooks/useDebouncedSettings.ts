@@ -78,6 +78,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'alwaysAllowFoodEditing',
       'showWeightPrediction',
       'requireExportEncryption',
+      'disableMinimumCalories',
       'intuitiveEatingMode',
       'progressionMode',
       'advancedDataManagement',
@@ -313,6 +314,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'requireExportEncryption',
     SettingsService.setRequireExportEncryption
   );
+  const handleDisableMinimumCaloriesChange = createSettingHandler<boolean>(
+    'disableMinimumCalories',
+    SettingsService.setDisableMinimumCalories
+  );
   const handleIntuitiveEatingModeChange = createSettingHandler<boolean>(
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
@@ -439,6 +444,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'requireExportEncryption':
             await SettingsService.setRequireExportEncryption(value as boolean);
             break;
+          case 'disableMinimumCalories':
+            await SettingsService.setDisableMinimumCalories(value as boolean);
+            break;
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
             break;
@@ -528,6 +536,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.showWeightPrediction as boolean) ?? actualSettings.showWeightPrediction,
     requireExportEncryption:
       (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
+    disableMinimumCalories:
+      (localSettings.disableMinimumCalories as boolean) ?? actualSettings.disableMinimumCalories,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
     progressionMode:
@@ -575,6 +585,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleAlwaysAllowFoodEditingChange,
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,
+    handleDisableMinimumCaloriesChange,
     handleIntuitiveEatingModeChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,

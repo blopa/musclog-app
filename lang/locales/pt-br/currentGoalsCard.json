@@ -17,6 +17,6 @@
     "lbs": "lbs",
     "percent": "%",
     "dynamic": "Dinâmico",
-    "dynamicNote": "Calculado automaticamente para hoje com base nos seus dados recentes"
+    "dynamicNote": "Calculado automaticamente para hoje com base nas configurações da sua meta"
   }
 }

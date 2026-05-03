@@ -19,6 +19,7 @@ type NutritionGoalsModalProps = {
   onSave?: (goals: NutritionGoals) => void | Promise<void>;
   initialGoals: NutritionGoalsInitialValues;
   isEditing?: boolean;
+  hideEatingPhase?: boolean;
 };
 
 function buildNutritionGoalsFromInitialValues(
@@ -50,6 +51,7 @@ export function NutritionGoalsModal({
   onSave,
   initialGoals,
   isEditing = false,
+  hideEatingPhase = false,
 }: NutritionGoalsModalProps) {
   const { t } = useTranslation();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals>(() =>
@@ -124,6 +126,7 @@ export function NutritionGoalsModal({
         initialGoals={initialGoals}
         showSaveButton={false}
         showGoalStartDate={!isEditing}
+        hideEatingPhase={hideEatingPhase}
       />
     </FullScreenModal>
   );

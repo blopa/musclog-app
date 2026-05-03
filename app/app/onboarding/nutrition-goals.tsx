@@ -18,6 +18,7 @@ import {
 } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
 import {
@@ -37,6 +38,7 @@ export default function NutritionGoalsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { disableMinimumCalories } = useSettings();
   const { goal, isLoading } = useCurrentNutritionGoal();
   const { defaults: computedDefaults, isLoading: isLoadingDefaults } = useDefaultNutritionGoals();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
@@ -161,6 +163,7 @@ export default function NutritionGoalsScreen() {
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
             bodyFatPercent: bodyFatDecrypted?.value,
+            disableMinimumCalories,
           });
 
           const checkins = generateWeeklyCheckins(
@@ -197,7 +200,7 @@ export default function NutritionGoalsScreen() {
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [isAdjusting, isCheckinAdjusting, router, t]
+    [disableMinimumCalories, isAdjusting, isCheckinAdjusting, router, t]
   );
 
   if (isLoading || isLoadingDefaults) {

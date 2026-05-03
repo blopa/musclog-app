@@ -1,4 +1,5 @@
 import { UserMetricService, UserService } from '@/database/services';
+import { localDayClosedRangeMaxMs } from '@/utils/calendarDate';
 import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
 import {
@@ -9,6 +10,9 @@ import {
 } from '@/utils/nutritionCalculator';
 
 jest.mock('@/database/services', () => ({
+  SettingsService: {
+    getDisableMinimumCalories: jest.fn(() => Promise.resolve(false)),
+  },
   UserService: {
     getCurrentUser: jest.fn(),
   },
@@ -46,7 +50,7 @@ describe('resolveDailyMacros', () => {
   const mockUser = {
     gender: 'male',
     getAge: () => 30,
-    activityLevel: 3,
+    activityLevel: 2,
     fitnessGoal: 'hypertrophy',
     liftingExperience: 'intermediate',
   };
@@ -101,6 +105,7 @@ describe('resolveDailyMacros', () => {
       fiber: 25,
       isDynamic: true,
       usedEmpiricalData: true,
+      tdee: 2600,
     });
   });
 
@@ -132,6 +137,7 @@ describe('resolveDailyMacros', () => {
       fiber: 25,
       isDynamic: true,
       usedEmpiricalData: false,
+      tdee: 2600,
     });
   });
   it('respects safety floors and never returns negative calories', async () => {
@@ -169,6 +175,7 @@ describe('resolveDailyMacros', () => {
       expect.objectContaining({
         totalCalories: 1500,
         isDynamic: true,
+        tdee: 2200,
       })
     );
   });
@@ -199,17 +206,17 @@ describe('resolveDailyMacros', () => {
     expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
       1,
       'weight',
-      expect.any(Number)
+      localDayClosedRangeMaxMs(viewedDate)
     );
     expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
       2,
       'height',
-      expect.any(Number)
+      localDayClosedRangeMaxMs(viewedDate)
     );
     expect(UserMetricService.getLatestOnOrBefore).toHaveBeenNthCalledWith(
       3,
       'body_fat',
-      expect.any(Number)
+      localDayClosedRangeMaxMs(viewedDate)
     );
   });
 
@@ -251,5 +258,75 @@ describe('resolveDailyMacros', () => {
     );
     expect(result?.totalCalories).toBeLessThan(2300);
     expect(result?.totalCalories).toBeGreaterThanOrEqual(1500);
+  });
+
+  it('keeps explicit target-date dynamic goals on the same formula TDEE path as setup', async () => {
+    const viewedDate = new Date('2026-02-11T15:00:00.000Z');
+
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
+    });
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 2300,
+      tdee: 2899,
+      bmr: 1800,
+    });
+
+    const result = await resolveDailyMacros(
+      {
+        ...mockGoal,
+        targetWeight: 80,
+        targetDate: new Date('2026-04-02T00:00:00.000Z').getTime(),
+      } as any,
+      viewedDate
+    );
+
+    expect(getHistoricalNutritionParams).not.toHaveBeenCalled();
+    expect(calculateNutritionPlan).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        historicalTotalCalories: expect.anything(),
+      })
+    );
+    expect(result?.usedEmpiricalData).toBe(false);
+    expect(result?.tdee).toBe(2899);
+  });
+
+  it('uses the same fallback activity and gender defaults as the setup flow', async () => {
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue({
+      ...mockUser,
+      gender: undefined,
+      activityLevel: undefined,
+    });
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) => {
+      if (type === 'height') {
+        return Promise.resolve(mockHeightMetric);
+      }
+      if (type === 'weight') {
+        return Promise.resolve(mockWeightMetric);
+      }
+      return Promise.resolve(null);
+    });
+    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 2300,
+      tdee: 2500,
+      bmr: 1800,
+    });
+
+    await resolveDailyMacros(mockGoal, new Date('2026-02-11T15:00:00.000Z'));
+
+    expect(calculateNutritionPlan).toHaveBeenCalledWith(
+      expect.objectContaining({
+        activityLevel: 2,
+        gender: 'other',
+      })
+    );
   });
 });

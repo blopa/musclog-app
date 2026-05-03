@@ -71,14 +71,17 @@
         "label": "Streefgewicht",
         "currentWeightLabel": "Je huidige gewicht",
         "tipLoseBF": "Streven naar 0,5–1% van je lichaamsgewicht per week is een duurzaam tempo dat helpt spiermassa te behouden tijdens het afvallen.",
-        "tipGain": "Een toename van 0,25–0,5 kg per week houdt vettoename minimaal terwijl er toch gestage spiergroei mogelijk is."
+        "tipGain": "Een toename van 0,25–0,5 kg per week houdt vettoename minimaal terwijl er toch gestage spiergroei mogelijk is.",
+        "tipGainImperial": "Een toename van 0,55–1,1 lbs per week houdt vettoename minimaal terwijl er toch gestage spiergroei mogelijk is."
       },
       "targetDate": {
         "title": "Wanneer wil je je doel bereiken?",
         "subtitle": "Het instellen van een deadline helpt je om je voortgang over de tijd bij te houden.",
         "label": "Streefdatum",
         "notSet": "Geen specifieke datum",
-        "clear": "Datum wissen"
+        "clear": "Datum wissen",
+        "warningLabel": "Agressieve Tijdlijn",
+        "warningMessage": "Gevraagd tempo: ongeveer {{weeklyLoss}} {{unit}} per week. Voorgestelde bovengrens voor je huidige lichaamsgewicht: ongeveer {{suggestedMaxWeeklyLoss}} {{unit}} per week. We berekenen hiervoor nog steeds calorieën, maar een realistischere streefdatum zou rond {{estimatedDate}} liggen."
       }
     },
     "manageCheckinData": {

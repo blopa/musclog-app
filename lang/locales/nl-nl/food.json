@@ -442,6 +442,9 @@
       "saveForLaterDesc": "Verwijder uit logboek en sla op als tijdelijke maaltijd",
       "saveForLaterSuccess": "Maaltijd bewaard voor later",
       "saveForLaterError": "Bewaren van maaltijd voor later mislukt",
+      "saveForLaterPercentageLabel": "Percentage om te bewaren",
+      "saveForLaterPortionHint": "De resterende {{remaining}}% blijft in je {{mealType}}",
+      "saveForLaterPortionHintAll": "De hele maaltijd wordt bewaard voor later",
       "savedMealDefaultName": "Bewaarde maaltijd van {{date}} - {{mealType}}",
       "savedForLaterModal": {
         "title": "Bewaard voor later",

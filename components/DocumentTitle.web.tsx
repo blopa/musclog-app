@@ -7,21 +7,21 @@ export function DocumentTitle() {
   const { t } = useTranslation();
 
   const routeTitles: Record<string, string> = {
-    '/app': t('app.title'),
-    '/app/nutrition': t('nutrition.title'),
-    '/app/nutrition/food': t('nutrition.food.title'),
-    '/app/workout': t('workout.title'),
-    '/app/workout/workouts': t('workout.workouts.title'),
-    '/app/progress': t('progress.title'),
-    '/app/profile': t('profile.title'),
-    '/app/settings': t('settings.title'),
-    '/app/cycle': t('cycle.title'),
+    '/app': t('common.app.title'),
+    '/app/nutrition': t('common.nutrition.title'),
+    '/app/nutrition/food': t('common.nutrition.food.title'),
+    '/app/workout': t('common.workout.title'),
+    '/app/workout/workouts': t('common.workout.workouts.title'),
+    '/app/progress': t('common.progress.title'),
+    '/app/profile': t('common.profile.title'),
+    '/app/settings': t('common.settings.title'),
+    '/app/cycle': t('common.cycle.title'),
   };
 
   const title =
     routeTitles[pathname] ||
     routeTitles[Object.keys(routeTitles).find((route) => pathname.startsWith(route)) || ''] ||
-    'Musclog';
+    t('common.app.title');
 
   return (
     <Head>

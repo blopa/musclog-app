@@ -300,6 +300,7 @@ export default function SetGoals() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { disableMinimumCalories } = useSettings();
   const params = useLocalSearchParams<{ weightMetricId?: string; heightMetricId?: string }>();
   const { units } = useSettings();
   const [isCalculating, setIsCalculating] = useState(false);
@@ -406,7 +407,10 @@ export default function SetGoals() {
       ...(historical ?? {}),
     };
 
-    const plan = calculateNutritionPlan(input);
+    const plan = calculateNutritionPlan({
+      ...input,
+      disableMinimumCalories,
+    });
     const heightM = convert(heightCm, 'cm').to('m') as number;
 
     const targetBMI =
@@ -454,7 +458,7 @@ export default function SetGoals() {
     }
 
     return planWithTargets;
-  }, [params]);
+  }, [disableMinimumCalories, params]);
 
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);

@@ -337,6 +337,7 @@ export class NutritionGoalService {
         generateWeeklyCheckins,
       } = require('../../utils/nutritionCalculator');
       const { storedWeightToKg, storedHeightToCm } = require('../../utils/unitConversion');
+      const { SettingsService } = require('./SettingsService');
 
       const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
       const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
@@ -346,16 +347,19 @@ export class NutritionGoalService {
       const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
       const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
 
+      const disableMinimumCalories = await SettingsService.getDisableMinimumCalories();
+
       const plan = calculateNutritionPlan({
         gender: user.gender,
         weightKg,
         heightCm,
         age: user.getAge(),
-        activityLevel: user.activityLevel as any,
+        activityLevel: (user.activityLevel || 2) as any,
         weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
         fitnessGoal: user.fitnessGoal,
         liftingExperience: user.liftingExperience,
         bodyFatPercent: bodyFatDecrypted?.value,
+        disableMinimumCalories,
       });
 
       const checkins = generateWeeklyCheckins(

@@ -3,7 +3,7 @@ import { useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, AppState, Pressable, ScrollView, Text, View } from 'react-native';
+import { AppState, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -33,7 +33,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
-import { useSmartCamera } from '@/context/SmartCameraContext';
+import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
@@ -50,11 +50,22 @@ import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
-import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
 declare global {
   var __PENDING_WIDGET_ACTION: string | undefined;
+}
+
+function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode }) => void) {
+  const action = global.__PENDING_WIDGET_ACTION;
+  if (!action) {
+    return;
+  }
+
+  global.__PENDING_WIDGET_ACTION = undefined;
+  if (action === 'open-camera') {
+    openCamera({ mode: 'barcode-scan' });
+  }
 }
 
 // No notification system yet, so leave it like this for now
@@ -94,6 +105,10 @@ export default function HomeScreen() {
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         syncToday();
+        // Drain pending widget action set by redirectSystemPath when Android
+        // recreates the activity while the JS process is still alive (the
+        // cold-start useEffect won't re-run because its deps haven't changed).
+        drainPendingWidgetAction(openCamera);
       }
     });
 
@@ -102,7 +117,7 @@ export default function HomeScreen() {
       appSub.remove();
       clearInterval(intervalId);
     };
-  }, []);
+  }, [openCamera]);
 
   const {
     calories: dailyCalories,
@@ -123,7 +138,6 @@ export default function HomeScreen() {
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | undefined>(undefined);
-  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
@@ -258,16 +272,7 @@ export default function HomeScreen() {
       return;
     }
 
-    const action = global.__PENDING_WIDGET_ACTION;
-    if (!action) {
-      return;
-    }
-
-    global.__PENDING_WIDGET_ACTION = undefined;
-
-    if (action === 'open-camera') {
-      openCamera({ mode: 'barcode-scan' });
-    }
+    drainPendingWidgetAction(openCamera);
   }, [navigationState?.key, openCamera]);
 
   // Handle widget deep link when app is already running (warm start)
@@ -284,59 +289,6 @@ export default function HomeScreen() {
     const subscription = ExpoLinking.addEventListener('url', handleUrl);
     return () => subscription.remove();
   }, [openCamera, router]);
-
-  // Check onboarding status on mount — wait until navigator is ready to avoid
-  // "Attempted to navigate before mounting the Root Layout component" on cold start
-  useEffect(() => {
-    if (!navigationState?.key) {
-      return;
-    }
-
-    const checkOnboarding = async () => {
-      try {
-        const completed = await isOnboardingCompleted();
-
-        if (!completed) {
-          try {
-            const saved = await getCurrentOnboardingStep();
-            if (saved) {
-              if (saved === '/app/onboarding/connect-with-google') {
-                router.replace('/app/onboarding/fitness-info');
-              } else {
-                const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-                router.replace(normalizedSaved as never);
-              }
-            } else {
-              router.replace('/app/onboarding/landing');
-            }
-          } catch (e) {
-            handleError(e, 'index.restoreOnboardingStep');
-            console.error('Error restoring onboarding step, falling back to landing', e);
-            router.replace('/app/onboarding/landing');
-          }
-        }
-      } catch (error) {
-        handleError(error, 'index.checkOnboardingStatus');
-        console.error('Error checking onboarding status:', error);
-      } finally {
-        setIsCheckingOnboarding(false);
-      }
-    };
-
-    checkOnboarding();
-  }, [router, navigationState?.key]);
-
-  // Show loading spinner while checking onboarding
-  if (isCheckingOnboarding) {
-    return (
-      <View
-        className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}
-      >
-        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-      </View>
-    );
-  }
 
   return (
     <MasterLayout>

@@ -8,6 +8,7 @@ import {
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   DUMP_LLM_REQUESTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
@@ -587,6 +588,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the disable minimum calories setting
+   */
+  static async setDisableMinimumCalories(value: boolean) {
+    await SettingsService.setBooleanSetting(DISABLE_MINIMUM_CALORIES_SETTING_TYPE, value);
+  }
+
+  /**
    * One-time migration: enable require-export-encryption by default for users
    * who have never explicitly configured it. Safe to call on every boot — exits
    * immediately if the setting already exists in the DB.
@@ -610,6 +618,13 @@ export class SettingsService {
    */
   static async getRequireExportEncryption(): Promise<boolean> {
     return SettingsService.getBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true);
+  }
+
+  /**
+   * Get the disable minimum calories setting
+   */
+  static async getDisableMinimumCalories(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false);
   }
 
   /**

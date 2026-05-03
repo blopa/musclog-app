@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { NutritionGoals } from '@/components/NutritionGoalsBody';
 import { EatingPhase, FitnessGoal, Gender, LiftingExperience } from '@/database/models';
 import { UserMetricService } from '@/database/services';
+import { useSettings } from '@/hooks/useSettings';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -52,6 +53,7 @@ function getFallbackDefaults(
 
 export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') {
   const { user } = useUser();
+  const { disableMinimumCalories } = useSettings();
   const [defaults, setDefaults] = useState<Partial<NutritionGoals> & RequiredMacroFields>(() =>
     getFallbackDefaults(eatingPhase)
   );
@@ -95,7 +97,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
       const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
       const age = user.getAge();
       const fitnessGoal = user.fitnessGoal ?? 'general';
-      const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 3)) as 1 | 2 | 3 | 4 | 5;
+      const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
       const liftingExperience = user.liftingExperience ?? 'intermediate';
       const gender = user.gender ?? 'other';
       const bodyFatPercent = bodyFatDecrypted?.value ?? undefined;
@@ -111,6 +113,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           fitnessGoal,
           liftingExperience,
           bodyFatPercent,
+          disableMinimumCalories,
         });
 
         const fiberValue = fiberFromCalories(plan.targetCalories);
@@ -154,7 +157,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
     return () => {
       isMounted = false;
     };
-  }, [user, eatingPhase]);
+  }, [user, eatingPhase, disableMinimumCalories]);
 
   return { defaults, isLoading, planData };
 }

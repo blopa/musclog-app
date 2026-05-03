@@ -21,6 +21,7 @@ import {
   getCalorieAdjustment,
   getEffectiveKcalPerKgGain,
   getEffectiveKcalPerKgWeightLoss,
+  getExactCalorieAdjustment,
   getGainFatFraction,
   getMinCalories,
   getProposedDailyWaterIntake,
@@ -1528,6 +1529,50 @@ describe('calculateTargetCalories', () => {
   it('returns MIN_CALORIES when TDEE itself is at floor', () => {
     expect(calculateTargetCalories(MIN_CALORIES_FEMALE, 'lose')).toBe(MIN_CALORIES_FEMALE);
   });
+
+  it('allows going below the calorie floor when explicitly disabled', () => {
+    expect(calculateTargetCalories(1500, 'lose', { disableMinimumCalories: true })).toBe(1000);
+    expect(calculateTargetCalories(1200, 'lose', { disableMinimumCalories: true })).toBe(700);
+  });
+
+  it('uses exact formula when targetWeightKg and daysToGoal are supplied', () => {
+    // weeklyLoss = (80-74)/84*7 = 0.5 kg/week; deficit = 0.5*7700/7 = 550
+    expect(
+      calculateTargetCalories(2500, 'lose', { weightKg: 80, targetWeightKg: 74, daysToGoal: 84 })
+    ).toBe(1950);
+  });
+
+  it('exact path: gain uses experience-weighted synthesis cost', () => {
+    // weeklyGain = (76-70)/84*7 = 0.5 kg/week; kcalPerKg = 6370 (intermediate default)
+    // surplus = 0.5*6370/7 = 455; result = 2500+455 = 2955
+    expect(
+      calculateTargetCalories(2500, 'gain', { weightKg: 70, targetWeightKg: 76, daysToGoal: 84 })
+    ).toBe(2955);
+  });
+
+  it('exact path: no minimum-calorie floor is applied', () => {
+    // weeklyLoss = (50-40)/100*7 = 0.7; deficit = 0.7*7700/7 = 770; result = 1500-770 = 730
+    // 730 < MIN_CALORIES_FEMALE (1200) — floor must NOT kick in on the exact path
+    expect(
+      calculateTargetCalories(1500, 'lose', { weightKg: 50, targetWeightKg: 40, daysToGoal: 100 })
+    ).toBe(730);
+  });
+
+  it('coached path still enforces the floor when no target is provided', () => {
+    // Verifies the non-exact branch is unchanged
+    expect(calculateTargetCalories(1500, 'lose')).toBe(MIN_CALORIES_FEMALE);
+  });
+
+  it('exact path: maintain ignores targetWeightKg and returns TDEE', () => {
+    // maintain branch bypasses getExactCalorieAdjustment entirely → adjustment = 0
+    expect(
+      calculateTargetCalories(2500, 'maintain', {
+        weightKg: 80,
+        targetWeightKg: 70,
+        daysToGoal: 84,
+      })
+    ).toBe(2500);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -1827,6 +1872,19 @@ describe('calculateNutritionPlan', () => {
       weightGoal: 'lose',
     });
     expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES_FEMALE);
+  });
+
+  it('allows nutrition plans below the default floor when the safeguard is disabled', () => {
+    const plan = calculateNutritionPlan({
+      ...baseInput,
+      weightKg: 40,
+      heightCm: 150,
+      age: 60,
+      activityLevel: 1,
+      weightGoal: 'lose',
+      disableMinimumCalories: true,
+    });
+    expect(plan.targetCalories).toBeLessThan(MIN_CALORIES_FEMALE);
   });
 
   it('handles female gender correctly', () => {
@@ -2852,6 +2910,24 @@ describe('getCalorieAdjustment', () => {
     expect(getCalorieAdjustment('lose', 80)).toBe(-440);
   });
 
+  it('treats body fat as optional and keeps the weight-based fallback when absent', () => {
+    expect(getCalorieAdjustment('lose', 80, undefined, 'male')).toBe(-440);
+    expect(getCalorieAdjustment('lose', 80, undefined, 'female')).toBe(-440);
+  });
+
+  it('uses the composition-aware loss model when body fat is available', () => {
+    const withBodyFat = getCalorieAdjustment('lose', 86.7, 25, 'male');
+    const withoutBodyFat = getCalorieAdjustment('lose', 86.7);
+    expect(withBodyFat).not.toBe(withoutBodyFat);
+  });
+
+  it('recommends a smaller cut for leaner users when body fat is available', () => {
+    const leaner = getCalorieAdjustment('lose', 80, 10, 'male');
+    const higherBodyFat = getCalorieAdjustment('lose', 80, 25, 'male');
+
+    expect(Math.abs(leaner)).toBeLessThan(Math.abs(higherBodyFat));
+  });
+
   it('surplus is clamped to minimum 150 for very light person', () => {
     // 2.75 * 40 = 110 < 150 → clamped to 150
     expect(getCalorieAdjustment('gain', 40)).toBe(150);
@@ -2865,6 +2941,129 @@ describe('getCalorieAdjustment', () => {
   it('calculates unclamped surplus for typical weight (80kg)', () => {
     // 2.75 * 80 = 220, within [150, 400]
     expect(getCalorieAdjustment('gain', 80)).toBe(220);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getExactCalorieAdjustment
+// ---------------------------------------------------------------------------
+
+describe('getExactCalorieAdjustment', () => {
+  // --- Guard cases ---
+
+  it('returns 0 when daysToGoal is 0', () => {
+    expect(getExactCalorieAdjustment('lose', 80, 74, 0)).toBe(0);
+  });
+
+  it('returns 0 when daysToGoal is negative', () => {
+    expect(getExactCalorieAdjustment('lose', 80, 74, -10)).toBe(0);
+  });
+
+  it('returns 0 for lose when target >= current (no loss needed)', () => {
+    expect(getExactCalorieAdjustment('lose', 80, 80, 84)).toBe(0);
+    expect(getExactCalorieAdjustment('lose', 80, 82, 84)).toBe(0);
+  });
+
+  it('returns 0 for gain when target <= current (no gain needed)', () => {
+    expect(getExactCalorieAdjustment('gain', 80, 80, 84)).toBe(0);
+    expect(getExactCalorieAdjustment('gain', 80, 78, 84)).toBe(0);
+  });
+
+  // --- Loss: direction and formula ---
+
+  it('returns a negative value for lose', () => {
+    expect(getExactCalorieAdjustment('lose', 80, 74, 84)).toBeLessThan(0);
+  });
+
+  it('loss without body fat uses 7700 kcal/kg rule', () => {
+    // weeklyLoss = (80-74)/84*7 = 0.5 kg/week; deficit = 0.5*7700/7 = 550
+    expect(getExactCalorieAdjustment('lose', 80, 74, 84)).toBe(-550);
+  });
+
+  it('loss is NOT clamped — can exceed the old 750 kcal ceiling', () => {
+    // weeklyLoss = (80-73)/70*7 = 0.7; deficit = 0.7*7700/7 = 770 > 750
+    expect(getExactCalorieAdjustment('lose', 80, 73, 70)).toBe(-770);
+  });
+
+  it('larger weekly loss target produces a larger deficit', () => {
+    const moderate = getExactCalorieAdjustment('lose', 80, 74, 84); // 0.5 kg/week
+    const aggressive = getExactCalorieAdjustment('lose', 80, 73, 70); // 0.7 kg/week
+    expect(Math.abs(aggressive)).toBeGreaterThan(Math.abs(moderate));
+  });
+
+  it('loss with body fat uses the Forbes Curve (differs from no-BF result)', () => {
+    const noBf = getExactCalorieAdjustment('lose', 80, 74, 84);
+    const withBf = getExactCalorieAdjustment('lose', 80, 74, 84, 20, 'male');
+    expect(withBf).not.toBe(noBf);
+  });
+
+  it('leaner users produce a smaller deficit via Forbes Curve (higher lean-mass fraction)', () => {
+    // Lean individuals lose proportionally more muscle, so effective kcal/kg is lower
+    const lean = getExactCalorieAdjustment('lose', 80, 74, 84, 10, 'male');
+    const higherFat = getExactCalorieAdjustment('lose', 80, 74, 84, 30, 'male');
+    expect(Math.abs(lean)).toBeLessThan(Math.abs(higherFat));
+  });
+
+  it('gender affects the Forbes Curve result for loss with body fat', () => {
+    const male = getExactCalorieAdjustment('lose', 80, 74, 84, 20, 'male');
+    const female = getExactCalorieAdjustment('lose', 80, 74, 84, 20, 'female');
+    expect(male).not.toBe(female);
+  });
+
+  // --- Gain: direction and formula ---
+
+  it('returns a positive value for gain', () => {
+    expect(getExactCalorieAdjustment('gain', 70, 76, 84)).toBeGreaterThan(0);
+  });
+
+  it('gain (intermediate) uses 6370 kcal/kg synthesis cost', () => {
+    // weeklyGain = (76-70)/84*7 = 0.5; surplus = 0.5*6370/7 = 455
+    expect(
+      getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')
+    ).toBe(455);
+  });
+
+  it('gain (beginner) uses 5876 kcal/kg (more lean gain → cheaper)', () => {
+    // surplus = 0.5*5876/7 ≈ 420
+    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'beginner')).toBe(
+      420
+    );
+  });
+
+  it('gain (advanced) uses 6864 kcal/kg (more fat gain → more expensive)', () => {
+    // surplus = 0.5*6864/7 ≈ 490
+    expect(getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'advanced')).toBe(
+      490
+    );
+  });
+
+  it('gain ordering: beginner < intermediate < advanced (fat-fraction cost)', () => {
+    const beg = getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'beginner');
+    const mid = getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate');
+    const adv = getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'advanced');
+    expect(beg).toBeLessThan(mid);
+    expect(mid).toBeLessThan(adv);
+  });
+
+  it('gain is NOT clamped — can exceed the old 400 kcal ceiling', () => {
+    // All experience levels at 0.5 kg/week produce > 400 kcal surplus
+    expect(
+      getExactCalorieAdjustment('gain', 70, 76, 84, undefined, undefined, 'intermediate')
+    ).toBeGreaterThan(400);
+  });
+
+  it('gain defaults to intermediate when liftingExperience is undefined', () => {
+    const defaultResult = getExactCalorieAdjustment('gain', 70, 76, 84);
+    const intermediateResult = getExactCalorieAdjustment(
+      'gain',
+      70,
+      76,
+      84,
+      undefined,
+      undefined,
+      'intermediate'
+    );
+    expect(defaultResult).toBe(intermediateResult);
   });
 });
 
