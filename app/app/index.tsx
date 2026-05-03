@@ -3,7 +3,7 @@ import { useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, Pressable, ScrollView, Text, View } from 'react-native';
+import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -49,6 +49,7 @@ import packageJson from '@/package.json';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
+import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
@@ -275,6 +276,15 @@ export default function HomeScreen() {
 
     drainPendingWidgetAction(openCamera);
   }, [navigationState?.key, openCamera]);
+
+  // On web we navigate directly to /app, so we need to check here if we need to run onboarding redirect
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !navigationState?.key) {
+      return;
+    }
+
+    runEntryOnboardingRedirect(router, 'app.index.web');
+  }, [navigationState?.key, router]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
