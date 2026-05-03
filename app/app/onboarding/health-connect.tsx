@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
 import { GradientText } from '@/components/GradientText';
@@ -55,6 +55,7 @@ export default function HealthConnectScreen() {
 
   // Health Connect initialization and permissions
   const {
+    status,
     isAvailable,
     isInitializing,
     hasAnyPermission,
@@ -66,6 +67,11 @@ export default function HealthConnectScreen() {
 
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
+  const isUnsupportedPlatform = Platform.OS === 'web' || status === 'NOT_SUPPORTED';
+  const primaryLabel =
+    isUnsupportedPlatform || permissionsRequested || hasAnyPermission
+      ? t('onboarding.healthConnect.continue')
+      : t('onboarding.healthConnect.allowHealthAccess');
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -208,14 +214,15 @@ export default function HealthConnectScreen() {
 
             {/* Primary Button */}
             <Button
-              label={
-                permissionsRequested || hasAnyPermission
-                  ? t('onboarding.healthConnect.continue')
-                  : t('onboarding.healthConnect.allowHealthAccess')
-              }
+              label={primaryLabel}
               onPress={async () => {
                 setIsProcessing(true);
                 try {
+                  if (isUnsupportedPlatform) {
+                    router.navigate(resolvedNextRoute as any);
+                    return;
+                  }
+
                   if (!isAvailable) {
                     // Not available, show settings to install
                     await openSettings();
