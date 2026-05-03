@@ -3,8 +3,12 @@ import { router } from 'expo-router';
 import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
 
+export function isProduction() {
+  return !__DEV__;
+}
+
 export async function reloadApp() {
-  if (__DEV__) {
+  if (isProduction()) {
     // In development mode, use DevSettings.reload() to reload the app (does not work in prod)
     DevSettings.reload();
     return;
