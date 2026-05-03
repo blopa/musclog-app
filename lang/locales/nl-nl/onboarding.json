@@ -123,7 +123,53 @@
         "workout_log_sets": "workout-logsets",
         "validating": "gegevens"
       },
-      "importData": "Gegevens importeren"
+      "importData": "Gegevens importeren",
+      "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
+      "recommended": "Aanbevolen",
+      "personalizedSetup": "Gepersonaliseerde Installatie",
+      "personalizedSetupSteps": "8 stappen",
+      "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
+      "quickSetup": "Snelle Installatie",
+      "quickSetupSteps": "5 stappen",
+      "quickSetupSubtitle": "Basisinstallatie, u kunt later aanpassen"
+    },
+    "quickPreferences": {
+      "title": "Laten we beginnen",
+      "subtitle": "Stel uw meet- en weergavevoorkeuren in.",
+      "unitSystem": "Eenhedensysteem",
+      "metric": "Metrisch",
+      "imperial": "Imperiaal",
+      "biologicalSex": "Biologisch Geslacht",
+      "sexNote": "Selecteer uw bij geboorte toegewezen geslacht voor nauwkeurige berekeningen.",
+      "male": "Man",
+      "female": "Vrouw",
+      "other": "Anders / Zeg ik liever niet",
+      "continue": "Doorgaan"
+    },
+    "quickGoals": {
+      "title": "Wat zijn uw doelen?",
+      "subtitle": "We passen uw ervaring hierop aan.",
+      "fitnessFocus": "Fitnessfocus",
+      "buildMuscle": "Spieren opbouwen",
+      "strength": "Kracht",
+      "endurance": "Uithoudingsvermogen",
+      "general": "Algemeen",
+      "weightGoal": "Gewichtsdoel",
+      "lose": "Afvallen",
+      "maintain": "Behouden",
+      "gain": "Aankomen",
+      "continue": "Doorgaan"
+    },
+    "quickBodyStats": {
+      "title": "Uw lichaamsstatistieken",
+      "subtitle": "Gebruikt om caloriebehoefte te berekenen en voortgang bij te houden.",
+      "height": "Lengte",
+      "weight": "Gewicht",
+      "birthday": "Geboortedatum",
+      "birthdayHelper": "Gebruikt om uw leeftijd te berekenen voor nauwkeurige calorieschattingen",
+      "bodyFat": "Lichaamsvetpercentage",
+      "bodyFatHelper": "Als u het weet, helpt dit bij caloriebebrekeningen",
+      "continue": "Doorgaan"
     },
     "setGoals": {
       "title": "Smart Goal",

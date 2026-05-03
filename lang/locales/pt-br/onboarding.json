@@ -123,7 +123,53 @@
         "workout_log_sets": "séries de registro de treino",
         "validating": "dados"
       },
-      "importData": "Importar Dados"
+      "importData": "Importar Dados",
+      "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
+      "recommended": "Recomendado",
+      "personalizedSetup": "Configuração Personalizada",
+      "personalizedSetupSteps": "8 etapas",
+      "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
+      "quickSetup": "Configuração Rápida",
+      "quickSetupSteps": "5 etapas",
+      "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
+    },
+    "quickPreferences": {
+      "title": "Vamos começar",
+      "subtitle": "Defina suas preferências de medidas e exibição.",
+      "unitSystem": "Sistema de Unidades",
+      "metric": "Métrico",
+      "imperial": "Imperial",
+      "biologicalSex": "Sexo Biológico",
+      "sexNote": "Selecione seu sexo atribuído ao nascimento para cálculos precisos.",
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro / Prefiro não dizer",
+      "continue": "Continuar"
+    },
+    "quickGoals": {
+      "title": "Quais são seus objetivos?",
+      "subtitle": "Vamos personalizar sua experiência com base nisso.",
+      "fitnessFocus": "Foco de Fitness",
+      "buildMuscle": "Ganhar Músculo",
+      "strength": "Força",
+      "endurance": "Resistência",
+      "general": "Geral",
+      "weightGoal": "Objetivo de Peso",
+      "lose": "Perder",
+      "maintain": "Manter",
+      "gain": "Ganhar",
+      "continue": "Continuar"
+    },
+    "quickBodyStats": {
+      "title": "Suas estatísticas corporais",
+      "subtitle": "Usadas para calcular necessidades calóricas e acompanhar o progresso.",
+      "height": "Altura",
+      "weight": "Peso",
+      "birthday": "Data de nascimento",
+      "birthdayHelper": "Usada para calcular sua idade e estimar calorias com precisão",
+      "bodyFat": "Percentual de gordura corporal",
+      "bodyFatHelper": "Se você souber, ajuda nos cálculos de calorias",
+      "continue": "Continuar"
     },
     "setGoals": {
       "title": "Cálculo Inteligente",

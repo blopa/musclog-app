@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ArrowRight, Download, Dumbbell } from 'lucide-react-native';
+import { Download, Lock, Settings2, Star, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
@@ -169,7 +169,7 @@ export default function LandingScreen() {
                   ...theme.shadows.lg,
                 }}
               >
-                <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.text.white} />
+                <Star size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
               </LinearGradient>
             </View>
 
@@ -190,9 +190,9 @@ export default function LandingScreen() {
 
               {/* Tagline */}
               <Text
-                className="font-medium tracking-wide"
+                className="font-bold tracking-wide"
                 style={{
-                  color: theme.colors.text.secondary,
+                  color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.lg,
                   letterSpacing: theme.typography.letterSpacing.wide,
                 }}
@@ -212,6 +212,22 @@ export default function LandingScreen() {
               >
                 {t('onboarding.landing.description')}
               </Text>
+
+              {/* Privacy badge */}
+              <View
+                className="mt-3 flex-row items-center gap-2 rounded-full px-4 py-2"
+                style={{ backgroundColor: theme.colors.background.black30 }}
+              >
+                <Lock size={14} color={theme.colors.text.secondary} />
+                <Text
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {t('onboarding.landing.storedLocally')}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -269,19 +285,73 @@ export default function LandingScreen() {
               </View>
             ) : (
               <>
-                {/* Primary Button */}
-                <Button
-                  label={t('onboarding.landing.getStarted')}
-                  onPress={() => {
-                    // Navigate to home or onboarding
-                    router.navigate('/app/onboarding/onboarding');
+                {/* Personalized Setup (Recommended) */}
+                <View style={{ position: 'relative' }}>
+                  {/* Recommended badge */}
+                  <View
+                    className="absolute -top-3 left-0 right-0 z-10 flex-row items-center justify-center"
+                    pointerEvents="none"
+                  >
+                    <View
+                      className="flex-row items-center gap-1 rounded-full px-3 py-0.5"
+                      style={{ backgroundColor: theme.colors.accent.primary }}
+                    >
+                      <Star
+                        size={10}
+                        color={theme.colors.text.white}
+                        fill={theme.colors.text.white}
+                      />
+                      <Text
+                        style={{
+                          color: theme.colors.text.white,
+                          fontSize: theme.typography.fontSize.xs,
+                          fontWeight: theme.typography.fontWeight.bold,
+                        }}
+                      >
+                        {t('onboarding.landing.recommended')}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Button
+                    label={`${t('onboarding.landing.personalizedSetup')}   ${t('onboarding.landing.personalizedSetupSteps')}`}
+                    onPress={() => router.navigate('/app/onboarding/onboarding')}
+                    icon={Settings2}
+                    iconPosition="left"
+                    variant="gradientCta"
+                    size="lg"
+                    width="full"
+                  />
+                </View>
+                <Text
+                  className="text-center"
+                  style={{
+                    color: theme.colors.text.gray500,
+                    fontSize: theme.typography.fontSize.xs,
                   }}
-                  icon={ArrowRight}
-                  iconPosition="right"
-                  variant="gradientCta"
+                >
+                  {t('onboarding.landing.personalizedSetupSubtitle')}
+                </Text>
+
+                {/* Quick Setup */}
+                <Button
+                  label={`${t('onboarding.landing.quickSetup')}   ${t('onboarding.landing.quickSetupSteps')}`}
+                  onPress={() => router.navigate('/app/onboarding/quick-preferences')}
+                  icon={Zap}
+                  iconPosition="left"
+                  variant="outline"
                   size="lg"
                   width="full"
                 />
+                <Text
+                  className="text-center"
+                  style={{
+                    color: theme.colors.text.gray500,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {t('onboarding.landing.quickSetupSubtitle')}
+                </Text>
 
                 {/* Terms / Footer Text */}
                 <View className="mt-2">
