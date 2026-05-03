@@ -1,6 +1,6 @@
 import { subYears } from 'date-fns';
-import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
+import type { Gender } from '@/database/models/User';
 import { SettingsService, UserMetricService, UserService } from '@/database/services';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 
@@ -20,6 +20,20 @@ import {
   storedHeightToCm,
   storedWeightToKg,
 } from './unitConversion';
+
+const DEFAULT_USERNAMES_BY_GENDER: Record<Gender, string[]> = {
+  male: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
+  female: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
+  other: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
+};
+
+function getDefaultUsernameForGender(gender: Gender): string {
+  const usernames = DEFAULT_USERNAMES_BY_GENDER[gender] ?? DEFAULT_USERNAMES_BY_GENDER.other;
+  const username = usernames[Math.floor(Math.random() * usernames.length)];
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+
+  return `${username}${suffix}`;
+}
 
 /**
  * Display DOB using the user's locale (numeric day/month/year).
@@ -153,11 +167,7 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
 
   let user = await UserService.getCurrentUser();
   if (!user) {
-    const fullName = uniqueNamesGenerator({
-      dictionaries: [names],
-      style: 'capital',
-      separator: ' ',
-    });
+    const fullName = getDefaultUsernameForGender(data.gender);
 
     user = await UserService.initializeUser({
       fullName,
