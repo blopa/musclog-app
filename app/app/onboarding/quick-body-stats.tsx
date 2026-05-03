@@ -1,17 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerInput } from '@/components/modals/DatePickerInput';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
+import { HeightPickerInput } from '@/components/modals/HeightPickerInput';
+import { HeightPickerModal } from '@/components/modals/HeightPickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
+import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { QUICK_SETUP_DATA, TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import { type FitnessGoal, type Gender, type WeightGoal } from '@/database/models/User';
@@ -60,7 +62,8 @@ export default function QuickBodyStatsScreen() {
   const [weight, setWeight] = useState('');
   const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
-  const [bodyFat, setBodyFat] = useState(25);
+  const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
+  const [bodyFat, setBodyFat] = useState<number | null>(25);
   const [isSaving, setIsSaving] = useState(false);
 
   const units = setupData.units ?? 'metric';
@@ -108,7 +111,7 @@ export default function QuickBodyStatsScreen() {
           date: now,
           timezone,
         }),
-        bodyFat > 0
+        bodyFat !== null
           ? UserMetricService.createMetric({
               type: 'body_fat',
               value: bodyFat,
@@ -164,7 +167,7 @@ export default function QuickBodyStatsScreen() {
         weightGoal,
         fitnessGoal,
         liftingExperience: 'beginner',
-        bodyFatPercent: bodyFat > 0 ? bodyFat : undefined,
+        bodyFatPercent: bodyFat ?? undefined,
       });
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
@@ -207,25 +210,54 @@ export default function QuickBodyStatsScreen() {
               </Text>
             </View>
 
-            {/* Height */}
-            <TextInput
-              label={`${t('onboarding.quickBodyStats.height')} (${heightUnit.toUpperCase()})`}
-              value={height}
-              onChangeText={setHeight}
-              placeholder={units === 'metric' ? '170' : '67'}
-              keyboardType="numeric"
-              required
-            />
-
-            {/* Weight */}
-            <TextInput
-              label={`${t('onboarding.quickBodyStats.weight')} (${weightUnit.toUpperCase()})`}
-              value={weight}
-              onChangeText={setWeight}
-              placeholder={units === 'metric' ? '70' : '154'}
-              keyboardType="numeric"
-              required
-            />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <TextInput
+                  label={t('onboarding.quickBodyStats.weight')}
+                  value={weight}
+                  onChangeText={setWeight}
+                  placeholder="0.0"
+                  keyboardType="numeric"
+                  selectTextOnFocus={true}
+                  required
+                  icon={
+                    <Text className="text-center text-sm font-medium text-text-tertiary">
+                      {weightUnit}
+                    </Text>
+                  }
+                />
+              </View>
+              <View className="flex-1">
+                {units === 'imperial' ? (
+                  <HeightPickerInput
+                    label={t('onboarding.quickBodyStats.height')}
+                    totalInches={parseFloat(height) || 67}
+                    onPress={() => setIsHeightPickerVisible(true)}
+                  />
+                ) : (
+                  <TextInput
+                    label={t('onboarding.quickBodyStats.height')}
+                    value={height}
+                    onChangeText={(text) => {
+                      const dotIndex = text.indexOf('.');
+                      if (dotIndex !== -1 && text.length - dotIndex > 3) {
+                        return;
+                      }
+                      setHeight(text);
+                    }}
+                    placeholder="0"
+                    keyboardType="numeric"
+                    selectTextOnFocus={true}
+                    required
+                    icon={
+                      <Text className="text-center text-sm font-medium text-text-tertiary">
+                        {heightUnit}
+                      </Text>
+                    }
+                  />
+                )}
+              </View>
+            </View>
 
             {/* Birthday */}
             <View className="gap-2">
@@ -266,47 +298,46 @@ export default function QuickBodyStatsScreen() {
               >
                 {t('onboarding.quickBodyStats.bodyFatHelper')}
               </Text>
-              <View
-                className="gap-3 rounded-xl p-4"
-                style={{ backgroundColor: theme.colors.background.cardElevated }}
-              >
+              <View className="mt-1">
                 <View className="flex-row items-center justify-between">
                   <Text
-                    style={{
-                      color: theme.colors.text.secondary,
-                      fontSize: theme.typography.fontSize.sm,
-                    }}
+                    className="text-sm font-medium text-text-secondary"
                   >
-                    {'5%'}
+                    {t('onboarding.quickBodyStats.bodyFat')}
                   </Text>
-                  <Text
-                    className="font-black"
-                    style={{
-                      color: theme.colors.accent.primary,
-                      fontSize: theme.typography.fontSize['2xl'],
-                    }}
-                  >
-                    {`${bodyFat}%`}
-                  </Text>
-                  <Text
-                    style={{
-                      color: theme.colors.text.secondary,
-                      fontSize: theme.typography.fontSize.sm,
-                    }}
-                  >
-                    {'50%'}
-                  </Text>
+                  {bodyFat === null ? (
+                    <Pressable onPress={() => setBodyFat(20)} className="active:opacity-70">
+                      <Text
+                        className="text-sm font-medium"
+                        style={{ color: theme.colors.text.tertiary }}
+                      >
+                        {t('editFitnessDetails.fatPercentageNotSet')}
+                      </Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable onPress={() => setBodyFat(null)} className="active:opacity-70">
+                      <Text
+                        className="text-sm font-medium"
+                        style={{ color: theme.colors.text.tertiary }}
+                      >
+                        {t('common.clear')}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
-                <Slider
-                  minimumValue={5}
-                  maximumValue={50}
-                  step={1}
-                  value={bodyFat}
-                  onValueChange={setBodyFat}
-                  minimumTrackTintColor={theme.colors.accent.primary}
-                  maximumTrackTintColor={theme.colors.border.light}
-                  thumbTintColor={theme.colors.accent.primary}
-                />
+                {bodyFat !== null ? (
+                  <View className="mt-3">
+                    <StepperInlineInput
+                      label={t('onboarding.quickBodyStats.bodyFat')}
+                      value={bodyFat}
+                      maxFractionDigits={1}
+                      onIncrement={() => setBodyFat((prev) => Math.min(50, (prev ?? 20) + 0.5))}
+                      onDecrement={() => setBodyFat((prev) => Math.max(5, (prev ?? 20) - 0.5))}
+                      onChangeValue={(value) => setBodyFat(Math.min(50, Math.max(5, value)))}
+                      unit="%"
+                    />
+                  </View>
+                ) : null}
               </View>
             </View>
           </View>
@@ -338,6 +369,17 @@ export default function QuickBodyStatsScreen() {
           }}
           minYear={1920}
           maxYear={new Date().getFullYear() - 10}
+        />
+
+        <HeightPickerModal
+          visible={isHeightPickerVisible}
+          onClose={() => setIsHeightPickerVisible(false)}
+          totalInches={parseFloat(height) || 67}
+          onHeightSelect={(totalInches) => {
+            setHeight(String(totalInches));
+            setIsHeightPickerVisible(false);
+          }}
+          title={t('heightPicker.selectHeight')}
         />
       </SafeAreaView>
     </MasterLayout>
