@@ -375,6 +375,29 @@ export function CreateMealModal({
     isQuickTrack ? undefined : meal
   );
 
+  const assertSavedMealIntegrity = async (
+    mealId: string,
+    expectedFoodCount: number,
+    context: string
+  ) => {
+    const savedMeal = await MealService.getMealWithFoods(mealId);
+
+    if (!savedMeal) {
+      throw new Error(`${context}: meal could not be reloaded after save`);
+    }
+
+    const actualFoodCount = savedMeal.foods.length;
+    if (actualFoodCount === 0) {
+      throw new Error(`${context}: saved meal has zero foods after save`);
+    }
+
+    if (actualFoodCount !== expectedFoodCount) {
+      throw new Error(
+        `${context}: expected ${expectedFoodCount} foods after save but found ${actualFoodCount}`
+      );
+    }
+  };
+
   useEffect(() => {
     setMealName(meal?.name ?? '');
     setMealDescription(meal?.description ?? '');
@@ -550,9 +573,15 @@ export function CreateMealModal({
         for (const ing of newIngredients) {
           await MealService.addFoodToMeal(meal.id, ing.foodId, ing.amount);
         }
+
+        await assertSavedMealIntegrity(
+          meal.id,
+          ingredients.length,
+          'CreateMealModal.handleSave.edit'
+        );
       } else {
         // Create mode
-        await MealService.createMealFromFoods(
+        const savedMeal = await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({
             foodId: ing.foodId,
@@ -561,6 +590,12 @@ export function CreateMealModal({
           mealDescription.trim(),
           false,
           preparedWeightGrams || undefined
+        );
+
+        await assertSavedMealIntegrity(
+          savedMeal.id,
+          ingredients.length,
+          'CreateMealModal.handleSave.create'
         );
       }
 

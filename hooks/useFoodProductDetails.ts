@@ -117,7 +117,11 @@ export async function fetchUSDAProductByBarcode(
 
     return null;
   } catch (e) {
-    console.error('Error fetching from USDA by barcode:', e);
+    const err = e as { name?: string };
+    if (err?.name !== 'AbortError') {
+      console.error('Error fetching from USDA by barcode:', e);
+    }
+
     return null;
   }
 }

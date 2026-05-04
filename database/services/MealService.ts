@@ -3,8 +3,54 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
+import { handleError } from '@/utils/handleError';
 
 export class MealService {
+  private static validateMealFoodItems(
+    foodItems: {
+      foodId: string;
+      amount: number;
+      portionId?: string;
+    }[]
+  ): void {
+    if (foodItems.length === 0) {
+      throw new Error('Cannot save meal without any food items');
+    }
+
+    const invalidFoodItem = foodItems.find(
+      (item) => !item.foodId || !Number.isFinite(item.amount) || item.amount <= 0
+    );
+
+    if (invalidFoodItem) {
+      throw new Error(
+        `Cannot save meal with invalid food item: foodId="${invalidFoodItem.foodId}", amount=${invalidFoodItem.amount}`
+      );
+    }
+  }
+
+  private static async assertMealHasExpectedFoods(
+    mealId: string,
+    expectedFoodCount: number,
+    context: string
+  ): Promise<void> {
+    const savedMeal = await this.getMealWithFoods(mealId);
+
+    if (!savedMeal) {
+      throw new Error(`${context}: meal could not be reloaded after save`);
+    }
+
+    const actualFoodCount = savedMeal.foods.length;
+    if (actualFoodCount === 0) {
+      throw new Error(`${context}: meal was saved without any meal_food rows`);
+    }
+
+    if (actualFoodCount !== expectedFoodCount) {
+      throw new Error(
+        `${context}: expected ${expectedFoodCount} meal_food rows but found ${actualFoodCount}`
+      );
+    }
+  }
+
   /**
    * Create a new meal
    */
@@ -117,6 +163,10 @@ export class MealService {
 
       return { meal, foods };
     } catch (error) {
+      await handleError(error, 'MealService.getMealWithFoods', {
+        showSnackbar: false,
+      });
+
       return null;
     }
   }
@@ -261,6 +311,8 @@ export class MealService {
     isAiGenerated = false,
     preparedWeightGrams?: number
   ): Promise<Meal> {
+    this.validateMealFoodItems(foodItems);
+
     const now = Date.now();
     const mealCollection = database.get<Meal>('meals');
     const mealFoodCollection = database.get<MealFood>('meal_foods');
@@ -289,6 +341,13 @@ export class MealService {
     await database.write(async () => {
       await database.batch(meal, ...mealFoods);
     });
+
+    await this.assertMealHasExpectedFoods(
+      meal.id,
+      foodItems.length,
+      'MealService.createMealFromFoods'
+    );
+
     return meal;
   }
 
