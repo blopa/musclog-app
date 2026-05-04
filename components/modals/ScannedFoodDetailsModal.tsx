@@ -48,6 +48,8 @@ export function ScannedFoodDetailsModal({
     (productData as any)?.source === 'usda' ||
     (productData as any)?.source === 'musclog';
 
+  const scaleFactor = amount / 100;
+
   const handleAddFood = async () => {
     if (!isScannedProductSuccess) {
       return;
@@ -162,13 +164,13 @@ export function ScannedFoodDetailsModal({
       );
     }
 
-    let foodInfo;
+    let baseFoodInfo;
     let brandText: string | undefined;
 
     if ((productData as any)?.source === 'usda') {
       const product = (productData as any).product;
       const mapped = mapUSDAFoodToUnified(product);
-      foodInfo = {
+      baseFoodInfo = {
         name: mapped.name,
         category: mapped.brand || product.dataType || t('food.generic'),
         calories: mapped.calories || 0,
@@ -181,7 +183,7 @@ export function ScannedFoodDetailsModal({
     } else if ((productData as any)?.source === 'musclog') {
       const product = (productData as any).product;
       const nutrition = getMusclogNutritionPer100g(product);
-      foodInfo = {
+      baseFoodInfo = {
         name: product.name || t('food.generic'),
         category: product.brand || t('food.generic'),
         calories: nutrition.calories,
@@ -193,7 +195,7 @@ export function ScannedFoodDetailsModal({
     } else {
       const product = (productData as any).product;
       const nutriments = getNutrimentsWithFallback(product);
-      foodInfo = {
+      baseFoodInfo = {
         name: getProductName(product),
         category: product.categories?.split(',')[0] || t('food.generic'),
         calories: getNutrimentValue(nutriments, 'energy-kcal') || 0,
@@ -204,6 +206,14 @@ export function ScannedFoodDetailsModal({
 
       brandText = product.brands;
     }
+
+    const foodInfo = {
+      ...baseFoodInfo,
+      calories: baseFoodInfo.calories * scaleFactor,
+      protein: baseFoodInfo.protein * scaleFactor,
+      carbs: baseFoodInfo.carbs * scaleFactor,
+      fat: baseFoodInfo.fat * scaleFactor,
+    };
 
     return (
       <View>
