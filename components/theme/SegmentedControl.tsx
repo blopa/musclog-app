@@ -26,7 +26,7 @@ export function SegmentedControl({
   variant = 'elevated',
 }: TestSegmentedControlProps) {
   const theme = useTheme();
-  const containerBase = 'h-16 flex-row rounded-lg';
+  const containerBase = 'flex-row rounded-lg';
   const segmentBorderRadius = theme.borderRadius.xs;
 
   const getContainerClass = (variant: SegmentedControlVariant): string => {
@@ -48,6 +48,7 @@ export function SegmentedControl({
     <View
       className={containerClass}
       style={{
+        height: theme.size['14'],
         paddingHorizontal: theme.spacing.padding['1half'],
         paddingVertical: theme.spacing.padding['1half'],
         gap: theme.spacing.gap.xs,
