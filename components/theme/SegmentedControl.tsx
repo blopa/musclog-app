@@ -26,7 +26,13 @@ export function SegmentedControl({
   variant = 'elevated',
 }: TestSegmentedControlProps) {
   const theme = useTheme();
+  const isWeb = Platform.OS === 'web'; // TODO: do we need this check?
   const containerBase = 'flex-row rounded-lg p-1';
+  const segmentVerticalPaddingClass = isWeb ? 'py-0' : 'py-2';
+  const gradientContentPaddingVertical = isWeb
+    ? theme.spacing.padding.xsHalf
+    : theme.spacing.padding.sm;
+  const segmentBorderRadius = theme.borderRadius.xs;
 
   const getContainerClass = (variant: SegmentedControlVariant): string => {
     switch (variant) {
@@ -51,7 +57,8 @@ export function SegmentedControl({
         return (
           <Pressable
             key={option.value}
-            className={`flex-1 rounded-md py-2 ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
+            className={`flex-1 ${segmentVerticalPaddingClass} ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
+            style={{ borderRadius: segmentBorderRadius }}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
@@ -61,8 +68,8 @@ export function SegmentedControl({
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={{
-                  paddingVertical: theme.spacing.padding.sm,
-                  borderRadius: theme.borderRadius.sm,
+                  paddingVertical: gradientContentPaddingVertical,
+                  borderRadius: segmentBorderRadius,
                   overflow: 'hidden',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -84,7 +91,9 @@ export function SegmentedControl({
               <View
                 className="flex-row items-center justify-center gap-1.5"
                 style={
-                  variant === 'gradient' ? { paddingVertical: theme.spacing.padding.sm } : undefined
+                  variant === 'gradient'
+                    ? { paddingVertical: gradientContentPaddingVertical }
+                    : undefined
                 }
               >
                 {option.icon}
