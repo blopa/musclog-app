@@ -14,6 +14,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
 import { handleError } from '@/utils/handleError';
+import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
@@ -83,14 +84,15 @@ export function ScannedFoodDetailsModal({
 
       if ((productData as any)?.source === 'musclog') {
         const musclogProduct = (productData as any).product;
+        const nutrition = getMusclogNutritionPer100g(musclogProduct);
         const newFood = await FoodService.createFromMusclogProduct(
           musclogProduct,
           {
-            calories: Number(musclogProduct.kcal ?? musclogProduct.calories ?? 0),
-            protein: Number(musclogProduct.protein || 0),
-            carbs: Number(musclogProduct.carbs || 0),
-            fat: Number(musclogProduct.fat || 0),
-            fiber: Number(musclogProduct.fiber || 0),
+            calories: nutrition.calories,
+            protein: nutrition.protein,
+            carbs: nutrition.carbs,
+            fat: nutrition.fat,
+            fiber: nutrition.fiber,
           },
           barcode
         );
@@ -178,13 +180,14 @@ export function ScannedFoodDetailsModal({
       brandText = mapped.brand;
     } else if ((productData as any)?.source === 'musclog') {
       const product = (productData as any).product;
+      const nutrition = getMusclogNutritionPer100g(product);
       foodInfo = {
         name: product.name || t('food.generic'),
         category: product.brand || t('food.generic'),
-        calories: Number(product.kcal ?? product.calories ?? 0),
-        protein: Number(product.protein || 0),
-        carbs: Number(product.carbs || 0),
-        fat: Number(product.fat || 0),
+        calories: nutrition.calories,
+        protein: nutrition.protein,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat,
       };
       brandText = product.brand;
     } else {

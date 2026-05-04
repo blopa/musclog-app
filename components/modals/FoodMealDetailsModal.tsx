@@ -77,6 +77,7 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
+import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
@@ -204,13 +205,13 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   const src = (state as any).source;
 
   if (src === 'musclog') {
-    const p = product as any;
+    const nutrition = getMusclogNutritionPer100g(product as any);
     return {
-      calories: toFiniteMacro(parseFloat(p.kcal ?? p.calories ?? 0)),
-      protein: toFiniteMacro(parseFloat(p.protein ?? 0)),
-      carbs: toFiniteMacro(parseFloat(p.carbs ?? 0)),
-      fat: toFiniteMacro(parseFloat(p.fat ?? 0)),
-      fiber: toFiniteMacro(parseFloat(p.fiber ?? 0)),
+      calories: toFiniteMacro(nutrition.calories),
+      protein: toFiniteMacro(nutrition.protein),
+      carbs: toFiniteMacro(nutrition.carbs),
+      fat: toFiniteMacro(nutrition.fat),
+      fiber: toFiniteMacro(nutrition.fiber),
     };
   }
 
@@ -826,16 +827,16 @@ export function FoodMealDetailsModal({
       const product = effectiveProductDetails.product;
 
       if ((effectiveProductDetails as any).source === 'musclog') {
-        const p = product as any;
+        const nutrition = getMusclogNutritionPer100g(product as any);
         return {
-          calories: parseFloat(p.kcal ?? p.calories ?? 0) || 0,
-          protein: parseFloat(p.protein ?? 0) || 0,
-          carbs: parseFloat(p.carbs ?? 0) || 0,
-          fat: parseFloat(p.fat ?? 0) || 0,
-          fiber: parseFloat(p.fiber ?? 0) || 0,
-          sugar: parseFloat(p.other_nutrients?.sugar ?? p.sugar ?? 0) || 0,
-          saturatedFat: parseFloat(p.other_nutrients?.saturated_fat ?? p.saturatedFat ?? 0) || 0,
-          sodium: parseFloat(p.other_nutrients?.sodium ?? p.sodium ?? 0) || 0,
+          calories: nutrition.calories,
+          protein: nutrition.protein,
+          carbs: nutrition.carbs,
+          fat: nutrition.fat,
+          fiber: nutrition.fiber,
+          sugar: nutrition.sugar,
+          saturatedFat: nutrition.saturatedFat,
+          sodium: nutrition.sodium,
         };
       }
 
