@@ -375,13 +375,8 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      if (isQuickSetup || isPersonalizedSetup) {
-        await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
-        router.replace('/app');
-        return;
-      }
-
-      router.navigate('/app/onboarding/personal-info');
+      await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
+      router.replace('/app');
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -1181,7 +1176,11 @@ export default function NutritionGoalsResults() {
               onPress={() => {
                 router.navigate({
                   pathname: '/app/onboarding/nutrition-goals',
-                  params: { isAdjusting: 'true', quickSetup: isQuickSetup ? 'true' : 'false' },
+                  params: {
+                    isAdjusting: 'true',
+                    quickSetup: isQuickSetup ? 'true' : 'false',
+                    personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
+                  },
                 });
               }}
             />

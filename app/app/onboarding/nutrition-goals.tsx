@@ -48,10 +48,12 @@ export default function NutritionGoalsScreen() {
     isCheckinAdjusting?: string;
     checkinId?: string;
     quickSetup?: string;
+    personalizedSetup?: string;
   }>();
   const isAdjusting = params.isAdjusting === 'true';
   const isCheckinAdjusting = params.isCheckinAdjusting === 'true';
   const isQuickSetup = params.quickSetup === 'true';
+  const isPersonalizedSetup = params.personalizedSetup === 'true';
 
   // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
   // We prefer this over the DB goal in initialGoals when present.
@@ -181,17 +183,16 @@ export default function NutritionGoalsScreen() {
           }
         }
 
-        // If the user arrived here from the results screen to adjust the AI plan,
-        // then after saving we should continue the onboarding flow to personal-info.
         if (isAdjusting) {
-          if (isQuickSetup) {
-            router.navigate({
-              pathname: '/app/onboarding/nutrition-goals-results',
-              params: { aiGenerated: 'false', quickSetup: 'true' },
-            });
-          } else {
-            router.navigate('/app/onboarding/personal-info');
-          }
+          router.navigate({
+            pathname: '/app/onboarding/nutrition-goals-results',
+            params: {
+              aiGenerated: 'false',
+              quickSetup: isQuickSetup ? 'true' : 'false',
+              personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
+            },
+          });
+
           return;
         }
 
@@ -209,7 +210,7 @@ export default function NutritionGoalsScreen() {
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [disableMinimumCalories, isAdjusting, isCheckinAdjusting, isQuickSetup, router, t]
+    [disableMinimumCalories, isAdjusting, isCheckinAdjusting, isPersonalizedSetup, isQuickSetup, router, t]
   );
 
   if (isLoading || isLoadingDefaults) {

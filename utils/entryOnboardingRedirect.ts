@@ -11,12 +11,8 @@ export async function runEntryOnboardingRedirect(router: Router, errorContext: s
       try {
         const saved = await getCurrentOnboardingStep();
         if (saved) {
-          if (saved === '/app/onboarding/connect-with-google') {
-            router.replace('/app/onboarding/fitness-info');
-          } else {
-            const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-            router.replace(normalizedSaved as never);
-          }
+          const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
+          router.replace(normalizedSaved as never);
         } else {
           router.replace('/app/onboarding/landing');
         }

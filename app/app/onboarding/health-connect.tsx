@@ -49,7 +49,7 @@ export default function HealthConnectScreen() {
     quickStep?: string;
     quickTotal?: string;
   }>();
-  const resolvedNextRoute = nextRoute ?? '/app/onboarding/fitness-info';
+  const resolvedNextRoute = nextRoute ?? '/app/onboarding/landing';
   const quickStepNum = quickStep ? Number(quickStep) : null;
   const quickTotalNum = quickTotal ? Number(quickTotal) : 5;
 
