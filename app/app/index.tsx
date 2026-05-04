@@ -278,14 +278,16 @@ export default function HomeScreen() {
     drainPendingWidgetAction(openCamera);
   }, [navigationState?.key, openCamera]);
 
-  // On web we navigate directly to /app, so we need to check here if we need to run onboarding redirect
+  // On web we navigate directly to /app, so we need to check here if we need to run onboarding redirect.
+  // pathname is intentionally excluded from deps: usePathname() updates globally on every navigation,
+  // which would re-trigger this effect and redirect the user back to /app from any other screen.
   useEffect(() => {
     if (Platform.OS !== 'web' || !navigationState?.key) {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'app.index.web', pathname);
-  }, [navigationState?.key, pathname, router]);
+    runEntryOnboardingRedirect(router, 'app.index.web', '/app');
+  }, [navigationState?.key, router]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
