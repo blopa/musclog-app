@@ -23,6 +23,7 @@ import {
   type WeightGoal,
 } from '@/database/models/User';
 import { UserMetricService, UserService } from '@/database/services';
+import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
@@ -60,13 +61,34 @@ export default function PersonalizedBodyStatsScreen() {
   const heightUnit = getHeightUnit(units);
 
   useEffect(() => {
-    AsyncStorage.getItem(PERSONALIZED_SETUP_DATA)
-      .then((raw) => {
+    async function load() {
+      let resolvedUnits: 'metric' | 'imperial' = 'metric';
+      try {
+        const raw = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
         if (raw) {
-          setSetupData(JSON.parse(raw) as PersonalizedSetupData);
+          const parsed = JSON.parse(raw) as PersonalizedSetupData;
+          setSetupData(parsed);
+          resolvedUnits = parsed.units ?? 'metric';
         }
-      })
-      .catch(() => {});
+      } catch {
+        // ignore
+      }
+
+      const prefill = await getHealthBodyMetricsPrefill(resolvedUnits);
+      if (prefill.weight) {
+        setWeight(prefill.weight);
+      }
+
+      if (prefill.height) {
+        setHeight(prefill.height);
+      }
+
+      if (prefill.bodyFat != null) {
+        setBodyFat(prefill.bodyFat);
+      }
+    }
+
+    load();
   }, []);
 
   const handleContinue = useCallback(async () => {
