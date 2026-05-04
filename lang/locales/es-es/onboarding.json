@@ -180,6 +180,43 @@
       "calculateForMe": "Calcular por Mí",
       "setThemMyself": "Los Estableceré Yo Mismo",
       "missingData": "Por favor, completa tus detalles de fitness primero para que podamos calcular tu plan."
+    },
+    "personalizedPreferences": {
+      "nameLabel": "¿CÓMO DEBERÍAMOS LLAMARTE?",
+      "namePlaceholder": "Ingresa tu nombre (opcional)"
+    },
+    "personalizedExperience": {
+      "title": "¿Cuál es tu experiencia?",
+      "subtitle": "Esto nos ayuda a adaptar las sugerencias de entrenamiento a tu nivel.",
+      "experienceLabel": "EXPERIENCIA DE ENTRENAMIENTO",
+      "activityLevelLabel": "NIVEL DE ACTIVIDAD",
+      "beginner": "Principiante",
+      "beginnerDesc": "Menos de 1 año de entrenamiento",
+      "intermediate": "Intermedio",
+      "intermediateDesc": "1–3 años de entrenamiento constante",
+      "advanced": "Avanzado",
+      "advancedDesc": "3+ años de entrenamiento dedicado",
+      "sedentary": "Sedentario",
+      "sedentaryDesc": "Poco o ningún ejercicio",
+      "lightlyActive": "Ligeramente Activo",
+      "lightlyActiveDesc": "Ejercicio ligero 1–3 días/semana",
+      "moderatelyActive": "Moderadamente Activo",
+      "moderatelyActiveDesc": "Ejercicio moderado 3–5 días/semana",
+      "veryActive": "Muy Activo",
+      "veryActiveDesc": "Ejercicio intenso 6–7 días/semana",
+      "extremelyActive": "Extremadamente Activo",
+      "extremelyActiveDesc": "Ejercicio muy intenso o trabajo físico",
+      "continue": "Continuar"
+    },
+    "personalizedCycle": {
+      "title": "Una pregunta más",
+      "subtitle": "Esto nos ayuda a darte información más personalizada.",
+      "question": "¿Menstrúas?",
+      "yes": "Sí",
+      "yesDesc": "Me gustaría registrar mi ciclo",
+      "no": "No",
+      "noDesc": "Omitir seguimiento del ciclo",
+      "continue": "Continuar"
     }
   }
 }

@@ -56,9 +56,11 @@ export default function NutritionGoalsResults() {
     aiGenerated?: string;
     plan?: string;
     quickSetup?: string;
+    personalizedSetup?: string;
   }>();
   const aiGenerated = params.aiGenerated === 'true';
   const isQuickSetup = params.quickSetup === 'true';
+  const isPersonalizedSetup = params.personalizedSetup === 'true';
   const [isSaving, setIsSaving] = useState(false);
   const [storedPlan, setStoredPlan] = useState<NutritionPlan | null>(null);
 
@@ -373,7 +375,7 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      if (isQuickSetup) {
+      if (isQuickSetup || isPersonalizedSetup) {
         await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
         router.replace('/app');
         return;
@@ -431,6 +433,7 @@ export default function NutritionGoalsResults() {
   return (
     <MasterLayout showNavigationMenu={false}>
       {isQuickSetup ? <QuickSetupProgressBar current={5} total={5} /> : null}
+      {isPersonalizedSetup ? <QuickSetupProgressBar current={8} total={8} /> : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"

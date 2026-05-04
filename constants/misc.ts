@@ -11,6 +11,9 @@ export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
 // Temporary storage key for quick-setup data accumulated across steps
 export const QUICK_SETUP_DATA = 'quickSetupData';
 
+// Temporary storage key for personalized-setup data accumulated across steps
+export const PERSONALIZED_SETUP_DATA = 'personalizedSetupData';
+
 // Current user (sync_id) for multi-user / future sync support
 export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
 

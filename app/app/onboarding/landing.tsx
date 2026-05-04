@@ -315,7 +315,7 @@ export default function LandingScreen() {
 
                   <Button
                     label={`${t('onboarding.landing.personalizedSetup')}   ${t('onboarding.landing.personalizedSetupSteps')}`}
-                    onPress={() => router.navigate('/app/onboarding/onboarding')}
+                    onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
                     icon={Settings2}
                     iconPosition="left"
                     variant="gradientCta"

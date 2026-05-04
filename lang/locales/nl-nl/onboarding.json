@@ -180,6 +180,43 @@
       "calculateForMe": "Bereken het voor mij",
       "setThemMyself": "Ik stel ze zelf in",
       "missingData": "Vul eerst je fitnessgegevens in zodat we je plan kunnen berekenen."
+    },
+    "personalizedPreferences": {
+      "nameLabel": "HOE MOETEN WE JE NOEMEN?",
+      "namePlaceholder": "Voer je naam in (optioneel)"
+    },
+    "personalizedExperience": {
+      "title": "Wat is je ervaringsniveau?",
+      "subtitle": "Dit helpt ons trainingsaanbevelingen op jouw niveau af te stemmen.",
+      "experienceLabel": "TRAININGSERVARING",
+      "activityLevelLabel": "ACTIVITEITSNIVEAU",
+      "beginner": "Beginner",
+      "beginnerDesc": "Minder dan 1 jaar training",
+      "intermediate": "Gemiddeld",
+      "intermediateDesc": "1–3 jaar consistent trainen",
+      "advanced": "Gevorderd",
+      "advancedDesc": "3+ jaar toegewijd trainen",
+      "sedentary": "Sedentair",
+      "sedentaryDesc": "Weinig of geen beweging",
+      "lightlyActive": "Licht Actief",
+      "lightlyActiveDesc": "Lichte beweging 1–3 dagen/week",
+      "moderatelyActive": "Matig Actief",
+      "moderatelyActiveDesc": "Matige beweging 3–5 dagen/week",
+      "veryActive": "Erg Actief",
+      "veryActiveDesc": "Intensieve training 6–7 dagen/week",
+      "extremelyActive": "Extreem Actief",
+      "extremelyActiveDesc": "Zeer intensieve training of fysiek werk",
+      "continue": "Doorgaan"
+    },
+    "personalizedCycle": {
+      "title": "Nog één vraag",
+      "subtitle": "Dit helpt ons meer gepersonaliseerde inzichten te geven.",
+      "question": "Menstrueer je?",
+      "yes": "Ja",
+      "yesDesc": "Ik wil mijn cyclus bijhouden",
+      "no": "Nee",
+      "noDesc": "Cyclus bijhouden overslaan",
+      "continue": "Doorgaan"
     }
   }
 }
