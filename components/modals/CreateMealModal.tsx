@@ -581,7 +581,7 @@ export function CreateMealModal({
         );
       } else {
         // Create mode
-        const savedMeal = await MealService.createMealFromFoods(
+        await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({
             foodId: ing.foodId,
@@ -590,12 +590,6 @@ export function CreateMealModal({
           mealDescription.trim(),
           false,
           preparedWeightGrams || undefined
-        );
-
-        await assertSavedMealIntegrity(
-          savedMeal.id,
-          ingredients.length,
-          'CreateMealModal.handleSave.create'
         );
       }
 

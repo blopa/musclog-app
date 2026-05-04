@@ -86,7 +86,7 @@ export function ScannedFoodDetailsModal({
         const newFood = await FoodService.createFromMusclogProduct(
           musclogProduct,
           {
-            calories: Number(musclogProduct.calories || 0),
+            calories: Number(musclogProduct.kcal ?? musclogProduct.calories ?? 0),
             protein: Number(musclogProduct.protein || 0),
             carbs: Number(musclogProduct.carbs || 0),
             fat: Number(musclogProduct.fat || 0),
@@ -181,7 +181,7 @@ export function ScannedFoodDetailsModal({
       foodInfo = {
         name: product.name || t('food.generic'),
         category: product.brand || t('food.generic'),
-        calories: Number(product.calories || 0),
+        calories: Number(product.kcal ?? product.calories ?? 0),
         protein: Number(product.protein || 0),
         carbs: Number(product.carbs || 0),
         fat: Number(product.fat || 0),
