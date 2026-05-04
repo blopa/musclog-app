@@ -88,6 +88,14 @@ function ScrollPicker({
         {items.map((item, index) => {
           const isSelected = index === displayIndex;
           const distance = Math.abs(index - displayIndex);
+          let opacity = 0.15;
+
+          if (distance === 0) {
+            opacity = 1;
+          } else if (distance === 1) {
+            opacity = 0.4;
+          }
+
           return (
             <Pressable
               key={item}
@@ -103,18 +111,7 @@ function ScrollPicker({
                   color: isSelected ? textPrimaryColor : textMutedColor,
                   fontSize: 30,
                   fontWeight: '600',
-                  // TODO: avoid using IIFE
-                  opacity: (() => {
-                    if (distance === 0) {
-                      return 1;
-                    }
-
-                    if (distance === 1) {
-                      return 0.4;
-                    }
-
-                    return 0.15;
-                  })(),
+                  opacity,
                 }}
               >
                 {item}

@@ -836,6 +836,15 @@ export default function WorkoutSessionScreen() {
   } else if (currentSetData) {
     const exerciseCategory = getExerciseCategory();
     const previousSet = currentSetData.previousSet;
+    let partialsValue;
+
+    if (!isStatsDataLoaded) {
+      partialsValue = <ActivityIndicator size="small" color={theme.colors.text.primary} />;
+    } else if (partials === 0) {
+      partialsValue = '-';
+    } else {
+      partialsValue = formatInteger(partials, { useGrouping: false });
+    }
 
     content = (
       <View className="flex-1">
@@ -984,18 +993,7 @@ export default function WorkoutSessionScreen() {
             />
             <WorkoutStatCard
               title={t('workoutSession.partials')}
-              // TODO: avoid using IIFE
-              value={(() => {
-                if (!isStatsDataLoaded) {
-                  return <ActivityIndicator size="small" color={theme.colors.text.primary} />;
-                }
-
-                if (partials === 0) {
-                  return '-';
-                }
-
-                return formatInteger(partials, { useGrouping: false });
-              })()}
+              value={partialsValue}
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
