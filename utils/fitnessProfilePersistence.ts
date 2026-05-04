@@ -1,6 +1,5 @@
 import { subYears } from 'date-fns';
 
-import type { Gender } from '@/database/models/User';
 import { SettingsService, UserMetricService, UserService } from '@/database/services';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 
@@ -20,21 +19,7 @@ import {
   storedHeightToCm,
   storedWeightToKg,
 } from './unitConversion';
-
-const DEFAULT_USERNAMES_BY_GENDER: Record<Gender, string[]> = {
-  male: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
-  female: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
-  other: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
-};
-
-// TODO: move this to a utils file
-function getDefaultUsernameForGender(gender: Gender): string {
-  const usernames = DEFAULT_USERNAMES_BY_GENDER[gender] ?? DEFAULT_USERNAMES_BY_GENDER.other;
-  const username = usernames[Math.floor(Math.random() * usernames.length)];
-  const suffix = Math.floor(1000 + Math.random() * 9000);
-
-  return `${username}${suffix}`;
-}
+import { getDefaultUsernameForGender } from './usernameUtils';
 
 /**
  * Display DOB using the user's locale (numeric day/month/year).

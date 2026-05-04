@@ -23,6 +23,7 @@ import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { getDefaultUsernameForGender } from '@/utils/usernameUtils';
 
 type QuickSetupData = {
   gender?: Gender;
@@ -30,27 +31,6 @@ type QuickSetupData = {
   fitnessGoal?: FitnessGoal;
   weightGoal?: WeightGoal;
 };
-
-const ADJECTIVES = [
-  'Strong',
-  'Fast',
-  'Fit',
-  'Iron',
-  'Solid',
-  'Peak',
-  'Bold',
-  'Swift',
-  'Fierce',
-  'Elite',
-];
-const NOUNS = ['Wolf', 'Bear', 'Eagle', 'Hawk', 'Lion', 'Tiger', 'Rhino', 'Bull', 'Fox', 'Ox'];
-
-function generateRandomUsername(): string {
-  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-  const num = Math.floor(1000 + Math.random() * 9000);
-  return `${adj}${noun}${num}`;
-}
 
 export default function QuickBodyStatsScreen() {
   const theme = useTheme();
@@ -133,8 +113,7 @@ export default function QuickBodyStatsScreen() {
 
       // Create or update user profile
       const existingUser = await UserService.getCurrentUser();
-      // TODO: use getDefaultUsernameForGender instead
-      const randomName = generateRandomUsername();
+      const randomName = getDefaultUsernameForGender(gender);
       const dob = localDayStartMs(birthday);
 
       if (existingUser) {

@@ -29,6 +29,7 @@ import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
+import { getDefaultUsernameForGender } from '@/utils/usernameUtils';
 
 type PersonalizedSetupData = {
   fullName?: string;
@@ -115,7 +116,7 @@ export default function PersonalizedBodyStatsScreen() {
         });
       } else {
         await UserService.initializeUser({
-          fullName: fullName ?? `User${Math.floor(1000 + Math.random() * 9000)}`,
+          fullName: fullName ?? getDefaultUsernameForGender(gender),
           dateOfBirth: dob,
           gender,
           fitnessGoal,
