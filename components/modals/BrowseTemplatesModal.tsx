@@ -69,12 +69,12 @@ const getNormalizedTemplates = (t: TFunction) => {
       const difficulty = (item.difficulty as any) || 'Beginner';
 
       // Duration: number (minutes) -> "NN min", otherwise keep string
-      const duration =
-        typeof item.duration === 'number'
-          ? `${item.duration} ${t('common.min')}`
-          : typeof item.duration === 'string'
-            ? item.duration
-            : '';
+      let duration = '';
+      if (typeof item.duration === 'number') {
+        duration = `${item.duration} ${t('common.min')}`;
+      } else if (typeof item.duration === 'string') {
+        duration = item.duration;
+      }
 
       // Exercises: if array -> use translation with count, if number -> use translation with count, otherwise string
       let exercisesText = '';

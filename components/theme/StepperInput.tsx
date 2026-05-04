@@ -46,19 +46,22 @@ export const StepperInput: FC<StepperInputProps> = ({
     [i18n.resolvedLanguage, i18n.language]
   );
   const formatValue = useCallback(
-    (v: number) =>
-      maxFractionDigits === 0
-        ? formatInteger(v, { useGrouping: false })
-        : v % 1 === 0
-          ? formatInteger(v, { useGrouping: false })
-          : formatDecimal(v, maxFractionDigits),
+    (v: number) => {
+      if (maxFractionDigits === 0 || v % 1 === 0) {
+        return formatInteger(v, { useGrouping: false });
+      }
+
+      return formatDecimal(v, maxFractionDigits);
+    },
     [formatDecimal, formatInteger, maxFractionDigits]
   );
+
   const isPortion = variant === 'portion';
 
   const valueFontSize = isPortion
     ? theme.typography.fontSize['4xl']
     : theme.typography.fontSize['2xl'];
+
   const unitFontSize = theme.typography.fontSize['2xl'];
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));

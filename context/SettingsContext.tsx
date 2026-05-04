@@ -210,8 +210,14 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
 
   const rawUnits = getString(map, UNITS_SETTING_TYPE);
-  const units: Units =
-    rawUnits === '1' ? 'imperial' : rawUnits === '0' ? 'metric' : getDefaultUnits();
+  let units: Units;
+  if (rawUnits === '1') {
+    units = 'imperial';
+  } else if (rawUnits === '0') {
+    units = 'metric';
+  } else {
+    units = getDefaultUnits();
+  }
 
   const rawNavSlot1 = getString(map, NAV_SLOT_1_SETTING_TYPE);
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);

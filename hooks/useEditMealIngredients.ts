@@ -35,7 +35,7 @@ export function useEditMealIngredients(meal: Meal | undefined) {
           return;
         }
 
-        const loaded: Array<Ingredient | null> = await Promise.all(
+        const loaded: (Ingredient | null)[] = await Promise.all(
           result.foods.map(async (mf) => {
             try {
               const food = await mf.food;

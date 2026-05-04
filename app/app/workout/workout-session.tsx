@@ -984,15 +984,18 @@ export default function WorkoutSessionScreen() {
             />
             <WorkoutStatCard
               title={t('workoutSession.partials')}
-              value={
-                !isStatsDataLoaded ? (
-                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
-                ) : partials === 0 ? (
-                  '-'
-                ) : (
-                  formatInteger(partials, { useGrouping: false })
-                )
-              }
+              // TODO: avoid using IIFE
+              value={(() => {
+                if (!isStatsDataLoaded) {
+                  return <ActivityIndicator size="small" color={theme.colors.text.primary} />;
+                }
+
+                if (partials === 0) {
+                  return '-';
+                }
+
+                return formatInteger(partials, { useGrouping: false });
+              })()}
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}

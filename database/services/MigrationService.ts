@@ -865,8 +865,12 @@ export class MigrationService {
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
-        const amountToStore =
-          gramsConsumed > 0 ? gramsConsumed : useUnknownGramsConvention ? 100 : 1;
+        let amountToStore = 1;
+        if (gramsConsumed > 0) {
+          amountToStore = gramsConsumed;
+        } else if (useUnknownGramsConvention) {
+          amountToStore = 100;
+        }
 
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {

@@ -67,13 +67,16 @@ export function MoveCopyMealModal({
     }
   }, [visible]);
 
-  const title =
-    customTitle ||
-    (mode === 'move'
-      ? t('food.actions.moveModalTitle')
-      : mode === 'copy'
-        ? t('food.actions.copyModalTitle')
-        : t('food.actions.splitModalTitle'));
+  let title = customTitle;
+  if (!title) {
+    if (mode === 'move') {
+      title = t('food.actions.moveModalTitle');
+    } else if (mode === 'copy') {
+      title = t('food.actions.copyModalTitle');
+    } else {
+      title = t('food.actions.splitModalTitle');
+    }
+  }
 
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },

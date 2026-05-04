@@ -28,11 +28,22 @@ export function GoalOptionItem({
 }: GoalOptionItemProps) {
   const theme = useTheme();
   const isActive = isRecommended || isSelected;
+  const getPressedOpacity = (pressed: boolean) => {
+    if (disabled) {
+      return 0.5;
+    }
+
+    if (pressed) {
+      return 0.85;
+    }
+
+    return 1;
+  };
 
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
-      style={({ pressed }) => ({ opacity: disabled ? 0.5 : pressed ? 0.85 : 1 })}
+      style={({ pressed }) => ({ opacity: getPressedOpacity(pressed) })}
     >
       <View
         style={{

@@ -1390,8 +1390,13 @@ export function estimateTargetBodyFatWhenCutting(
 /** Map a stored NutritionPlan to initial form data (Partial<NutritionGoals>). */
 export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals> {
   const fiber = fiberFromCalories(plan.targetCalories);
-  const eatingPhase: EatingPhase =
-    plan.targetCalories < plan.tdee ? 'cut' : plan.targetCalories > plan.tdee ? 'bulk' : 'maintain';
+  let eatingPhase: EatingPhase = 'maintain';
+  if (plan.targetCalories < plan.tdee) {
+    eatingPhase = 'cut';
+  } else if (plan.targetCalories > plan.tdee) {
+    eatingPhase = 'bulk';
+  }
+
   return {
     totalCalories: plan.targetCalories,
     protein: plan.protein,

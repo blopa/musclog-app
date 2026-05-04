@@ -23,19 +23,20 @@ import {
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '@/components/cards/FoodNutritionSectionCard';
+import { MacroInput } from '@/components/MacroInput';
+import {
   type MicronutrientFormStrings,
   micronutrientFormStringsFromMicros,
   MicronutrientsExpandableSection,
   parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
-import { MacroInput } from '@/components/MacroInput';
-import {
-  FoodNutritionSectionCard,
-  type FoodDetailsNutritionSectionMode,
-} from '@/components/cards/FoodNutritionSectionCard';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import type { MicrosData } from '@/database/models';
 import { FoodService } from '@/database/services';
 import {
@@ -46,8 +47,8 @@ import {
   useFoodProductDetails,
 } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useTheme } from '@/hooks/useTheme';
+import { isSuccessFoodDetailProductState, isSuccessStatus } from '@/types/guards/openFoodFacts';
 import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
@@ -73,7 +74,6 @@ import {
   getProductName,
 } from '@/utils/openFoodFactsMapper';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { isSuccessFoodDetailProductState, isSuccessStatus } from '@/types/guards/openFoodFacts';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
 type ScannedFoodDetailsModalProps = {
@@ -154,9 +154,9 @@ export function ScannedFoodDetailsModal({
 
   const isScannedProductSuccess = Boolean(
     effectiveProductDetails &&
-      (isSuccessFoodDetailProductState(effectiveProductDetails) ||
-        (effectiveProductDetails as any)?.source === 'usda' ||
-        (effectiveProductDetails as any)?.source === 'musclog')
+    (isSuccessFoodDetailProductState(effectiveProductDetails) ||
+      (effectiveProductDetails as any)?.source === 'usda' ||
+      (effectiveProductDetails as any)?.source === 'musclog')
   );
 
   useEffect(() => {
@@ -328,30 +328,31 @@ export function ScannedFoodDetailsModal({
     if (Number.isFinite(rawNutritionalData.sugar)) {
       out.sugar = rawNutritionalData.sugar;
     }
+
     if (Number.isFinite(rawNutritionalData.saturatedFat)) {
       out.saturatedFat = rawNutritionalData.saturatedFat;
     }
+
     if (Number.isFinite(rawNutritionalData.sodium)) {
       out.sodium = rawNutritionalData.sodium;
     }
+
     if (Number.isFinite(rawNutritionalData.alcohol) && (rawNutritionalData.alcohol ?? 0) > 0) {
       out.alcohol = rawNutritionalData.alcohol;
     }
-    if (
-      Number.isFinite(rawNutritionalData.potassium) &&
-      (rawNutritionalData.potassium ?? 0) > 0
-    ) {
+
+    if (Number.isFinite(rawNutritionalData.potassium) && (rawNutritionalData.potassium ?? 0) > 0) {
       out.potassium = rawNutritionalData.potassium;
     }
-    if (
-      Number.isFinite(rawNutritionalData.magnesium) &&
-      (rawNutritionalData.magnesium ?? 0) > 0
-    ) {
+
+    if (Number.isFinite(rawNutritionalData.magnesium) && (rawNutritionalData.magnesium ?? 0) > 0) {
       out.magnesium = rawNutritionalData.magnesium;
     }
+
     if (Number.isFinite(rawNutritionalData.zinc) && (rawNutritionalData.zinc ?? 0) > 0) {
       out.zinc = rawNutritionalData.zinc;
     }
+
     return out;
   }, [rawNutritionalData]);
 
@@ -435,6 +436,7 @@ export function ScannedFoodDetailsModal({
     if (refetchedProductDetails || isLoading || !effectiveProductDetails) {
       return false;
     }
+
     return areCoreMacrosEffectivelyZero(baseNutritionalData);
   }, [refetchedProductDetails, isLoading, effectiveProductDetails, baseNutritionalData]);
 
@@ -587,7 +589,9 @@ export function ScannedFoodDetailsModal({
   );
 
   const handleOpenEditPopUp = useCallback(() => {
-    const productCode = getProductBarcodeFromSearchProduct((effectiveProductDetails as any)?.product);
+    const productCode = getProductBarcodeFromSearchProduct(
+      (effectiveProductDetails as any)?.product
+    );
     const currentBarcode = editedOverrides?.barcode ?? barcode ?? productCode ?? '';
 
     setEditForm({

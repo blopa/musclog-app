@@ -23,6 +23,8 @@ module.exports = defineConfig([
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
       // Enforce curly braces for all control statements (fixable)
       curly: ['warn', 'all'],
+      // Disallow nested ternary expressions
+      'no-nested-ternary': 'warn',
       // Disallow using `&&` inside JSX expression containers (fixable)
       'local/no-jsx-logical-expression': 'error',
       // Require lazy imports for conditionally rendered components (fixable)

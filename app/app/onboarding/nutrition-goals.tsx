@@ -54,6 +54,12 @@ export default function NutritionGoalsScreen() {
   const isCheckinAdjusting = params.isCheckinAdjusting === 'true';
   const isQuickSetup = params.quickSetup === 'true';
   const isPersonalizedSetup = params.personalizedSetup === 'true';
+  let nutritionGoalsBodyKey = 'empty';
+  if (goal) {
+    nutritionGoalsBodyKey = `goal-${goal.id}`;
+  } else if (storedPlanGoals) {
+    nutritionGoalsBodyKey = 'stored-plan';
+  }
 
   // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
   // We prefer this over the DB goal in initialGoals when present.
@@ -248,7 +254,7 @@ export default function NutritionGoalsScreen() {
             </Text>
           </View>
           <NutritionGoalsBody
-            key={goal ? `goal-${goal.id}` : storedPlanGoals ? 'stored-plan' : 'empty'}
+            key={nutritionGoalsBodyKey}
             onSave={handleSave}
             initialGoals={initialGoals}
             showSaveButton={false}

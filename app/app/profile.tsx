@@ -61,6 +61,46 @@ const getGenderKey = (gender: string): string => {
   }
 };
 
+const getTrendIcon = (isGainPhase: boolean, isLosePhase: boolean) => {
+  if (isLosePhase) {
+    return TrendingDown;
+  }
+
+  return TrendingUp;
+};
+
+const getWeightTrendColor = (
+  isGainPhase: boolean,
+  isLosePhase: boolean,
+  theme: ReturnType<typeof useTheme>
+) => {
+  if (isGainPhase) {
+    return theme.colors.status.success;
+  }
+
+  if (isLosePhase) {
+    return theme.colors.status.warning;
+  }
+
+  return theme.colors.accent.primary;
+};
+
+const getBodyFatTrendColor = (
+  isGainPhase: boolean,
+  isLosePhase: boolean,
+  theme: ReturnType<typeof useTheme>
+) => {
+  if (isGainPhase) {
+    return theme.colors.status.warning;
+  }
+
+  if (isLosePhase) {
+    return theme.colors.status.success;
+  }
+
+  return theme.colors.status.warning;
+};
+
 export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -140,12 +180,8 @@ export default function ProfileScreen() {
         titleKey: 'profile.stats.weight',
         value: formatDecimal(metrics.weight, 1),
         unit: weightUnit,
-        icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
-        iconColor: isGainPhase
-          ? theme.colors.status.success
-          : isLosePhase
-            ? theme.colors.status.warning
-            : theme.colors.accent.primary,
+        icon: getTrendIcon(isGainPhase, isLosePhase),
+        iconColor: getWeightTrendColor(isGainPhase, isLosePhase, theme),
       });
     }
 
@@ -173,12 +209,8 @@ export default function ProfileScreen() {
         titleKey: 'profile.stats.bodyFat',
         value: formatDecimal(metrics.bodyFat, 1),
         unit: '%',
-        icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
-        iconColor: isGainPhase
-          ? theme.colors.status.warning
-          : isLosePhase
-            ? theme.colors.status.success
-            : theme.colors.status.warning,
+        icon: getTrendIcon(isGainPhase, isLosePhase),
+        iconColor: getBodyFatTrendColor(isGainPhase, isLosePhase, theme),
       });
     }
 

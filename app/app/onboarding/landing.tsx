@@ -27,6 +27,19 @@ export default function LandingScreen() {
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
+  const getInitStatusText = () => {
+    if (initPhase === 'migrating' && initStep) {
+      return t('onboarding.landing.migratingStep', {
+        step: t(`onboarding.landing.migrationSteps.${initStep}`),
+      });
+    }
+
+    if (initPhase === 'migrating') {
+      return t('onboarding.landing.migratingData');
+    }
+
+    return t('onboarding.landing.preparingApp');
+  };
 
   const [isInitializing, setIsInitializing] = useState(true);
   const [initPhase, setInitPhase] = useState<'seeding' | 'migrating' | null>(null);
@@ -273,13 +286,7 @@ export default function LandingScreen() {
                       fontSize: theme.typography.fontSize.lg,
                     }}
                   >
-                    {initPhase === 'migrating' && initStep
-                      ? t('onboarding.landing.migratingStep', {
-                          step: t(`onboarding.landing.migrationSteps.${initStep}`),
-                        })
-                      : initPhase === 'migrating'
-                        ? t('onboarding.landing.migratingData')
-                        : t('onboarding.landing.preparingApp')}
+                    {getInitStatusText()}
                   </Text>
                 </View>
               </View>

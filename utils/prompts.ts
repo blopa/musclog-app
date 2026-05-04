@@ -429,19 +429,19 @@ export const getMinimalSystemPrompt = async (
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
 
-  const role =
-    context === 'nutrition'
-      ? 'nutrition coach'
-      : context === 'exercise'
-        ? 'personal trainer'
-        : 'fitness coach';
+  let role = 'fitness coach';
+  if (context === 'nutrition') {
+    role = 'nutrition coach';
+  } else if (context === 'exercise') {
+    role = 'personal trainer';
+  }
 
-  const focus =
-    context === 'nutrition'
-      ? 'Focus on nutrition and diet topics.'
-      : context === 'exercise'
-        ? 'Focus on exercise and training topics.'
-        : 'Focus on fitness, nutrition, and health topics.';
+  let focus = 'Focus on fitness, nutrition, and health topics.';
+  if (context === 'nutrition') {
+    focus = 'Focus on nutrition and diet topics.';
+  } else if (context === 'exercise') {
+    focus = 'Focus on exercise and training topics.';
+  }
 
   return `You are Loggy, a specialized ${role}. ${userStats}
 

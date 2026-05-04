@@ -166,10 +166,26 @@ export function useExercises({
           }
 
           if (sortOrder === 'asc') {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-          } else {
-            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+            if (aValue > bValue) {
+              return 1;
+            }
+
+            if (aValue < bValue) {
+              return -1;
+            }
+
+            return 0;
           }
+
+          if (aValue < bValue) {
+            return 1;
+          }
+
+          if (aValue > bValue) {
+            return -1;
+          }
+
+          return 0;
         });
       }
 
@@ -272,9 +288,26 @@ export function useExercises({
             bValue = (bValue as string).toLowerCase();
           }
           if (sortOrder === 'asc') {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+            if (aValue > bValue) {
+              return 1;
+            }
+
+            if (aValue < bValue) {
+              return -1;
+            }
+
+            return 0;
           }
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+
+          if (aValue < bValue) {
+            return 1;
+          }
+
+          if (aValue > bValue) {
+            return -1;
+          }
+
+          return 0;
         });
         setExercises((prev) => [...prev, ...moreExercises]);
         const newOffset = currentOffset + moreExercises.length;

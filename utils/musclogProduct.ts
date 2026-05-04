@@ -37,9 +37,7 @@ function parseMusclogNumber(value: NumericLike): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export function getMusclogNutritionPer100g(
-  product: MusclogProduct
-): MusclogNutritionPer100g {
+export function getMusclogNutritionPer100g(product: MusclogProduct): MusclogNutritionPer100g {
   return {
     calories: parseMusclogNumber(product.kcal ?? product.calories),
     protein: parseMusclogNumber(product.protein),

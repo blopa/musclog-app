@@ -800,12 +800,12 @@ export class SettingsService {
       2: 'food',
       3: 'profile',
     };
-    const type =
-      slot === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slot === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let type = NAV_SLOT_3_SETTING_TYPE;
+    if (slot === 1) {
+      type = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slot === 2) {
+      type = NAV_SLOT_2_SETTING_TYPE;
+    }
     const value = await SettingsService.getStringSetting(type, defaults[slot]);
     return value as NavItemKey;
   }
@@ -814,12 +814,12 @@ export class SettingsService {
    * Upsert the nav item key for a customizable nav slot.
    */
   static async setNavSlot(slot: 1 | 2 | 3, item: NavItemKey) {
-    const type =
-      slot === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slot === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let type = NAV_SLOT_3_SETTING_TYPE;
+    if (slot === 1) {
+      type = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slot === 2) {
+      type = NAV_SLOT_2_SETTING_TYPE;
+    }
     await SettingsService.setStringSetting(type, item);
   }
 
@@ -833,18 +833,18 @@ export class SettingsService {
     slotB: 1 | 2 | 3,
     itemB: NavItemKey
   ) {
-    const typeA =
-      slotA === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slotA === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
-    const typeB =
-      slotB === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slotB === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let typeA = NAV_SLOT_3_SETTING_TYPE;
+    if (slotA === 1) {
+      typeA = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slotA === 2) {
+      typeA = NAV_SLOT_2_SETTING_TYPE;
+    }
+    let typeB = NAV_SLOT_3_SETTING_TYPE;
+    if (slotB === 1) {
+      typeB = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slotB === 2) {
+      typeB = NAV_SLOT_2_SETTING_TYPE;
+    }
 
     const now = Date.now();
     const [existingA, existingB] = await Promise.all([

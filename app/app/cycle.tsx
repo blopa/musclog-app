@@ -21,6 +21,18 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 
+const getHormoneTrend = (trend?: string) => {
+  if (trend === 'rising') {
+    return 'up';
+  }
+
+  if (trend === 'dropping') {
+    return 'down';
+  }
+
+  return 'stable';
+};
+
 export default function CycleScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -205,13 +217,7 @@ export default function CycleScreen() {
                 type="estrogen"
                 label={t('focus.estrogen')}
                 value={insights?.estrogen || '--'}
-                trend={
-                  insights?.estrogen === 'rising'
-                    ? 'up'
-                    : insights?.estrogen === 'dropping'
-                      ? 'down'
-                      : 'stable'
-                }
+                trend={getHormoneTrend(insights?.estrogen)}
               />
               <PhysiologicalInsightsCard
                 type="metabolism"

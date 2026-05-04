@@ -96,6 +96,99 @@ export function ExerciseGoalDetailModal({
     return null;
   }
 
+  const renderProjectionStatus = () => {
+    if (projection?.status === 'achieved') {
+      return (
+        <View className="bg-status-success10 rounded-xl p-4">
+          <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
+            {projection.achievedDate
+              ? t('exerciseGoals.card.achieved', {
+                  date: new Date(projection.achievedDate).toLocaleDateString(locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }),
+                })
+              : t('exerciseGoals.card.achieved')}
+          </Text>
+        </View>
+      );
+    }
+
+    if (projection?.status === 'ready_to_achieve') {
+      return (
+        <View className="bg-accent-primary10 rounded-xl p-4">
+          <Text
+            className="text-center text-sm font-medium"
+            style={{ color: theme.colors.accent.primary }}
+          >
+            {t('exerciseGoals.card.readyToAchieve')}
+          </Text>
+        </View>
+      );
+    }
+
+    if (projection?.status === 'stalling') {
+      return (
+        <View className="bg-status-warning10 rounded-xl p-4">
+          <Text
+            className="text-center text-sm font-medium"
+            style={{ color: theme.colors.status.warning }}
+          >
+            {t('exerciseGoals.card.stalling')}
+          </Text>
+        </View>
+      );
+    }
+
+    if (projection?.status === 'declining') {
+      return (
+        <View className="bg-status-error10 rounded-xl p-4">
+          <Text
+            className="text-center text-sm font-medium"
+            style={{ color: theme.colors.status.error }}
+          >
+            {t('exerciseGoals.card.declining')}
+          </Text>
+        </View>
+      );
+    }
+
+    if (projection?.status === 'insufficient_data') {
+      return (
+        <Text className="text-center text-sm italic text-text-tertiary">
+          {t('exerciseGoals.card.insufficientData')}
+        </Text>
+      );
+    }
+
+    if (projection?.status === 'no_history') {
+      return (
+        <Text className="text-center text-sm italic text-text-tertiary">
+          {t('exerciseGoals.card.noHistory')}
+        </Text>
+      );
+    }
+
+    if (projection?.projectedWeeks && projection?.projectedDate) {
+      return (
+        <View className="bg-accent-primary10 rounded-xl p-4">
+          <Text className="text-sm font-bold text-accent-primary">
+            {t('exerciseGoals.card.projectedDate', {
+              weeks: Math.ceil(projection.projectedWeeks),
+              date: projection.projectedDate.toLocaleDateString(locale, {
+                month: 'short',
+                year: 'numeric',
+              }),
+            })}
+          </Text>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
   const render1RMContent = () => {
     return (
       <View className="gap-5">
@@ -212,68 +305,7 @@ export function ExerciseGoalDetailModal({
         ) : null}
 
         {/* Status message */}
-        {projection?.status === 'achieved' ? (
-          <View className="bg-status-success10 rounded-xl p-4">
-            <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
-              {projection.achievedDate
-                ? t('exerciseGoals.card.achieved', {
-                    date: new Date(projection.achievedDate).toLocaleDateString(locale, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    }),
-                  })
-                : t('exerciseGoals.card.achieved')}
-            </Text>
-          </View>
-        ) : projection?.status === 'ready_to_achieve' ? (
-          <View className="bg-accent-primary10 rounded-xl p-4">
-            <Text
-              className="text-center text-sm font-medium"
-              style={{ color: theme.colors.accent.primary }}
-            >
-              {t('exerciseGoals.card.readyToAchieve')}
-            </Text>
-          </View>
-        ) : projection?.status === 'stalling' ? (
-          <View className="bg-status-warning10 rounded-xl p-4">
-            <Text
-              className="text-center text-sm font-medium"
-              style={{ color: theme.colors.status.warning }}
-            >
-              {t('exerciseGoals.card.stalling')}
-            </Text>
-          </View>
-        ) : projection?.status === 'declining' ? (
-          <View className="bg-status-error10 rounded-xl p-4">
-            <Text
-              className="text-center text-sm font-medium"
-              style={{ color: theme.colors.status.error }}
-            >
-              {t('exerciseGoals.card.declining')}
-            </Text>
-          </View>
-        ) : projection?.status === 'insufficient_data' ? (
-          <Text className="text-center text-sm italic text-text-tertiary">
-            {t('exerciseGoals.card.insufficientData')}
-          </Text>
-        ) : projection?.status === 'no_history' ? (
-          <Text className="text-center text-sm italic text-text-tertiary">
-            {t('exerciseGoals.card.noHistory')}
-          </Text>
-        ) : projection?.projectedWeeks && projection?.projectedDate ? (
-          <View className="bg-accent-primary10 rounded-xl p-4">
-            <Text className="text-sm font-bold text-accent-primary">
-              {t('exerciseGoals.card.projectedDate', {
-                weeks: Math.ceil(projection.projectedWeeks),
-                date: projection.projectedDate.toLocaleDateString(locale, {
-                  month: 'short',
-                  year: 'numeric',
-                }),
-              })}
-            </Text>
-          </View>
-        ) : null}
+        {renderProjectionStatus()}
 
         {/* Meta info */}
         {goal.targetDate || goal.notes ? (

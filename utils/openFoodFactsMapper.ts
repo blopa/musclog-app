@@ -288,12 +288,14 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   const valueField = nutriments[`${baseName}_value`];
 
   const raw = value100g ?? valueServing ?? baseValue ?? valueField;
-  const num =
-    typeof raw === 'number'
-      ? raw
-      : typeof raw === 'string'
-        ? Number.parseFloat(raw.replace(',', '.'))
-        : Number.NaN;
+  let num: number;
+  if (typeof raw === 'number') {
+    num = raw;
+  } else if (typeof raw === 'string') {
+    num = Number.parseFloat(raw.replace(',', '.'));
+  } else {
+    num = Number.NaN;
+  }
 
   return Number.isFinite(num) ? num : undefined;
 }

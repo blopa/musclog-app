@@ -21,6 +21,18 @@ export const MAX_X_LABELS = 8;
 export const X_AXIS_LABEL_WIDTH = 40;
 export const X_AXIS_LABEL_OFFSET = 20;
 
+export function getXAxisLabelEdgeMargin(positionPercent: number, edgeOffset: number): number {
+  if (positionPercent === 0) {
+    return edgeOffset;
+  }
+
+  if (positionPercent === 100) {
+    return -edgeOffset;
+  }
+
+  return 0;
+}
+
 /**
  * Calculates X-axis labels with precise percentage positions.
  * Subsamples labels if they exceed MAX_X_LABELS.

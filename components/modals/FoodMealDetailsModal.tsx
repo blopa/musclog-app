@@ -64,14 +64,14 @@ import {
   localCalendarDayDateFromDayKeyMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
-import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
-import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
   parseCoreMacrosFromAlternateSource,
   parseServingSizeFromProduct,
 } from '@/utils/externalFoodProduct';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
+import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,

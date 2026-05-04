@@ -33,9 +33,17 @@ jest.mock('../nutritionCalculator', () => ({
     fats: Math.round(targetCalories / 30),
   })),
   computeWeightChangeFromCalorieDelta: jest.fn((totalDeltaKcal) => totalDeltaKcal / 7000),
-  eatingPhaseToWeightGoal: jest.fn((p) =>
-    p === 'cut' ? 'lose' : p === 'bulk' ? 'gain' : 'maintain'
-  ),
+  eatingPhaseToWeightGoal: jest.fn((p) => {
+    if (p === 'cut') {
+      return 'lose';
+    }
+
+    if (p === 'bulk') {
+      return 'gain';
+    }
+
+    return 'maintain';
+  }),
   fiberFromCalories: jest.fn((c) => 25),
   getMinCalories: jest.fn(() => 1500),
 }));

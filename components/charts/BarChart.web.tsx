@@ -7,7 +7,12 @@ import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '@/utils/chartUtils';
+import {
+  getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_OFFSET,
+  X_AXIS_LABEL_WIDTH,
+  XAxisLabel,
+} from '@/utils/chartUtils';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
@@ -275,8 +280,7 @@ export function BarChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft:
-                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
+                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
                 }}
                 numberOfLines={1}
               >

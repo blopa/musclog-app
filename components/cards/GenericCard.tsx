@@ -37,6 +37,18 @@ export function GenericCard({
   containerStyle,
 }: GenericCardProps) {
   const theme = useTheme();
+  const getCardBorderRadius = () => {
+    if (size === 'sm') {
+      return theme.borderRadius.lg;
+    }
+
+    if (size === 'lg') {
+      return theme.borderRadius['2xl'];
+    }
+
+    return theme.borderRadius.xl;
+  };
+
   // ============================================================================
   // Computed Values
   // ============================================================================
@@ -76,12 +88,7 @@ export function GenericCard({
     }
 
     // Size-based border radius for non-workout variants
-    const borderRadius =
-      size === 'sm'
-        ? theme.borderRadius.lg
-        : size === 'lg'
-          ? theme.borderRadius['2xl']
-          : theme.borderRadius.xl;
+    const borderRadius = getCardBorderRadius();
 
     return {
       ...baseStyle,
@@ -170,12 +177,7 @@ export function GenericCard({
 
   const getInnerViewStyle = (pressed: boolean = false): ViewStyle => {
     // Inner view gets the background, border, borderRadius, and transform
-    const borderRadius =
-      size === 'sm'
-        ? theme.borderRadius.lg
-        : size === 'lg'
-          ? theme.borderRadius['2xl']
-          : theme.borderRadius.xl;
+    const borderRadius = getCardBorderRadius();
 
     return {
       ...getBackgroundStyle(pressed),
@@ -208,12 +210,7 @@ export function GenericCard({
     // Popular cards get wrapped in a gradient border
     if (shouldShowPopularGradient) {
       // Calculate border radius to match the parent container
-      const borderRadius =
-        size === 'sm'
-          ? theme.borderRadius.lg
-          : size === 'lg'
-            ? theme.borderRadius['2xl']
-            : theme.borderRadius.xl;
+      const borderRadius = getCardBorderRadius();
 
       return (
         <LinearGradient
@@ -248,6 +245,34 @@ export function GenericCard({
     return children;
   };
 
+  const renderBackgroundEffects = () => {
+    if (hasGradientBackground) {
+      return (
+        <>
+          <View
+            className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
+            style={{ backgroundColor: theme.colors.accent.primary10 }}
+          />
+          <View
+            className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full blur-3xl"
+            style={{ backgroundColor: theme.colors.accent.secondary10 }}
+          />
+        </>
+      );
+    }
+
+    if (isTdeeBackground) {
+      return (
+        <View
+          className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
+          style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+        />
+      );
+    }
+
+    return null;
+  };
+
   // ============================================================================
   // Main Render
   // ============================================================================
@@ -272,23 +297,7 @@ export function GenericCard({
 
   return (
     <View className={workoutClassName} style={[getCardStyle(), containerStyle]}>
-      {hasGradientBackground ? (
-        <>
-          <View
-            className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          />
-          <View
-            className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full blur-3xl"
-            style={{ backgroundColor: theme.colors.accent.secondary10 }}
-          />
-        </>
-      ) : isTdeeBackground ? (
-        <View
-          className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
-          style={{ backgroundColor: theme.colors.status.emerald400_10 }}
-        />
-      ) : undefined}
+      {renderBackgroundEffects()}
       {cardContent}
     </View>
   );

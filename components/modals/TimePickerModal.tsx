@@ -103,7 +103,18 @@ function ScrollPicker({
                   color: isSelected ? textPrimaryColor : textMutedColor,
                   fontSize: 30,
                   fontWeight: '600',
-                  opacity: distance === 0 ? 1 : distance === 1 ? 0.4 : 0.15,
+                  // TODO: avoid using IIFE
+                  opacity: (() => {
+                    if (distance === 0) {
+                      return 1;
+                    }
+
+                    if (distance === 1) {
+                      return 0.4;
+                    }
+
+                    return 0.15;
+                  })(),
                 }}
               >
                 {item}
