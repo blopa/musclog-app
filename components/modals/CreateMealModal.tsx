@@ -627,6 +627,7 @@ export function CreateMealModal({
       visible={visible}
       onClose={onClose}
       title={
+        // TODO: use helper function to avoid using nested ternary
         isQuickTrack
           ? t('food.quickTrackMeal.title')
           : meal
