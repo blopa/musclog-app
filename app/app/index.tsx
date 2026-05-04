@@ -1,5 +1,5 @@
 import * as ExpoLinking from 'expo-linking';
-import { useRootNavigationState, useRouter } from 'expo-router';
+import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,6 +87,7 @@ export default function HomeScreen() {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
+  const pathname = usePathname();
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
@@ -283,8 +284,8 @@ export default function HomeScreen() {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'app.index.web');
-  }, [navigationState?.key, router]);
+    runEntryOnboardingRedirect(router, 'app.index.web', pathname);
+  }, [navigationState?.key, pathname, router]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {

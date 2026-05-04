@@ -1,4 +1,4 @@
-import { Redirect, useRootNavigationState, useRouter } from 'expo-router';
+import { Redirect, usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 import { SplashLoading } from '@/components/SplashLoading';
@@ -7,6 +7,7 @@ import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 
 export default function Index() {
   const router = useRouter();
+  const pathname = usePathname();
   const navigationState = useRootNavigationState();
 
   useEffect(() => {
@@ -14,8 +15,8 @@ export default function Index() {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'index.web');
-  }, [navigationState?.key, router]);
+    runEntryOnboardingRedirect(router, 'index.web', pathname);
+  }, [navigationState?.key, pathname, router]);
 
   if (isProduction()) {
     return <Redirect href="/home" />;

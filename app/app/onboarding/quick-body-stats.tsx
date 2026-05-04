@@ -133,6 +133,7 @@ export default function QuickBodyStatsScreen() {
 
       // Create or update user profile
       const existingUser = await UserService.getCurrentUser();
+      // TODO: use getDefaultUsernameForGender instead
       const randomName = generateRandomUsername();
       const dob = localDayStartMs(birthday);
 

@@ -27,6 +27,7 @@ const DEFAULT_USERNAMES_BY_GENDER: Record<Gender, string[]> = {
   other: ['StrongLifter', 'PowerBuilder', 'IronAthlete'],
 };
 
+// TODO: move this to a utils file
 function getDefaultUsernameForGender(gender: Gender): string {
   const usernames = DEFAULT_USERNAMES_BY_GENDER[gender] ?? DEFAULT_USERNAMES_BY_GENDER.other;
   const username = usernames[Math.floor(Math.random() * usernames.length)];
