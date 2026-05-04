@@ -166,6 +166,10 @@ export class FoodService {
       carbs: number;
       fat: number;
       fiber?: number;
+      sugar?: number;
+      saturatedFat?: number;
+      sodium?: number;
+      micros?: MicrosData;
       isFavorite?: boolean;
     },
     barcode?: string
@@ -181,13 +185,25 @@ export class FoodService {
         food.brand = product.brand;
         food.barcode = barcode;
         food.externalId = barcode;
+        food.description = product.description;
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
         food.carbs = nutritionData.carbs;
         food.fat = nutritionData.fat;
         food.fiber = nutritionData.fiber || 0;
-        food.micros = {};
+
+        const micros = {
+          sugar: nutritionData.sugar,
+          saturatedFat: nutritionData.saturatedFat,
+          sodium: nutritionData.sodium,
+          ...nutritionData.micros,
+        };
+
+        food.micros = Object.fromEntries(
+          Object.entries(micros).filter(([_, value]) => value !== undefined)
+        );
+
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'musclog';
         food.createdAt = now;
