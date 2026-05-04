@@ -26,7 +26,7 @@ export function SegmentedControl({
   variant = 'elevated',
 }: TestSegmentedControlProps) {
   const theme = useTheme();
-  const containerBase = 'h-14 flex-row rounded-lg p-1';
+  const containerBase = 'h-16 flex-row rounded-lg';
   const segmentBorderRadius = theme.borderRadius.xs;
 
   const getContainerClass = (variant: SegmentedControlVariant): string => {
@@ -45,14 +45,21 @@ export function SegmentedControl({
   const containerClass = getContainerClass(variant);
 
   return (
-    <View className={containerClass}>
+    <View
+      className={containerClass}
+      style={{
+        paddingHorizontal: theme.spacing.padding['1half'],
+        paddingVertical: theme.spacing.padding['1half'],
+        gap: theme.spacing.gap.xs,
+      }}
+    >
       {options.map((option) => {
         const isSelected = value === option.value;
 
         return (
           <Pressable
             key={option.value}
-            className={`h-full flex-1 justify-center ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
+            className={`flex-1 justify-center self-stretch ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
             style={{ borderRadius: segmentBorderRadius }}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
@@ -75,7 +82,7 @@ export function SegmentedControl({
                   elevation: 3,
                 }}
               >
-                <View className="h-full flex-row items-center justify-center gap-1.5">
+                <View className="flex-row items-center justify-center gap-1.5">
                   {option.icon}
                   <Text className="text-center text-xs font-bold text-text-primary">
                     {option.label}
@@ -83,7 +90,7 @@ export function SegmentedControl({
                 </View>
               </LinearGradient>
             ) : (
-              <View className="h-full flex-row items-center justify-center gap-1.5">
+              <View className="flex-row items-center justify-center gap-1.5">
                 {option.icon}
                 <Text
                   className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
