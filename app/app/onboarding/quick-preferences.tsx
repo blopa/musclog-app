@@ -43,7 +43,7 @@ export default function QuickPreferencesScreen() {
       await AsyncStorage.setItem(QUICK_SETUP_DATA, JSON.stringify({ ...current, gender, units }));
 
       router.navigate(
-        `/app/onboarding/health-connect?nextRoute=/app/onboarding/quick-goals&quickStep=2&quickTotal=5`
+        `/app/onboarding/health-connect?nextRoute=/app/onboarding/quick-goals&quickStep=2&quickTotal=6`
       );
     } catch (e) {
       console.error('Error saving quick preferences:', e);
@@ -55,7 +55,7 @@ export default function QuickPreferencesScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={1} total={5} />
+        <QuickSetupProgressBar current={1} total={6} />
 
         <ScrollView
           className="flex-1"

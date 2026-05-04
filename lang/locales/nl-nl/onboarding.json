@@ -171,6 +171,30 @@
       "bodyFatHelper": "Als u het weet, helpt dit bij caloriebebrekeningen",
       "continue": "Doorgaan"
     },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "GRATIS",
+      "subtitle": "Verbeter je fitnesstraject met AI-gestuurde inzichten.",
+      "features": {
+        "coach": {
+          "title": "AI Trainingsassistent",
+          "desc": "Ontvang oefensuggesties en tips voor juiste uitvoering"
+        },
+        "insights": {
+          "title": "Voortgangsinzichten",
+          "desc": "Persoonlijke analyse van je training"
+        },
+        "recommendations": {
+          "title": "Slimme Aanbevelingen",
+          "desc": "AI-gestuurde trainings- en voedingsadviezen"
+        }
+      },
+      "dataSharingTitle": "Melding over Gegevensdeling",
+      "dataSharingBody": "Om AI-functies te bieden, worden sommige fitnessgegevens gedeeld met Musclog-servers. Het gratis abonnement heeft beperkte verzoeken per dag.",
+      "readPrivacyPolicy": "Lees ons Privacybeleid",
+      "enable": "Musclog AI inschakelen",
+      "noThanks": "Nee bedankt, doorgaan zonder AI"
+    },
     "setGoals": {
       "title": "Smart Goal",
       "calculation": "Berekening",

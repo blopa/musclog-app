@@ -124,7 +124,7 @@ export default function PersonalizedExperienceScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={3} total={8} />
+        <QuickSetupProgressBar current={3} total={9} />
 
         <ScrollView
           className="flex-1"

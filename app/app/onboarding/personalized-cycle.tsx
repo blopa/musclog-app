@@ -12,8 +12,10 @@ import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
-const RESULTS_ROUTE =
+const NUTRITION_RESULTS_ROUTE =
   '/app/onboarding/nutrition-goals-results?aiGenerated=true&personalizedSetup=true';
+const MUSCLOG_API_DIRECT_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=8&quickTotal=9`;
+const MUSCLOG_API_AFTER_CYCLE_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=9&quickTotal=9`;
 
 export default function PersonalizedCycleScreen() {
   const theme = useTheme();
@@ -33,12 +35,12 @@ export default function PersonalizedCycleScreen() {
       await setCurrentOnboardingStep('/app/onboarding/personalized-cycle');
 
       if (menstruates) {
-        const nextRoute = encodeURIComponent(RESULTS_ROUTE);
+        const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
         router.navigate(
-          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=7&quickTotal=8`
+          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=8&quickTotal=9`
         );
       } else {
-        router.navigate(RESULTS_ROUTE);
+        router.navigate(MUSCLOG_API_DIRECT_ROUTE);
       }
     } catch (e) {
       console.error('Error in personalized cycle screen:', e);
@@ -65,7 +67,7 @@ export default function PersonalizedCycleScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={6} total={8} />
+        <QuickSetupProgressBar current={7} total={9} />
 
         <ScrollView
           className="flex-1"
@@ -89,10 +91,7 @@ export default function PersonalizedCycleScreen() {
               {t('onboarding.personalizedCycle.subtitle')}
             </Text>
 
-            <Text
-              className="mb-4 text-lg font-semibold"
-              style={{ color: theme.colors.text.white }}
-            >
+            <Text className="mb-4 text-lg font-semibold" style={{ color: theme.colors.text.white }}>
               {t('onboarding.personalizedCycle.question')}
             </Text>
 

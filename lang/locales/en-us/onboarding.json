@@ -208,6 +208,30 @@
       "noDesc": "Skip cycle tracking",
       "continue": "Continue"
     },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "FREE",
+      "subtitle": "Enhance your fitness journey with AI-powered insights.",
+      "features": {
+        "coach": {
+          "title": "AI Workout Assistant",
+          "desc": "Get exercise suggestions and form tips"
+        },
+        "insights": {
+          "title": "Progress Insights",
+          "desc": "Personalized analysis of your training"
+        },
+        "recommendations": {
+          "title": "Smart Recommendations",
+          "desc": "AI-powered workout and nutrition advice"
+        }
+      },
+      "dataSharingTitle": "Data Sharing Notice",
+      "dataSharingBody": "To provide AI features, some of your fitness data will be shared with Musclog servers. The free tier has limited requests per day.",
+      "readPrivacyPolicy": "Read our Privacy Policy",
+      "enable": "Enable Musclog AI",
+      "noThanks": "No thanks, continue without AI"
+    },
     "setGoals": {
       "title": "Smart Goal",
       "calculation": "Calculation",

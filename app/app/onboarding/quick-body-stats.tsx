@@ -151,7 +151,9 @@ export default function QuickBodyStatsScreen() {
       });
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
-      router.navigate('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true');
+      router.navigate(
+        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=6`
+      );
     } catch (e) {
       console.error('Error in quick body stats:', e);
     } finally {
@@ -164,7 +166,7 @@ export default function QuickBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={4} total={5} />
+        <QuickSetupProgressBar current={4} total={6} />
 
         <ScrollView
           className="flex-1"
@@ -280,9 +282,7 @@ export default function QuickBodyStatsScreen() {
               </Text>
               <View className="mt-1">
                 <View className="flex-row items-center justify-between">
-                  <Text
-                    className="text-sm font-medium text-text-secondary"
-                  >
+                  <Text className="text-sm font-medium text-text-secondary">
                     {t('onboarding.quickBodyStats.bodyFat')}
                   </Text>
                   {bodyFat === null ? (

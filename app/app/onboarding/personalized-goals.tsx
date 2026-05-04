@@ -81,7 +81,7 @@ export default function PersonalizedGoalsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={4} total={8} />
+        <QuickSetupProgressBar current={4} total={9} />
 
         <ScrollView
           className="flex-1"

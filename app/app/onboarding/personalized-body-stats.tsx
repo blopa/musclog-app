@@ -85,10 +85,28 @@ export default function PersonalizedBodyStatsScreen() {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       await Promise.all([
-        UserMetricService.createMetric({ type: 'weight', value: weightKg, unit: 'kg', date: now, timezone }),
-        UserMetricService.createMetric({ type: 'height', value: heightCm, unit: 'cm', date: now, timezone }),
+        UserMetricService.createMetric({
+          type: 'weight',
+          value: weightKg,
+          unit: 'kg',
+          date: now,
+          timezone,
+        }),
+        UserMetricService.createMetric({
+          type: 'height',
+          value: heightCm,
+          unit: 'cm',
+          date: now,
+          timezone,
+        }),
         bodyFat !== null
-          ? UserMetricService.createMetric({ type: 'body_fat', value: bodyFat, unit: '%', date: now, timezone })
+          ? UserMetricService.createMetric({
+              type: 'body_fat',
+              value: bodyFat,
+              unit: '%',
+              date: now,
+              timezone,
+            })
           : Promise.resolve(),
       ]);
 
@@ -153,7 +171,7 @@ export default function PersonalizedBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={5} total={8} />
+        <QuickSetupProgressBar current={5} total={9} />
 
         <ScrollView
           className="flex-1"

@@ -86,7 +86,9 @@ export default function CycleSetup() {
 
       <BottomButtonWrapper>
         <Button
-          label={nextRoute ? t('onboarding.fitnessInfo.continue') : t('onboarding.personalInfo.finish')}
+          label={
+            nextRoute ? t('onboarding.fitnessInfo.continue') : t('onboarding.personalInfo.finish')
+          }
           onPress={handleFinish}
           variant="accent"
           size="md"

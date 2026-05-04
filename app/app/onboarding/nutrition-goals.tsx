@@ -210,7 +210,15 @@ export default function NutritionGoalsScreen() {
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [disableMinimumCalories, isAdjusting, isCheckinAdjusting, isPersonalizedSetup, isQuickSetup, router, t]
+    [
+      disableMinimumCalories,
+      isAdjusting,
+      isCheckinAdjusting,
+      isPersonalizedSetup,
+      isQuickSetup,
+      router,
+      t,
+    ]
   );
 
   if (isLoading || isLoadingDefaults) {

@@ -171,6 +171,30 @@
       "bodyFatHelper": "Se você souber, ajuda nos cálculos de calorias",
       "continue": "Continuar"
     },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "GRÁTIS",
+      "subtitle": "Melhore sua jornada fitness com insights impulsionados por IA.",
+      "features": {
+        "coach": {
+          "title": "Assistente de Treino IA",
+          "desc": "Receba sugestões de exercícios e dicas de forma"
+        },
+        "insights": {
+          "title": "Análise de Progresso",
+          "desc": "Análise personalizada do seu treinamento"
+        },
+        "recommendations": {
+          "title": "Recomendações Inteligentes",
+          "desc": "Conselhos de treino e nutrição com IA"
+        }
+      },
+      "dataSharingTitle": "Aviso de Compartilhamento de Dados",
+      "dataSharingBody": "Para fornecer recursos de IA, alguns dados de saúde serão compartilhados com os servidores da Musclog. O nível gratuito tem solicitações limitadas por dia.",
+      "readPrivacyPolicy": "Leia nossa Política de Privacidade",
+      "enable": "Ativar Musclog AI",
+      "noThanks": "Não obrigado, continuar sem IA"
+    },
     "setGoals": {
       "title": "Cálculo Inteligente",
       "calculation": "de Metas",

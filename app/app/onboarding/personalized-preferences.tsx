@@ -51,7 +51,7 @@ export default function PersonalizedPreferencesScreen() {
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 
       router.navigate(
-        `/app/onboarding/health-connect?nextRoute=/app/onboarding/personalized-experience&quickStep=2&quickTotal=8`
+        `/app/onboarding/health-connect?nextRoute=/app/onboarding/personalized-experience&quickStep=2&quickTotal=9`
       );
     } catch (e) {
       console.error('Error saving personalized preferences:', e);
@@ -63,7 +63,7 @@ export default function PersonalizedPreferencesScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={1} total={8} />
+        <QuickSetupProgressBar current={1} total={9} />
 
         <ScrollView
           className="flex-1"

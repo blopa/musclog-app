@@ -427,8 +427,8 @@ export default function NutritionGoalsResults() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      {isQuickSetup ? <QuickSetupProgressBar current={5} total={5} /> : null}
-      {isPersonalizedSetup ? <QuickSetupProgressBar current={8} total={8} /> : null}
+      {isQuickSetup ? <QuickSetupProgressBar current={6} total={6} /> : null}
+      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={9} /> : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"
