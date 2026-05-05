@@ -15,6 +15,7 @@
       "baseUrl": "/"
     },
     "plugins": [
+      "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
       "expo-router",
@@ -124,6 +125,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "buildNumber": "232",
