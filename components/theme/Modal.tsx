@@ -34,9 +34,7 @@ export function Modal({
           separate native window that doesn't inherit the root SafeAreaProvider
           context. Without this, useSafeAreaInsets/SafeAreaView inside the modal
           returns zero insets, causing content to render behind the status bar. */}
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        {children}
-      </SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>{children}</SafeAreaProvider>
     </RNModal>
   );
 }
