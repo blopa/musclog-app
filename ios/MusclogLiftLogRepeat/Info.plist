@@ -75,6 +75,8 @@
 	</array>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>RCTRootViewBackgroundColor</key>
+	<integer>4278784784</integer>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
