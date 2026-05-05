@@ -1,14 +1,15 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
 import { GradientText } from '@/components/GradientText';
 import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { useHealthConnectPermissions } from '@/hooks/useHealthConnectPermissions';
 import { useScrollFade } from '@/hooks/useScrollFade';
@@ -43,8 +44,18 @@ export default function HealthConnectScreen() {
   const [permissionsRequested, setPermissionsRequested] = useState(false);
   const { scrollProps, FadeIndicator } = useScrollFade();
 
+  const { nextRoute, quickStep, quickTotal } = useLocalSearchParams<{
+    nextRoute?: string;
+    quickStep?: string;
+    quickTotal?: string;
+  }>();
+  const resolvedNextRoute = nextRoute ?? '/app/onboarding/landing';
+  const quickStepNum = quickStep ? Number(quickStep) : null;
+  const quickTotalNum = quickTotal ? Number(quickTotal) : 5;
+
   // Health Connect initialization and permissions
   const {
+    status,
     isAvailable,
     isInitializing,
     hasAnyPermission,
@@ -56,10 +67,18 @@ export default function HealthConnectScreen() {
 
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
+  const isUnsupportedPlatform = Platform.OS === 'web' || status === 'NOT_SUPPORTED';
+  const primaryLabel =
+    isUnsupportedPlatform || permissionsRequested || hasAnyPermission
+      ? t('onboarding.healthConnect.continue')
+      : t('onboarding.healthConnect.allowHealthAccess');
 
   return (
     <MasterLayout showNavigationMenu={false}>
       <View style={{ flex: 1 }}>
+        {quickStepNum != null ? (
+          <QuickSetupProgressBar current={quickStepNum} total={quickTotalNum} />
+        ) : null}
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ flexGrow: 1 }}
@@ -195,14 +214,15 @@ export default function HealthConnectScreen() {
 
             {/* Primary Button */}
             <Button
-              label={
-                permissionsRequested || hasAnyPermission
-                  ? t('onboarding.healthConnect.continue')
-                  : t('onboarding.healthConnect.allowHealthAccess')
-              }
+              label={primaryLabel}
               onPress={async () => {
                 setIsProcessing(true);
                 try {
+                  if (isUnsupportedPlatform) {
+                    router.navigate(resolvedNextRoute as any);
+                    return;
+                  }
+
                   if (!isAvailable) {
                     // Not available, show settings to install
                     await openSettings();
@@ -211,7 +231,7 @@ export default function HealthConnectScreen() {
 
                   if (hasAnyPermission) {
                     // Already has at least one permission, navigate to next screen
-                    router.navigate('/app/onboarding/fitness-info');
+                    router.navigate(resolvedNextRoute as any);
                     return;
                   }
 
@@ -225,7 +245,7 @@ export default function HealthConnectScreen() {
                   }
 
                   // Navigate to next screen regardless of granted permissions
-                  router.navigate('/app/onboarding/fitness-info');
+                  router.navigate(resolvedNextRoute as any);
                 } catch (error) {
                   console.error('Error setting up Health Connect:', error);
                 } finally {
@@ -241,8 +261,7 @@ export default function HealthConnectScreen() {
             />
             <MaybeLaterButton
               onPress={() => {
-                // Navigate away or skip
-                router.navigate('/app/onboarding/fitness-info');
+                router.navigate(resolvedNextRoute as any);
               }}
               text={t('onboarding.healthConnect.maybeLater')}
             />

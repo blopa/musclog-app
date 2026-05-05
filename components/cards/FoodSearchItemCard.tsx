@@ -33,6 +33,52 @@ export function FoodSearchItemCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const renderFoodVisual = () => {
+    if (food.image) {
+      return (
+        <Image
+          source={food.image}
+          className="h-full w-full"
+          resizeMode="cover"
+          style={{ borderRadius: theme.borderRadius.xl }}
+        />
+      );
+    }
+
+    if (food.imageUrl) {
+      return (
+        <Image
+          source={{ uri: food.imageUrl }}
+          className="h-full w-full"
+          resizeMode="cover"
+          style={{ borderRadius: theme.borderRadius.xl }}
+        />
+      );
+    }
+
+    if (food.iconComponent) {
+      const Icon = food.iconComponent;
+      return (
+        <Icon size={theme.iconSize.lg} color={food.iconColor ?? theme.colors.text.secondary} />
+      );
+    }
+
+    if (food.iconName === 'utensils-crossed') {
+      return (
+        <UtensilsCrossed
+          size={theme.iconSize.lg}
+          color={food.iconColor ?? theme.colors.accent.primary}
+        />
+      );
+    }
+
+    if (food.icon) {
+      return <Text className="text-xl">{food.icon}</Text>;
+    }
+
+    return <View className="h-full w-full opacity-80" />;
+  };
+
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
     protein: intuitiveMode ? '0' : formatRoundedDecimal(food.protein ?? 0, 2),
     carbs: intuitiveMode ? '0' : formatRoundedDecimal(food.carbs ?? 0, 2),
@@ -54,40 +100,7 @@ export function FoodSearchItemCard({
             : 'transparent',
         }}
       >
-        {food.image ? (
-          <Image
-            source={food.image}
-            className="h-full w-full"
-            resizeMode="cover"
-            style={{ borderRadius: theme.borderRadius.xl }}
-          />
-        ) : food.imageUrl ? (
-          <Image
-            source={{ uri: food.imageUrl }}
-            className="h-full w-full"
-            resizeMode="cover"
-            style={{ borderRadius: theme.borderRadius.xl }}
-          />
-        ) : food.iconComponent ? (
-          (() => {
-            const Icon = food.iconComponent;
-            return (
-              <Icon
-                size={theme.iconSize.lg}
-                color={food.iconColor ?? theme.colors.text.secondary}
-              />
-            );
-          })()
-        ) : food.iconName === 'utensils-crossed' ? (
-          <UtensilsCrossed
-            size={theme.iconSize.lg}
-            color={food.iconColor ?? theme.colors.accent.primary}
-          />
-        ) : food.icon ? (
-          <Text className="text-xl">{food.icon}</Text>
-        ) : (
-          <View className="h-full w-full opacity-80" />
-        )}
+        {renderFoodVisual()}
       </View>
 
       {/* Content */}

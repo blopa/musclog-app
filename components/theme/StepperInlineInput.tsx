@@ -50,14 +50,16 @@ export function StepperInlineInput({
     [i18n.resolvedLanguage, i18n.language]
   );
   const formatValue = useCallback(
-    (v: number) =>
-      maxFractionDigits === 0
-        ? formatInteger(v, { useGrouping: false })
-        : v % 1 === 0
-          ? formatInteger(v, { useGrouping: false })
-          : formatDecimal(v, maxFractionDigits),
+    (v: number) => {
+      if (maxFractionDigits === 0 || v % 1 === 0) {
+        return formatInteger(v, { useGrouping: false });
+      }
+
+      return formatDecimal(v, maxFractionDigits);
+    },
     [formatDecimal, formatInteger, maxFractionDigits]
   );
+
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInput>(null);

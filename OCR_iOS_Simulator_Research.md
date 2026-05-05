@@ -369,7 +369,7 @@ export class IOSVisionOCRService implements OCRService {
       };
     } catch (error) {
       // Fallback to cloud if simulator mode
-      if (__DEV__) {
+      if (!isProduction()) {
         console.warn('Vision OCR failed, trying cloud fallback');
         return this.cloudFallback(imagePath);
       }

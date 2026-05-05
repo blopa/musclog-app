@@ -81,8 +81,11 @@ export default class MealFood extends Model {
     let food: Food | null = null;
     try {
       food = await this.food;
-    } catch {
-      // Food missing — return zeroes
+    } catch (error) {
+      await handleError(error, 'MealFood.getNutrients.loadFood', {
+        showSnackbar: false,
+      });
+
       return {
         calories: 0,
         protein: 0,
@@ -93,6 +96,12 @@ export default class MealFood extends Model {
     }
 
     if (!food) {
+      await handleError(
+        new Error(`MealFood ${this.id} is missing related food ${this.foodId}`),
+        'MealFood.getNutrients.missingFood',
+        { showSnackbar: false }
+      );
+
       return {
         calories: 0,
         protein: 0,

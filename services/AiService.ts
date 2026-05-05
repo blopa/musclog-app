@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { GEMINI_MODELS } from '@/constants/ai';
 import { SettingsService } from '@/database/services';
 import { GatewayService } from '@/services/GatewayService';
+import { isProduction } from '@/utils/app';
 import type { CoachAIConfig } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
@@ -20,9 +21,9 @@ export class AiService {
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
       // On web production builds, CORS blocks browser→Cloudflare direct calls.
-      // In __DEV__ the client uses a CORS proxy (see buildOpenAIClient).
+      // In development the client uses a CORS proxy (see buildOpenAIClient).
       const useGateway = await SettingsService.getUseMusclogFreeTier();
-      if (useGateway && (Platform.OS !== 'web' || __DEV__)) {
+      if (useGateway && (Platform.OS !== 'web' || !isProduction())) {
         const language = await SettingsService.getLanguage();
         return GatewayService.buildGatewayConfig(language);
       }

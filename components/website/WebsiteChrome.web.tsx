@@ -106,11 +106,12 @@ export function DownloadModal({
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
   const spaceBelow = triggerRect != null ? viewportHeight - triggerRect.bottom - 16 : 0;
   const shouldOpenUpward = popoverHeight > 0 && spaceBelow < popoverHeight + 12;
-  const popoverTop = triggerRect
-    ? shouldOpenUpward
+  let popoverTop = 0;
+  if (triggerRect) {
+    popoverTop = shouldOpenUpward
       ? Math.max(triggerRect.top - popoverHeight - 12, 16)
-      : triggerRect.bottom + 12
-    : 0;
+      : triggerRect.bottom + 12;
+  }
 
   const buttonStyleByVariant: Record<
     NonNullable<DownloadModalProps['variant']>,

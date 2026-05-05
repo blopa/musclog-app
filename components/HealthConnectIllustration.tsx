@@ -1,21 +1,21 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Apple, Dumbbell, Heart, Scale, Shield } from 'lucide-react-native';
-import { Dimensions, View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
-
 export function HealthConnectIllustration() {
   const theme = useTheme();
+  const { width, height } = useWindowDimensions();
+  const illustrationSize = Math.min(width * 0.42, 220);
+  const containerHeight = Math.min(Math.max(illustrationSize * 1.45, 240), height * 0.36);
+
   return (
     <View
-      className="relative mb-8 mt-4 w-full items-center justify-center"
+      className="relative mb-8 mt-4 w-full items-center justify-center overflow-hidden"
       style={{
-        aspectRatio: theme.aspectRatio.square,
-        minHeight: ILLUSTRATION_SIZE,
-        maxHeight: SCREEN_HEIGHT * 0.3,
+        minHeight: containerHeight,
+        maxHeight: containerHeight,
       }}
     >
       {/* Ambient Background Glows */}
@@ -46,8 +46,8 @@ export function HealthConnectIllustration() {
       <View
         className="relative z-10 items-center justify-center"
         style={{
-          width: ILLUSTRATION_SIZE,
-          height: ILLUSTRATION_SIZE,
+          width: illustrationSize,
+          height: illustrationSize,
         }}
       >
         <LinearGradient
@@ -65,7 +65,7 @@ export function HealthConnectIllustration() {
           }}
         >
           <Shield
-            size={ILLUSTRATION_SIZE * 0.5}
+            size={illustrationSize * 0.5}
             color={theme.colors.text.white}
             strokeWidth={theme.strokeWidth.medium}
           />

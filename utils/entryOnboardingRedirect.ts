@@ -3,7 +3,24 @@ import type { Router } from 'expo-router';
 import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
 
-export async function runEntryOnboardingRedirect(router: Router, errorContext: string) {
+function normalizePath(path: string): string {
+  const [pathname] = path.split('?');
+  return pathname.replace(/\/+$/, '') || '/';
+}
+
+function replaceIfNeeded(router: Router, currentPath: string | undefined, targetPath: string) {
+  if (currentPath && normalizePath(currentPath) === normalizePath(targetPath)) {
+    return;
+  }
+
+  router.replace(targetPath as never);
+}
+
+export async function runEntryOnboardingRedirect(
+  router: Router,
+  errorContext: string,
+  currentPath?: string
+) {
   try {
     const completed = await isOnboardingCompleted();
 
@@ -11,24 +28,20 @@ export async function runEntryOnboardingRedirect(router: Router, errorContext: s
       try {
         const saved = await getCurrentOnboardingStep();
         if (saved) {
-          if (saved === '/app/onboarding/connect-with-google') {
-            router.replace('/app/onboarding/fitness-info');
-          } else {
-            const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
-            router.replace(normalizedSaved as never);
-          }
+          const normalizedSaved = saved.startsWith('/app') ? saved : `/app${saved}`;
+          replaceIfNeeded(router, currentPath, normalizedSaved);
         } else {
-          router.replace('/app/onboarding/landing');
+          replaceIfNeeded(router, currentPath, '/app/onboarding/landing');
         }
       } catch (error) {
         handleError(error, `${errorContext}.restoreOnboardingStep`);
-        router.replace('/app/onboarding/landing');
+        replaceIfNeeded(router, currentPath, '/app/onboarding/landing');
       }
     } else {
-      router.replace('/app');
+      replaceIfNeeded(router, currentPath, '/app');
     }
   } catch (error) {
     handleError(error, `${errorContext}.checkOnboardingStatus`);
-    router.replace('/app');
+    replaceIfNeeded(router, currentPath, '/app');
   }
 }

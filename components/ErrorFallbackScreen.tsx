@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { NotificationService } from '@/services/NotificationService';
+import { isProduction } from '@/utils/app';
 import { captureMessage } from '@/utils/sentry';
 
 type ErrorFallbackScreenProps = {
@@ -15,7 +16,7 @@ type ErrorFallbackScreenProps = {
 export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallbackScreenProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [showDetails, setShowDetails] = useState(__DEV__); // Show details by default in development
+  const [showDetails, setShowDetails] = useState(!isProduction()); // Show details by default in development
 
   useEffect(() => {
     NotificationService.dismissActiveWorkoutNotification();
@@ -41,7 +42,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
       </Text>
       <Text className="mb-4 text-center text-sm text-text-secondary">{errorMessage}</Text>
 
-      {__DEV__ ? (
+      {!isProduction() ? (
         <View className="mb-4 w-full">
           <Pressable
             onPress={() => setShowDetails(!showDetails)}

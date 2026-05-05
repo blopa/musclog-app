@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "engines": {
     "node": "24.x"
   },
@@ -127,6 +127,7 @@
     "expo-secure-store": "~55.0.13",
     "expo-sharing": "~55.0.18",
     "expo-sqlite": "~55.0.15",
+    "expo-system-ui": "~55.0.17",
     "expo-updates": "~55.0.21",
     "expo-web-browser": "~55.0.14",
     "glob": "13.0.6",
@@ -165,7 +166,6 @@
     "react-zxing": "2.1.0",
     "rn-mlkit-ocr": "^0.3.1",
     "tesseract.js": "^7.0.0",
-    "unique-names-generator": "^4.7.1",
     "victory": "37.3.6",
     "victory-native": "41.20.2",
     "xlsx": "0.18.5",

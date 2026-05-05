@@ -1,23 +1,80 @@
-import { PlusCircle, ScanLine } from 'lucide-react-native';
-import { useState } from 'react';
+import {
+  AlignLeft,
+  BarChart,
+  Cookie,
+  Droplet,
+  Dumbbell,
+  Edit3,
+  Leaf,
+  PlusCircle,
+  ScanLine,
+} from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
-import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
+import {
+  type FoodDetailsNutritionSectionMode,
+  FoodNutritionSectionCard,
+} from '@/components/cards/FoodNutritionSectionCard';
+import { MacroInput } from '@/components/MacroInput';
+import {
+  type MicronutrientFormStrings,
+  micronutrientFormStringsFromMicros,
+  MicronutrientsExpandableSection,
+  parseMicronutrientFormStringsToPartial,
+} from '@/components/MicronutrientsExpandableSection';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
-import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
+import { TextInput } from '@/components/theme/TextInput';
+import { useSmartCamera } from '@/context/SmartCameraContext';
+import type { MicrosData } from '@/database/models';
+import { FoodService } from '@/database/services';
+import {
+  fetchMusclogProductByBarcode,
+  fetchOFFProductByBarcode,
+  fetchUSDAProductByBarcode,
+  type ProductDetailsQueryData,
+  useFoodProductDetails,
+} from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
-import type { SearchResultProduct } from '@/types/openFoodFacts';
+import { isSuccessFoodDetailProductState, isSuccessStatus } from '@/types/guards/openFoodFacts';
+import {
+  getProductBarcodeFromSearchProduct,
+  inferBarcodeNutritionSource,
+  parseCoreMacrosFromAlternateSource,
+  parseServingSizeFromProduct,
+} from '@/utils/externalFoodProduct';
+import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
+import { handleError } from '@/utils/handleError';
+import {
+  applyInferredCaloriesFromMacrosIfNeeded,
+  inferCaloriesFromMacrosPer100g,
+  toFiniteMacro,
+} from '@/utils/inferCaloriesFromMacros';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedDecimalInput,
+} from '@/utils/localizedDecimalInput';
+import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
   getProductName,
-  mapOpenFoodFactsProduct,
 } from '@/utils/openFoodFactsMapper';
+import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { mapUSDANutritient } from '@/utils/usdaMapper';
 
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
@@ -26,6 +83,23 @@ type ScannedFoodDetailsModalProps = {
   onAddFood?: (food: { food: any; amount: number }) => void;
 };
 
+function areCoreMacrosEffectivelyZero(data: {
+  calories?: unknown;
+  protein?: unknown;
+  carbs?: unknown;
+  fat?: unknown;
+  fiber?: unknown;
+}): boolean {
+  const eps = 1e-6;
+  return (
+    Math.abs(toFiniteMacro(data.calories)) < eps &&
+    Math.abs(toFiniteMacro(data.protein)) < eps &&
+    Math.abs(toFiniteMacro(data.carbs)) < eps &&
+    Math.abs(toFiniteMacro(data.fat)) < eps &&
+    Math.abs(toFiniteMacro(data.fiber)) < eps
+  );
+}
+
 export function ScannedFoodDetailsModal({
   visible,
   onClose,
@@ -33,38 +107,778 @@ export function ScannedFoodDetailsModal({
   onAddFood,
 }: ScannedFoodDetailsModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
-  const { intuitiveEatingMode } = useSettings();
+  const { t, i18n } = useTranslation();
+  const locale = useMemo(
+    () => i18n.resolvedLanguage ?? i18n.language,
+    [i18n.resolvedLanguage, i18n.language]
+  );
+  const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
+  const { intuitiveEatingMode, alwaysAllowFoodEditing } = useSettings();
+  const { openCamera } = useSmartCamera();
   const [amount, setAmount] = useState(100);
+  const [editedOverrides, setEditedOverrides] = useState<{
+    name?: string;
+    barcode?: string;
+    description?: string;
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+    fiber?: number;
+    micros?: Partial<MicrosData>;
+  } | null>(null);
+  const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
+  const [editMicroOpen, setEditMicroOpen] = useState(false);
+  const [editForm, setEditForm] = useState<{
+    name: string;
+    barcode: string;
+    description: string;
+    calories: string;
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber: string;
+    micronutrients: MicronutrientFormStrings;
+  } | null>(null);
+  const [refetchedProductDetails, setRefetchedProductDetails] =
+    useState<ProductDetailsQueryData | null>(null);
+  const [isRefetchingSource, setIsRefetchingSource] = useState(false);
+  const [localCanEdit, setLocalCanEdit] = useState(alwaysAllowFoodEditing);
+  const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
 
   const { data: productData, isLoading, error } = useFoodProductDetails(barcode);
+  const effectiveProductDetails = refetchedProductDetails ?? productData;
+  const currentSource = inferBarcodeNutritionSource(effectiveProductDetails, null);
+  const mode: FoodDetailsNutritionSectionMode = 'externalProduct';
+  const scaleFactor = amount / 100;
 
-  const handleAddFood = () => {
-    if (isSuccessFoodDetailProductState(productData)) {
-      // Map the product data to UnifiedFoodResult format, then to a Food-like object
-      const mappedProduct = mapOpenFoodFactsProduct(productData.product as SearchResultProduct);
+  const isScannedProductSuccess = Boolean(
+    effectiveProductDetails &&
+    (isSuccessFoodDetailProductState(effectiveProductDetails) ||
+      (effectiveProductDetails as any)?.source === 'usda' ||
+      (effectiveProductDetails as any)?.source === 'musclog')
+  );
 
-      const foodForMeal = {
-        food: {
-          id: mappedProduct.id,
-          name: mappedProduct.name,
-          brand: mappedProduct.brand,
-          calories: mappedProduct.calories || 0,
-          protein: mappedProduct.protein || 0,
-          carbs: mappedProduct.carbs || 0,
-          fat: mappedProduct.fat || 0,
-          fiber: mappedProduct.fiber || 0,
-        },
-        amount,
-      };
+  useEffect(() => {
+    setLocalCanEdit(alwaysAllowFoodEditing);
+  }, [alwaysAllowFoodEditing]);
 
-      onAddFood?.(foodForMeal);
-      onClose();
+  useEffect(() => {
+    if (!visible) {
+      setAmount(100);
+      setEditedOverrides(null);
+      setIsEditPopUpVisible(false);
+      setEditMicroOpen(false);
+      setEditForm(null);
+      setRefetchedProductDetails(null);
+      setIsRefetchingSource(false);
+      setLocalCanEdit(alwaysAllowFoodEditing);
+      setAlternateSourceLookupFailed(false);
     }
-  };
+  }, [visible, alwaysAllowFoodEditing]);
 
-  const renderContent = () => {
-    if (isLoading) {
+  const rawNutritionalData = useMemo(() => {
+    if ((effectiveProductDetails as any)?.source === 'musclog') {
+      const nutrition = getMusclogNutritionPer100g((effectiveProductDetails as any).product);
+      return {
+        calories: nutrition.calories,
+        protein: nutrition.protein,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat,
+        fiber: nutrition.fiber,
+        sugar: nutrition.sugar,
+        saturatedFat: nutrition.saturatedFat,
+        sodium: nutrition.sodium,
+        alcohol: 0,
+        potassium: 0,
+        magnesium: 0,
+        zinc: 0,
+      };
+    }
+
+    if ((effectiveProductDetails as any)?.source === 'usda') {
+      const product = (effectiveProductDetails as any).product;
+      const nutrients = product?.foodNutrients as any[] | undefined;
+      const rawServingSize = product?.servingSize;
+      const isBranded = product?.dataType === 'Branded';
+      const normFactor =
+        isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+
+      return {
+        calories:
+          (mapUSDANutritient(nutrients, '1008') ??
+            mapUSDANutritient(nutrients, '208') ??
+            mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
+            0) * normFactor,
+        protein:
+          (mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0) *
+          normFactor,
+        carbs:
+          (mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0) *
+          normFactor,
+        fat:
+          (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
+          normFactor,
+        fiber:
+          (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
+          normFactor,
+        sugar:
+          (mapUSDANutritient(nutrients, '2000') ??
+            mapUSDANutritient(nutrients, '269') ??
+            mapUSDANutritient(nutrients, 'sugars') ??
+            0) * normFactor,
+        saturatedFat:
+          (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
+          normFactor,
+        sodium:
+          ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
+            1000) *
+          normFactor,
+        alcohol:
+          (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
+          normFactor,
+        potassium:
+          ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
+            1000) *
+          normFactor,
+        magnesium:
+          ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
+            1000) *
+          normFactor,
+        zinc:
+          ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
+            1000) *
+          normFactor,
+      };
+    }
+
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      const product = effectiveProductDetails.product;
+      const nutrients = getNutrimentsWithFallback(product);
+      if (!nutrients) {
+        return {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          fiber: 0,
+          sugar: 0,
+          saturatedFat: 0,
+          sodium: 0,
+          alcohol: 0,
+          potassium: 0,
+          magnesium: 0,
+          zinc: 0,
+        };
+      }
+
+      const getNum = (key: string) => (getNutrimentValue(nutrients, key) ?? 0) as number;
+      const directFiber = getNutrimentValue(nutrients, 'fiber');
+      let fiber: number;
+      if (directFiber !== undefined && directFiber >= 0) {
+        fiber = directFiber;
+      } else {
+        const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+        const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+        fiber =
+          carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+      }
+      const sodium =
+        getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+
+      return {
+        calories: getNum('energy-kcal') || getNum('kcal'),
+        protein: getNum('proteins'),
+        carbs: getNum('carbohydrates'),
+        fat: getNum('fat'),
+        fiber,
+        sugar: getNum('sugars'),
+        saturatedFat: getNum('saturated-fat'),
+        sodium: Number.isFinite(sodium) ? sodium : 0,
+        alcohol: getNum('alcohol'),
+        potassium: getNum('potassium'),
+        magnesium: getNum('magnesium'),
+        zinc: getNum('zinc'),
+      };
+    }
+
+    return {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      saturatedFat: 0,
+      sodium: 0,
+      alcohol: 0,
+      potassium: 0,
+      magnesium: 0,
+      zinc: 0,
+    };
+  }, [effectiveProductDetails]);
+
+  const baseNutritionalData = useMemo(
+    () => applyInferredCaloriesFromMacrosIfNeeded(rawNutritionalData),
+    [rawNutritionalData]
+  );
+
+  const baseMicrosPer100g = useMemo((): MicrosData => {
+    const out: MicrosData = {};
+    if (Number.isFinite(rawNutritionalData.sugar)) {
+      out.sugar = rawNutritionalData.sugar;
+    }
+
+    if (Number.isFinite(rawNutritionalData.saturatedFat)) {
+      out.saturatedFat = rawNutritionalData.saturatedFat;
+    }
+
+    if (Number.isFinite(rawNutritionalData.sodium)) {
+      out.sodium = rawNutritionalData.sodium;
+    }
+
+    if (Number.isFinite(rawNutritionalData.alcohol) && (rawNutritionalData.alcohol ?? 0) > 0) {
+      out.alcohol = rawNutritionalData.alcohol;
+    }
+
+    if (Number.isFinite(rawNutritionalData.potassium) && (rawNutritionalData.potassium ?? 0) > 0) {
+      out.potassium = rawNutritionalData.potassium;
+    }
+
+    if (Number.isFinite(rawNutritionalData.magnesium) && (rawNutritionalData.magnesium ?? 0) > 0) {
+      out.magnesium = rawNutritionalData.magnesium;
+    }
+
+    if (Number.isFinite(rawNutritionalData.zinc) && (rawNutritionalData.zinc ?? 0) > 0) {
+      out.zinc = rawNutritionalData.zinc;
+    }
+
+    return out;
+  }, [rawNutritionalData]);
+
+  const effectiveMicrosPer100g = useMemo(
+    () => ({
+      ...baseMicrosPer100g,
+      ...(editedOverrides?.micros ?? {}),
+    }),
+    [baseMicrosPer100g, editedOverrides?.micros]
+  );
+
+  const inferredCaloriesPer100g = useMemo(
+    () =>
+      inferCaloriesFromMacrosPer100g(
+        rawNutritionalData.protein,
+        rawNutritionalData.carbs,
+        rawNutritionalData.fat,
+        rawNutritionalData.fiber,
+        rawNutritionalData.alcohol
+      ),
+    [
+      rawNutritionalData.protein,
+      rawNutritionalData.carbs,
+      rawNutritionalData.fat,
+      rawNutritionalData.fiber,
+      rawNutritionalData.alcohol,
+    ]
+  );
+
+  const showCaloriesTooLowWarning = useMemo(() => {
+    const rawCal = toFiniteMacro(rawNutritionalData.calories);
+    return (
+      rawCal > 0 &&
+      inferredCaloriesPer100g > 0 &&
+      (rawCal < inferredCaloriesPer100g * 0.7 || rawCal > inferredCaloriesPer100g * 1.3) &&
+      editedOverrides?.calories == null
+    );
+  }, [rawNutritionalData.calories, inferredCaloriesPer100g, editedOverrides?.calories]);
+
+  const nutritionalData = useMemo(() => {
+    const macroBase =
+      editedOverrides &&
+      (editedOverrides.calories != null ||
+        editedOverrides.protein != null ||
+        editedOverrides.carbs != null ||
+        editedOverrides.fat != null ||
+        editedOverrides.fiber != null)
+        ? {
+            ...baseNutritionalData,
+            calories: editedOverrides.calories ?? baseNutritionalData.calories,
+            protein: editedOverrides.protein ?? baseNutritionalData.protein,
+            carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
+            fat: editedOverrides.fat ?? baseNutritionalData.fat,
+            fiber: editedOverrides.fiber ?? baseNutritionalData.fiber,
+          }
+        : baseNutritionalData;
+
+    const pickMicro = (key: 'sugar' | 'saturatedFat' | 'sodium') => {
+      const v = effectiveMicrosPer100g[key];
+      return typeof v === 'number' && Number.isFinite(v) ? v : (macroBase as any)[key];
+    };
+
+    const pickMicro2 = (key: 'alcohol' | 'potassium' | 'magnesium' | 'zinc') => {
+      const v = effectiveMicrosPer100g[key];
+      return typeof v === 'number' && Number.isFinite(v) ? v : ((macroBase as any)[key] ?? 0);
+    };
+
+    return {
+      ...macroBase,
+      sugar: pickMicro('sugar'),
+      saturatedFat: pickMicro('saturatedFat'),
+      sodium: pickMicro('sodium'),
+      alcohol: pickMicro2('alcohol'),
+      potassium: pickMicro2('potassium'),
+      magnesium: pickMicro2('magnesium'),
+      zinc: pickMicro2('zinc'),
+    };
+  }, [baseNutritionalData, editedOverrides, effectiveMicrosPer100g]);
+
+  const hasAllZeroMacros = useMemo(() => {
+    if (refetchedProductDetails || isLoading || !effectiveProductDetails) {
+      return false;
+    }
+
+    return areCoreMacrosEffectivelyZero(baseNutritionalData);
+  }, [refetchedProductDetails, isLoading, effectiveProductDetails, baseNutritionalData]);
+
+  const hasNoNutrition = useMemo(() => {
+    if (currentSource !== 'openfood' || !isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      return false;
+    }
+    const product = effectiveProductDetails.product;
+    return (
+      product.no_nutrition_data === 'on' ||
+      product.no_nutrition_data === 1 ||
+      !product.nutriments ||
+      Object.keys(product.nutriments).length === 0
+    );
+  }, [currentSource, effectiveProductDetails]);
+
+  const getCurrentName = useCallback(() => {
+    if (editedOverrides?.name?.trim()) {
+      return editedOverrides.name.trim();
+    }
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      return getProductName(effectiveProductDetails);
+    }
+    if ((effectiveProductDetails as any)?.source === 'musclog') {
+      return (effectiveProductDetails as any).product?.name || t('food.unknownFood');
+    }
+    if ((effectiveProductDetails as any)?.source === 'usda') {
+      return (effectiveProductDetails as any).product?.description || t('food.unknownFood');
+    }
+    return t('food.unknownFood');
+  }, [editedOverrides?.name, effectiveProductDetails, t]);
+
+  const getCurrentBrand = useCallback(() => {
+    if ((effectiveProductDetails as any)?.source === 'musclog') {
+      return (effectiveProductDetails as any).product?.brand || '';
+    }
+    if ((effectiveProductDetails as any)?.source === 'usda') {
+      const product = (effectiveProductDetails as any).product;
+      return product?.brandOwner || product?.brandName || '';
+    }
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      return effectiveProductDetails.product?.brands || '';
+    }
+    return '';
+  }, [effectiveProductDetails]);
+
+  const getCurrentCategory = useCallback(() => {
+    if ((effectiveProductDetails as any)?.source === 'musclog') {
+      return (effectiveProductDetails as any).product?.brand || t('food.generic');
+    }
+    if ((effectiveProductDetails as any)?.source === 'usda') {
+      const product = (effectiveProductDetails as any).product;
+      const brand = product?.brandOwner || product?.brandName;
+      const category = product?.foodCategory || product?.dataType;
+      if (brand && category) {
+        return `${brand} • ${category}`;
+      }
+      return brand || category || t('food.generic');
+    }
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      const product = effectiveProductDetails.product;
+      const brand = product?.brands;
+      const categories = product?.categories;
+      if (brand && categories) {
+        return `${brand} • ${categories}`;
+      }
+      return brand || categories || t('food.generic');
+    }
+    return t('food.generic');
+  }, [effectiveProductDetails, t]);
+
+  const getCurrentDescription = useCallback(() => {
+    if (editedOverrides?.description != null) {
+      return editedOverrides.description.trim();
+    }
+    if ((effectiveProductDetails as any)?.source === 'musclog') {
+      return (effectiveProductDetails as any).product?.description || '';
+    }
+    if ((effectiveProductDetails as any)?.source === 'usda') {
+      return (effectiveProductDetails as any).product?.ingredients || '';
+    }
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      return (effectiveProductDetails.product as any)?.ingredients_text || '';
+    }
+    return '';
+  }, [editedOverrides?.description, effectiveProductDetails]);
+
+  const parsedProductServingSize = useMemo(() => {
+    if (!isScannedProductSuccess) {
+      return undefined;
+    }
+
+    const product = (effectiveProductDetails as any)?.product;
+    return parseServingSizeFromProduct(product);
+  }, [effectiveProductDetails, isScannedProductSuccess]);
+
+  const parsedProductMeasures = useMemo(() => {
+    if ((effectiveProductDetails as any)?.source !== 'usda') {
+      return undefined;
+    }
+
+    const product = (effectiveProductDetails as any).product;
+    const result: { name: string; gramWeight: number }[] = [];
+    const measures: { disseminationText?: string; gramWeight?: number }[] =
+      product?.foodMeasures ?? product?._raw?.foodMeasures ?? [];
+    for (const m of measures) {
+      if (m.gramWeight && m.gramWeight > 0 && m.disseminationText) {
+        result.push({ name: m.disseminationText, gramWeight: m.gramWeight });
+      }
+    }
+
+    const portions: { gramWeight?: number; portionDescription?: string; modifier?: string }[] =
+      product?.foodPortions ?? [];
+    for (const p of portions) {
+      if (!p.gramWeight || p.gramWeight <= 0) {
+        continue;
+      }
+      const name = p.portionDescription || p.modifier;
+      if (!name) {
+        continue;
+      }
+      if (!result.some((r) => r.gramWeight === p.gramWeight)) {
+        result.push({ name, gramWeight: p.gramWeight });
+      }
+    }
+
+    return result.length > 0 ? result : undefined;
+  }, [effectiveProductDetails]);
+
+  const scaledFood = useMemo(
+    () => ({
+      name: getCurrentName(),
+      category: getCurrentCategory(),
+      calories: roundToDecimalPlaces(nutritionalData.calories * scaleFactor),
+      protein: roundToDecimalPlaces(nutritionalData.protein * scaleFactor),
+      carbs: roundToDecimalPlaces(nutritionalData.carbs * scaleFactor),
+      fat: roundToDecimalPlaces(nutritionalData.fat * scaleFactor),
+      source: currentSource ?? undefined,
+    }),
+    [
+      getCurrentName,
+      getCurrentCategory,
+      nutritionalData.calories,
+      nutritionalData.protein,
+      nutritionalData.carbs,
+      nutritionalData.fat,
+      scaleFactor,
+      currentSource,
+    ]
+  );
+
+  const handleOpenEditPopUp = useCallback(() => {
+    const productCode = getProductBarcodeFromSearchProduct(
+      (effectiveProductDetails as any)?.product
+    );
+    const currentBarcode = editedOverrides?.barcode ?? barcode ?? productCode ?? '';
+
+    setEditForm({
+      name: getCurrentName(),
+      barcode: currentBarcode,
+      description: getCurrentDescription(),
+      calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
+      protein: formatAppRoundedDecimal(locale, nutritionalData.protein, 2),
+      carbs: formatAppRoundedDecimal(locale, nutritionalData.carbs, 2),
+      fat: formatAppRoundedDecimal(locale, nutritionalData.fat, 2),
+      fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
+      micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
+    });
+    setEditMicroOpen(false);
+    setIsEditPopUpVisible(true);
+  }, [
+    effectiveProductDetails,
+    editedOverrides?.barcode,
+    barcode,
+    getCurrentName,
+    getCurrentDescription,
+    locale,
+    nutritionalData.calories,
+    nutritionalData.protein,
+    nutritionalData.carbs,
+    nutritionalData.fat,
+    nutritionalData.fiber,
+    effectiveMicrosPer100g,
+  ]);
+
+  const handleSaveEditPopUp = useCallback(() => {
+    if (!editForm) {
+      return;
+    }
+
+    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
+    const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
+    const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
+    const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
+    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
+
+    setEditedOverrides({
+      name: editForm.name.trim() || undefined,
+      barcode: editForm.barcode.trim() || undefined,
+      description: editForm.description.trim() || undefined,
+      calories: Number.isFinite(cal) ? cal : undefined,
+      protein: Number.isFinite(pro) ? pro : undefined,
+      carbs: Number.isFinite(carb) ? carb : undefined,
+      fat: Number.isFinite(f) ? f : undefined,
+      fiber: Number.isFinite(fib) ? fib : undefined,
+      micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
+    });
+    setEditForm(null);
+    setIsEditPopUpVisible(false);
+  }, [editForm, decimalSeparator]);
+
+  const handleEditFormNumericChange = useCallback(
+    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
+      const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
+      setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
+    },
+    [decimalSeparator]
+  );
+
+  const handleAcceptInferredCalories = useCallback(() => {
+    setEditedOverrides((prev) => ({
+      ...prev,
+      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+    }));
+  }, [inferredCaloriesPer100g]);
+
+  const handleTryAnotherSource = useCallback(async () => {
+    if (!barcode) {
+      return;
+    }
+
+    setIsRefetchingSource(true);
+    const source = inferBarcodeNutritionSource(effectiveProductDetails, null);
+
+    try {
+      const attempts: Promise<ProductDetailsQueryData | null>[] = [];
+
+      if (source !== 'openfood') {
+        attempts.push(
+          fetchOFFProductByBarcode(barcode)
+            .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
+            .catch(() => null)
+        );
+      }
+
+      if (source !== 'usda') {
+        attempts.push(
+          fetchUSDAProductByBarcode(barcode)
+            .then((raw) =>
+              raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null
+            )
+            .catch(() => null)
+        );
+      }
+
+      if (source !== 'musclog') {
+        attempts.push(
+          fetchMusclogProductByBarcode(barcode)
+            .then((raw) =>
+              raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
+            )
+            .catch(() => null)
+        );
+      }
+
+      const results = await Promise.all(attempts);
+      const withNonZeroMacros = results.filter((r): r is ProductDetailsQueryData => {
+        if (!r) {
+          return false;
+        }
+        const macros = parseCoreMacrosFromAlternateSource(r);
+        return macros !== null && !areCoreMacrosEffectivelyZero(macros);
+      });
+
+      const found = withNonZeroMacros[0] ?? null;
+      if (found) {
+        setAlternateSourceLookupFailed(false);
+        setRefetchedProductDetails(found);
+      } else {
+        setAlternateSourceLookupFailed(true);
+        setLocalCanEdit(true);
+      }
+    } catch (fetchError) {
+      handleError(fetchError, 'ScannedFoodDetailsModal.handleTryAnotherSource', {
+        showSnackbar: false,
+      });
+      setAlternateSourceLookupFailed(true);
+      setLocalCanEdit(true);
+    } finally {
+      setIsRefetchingSource(false);
+    }
+  }, [barcode, effectiveProductDetails]);
+
+  const handleAddFood = useCallback(async () => {
+    if (!isScannedProductSuccess) {
+      return;
+    }
+
+    const saveBarcode = editedOverrides?.barcode?.trim() || barcode;
+
+    try {
+      const existingFood = await FoodService.getFoodByBarcode(saveBarcode);
+      if (existingFood) {
+        if (editedOverrides || refetchedProductDetails) {
+          await existingFood.update((record: any) => {
+            record.name = getCurrentName();
+            record.barcode = saveBarcode;
+            record.description = getCurrentDescription();
+            record.brand = getCurrentBrand();
+            record.calories = nutritionalData.calories;
+            record.protein = nutritionalData.protein;
+            record.carbs = nutritionalData.carbs;
+            record.fat = nutritionalData.fat;
+            record.fiber = nutritionalData.fiber;
+            record.micros = effectiveMicrosPer100g;
+            if (currentSource) {
+              record.source = currentSource;
+            }
+          });
+        }
+
+        onAddFood?.({ food: existingFood, amount });
+        onClose();
+        return;
+      }
+
+      if ((effectiveProductDetails as any)?.source === 'usda') {
+        const baseProduct = (effectiveProductDetails as any).product;
+        const usdaProduct = {
+          ...baseProduct,
+          description: editedOverrides?.name?.trim() || baseProduct.description,
+          gtinUpc: saveBarcode || baseProduct.gtinUpc,
+          ingredients: getCurrentDescription() || baseProduct.ingredients,
+        };
+
+        const newFood = await FoodService.createFromUSDAProduct(
+          usdaProduct,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            sugar: nutritionalData.sugar,
+            saturatedFat: nutritionalData.saturatedFat,
+            sodium: nutritionalData.sodium,
+            micros: effectiveMicrosPer100g,
+          },
+          null,
+          saveBarcode
+        );
+
+        onAddFood?.({ food: newFood, amount });
+        onClose();
+        return;
+      }
+
+      if ((effectiveProductDetails as any)?.source === 'musclog') {
+        const baseProduct = (effectiveProductDetails as any).product;
+        const musclogProduct = {
+          ...baseProduct,
+          name: getCurrentName(),
+          description: getCurrentDescription(),
+        };
+
+        const newFood = await FoodService.createFromMusclogProduct(
+          musclogProduct,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            sugar: nutritionalData.sugar,
+            saturatedFat: nutritionalData.saturatedFat,
+            sodium: nutritionalData.sodium,
+            micros: effectiveMicrosPer100g,
+          },
+          saveBarcode
+        );
+
+        onAddFood?.({ food: newFood, amount });
+        onClose();
+        return;
+      }
+
+      if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+        const baseProduct = effectiveProductDetails.product as any;
+        const offProduct = {
+          ...baseProduct,
+          product_name: getCurrentName(),
+          code: saveBarcode || baseProduct.code || '',
+          ingredients_text: getCurrentDescription() || baseProduct.ingredients_text,
+        };
+
+        const newFood = await FoodService.createFromV3Product(
+          offProduct,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            sugar: nutritionalData.sugar,
+            saturatedFat: nutritionalData.saturatedFat,
+            sodium: nutritionalData.sodium,
+            micros: effectiveMicrosPer100g,
+          },
+          null
+        );
+
+        onAddFood?.({ food: newFood, amount });
+        onClose();
+      }
+    } catch (saveError) {
+      handleError(saveError, 'ScannedFoodDetailsModal.handleAddFood', {
+        showSnackbar: false,
+      });
+    }
+  }, [
+    isScannedProductSuccess,
+    editedOverrides,
+    barcode,
+    refetchedProductDetails,
+    getCurrentName,
+    getCurrentDescription,
+    getCurrentBrand,
+    nutritionalData,
+    effectiveMicrosPer100g,
+    currentSource,
+    onAddFood,
+    amount,
+    onClose,
+    effectiveProductDetails,
+  ]);
+
+  if (!visible) {
+    return null;
+  }
+
+  const renderMainContent = () => {
+    if (isLoading && !refetchedProductDetails) {
       return (
         <View className="flex-1 items-center justify-center py-8">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
@@ -81,7 +895,7 @@ export function ScannedFoodDetailsModal({
       );
     }
 
-    if (error || !isSuccessFoodDetailProductState(productData)) {
+    if (error || !isScannedProductSuccess) {
       return (
         <View className="flex-1 items-center justify-center py-8">
           <Text
@@ -97,69 +911,258 @@ export function ScannedFoodDetailsModal({
       );
     }
 
-    const product = productData.product;
-    const nutriments = getNutrimentsWithFallback(product);
-
-    // Extract nutritional values for FoodInfoCard
-    const foodInfo = {
-      name: getProductName(product),
-      category: product.categories?.split(',')[0] || t('food.generic'),
-      calories: getNutrimentValue(nutriments, 'energy-kcal') || 0,
-      protein: getNutrimentValue(nutriments, 'proteins') || 0,
-      carbs: getNutrimentValue(nutriments, 'carbohydrates') || 0,
-      fat: getNutrimentValue(nutriments, 'fat') || 0,
-    };
-
     return (
-      <View>
-        <FoodInfoCard food={foodInfo} intuitiveMode={intuitiveEatingMode} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: theme.spacing.padding.lg }}
+      >
+        <FoodNutritionSectionCard
+          food={scaledFood}
+          canEdit={localCanEdit || hasNoNutrition}
+          mode={mode}
+          showIncompleteWarning={hasNoNutrition}
+          onEditPress={handleOpenEditPopUp}
+          nutritionalData={nutritionalData}
+          servingSize={amount}
+          isLoadingDetails={isLoading}
+          onTryAnotherSource={
+            hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
+          }
+          isRefetchingSource={isRefetchingSource}
+          alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+          caloriesTooLowWarning={
+            showCaloriesTooLowWarning
+              ? {
+                  inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+                  onAccept: handleAcceptInferredCalories,
+                }
+              : undefined
+          }
+          intuitiveMode={intuitiveEatingMode}
+        />
+
         <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
-        <ServingSizeSelector value={amount} onChange={setAmount} />
 
-        {product.brands ? (
-          <Text
-            style={{
-              marginTop: theme.spacing.padding.md,
-              fontSize: theme.typography.fontSize.sm,
-              color: theme.colors.text.tertiary,
-              textAlign: 'center',
-            }}
-          >
-            {product.brands}
-          </Text>
-        ) : null}
-      </View>
-    );
-  };
-
-  const renderFooter = () => {
-    if (!isSuccessFoodDetailProductState(productData)) {
-      return null;
-    }
-
-    return (
-      <Button
-        label={t('food.addFoodItemToMeal.addFoodToMeal')}
-        variant="gradientCta"
-        size="md"
-        width="full"
-        icon={PlusCircle}
-        onPress={handleAddFood}
-      />
+        <ServingSizeSelector
+          value={amount}
+          onChange={setAmount}
+          productServingSize={parsedProductServingSize}
+          productMeasures={parsedProductMeasures}
+        />
+      </ScrollView>
     );
   };
 
   return (
-    <BottomPopUp
-      visible={visible}
-      onClose={onClose}
-      title={t('food.addFoodItemToMeal.scannedFoodDetails')}
-      subtitle={barcode}
-      headerIcon={<ScanLine size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
-      footer={renderFooter()}
-      maxHeight="80%"
-    >
-      {renderContent()}
-    </BottomPopUp>
+    <>
+      <BottomPopUp
+        visible={visible}
+        onClose={onClose}
+        title={t('food.addFoodItemToMeal.scannedFoodDetails')}
+        subtitle={barcode}
+        headerIcon={<ScanLine size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
+        footer={
+          isScannedProductSuccess ? (
+            <Button
+              label={t('food.addFoodItemToMeal.addFoodToMeal')}
+              variant="gradientCta"
+              size="md"
+              width="full"
+              icon={PlusCircle}
+              onPress={handleAddFood}
+            />
+          ) : null
+        }
+        maxHeight="88%"
+      >
+        {renderMainContent()}
+      </BottomPopUp>
+
+      <BottomPopUp
+        visible={isEditPopUpVisible ? editForm !== null : false}
+        onClose={() => {
+          setIsEditPopUpVisible(false);
+          setEditForm(null);
+          setEditMicroOpen(false);
+        }}
+        title={t('food.foodDetails.editFoodInfo')}
+        subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
+        headerIcon={
+          <View
+            className="h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: theme.colors.status.purple20 }}
+          >
+            <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          </View>
+        }
+        footer={
+          <Button
+            label={t('common.save')}
+            variant="gradientCta"
+            size="sm"
+            width="full"
+            onPress={handleSaveEditPopUp}
+          />
+        }
+      >
+        {editForm ? (
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            className="gap-5"
+          >
+            <TextInput
+              label={t('food.foodDetails.foodName')}
+              value={editForm.name}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, name: text } : null))
+              }
+              placeholder={t('food.foodDetails.foodNamePlaceholder')}
+              icon={<Edit3 size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            />
+
+            <View className="relative">
+              <TextInput
+                label={t('food.foodDetails.barcode')}
+                value={editForm.barcode}
+                onChangeText={(text) =>
+                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
+                }
+                placeholder={t('food.foodDetails.barcodePlaceholder')}
+                keyboardType="numeric"
+              />
+              <Pressable
+                className="absolute right-2 items-center justify-center rounded-lg"
+                style={{
+                  ...(Platform.OS !== 'web'
+                    ? { top: theme.size['14'] / 2 }
+                    : { top: theme.size['18'] / 2 }),
+                  width: theme.size['10'],
+                  height: theme.size['10'],
+                  backgroundColor: theme.colors.accent.primary10,
+                }}
+                onPress={() =>
+                  openCamera({
+                    mode: 'barcode-scan',
+                    hideCameraModePicker: true,
+                    onBarcodeScanned: (data) =>
+                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
+                  })
+                }
+              >
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </Pressable>
+            </View>
+
+            <TextInput
+              label={t('food.foodDetails.description')}
+              value={editForm.description}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, description: text } : null))
+              }
+              placeholder={t('food.foodDetails.descriptionPlaceholder')}
+              icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              multiline
+            />
+
+            <View className="flex-row items-center gap-2">
+              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients')}
+              </Text>
+            </View>
+
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              {t('food.foodDetails.macrosPer100g')}
+            </Text>
+
+            <MacroInput
+              label={t('food.newCustomFood.calories')}
+              value={editForm.calories}
+              onChange={handleEditFormNumericChange('calories')}
+              allowDecimals
+              topRightElement={
+                <View
+                  className="rounded-full px-2"
+                  style={{
+                    paddingVertical: theme.spacing.padding.xsHalf,
+                    backgroundColor: theme.colors.accent.primary10,
+                  }}
+                >
+                  <Text className="text-xs font-medium text-accent-primary">
+                    {t('food.common.kcal')}
+                  </Text>
+                </View>
+              }
+              variant="default"
+              size="full"
+            />
+
+            <View className="flex-row flex-wrap gap-4">
+              <MacroInput
+                label={t('food.newCustomFood.protein')}
+                value={editForm.protein}
+                onChange={handleEditFormNumericChange('protein')}
+                allowDecimals
+                topRightElement={
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                }
+                variant="success"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.carbs')}
+                value={editForm.carbs}
+                onChange={handleEditFormNumericChange('carbs')}
+                allowDecimals
+                topRightElement={
+                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+                }
+                variant="warning"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.fat')}
+                value={editForm.fat}
+                onChange={handleEditFormNumericChange('fat')}
+                allowDecimals
+                topRightElement={
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                }
+                variant="error"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.macros.fiber')}
+                value={editForm.fiber}
+                onChange={handleEditFormNumericChange('fiber')}
+                allowDecimals
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                }
+                variant="success"
+                size="half"
+              />
+            </View>
+
+            <MicronutrientsExpandableSection
+              microOpen={editMicroOpen}
+              onToggleMicro={() => setEditMicroOpen((o) => !o)}
+              values={editForm.micronutrients}
+              decimalSeparator={decimalSeparator}
+              onMicronutrientChange={(key, value) =>
+                setEditForm((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        micronutrients: { ...prev.micronutrients, [key]: value },
+                      }
+                    : null
+                )
+              }
+            />
+          </KeyboardAvoidingView>
+        ) : null}
+      </BottomPopUp>
+    </>
   );
 }

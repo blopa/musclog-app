@@ -26,7 +26,8 @@ export function SegmentedControl({
   variant = 'elevated',
 }: TestSegmentedControlProps) {
   const theme = useTheme();
-  const containerBase = 'flex-row rounded-lg p-1';
+  const containerBase = 'flex-row rounded-lg';
+  const segmentBorderRadius = theme.borderRadius.xs;
 
   const getContainerClass = (variant: SegmentedControlVariant): string => {
     switch (variant) {
@@ -44,14 +45,23 @@ export function SegmentedControl({
   const containerClass = getContainerClass(variant);
 
   return (
-    <View className={containerClass}>
+    <View
+      className={containerClass}
+      style={{
+        height: theme.size['14'],
+        paddingHorizontal: theme.spacing.padding['1half'],
+        paddingVertical: theme.spacing.padding['1half'],
+        gap: theme.spacing.gap.xs,
+      }}
+    >
       {options.map((option) => {
         const isSelected = value === option.value;
 
         return (
           <Pressable
             key={option.value}
-            className={`flex-1 rounded-md py-2 ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
+            className={`flex-1 justify-center self-stretch ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
+            style={{ borderRadius: segmentBorderRadius }}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
@@ -61,8 +71,8 @@ export function SegmentedControl({
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={{
-                  paddingVertical: theme.spacing.padding.sm,
-                  borderRadius: theme.borderRadius.sm,
+                  flex: 1,
+                  borderRadius: segmentBorderRadius,
                   overflow: 'hidden',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -81,12 +91,7 @@ export function SegmentedControl({
                 </View>
               </LinearGradient>
             ) : (
-              <View
-                className="flex-row items-center justify-center gap-1.5"
-                style={
-                  variant === 'gradient' ? { paddingVertical: theme.spacing.padding.sm } : undefined
-                }
-              >
+              <View className="flex-row items-center justify-center gap-1.5">
                 {option.icon}
                 <Text
                   className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${

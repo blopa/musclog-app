@@ -42,7 +42,12 @@ export function MealNutritionHighlightCard({
 
   const narrow = windowWidth < 380;
 
-  const statsMarginTop = header && !caption ? 'mt-6' : caption ? 'mt-3' : '';
+  let statsMarginTop = '';
+  if (header && !caption) {
+    statsMarginTop = 'mt-6';
+  } else if (caption) {
+    statsMarginTop = 'mt-3';
+  }
 
   return (
     <GenericCard variant="highlighted" backgroundVariant="gradient">

@@ -99,8 +99,9 @@
       "getStarted": "Get Started",
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
       "appName": "Musclog",
-      "tagline": "Lift, Log, Repeat",
-      "description": "Track your progress with data-driven insights and crush your fitness goals.",
+      "tagline": "100% Free, 100% Yours",
+      "description": "Track your workouts and nutrition with complete privacy. No accounts, no cloud, no subscriptions.",
+      "storedLocally": "All data stored locally on your device",
       "viewTerms": "View Terms",
       "preparingApp": "Preparing the app for you...",
       "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
@@ -123,7 +124,113 @@
         "workout_log_sets": "workout log sets",
         "validating": "data"
       },
-      "importData": "Import Data"
+      "importData": "Import Data",
+      "recommended": "Recommended",
+      "personalizedSetup": "Personalized Setup",
+      "personalizedSetupSteps": "8 steps",
+      "personalizedSetupSubtitle": "Get accurate TDEE, macros, and personalized recommendations",
+      "quickSetup": "Quick Setup",
+      "quickSetupSteps": "5 steps",
+      "quickSetupSubtitle": "Basic setup, you can personalize later"
+    },
+    "quickPreferences": {
+      "title": "Let's get started",
+      "subtitle": "Set your preferences for measurements and display.",
+      "unitSystem": "Unit System",
+      "metric": "Metric",
+      "imperial": "Imperial",
+      "biologicalSex": "Biological Sex",
+      "sexNote": "Please select your sex assigned at birth for accurate calculations. Fitness research is based on biological factors, so this helps us provide better TDEE and macro estimates. If unsure, select \"Other\" and we'll use averaged values.",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other / Prefer not to say",
+      "continue": "Continue"
+    },
+    "quickGoals": {
+      "title": "What are your goals?",
+      "subtitle": "We'll customize your experience based on these.",
+      "fitnessFocus": "Fitness Focus",
+      "buildMuscle": "Build Muscle",
+      "strength": "Strength",
+      "endurance": "Endurance",
+      "general": "General",
+      "weightGoal": "Weight Goal",
+      "lose": "Lose",
+      "maintain": "Maintain",
+      "gain": "Gain",
+      "continue": "Continue"
+    },
+    "quickBodyStats": {
+      "title": "Your body stats",
+      "subtitle": "Used to calculate calorie needs and track progress.",
+      "height": "Height",
+      "weight": "Weight",
+      "birthday": "Birthday",
+      "birthdayHelper": "Used to calculate your age for accurate calorie estimates",
+      "bodyFat": "Body Fat Percentage",
+      "bodyFatHelper": "If you know it, this helps with calorie calculations",
+      "continue": "Continue"
+    },
+    "personalizedPreferences": {
+      "nameLabel": "WHAT SHOULD WE CALL YOU?",
+      "namePlaceholder": "Enter your name (optional)"
+    },
+    "personalizedExperience": {
+      "title": "What's your experience?",
+      "subtitle": "This helps us tailor workout suggestions to your level.",
+      "experienceLabel": "TRAINING EXPERIENCE",
+      "activityLevelLabel": "ACTIVITY LEVEL",
+      "beginner": "Beginner",
+      "beginnerDesc": "Less than 1 year of training",
+      "intermediate": "Intermediate",
+      "intermediateDesc": "1–3 years of consistent training",
+      "advanced": "Advanced",
+      "advancedDesc": "3+ years of dedicated training",
+      "sedentary": "Sedentary",
+      "sedentaryDesc": "Little or no exercise",
+      "lightlyActive": "Lightly Active",
+      "lightlyActiveDesc": "Light exercise 1–3 days/week",
+      "moderatelyActive": "Moderately Active",
+      "moderatelyActiveDesc": "Moderate exercise 3–5 days/week",
+      "veryActive": "Very Active",
+      "veryActiveDesc": "Hard exercise 6–7 days/week",
+      "extremelyActive": "Extremely Active",
+      "extremelyActiveDesc": "Very hard exercise or physical job",
+      "continue": "Continue"
+    },
+    "personalizedCycle": {
+      "title": "One more question",
+      "subtitle": "This helps us give you more personalized insights.",
+      "question": "Do you menstruate?",
+      "yes": "Yes",
+      "yesDesc": "I'd like to track my cycle",
+      "no": "No",
+      "noDesc": "Skip cycle tracking",
+      "continue": "Continue"
+    },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "FREE",
+      "subtitle": "Enhance your fitness journey with AI-powered insights.",
+      "features": {
+        "coach": {
+          "title": "AI Workout Assistant",
+          "desc": "Get exercise suggestions and form tips"
+        },
+        "insights": {
+          "title": "Progress Insights",
+          "desc": "Personalized analysis of your training"
+        },
+        "recommendations": {
+          "title": "Smart Recommendations",
+          "desc": "AI-powered workout and nutrition advice"
+        }
+      },
+      "dataSharingTitle": "Data Sharing Notice",
+      "dataSharingBody": "To provide AI features, some of your fitness data will be shared with Musclog servers. The free tier has limited requests per day.",
+      "readPrivacyPolicy": "Read our Privacy Policy",
+      "enable": "Enable Musclog AI",
+      "noThanks": "No thanks, continue without AI"
     },
     "setGoals": {
       "title": "Smart Goal",

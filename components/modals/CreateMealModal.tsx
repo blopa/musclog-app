@@ -375,6 +375,29 @@ export function CreateMealModal({
     isQuickTrack ? undefined : meal
   );
 
+  const assertSavedMealIntegrity = async (
+    mealId: string,
+    expectedFoodCount: number,
+    context: string
+  ) => {
+    const savedMeal = await MealService.getMealWithFoods(mealId);
+
+    if (!savedMeal) {
+      throw new Error(`${context}: meal could not be reloaded after save`);
+    }
+
+    const actualFoodCount = savedMeal.foods.length;
+    if (actualFoodCount === 0) {
+      throw new Error(`${context}: saved meal has zero foods after save`);
+    }
+
+    if (actualFoodCount !== expectedFoodCount) {
+      throw new Error(
+        `${context}: expected ${expectedFoodCount} foods after save but found ${actualFoodCount}`
+      );
+    }
+  };
+
   useEffect(() => {
     setMealName(meal?.name ?? '');
     setMealDescription(meal?.description ?? '');
@@ -550,6 +573,12 @@ export function CreateMealModal({
         for (const ing of newIngredients) {
           await MealService.addFoodToMeal(meal.id, ing.foodId, ing.amount);
         }
+
+        await assertSavedMealIntegrity(
+          meal.id,
+          ingredients.length,
+          'CreateMealModal.handleSave.edit'
+        );
       } else {
         // Create mode
         await MealService.createMealFromFoods(
@@ -601,6 +630,30 @@ export function CreateMealModal({
     return t('food.createMeal.saveMeal');
   };
 
+  const getTitle = () => {
+    if (isQuickTrack) {
+      return t('food.quickTrackMeal.title');
+    }
+
+    if (meal) {
+      return t('food.meals.manageMealData.editMeal');
+    }
+
+    return t('food.createMeal.title');
+  };
+
+  const getSaveIcon = () => {
+    if (isSaving) {
+      return undefined;
+    }
+
+    if (isQuickTrack) {
+      return Check;
+    }
+
+    return CheckCircle2;
+  };
+
   const mealTypeOptions = useMemo(() => getMealTypeOptions(theme, t), [theme, t]);
 
   const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
@@ -626,13 +679,7 @@ export function CreateMealModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={
-        isQuickTrack
-          ? t('food.quickTrackMeal.title')
-          : meal
-            ? t('food.meals.manageMealData.editMeal')
-            : t('food.createMeal.title')
-      }
+      title={getTitle()}
       headerRight={
         !isQuickTrack && meal ? (
           <MenuButton size="md" className="p-2" onPress={() => setMealOptionsMenuVisible(true)} />
@@ -645,7 +692,7 @@ export function CreateMealModal({
             variant="gradientCta"
             size="md"
             width="full"
-            icon={isSaving ? undefined : isQuickTrack ? Check : CheckCircle2}
+            icon={getSaveIcon()}
             onPress={isQuickTrack ? handleTrack : handleSave}
             disabled={
               isSaving || (isQuickTrack && (ingredients.length === 0 || mealAmountGrams < 1))

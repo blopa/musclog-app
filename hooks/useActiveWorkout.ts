@@ -82,11 +82,7 @@ export function useActiveWorkout(workoutLogId?: string) {
   }, [workoutLogId]);
 
   const isLoading =
-    workoutLogId !== undefined
-      ? sessionLoading
-      : resolvedLogId === undefined
-        ? true
-        : sessionLoading;
+    workoutLogId !== undefined || resolvedLogId !== undefined ? sessionLoading : true;
   const error = sessionError ?? noActiveError;
 
   const currentSetData = useMemo((): CurrentSetData | null => {

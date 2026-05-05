@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -6,6 +6,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { MasterLayout } from '@/components/MasterLayout';
+import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
 import { useTheme } from '@/hooks/useTheme';
@@ -25,6 +26,16 @@ export default function CycleSetup() {
   const { t } = useTranslation();
   const router = useRouter();
 
+  const params = useLocalSearchParams<{
+    nextRoute?: string;
+    quickStep?: string;
+    quickTotal?: string;
+  }>();
+
+  const nextRoute = params.nextRoute ? decodeURIComponent(params.nextRoute) : undefined;
+  const quickStep = params.quickStep ? parseInt(params.quickStep, 10) : undefined;
+  const quickTotal = params.quickTotal ? parseInt(params.quickTotal, 10) : undefined;
+
   const [currentFormData, setCurrentFormData] = useState<Partial<CycleSetupData>>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -41,8 +52,12 @@ export default function CycleSetup() {
         syncGoal: data.syncGoal,
       });
 
-      await setOnboardingCompleted();
-      router.navigate('/app');
+      if (nextRoute) {
+        router.navigate(nextRoute as never);
+      } else {
+        await setOnboardingCompleted();
+        router.navigate('/app');
+      }
     } catch (error) {
       console.error('Error saving cycle setup:', error);
     } finally {
@@ -52,6 +67,9 @@ export default function CycleSetup() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
+      {quickStep !== undefined && quickTotal !== undefined ? (
+        <QuickSetupProgressBar current={quickStep} total={quickTotal} />
+      ) : null}
       <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
         <Text
           className="mb-2 text-3xl font-bold tracking-tight"
@@ -68,7 +86,9 @@ export default function CycleSetup() {
 
       <BottomButtonWrapper>
         <Button
-          label={t('onboarding.personalInfo.finish')}
+          label={
+            nextRoute ? t('onboarding.fitnessInfo.continue') : t('onboarding.personalInfo.finish')
+          }
           onPress={handleFinish}
           variant="accent"
           size="md"

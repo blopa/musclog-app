@@ -202,12 +202,12 @@ export default function Calculator() {
       ? ffmiFromWeightHeightAndBodyFat(form.weightKg, form.heightCm / 100, form.bodyFatPercent!)
       : null;
 
-  const velocityKey =
-    form.weightGoal === 'lose'
-      ? 'results.velocityCut'
-      : form.weightGoal === 'gain'
-        ? 'results.velocityBulk'
-        : 'results.velocityMaintain';
+  let velocityKey = 'results.velocityMaintain';
+  if (form.weightGoal === 'lose') {
+    velocityKey = 'results.velocityCut';
+  } else if (form.weightGoal === 'gain') {
+    velocityKey = 'results.velocityBulk';
+  }
 
   const inputStyle = { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: 'white' };
   const inputClass =

@@ -1,5 +1,4 @@
 import { subYears } from 'date-fns';
-import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
 import { SettingsService, UserMetricService, UserService } from '@/database/services';
 import type { FitnessDetails } from '@/types/fitnessDetails';
@@ -20,6 +19,7 @@ import {
   storedHeightToCm,
   storedWeightToKg,
 } from './unitConversion';
+import { getDefaultUsernameForGender } from './usernameUtils';
 
 /**
  * Display DOB using the user's locale (numeric day/month/year).
@@ -153,11 +153,7 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
 
   let user = await UserService.getCurrentUser();
   if (!user) {
-    const fullName = uniqueNamesGenerator({
-      dictionaries: [names],
-      style: 'capital',
-      separator: ' ',
-    });
+    const fullName = getDefaultUsernameForGender(data.gender);
 
     user = await UserService.initializeUser({
       fullName,

@@ -11,8 +11,9 @@ import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
+import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { CURRENT_ONBOARDING_VERSION, TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -36,6 +37,7 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '@/utils/nutritionCalculator';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { showSnackbar } from '@/utils/snackbarService';
 import { kgToDisplay } from '@/utils/unitConversion';
@@ -50,8 +52,15 @@ export default function NutritionGoalsResults() {
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
-  const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
+  const params = useLocalSearchParams<{
+    aiGenerated?: string;
+    plan?: string;
+    quickSetup?: string;
+    personalizedSetup?: string;
+  }>();
   const aiGenerated = params.aiGenerated === 'true';
+  const isQuickSetup = params.quickSetup === 'true';
+  const isPersonalizedSetup = params.personalizedSetup === 'true';
   const [isSaving, setIsSaving] = useState(false);
   const [storedPlan, setStoredPlan] = useState<NutritionPlan | null>(null);
 
@@ -366,7 +375,8 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      router.navigate('/app/onboarding/personal-info');
+      await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
+      router.replace('/app');
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -417,6 +427,8 @@ export default function NutritionGoalsResults() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
+      {isQuickSetup ? <QuickSetupProgressBar current={6} total={6} /> : null}
+      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={9} /> : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"
@@ -1164,7 +1176,11 @@ export default function NutritionGoalsResults() {
               onPress={() => {
                 router.navigate({
                   pathname: '/app/onboarding/nutrition-goals',
-                  params: { isAdjusting: 'true' },
+                  params: {
+                    isAdjusting: 'true',
+                    quickSetup: isQuickSetup ? 'true' : 'false',
+                    personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
+                  },
                 });
               }}
             />

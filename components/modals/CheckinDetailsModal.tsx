@@ -200,6 +200,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const displayTrend = kgToDisplay(Math.abs(trend), units);
   const trendColor = trend <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
   const weightUnitKey = getWeightUnitI18nKey(units);
+  let statusColor = theme.colors.status.warning;
+  if (status === 'onTrack') {
+    statusColor = theme.colors.status.emerald;
+  } else if (status === 'ahead') {
+    statusColor = theme.colors.status.info;
+  }
 
   return (
     <FullScreenModal
@@ -233,18 +239,8 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           <View
             className="h-48 w-48 items-center justify-center rounded-full border-[10px]"
             style={{
-              borderColor:
-                status === 'onTrack'
-                  ? theme.colors.status.emerald
-                  : status === 'ahead'
-                    ? theme.colors.status.info
-                    : theme.colors.status.warning,
-              shadowColor:
-                status === 'onTrack'
-                  ? theme.colors.status.emerald
-                  : status === 'ahead'
-                    ? theme.colors.status.info
-                    : theme.colors.status.warning,
+              borderColor: statusColor,
+              shadowColor: statusColor,
               shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.3,
               shadowRadius: 15,

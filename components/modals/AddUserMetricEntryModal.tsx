@@ -269,7 +269,12 @@ export default function AddUserMetricEntryModal({
   // Render full metric entry card content for a specific metric type
   const renderMetricEntry = (metric: MetricType) => {
     const config = metricConfigs[metric];
-    const value = metric === 'weight' ? weight : metric === 'body_fat' ? bodyFat : height;
+    let value = height;
+    if (metric === 'weight') {
+      value = weight;
+    } else if (metric === 'body_fat') {
+      value = bodyFat;
+    }
 
     const handleIncrement = (amount: number) => {
       if (metric === 'weight') {

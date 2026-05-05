@@ -1,9 +1,9 @@
 import * as ExpoLinking from 'expo-linking';
-import { useRootNavigationState, useRouter } from 'expo-router';
+import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, Pressable, ScrollView, Text, View } from 'react-native';
+import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -46,8 +46,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
+import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
+import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
@@ -85,6 +87,7 @@ export default function HomeScreen() {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
+  const pathname = usePathname();
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
@@ -274,6 +277,17 @@ export default function HomeScreen() {
 
     drainPendingWidgetAction(openCamera);
   }, [navigationState?.key, openCamera]);
+
+  // On web we navigate directly to /app, so we need to check here if we need to run onboarding redirect.
+  // pathname is intentionally excluded from deps: usePathname() updates globally on every navigation,
+  // which would re-trigger this effect and redirect the user back to /app from any other screen.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !navigationState?.key) {
+      return;
+    }
+
+    runEntryOnboardingRedirect(router, 'app.index.web', '/app');
+  }, [navigationState?.key, router]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
@@ -629,7 +643,7 @@ export default function HomeScreen() {
         }}
         onCoachPress={openCoach}
         onCyclePress={() => router.navigate('/app/cycle')}
-        {...(__DEV__ && {
+        {...(!isProduction() && {
           onDebugMenuPress: () => router.navigate('/app/test/debug'),
         })}
       />

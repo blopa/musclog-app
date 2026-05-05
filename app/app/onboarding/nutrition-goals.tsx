@@ -47,9 +47,19 @@ export default function NutritionGoalsScreen() {
     isAdjusting?: string;
     isCheckinAdjusting?: string;
     checkinId?: string;
+    quickSetup?: string;
+    personalizedSetup?: string;
   }>();
   const isAdjusting = params.isAdjusting === 'true';
   const isCheckinAdjusting = params.isCheckinAdjusting === 'true';
+  const isQuickSetup = params.quickSetup === 'true';
+  const isPersonalizedSetup = params.personalizedSetup === 'true';
+  let nutritionGoalsBodyKey = 'empty';
+  if (goal) {
+    nutritionGoalsBodyKey = `goal-${goal.id}`;
+  } else if (storedPlanGoals) {
+    nutritionGoalsBodyKey = 'stored-plan';
+  }
 
   // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
   // We prefer this over the DB goal in initialGoals when present.
@@ -179,10 +189,16 @@ export default function NutritionGoalsScreen() {
           }
         }
 
-        // If the user arrived here from the results screen to adjust the AI plan,
-        // then after saving we should continue the onboarding flow to personal-info.
         if (isAdjusting) {
-          router.navigate('/app/onboarding/personal-info');
+          router.navigate({
+            pathname: '/app/onboarding/nutrition-goals-results',
+            params: {
+              aiGenerated: 'false',
+              quickSetup: isQuickSetup ? 'true' : 'false',
+              personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
+            },
+          });
+
           return;
         }
 
@@ -193,14 +209,22 @@ export default function NutritionGoalsScreen() {
 
         router.navigate({
           pathname: '/app/onboarding/nutrition-goals-results',
-          params: { aiGenerated: 'false' },
+          params: { aiGenerated: 'false', quickSetup: isQuickSetup ? 'true' : 'false' },
         });
       } catch (e) {
         showSnackbar('error', t('nutritionGoals.errorSaving'));
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [disableMinimumCalories, isAdjusting, isCheckinAdjusting, router, t]
+    [
+      disableMinimumCalories,
+      isAdjusting,
+      isCheckinAdjusting,
+      isPersonalizedSetup,
+      isQuickSetup,
+      router,
+      t,
+    ]
   );
 
   if (isLoading || isLoadingDefaults) {
@@ -230,7 +254,7 @@ export default function NutritionGoalsScreen() {
             </Text>
           </View>
           <NutritionGoalsBody
-            key={goal ? `goal-${goal.id}` : storedPlanGoals ? 'stored-plan' : 'empty'}
+            key={nutritionGoalsBodyKey}
             onSave={handleSave}
             initialGoals={initialGoals}
             showSaveButton={false}

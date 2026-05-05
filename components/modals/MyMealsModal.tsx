@@ -212,7 +212,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         );
         setMealCardsData(transformedMeals);
       } catch (error) {
-        console.error('Error transforming meals:', error);
+        handleError(error, 'MyMealsModal.transformMeals', {
+          showSnackbar: false,
+        });
       } finally {
         setIsTransforming(false);
       }
@@ -328,8 +330,10 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
 
         await refresh();
         showSnackbar('success', t('meals.generateAI.successMessage'));
-      } catch {
-        showSnackbar('error', t('meals.generateAI.errorMessage'));
+      } catch (error) {
+        handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext', {
+          snackbarMessage: t('meals.generateAI.errorMessage'),
+        });
       } finally {
         setIsGeneratingMealAI(false);
       }

@@ -1,5 +1,4 @@
 import { Calculator } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -15,21 +14,24 @@ type WorkoutStatCardProps = {
 };
 
 export function WorkoutStatCard({ title, value, unit, onPress, isAdjusted }: WorkoutStatCardProps) {
-  const { t } = useTranslation();
   const theme = useTheme();
+  const renderValue = () => {
+    if (typeof value === 'string' && value === '-') {
+      return <Text className="text-3xl font-bold text-text-tertiary">-</Text>;
+    }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return <Text className="text-3xl font-bold text-text-primary">{value}</Text>;
+    }
+
+    return <View className="h-10 items-center justify-center">{value}</View>;
+  };
 
   return (
     <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
       <View className="items-center p-3">
         <Text className="mb-1 text-xs font-medium text-text-secondary">{title}</Text>
-        {typeof value === 'string' && value === '-' ? (
-          <Text className="text-3xl font-bold text-text-tertiary">-</Text>
-        ) : typeof value === 'string' || typeof value === 'number' ? (
-          <Text className="text-3xl font-bold text-text-primary">{value}</Text>
-        ) : (
-          // React element (ActivityIndicator)
-          <View className="h-10 items-center justify-center">{value}</View>
-        )}
+        {renderValue()}
         <View className="flex-row items-center">
           {unit ? <Text className="mt-0.5 text-sm text-text-secondary">{unit}</Text> : null}
           {isAdjusted ? (

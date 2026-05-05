@@ -782,8 +782,10 @@ export class ProgressService {
       }
     }
 
-    const weightTrend =
-      Math.abs(weightChangeWeekly) < 0.05 ? 'stable' : weightChangeWeekly > 0 ? 'up' : 'down';
+    let weightTrend: 'stable' | 'up' | 'down' = 'stable';
+    if (Math.abs(weightChangeWeekly) >= 0.05) {
+      weightTrend = weightChangeWeekly > 0 ? 'up' : 'down';
+    }
 
     const intakeDayCount = nutritionDaily.length;
     let averageIntake: AverageIntakeForPeriod | null = null;
@@ -939,12 +941,12 @@ export class ProgressService {
     const energyMetrics = await UserMetricService.getMetricsHistory('mood', { startDate, endDate });
     const energyPoints = await this.decryptMetricPoints(energyMetrics, false);
 
-    const step =
-      aggregation === 'daily'
-        ? MS_PER_SOLAR_DAY
-        : aggregation === 'weekly'
-          ? MS_PER_SOLAR_DAY * 7
-          : MS_PER_SOLAR_DAY * 30;
+    let step = MS_PER_SOLAR_DAY * 30;
+    if (aggregation === 'daily') {
+      step = MS_PER_SOLAR_DAY;
+    } else if (aggregation === 'weekly') {
+      step = MS_PER_SOLAR_DAY * 7;
+    }
 
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);

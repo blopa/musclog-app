@@ -181,6 +181,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSymbols (55.0.7):
     - ExpoModulesCore
+  - ExpoSystemUI (55.0.17):
+    - ExpoModulesCore
   - ExpoTaskManager (55.0.15):
     - ExpoModulesCore
     - UMAppLoader
@@ -2769,6 +2771,7 @@ DEPENDENCIES:
   - ExpoSharing (from `../node_modules/expo-sharing/ios`)
   - ExpoSQLite (from `../node_modules/expo-sqlite/ios`)
   - ExpoSymbols (from `../node_modules/expo-symbols/ios`)
+  - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - ExpoTaskManager (from `../node_modules/expo-task-manager/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../node_modules/expo-structured-headers/ios`)
@@ -2986,6 +2989,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-sqlite/ios"
   ExpoSymbols:
     :path: "../node_modules/expo-symbols/ios"
+  ExpoSystemUI:
+    :path: "../node_modules/expo-system-ui/ios"
   ExpoTaskManager:
     :path: "../node_modules/expo-task-manager/ios"
   ExpoWebBrowser:
@@ -3234,6 +3239,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 5acc9d78894386d31b862b12ed1cebe7dce74e68
   ExpoSQLite: f63db535d24c59722971241ea9ade2a878dfabea
   ExpoSymbols: 8b63e859ba013df1f2fc666f535fddb3d5270569
+  ExpoSystemUI: 580f7a0e688715502a690817789c95a59c72840f
   ExpoTaskManager: 7c2660c3c0bd0ed863e1536e59e11b71ac1490c6
   ExpoWebBrowser: f88a3ba50a025b673236a46d2654a49b985953d6
   EXStructuredHeaders: 93ad4f31a2eec124428675e28aca11de243ee1e4
