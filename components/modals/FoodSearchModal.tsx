@@ -1,4 +1,5 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import type { TFunction } from 'i18next';
 import {
   AlertTriangle,
   Apple,
@@ -123,7 +124,7 @@ function getMealsTabLabel(options: {
   searchQuery: string;
   filteredCount: number;
   totalCount?: number;
-  t: (key: string) => string;
+  t: TFunction;
 }): string {
   const { searchQuery, filteredCount, totalCount, t } = options;
   const base = t('foodSearch.filters.meals');
@@ -295,7 +296,7 @@ function getSectionHeaderTitle(
   hasLocalResults: boolean,
   hasApiResults: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isInitialLoad) {
     return t('foodSearch.searching');
@@ -311,7 +312,7 @@ function getSectionHeaderTitle(
 function getSearchingStatusText(
   isLoadingLocal: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isLoadingLocal && isLoadingAPI) {
     return t('foodSearch.searchingLocalAndAPI');

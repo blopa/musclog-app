@@ -1,23 +1,16 @@
 import { Info } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
-import { CenteredModal } from '@/components/modals/CenteredModal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
+import { IngredientListModal, MealIngredient } from './IngredientListModal';
 
-export type MealIngredient = {
-  name: string;
-  kcal: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  grams: number;
-};
+export type { MealIngredient };
 
 export type MealNutritionHighlightCardProps = {
   /** Optional block above the nutrition grid (e.g. meal title + image in LogMealModal). */
@@ -31,7 +24,6 @@ export type MealNutritionHighlightCardProps = {
   /** When greater than zero, shown as a line below the macro grid. */
   fiber?: number;
   intuitiveMode?: boolean;
-  /** When true and ingredients are provided, shows an info button that opens an ingredients modal. */
   showIngredientsInfo?: boolean;
   ingredients?: MealIngredient[];
 };
@@ -54,11 +46,10 @@ export function MealNutritionHighlightCard({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
   const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
 
   const narrow = windowWidth < 380;
-  const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
 
   const showInfoButton = showIngredientsInfo && ingredients && ingredients.length > 0;
 
@@ -230,85 +221,12 @@ export function MealNutritionHighlightCard({
       </GenericCard>
 
       {showInfoButton ? (
-        <CenteredModal
+        <IngredientListModal
           visible={ingredientsModalVisible}
           onClose={() => setIngredientsModalVisible(false)}
-          title={t('food.quickTrackMeal.ingredients')}
-          subtitle={t('food.quickTrackMeal.ingredientsCount_other', {
-            count: ingredients!.length,
-          })}
-        >
-          <ScrollView
-            nestedScrollEnabled
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator
-            style={{ maxHeight: ingredientsScrollMaxHeight, flexGrow: 0 }}
-            contentContainerStyle={{ gap: 8, flexGrow: 0 }}
-          >
-            {ingredients!.map((ingredient, index) => (
-              <View
-                key={`${ingredient.name}-${index}`}
-                className="flex-row items-center justify-between rounded-lg px-3 py-2.5"
-                style={{ backgroundColor: theme.colors.background.white5 }}
-              >
-                <View className="flex-1 pr-3">
-                  <Text
-                    className="text-sm font-semibold"
-                    style={{ color: theme.colors.text.primary }}
-                    numberOfLines={1}
-                  >
-                    {ingredient.name}
-                  </Text>
-                  <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                    {formatRoundedDecimal(ingredient.grams ?? 0, 2)}g
-                  </Text>
-                </View>
-                <View className="flex-row items-center gap-3">
-                  <View className="items-end">
-                    <Text
-                      className="text-xs font-bold"
-                      style={[
-                        { color: theme.colors.accent.primary },
-                        intuitiveMode ? blurFilter(4) : undefined,
-                      ]}
-                    >
-                      P {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.protein ?? 0, 2)}g
-                    </Text>
-                    <Text
-                      className="text-xs font-bold"
-                      style={[
-                        { color: theme.colors.status.info },
-                        intuitiveMode ? blurFilter(4) : undefined,
-                      ]}
-                    >
-                      C {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.carbs ?? 0, 2)}g
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text
-                      className="text-xs font-bold"
-                      style={[
-                        { color: theme.colors.status.amber },
-                        intuitiveMode ? blurFilter(4) : undefined,
-                      ]}
-                    >
-                      F {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.fat ?? 0, 2)}g
-                    </Text>
-                    <Text
-                      className="text-xs font-medium"
-                      style={[
-                        { color: theme.colors.text.secondary },
-                        intuitiveMode ? blurFilter(4) : undefined,
-                      ]}
-                    >
-                      {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal ?? 0, 2)} kcal
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-        </CenteredModal>
+          ingredients={ingredients!}
+          intuitiveMode={intuitiveMode}
+        />
       ) : null}
     </>
   );

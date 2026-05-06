@@ -186,7 +186,6 @@ export function AddFoodModal({
                   iconGradient={
                     [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
                   }
-                  // badge={t('food.addFoodModal.aiCamera.badge')}
                   highlighted={true}
                   onPress={() => {
                     onAiCameraPress?.();

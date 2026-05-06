@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import { Info } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,10 +26,7 @@ type FoodInfoCardProps = {
   onInfoPress?: () => void;
 };
 
-const getSourceText = (
-  source: 'openfood' | 'usda' | 'ai' | 'musclog',
-  t: (key: string) => string
-): string => {
+const getSourceText = (source: 'openfood' | 'usda' | 'ai' | 'musclog', t: TFunction): string => {
   switch (source) {
     case 'openfood':
       return t('food.foodDetails.sourceOpenFood');
@@ -43,7 +41,12 @@ const getSourceText = (
   }
 };
 
-export function FoodInfoCard({ food, intuitiveMode = false, showName = true, onInfoPress }: FoodInfoCardProps) {
+export function FoodInfoCard({
+  food,
+  intuitiveMode = false,
+  showName = true,
+  onInfoPress,
+}: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
@@ -66,9 +69,7 @@ export function FoodInfoCard({ food, intuitiveMode = false, showName = true, onI
           <View className="flex-1 pr-5">
             {showName ? (
               <View className="mb-1 flex-row items-start">
-                <Text className="flex-1 text-2xl font-bold text-text-primary">
-                  {food.name}
-                </Text>
+                <Text className="flex-1 text-2xl font-bold text-text-primary">{food.name}</Text>
                 {onInfoPress ? (
                   <Pressable className="ml-1 mt-1 self-start" onPress={onInfoPress} hitSlop={8}>
                     <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
@@ -76,9 +77,7 @@ export function FoodInfoCard({ food, intuitiveMode = false, showName = true, onI
                 ) : null}
               </View>
             ) : null}
-            <View className="flex-row items-center">
-              <Text className="text-sm text-text-secondary">{food.category}</Text>
-            </View>
+            <Text className="text-sm text-text-secondary">{food.category}</Text>
             {food.source === 'openfood' ||
             food.source === 'usda' ||
             food.source === 'ai' ||

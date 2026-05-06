@@ -3,6 +3,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { TFunction } from 'i18next';
 import {
   FileText,
   Images,
@@ -70,7 +71,7 @@ const getSafeCameraMode = (
 
 export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
-const getCameraInstructionText = (cameraMode: CameraMode, t: (key: string) => string): string => {
+const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string => {
   switch (cameraMode) {
     case 'ai-meal-photo':
       return t('food.aiCamera.mealInstruction');
