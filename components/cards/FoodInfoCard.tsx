@@ -63,20 +63,22 @@ export function FoodInfoCard({ food, intuitiveMode = false, showName = true, onI
       <View className="relative z-10 p-5">
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">
-          <View className="flex-1">
+          <View className="flex-1 pr-3">
             {showName ? (
-              <View className="mb-1 flex-row items-center gap-2">
-                <Text className="shrink text-2xl font-bold text-text-primary" numberOfLines={2}>
+              <View className="mb-1 flex-row items-start">
+                <Text className="flex-1 text-2xl font-bold text-text-primary">
                   {food.name}
                 </Text>
                 {onInfoPress ? (
-                  <Pressable onPress={onInfoPress} hitSlop={8}>
+                  <Pressable className="ml-1 mt-1 self-start" onPress={onInfoPress} hitSlop={8}>
                     <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                   </Pressable>
                 ) : null}
               </View>
             ) : null}
-            <Text className="text-sm text-text-secondary">{food.category}</Text>
+            <View className="flex-row items-center">
+              <Text className="text-sm text-text-secondary">{food.category}</Text>
+            </View>
             {food.source === 'openfood' ||
             food.source === 'usda' ||
             food.source === 'ai' ||
