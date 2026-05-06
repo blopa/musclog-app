@@ -104,6 +104,48 @@ type CreateMealModalProps = {
   initialMealType?: MealType;
 };
 
+function buildIngredientFromFood(food: Food, amount: number, t: TFunction): Ingredient {
+  if (food.resolvedNutritionBasis === 'per_serving') {
+    const nutrients = food.getNutrientsForServingCount(amount);
+    return {
+      foodId: food.id,
+      name: food.name ?? t('meals.unknownFood'),
+      amount,
+      calories: nutrients.calories,
+      protein: nutrients.protein,
+      carbs: nutrients.carbs,
+      fat: nutrients.fat,
+      fiber: nutrients.fiber,
+      sugar: (food.micros?.sugar ?? 0) * amount,
+      saturatedFat: (food.micros?.saturatedFat ?? 0) * amount,
+      sodium: (food.micros?.sodium ?? 0) * amount,
+      alcohol: (food.micros?.alcohol ?? 0) * amount,
+      potassium: (food.micros?.potassium ?? 0) * amount,
+      magnesium: (food.micros?.magnesium ?? 0) * amount,
+      zinc: (food.micros?.zinc ?? 0) * amount,
+    };
+  }
+
+  const multiplier = amount / 100;
+  return {
+    foodId: food.id,
+    name: food.name ?? t('meals.unknownFood'),
+    amount,
+    calories: food.calories * multiplier,
+    protein: food.protein * multiplier,
+    carbs: food.carbs * multiplier,
+    fat: food.fat * multiplier,
+    fiber: food.fiber * multiplier,
+    sugar: (food.micros?.sugar ?? 0) * multiplier,
+    saturatedFat: (food.micros?.saturatedFat ?? 0) * multiplier,
+    sodium: (food.micros?.sodium ?? 0) * multiplier,
+    alcohol: (food.micros?.alcohol ?? 0) * multiplier,
+    potassium: (food.micros?.potassium ?? 0) * multiplier,
+    magnesium: (food.micros?.magnesium ?? 0) * multiplier,
+    zinc: (food.micros?.zinc ?? 0) * multiplier,
+  };
+}
+
 export function CreateMealModal({
   visible,
   onClose,
@@ -196,27 +238,8 @@ export function CreateMealModal({
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
     if (visible && initialFoods && initialFoods.length > 0 && !meal) {
-      const newIngredients: Ingredient[] = initialFoods.map(
-        (item: { food: Food; amount: number }) => {
-          const multiplier = item.amount / 100;
-          return {
-            foodId: item.food.id,
-            name: item.food.name ?? t('meals.unknownFood'),
-            amount: item.amount,
-            calories: item.food.calories * multiplier,
-            protein: item.food.protein * multiplier,
-            carbs: item.food.carbs * multiplier,
-            fat: item.food.fat * multiplier,
-            fiber: item.food.fiber * multiplier,
-            sugar: (item.food.micros?.sugar ?? 0) * multiplier,
-            saturatedFat: (item.food.micros?.saturatedFat ?? 0) * multiplier,
-            sodium: (item.food.micros?.sodium ?? 0) * multiplier,
-            alcohol: (item.food.micros?.alcohol ?? 0) * multiplier,
-            potassium: (item.food.micros?.potassium ?? 0) * multiplier,
-            magnesium: (item.food.micros?.magnesium ?? 0) * multiplier,
-            zinc: (item.food.micros?.zinc ?? 0) * multiplier,
-          };
-        }
+      const newIngredients: Ingredient[] = initialFoods.map((item: { food: Food; amount: number }) =>
+        buildIngredientFromFood(item.food, item.amount, t)
       );
       setIngredients(newIngredients);
     }
@@ -394,10 +417,14 @@ export function CreateMealModal({
   };
 
   const syncMealPortion = async (targetMeal: Meal) => {
-    const trimmedPortionName = defaultPortionName.trim();
-    if (!trimmedPortionName) {
+    await FoodPortionService.clearMealPortions(targetMeal.id);
+
+    if (nutritionBasis === 'per_recipe') {
       return;
     }
+
+    const trimmedPortionName =
+      defaultPortionName.trim() || mealName.trim() || t('food.foodDetails.serving');
 
     if (nutritionBasis === 'per_serving') {
       const portion = await FoodPortionService.createPrivateNamedPortion(
@@ -606,27 +633,9 @@ export function CreateMealModal({
   const mealTypeOptions = useMemo(() => getMealTypeOptions(theme, t), [theme, t]);
 
   const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
-    const newIngredients: Ingredient[] = selectedFoods.map((item) => {
-      // Calculate nutrients based on amount (per 100g base)
-      const multiplier = item.amount / 100;
-      return {
-        foodId: item.food.id,
-        name: item.food.name ?? t('meals.unknownFood'),
-        amount: item.amount,
-        calories: item.food.calories * multiplier,
-        protein: item.food.protein * multiplier,
-        carbs: item.food.carbs * multiplier,
-        fat: item.food.fat * multiplier,
-        fiber: item.food.fiber * multiplier,
-        sugar: (item.food.micros?.sugar ?? 0) * multiplier,
-        saturatedFat: (item.food.micros?.saturatedFat ?? 0) * multiplier,
-        sodium: (item.food.micros?.sodium ?? 0) * multiplier,
-        alcohol: (item.food.micros?.alcohol ?? 0) * multiplier,
-        potassium: (item.food.micros?.potassium ?? 0) * multiplier,
-        magnesium: (item.food.micros?.magnesium ?? 0) * multiplier,
-        zinc: (item.food.micros?.zinc ?? 0) * multiplier,
-      };
-    });
+    const newIngredients: Ingredient[] = selectedFoods.map((item) =>
+      buildIngredientFromFood(item.food, item.amount, t)
+    );
 
     setIngredients((prev) => [...prev, ...newIngredients]);
     setIsAddFoodVisible(false);

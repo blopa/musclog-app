@@ -265,6 +265,7 @@ export class FoodService {
     }
   ): Promise<Food> {
     const nutritionBasis = options?.nutritionBasis ?? 'per_100g';
+    const primarySelectedPortionId = options?.selectedPortionIds?.[0];
 
     // Convert serving amount to grams
     let gramWeight = servingAmount;
@@ -275,6 +276,27 @@ export class FoodService {
       gramWeight = servingAmount;
     }
     // For 'g' or other units, assume gramWeight = servingAmount
+
+    let existingDefaultPortion: FoodPortion | null = null;
+    if (nutritionBasis === 'per_100g') {
+      if (primarySelectedPortionId) {
+        existingDefaultPortion = await FoodPortionService.getPortionById(primarySelectedPortionId);
+        if (existingDefaultPortion?.gramWeight == null) {
+          existingDefaultPortion = null;
+        }
+      }
+
+      if (!existingDefaultPortion) {
+        const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
+        existingDefaultPortion = await FoodPortionService.createFoodPortion(
+          portionName,
+          gramWeight,
+          undefined,
+          'basic',
+          { kind: 'mass', scope: 'global' }
+        );
+      }
+    }
 
     return await database.write(async () => {
       const now = Date.now();
@@ -311,20 +333,21 @@ export class FoodService {
 
       let defaultPortion: FoodPortion;
       if (nutritionBasis === 'per_serving') {
-        defaultPortion = await FoodPortionService.createPrivateNamedPortion(
-          options?.servingName?.trim() || '1 serving',
-          'food',
-          food.id
-        );
+        defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
+          portion.name = options?.servingName?.trim() || '1 serving';
+          portion.source = 'custom';
+          portion.kind = 'named';
+          portion.scope = 'private';
+          portion.ownerType = 'food';
+          portion.ownerId = food.id;
+          portion.createdAt = now;
+          portion.updatedAt = now;
+        });
       } else {
-        const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
-        defaultPortion = await FoodPortionService.createFoodPortion(
-          portionName,
-          gramWeight,
-          undefined,
-          'basic',
-          { kind: 'mass', scope: 'global' }
-        );
+        if (!existingDefaultPortion) {
+          throw new Error('Expected default mass portion for custom food');
+        }
+        defaultPortion = existingDefaultPortion;
       }
 
       await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {

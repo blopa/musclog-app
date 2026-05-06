@@ -328,10 +328,10 @@ export function FoodMealDetailsModal({
   };
 
   const mode = getMode();
-  const resolvedFoodServingMode =
-    foodLogDecrypted?.snapshotBasis === 'per_serving' ||
-    food?.resolvedNutritionBasis === 'per_serving' ||
-    localFood?.resolvedNutritionBasis === 'per_serving';
+  const resolvedFoodServingMode = foodLog
+    ? foodLogDecrypted?.snapshotBasis === 'per_serving'
+    : food?.resolvedNutritionBasis === 'per_serving' ||
+      localFood?.resolvedNutritionBasis === 'per_serving';
   const resolvedMealServingMode =
     meal?.resolvedNutritionBasis === 'per_serving' || meal?.resolvedNutritionBasis === 'per_gram';
 
@@ -1892,6 +1892,7 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    resolvedFoodServingMode,
     refetchedProductDetails,
     barcode,
     effectiveMicrosPer100g,

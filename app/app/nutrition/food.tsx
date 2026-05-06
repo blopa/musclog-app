@@ -577,7 +577,13 @@ export default function FoodScreen() {
         if (!entry.food) {
           return null;
         }
-        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+        return {
+          food: entry.food,
+          amount:
+            entry.food.resolvedNutritionBasis === 'per_serving'
+              ? entry.log.amount
+              : Math.round(entry.gramWeight),
+        };
       })
       .filter(Boolean) as { food: Food; amount: number }[];
 
@@ -935,7 +941,13 @@ export default function FoodScreen() {
           return null;
         }
 
-        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+        return {
+          food: entry.food,
+          amount:
+            entry.food.resolvedNutritionBasis === 'per_serving'
+              ? entry.log.amount
+              : Math.round(entry.gramWeight),
+        };
       })
       .filter(Boolean) as { food: Food; amount: number }[];
 

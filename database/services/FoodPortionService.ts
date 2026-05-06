@@ -246,22 +246,35 @@ export class FoodPortionService {
   }
 
   static async backfillPortionSources(appPortionCount: number = 9): Promise<void> {
-    const unsourced = await database
+    const legacyRows = await database
       .get<FoodPortion>('food_portions')
       .query(
-        Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))),
+        Q.or(
+          Q.where('source', Q.eq(null)),
+          Q.where('source', Q.eq('')),
+          Q.where('source', 'app'),
+          Q.where('source', 'user')
+        ),
         Q.sortBy('created_at', Q.asc)
       )
       .fetch();
 
-    if (unsourced.length === 0) {
+    if (legacyRows.length === 0) {
       return;
     }
 
     await database.write(async () => {
-      for (let i = 0; i < unsourced.length; i++) {
-        const portion = unsourced[i];
-        const source: 'basic' | 'custom' = i < appPortionCount ? 'basic' : 'custom';
+      let unsourcedIndex = 0;
+      for (const portion of legacyRows) {
+        let source: 'basic' | 'custom';
+        if (portion.source === 'app') {
+          source = 'basic';
+        } else if (portion.source === 'user') {
+          source = 'custom';
+        } else {
+          source = unsourcedIndex++ < appPortionCount ? 'basic' : 'custom';
+        }
+
         await portion.update((record) => {
           record.source = source;
           record.scope = source === 'basic' ? 'global' : 'private';
@@ -521,6 +534,55 @@ export class FoodPortionService {
     ).filter((name): name is string => !!name);
 
     return { foods: Array.from(new Set(foods)), meals: Array.from(new Set(meals)) };
+  }
+
+  static async getDefaultPortionForMeal(mealId: string): Promise<FoodPortion | null> {
+    const links = await database
+      .get<MealFoodPortion>('meal_food_portions')
+      .query(
+        Q.where('meal_id', mealId),
+        Q.where('is_default', true),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (links.length === 0) {
+      return null;
+    }
+
+    try {
+      return await links[0].foodPortion;
+    } catch {
+      return null;
+    }
+  }
+
+  static async clearMealPortions(mealId: string): Promise<void> {
+    const links = await database
+      .get<MealFoodPortion>('meal_food_portions')
+      .query(Q.where('meal_id', mealId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    for (const link of links) {
+      let portion: FoodPortion | null = null;
+      try {
+        portion = await link.foodPortion;
+      } catch {
+        portion = null;
+      }
+
+      await link.markAsDeleted();
+
+      if (
+        portion &&
+        portion.resolvedScope === 'private' &&
+        portion.ownerType === 'meal' &&
+        portion.ownerId === mealId &&
+        !portion.deletedAt
+      ) {
+        await portion.markAsDeleted();
+      }
+    }
   }
 
   static async duplicatePortion(id: string): Promise<FoodPortion> {
