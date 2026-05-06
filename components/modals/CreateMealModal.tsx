@@ -17,11 +17,11 @@ import {
   Pressable,
   Switch,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
@@ -107,229 +107,6 @@ type CreateMealModalProps = {
   initialFoods?: { food: Food; amount: number }[];
   /** For quickTrack mode: pre-selected meal type instead of defaulting to 'lunch'. */
   initialMealType?: MealType;
-};
-
-const MacroCard = ({
-  label,
-  value,
-  progress,
-  color,
-  intuitiveMode = false,
-}: {
-  label: string;
-  value: string;
-  progress: number;
-  color: string;
-  intuitiveMode?: boolean;
-}) => {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.overlay.backdrop,
-        borderRadius: theme.borderRadius.md,
-        padding: theme.spacing.padding['2half'],
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.border.light,
-        alignItems: 'center',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: theme.typography.fontSize.xs,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.secondary,
-          textTransform: 'uppercase',
-          letterSpacing: theme.typography.letterSpacing.wider,
-          marginBottom: theme.spacing.padding.xsHalf,
-        }}
-      >
-        {label}
-      </Text>
-      <Text
-        style={[
-          {
-            fontSize: theme.typography.fontSize.sm,
-            fontWeight: theme.typography.fontWeight.bold,
-            color: theme.colors.text.primary,
-          },
-          intuitiveMode ? blurFilter(4) : undefined,
-        ]}
-      >
-        {intuitiveMode ? t('common.weightFormatG', { value: 0 }) : value}
-      </Text>
-      <View
-        style={{
-          width: '100%',
-          height: theme.size.xs,
-          backgroundColor: theme.colors.background.white10,
-          borderRadius: theme.borderRadius.xs / 2,
-          marginTop: theme.spacing.padding.sm,
-          overflow: 'hidden',
-        }}
-      >
-        <View
-          style={{
-            height: '100%',
-            width: intuitiveMode ? '0%' : `${progress}%`,
-            backgroundColor: color,
-            borderRadius: theme.borderRadius.xs / 2,
-          }}
-        />
-      </View>
-    </View>
-  );
-};
-
-// Local component for Meal Macros Summary
-const MealMacrosSummary = ({
-  calories,
-  macros,
-  intuitiveMode = false,
-}: {
-  calories: number;
-  macros: { protein: number; carbs: number; fat: number };
-  intuitiveMode?: boolean;
-}) => {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  const { formatRoundedDecimal } = useFormatAppNumber();
-  const { width: windowWidth } = useWindowDimensions();
-
-  // Calculate progress percentages (simple estimation)
-  const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
-  const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
-  const fatProgress = Math.min((macros.fat / 80) * 100, 100);
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.colors.background.cardElevated,
-        borderRadius: theme.borderRadius.lg,
-        padding: theme.spacing.padding.lg,
-        marginBottom: theme.spacing.margin.xl,
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.border.light,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Background Glows */}
-      <View
-        style={{
-          position: 'absolute',
-          top: theme.offset.glowMedium,
-          right: theme.offset.glowMedium,
-          width: theme.size['160'],
-          height: theme.size['160'],
-          backgroundColor: theme.colors.accent.primary20,
-          borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium,
-        }}
-      />
-      <View
-        style={{
-          position: 'absolute',
-          bottom: theme.offset.glowMedium,
-          left: theme.offset.glowMedium,
-          width: theme.size['160'],
-          height: theme.size['160'],
-          backgroundColor: theme.colors.status.indigo20,
-          borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium,
-        }}
-      />
-
-      <View style={{ position: 'relative', zIndex: theme.zIndex.dropdown }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: theme.spacing.margin.lg,
-          }}
-        >
-          <View>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.primary,
-              }}
-            >
-              {t('food.createMeal.totalNutrition')}
-            </Text>
-            <Text
-              style={[
-                {
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  color: theme.colors.text.secondary,
-                },
-                intuitiveMode ? blurFilter(4) : undefined,
-              ]}
-            >
-              {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)} {t('common.kcal')}
-            </Text>
-          </View>
-          <View
-            style={{
-              backgroundColor: theme.colors.background.secondaryDark,
-              paddingHorizontal: theme.spacing.padding['2half'],
-              paddingVertical: theme.spacing.padding.xs,
-              borderRadius: theme.borderRadius.full,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.wider,
-              }}
-            >
-              {t('food.createMeal.estimated')}
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.protein, 2),
-            })}
-            progress={proteinProgress}
-            color={theme.colors.accent.primary}
-            intuitiveMode={intuitiveMode}
-          />
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.carbs, 2),
-            })}
-            progress={carbsProgress}
-            color={theme.colors.status.indigo}
-            intuitiveMode={intuitiveMode}
-          />
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.fat, 2),
-            })}
-            progress={fatProgress}
-            color={theme.colors.status.amber}
-            intuitiveMode={intuitiveMode}
-          />
-        </View>
-      </View>
-    </View>
-  );
 };
 
 export function CreateMealModal({
@@ -459,6 +236,33 @@ export function CreateMealModal({
 
   // Reference grams for scaling: prepared weight if set, otherwise raw ingredient sum
   const referenceMealGrams = preparedWeightGrams ?? totalMealGrams;
+
+  const displayedMealTotals = useMemo(() => {
+    if (isQuickTrack && referenceMealGrams > 0) {
+      const scale = mealAmountGrams / referenceMealGrams;
+      return {
+        calories: totalMacros.calories * scale,
+        protein: totalMacros.protein * scale,
+        carbs: totalMacros.carbs * scale,
+        fat: totalMacros.fat * scale,
+      };
+    }
+
+    return totalMacros;
+  }, [isQuickTrack, mealAmountGrams, referenceMealGrams, totalMacros]);
+
+  const mealNutritionCardFood = useMemo(
+    () => ({
+      name: mealName.trim() || t('food.createMeal.totalNutrition'),
+      category:
+        mealDescription.trim() || t('food.createMeal.ingredients', { count: ingredients.length }),
+      calories: displayedMealTotals.calories,
+      protein: displayedMealTotals.protein,
+      carbs: displayedMealTotals.carbs,
+      fat: displayedMealTotals.fat,
+    }),
+    [displayedMealTotals, ingredients.length, mealDescription, mealName, t]
+  );
 
   useEffect(() => {
     if (isQuickTrack) {
@@ -736,27 +540,20 @@ export function CreateMealModal({
           </View>
         ) : null}
 
-        {/* Total Nutrition Card */}
-        <MealMacrosSummary
-          calories={
-            isQuickTrack && referenceMealGrams > 0
-              ? totalMacros.calories * (mealAmountGrams / referenceMealGrams)
-              : totalMacros.calories
-          }
-          macros={
-            isQuickTrack && referenceMealGrams > 0
-              ? {
-                  protein: totalMacros.protein * (mealAmountGrams / referenceMealGrams),
-                  carbs: totalMacros.carbs * (mealAmountGrams / referenceMealGrams),
-                  fat: totalMacros.fat * (mealAmountGrams / referenceMealGrams),
-                }
-              : totalMacros
-          }
+        <FoodNutritionSectionCard
+          food={mealNutritionCardFood}
+          canEdit={false}
+          mode="meal"
+          onEditPress={() => {}}
+          nutritionalData={{ fiber: 0, saturatedFat: 0, sodium: 0 }}
+          servingSize={100}
+          isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
+          showName={false}
         />
 
         {/* Ingredients Section */}
-        <View className="mb-6">
+        <View className="mb-6 mt-6">
           <View className="mb-3 flex-row items-end justify-between px-1">
             <Text
               style={{

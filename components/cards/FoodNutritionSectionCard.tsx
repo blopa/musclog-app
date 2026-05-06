@@ -56,6 +56,8 @@ type FoodNutritionSectionProps = {
     onAccept: () => void;
   };
   intuitiveMode?: boolean;
+  // TODO: implement usage of showName
+  showName?: boolean;
 };
 
 export function FoodNutritionSectionCard({
@@ -72,6 +74,7 @@ export function FoodNutritionSectionCard({
   alternateSourceNotFound = false,
   caloriesTooLowWarning,
   intuitiveMode = false,
+  showName = true,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
