@@ -28,7 +28,11 @@ import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
 import { FoodPortionService, MealService, NutritionService } from '@/database/services';
-import { type Ingredient, useEditMealIngredients } from '@/hooks/useEditMealIngredients';
+import {
+  createIngredientLocalId,
+  type Ingredient,
+  useEditMealIngredients,
+} from '@/hooks/useEditMealIngredients';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -109,10 +113,12 @@ async function buildIngredientFromFood(food: Food, amount: number, t: TFunction)
     const nutrients = food.getNutrientsForServingCount(amount);
     const baseGrams = await food.getBaseGramWeight();
     return {
+      localId: createIngredientLocalId(food.id),
       foodId: food.id,
       name: food.name ?? t('meals.unknownFood'),
       amount,
       referenceGrams: amount * baseGrams,
+      isPerServing: true,
       calories: nutrients.calories,
       protein: nutrients.protein,
       carbs: nutrients.carbs,
@@ -130,10 +136,12 @@ async function buildIngredientFromFood(food: Food, amount: number, t: TFunction)
 
   const multiplier = amount / 100;
   return {
+    localId: createIngredientLocalId(food.id),
     foodId: food.id,
     name: food.name ?? t('meals.unknownFood'),
     amount,
     referenceGrams: amount,
+    isPerServing: false,
     calories: food.calories * multiplier,
     protein: food.protein * multiplier,
     carbs: food.carbs * multiplier,
@@ -404,8 +412,8 @@ export function CreateMealModal({
     [displayedMealTotals, ingredients.length, mealDescription, mealName, t]
   );
 
-  const handleRemoveIngredient = (foodId: string) => {
-    setIngredientToRemoveId(foodId);
+  const handleRemoveIngredient = (ingredientId: string) => {
+    setIngredientToRemoveId(ingredientId);
     setIsConfirmationModalVisible(true);
   };
 
@@ -608,13 +616,14 @@ export function CreateMealModal({
     }
   };
 
-  const removeIngredient = (foodId: string) => {
+  const removeIngredient = (ingredientId: string) => {
     setIngredients((prev) => {
-      const toRemove = prev.find((item) => item.foodId === foodId);
+      const toRemove = prev.find((item) => item.localId === ingredientId);
       if (toRemove?.mealFoodId) {
         removedMealFoodIdsRef.current.push(toRemove.mealFoodId);
       }
-      return prev.filter((item) => item.foodId !== foodId);
+
+      return prev.filter((item) => item.localId !== ingredientId);
     });
   };
 
@@ -848,7 +857,7 @@ export function CreateMealModal({
             ) : (
               ingredients.map((item) => (
                 <View
-                  key={item.foodId}
+                  key={item.localId}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -898,7 +907,9 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {formatInteger(Math.round(item.amount))}g
+                        {item.isPerServing
+                          ? `${formatRoundedDecimal(item.amount, 2)} ${t('food.foodDetails.serving')}`
+                          : `${formatInteger(Math.round(item.amount))}g`}
                       </Text>
                       <View
                         style={{
@@ -922,7 +933,7 @@ export function CreateMealModal({
                       </Text>
                     </View>
                   </View>
-                  <Pressable onPress={() => handleRemoveIngredient(item.foodId)} className="p-2">
+                  <Pressable onPress={() => handleRemoveIngredient(item.localId)} className="p-2">
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>

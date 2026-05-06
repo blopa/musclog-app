@@ -3,7 +3,7 @@ import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { handleError } from '@/utils/handleError';
 
-import Food from './Food';
+import Food, { type MicrosData } from './Food';
 import FoodPortion from './FoodPortion';
 import Meal from './Meal';
 
@@ -84,7 +84,15 @@ export default class MealFood extends Model {
     try {
       const food = await this.food;
       if (food?.resolvedNutritionBasis === 'per_serving') {
-        const baseGrams = await food.getBaseGramWeight();
+        let baseGrams = await food.getBaseGramWeight();
+        if (this.portionId) {
+          try {
+            const portion = await this.portion;
+            baseGrams = portion?.gramWeight ?? baseGrams;
+          } catch {
+            // Fall back to the food default portion grams.
+          }
+        }
         return this.amount * baseGrams;
       }
     } catch {
@@ -92,6 +100,29 @@ export default class MealFood extends Model {
     }
 
     return this.getGramWeight();
+  }
+
+  async getMicros(): Promise<MicrosData> {
+    try {
+      const food = await this.food;
+      if (!food) {
+        return {};
+      }
+
+      if (food.resolvedNutritionBasis === 'per_serving') {
+        return Object.fromEntries(
+          Object.entries(food.micros ?? {}).map(([key, value]) => [key, value != null ? value * this.amount : undefined])
+        ) as MicrosData;
+      }
+
+      const totalGrams = await this.getReferenceGramWeight();
+      const scale = totalGrams / 100;
+      return Object.fromEntries(
+        Object.entries(food.micros ?? {}).map(([key, value]) => [key, value != null ? value * scale : undefined])
+      ) as MicrosData;
+    } catch {
+      return {};
+    }
   }
 
   // Get nutrients for this specific meal food entry
