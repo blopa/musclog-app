@@ -43,7 +43,7 @@ type FoodNutritionSectionProps = {
   canEdit: boolean;
   showIncompleteWarning?: boolean;
   mode: FoodDetailsNutritionSectionMode;
-  onEditPress: () => void;
+  onEditPress: () => void; // TODO: make this optional
   nutritionalData: NutritionalData;
   servingSize: number;
   isLoadingDetails: boolean;
@@ -56,7 +56,6 @@ type FoodNutritionSectionProps = {
     onAccept: () => void;
   };
   intuitiveMode?: boolean;
-  // TODO: implement usage of showName
   showName?: boolean;
 };
 
@@ -98,7 +97,7 @@ export function FoodNutritionSectionCard({
   return (
     <View className="mt-6">
       <View className="relative">
-        <FoodInfoCard food={food} intuitiveMode={intuitiveMode} />
+        <FoodInfoCard food={food} intuitiveMode={intuitiveMode} showName={showName} />
         {canEdit && mode !== 'meal' ? (
           <Pressable
             onPress={onEditPress}

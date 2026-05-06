@@ -20,6 +20,7 @@ type FoodInfoCardProps = {
     source?: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog';
   };
   intuitiveMode?: boolean;
+  showName?: boolean;
 };
 
 const getSourceText = (
@@ -40,7 +41,7 @@ const getSourceText = (
   }
 };
 
-export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps) {
+export function FoodInfoCard({ food, intuitiveMode = false, showName = true }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
@@ -61,7 +62,7 @@ export function FoodInfoCard({ food, intuitiveMode = false }: FoodInfoCardProps)
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">
           <View className="flex-1">
-            <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text>
+            {showName ? <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text> : null}
             <Text className="text-sm text-text-secondary">{food.category}</Text>
             {food.source === 'openfood' ||
             food.source === 'usda' ||
