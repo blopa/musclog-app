@@ -63,7 +63,7 @@ export function FoodInfoCard({ food, intuitiveMode = false, showName = true, onI
       <View className="relative z-10 p-5">
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">
-          <View className="flex-1 pr-3">
+          <View className="flex-1 pr-5">
             {showName ? (
               <View className="mb-1 flex-row items-start">
                 <Text className="flex-1 text-2xl font-bold text-text-primary">
