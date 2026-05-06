@@ -544,7 +544,6 @@ export function CreateMealModal({
           food={mealNutritionCardFood}
           canEdit={false}
           mode="meal"
-          onEditPress={() => {}}
           nutritionalData={{ fiber: 0, saturatedFat: 0, sodium: 0 }}
           servingSize={100}
           isLoadingDetails={false}
