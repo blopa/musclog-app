@@ -1,8 +1,10 @@
 import { AlertCircle, AlertTriangle, Edit3, Info } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import { MealIngredient } from '@/components/cards/MealNutritionHighlightCard';
+import { CenteredModal } from '@/components/modals/CenteredModal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -58,8 +60,8 @@ type FoodNutritionSectionProps = {
   };
   intuitiveMode?: boolean;
   showName?: boolean;
-  /** Show an info button that expands to list the ingredients below the food header. */
-  ingredients?: string[];
+  /** When provided, shows an info button that opens an ingredients modal. */
+  ingredients?: MealIngredient[];
 };
 
 export function FoodNutritionSectionCard({
@@ -82,7 +84,9 @@ export function FoodNutritionSectionCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
-  const [ingredientsExpanded, setIngredientsExpanded] = useState(false);
+  const { height: windowHeight } = useWindowDimensions();
+  const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
+  const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
 
   const scaleFactor = servingSize / 100;
 
@@ -120,7 +124,8 @@ export function FoodNutritionSectionCard({
         ) : null}
         {ingredients && ingredients.length > 0 ? (
           <Pressable
-            onPress={() => setIngredientsExpanded((v) => !v)}
+            onPress={() => setIngredientsModalVisible(true)}
+            hitSlop={8}
             className="absolute right-3 top-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
             style={{
               elevation: 2,
@@ -135,20 +140,84 @@ export function FoodNutritionSectionCard({
         ) : null}
       </View>
 
-      {ingredients && ingredients.length > 0 && ingredientsExpanded ? (
-        <View className="mt-3 rounded-2xl border border-border-light bg-bg-overlay p-4">
-          <Text className="mb-2 text-sm font-bold uppercase tracking-wider text-text-secondary">
-            {t('food.quickTrackMeal.ingredients')}
-          </Text>
-          <View className="gap-1">
+      {ingredients && ingredients.length > 0 ? (
+        <CenteredModal
+          visible={ingredientsModalVisible}
+          onClose={() => setIngredientsModalVisible(false)}
+          title={t('food.quickTrackMeal.ingredients')}
+          subtitle={t('food.quickTrackMeal.ingredientsCount_other', { count: ingredients.length })}
+        >
+          <ScrollView
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator
+            style={{ maxHeight: ingredientsScrollMaxHeight, flexGrow: 0 }}
+            contentContainerStyle={{ gap: 8, flexGrow: 0 }}
+          >
             {ingredients.map((ingredient, index) => (
-              <Text key={index} className="text-sm text-text-secondary">
-                {'• '}
-                {ingredient}
-              </Text>
+              <View
+                key={`${ingredient.name}-${index}`}
+                className="flex-row items-center justify-between rounded-lg px-3 py-2.5"
+                style={{ backgroundColor: theme.colors.background.white5 }}
+              >
+                <View className="flex-1 pr-3">
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: theme.colors.text.primary }}
+                    numberOfLines={1}
+                  >
+                    {ingredient.name}
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                    {formatRoundedDecimal(ingredient.grams, 2)}g
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-3">
+                  <View className="items-end">
+                    <Text
+                      className="text-xs font-bold"
+                      style={[
+                        { color: theme.colors.accent.primary },
+                        intuitiveMode ? blurFilter(4) : undefined,
+                      ]}
+                    >
+                      P {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.protein, 2)}g
+                    </Text>
+                    <Text
+                      className="text-xs font-bold"
+                      style={[
+                        { color: theme.colors.status.info },
+                        intuitiveMode ? blurFilter(4) : undefined,
+                      ]}
+                    >
+                      C {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.carbs, 2)}g
+                    </Text>
+                  </View>
+                  <View className="items-end">
+                    <Text
+                      className="text-xs font-bold"
+                      style={[
+                        { color: theme.colors.status.amber },
+                        intuitiveMode ? blurFilter(4) : undefined,
+                      ]}
+                    >
+                      F {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.fat, 2)}g
+                    </Text>
+                    <Text
+                      className="text-xs font-medium"
+                      style={[
+                        { color: theme.colors.text.secondary },
+                        intuitiveMode ? blurFilter(4) : undefined,
+                      ]}
+                    >
+                      {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal, 2)} kcal
+                    </Text>
+                  </View>
+                </View>
+              </View>
             ))}
-          </View>
-        </View>
+          </ScrollView>
+        </CenteredModal>
       ) : null}
 
       {showIncompleteWarning ? (
