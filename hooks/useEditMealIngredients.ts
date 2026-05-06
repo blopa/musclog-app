@@ -14,6 +14,14 @@ export type Ingredient = {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
+  sugar?: number;
+  saturatedFat?: number;
+  sodium?: number;
+  alcohol?: number;
+  potassium?: number;
+  magnesium?: number;
+  zinc?: number;
 };
 
 export function useEditMealIngredients(meal: Meal | undefined) {
@@ -49,6 +57,14 @@ export function useEditMealIngredients(meal: Meal | undefined) {
                 protein: nutrients.protein,
                 carbs: nutrients.carbs,
                 fat: nutrients.fat,
+                fiber: nutrients.fiber,
+                sugar: food?.micros?.sugar ?? 0,
+                saturatedFat: food?.micros?.saturatedFat ?? 0,
+                sodium: food?.micros?.sodium ?? 0,
+                alcohol: food?.micros?.alcohol ?? 0,
+                potassium: food?.micros?.potassium ?? 0,
+                magnesium: food?.micros?.magnesium ?? 0,
+                zinc: food?.micros?.zinc ?? 0,
               };
             } catch (error) {
               await handleError(error, 'useEditMealIngredients.loadIngredient', {

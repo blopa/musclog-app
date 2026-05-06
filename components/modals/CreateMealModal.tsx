@@ -202,6 +202,14 @@ export function CreateMealModal({
             protein: item.food.protein * multiplier,
             carbs: item.food.carbs * multiplier,
             fat: item.food.fat * multiplier,
+            fiber: item.food.fiber * multiplier,
+            sugar: (item.food.micros?.sugar ?? 0) * multiplier,
+            saturatedFat: (item.food.micros?.saturatedFat ?? 0) * multiplier,
+            sodium: (item.food.micros?.sodium ?? 0) * multiplier,
+            alcohol: (item.food.micros?.alcohol ?? 0) * multiplier,
+            potassium: (item.food.micros?.potassium ?? 0) * multiplier,
+            magnesium: (item.food.micros?.magnesium ?? 0) * multiplier,
+            zinc: (item.food.micros?.zinc ?? 0) * multiplier,
           };
         }
       );
@@ -228,6 +236,31 @@ export function CreateMealModal({
     );
   }, [ingredients]);
 
+  const totalAdditionalNutrition = useMemo(() => {
+    return ingredients.reduce(
+      (acc, ingredient) => ({
+        fiber: acc.fiber + ingredient.fiber,
+        sugar: acc.sugar + (ingredient.sugar ?? 0),
+        saturatedFat: acc.saturatedFat + (ingredient.saturatedFat ?? 0),
+        sodium: acc.sodium + (ingredient.sodium ?? 0),
+        alcohol: acc.alcohol + (ingredient.alcohol ?? 0),
+        potassium: acc.potassium + (ingredient.potassium ?? 0),
+        magnesium: acc.magnesium + (ingredient.magnesium ?? 0),
+        zinc: acc.zinc + (ingredient.zinc ?? 0),
+      }),
+      {
+        fiber: 0,
+        sugar: 0,
+        saturatedFat: 0,
+        sodium: 0,
+        alcohol: 0,
+        potassium: 0,
+        magnesium: 0,
+        zinc: 0,
+      }
+    );
+  }, [ingredients]);
+
   // Total meal weight in grams (sum of raw ingredients)
   const totalMealGrams = useMemo(
     () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
@@ -250,6 +283,24 @@ export function CreateMealModal({
 
     return totalMacros;
   }, [isQuickTrack, mealAmountGrams, referenceMealGrams, totalMacros]);
+
+  const displayedAdditionalNutrition = useMemo(() => {
+    if (isQuickTrack && referenceMealGrams > 0) {
+      const scale = mealAmountGrams / referenceMealGrams;
+      return {
+        fiber: totalAdditionalNutrition.fiber * scale,
+        sugar: totalAdditionalNutrition.sugar * scale,
+        saturatedFat: totalAdditionalNutrition.saturatedFat * scale,
+        sodium: totalAdditionalNutrition.sodium * scale,
+        alcohol: totalAdditionalNutrition.alcohol * scale,
+        potassium: totalAdditionalNutrition.potassium * scale,
+        magnesium: totalAdditionalNutrition.magnesium * scale,
+        zinc: totalAdditionalNutrition.zinc * scale,
+      };
+    }
+
+    return totalAdditionalNutrition;
+  }, [isQuickTrack, mealAmountGrams, referenceMealGrams, totalAdditionalNutrition]);
 
   const mealNutritionCardFood = useMemo(
     () => ({
@@ -472,6 +523,14 @@ export function CreateMealModal({
         protein: item.food.protein * multiplier,
         carbs: item.food.carbs * multiplier,
         fat: item.food.fat * multiplier,
+        fiber: item.food.fiber * multiplier,
+        sugar: (item.food.micros?.sugar ?? 0) * multiplier,
+        saturatedFat: (item.food.micros?.saturatedFat ?? 0) * multiplier,
+        sodium: (item.food.micros?.sodium ?? 0) * multiplier,
+        alcohol: (item.food.micros?.alcohol ?? 0) * multiplier,
+        potassium: (item.food.micros?.potassium ?? 0) * multiplier,
+        magnesium: (item.food.micros?.magnesium ?? 0) * multiplier,
+        zinc: (item.food.micros?.zinc ?? 0) * multiplier,
       };
     });
 
@@ -544,8 +603,7 @@ export function CreateMealModal({
           food={mealNutritionCardFood}
           canEdit={false}
           mode="meal"
-          // TODO: get this from the ingredients
-          nutritionalData={{ fiber: 0, saturatedFat: 0, sodium: 0 }}
+          nutritionalData={displayedAdditionalNutrition}
           servingSize={100}
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
