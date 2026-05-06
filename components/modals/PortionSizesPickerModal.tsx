@@ -148,33 +148,53 @@ export function PortionSizesPickerModal({
   ]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const loadUsage = async () => {
       const customPortions = (loadedPortions as FoodPortion[]).filter(
         (portion) => portion.resolvedSource === 'custom'
       );
-      const entries = await Promise.all(
-        customPortions.map(async (portion) => {
-          const usage = await FoodPortionService.getPortionUsageSummary(portion.id);
-          const names = [...usage.foods, ...usage.meals].slice(0, 3);
-          const label =
-            names.length > 0
-              ? t('food.foodDetails.usedOnItems', {
-                  items: names.join(', '),
-                })
-              : t('food.foodDetails.privateServing');
-          return [portion.id, label] as const;
-        })
-      );
-      setUsageSummaries(Object.fromEntries(entries));
+
+      const result: Record<string, string> = {};
+      for (const portion of customPortions) {
+        if (cancelled) {
+          return;
+        }
+        const usage = await FoodPortionService.getPortionUsageSummary(portion.id);
+        if (cancelled) {
+          return;
+        }
+
+        const names = [...usage.foods, ...usage.meals].slice(0, 3);
+        result[portion.id] =
+          names.length > 0
+            ? t('food.foodDetails.usedOnItems', { items: names.join(', ') })
+            : t('food.foodDetails.privateServing');
+      }
+
+      setUsageSummaries(result);
     };
 
     loadUsage();
+    return () => {
+      cancelled = true;
+    };
   }, [loadedPortions, t]);
+
+  const portionById = useMemo(() => {
+    const map = new Map<string, FoodPortion>();
+    for (const p of loadedPortions as FoodPortion[]) {
+      map.set(p.id, p);
+    }
+
+    return map;
+  }, [loadedPortions]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
+    const selectedIdSet = new Set(localSelectedIds);
     const filteredByTab = selectorOptions.filter((option) => {
-      const portion = (loadedPortions as FoodPortion[]).find((p) => p.id === option.id);
+      const portion = portionById.get(option.id);
       if (!portion) {
         return false;
       }
@@ -184,7 +204,7 @@ export function PortionSizesPickerModal({
       if (activeTab === 'other') {
         return portion.resolvedSource === 'custom';
       }
-      return localSelectedIds.includes(option.id);
+      return selectedIdSet.has(option.id);
     });
 
     if (!searchQuery.trim()) {
@@ -197,7 +217,7 @@ export function PortionSizesPickerModal({
         option.label.toLowerCase().includes(query) ||
         option.description.toLowerCase().includes(query)
     );
-  }, [selectorOptions, loadedPortions, activeTab, localSelectedIds, searchQuery]);
+  }, [selectorOptions, portionById, activeTab, localSelectedIds, searchQuery]);
 
   const handleConfirm = () => {
     onConfirm(localSelectedIds);

@@ -228,7 +228,8 @@ export default function CreateCustomFoodModal({
           description || undefined,
           {
             nutritionBasis,
-            servingName: servingName.trim() || foodName.trim() || t('food.newCustomFood.oneServing'),
+            servingName:
+              servingName.trim() || foodName.trim() || t('food.newCustomFood.oneServing'),
             selectedPortionIds,
           }
         );

@@ -86,8 +86,8 @@ export function ServingSizeSelector({
 
   const commonPortionQuickSizes = useMemo(() => {
     return COMMON_GRAM_WEIGHTS.flatMap((gw) => {
-      const match = allGlobalPortions.filter(hasGramWeight).find((p) => p.gramWeight === gw);
-      if (!match) {
+      const match = allGlobalPortions.find((p) => p.gramWeight != null && p.gramWeight === gw);
+      if (!match || !hasGramWeight(match)) {
         return [];
       }
 

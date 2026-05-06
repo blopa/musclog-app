@@ -103,7 +103,14 @@ import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
 
 function computeMealScaleFactor(
-  meal: { resolvedNutritionBasis: 'per_recipe' | 'per_serving' | 'per_gram'; recipeServingsCount?: number; servingGrams?: number } | null | undefined,
+  meal:
+    | {
+        resolvedNutritionBasis: 'per_recipe' | 'per_serving' | 'per_gram';
+        recipeServingsCount?: number;
+        servingGrams?: number;
+      }
+    | null
+    | undefined,
   mealAmountGrams: number,
   effectiveMealAmountGrams: number,
   totalMealGrams: number
@@ -112,17 +119,19 @@ function computeMealScaleFactor(
     return 1;
   }
 
+  const clamped = Math.max(0.01, mealAmountGrams);
+
   if (meal.resolvedNutritionBasis === 'per_serving') {
-    return Math.max(0.01, mealAmountGrams) / Math.max(1, meal.recipeServingsCount ?? 1);
+    return clamped / Math.max(1, meal.recipeServingsCount ?? 1);
   }
 
   if (meal.resolvedNutritionBasis === 'per_gram') {
     return totalMealGrams > 0
-      ? (Math.max(0.01, mealAmountGrams) * Math.max(1, meal.servingGrams ?? 1)) / totalMealGrams
+      ? (clamped * Math.max(1, meal.servingGrams ?? 1)) / totalMealGrams
       : 1;
   }
 
-  return totalMealGrams > 0 ? effectiveMealAmountGrams / totalMealGrams : 1;
+  return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
 }
 
 function areCoreMacrosEffectivelyZero(data: {
@@ -1410,42 +1419,60 @@ export function FoodMealDetailsModal({
   }, [productFromSearch, productDetails]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const loadServingUnit = async () => {
       if (
         meal?.resolvedNutritionBasis === 'per_serving' ||
         meal?.resolvedNutritionBasis === 'per_gram'
       ) {
-        setServingUnitLabel(meal.defaultPortionName || t('food.foodDetails.serving'));
+        if (!cancelled) {
+          setServingUnitLabel(meal.defaultPortionName || t('food.foodDetails.serving'));
+        }
+
         return;
       }
 
       if (foodLog?.snapshotBasis === 'per_serving') {
         try {
           const portion = foodLog.portionId ? await foodLog.portion : null;
-          setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
-          return;
+          if (!cancelled) {
+            setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
+          }
         } catch {
-          setServingUnitLabel(t('food.foodDetails.serving'));
-          return;
+          if (!cancelled) {
+            setServingUnitLabel(t('food.foodDetails.serving'));
+          }
         }
+
+        return;
       }
 
       const targetFood = food || localFood;
       if (targetFood?.resolvedNutritionBasis === 'per_serving') {
         try {
           const portion = await targetFood.getDefaultPortionAsync();
-          setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
-          return;
+          if (!cancelled) {
+            setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
+          }
         } catch {
-          setServingUnitLabel(t('food.foodDetails.serving'));
-          return;
+          if (!cancelled) {
+            setServingUnitLabel(t('food.foodDetails.serving'));
+          }
         }
+
+        return;
       }
 
-      setServingUnitLabel(getMassUnitLabel(units));
+      if (!cancelled) {
+        setServingUnitLabel(getMassUnitLabel(units));
+      }
     };
 
     loadServingUnit();
+    return () => {
+      cancelled = true;
+    };
   }, [meal, foodLog, food, localFood, t, units]);
 
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
@@ -1597,14 +1624,17 @@ export function FoodMealDetailsModal({
         try {
           const dateTimestamp = localDayStartMs(selectedDate);
 
-          await Promise.all(
-            [
-              foodLog.updateAmount(servingSize),
-              foodLog.updateMealType(selectedMeal),
-              foodLog.updateDate(dateTimestamp),
-              resolvedFoodServingMode ? Promise.resolve() : foodLog.updatePortion(undefined),
-            ].filter(Boolean)
-          );
+          const updates: Promise<unknown>[] = [
+            foodLog.updateAmount(servingSize),
+            foodLog.updateMealType(selectedMeal),
+            foodLog.updateDate(dateTimestamp),
+          ];
+
+          if (!resolvedFoodServingMode) {
+            updates.push(foodLog.updatePortion(undefined));
+          }
+
+          await Promise.all(updates);
 
           // Call callback if provided
           onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });

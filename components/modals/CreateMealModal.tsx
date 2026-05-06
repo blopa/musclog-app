@@ -238,8 +238,8 @@ export function CreateMealModal({
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
     if (visible && initialFoods && initialFoods.length > 0 && !meal) {
-      const newIngredients: Ingredient[] = initialFoods.map((item: { food: Food; amount: number }) =>
-        buildIngredientFromFood(item.food, item.amount, t)
+      const newIngredients: Ingredient[] = initialFoods.map(
+        (item: { food: Food; amount: number }) => buildIngredientFromFood(item.food, item.amount, t)
       );
       setIngredients(newIngredients);
     }
