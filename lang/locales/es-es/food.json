@@ -229,7 +229,7 @@
         "description": "Busca en nuestra base de datos de más de 2 millones de artículos"
       },
       "createCustomFood": "Crear Alimento Personalizado",
-      "trackCustomMeal": "Registrar Comida Personalizada",
+      "trackCustomMeal": "Registrar Comida",
       "quickTrackMeal": "Registro Rápido de Comida",
       "quickTrackMealDescription": "Construye una comida, regístrala ahora. Opcionalmente guárdala en Mis Comidas.",
       "trackFromSaved": "Registrar desde Guardados para Luego",

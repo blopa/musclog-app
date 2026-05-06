@@ -158,6 +158,26 @@ export function AddFoodModal({
               </Text>
             </View>
             <View className="gap-3">
+              <TrackingMethodButton
+                icon={Search}
+                title={t('food.addFoodModal.searchFood.title')}
+                description={t('food.addFoodModal.searchFood.description')}
+                iconBgColor={theme.colors.background.secondaryDark}
+                onPress={() => {
+                  onSearchFoodPress?.();
+                  onClose();
+                }}
+              />
+              <TrackingMethodButton
+                icon={ScanLine}
+                title={t('food.addFoodModal.scanBarcode.title')}
+                description={t('food.addFoodModal.scanBarcode.description')}
+                iconBgColor={theme.colors.background.secondaryDark}
+                onPress={() => {
+                  onScanBarcodePress?.();
+                  onClose();
+                }}
+              />
               {isAiEnabled ? (
                 <TrackingMethodButton
                   icon={Sparkles}
@@ -166,7 +186,7 @@ export function AddFoodModal({
                   iconGradient={
                     [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
                   }
-                  badge={t('food.addFoodModal.aiCamera.badge')}
+                  // badge={t('food.addFoodModal.aiCamera.badge')}
                   highlighted={true}
                   onPress={() => {
                     onAiCameraPress?.();
@@ -181,26 +201,6 @@ export function AddFoodModal({
                 iconBgColor={theme.colors.status.purple10}
                 onPress={() => {
                   onQuickTrackMealPress?.();
-                  onClose();
-                }}
-              />
-              <TrackingMethodButton
-                icon={ScanLine}
-                title={t('food.addFoodModal.scanBarcode.title')}
-                description={t('food.addFoodModal.scanBarcode.description')}
-                iconBgColor={theme.colors.background.secondaryDark}
-                onPress={() => {
-                  onScanBarcodePress?.();
-                  onClose();
-                }}
-              />
-              <TrackingMethodButton
-                icon={Search}
-                title={t('food.addFoodModal.searchFood.title')}
-                description={t('food.addFoodModal.searchFood.description')}
-                iconBgColor={theme.colors.background.secondaryDark}
-                onPress={() => {
-                  onSearchFoodPress?.();
                   onClose();
                 }}
               />

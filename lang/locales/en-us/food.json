@@ -229,7 +229,7 @@
         "description": "Search our database of 2M+ items"
       },
       "createCustomFood": "Create Custom Food",
-      "trackCustomMeal": "Track Custom Meal",
+      "trackCustomMeal": "Track Meal",
       "quickTrackMeal": "Quick Track Meal",
       "quickTrackMealDescription": "Build a meal, track it now. Optionally save to My Meals.",
       "trackFromSaved": "Track from Saved for Later",
