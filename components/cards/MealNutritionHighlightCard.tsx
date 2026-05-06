@@ -260,7 +260,7 @@ export function MealNutritionHighlightCard({
                     {ingredient.name}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                    {formatRoundedDecimal(ingredient.grams, 2)}g
+                    {formatRoundedDecimal(ingredient.grams ?? 0, 2)}g
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-3">
@@ -272,7 +272,7 @@ export function MealNutritionHighlightCard({
                         intuitiveMode ? blurFilter(4) : undefined,
                       ]}
                     >
-                      P {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.protein, 2)}g
+                      P {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.protein ?? 0, 2)}g
                     </Text>
                     <Text
                       className="text-xs font-bold"
@@ -281,7 +281,7 @@ export function MealNutritionHighlightCard({
                         intuitiveMode ? blurFilter(4) : undefined,
                       ]}
                     >
-                      C {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.carbs, 2)}g
+                      C {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.carbs ?? 0, 2)}g
                     </Text>
                   </View>
                   <View className="items-end">
@@ -292,7 +292,7 @@ export function MealNutritionHighlightCard({
                         intuitiveMode ? blurFilter(4) : undefined,
                       ]}
                     >
-                      F {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.fat, 2)}g
+                      F {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.fat ?? 0, 2)}g
                     </Text>
                     <Text
                       className="text-xs font-medium"
@@ -301,7 +301,7 @@ export function MealNutritionHighlightCard({
                         intuitiveMode ? blurFilter(4) : undefined,
                       ]}
                     >
-                      {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal, 2)} kcal
+                      {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal ?? 0, 2)} kcal
                     </Text>
                   </View>
                 </View>

@@ -21,6 +21,7 @@ import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
 } from '@/components/cards/FoodNutritionSectionCard';
+import { MealIngredient } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import {
@@ -236,7 +237,7 @@ export function FoodMealDetailsModal({
     fat: number;
     fiber: number;
   } | null>(null);
-  const [mealIngredientLabels, setMealIngredientLabels] = useState<string[]>([]);
+  const [mealIngredientLabels, setMealIngredientLabels] = useState<MealIngredient[]>([]);
 
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
@@ -546,9 +547,12 @@ export function FoodMealDetailsModal({
         });
         if (mealWithFoods?.foods) {
           let rawGrams = 0;
-          const ingredientLabels: string[] = [];
+          const ingredientLabels: MealIngredient[] = [];
           for (const mf of mealWithFoods.foods) {
-            const gramWeight = await mf.getGramWeight();
+            const [gramWeight, nutrients] = await Promise.all([
+              mf.getGramWeight(),
+              mf.getNutrients(),
+            ]);
             rawGrams += gramWeight;
 
             let ingredientName = t('food.unknownFood');
@@ -561,13 +565,14 @@ export function FoodMealDetailsModal({
               console.warn('Error loading meal ingredient food:', error);
             }
 
-            const amountLabel =
-              gramWeight > 0
-                ? `${formatDisplayGrams(locale, units, gramWeight)} ${getMassUnitLabel(units)}`
-                : '';
-            ingredientLabels.push(
-              amountLabel ? `${ingredientName} (${amountLabel})` : ingredientName
-            );
+            ingredientLabels.push({
+              name: ingredientName,
+              grams: roundToDecimalPlaces(gramWeight),
+              kcal: roundToDecimalPlaces(nutrients.calories),
+              protein: roundToDecimalPlaces(nutrients.protein),
+              carbs: roundToDecimalPlaces(nutrients.carbs),
+              fat: roundToDecimalPlaces(nutrients.fat),
+            });
           }
           setMealIngredientLabels(ingredientLabels);
           // Use prepared weight as the portion reference when the user set it,
