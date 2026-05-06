@@ -593,7 +593,7 @@ export function FoodMealDetailsModal({
           const ingredientLabels: MealIngredient[] = [];
           for (const mf of mealWithFoods.foods) {
             const [gramWeight, nutrients] = await Promise.all([
-              mf.getGramWeight(),
+              mf.getReferenceGramWeight(),
               mf.getNutrients(),
             ]);
             rawGrams += gramWeight;

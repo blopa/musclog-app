@@ -104,13 +104,15 @@ type CreateMealModalProps = {
   initialMealType?: MealType;
 };
 
-function buildIngredientFromFood(food: Food, amount: number, t: TFunction): Ingredient {
+async function buildIngredientFromFood(food: Food, amount: number, t: TFunction): Promise<Ingredient> {
   if (food.resolvedNutritionBasis === 'per_serving') {
     const nutrients = food.getNutrientsForServingCount(amount);
+    const baseGrams = await food.getBaseGramWeight();
     return {
       foodId: food.id,
       name: food.name ?? t('meals.unknownFood'),
       amount,
+      referenceGrams: amount * baseGrams,
       calories: nutrients.calories,
       protein: nutrients.protein,
       carbs: nutrients.carbs,
@@ -131,6 +133,7 @@ function buildIngredientFromFood(food: Food, amount: number, t: TFunction): Ingr
     foodId: food.id,
     name: food.name ?? t('meals.unknownFood'),
     amount,
+    referenceGrams: amount,
     calories: food.calories * multiplier,
     protein: food.protein * multiplier,
     carbs: food.carbs * multiplier,
@@ -237,11 +240,33 @@ export function CreateMealModal({
 
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
-    if (visible && initialFoods && initialFoods.length > 0 && !meal) {
-      const newIngredients: Ingredient[] = initialFoods.map(
-        (item: { food: Food; amount: number }) => buildIngredientFromFood(item.food, item.amount, t)
-      );
-      setIngredients(newIngredients);
+    if (visible && !meal) {
+      if (!initialFoods || initialFoods.length === 0) {
+        setIngredients([]);
+        return;
+      }
+
+      let cancelled = false;
+
+      Promise.all(
+        initialFoods.map((item: { food: Food; amount: number }) =>
+          buildIngredientFromFood(item.food, item.amount, t)
+        )
+      )
+        .then((newIngredients) => {
+          if (!cancelled) {
+            setIngredients(newIngredients);
+          }
+        })
+        .catch((error) => {
+          handleError(error, 'CreateMealModal.prefillIngredients', {
+            showSnackbar: false,
+          });
+        });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [visible, initialFoods, meal, setIngredients, t]);
 
@@ -291,7 +316,7 @@ export function CreateMealModal({
 
   // Total meal weight in grams (sum of raw ingredients)
   const totalMealGrams = useMemo(
-    () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
+    () => ingredients.reduce((sum, ing) => sum + ing.referenceGrams, 0),
     [ingredients]
   );
 
@@ -632,13 +657,18 @@ export function CreateMealModal({
 
   const mealTypeOptions = useMemo(() => getMealTypeOptions(theme, t), [theme, t]);
 
-  const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
-    const newIngredients: Ingredient[] = selectedFoods.map((item) =>
-      buildIngredientFromFood(item.food, item.amount, t)
-    );
-
-    setIngredients((prev) => [...prev, ...newIngredients]);
-    setIsAddFoodVisible(false);
+  const handleAddFoods = async (selectedFoods: { food: Food; amount: number }[]) => {
+    try {
+      const newIngredients = await Promise.all(
+        selectedFoods.map((item) => buildIngredientFromFood(item.food, item.amount, t))
+      );
+      setIngredients((prev) => [...prev, ...newIngredients]);
+      setIsAddFoodVisible(false);
+    } catch (error) {
+      handleError(error, 'CreateMealModal.handleAddFoods', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    }
   };
 
   return (

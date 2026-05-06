@@ -9,7 +9,8 @@ export type Ingredient = {
   mealFoodId?: string; // present when loaded from an existing meal (edit mode)
   foodId: string;
   name: string;
-  amount: number; // in grams
+  amount: number; // base amount stored on the meal food row: grams or servings
+  referenceGrams: number; // gram-equivalent used for meal scaling math
   calories: number;
   protein: number;
   carbs: number;
@@ -53,6 +54,7 @@ export function useEditMealIngredients(meal: Meal | undefined) {
                 foodId: mf.foodId,
                 name: food?.name ?? t('food.unknownFood'),
                 amount: mf.amount,
+                referenceGrams: await mf.getReferenceGramWeight(),
                 calories: nutrients.calories,
                 protein: nutrients.protein,
                 carbs: nutrients.carbs,

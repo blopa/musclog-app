@@ -79,6 +79,21 @@ export default class MealFood extends Model {
     return this.amount;
   }
 
+  // Get a gram-equivalent for meal scaling/reference math.
+  async getReferenceGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        const baseGrams = await food.getBaseGramWeight();
+        return this.amount * baseGrams;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
+    return this.getGramWeight();
+  }
+
   // Get nutrients for this specific meal food entry
   async getNutrients(): Promise<{
     calories: number;
