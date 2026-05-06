@@ -144,6 +144,9 @@ export default function HomeScreen() {
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
+  const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
+    'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
+  >('all');
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
@@ -190,6 +193,7 @@ export default function HomeScreen() {
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
     setSelectedMealType(mealType);
     setIsAddFoodVisible(false);
+    setFoodSearchInitialTab('all');
     setIsFoodSearchVisible(true);
   }, []);
 
@@ -206,6 +210,7 @@ export default function HomeScreen() {
   const handleSearchFoodPress = useCallback(() => {
     setIsAddFoodVisible(false);
     setSelectedMealType('snack');
+    setFoodSearchInitialTab('all');
     setIsFoodSearchVisible(true);
   }, []);
 
@@ -215,8 +220,9 @@ export default function HomeScreen() {
   }, []);
 
   const handleTrackCustomMealPress = useCallback(() => {
-    setIsMyMealsVisible(true);
     setIsAddFoodVisible(false);
+    setFoodSearchInitialTab('meals');
+    setIsFoodSearchVisible(true);
   }, []);
 
   const handleSaveNutritionGoals = useCallback(
@@ -709,6 +715,7 @@ export default function HomeScreen() {
         visible={isFoodSearchVisible}
         onClose={handleCloseFoodSearch}
         mealType={selectedMealType}
+        initialTab={foodSearchInitialTab}
         onCreatePress={handleFoodSearchCreatePress}
         onBarcodeScanPress={handleFoodSearchBarcodePress}
         isAiEnabled={isAiConfigured}

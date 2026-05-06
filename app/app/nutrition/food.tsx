@@ -121,6 +121,9 @@ export default function FoodScreen() {
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
+    'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
+  >('all');
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
@@ -1792,6 +1795,7 @@ export default function FoodScreen() {
         onMealTypeSelect={(mealType) => {
           setSelectedMealType(mealType);
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onAiCameraPress={() => {
@@ -1814,6 +1818,7 @@ export default function FoodScreen() {
         }}
         onSearchFoodPress={() => {
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onCreateCustomFoodPress={() => {
@@ -1822,8 +1827,9 @@ export default function FoodScreen() {
           setIsCreateCustomFoodVisible(true);
         }}
         onTrackCustomMealPress={() => {
-          setIsMyMealsModalVisible(true);
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('meals');
+          setIsFoodSearchModalVisible(true);
         }}
         onQuickTrackMealPress={() => {
           setIsQuickTrackMealModalVisible(true);
@@ -1882,6 +1888,7 @@ export default function FoodScreen() {
         onClose={() => setIsFoodSearchModalVisible(false)}
         mealType={selectedMealType}
         logDate={selectedDate}
+        initialTab={foodSearchInitialTab}
         onFoodTracked={refresh}
         onCreatePress={() => {
           // Open CreateCustomFoodModal

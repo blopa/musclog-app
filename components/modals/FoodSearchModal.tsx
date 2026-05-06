@@ -103,6 +103,7 @@ type FoodSearchModalProps = {
   mealType?: MealType; // e.g., "Breakfast", "Lunch", etc. If not provided, inferred from current hour
   /** Date to use when logging food (e.g. the date currently selected on the food screen). */
   logDate?: Date;
+  initialTab?: 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
@@ -328,6 +329,7 @@ export function FoodSearchModal({
   onClose,
   mealType,
   logDate,
+  initialTab = 'all',
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
@@ -854,6 +856,14 @@ export function FoodSearchModal({
     filteredMealCardsData.length,
     mealsTotalCount,
   ]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    setActiveFilter(initialTab);
+  }, [initialTab, visible]);
 
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {

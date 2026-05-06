@@ -136,6 +136,9 @@ export default function SmartCameraModal({
 
   const [aiContext, setAiContext] = useState<{ description: string; tags: string[] } | null>(null);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
+    'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
+  >('all');
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
@@ -615,7 +618,8 @@ export default function SmartCameraModal({
 
   const handleTrackCustomMeal = useCallback(() => {
     setIsAddFoodModalVisible(false);
-    setIsLogMealModalVisible(true);
+    setFoodSearchInitialTab('meals');
+    setIsFoodSearchModalVisible(true);
   }, []);
 
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -678,6 +682,7 @@ export default function SmartCameraModal({
       onOpenFoodSearch(selectedMealType);
     } else {
       // Fallback to internal modal (for backward compatibility, though not recommended)
+      setFoodSearchInitialTab('all');
       setIsFoodSearchModalVisible(true);
     }
   }, [onOpenFoodSearch, selectedMealType]);
@@ -1243,6 +1248,7 @@ export default function SmartCameraModal({
             visible={isFoodSearchModalVisible}
             onClose={() => setIsFoodSearchModalVisible(false)}
             mealType={selectedMealType}
+            initialTab={foodSearchInitialTab}
             onBarcodeScanPress={handleScanBarcodePress}
             onCreatePress={handleCreateCustomFood}
             isAiEnabled={isAiEnabled}
