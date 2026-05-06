@@ -16,6 +16,7 @@ import { ActivityIndicator, Pressable, Switch, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
@@ -26,7 +27,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
-import { MealService, NutritionService } from '@/database/services';
+import { FoodPortionService, MealService, NutritionService } from '@/database/services';
 import { type Ingredient, useEditMealIngredients } from '@/hooks/useEditMealIngredients';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -139,6 +140,12 @@ export function CreateMealModal({
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
   const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);
+  const [nutritionBasis, setNutritionBasis] = useState<'per_recipe' | 'per_serving' | 'per_gram'>(
+    'per_recipe'
+  );
+  const [recipeServingsCount, setRecipeServingsCount] = useState(1);
+  const [defaultPortionName, setDefaultPortionName] = useState('');
+  const [servingGrams, setServingGrams] = useState(100);
 
   const isQuickTrack = mode === 'quickTrack';
 
@@ -173,6 +180,10 @@ export function CreateMealModal({
     setMealName(meal?.name ?? '');
     setMealDescription(meal?.description ?? '');
     setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
+    setNutritionBasis(meal?.nutritionBasis ?? 'per_recipe');
+    setRecipeServingsCount(meal?.recipeServingsCount ?? 1);
+    setDefaultPortionName(meal?.defaultPortionName ?? '');
+    setServingGrams(meal?.servingGrams ?? 100);
   }, [meal]);
 
   useEffect(() => {
@@ -264,37 +275,73 @@ export function CreateMealModal({
   // Reference grams for scaling: prepared weight if set, otherwise raw ingredient sum
   const referenceMealGrams = preparedWeightGrams ?? totalMealGrams;
 
+  useEffect(() => {
+    if (!isQuickTrack) {
+      return;
+    }
+
+    if (nutritionBasis === 'per_recipe') {
+      setMealAmountGrams(referenceMealGrams);
+      return;
+    }
+
+    setMealAmountGrams(1);
+  }, [isQuickTrack, nutritionBasis, referenceMealGrams]);
+
+  const quickTrackScale = useMemo(() => {
+    if (!isQuickTrack) {
+      return 1;
+    }
+
+    if (nutritionBasis === 'per_serving') {
+      return Math.max(0.01, mealAmountGrams) / Math.max(1, recipeServingsCount);
+    }
+
+    if (nutritionBasis === 'per_gram') {
+      return referenceMealGrams > 0
+        ? (Math.max(0.01, mealAmountGrams) * Math.max(1, servingGrams)) / referenceMealGrams
+        : 1;
+    }
+
+    return referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
+  }, [
+    isQuickTrack,
+    mealAmountGrams,
+    nutritionBasis,
+    recipeServingsCount,
+    referenceMealGrams,
+    servingGrams,
+  ]);
+
   const displayedMealTotals = useMemo(() => {
-    if (isQuickTrack && referenceMealGrams > 0) {
-      const scale = mealAmountGrams / referenceMealGrams;
+    if (isQuickTrack) {
       return {
-        calories: totalMacros.calories * scale,
-        protein: totalMacros.protein * scale,
-        carbs: totalMacros.carbs * scale,
-        fat: totalMacros.fat * scale,
+        calories: totalMacros.calories * quickTrackScale,
+        protein: totalMacros.protein * quickTrackScale,
+        carbs: totalMacros.carbs * quickTrackScale,
+        fat: totalMacros.fat * quickTrackScale,
       };
     }
 
     return totalMacros;
-  }, [isQuickTrack, mealAmountGrams, referenceMealGrams, totalMacros]);
+  }, [isQuickTrack, quickTrackScale, totalMacros]);
 
   const displayedAdditionalNutrition = useMemo(() => {
-    if (isQuickTrack && referenceMealGrams > 0) {
-      const scale = mealAmountGrams / referenceMealGrams;
+    if (isQuickTrack) {
       return {
-        fiber: totalAdditionalNutrition.fiber * scale,
-        sugar: totalAdditionalNutrition.sugar * scale,
-        saturatedFat: totalAdditionalNutrition.saturatedFat * scale,
-        sodium: totalAdditionalNutrition.sodium * scale,
-        alcohol: totalAdditionalNutrition.alcohol * scale,
-        potassium: totalAdditionalNutrition.potassium * scale,
-        magnesium: totalAdditionalNutrition.magnesium * scale,
-        zinc: totalAdditionalNutrition.zinc * scale,
+        fiber: totalAdditionalNutrition.fiber * quickTrackScale,
+        sugar: totalAdditionalNutrition.sugar * quickTrackScale,
+        saturatedFat: totalAdditionalNutrition.saturatedFat * quickTrackScale,
+        sodium: totalAdditionalNutrition.sodium * quickTrackScale,
+        alcohol: totalAdditionalNutrition.alcohol * quickTrackScale,
+        potassium: totalAdditionalNutrition.potassium * quickTrackScale,
+        magnesium: totalAdditionalNutrition.magnesium * quickTrackScale,
+        zinc: totalAdditionalNutrition.zinc * quickTrackScale,
       };
     }
 
     return totalAdditionalNutrition;
-  }, [isQuickTrack, mealAmountGrams, referenceMealGrams, totalAdditionalNutrition]);
+  }, [isQuickTrack, quickTrackScale, totalAdditionalNutrition]);
 
   const mealNutritionCardFood = useMemo(
     () => ({
@@ -308,12 +355,6 @@ export function CreateMealModal({
     }),
     [displayedMealTotals, ingredients.length, mealDescription, mealName, t]
   );
-
-  useEffect(() => {
-    if (isQuickTrack) {
-      setMealAmountGrams(referenceMealGrams);
-    }
-  }, [isQuickTrack, referenceMealGrams]);
 
   const handleRemoveIngredient = (foodId: string) => {
     setIngredientToRemoveId(foodId);
@@ -352,6 +393,40 @@ export function CreateMealModal({
     }
   };
 
+  const syncMealPortion = async (targetMeal: Meal) => {
+    const trimmedPortionName = defaultPortionName.trim();
+    if (!trimmedPortionName) {
+      return;
+    }
+
+    if (nutritionBasis === 'per_serving') {
+      const portion = await FoodPortionService.createPrivateNamedPortion(
+        trimmedPortionName,
+        'meal',
+        targetMeal.id
+      );
+      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
+      return;
+    }
+
+    if (nutritionBasis === 'per_gram') {
+      const portion = await FoodPortionService.createFoodPortion(
+        trimmedPortionName,
+        Math.max(1, servingGrams),
+        undefined,
+        'custom',
+        {
+          kind: 'mass',
+          scope: 'private',
+          ownerType: 'meal',
+          ownerId: targetMeal.id,
+          dedupe: false,
+        }
+      );
+      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
+    }
+  };
+
   const handleTrack = async () => {
     if (ingredients.length === 0) {
       showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'));
@@ -365,19 +440,29 @@ export function CreateMealModal({
     setIsSaving(true);
     try {
       if (saveToMyMeals) {
-        await MealService.createMealFromFoods(
+        const savedMeal = await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({ foodId: ing.foodId, amount: ing.amount })),
-          mealDescription.trim()
+          mealDescription.trim(),
+          false,
+          undefined,
+          {
+            nutritionBasis,
+            recipeServingsCount,
+            defaultPortionName:
+              nutritionBasis === 'per_recipe' ? undefined : defaultPortionName.trim(),
+            servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : undefined,
+          }
         );
+        await syncMealPortion(savedMeal);
       }
-      const scale = referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
+
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
           selectedDate,
           selectedMealType,
-          ing.amount * scale,
+          ing.amount * quickTrackScale,
           undefined
         );
       }
@@ -414,6 +499,10 @@ export function CreateMealModal({
           name: mealName.trim(),
           description: mealDescription.trim(),
           preparedWeightGrams: preparedWeightGrams || null,
+          nutritionBasis,
+          recipeServingsCount,
+          defaultPortionName: nutritionBasis === 'per_recipe' ? null : defaultPortionName.trim(),
+          servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : null,
         });
         for (const mealFoodId of removedMealFoodIdsRef.current) {
           await MealService.removeFoodFromMeal(mealFoodId);
@@ -428,9 +517,11 @@ export function CreateMealModal({
           ingredients.length,
           'CreateMealModal.handleSave.edit'
         );
+
+        await syncMealPortion(meal);
       } else {
         // Create mode
-        await MealService.createMealFromFoods(
+        const savedMeal = await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({
             foodId: ing.foodId,
@@ -438,8 +529,17 @@ export function CreateMealModal({
           })),
           mealDescription.trim(),
           false,
-          preparedWeightGrams || undefined
+          preparedWeightGrams || undefined,
+          {
+            nutritionBasis,
+            recipeServingsCount,
+            defaultPortionName:
+              nutritionBasis === 'per_recipe' ? undefined : defaultPortionName.trim(),
+            servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : undefined,
+          }
         );
+
+        await syncMealPortion(savedMeal);
       }
 
       // Callback to refresh meals list
@@ -552,7 +652,10 @@ export function CreateMealModal({
             icon={getSaveIcon()}
             onPress={isQuickTrack ? handleTrack : handleSave}
             disabled={
-              isSaving || (isQuickTrack && (ingredients.length === 0 || mealAmountGrams < 1))
+              isSaving ||
+              (isQuickTrack &&
+                (ingredients.length === 0 ||
+                  mealAmountGrams < (nutritionBasis === 'per_recipe' ? 1 : 0.5)))
             }
           />
           {isSaving ? (
@@ -603,6 +706,70 @@ export function CreateMealModal({
           intuitiveMode={intuitiveEatingMode}
           showName={false}
         />
+
+        <View className="mb-6 mt-6 gap-4">
+          <Text className="text-sm font-medium text-text-secondary">
+            {t('food.foodDetails.serving')}
+          </Text>
+          <FilterTabs
+            tabs={[
+              {
+                id: 'per_recipe',
+                label: t('food.foodDetails.perRecipe'),
+              },
+              {
+                id: 'per_serving',
+                label: t('food.foodDetails.perServing'),
+              },
+              {
+                id: 'per_gram',
+                label: t('food.foodDetails.byGrams'),
+              },
+            ]}
+            activeTab={nutritionBasis}
+            onTabChange={(id) => setNutritionBasis(id as 'per_recipe' | 'per_serving' | 'per_gram')}
+            showContainer={false}
+          />
+          {nutritionBasis === 'per_serving' || nutritionBasis === 'per_gram' ? (
+            <>
+              <TextInput
+                label={t('food.foodDetails.servingName')}
+                value={defaultPortionName}
+                onChangeText={setDefaultPortionName}
+                placeholder={t('food.foodDetails.servingNamePlaceholder')}
+              />
+              {nutritionBasis === 'per_serving' ? (
+                <StepperInput
+                  label={t('food.foodDetails.recipeServings')}
+                  value={recipeServingsCount}
+                  maxFractionDigits={0}
+                  onIncrement={() => setRecipeServingsCount((prev) => prev + 1)}
+                  onDecrement={() => setRecipeServingsCount((prev) => Math.max(1, prev - 1))}
+                  onChangeValue={(value) => setRecipeServingsCount(Math.max(1, Math.round(value)))}
+                />
+              ) : (
+                <StepperInput
+                  label={t('food.foodDetails.servingWeight', {
+                    unit: massUnit,
+                  })}
+                  value={gramsToDisplay(servingGrams, units)}
+                  onIncrement={() =>
+                    setServingGrams((prev) => Math.max(1, Math.round(prev + stepAmount)))
+                  }
+                  onDecrement={() =>
+                    setServingGrams((prev) => Math.max(1, Math.round(prev - stepAmount)))
+                  }
+                  onChangeValue={(displayVal) =>
+                    setServingGrams(Math.max(1, Math.round(displayToGrams(displayVal, units))))
+                  }
+                  unit={massUnit}
+                  step={stepDisplay}
+                  maxFractionDigits={units === 'imperial' ? 1 : 0}
+                />
+              )}
+            </>
+          ) : null}
+        </View>
 
         {/* Ingredients Section */}
         <View className="mb-6 mt-6">
@@ -780,20 +947,33 @@ export function CreateMealModal({
         {isQuickTrack ? (
           <>
             <View style={{ marginBottom: theme.spacing.margin.xl }}>
-              <ServingSizeSelector
-                value={mealAmountGrams}
-                onChange={(v) => setMealAmountGrams(Math.round(v))}
-                quickSizes={
-                  referenceMealGrams > 0
-                    ? [
-                        { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
-                        { label: '1×', value: referenceMealGrams },
-                        { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
-                        { label: '2×', value: referenceMealGrams * 2 },
-                      ]
-                    : []
-                }
-              />
+              {nutritionBasis === 'per_serving' || nutritionBasis === 'per_gram' ? (
+                <StepperInput
+                  label={t('food.foodDetails.servings')}
+                  value={mealAmountGrams}
+                  step={0.5}
+                  maxFractionDigits={2}
+                  onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
+                  onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
+                  onChangeValue={setMealAmountGrams}
+                  unit={defaultPortionName.trim() || t('food.foodDetails.serving')}
+                />
+              ) : (
+                <ServingSizeSelector
+                  value={mealAmountGrams}
+                  onChange={(v) => setMealAmountGrams(Math.round(v))}
+                  quickSizes={
+                    referenceMealGrams > 0
+                      ? [
+                          { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
+                          { label: '1×', value: referenceMealGrams },
+                          { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
+                          { label: '2×', value: referenceMealGrams * 2 },
+                        ]
+                      : []
+                  }
+                />
+              )}
             </View>
             <View className="mb-6">
               <DatePickerInput

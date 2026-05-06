@@ -50,6 +50,7 @@ type FoodNutritionSectionProps = {
   onEditPress?: () => void;
   nutritionalData: NutritionalData;
   servingSize: number;
+  servingBasis?: 'per_100g' | 'per_serving';
   isLoadingDetails: boolean;
   onTryAnotherSource?: () => void;
   isRefetchingSource?: boolean;
@@ -71,6 +72,7 @@ export function FoodNutritionSectionCard({
   onEditPress,
   nutritionalData,
   servingSize,
+  servingBasis = 'per_100g',
   isLoadingDetails,
   showIncompleteWarning = false,
   onTryAnotherSource,
@@ -86,7 +88,7 @@ export function FoodNutritionSectionCard({
   const { formatRoundedDecimal } = useFormatAppNumber();
   const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
 
-  const scaleFactor = servingSize / 100;
+  const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
 
   const showAdditionalNutrition =
     mode !== 'meal' &&

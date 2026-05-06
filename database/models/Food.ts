@@ -52,6 +52,8 @@ export interface MicrosData {
   [key: string]: number | undefined;
 }
 
+export type FoodNutritionBasis = 'per_100g' | 'per_serving';
+
 export default class Food extends Model {
   static table = 'foods';
 
@@ -133,6 +135,7 @@ export default class Food extends Model {
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood', 'foundation'
   @field('image_url') imageUrl?: string; // URL to product image
+  @field('nutrition_basis') nutritionBasis?: FoodNutritionBasis;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -204,6 +207,10 @@ export default class Food extends Model {
     return portion?.gramWeight ?? 100;
   }
 
+  get resolvedNutritionBasis(): FoodNutritionBasis {
+    return this.nutritionBasis === 'per_serving' ? 'per_serving' : 'per_100g';
+  }
+
   getCaloriesPer100g(): number {
     // Macros are stored as-is; we assume they refer to a standard 100g serving
     // New code should use portion-based calculations instead
@@ -252,6 +259,31 @@ export default class Food extends Model {
             Object.entries(this.micros).map(([key, value]) => [
               key,
               value ? value * gramMultiplier : undefined,
+            ])
+          )
+        : undefined,
+    };
+  }
+
+  getNutrientsForServingCount(servings: number): {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    micros?: MicrosData;
+  } {
+    return {
+      calories: this.calories * servings,
+      protein: this.protein * servings,
+      carbs: this.carbs * servings,
+      fat: this.fat * servings,
+      fiber: this.fiber * servings,
+      micros: this.micros
+        ? Object.fromEntries(
+            Object.entries(this.micros).map(([key, value]) => [
+              key,
+              value ? value * servings : undefined,
             ])
           )
         : undefined,

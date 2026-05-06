@@ -55,6 +55,15 @@ export default class MealFood extends Model {
 
   // Get the actual gram weight for this meal food entry
   async getGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        return 0;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
     if (this.portionId) {
       try {
         const portion = await this.portion;
@@ -109,6 +118,10 @@ export default class MealFood extends Model {
         fat: 0,
         fiber: 0,
       };
+    }
+
+    if (food.resolvedNutritionBasis === 'per_serving') {
+      return food.getNutrientsForServingCount(this.amount);
     }
 
     if (this.portionId) {

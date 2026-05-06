@@ -210,6 +210,7 @@ export const schema = appSchema({
         { name: 'is_favorite', type: 'boolean' }, // Quick access
         { name: 'source', type: 'string', isOptional: true }, // 'user', 'usda', 'ai', 'openfood', 'foundation'
         { name: 'image_url', type: 'string', isOptional: true }, // URL to product image
+        { name: 'nutrition_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -223,9 +224,13 @@ export const schema = appSchema({
       name: 'food_portions',
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
-        { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        { name: 'gram_weight', type: 'number', isOptional: true }, // How many grams is this portion?
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
-        { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
+        { name: 'source', type: 'string', isOptional: true }, // 'basic' or 'custom'
+        { name: 'kind', type: 'string', isOptional: true }, // 'mass' or 'named'
+        { name: 'scope', type: 'string', isOptional: true }, // 'global' or 'private'
+        { name: 'owner_type', type: 'string', isOptional: true }, // 'food' | 'meal'
+        { name: 'owner_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -258,6 +263,22 @@ export const schema = appSchema({
         { name: 'image_url', type: 'string', isOptional: true }, // URL to meal image
         { name: 'is_favorite', type: 'boolean' },
         { name: 'prepared_weight_grams', type: 'number', isOptional: true },
+        { name: 'nutrition_basis', type: 'string', isOptional: true }, // 'per_recipe' | 'per_serving' | 'per_gram'
+        { name: 'recipe_servings_count', type: 'number', isOptional: true },
+        { name: 'default_portion_name', type: 'string', isOptional: true },
+        { name: 'serving_grams', type: 'number', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    tableSchema({
+      name: 'meal_food_portions',
+      columns: [
+        { name: 'meal_id', type: 'string', isIndexed: true },
+        { name: 'food_portion_id', type: 'string', isIndexed: true },
+        { name: 'is_default', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -304,6 +325,7 @@ export const schema = appSchema({
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
+        { name: 'snapshot_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
         { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal)
         { name: 'logged_meal_name', type: 'string', isOptional: true }, // Display name for the meal group

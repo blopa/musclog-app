@@ -33,7 +33,11 @@ export class FoodService {
     externalId?: string
   ): Promise<Food> {
     const defaultPortion =
-      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+      customPortion ??
+      (await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+        kind: 'mass',
+        scope: 'global',
+      }));
 
     return await database.write(async () => {
       const now = Date.now();
@@ -67,6 +71,7 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'openfood';
+        food.nutritionBasis = 'per_100g';
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -105,7 +110,11 @@ export class FoodService {
     externalId?: string
   ): Promise<Food> {
     const defaultPortion =
-      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+      customPortion ??
+      (await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+        kind: 'mass',
+        scope: 'global',
+      }));
 
     return await database.write(async () => {
       const now = Date.now();
@@ -138,6 +147,7 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'usda';
+        food.nutritionBasis = 'per_100g';
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -174,7 +184,13 @@ export class FoodService {
     },
     barcode?: string
   ): Promise<Food> {
-    const defaultPortion = await FoodPortionService.createFoodPortion('100g', 100);
+    const defaultPortion = await FoodPortionService.createFoodPortion(
+      '100g',
+      100,
+      'scale',
+      'basic',
+      { kind: 'mass', scope: 'global' }
+    );
 
     return await database.write(async () => {
       const now = Date.now();
@@ -206,6 +222,7 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'musclog';
+        food.nutritionBasis = 'per_100g';
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -240,8 +257,15 @@ export class FoodService {
     brand?: string,
     servingAmount: number = 100,
     servingUnit: string = 'g',
-    description?: string
+    description?: string,
+    options?: {
+      nutritionBasis?: 'per_100g' | 'per_serving';
+      servingName?: string;
+      selectedPortionIds?: string[];
+    }
   ): Promise<Food> {
+    const nutritionBasis = options?.nutritionBasis ?? 'per_100g';
+
     // Convert serving amount to grams
     let gramWeight = servingAmount;
     if (servingUnit === 'oz') {
@@ -251,9 +275,6 @@ export class FoodService {
       gramWeight = servingAmount;
     }
     // For 'g' or other units, assume gramWeight = servingAmount
-
-    const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
-    const portion = await FoodPortionService.createFoodPortion(portionName, gramWeight);
 
     return await database.write(async () => {
       const now = Date.now();
@@ -283,18 +304,50 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'user';
+        food.nutritionBasis = nutritionBasis;
         food.createdAt = now;
         food.updatedAt = now;
       });
 
-      // Link food to the portion as default
+      let defaultPortion: FoodPortion;
+      if (nutritionBasis === 'per_serving') {
+        defaultPortion = await FoodPortionService.createPrivateNamedPortion(
+          options?.servingName?.trim() || '1 serving',
+          'food',
+          food.id
+        );
+      } else {
+        const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
+        defaultPortion = await FoodPortionService.createFoodPortion(
+          portionName,
+          gramWeight,
+          undefined,
+          'basic',
+          { kind: 'mass', scope: 'global' }
+        );
+      }
+
       await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
         ffp.foodId = food.id;
-        ffp.foodPortionId = portion.id;
+        ffp.foodPortionId = defaultPortion.id;
         ffp.isDefault = true;
         ffp.createdAt = now;
         ffp.updatedAt = now;
       });
+
+      for (const portionId of options?.selectedPortionIds ?? []) {
+        if (portionId === defaultPortion.id) {
+          continue;
+        }
+
+        await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+          ffp.foodId = food.id;
+          ffp.foodPortionId = portionId;
+          ffp.isDefault = false;
+          ffp.createdAt = now;
+          ffp.updatedAt = now;
+        });
+      }
 
       return food;
     });

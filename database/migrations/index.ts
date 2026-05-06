@@ -13,6 +13,7 @@ import migrationV11 from '@/database/migrations/2026/04/migration-v11';
 import migrationV12 from '@/database/migrations/2026/04/migration-v12';
 import migrationV13 from '@/database/migrations/2026/04/migration-v13';
 import migrationV14 from '@/database/migrations/2026/04/migration-v14';
+import migrationV15 from '@/database/migrations/2026/04/migration-v15';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -70,5 +71,7 @@ export const migrations = schemaMigrations({
     migrationV13,
     // Version 14: Add is_dynamic column to nutrition_goals
     migrationV14,
+    // Version 15: Add private/custom named servings for foods and meals
+    migrationV15,
   ],
 });

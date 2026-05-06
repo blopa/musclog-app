@@ -34,6 +34,12 @@ function isFarEnough(candidateGrams: number, existingGrams: number[]): boolean {
   });
 }
 
+function hasGramWeight<T extends { gramWeight?: number }>(
+  item: T
+): item is T & { gramWeight: number } {
+  return item.gramWeight != null;
+}
+
 export function ServingSizeSelector({
   value,
   onChange,
@@ -61,7 +67,7 @@ export function ServingSizeSelector({
 
   // Transform database portions to quick sizes format (label in display unit, value stays in grams)
   const databaseQuickSizes = useMemo(() => {
-    return portions.map((portion) => {
+    return portions.filter(hasGramWeight).map((portion) => {
       const display = gramsToDisplay(portion.gramWeight, units);
       const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
       const valueLabel =
@@ -80,7 +86,7 @@ export function ServingSizeSelector({
 
   const commonPortionQuickSizes = useMemo(() => {
     return COMMON_GRAM_WEIGHTS.flatMap((gw) => {
-      const match = allGlobalPortions.find((p) => p.gramWeight === gw);
+      const match = allGlobalPortions.filter(hasGramWeight).find((p) => p.gramWeight === gw);
       if (!match) {
         return [];
       }

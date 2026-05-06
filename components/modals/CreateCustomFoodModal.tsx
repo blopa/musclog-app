@@ -35,6 +35,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
@@ -142,6 +143,8 @@ export default function CreateCustomFoodModal({
   const [microOpen, setMicroOpen] = useState(false);
   const [showPortionPicker, setShowPortionPicker] = useState(false);
   const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
+  const [nutritionBasis, setNutritionBasis] = useState<'per_100g' | 'per_serving'>('per_100g');
+  const [servingName, setServingName] = useState('');
 
   useEffect(() => {
     if (!visible) {
@@ -205,14 +208,12 @@ export default function CreateCustomFoodModal({
 
         // Determine serving amount/unit based on selected portion
         let servingAmount = 100;
-
-        // TODO: shouldn't we check if user uses metric or imperial?
         let servingUnit = 'g';
 
-        if (selectedPortionIds.length > 0) {
+        if (nutritionBasis === 'per_100g' && selectedPortionIds.length > 0) {
           // Use the first selected portion as the default serving size
           const selectedPortion = portions.find((p) => selectedPortionIds.includes(p.id));
-          if (selectedPortion) {
+          if (selectedPortion?.gramWeight != null) {
             servingAmount = selectedPortion.gramWeight;
             servingUnit = selectedPortion.name.toLowerCase();
           }
@@ -224,7 +225,12 @@ export default function CreateCustomFoodModal({
           brand || undefined,
           servingAmount,
           servingUnit,
-          description || undefined
+          description || undefined,
+          {
+            nutritionBasis,
+            servingName: servingName.trim() || foodName.trim() || t('food.newCustomFood.oneServing'),
+            selectedPortionIds,
+          }
         );
 
         setCreatedFood(newFood);
@@ -250,7 +256,7 @@ export default function CreateCustomFoodModal({
 
     // Default behavior: call onSave and close
     if (onSave) {
-      onSave(foodData);
+      onSave({ ...foodData, nutritionBasis, servingName, selectedPortionIds });
     }
     onClose();
   };
@@ -690,6 +696,33 @@ export default function CreateCustomFoodModal({
           {/* Portion Sizes */}
           <View>
             <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+              {t('food.foodDetails.serving')}
+            </Text>
+            <FilterTabs
+              tabs={[
+                { id: 'per_100g', label: t('food.portions.100g') },
+                {
+                  id: 'per_serving',
+                  label: t('food.foodDetails.perServing'),
+                },
+              ]}
+              activeTab={nutritionBasis}
+              onTabChange={(id) => setNutritionBasis(id as 'per_100g' | 'per_serving')}
+              showContainer={false}
+            />
+          </View>
+
+          {nutritionBasis === 'per_serving' ? (
+            <TextInput
+              label={t('food.foodDetails.servingName')}
+              value={servingName}
+              onChangeText={setServingName}
+              placeholder={t('food.foodDetails.servingNamePlaceholder')}
+            />
+          ) : null}
+
+          <View>
+            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
               {t('food.newCustomFood.portionSizes')}
             </Text>
             {isLoadingPortions ? (
@@ -707,8 +740,10 @@ export default function CreateCustomFoodModal({
                 ) : null}
                 {selectedPortionsOrdered.map((portion) => {
                   const IconComponent = getFoodPortionIconComponent(portion.icon) ?? Scale;
-                  const displayWeight = gramsToDisplay(portion.gramWeight, units);
-                  const gramsLabel = formatInteger(Math.round(displayWeight));
+                  const displayWeight =
+                    portion.gramWeight != null ? gramsToDisplay(portion.gramWeight, units) : null;
+                  const gramsLabel =
+                    displayWeight != null ? formatInteger(Math.round(displayWeight)) : null;
                   const massUnit = getMassUnitLabel(units);
                   return (
                     <View
@@ -763,7 +798,9 @@ export default function CreateCustomFoodModal({
                             color: theme.colors.text.white,
                           }}
                         >
-                          {`(${gramsLabel}${massUnit})`}
+                          {displayWeight != null
+                            ? `(${gramsLabel}${massUnit})`
+                            : t('food.foodDetails.namedServing')}
                         </Text>
                       </View>
                       <Pressable
@@ -778,35 +815,19 @@ export default function CreateCustomFoodModal({
                     </View>
                   );
                 })}
-                <Pressable
+                <Button
+                  variant="dashed"
+                  width="full"
+                  size="sm"
+                  icon={Plus}
                   disabled={isLoadingPortions}
                   onPress={() => setShowPortionPicker(true)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: theme.borderRadius.lg,
-                    borderWidth: 1,
-                    borderColor: theme.colors.background.white20,
-                    backgroundColor: theme.colors.background.secondary,
-                    paddingVertical: theme.spacing.padding.md,
-                    gap: theme.spacing.gap.sm,
-                    opacity: isLoadingPortions ? 0.5 : 1,
-                  }}
-                >
-                  <Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.base,
-                      fontWeight: theme.typography.fontWeight.medium,
-                      color: theme.colors.text.primary,
-                    }}
-                  >
-                    {selectedPortionIds.length === 0
+                  label={
+                    selectedPortionIds.length === 0
                       ? t('food.newCustomFood.addPortionSizes')
-                      : t('food.newCustomFood.addAnotherPortion')}
-                  </Text>
-                </Pressable>
+                      : t('food.newCustomFood.addAnotherPortion')
+                  }
+                />
               </View>
             )}
           </View>

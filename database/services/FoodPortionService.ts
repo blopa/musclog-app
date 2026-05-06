@@ -1,11 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
+import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
+import Meal from '@/database/models/Meal';
+import MealFoodPortion from '@/database/models/MealFoodPortion';
 import i18n from '@/lang/lang';
 
-/** Matches {@link FoodPortionService.createCommonPortions} i18n keys that were persisted literally in `name`. */
 const PORTION_DISPLAY_NAME_I18N_KEYS = [
   'food.portions.slice',
   'food.portions.twoSlices',
@@ -20,30 +22,43 @@ const PORTION_DISPLAY_NAME_I18N_KEYS = [
 ] as const;
 
 export class FoodPortionService {
-  /**
-   * Non-deleted portion with this exact gram_weight, if any (at most one should exist after dedupe).
-   */
+  static isBasicPortion(portion: FoodPortion): boolean {
+    return portion.resolvedSource === 'basic';
+  }
+
   static async findExistingPortionByGramWeight(gramWeight: number): Promise<FoodPortion | null> {
     const rows = await database
       .get<FoodPortion>('food_portions')
-      .query(Q.where('gram_weight', gramWeight), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('gram_weight', gramWeight),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('source', 'basic')
+      )
       .fetch();
     return rows.length > 0 ? rows[0] : null;
   }
 
-  /**
-   * Create a new global portion (not tied to any specific food).
-   * If a non-deleted portion with the same gram_weight already exists, returns it and does not create.
-   */
   static async createFoodPortion(
     name: string,
-    gramWeight: number,
+    gramWeight?: number,
     icon?: string,
-    source: 'app' | 'user' = 'user'
+    source: 'basic' | 'custom' = 'custom',
+    options?: {
+      kind?: 'mass' | 'named';
+      scope?: 'global' | 'private';
+      ownerType?: 'food' | 'meal';
+      ownerId?: string;
+      dedupe?: boolean;
+    }
   ): Promise<FoodPortion> {
-    const duplicate = await this.findExistingPortionByGramWeight(gramWeight);
-    if (duplicate) {
-      return duplicate;
+    const kind = options?.kind ?? (gramWeight != null ? 'mass' : 'named');
+    const scope = options?.scope ?? (source === 'basic' ? 'global' : 'private');
+
+    if (options?.dedupe !== false && source === 'basic' && kind === 'mass' && gramWeight != null) {
+      const duplicate = await this.findExistingPortionByGramWeight(gramWeight);
+      if (duplicate) {
+        return duplicate;
+      }
     }
 
     return await database.write(async () => {
@@ -56,110 +71,140 @@ export class FoodPortionService {
           portion.icon = icon;
         }
         portion.source = source;
+        portion.kind = kind;
+        portion.scope = scope;
+        portion.ownerType = options?.ownerType;
+        portion.ownerId = options?.ownerId;
         portion.createdAt = now;
         portion.updatedAt = now;
       });
     });
   }
 
-  /**
-   * Same as {@link createFoodPortion} — uniqueness is by gram_weight only.
-   */
-  static async getOrCreatePortion(
+  static async createPrivateNamedPortion(
     name: string,
-    gramWeight: number,
-    icon?: string,
-    source: 'app' | 'user' = 'user'
+    ownerType: 'food' | 'meal',
+    ownerId: string,
+    icon?: string
   ): Promise<FoodPortion> {
-    return this.createFoodPortion(name, gramWeight, icon, source);
+    return this.createFoodPortion(name, undefined, icon, 'custom', {
+      kind: 'named',
+      scope: 'private',
+      ownerType,
+      ownerId,
+      dedupe: false,
+    });
   }
 
-  /**
-   * Get all global portions (not deleted)
-   */
-  static async getAllPortions(): Promise<FoodPortion[]> {
+  static async getOrCreatePortion(
+    name: string,
+    gramWeight?: number,
+    icon?: string,
+    source: 'basic' | 'custom' = 'custom',
+    options?: {
+      kind?: 'mass' | 'named';
+      scope?: 'global' | 'private';
+      ownerType?: 'food' | 'meal';
+      ownerId?: string;
+      dedupe?: boolean;
+    }
+  ): Promise<FoodPortion> {
+    return this.createFoodPortion(name, gramWeight, icon, source, options);
+  }
+
+  static async getAllPortions(options?: {
+    source?: 'basic' | 'custom';
+    scope?: 'global' | 'private';
+    ownerType?: 'food' | 'meal';
+    ownerId?: string;
+  }): Promise<FoodPortion[]> {
+    const clauses = [Q.where('deleted_at', Q.eq(null))];
+    if (options?.source) {
+      clauses.push(Q.where('source', options.source));
+    }
+
+    if (options?.scope) {
+      clauses.push(Q.where('scope', options.scope));
+    }
+
+    if (options?.ownerType) {
+      clauses.push(Q.where('owner_type', options.ownerType));
+    }
+
+    if (options?.ownerId) {
+      clauses.push(Q.where('owner_id', options.ownerId));
+    }
+
     return await database
       .get<FoodPortion>('food_portions')
-      .query(Q.where('deleted_at', Q.eq(null)))
+      .query(...clauses)
       .fetch();
   }
 
-  /**
-   * Get portions paginated, sorted by created_at desc (newest first).
-   * Optional `source` limits to app catalog or user-created rows.
-   */
   static async getPortionsPaginated(
     limit: number,
     offset: number,
-    options?: { source?: 'app' | 'user' }
+    options?: {
+      source?: 'basic' | 'custom';
+      scope?: 'global' | 'private';
+      ownerType?: 'food' | 'meal';
+      ownerId?: string;
+    }
   ): Promise<FoodPortion[]> {
     const clauses = [
       Q.where('deleted_at', Q.eq(null)),
       ...(options?.source ? [Q.where('source', options.source)] : []),
+      ...(options?.scope ? [Q.where('scope', options.scope)] : []),
+      ...(options?.ownerType ? [Q.where('owner_type', options.ownerType)] : []),
+      ...(options?.ownerId ? [Q.where('owner_id', options.ownerId)] : []),
       Q.sortBy('created_at', Q.desc),
     ];
 
     let query = database.get<FoodPortion>('food_portions').query(...clauses);
-
     if (limit > 0) {
-      if (offset > 0) {
-        query = query.extend(Q.skip(offset), Q.take(limit));
-      } else {
-        query = query.extend(Q.take(limit));
-      }
+      query =
+        offset > 0 ? query.extend(Q.skip(offset), Q.take(limit)) : query.extend(Q.take(limit));
     }
-
     return await query.fetch();
   }
 
-  /**
-   * Get the standard 100g portion (from createCommonPortions).
-   * Returns null if it has not been created yet.
-   * Queries by gram_weight only since the name may be localized.
-   */
   static async get100gPortion(): Promise<FoodPortion | null> {
     const portions = await database
       .get<FoodPortion>('food_portions')
-      .query(Q.where('gram_weight', 100), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('gram_weight', 100),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('source', 'basic')
+      )
       .fetch();
-
     return portions.length > 0 ? portions[0] : null;
   }
 
-  /**
-   * @deprecated Prefer {@link get100gPortion} or filter with `source === 'app'`.
-   * The canonical “default” serving for macros is the 100g row from {@link createCommonPortions}.
-   */
   static async getDefaultPortion(): Promise<FoodPortion | null> {
     return this.get100gPortion();
   }
 
-  /**
-   * Get portion by ID
-   */
   static async getPortionById(id: string): Promise<FoodPortion | null> {
     try {
       const portion = await database.get<FoodPortion>('food_portions').find(id);
       return portion.deletedAt ? null : portion;
-    } catch (error) {
+    } catch {
       return null;
     }
   }
 
-  /**
-   * Update food portion
-   */
   static async updateFoodPortion(
     id: string,
     updates: {
       name?: string;
       gramWeight?: number;
       icon?: string;
+      kind?: 'mass' | 'named';
+      scope?: 'global' | 'private';
     }
   ): Promise<FoodPortion> {
     return await database.write(async () => {
       const portion = await database.get<FoodPortion>('food_portions').find(id);
-
       if (portion.deletedAt) {
         throw new Error('Cannot update deleted food portion');
       }
@@ -168,11 +213,22 @@ export class FoodPortionService {
         if (updates.name !== undefined) {
           record.name = updates.name;
         }
+
         if (updates.gramWeight !== undefined) {
           record.gramWeight = updates.gramWeight;
+          record.kind = 'mass';
         }
+
         if (updates.icon !== undefined) {
           record.icon = updates.icon;
+        }
+
+        if (updates.kind !== undefined) {
+          record.kind = updates.kind;
+        }
+
+        if (updates.scope !== undefined) {
+          record.scope = updates.scope;
         }
         record.updatedAt = Date.now();
       });
@@ -181,26 +237,14 @@ export class FoodPortionService {
     });
   }
 
-  /**
-   * Delete food portion. Throws if the portion is a built-in app portion (source='app').
-   */
   static async deleteFoodPortion(id: string): Promise<void> {
     const portion = await database.get<FoodPortion>('food_portions').find(id);
-    if (portion.source === 'app') {
+    if (portion.resolvedSource === 'basic') {
       throw new Error('Cannot delete a built-in app food portion.');
     }
-
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
     await portion.markAsDeleted();
   }
 
-  /**
-   * Backfills the `source` field for food portions that predate the column addition.
-   * Portions with no source are ordered by creation date (oldest first); the first
-   * `appPortionCount` are assumed to be app-seeded and get 'app', the rest get 'user'.
-   * Safe to call on every app start — it's a no-op when all portions already have a source.
-   * Used as the web (LokiJS) fallback since unsafeExecuteSql is ignored by that adapter.
-   */
   static async backfillPortionSources(appPortionCount: number = 9): Promise<void> {
     const unsourced = await database
       .get<FoodPortion>('food_portions')
@@ -217,20 +261,17 @@ export class FoodPortionService {
     await database.write(async () => {
       for (let i = 0; i < unsourced.length; i++) {
         const portion = unsourced[i];
-        const source: 'app' | 'user' = i < appPortionCount ? 'app' : 'user';
+        const source: 'basic' | 'custom' = i < appPortionCount ? 'basic' : 'custom';
         await portion.update((record) => {
           record.source = source;
+          record.scope = source === 'basic' ? 'global' : 'private';
+          record.kind = record.kind || 'mass';
           record.updatedAt = Date.now();
         });
       }
     });
   }
 
-  /**
-   * Some installs stored `name` as the raw i18n key (e.g. `"food.portions.tbsp"`) when the locale
-   * bundle was not available at seed time. Rewrites those rows to `i18n.t(name)` for the active
-   * language. Skips rows where the key has no translation (still equals the key after `t()`).
-   */
   static async fixPortionNamesStoredAsI18nKeys(): Promise<void> {
     const rows = await database
       .get<FoodPortion>('food_portions')
@@ -259,14 +300,8 @@ export class FoodPortionService {
     });
   }
 
-  /**
-   * Create common portions for a food type
-   * Returns array of global portion definitions
-   */
   static async createCommonPortions(): Promise<FoodPortion[]> {
     const portions: FoodPortion[] = [];
-
-    // Standard portions (global, not tied to any specific food)
     const commonPortions = [
       { name: i18n.t('food.portions.slice'), gramWeight: 25, icon: 'egg' },
       { name: i18n.t('food.portions.twoSlices'), gramWeight: 50, icon: 'egg' },
@@ -285,7 +320,11 @@ export class FoodPortionService {
         portion.name,
         portion.gramWeight,
         portion.icon,
-        'app'
+        'basic',
+        {
+          kind: 'mass',
+          scope: 'global',
+        }
       );
       portions.push(created);
     }
@@ -293,9 +332,6 @@ export class FoodPortionService {
     return portions;
   }
 
-  /**
-   * Search portions by name
-   */
   static async searchPortions(searchTerm: string): Promise<FoodPortion[]> {
     return await database
       .get<FoodPortion>('food_portions')
@@ -303,35 +339,32 @@ export class FoodPortionService {
       .fetch();
   }
 
-  /**
-   * Add a portion to a food
-   */
   static async addPortionToFood(
     foodId: string,
     foodPortionId: string,
     isDefault = false
   ): Promise<FoodFoodPortion> {
     return await database.write(async () => {
-      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+      const table = database.get<FoodFoodPortion>('food_food_portions');
       const now = Date.now();
 
-      // If marking as default, unset default for other portions of this food
       if (isDefault) {
-        const currentDefault = await FFP.query(
-          Q.where('food_id', foodId),
-          Q.where('is_default', true)
-        ).fetch();
-
-        for (const ffp of currentDefault) {
-          await ffp.update((record) => {
+        const currentDefault = await table
+          .query(
+            Q.where('food_id', foodId),
+            Q.where('is_default', true),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+        for (const row of currentDefault) {
+          await row.update((record) => {
             record.isDefault = false;
             record.updatedAt = now;
           });
         }
       }
 
-      // Create new food-portion link
-      return await FFP.create((ffp) => {
+      return await table.create((ffp) => {
         ffp.foodId = foodId;
         ffp.foodPortionId = foodPortionId;
         ffp.isDefault = isDefault;
@@ -341,35 +374,61 @@ export class FoodPortionService {
     });
   }
 
-  /**
-   * Set a portion as the default for a food
-   */
-  static async setDefaultPortionForFood(foodId: string, foodPortionId: string): Promise<void> {
+  static async addPortionToMeal(
+    mealId: string,
+    foodPortionId: string,
+    isDefault = false
+  ): Promise<MealFoodPortion> {
     return await database.write(async () => {
-      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+      const table = database.get<MealFoodPortion>('meal_food_portions');
       const now = Date.now();
 
-      // Unset current default
-      const currentDefault = await FFP.query(
-        Q.where('food_id', foodId),
-        Q.where('is_default', true)
-      ).fetch();
+      if (isDefault) {
+        const currentDefault = await table
+          .query(
+            Q.where('meal_id', mealId),
+            Q.where('is_default', true),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+        for (const row of currentDefault) {
+          await row.update((record) => {
+            record.isDefault = false;
+            record.updatedAt = now;
+          });
+        }
+      }
 
-      for (const ffp of currentDefault) {
-        await ffp.update((record) => {
+      return await table.create((record) => {
+        record.mealId = mealId;
+        record.foodPortionId = foodPortionId;
+        record.isDefault = isDefault;
+        record.createdAt = now;
+        record.updatedAt = now;
+      });
+    });
+  }
+
+  static async setDefaultPortionForFood(foodId: string, foodPortionId: string): Promise<void> {
+    return await database.write(async () => {
+      const table = database.get<FoodFoodPortion>('food_food_portions');
+      const now = Date.now();
+
+      const currentDefault = await table
+        .query(Q.where('food_id', foodId), Q.where('is_default', true))
+        .fetch();
+      for (const row of currentDefault) {
+        await row.update((record) => {
           record.isDefault = false;
           record.updatedAt = now;
         });
       }
 
-      // Set new default
-      const foodFoodPortion = await FFP.query(
-        Q.where('food_id', foodId),
-        Q.where('food_portion_id', foodPortionId)
-      ).fetch();
-
-      if (foodFoodPortion.length > 0) {
-        await foodFoodPortion[0].update((record) => {
+      const linked = await table
+        .query(Q.where('food_id', foodId), Q.where('food_portion_id', foodPortionId))
+        .fetch();
+      if (linked.length > 0) {
+        await linked[0].update((record) => {
           record.isDefault = true;
           record.updatedAt = now;
         });
@@ -377,73 +436,117 @@ export class FoodPortionService {
     });
   }
 
-  /**
-   * Remove a portion from a food
-   */
   static async removePortionFromFood(foodId: string, foodPortionId: string): Promise<void> {
-    const FFP = database.get<FoodFoodPortion>('food_food_portions');
-
-    const ffp = await FFP.query(
-      Q.where('food_id', foodId),
-      Q.where('food_portion_id', foodPortionId)
-    ).fetch();
-
-    if (ffp.length > 0) {
-      // markAsDeleted is a @writer method, so it already manages its own write transaction
-      await ffp[0].markAsDeleted();
+    const table = database.get<FoodFoodPortion>('food_food_portions');
+    const rows = await table
+      .query(Q.where('food_id', foodId), Q.where('food_portion_id', foodPortionId))
+      .fetch();
+    if (rows.length > 0) {
+      await rows[0].markAsDeleted();
     }
   }
 
-  /**
-   * Get all portions for a specific food
-   */
   static async getPortionsForFood(foodId: string): Promise<FoodPortion[]> {
-    const FFP = database.get<FoodFoodPortion>('food_food_portions');
-
-    const foodFoodPortions = await FFP.query(
-      Q.where('food_id', foodId),
-      Q.where('deleted_at', Q.eq(null))
-    ).fetch();
-
-    // Extract the FoodPortion objects from each junction entry,
-    // filtering out any orphans where the portion no longer exists.
+    const rows = await database
+      .get<FoodFoodPortion>('food_food_portions')
+      .query(Q.where('food_id', foodId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
     const portions = await Promise.all(
-      foodFoodPortions.map(async (ffp) => {
+      rows.map(async (row) => {
         try {
-          return await ffp.foodPortion;
+          return await row.foodPortion;
         } catch {
           return null;
         }
       })
     );
-
     return portions.filter((p): p is FoodPortion => p !== null);
   }
 
-  /**
-   * Duplicate portion (create a copy)
-   */
-  static async duplicatePortion(id: string): Promise<FoodPortion> {
-    const originalPortion = await database.get<FoodPortion>('food_portions').find(id);
+  static async getPortionsForMeal(mealId: string): Promise<FoodPortion[]> {
+    const rows = await database
+      .get<MealFoodPortion>('meal_food_portions')
+      .query(Q.where('meal_id', mealId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const portions = await Promise.all(
+      rows.map(async (row) => {
+        try {
+          return await row.foodPortion;
+        } catch {
+          return null;
+        }
+      })
+    );
+    return portions.filter((p): p is FoodPortion => p !== null);
+  }
 
-    if (originalPortion.deletedAt) {
+  static async getPortionUsageSummary(
+    portionId: string
+  ): Promise<{ foods: string[]; meals: string[] }> {
+    const [foodLinks, mealLinks] = await Promise.all([
+      database
+        .get<FoodFoodPortion>('food_food_portions')
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+      database
+        .get<MealFoodPortion>('meal_food_portions')
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+    ]);
+
+    const foods = (
+      await Promise.all(
+        foodLinks.map(async (row) => {
+          try {
+            const food = await database.get<Food>('foods').find(row.foodId);
+            return food.deletedAt ? null : food.name;
+          } catch {
+            return null;
+          }
+        })
+      )
+    ).filter((name): name is string => !!name);
+
+    const meals = (
+      await Promise.all(
+        mealLinks.map(async (row) => {
+          try {
+            const meal = await database.get<Meal>('meals').find(row.mealId);
+            return meal.deletedAt ? null : meal.name;
+          } catch {
+            return null;
+          }
+        })
+      )
+    ).filter((name): name is string => !!name);
+
+    return { foods: Array.from(new Set(foods)), meals: Array.from(new Set(meals)) };
+  }
+
+  static async duplicatePortion(id: string): Promise<FoodPortion> {
+    const original = await database.get<FoodPortion>('food_portions').find(id);
+    if (original.deletedAt) {
       throw new Error('Cannot duplicate deleted portion');
     }
 
-    const existingSameGrams = await this.findExistingPortionByGramWeight(
-      originalPortion.gramWeight
-    );
-    if (existingSameGrams) {
-      return existingSameGrams;
+    if (original.resolvedSource === 'basic' && original.gramWeight != null) {
+      const existing = await this.findExistingPortionByGramWeight(original.gramWeight);
+      if (existing) {
+        return existing;
+      }
     }
 
     return await database.write(async () => {
       const now = Date.now();
-
       return await database.get<FoodPortion>('food_portions').create((portion) => {
-        portion.name = `${originalPortion.name} (Copy)`;
-        portion.gramWeight = originalPortion.gramWeight;
-        portion.icon = originalPortion.icon;
+        portion.name = `${original.name} (Copy)`;
+        portion.gramWeight = original.gramWeight;
+        portion.icon = original.icon;
+        portion.source = original.source;
+        portion.kind = original.kind;
+        portion.scope = original.scope;
+        portion.ownerType = original.ownerType;
+        portion.ownerId = original.ownerId;
         portion.createdAt = now;
         portion.updatedAt = now;
       });

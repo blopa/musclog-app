@@ -130,6 +130,11 @@ export class NutritionService {
     const log = await database.write(async () => {
       const food = await database.get<Food>('foods').find(foodId);
       const now = Date.now();
+      let resolvedPortionId = portionId;
+      if (!resolvedPortionId && food.resolvedNutritionBasis === 'per_serving') {
+        const defaultPortion = await food.getDefaultPortionAsync();
+        resolvedPortionId = defaultPortion?.id;
+      }
       const encrypted = await encryptNutritionLogSnapshot({
         loggedFoodName: food.name ?? undefined,
         loggedCalories: food.calories ?? 0,
@@ -146,7 +151,7 @@ export class NutritionService {
         record.date = dateTimestamp;
         record.type = mealType;
         record.amount = amount;
-        record.portionId = portionId;
+        record.portionId = resolvedPortionId;
         record.loggedFoodNameRaw = encrypted.loggedFoodName;
         record.loggedCaloriesRaw = encrypted.loggedCalories;
         record.loggedProteinRaw = encrypted.loggedProtein;
@@ -154,6 +159,7 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.snapshotBasis = food.resolvedNutritionBasis;
         record.groupId = groupId;
         record.loggedMealName = loggedMealName;
         record.createdAt = now;
@@ -556,6 +562,7 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
@@ -627,6 +634,7 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
@@ -936,6 +944,7 @@ export class NutritionService {
         log.loggedFatRaw = originalLog.loggedFatRaw ?? '';
         log.loggedFiberRaw = originalLog.loggedFiberRaw ?? '';
         log.loggedMicrosRaw = originalLog.loggedMicrosRaw;
+        log.snapshotBasis = originalLog.snapshotBasis;
         log.createdAt = now;
         log.updatedAt = now;
       });
@@ -1029,6 +1038,7 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.snapshotBasis = 'per_100g';
         record.groupId = options?.groupId;
         record.loggedMealName = options?.loggedMealName;
         record.createdAt = now;
@@ -1158,6 +1168,7 @@ export class NutritionService {
               record.loggedFatRaw = encrypted.loggedFat;
               record.loggedFiberRaw = encrypted.loggedFiber;
               record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+              record.snapshotBasis = food.resolvedNutritionBasis;
               record.groupId = options?.groupId;
               record.loggedMealName = options?.loggedMealName;
               record.createdAt = now;
@@ -1215,6 +1226,7 @@ export class NutritionService {
           record.loggedFatRaw = encrypted.loggedFat;
           record.loggedFiberRaw = encrypted.loggedFiber;
           record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          record.snapshotBasis = 'per_100g';
           record.groupId = options?.groupId;
           record.loggedMealName = options?.loggedMealName;
           record.createdAt = now;

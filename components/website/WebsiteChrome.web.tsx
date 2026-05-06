@@ -165,7 +165,7 @@ export function DownloadModal({
                 </div>
                 <button
                   type="button"
-                  aria-label={t('close', { defaultValue: 'Close' })}
+                  aria-label={t('close')}
                   className="text-muted-foreground hover:text-foreground text-xl leading-none"
                   onClick={() => setIsOpen(false)}
                 >
