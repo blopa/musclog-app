@@ -1,4 +1,4 @@
-import { AlertCircle, AlertTriangle, Edit3, Info } from 'lucide-react-native';
+import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -106,7 +106,12 @@ export function FoodNutritionSectionCard({
   return (
     <View className="mt-6">
       <View className="relative">
-        <FoodInfoCard food={food} intuitiveMode={intuitiveMode} showName={showName} />
+        <FoodInfoCard
+          food={food}
+          intuitiveMode={intuitiveMode}
+          showName={showName}
+          onInfoPress={ingredients && ingredients.length > 0 ? () => setIngredientsModalVisible(true) : undefined}
+        />
         {canEdit && mode !== 'meal' && onEditPress ? (
           <Pressable
             onPress={onEditPress}
@@ -120,22 +125,6 @@ export function FoodNutritionSectionCard({
             }}
           >
             <Edit3 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-          </Pressable>
-        ) : null}
-        {ingredients && ingredients.length > 0 ? (
-          <Pressable
-            onPress={() => setIngredientsModalVisible(true)}
-            hitSlop={8}
-            className="absolute right-3 top-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
-            style={{
-              elevation: 2,
-              shadowColor: theme.colors.text.black,
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.2,
-              shadowRadius: 2,
-            }}
-          >
-            <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
           </Pressable>
         ) : null}
       </View>
