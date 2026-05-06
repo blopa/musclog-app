@@ -236,6 +236,7 @@ export function FoodMealDetailsModal({
     fat: number;
     fiber: number;
   } | null>(null);
+  const [mealIngredientLabels, setMealIngredientLabels] = useState<string[]>([]);
 
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
@@ -523,6 +524,7 @@ export function FoodMealDetailsModal({
   useEffect(() => {
     if (!meal) {
       setMealNutrients(null);
+      setMealIngredientLabels([]);
       setTotalMealGrams(0);
       setMealAmountGrams(0);
       return;
@@ -544,21 +546,44 @@ export function FoodMealDetailsModal({
         });
         if (mealWithFoods?.foods) {
           let rawGrams = 0;
+          const ingredientLabels: string[] = [];
           for (const mf of mealWithFoods.foods) {
-            rawGrams += await mf.getGramWeight();
+            const gramWeight = await mf.getGramWeight();
+            rawGrams += gramWeight;
+
+            let ingredientName = t('food.unknownFood');
+            try {
+              const ingredientFood = await mf.food;
+              if (ingredientFood?.name?.trim()) {
+                ingredientName = ingredientFood.name.trim();
+              }
+            } catch (error) {
+              console.warn('Error loading meal ingredient food:', error);
+            }
+
+            const amountLabel =
+              gramWeight > 0
+                ? `${formatDisplayGrams(locale, units, gramWeight)} ${getMassUnitLabel(units)}`
+                : '';
+            ingredientLabels.push(
+              amountLabel ? `${ingredientName} (${amountLabel})` : ingredientName
+            );
           }
+          setMealIngredientLabels(ingredientLabels);
           // Use prepared weight as the portion reference when the user set it,
           // otherwise fall back to the raw ingredient sum.
           const referenceGrams = Math.round(meal.preparedWeightGrams ?? rawGrams);
           setTotalMealGrams(referenceGrams);
           setMealAmountGrams(referenceGrams > 0 ? referenceGrams : 100);
         } else {
+          setMealIngredientLabels([]);
           setTotalMealGrams(0);
           setMealAmountGrams(100);
         }
       } catch (error) {
         console.error('Error loading meal nutrients:', error);
         setMealNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+        setMealIngredientLabels([]);
         setTotalMealGrams(0);
         setMealAmountGrams(100);
       } finally {
@@ -567,7 +592,7 @@ export function FoodMealDetailsModal({
     };
 
     loadMealNutrients();
-  }, [meal]);
+  }, [locale, meal, t, units]);
 
   // If we are given a foodLog, initialize edit mode values from it and load decrypted snapshot
   useEffect(() => {
@@ -2087,7 +2112,7 @@ export function FoodMealDetailsModal({
               : undefined
           }
           intuitiveMode={intuitiveEatingMode}
-          // ingredients={[]} // TODO: if food type is meal, pass the food ingredients
+          ingredients={mode === 'meal' ? mealIngredientLabels : undefined}
         />
 
         {/* Form Sections */}
