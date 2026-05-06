@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { Info } from 'lucide-react-native';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -20,6 +21,9 @@ export type MealNutritionHighlightCardProps = {
   /** When greater than zero, shown as a line below the macro grid. */
   fiber?: number;
   intuitiveMode?: boolean;
+  /** Show an info button that expands to list the ingredients below the card. */
+  showIngredientsInfo?: boolean;
+  ingredients?: string[];
 };
 
 /**
@@ -34,11 +38,14 @@ export function MealNutritionHighlightCard({
   fat,
   fiber,
   intuitiveMode = false,
+  showIngredientsInfo = false,
+  ingredients,
 }: MealNutritionHighlightCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
+  const [ingredientsExpanded, setIngredientsExpanded] = useState(false);
 
   const narrow = windowWidth < 380;
 
@@ -193,6 +200,35 @@ export function MealNutritionHighlightCard({
                 label: t('food.macros.fiber'),
               })}
             </Text>
+          ) : null}
+
+          {showIngredientsInfo && ingredients && ingredients.length > 0 ? (
+            <>
+              <Pressable
+                onPress={() => setIngredientsExpanded((v) => !v)}
+                hitSlop={8}
+                className="mt-3 flex-row items-center gap-1 self-start"
+              >
+                <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+                <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                  {t('food.quickTrackMeal.ingredients')}
+                </Text>
+              </Pressable>
+              {ingredientsExpanded ? (
+                <View className="mt-2 gap-1">
+                  {ingredients.map((ingredient, index) => (
+                    <Text
+                      key={index}
+                      className="text-xs"
+                      style={{ color: theme.colors.text.secondary }}
+                    >
+                      {'• '}
+                      {ingredient}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
+            </>
           ) : null}
         </View>
       </View>

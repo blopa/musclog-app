@@ -1,4 +1,5 @@
-import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
+import { AlertCircle, AlertTriangle, Edit3, Info } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
@@ -57,6 +58,8 @@ type FoodNutritionSectionProps = {
   };
   intuitiveMode?: boolean;
   showName?: boolean;
+  /** Show an info button that expands to list the ingredients below the food header. */
+  ingredients?: string[];
 };
 
 export function FoodNutritionSectionCard({
@@ -74,10 +77,12 @@ export function FoodNutritionSectionCard({
   caloriesTooLowWarning,
   intuitiveMode = false,
   showName = true,
+  ingredients,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const [ingredientsExpanded, setIngredientsExpanded] = useState(false);
 
   const scaleFactor = servingSize / 100;
 
@@ -113,7 +118,38 @@ export function FoodNutritionSectionCard({
             <Edit3 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
           </Pressable>
         ) : null}
+        {ingredients && ingredients.length > 0 ? (
+          <Pressable
+            onPress={() => setIngredientsExpanded((v) => !v)}
+            className="absolute right-3 top-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
+            style={{
+              elevation: 2,
+              shadowColor: theme.colors.text.black,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.2,
+              shadowRadius: 2,
+            }}
+          >
+            <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+          </Pressable>
+        ) : null}
       </View>
+
+      {ingredients && ingredients.length > 0 && ingredientsExpanded ? (
+        <View className="mt-3 rounded-2xl border border-border-light bg-bg-overlay p-4">
+          <Text className="mb-2 text-sm font-bold uppercase tracking-wider text-text-secondary">
+            {t('food.quickTrackMeal.ingredients')}
+          </Text>
+          <View className="gap-1">
+            {ingredients.map((ingredient, index) => (
+              <Text key={index} className="text-sm text-text-secondary">
+                {'• '}
+                {ingredient}
+              </Text>
+            ))}
+          </View>
+        </View>
+      ) : null}
 
       {showIncompleteWarning ? (
         <View

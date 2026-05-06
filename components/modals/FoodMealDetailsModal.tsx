@@ -2087,6 +2087,7 @@ export function FoodMealDetailsModal({
               : undefined
           }
           intuitiveMode={intuitiveEatingMode}
+          // ingredients={[]} // TODO: if food type is meal, pass the food ingredients
         />
 
         {/* Form Sections */}
