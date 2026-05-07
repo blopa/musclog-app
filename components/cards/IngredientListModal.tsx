@@ -39,7 +39,7 @@ export function IngredientListModal({
       visible={visible}
       onClose={onClose}
       title={t('food.quickTrackMeal.ingredients')}
-      subtitle={t('food.quickTrackMeal.ingredientsCount_other', { count: ingredients.length })}
+      subtitle={t('food.quickTrackMeal.ingredientsCount', { count: ingredients.length })}
     >
       <ScrollView
         nestedScrollEnabled

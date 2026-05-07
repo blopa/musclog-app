@@ -234,7 +234,7 @@ function FoodResultCard({
             onDecrement={() =>
               onAmountChange(Math.max(isPerServing ? 0.5 : 0, amount - (isPerServing ? 0.5 : 1)))
             }
-            unit={isPerServing ? t('food.foodDetails.serving') : 'g'} // TODO: Use translation
+            unit={isPerServing ? t('food.foodDetails.serving') : 'g'}
           />
         </View>
       ) : null}

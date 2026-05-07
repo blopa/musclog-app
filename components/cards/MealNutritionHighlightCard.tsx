@@ -224,7 +224,7 @@ export function MealNutritionHighlightCard({
         <IngredientListModal
           visible={ingredientsModalVisible}
           onClose={() => setIngredientsModalVisible(false)}
-          ingredients={ingredients!}
+          ingredients={ingredients ?? []}
           intuitiveMode={intuitiveMode}
         />
       ) : null}
