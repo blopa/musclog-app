@@ -175,8 +175,10 @@ export function ServingSizeSelector({
     // Food-specific DB portions (only present when food prop is passed with specific portions)
     const foodDbPortions = databaseQuickSizes;
 
-    // All already-shown items, used for dedup and ≥20% proximity check
-    const alreadyShown = [...apiPortions, ...foodDbPortions].filter(
+    // All already-shown items, used for dedup and >=20% proximity check.
+    // Food-specific portions are intentionally first so their labels win over
+    // generic API/default portions with the same gram weight.
+    const alreadyShown = [...foodDbPortions, ...apiPortions].filter(
       (p, i, arr) => arr.findIndex((q) => q.value === p.value) === i
     );
 
@@ -223,9 +225,9 @@ export function ServingSizeSelector({
     }
     // Rule 4 (apiCount >= 4): no supplement
 
-    // Build final list: API first, then food-specific DB, then common supplement (deduped)
-    const result: { label: string; value: number }[] = [...apiPortions];
-    for (const p of foodDbPortions) {
+    // Build final list: food-specific DB first, then API, then common supplement (deduped)
+    const result: { label: string; value: number }[] = [...foodDbPortions];
+    for (const p of apiPortions) {
       if (!result.some((r) => r.value === p.value)) {
         result.push(p);
       }

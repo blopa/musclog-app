@@ -176,7 +176,7 @@ export default class Food extends Model {
   async getDefaultPortionAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      const defaultEntry = ffp.find((entry: any) => entry.isDefault);
+      const defaultEntry = ffp.find((entry: any) => entry.isDefault && !entry.deletedAt);
       if (defaultEntry) {
         return defaultEntry.foodPortion;
       }
@@ -192,7 +192,10 @@ export default class Food extends Model {
   async getPortionsAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      return Promise.all(ffp.map((fp: any) => fp.foodPortion));
+      const activeLinks = ffp.filter((fp: any) => !fp.deletedAt);
+      const portions = await Promise.all(activeLinks.map((fp: any) => fp.foodPortion));
+
+      return portions.filter((portion: any) => !portion?.deletedAt);
     } catch (error) {
       console.warn('Error getting portions:', error);
       return [];
