@@ -21,8 +21,9 @@ import { FullScreenModal } from './FullScreenModal';
 type PortionSizesPickerModalProps = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (selectedIds: string[]) => void;
+  onConfirm: (selectedIds: string[]) => void | Promise<void>;
   selectedIds?: string[];
+  ownerType?: 'food' | 'meal';
 };
 
 type PortionTabId = 'basic' | 'this' | 'other';
@@ -82,6 +83,7 @@ export function PortionSizesPickerModal({
   onClose,
   onConfirm,
   selectedIds = [],
+  ownerType = 'food',
 }: PortionSizesPickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -202,7 +204,7 @@ export function PortionSizesPickerModal({
         return portion.resolvedSource === 'basic';
       }
       if (activeTab === 'other') {
-        return portion.resolvedSource === 'custom';
+        return portion.resolvedSource === 'custom' && !selectedIdSet.has(option.id);
       }
       return selectedIdSet.has(option.id);
     });
@@ -219,8 +221,8 @@ export function PortionSizesPickerModal({
     );
   }, [selectorOptions, portionById, activeTab, localSelectedIds, searchQuery]);
 
-  const handleConfirm = () => {
-    onConfirm(localSelectedIds);
+  const handleConfirm = async () => {
+    await onConfirm(localSelectedIds);
     onClose();
   };
 
@@ -334,11 +336,19 @@ export function PortionSizesPickerModal({
               },
               {
                 id: 'this',
-                label: t('food.foodDetails.thisItemServings'),
+                label: t(
+                  ownerType === 'meal'
+                    ? 'food.foodDetails.thisMealServings'
+                    : 'food.foodDetails.thisFoodServings'
+                ),
               },
               {
                 id: 'other',
-                label: t('food.foodDetails.otherItemServings'),
+                label: t(
+                  ownerType === 'meal'
+                    ? 'food.foodDetails.otherMealServings'
+                    : 'food.foodDetails.otherFoodServings'
+                ),
               },
             ]}
             activeTab={activeTab}
@@ -351,7 +361,11 @@ export function PortionSizesPickerModal({
               <ActivityIndicator size="large" color={theme.colors.accent.primary} />
             </View>
           ) : (
-            <View>
+            <View
+              style={{
+                paddingHorizontal: theme.spacing.padding.base,
+              }}
+            >
               {filteredOptions.length > 0 ? (
                 <OptionsMultiSelector
                   title=""

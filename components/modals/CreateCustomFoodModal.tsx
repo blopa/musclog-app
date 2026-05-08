@@ -158,7 +158,11 @@ export default function CreateCustomFoodModal({
     [i18n.resolvedLanguage, i18n.language]
   );
 
-  const { portions, isLoading: isLoadingPortions } = useFoodPortions({
+  const {
+    portions,
+    isLoading: isLoadingPortions,
+    refresh: refreshPortions,
+  } = useFoodPortions({
     mode: 'all',
     visible: visible,
     // Must match PortionSizesPickerModal so selected user/custom portions resolve for chips
@@ -971,8 +975,10 @@ export default function CreateCustomFoodModal({
       <PortionSizesPickerModal
         visible={showPortionPicker}
         onClose={() => setShowPortionPicker(false)}
-        onConfirm={(selectedIds) => {
+        ownerType="food"
+        onConfirm={async (selectedIds) => {
           setSelectedPortionIds(selectedIds);
+          await refreshPortions();
           setShowPortionPicker(false);
         }}
         selectedIds={selectedPortionIds}

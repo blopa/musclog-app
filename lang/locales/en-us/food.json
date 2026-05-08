@@ -256,6 +256,7 @@
     "portions": {
       "100g": "Standard",
       "twoSlices": "Two slices",
+      "slice": "Slice",
       "cup": "Cup",
       "tbsp": "Tablespoon",
       "tsp": "Teaspoon",
@@ -296,6 +297,10 @@
       "basicServings": "Basic",
       "thisItemServings": "This item",
       "otherItemServings": "Other items",
+      "thisFoodServings": "This food",
+      "otherFoodServings": "Other food",
+      "thisMealServings": "This meal",
+      "otherMealServings": "Other meal",
       "addFavorite": "Add Favorite",
       "grams": "Grams",
       "unitGrams": "g",

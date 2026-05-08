@@ -2261,6 +2261,7 @@ export function FoodMealDetailsModal({
               <ServingSizeSelector
                 value={servingSize}
                 onChange={setServingSize}
+                food={food || localFood || undefined}
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 productServingSize={parsedProductServingSize}
                 productMeasures={parsedProductMeasures}
