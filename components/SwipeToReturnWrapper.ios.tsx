@@ -37,6 +37,7 @@ export function SwipeToReturnWrapper({
   const panGesture = Gesture.Pan()
     .activeOffsetX([20, Infinity])
     .failOffsetY([-15, 15])
+    .hitSlop({ left: 0, width: EDGE_ZONE_WIDTH })
     .enabled(enabled)
     .onStart((e) => {
       isEdgeGesture.value = e.x <= EDGE_ZONE_WIDTH;
