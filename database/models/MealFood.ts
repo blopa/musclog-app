@@ -111,14 +111,20 @@ export default class MealFood extends Model {
 
       if (food.resolvedNutritionBasis === 'per_serving') {
         return Object.fromEntries(
-          Object.entries(food.micros ?? {}).map(([key, value]) => [key, value != null ? value * this.amount : undefined])
+          Object.entries(food.micros ?? {}).map(([key, value]) => [
+            key,
+            value != null ? value * this.amount : undefined,
+          ])
         ) as MicrosData;
       }
 
       const totalGrams = await this.getReferenceGramWeight();
       const scale = totalGrams / 100;
       return Object.fromEntries(
-        Object.entries(food.micros ?? {}).map(([key, value]) => [key, value != null ? value * scale : undefined])
+        Object.entries(food.micros ?? {}).map(([key, value]) => [
+          key,
+          value != null ? value * scale : undefined,
+        ])
       ) as MicrosData;
     } catch {
       return {};

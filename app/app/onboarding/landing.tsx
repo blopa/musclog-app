@@ -321,7 +321,8 @@ export default function LandingScreen() {
                   </View>
 
                   <Button
-                    label={`${t('onboarding.landing.personalizedSetup')}   ${t('onboarding.landing.personalizedSetupSteps')}`}
+                    label={t('onboarding.landing.personalizedSetup')}
+                    labelAccessory={t('onboarding.landing.personalizedSetupSteps')}
                     onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
                     icon={Settings2}
                     iconPosition="left"
@@ -342,7 +343,8 @@ export default function LandingScreen() {
 
                 {/* Quick Setup */}
                 <Button
-                  label={`${t('onboarding.landing.quickSetup')}   ${t('onboarding.landing.quickSetupSteps')}`}
+                  label={t('onboarding.landing.quickSetup')}
+                  labelAccessory={t('onboarding.landing.quickSetupSteps')}
                   onPress={() => router.navigate('/app/onboarding/quick-preferences')}
                   icon={Zap}
                   iconPosition="left"

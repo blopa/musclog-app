@@ -108,7 +108,11 @@ type CreateMealModalProps = {
   initialMealType?: MealType;
 };
 
-async function buildIngredientFromFood(food: Food, amount: number, t: TFunction): Promise<Ingredient> {
+async function buildIngredientFromFood(
+  food: Food,
+  amount: number,
+  t: TFunction
+): Promise<Ingredient> {
   if (food.resolvedNutritionBasis === 'per_serving') {
     const nutrients = food.getNutrientsForServingCount(amount);
     const baseGrams = await food.getBaseGramWeight();
