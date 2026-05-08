@@ -10,6 +10,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+// Match iOS's native edge-swipe zone (~20pt from the left edge)
+const EDGE_ZONE_WIDTH = 20;
 
 type Props = {
   onClose: () => void;
@@ -29,33 +31,42 @@ export function SwipeToReturnWrapper({
   pointerEvents,
 }: Props) {
   const translateX = useSharedValue(0);
+  // Track whether the current gesture started within the left edge zone
+  const isEdgeGesture = useSharedValue(false);
 
   const panGesture = Gesture.Pan()
-    // Only activate on rightward drags; fail if the user scrolls vertically
     .activeOffsetX([20, Infinity])
     .failOffsetY([-15, 15])
     .enabled(enabled)
+    .onStart((e) => {
+      isEdgeGesture.value = e.x <= EDGE_ZONE_WIDTH;
+    })
     .onUpdate((e) => {
-      if (e.translationX > 0) {
+      if (isEdgeGesture.value && e.translationX > 0) {
         translateX.value = e.translationX;
       }
     })
     .onEnd((e) => {
-      if (e.translationX > SCREEN_WIDTH * 0.35 || e.velocityX > 800) {
+      if (isEdgeGesture.value && (e.translationX > SCREEN_WIDTH * 0.35 || e.velocityX > 800)) {
         translateX.value = withTiming(SCREEN_WIDTH, { duration: 200 }, () => {
           runOnJS(onClose)();
         });
       } else {
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
       }
+      isEdgeGesture.value = false;
     });
+
+  // Allow native scroll gestures (ScrollView) to run simultaneously with the
+  // pan gesture so the pan never blocks vertical scrolling.
+  const combinedGesture = Gesture.Simultaneous(panGesture, Gesture.Native());
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
 
   return (
-    <GestureDetector gesture={panGesture}>
+    <GestureDetector gesture={combinedGesture}>
       <Animated.View
         className={className}
         pointerEvents={pointerEvents}
