@@ -1,7 +1,11 @@
 import { Check } from 'lucide-react-native';
-import { Platform, Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, ScrollView as RNScrollView, Text, View, ViewStyle } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import { useTheme } from '@/hooks/useTheme';
+
+// iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView is covered by Gesture.Native() and wins correctly.
+const ScrollView = Platform.OS === 'ios' ? RNScrollView : GHScrollView;
 
 type FilterTab = {
   id: string;
