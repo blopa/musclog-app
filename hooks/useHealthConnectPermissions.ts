@@ -150,17 +150,16 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
       setError(null);
       const result = await healthConnectService.requestPermissions();
 
-      // Check if mandatory READ permissions are granted: Nutrition, BodyFat, Weight
-      const mandatoryPermissions = ['Nutrition', 'BodyFat', 'Weight'];
-      const deniedMandatory = result.denied.filter(
-        (p: Permission) => p.accessType === 'read' && mandatoryPermissions.includes(p.recordType)
-      );
+      const hasRequiredPermissions = result.denied.length === 0;
+      const hasAnyGrantedPermission = result.granted.length > 0;
+      const stats = await healthConnectService.getPermissionStats();
 
-      const hasMandatoryPermissions = deniedMandatory.length === 0;
-      setHasAllPermissions(hasMandatoryPermissions);
+      setHasAllPermissions(hasRequiredPermissions);
+      setHasAnyPermission(hasAnyGrantedPermission);
+      setPermissionStats(stats);
 
-      if (!hasMandatoryPermissions) {
-        const deniedTypes = deniedMandatory.map((p: Permission) => p.recordType).join(', ');
+      if (!hasRequiredPermissions) {
+        const deniedTypes = result.denied.map((p: Permission) => p.recordType).join(', ');
         showSnackbar('error', t('healthConnect.permissionsDenied', { types: deniedTypes }), {
           action: t('healthConnect.openSettings'),
           onAction: () => openSettings(),
@@ -168,7 +167,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
         });
       }
 
-      return hasMandatoryPermissions;
+      return hasRequiredPermissions;
     } catch (err) {
       const hcError = err as HealthConnectError;
       console.error('Error requesting permissions:', hcError);

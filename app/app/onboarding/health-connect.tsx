@@ -58,20 +58,55 @@ export default function HealthConnectScreen() {
     status,
     isAvailable,
     isInitializing,
+    hasAllPermissions,
     hasAnyPermission,
     permissionStats,
     requestPermissions,
     openSettings,
+    openDataManagement,
     error: hcError,
   } = useHealthConnectPermissions();
 
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();
   const isUnsupportedPlatform = Platform.OS === 'web' || status === 'NOT_SUPPORTED';
-  const primaryLabel =
-    isUnsupportedPlatform || permissionsRequested || hasAnyPermission
-      ? t('onboarding.healthConnect.continue')
-      : t('onboarding.healthConnect.allowHealthAccess');
+  let primaryLabel = t('onboarding.healthConnect.allowHealthAccess');
+  if (isUnsupportedPlatform || hasAllPermissions) {
+    primaryLabel = t('onboarding.healthConnect.continue');
+  } else if (permissionsRequested || hasAnyPermission) {
+    primaryLabel = t('onboarding.healthConnect.reviewHealthAccess');
+  }
+
+  const grantedPermissionLabels =
+    permissionStats?.permissions
+      .filter((permission) => permission.read || permission.write)
+      .map((permission) => {
+        switch (permission.recordType) {
+          case 'Height':
+            return t('onboarding.healthConnect.permissionTypes.height');
+          case 'Weight':
+            return t('onboarding.healthConnect.permissionTypes.weight');
+          case 'BodyFat':
+            return t('onboarding.healthConnect.permissionTypes.bodyFat');
+          case 'Nutrition':
+            return t('onboarding.healthConnect.permissionTypes.nutrition');
+          case 'TotalCaloriesBurned':
+            return t('onboarding.healthConnect.permissionTypes.totalCalories');
+          case 'ActiveCaloriesBurned':
+            return t('onboarding.healthConnect.permissionTypes.activeCalories');
+          case 'BasalMetabolicRate':
+            return t('onboarding.healthConnect.permissionTypes.basalMetabolicRate');
+          case 'ExerciseSession':
+            return t('onboarding.healthConnect.permissionTypes.exerciseSession');
+          case 'LeanBodyMass':
+            return t('onboarding.healthConnect.permissionTypes.leanBodyMass');
+          case 'Steps':
+            return t('onboarding.healthConnect.permissionTypes.steps');
+          default:
+            return permission.recordType;
+        }
+      })
+      .join(', ') ?? '';
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -181,18 +216,42 @@ export default function HealthConnectScreen() {
 
             {/* Connected count (moved out of button) */}
             {hasAnyPermission ? (
-              <Text
-                className="mb-2 text-center"
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  color: theme.colors.text.secondary,
-                }}
-              >
-                {t('onboarding.healthConnect.connectedCount', {
-                  granted: permissionStats?.granted || 0,
-                  total: permissionStats?.total || 0,
-                }) || `Connected (${permissionStats?.granted || 0}/${permissionStats?.total || 0})`}
-              </Text>
+              <>
+                <Text
+                  className="mb-2 text-center"
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.text.secondary,
+                  }}
+                >
+                  {Platform.OS === 'ios'
+                    ? t('onboarding.healthConnect.accessCount', {
+                        granted: permissionStats?.granted || 0,
+                        total: permissionStats?.total || 0,
+                      })
+                    : t('onboarding.healthConnect.connectedCount', {
+                        granted: permissionStats?.granted || 0,
+                        total: permissionStats?.total || 0,
+                      })}
+                </Text>
+                {grantedPermissionLabels ? (
+                  <Text
+                    className="mb-3 text-center"
+                    style={{
+                      fontSize: theme.typography.fontSize.xs,
+                      color: theme.colors.text.gray500,
+                    }}
+                  >
+                    {Platform.OS === 'ios'
+                      ? t('onboarding.healthConnect.requestedTypes', {
+                          types: grantedPermissionLabels,
+                        })
+                      : t('onboarding.healthConnect.connectedTypes', {
+                          types: grantedPermissionLabels,
+                        })}
+                  </Text>
+                ) : null}
+              </>
             ) : null}
 
             {/* Loading State */}
@@ -229,8 +288,8 @@ export default function HealthConnectScreen() {
                     return;
                   }
 
-                  if (hasAnyPermission) {
-                    // Already has at least one permission, navigate to next screen
+                  if (hasAllPermissions) {
+                    await enableSync();
                     router.navigate(resolvedNextRoute as any);
                     return;
                   }
@@ -239,20 +298,22 @@ export default function HealthConnectScreen() {
                   setPermissionsRequested(true);
                   const granted = await requestPermissions();
 
-                  // Enable sync only if all required permissions were granted
                   if (granted) {
                     await enableSync();
+                    router.navigate(resolvedNextRoute as any);
+                    return;
                   }
 
-                  // Navigate to next screen regardless of granted permissions
-                  router.navigate(resolvedNextRoute as any);
+                  if (hasAnyPermission) {
+                    await (Platform.OS === 'ios' ? openDataManagement() : openSettings());
+                  }
                 } catch (error) {
                   console.error('Error setting up Health Connect:', error);
                 } finally {
                   setIsProcessing(false);
                 }
               }}
-              icon={hasAnyPermission ? undefined : RefreshCw}
+              icon={hasAllPermissions ? undefined : RefreshCw}
               iconPosition="left"
               variant="gradientCta"
               size="md"
