@@ -7,6 +7,7 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
+import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedForLaterFoodMealModal';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
@@ -18,7 +19,6 @@ import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/u
 import { handleError } from '@/utils/handleError';
 
 import { MoveCopyMealModal } from './MoveCopyMealModal';
-import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedForLaterFoodMealModal';
 
 type SavedForLaterModalProps = {
   visible: boolean;

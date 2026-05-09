@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { FilterTabs } from '@/components/FilterTabs';
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
 import { QuoteCallout } from '@/components/theme/QuoteCallout';
 import { Slider } from '@/components/theme/Slider';

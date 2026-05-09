@@ -81,6 +81,29 @@ const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify
   LANDING_TRANSLATIONS
 )}, ${JSON.stringify(LANDING_LANGUAGE_STORAGE_KEY)});`;
 
+/**
+ * Sets --phone-scale on :root so the fixed-size phone frame (920×445px natural)
+ * scales to fit the viewport height. The entire frame+app assembly transforms
+ * together, keeping the app content at a consistent CSS-pixel resolution regardless
+ * of screen size.
+ */
+function phoneFrameScaler(naturalH: number) {
+  try {
+    function update() {
+      if (window.innerWidth < 1024) {
+        return;
+      }
+      const s = Math.min((window.innerHeight * 0.9) / naturalH, 1);
+      document.documentElement.style.setProperty('--phone-scale', s.toFixed(4));
+    }
+
+    update();
+    window.addEventListener('resize', update);
+  } catch (_) {}
+}
+
+const PHONE_FRAME_SCALER_SCRIPT = `(${phoneFrameScaler.toString()})(920);`;
+
 function landingPanelGate(base: string) {
   try {
     function update() {
@@ -135,6 +158,8 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <ScrollViewStyleReset />
+        {/* Scale phone frame to fit viewport before body renders */}
+        <script dangerouslySetInnerHTML={{ __html: PHONE_FRAME_SCALER_SCRIPT }} />
         {/* Gate: hides desktop wrapper on non-/app routes before body renders */}
         <script dangerouslySetInnerHTML={{ __html: LANDING_GATE_SCRIPT }} />
         <style>{`
@@ -146,6 +171,8 @@ export default function Root({ children }: PropsWithChildren) {
             width: 100% !important;
             max-height: none !important;
             overflow: visible !important;
+            transform: none !important;
+            margin: 0 !important;
           }
           .hide-desktop-wrapper .expo-web-app-shell {
             position: static !important;

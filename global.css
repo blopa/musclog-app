@@ -108,8 +108,11 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 	}
 
 	.hide-desktop-wrapper .expo-web-root {
+		width: 100% !important;
 		min-height: 100dvh !important;
 		height: auto !important;
+		transform: none !important;
+		margin: 0 !important;
 	}
 
 	.expo-web-body {
@@ -126,16 +129,25 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 
 	/*
 	 * PNG phone-wrapper.png is 1438×2976; screen hole insets from connected alpha=0 region.
+	 * Natural size: 920px tall × 445px wide (920 × 1438/2976 ≈ 444.5px).
+	 * A <head> script sets --phone-scale = min(vh*0.9/920, 1) so the entire frame+app
+	 * assembly scales as one unit. The app always renders at the same CSS-pixel size;
+	 * only the zoom of the whole phone image changes with the viewport.
+	 * transform-origin: top left keeps the frame flush with the flex gap after the
+	 * landing panel. Negative margins collapse the phantom layout space that
+	 * transform: scale() leaves behind, so flex centering stays correct.
 	 */
 	.expo-web-root {
 		flex: none;
-		--frame-h: min(100dvh, max(min(360px, 100dvh), 85dvh));
-		aspect-ratio: 1438 / 2976;
-		width: min(100vw, calc(var(--frame-h) * 1438 / 2976));
-		height: auto;
+		width: 445px;
+		height: 920px;
 		min-height: 0;
-		max-height: var(--frame-h);
+		max-height: none;
 		overflow: hidden;
+		transform: scale(var(--phone-scale, 1));
+		transform-origin: top left;
+		margin-bottom: calc((var(--phone-scale, 1) - 1) * 920px);
+		margin-right: calc((var(--phone-scale, 1) - 1) * 445px);
 	}
 
 	.expo-web-phone-frame {
