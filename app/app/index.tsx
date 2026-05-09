@@ -1,7 +1,7 @@
 import * as ExpoLinking from 'expo-linking';
 import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useCallback, useEffect, useState } from 'react';
+import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -129,6 +129,20 @@ export default function HomeScreen() {
     nutritionGoal,
     isLoading: isLoadingNutritionSummary,
   } = useDailyNutritionSummary({ date: today });
+
+  const weeklyRange = useMemo(() => {
+    const end = new Date(today);
+    end.setDate(end.getDate() - 1); // yesterday — exclude today (may be incomplete)
+    const start = new Date(today);
+    start.setDate(start.getDate() - 7); // 7 complete days before today
+    return { start, end };
+  }, [today]);
+
+  const { rangeNutrients: weeklyNutrients } = useNutritionLogs({
+    mode: 'range',
+    startDate: weeklyRange.start,
+    endDate: weeklyRange.end,
+  });
 
   // Get recent foods for display (limit to today's logs)
   const { recentNutritionLogs, isLoading: isLoadingRecentFoods } = useNutritionLogs({
@@ -433,6 +447,17 @@ export default function HomeScreen() {
                 secondaryNutrients={dailySecondaryNutrients}
                 intuitiveMode={intuitiveEatingMode}
                 nutritionDisplay={nutritionDisplay}
+                weeklyAverages={
+                  weeklyNutrients?.dailyAverages
+                    ? {
+                        calories: weeklyNutrients.dailyAverages.calories,
+                        protein: weeklyNutrients.dailyAverages.protein,
+                        carbs: weeklyNutrients.dailyAverages.carbs,
+                        fats: weeklyNutrients.dailyAverages.fat,
+                        fiber: weeklyNutrients.dailyAverages.fiber,
+                      }
+                    : undefined
+                }
                 menuButton={
                   <MenuButton
                     onPress={() => setIsDailySummaryMenuVisible(true)}

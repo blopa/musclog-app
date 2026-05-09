@@ -9,6 +9,8 @@
     "dailySummary": "Day Summary",
     "fats": "Fats",
     "fatsShort": "F",
+    "goalExceeded": "Goal Exceeded",
+    "goalReached": "Goal Reached",
     "kcal": "Kcal",
     "over": "Over",
     "protein": "Protein",
@@ -16,6 +18,7 @@
     "remaining": "Remaining",
     "setGoals": "Set Goals",
     "setGoalsToTrack": "Set Goals To Track",
-    "today": "Today"
+    "today": "Today",
+    "weeklyAvg": "Weekly Average"
   }
 }

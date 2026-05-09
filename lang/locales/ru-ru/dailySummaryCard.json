@@ -9,6 +9,8 @@
     "dailySummary": "Сводка дня",
     "fats": "Жиры",
     "fatsShort": "Ж",
+    "goalExceeded": "Цель Превышена",
+    "goalReached": "Цель Достигнута",
     "kcal": "Ккал",
     "over": "Превышение",
     "protein": "Белок",
@@ -16,6 +18,7 @@
     "remaining": "Остаток",
     "setGoals": "Установить цели",
     "setGoalsToTrack": "Установите цели для отслеживания",
-    "today": "Сегодня"
+    "today": "Сегодня",
+    "weeklyAvg": "Ср. за Неделю"
   }
 }

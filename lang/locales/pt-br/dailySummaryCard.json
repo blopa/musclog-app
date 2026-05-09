@@ -9,6 +9,8 @@
     "dailySummary": "Resumo do Dia",
     "fats": "Gordura",
     "fatsShort": "G",
+    "goalExceeded": "Meta Excedida",
+    "goalReached": "Meta Atingida",
     "kcal": "Kcal",
     "over": "Acima",
     "protein": "Proteína",
@@ -16,6 +18,7 @@
     "remaining": "Restante",
     "setGoals": "Definir Metas",
     "setGoalsToTrack": "Definir Metas para Acompanhar",
-    "today": "Hoje"
+    "today": "Hoje",
+    "weeklyAvg": "Média Semanal"
   }
 }
