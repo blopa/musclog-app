@@ -4,6 +4,10 @@ const migrationV15 = {
   toVersion: 15,
   steps: [
     addColumns({
+      table: 'saved_for_later_groups',
+      columns: [{ name: 'note', type: 'string', isOptional: true }],
+    }),
+    addColumns({
       table: 'foods',
       columns: [{ name: 'nutrition_basis', type: 'string', isOptional: true }],
     }),

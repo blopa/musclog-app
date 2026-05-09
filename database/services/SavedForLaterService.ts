@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database';
+import { encryptOptionalString } from '@/database/encryptionHelpers';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
 import SavedForLaterItem from '@/database/models/SavedForLaterItem';
@@ -21,8 +22,11 @@ export class SavedForLaterService {
     name: string,
     originalMealType: MealType,
     originalDate: number,
-    percentage: number = 100
+    percentage: number = 100,
+    note?: string
   ): Promise<SavedForLaterGroup> {
+    const encryptedNote = await encryptOptionalString(note);
+
     return await database.write(async () => {
       const now = Date.now();
       const saveFactor = Math.min(percentage, 100) / 100;
@@ -33,6 +37,7 @@ export class SavedForLaterService {
         .get<SavedForLaterGroup>('saved_for_later_groups')
         .prepareCreate((record) => {
           record.name = name;
+          record.noteRaw = encryptedNote || undefined;
           record.originalMealType = originalMealType;
           record.originalDate = originalDate;
           record.createdAt = now;

@@ -29,6 +29,7 @@ type SavedForLaterModalProps = {
 
 type GroupWithNutrients = {
   group: SavedForLaterGroup;
+  note: string;
   nutrients: {
     calories: number;
     protein: number;
@@ -70,7 +71,9 @@ export function SavedForLaterModal({
             nutrients.carbs += itemNutrients.carbs;
             nutrients.fat += itemNutrients.fat;
           }
-          return { group, nutrients };
+
+          const note = await group.getNote();
+          return { group, note, nutrients };
         })
       );
       setGroups(resolvedGroups);
@@ -155,6 +158,11 @@ export function SavedForLaterModal({
               <Text className="text-xs text-text-secondary">
                 {originalDate} • {mealTypeLabel}
               </Text>
+              {item.note ? (
+                <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
+                  {item.note}
+                </Text>
+              ) : null}
               <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
                 <Text className="text-sm font-semibold text-accent-primary">
                   {formatInteger(Math.round(item.nutrients.calories))} kcal

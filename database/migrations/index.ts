@@ -71,7 +71,7 @@ export const migrations = schemaMigrations({
     migrationV13,
     // Version 14: Add is_dynamic column to nutrition_goals
     migrationV14,
-    // Version 15: Add private/custom named servings for foods and meals
+    // Version 15: Add private/custom named servings for foods and meals add optional notes to saved-for-later meals
     migrationV15,
   ],
 });

@@ -460,6 +460,8 @@
       "saveForLaterSuccess": "Refeição salva para depois",
       "saveForLaterError": "Falha ao salvar refeição para depois",
       "saveForLaterPercentageLabel": "Porcentagem a salvar",
+      "saveForLaterNoteLabel": "Nota",
+      "saveForLaterNotePlaceholder": "Adicione um lembrete para depois",
       "saveForLaterPortionHint": "Os {{remaining}}% restantes permanecerão na sua {{mealType}}",
       "saveForLaterPortionHintAll": "Toda a refeição será salva para depois",
       "savedMealDefaultName": "Refeição salva de {{date}} - {{mealType}}",

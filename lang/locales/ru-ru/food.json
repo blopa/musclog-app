@@ -460,6 +460,8 @@
       "saveForLaterSuccess": "Блюдо сохранено на потом",
       "saveForLaterError": "Не удалось сохранить блюдо на потом",
       "saveForLaterPercentageLabel": "Процент для сохранения",
+      "saveForLaterNoteLabel": "Заметка",
+      "saveForLaterNotePlaceholder": "Добавьте напоминание на потом",
       "saveForLaterPortionHint": "Оставшиеся {{remaining}}% останутся в вашей {{mealType}}",
       "saveForLaterPortionHintAll": "Вся еда будет сохранена на потом",
       "savedMealDefaultName": "Сохранённое блюдо от {{date}} — {{mealType}}",

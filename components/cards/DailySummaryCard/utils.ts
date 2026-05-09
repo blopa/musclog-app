@@ -145,11 +145,16 @@ export function isNarrowLayout(
   const isNarrow = windowWidth < adjustedThreshold;
   const isVeryNarrow = windowWidth < adjustedThreshold * 0.8;
 
+  // When all 4 macros are shown each column is ~80px — use short labels for everything
+  if (enabledMacrosCount === 4) {
+    return [isNarrow, isNarrow, isNarrow, isNarrow];
+  }
+
   return [
     isNarrow, // protein
     isNarrow, // carbs
     isVeryNarrow, // fats
-    isVeryNarrow, // fiber (shorter threshold since fiber is less critical)
+    isVeryNarrow, // fiber
   ];
 }
 

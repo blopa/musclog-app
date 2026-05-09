@@ -611,7 +611,8 @@ export default function FoodScreen() {
   const handleSaveMealForLater = async (
     logs: NutritionLog[],
     mealType: MealType,
-    percentage: number = 100
+    percentage: number = 100,
+    note?: string
   ) => {
     setIsSaveForLaterLoading(true);
     try {
@@ -626,7 +627,8 @@ export default function FoodScreen() {
         defaultName,
         mealType,
         selectedDate.getTime(),
-        percentage
+        percentage,
+        note
       );
 
       showSnackbar('success', t('food.mealGroup.saveForLaterSuccess'));
@@ -2112,12 +2114,13 @@ export default function FoodScreen() {
           setSaveForLaterPendingLogs(null);
           setSaveForLaterPendingMealType(null);
         }}
-        onConfirm={async (percentage) => {
+        onConfirm={async (percentage, note) => {
           if (saveForLaterPendingLogs && saveForLaterPendingMealType) {
             await handleSaveMealForLater(
               saveForLaterPendingLogs,
               saveForLaterPendingMealType,
-              percentage
+              percentage,
+              note
             );
           }
           setSaveForLaterPendingLogs(null);

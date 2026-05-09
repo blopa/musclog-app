@@ -460,6 +460,8 @@
       "saveForLaterSuccess": "Maaltijd bewaard voor later",
       "saveForLaterError": "Bewaren van maaltijd voor later mislukt",
       "saveForLaterPercentageLabel": "Percentage om te bewaren",
+      "saveForLaterNoteLabel": "Notitie",
+      "saveForLaterNotePlaceholder": "Voeg een herinnering toe voor later",
       "saveForLaterPortionHint": "De resterende {{remaining}}% blijft in je {{mealType}}",
       "saveForLaterPortionHintAll": "De hele maaltijd wordt bewaard voor later",
       "savedMealDefaultName": "Bewaarde maaltijd van {{date}} - {{mealType}}",

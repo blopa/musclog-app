@@ -506,6 +506,7 @@ export const schema = appSchema({
       name: 'saved_for_later_groups',
       columns: [
         { name: 'name', type: 'string' },
+        { name: 'note', type: 'string', isOptional: true },
         { name: 'original_meal_type', type: 'string' },
         { name: 'original_date', type: 'number' },
         { name: 'created_at', type: 'number' },

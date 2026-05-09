@@ -273,9 +273,11 @@ export function DailySummaryCard({
                 <View className="flex-row items-end justify-between">
                   <Text
                     className="font-bold uppercase"
+                    numberOfLines={1}
                     style={{
                       fontSize: theme.typography.fontSize.xxs,
                       color: theme.colors.overlay.onColorful70,
+                      flexShrink: 1,
                     }}
                   >
                     {macro.label}

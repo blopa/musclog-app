@@ -327,7 +327,7 @@ export default function LandingScreen() {
                     icon={Settings2}
                     iconPosition="left"
                     variant="gradientCta"
-                    size="lg"
+                    size="md"
                     width="full"
                   />
                 </View>
@@ -349,7 +349,7 @@ export default function LandingScreen() {
                   icon={Zap}
                   iconPosition="left"
                   variant="outline"
-                  size="lg"
+                  size="md"
                   width="full"
                 />
                 <Text
