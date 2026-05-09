@@ -5,7 +5,8 @@ import { Pressable, Text, View } from 'react-native';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
 import { Slider } from '@/components/theme/Slider';
-import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import { TextInput } from '@/components/theme/TextInput';
+import { type MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 
@@ -14,7 +15,7 @@ const SAVE_PRESETS = [25, 50, 75, 100];
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (percentage: number) => Promise<void>;
+  onConfirm: (percentage: number, note?: string) => Promise<void>;
   isLoading?: boolean;
   mealType?: MealType;
 };
@@ -29,6 +30,7 @@ export function SaveForLaterPortionModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const [percentage, setPercentage] = useState(100);
+  const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isBusy = isLoading || isSubmitting;
@@ -36,6 +38,7 @@ export function SaveForLaterPortionModal({
   useEffect(() => {
     if (visible) {
       setPercentage(100);
+      setNote('');
     } else {
       setIsSubmitting(false);
     }
@@ -48,7 +51,7 @@ export function SaveForLaterPortionModal({
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {
-      await onConfirm(percentage);
+      await onConfirm(percentage, note.trim() || undefined);
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -141,6 +144,16 @@ export function SaveForLaterPortionModal({
         </View>
 
         <Slider value={percentage} min={1} max={100} step={1} onChange={setPercentage} />
+
+        <TextInput
+          label={t('food.mealGroup.saveForLaterNoteLabel')}
+          value={note}
+          onChangeText={setNote}
+          placeholder={t('food.mealGroup.saveForLaterNotePlaceholder')}
+          multiline
+          numberOfLines={4}
+          editable={!isBusy}
+        />
 
         {remaining > 0 ? (
           <Text className="text-center text-sm" style={{ color: theme.colors.text.secondary }}>

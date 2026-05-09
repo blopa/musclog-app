@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { TFunction } from 'i18next';
 import {
   BarChart3,
   CheckCircle,
@@ -84,7 +85,7 @@ import { formatDuration } from '@/utils/workout';
 const getHormonalInsightText = (
   currentPhase: string | null,
   intensityMultiplier: number,
-  t: (key: string, params?: Record<string, any>) => string
+  t: TFunction
 ) => {
   switch (currentPhase) {
     case 'ovulation':

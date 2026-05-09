@@ -9,6 +9,8 @@
     "dailySummary": "Dagsamenvatting",
     "fats": "Vetten",
     "fatsShort": "V",
+    "goalExceeded": "Doel Overschreden",
+    "goalReached": "Doel Bereikt",
     "kcal": "Kcal",
     "over": "Te veel",
     "protein": "Eiwit",
@@ -16,6 +18,7 @@
     "remaining": "Resterend",
     "setGoals": "Doelen instellen",
     "setGoalsToTrack": "Stel doelen in om bij te houden",
-    "today": "Vandaag"
+    "today": "Vandaag",
+    "weeklyAvg": "Weekgemiddelde"
   }
 }

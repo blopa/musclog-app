@@ -224,7 +224,7 @@ export function StoreButtons() {
       <div className="relative hidden [@media(min-width:767px)]:inline-flex" ref={qrButtonRef}>
         <button
           type="button"
-          aria-label={t('qrButton', { defaultValue: 'Show QR codes' })}
+          aria-label={t('qrButton')}
           aria-expanded={isQrOpen}
           aria-haspopup="dialog"
           className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-white/30 bg-black/85 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition-colors hover:border-white/50"
@@ -255,7 +255,7 @@ export function StoreButtons() {
                 <div className="mb-4 flex items-start justify-between gap-4">
                   <div>
                     <h3 id="store-qr-popover-title" className="text-base font-bold text-white">
-                      {t('qrTitle', { defaultValue: 'Scan to install' })}
+                      {t('qrTitle')}
                     </h3>
                     <p className="mt-1 text-sm text-gray-300">
                       {t('qrDescription', {
@@ -266,7 +266,7 @@ export function StoreButtons() {
                   </div>
                   <button
                     type="button"
-                    aria-label={t('close', { defaultValue: 'Close' })}
+                    aria-label={t('close')}
                     className="text-xl leading-none text-gray-400 transition-colors hover:text-white"
                     onClick={() => setIsQrOpen(false)}
                   >
@@ -277,16 +277,16 @@ export function StoreButtons() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <QRCodeCard
                     href={GOOGLE_PLAY_URL}
-                    label={t('qrGoogleLabel', { defaultValue: 'Google Play' })}
-                    alt={t('qrGoogleAlt', { defaultValue: 'Google Play QR code' })}
+                    label={t('qrGoogleLabel')}
+                    alt={t('qrGoogleAlt')}
                     onLinkClick={() =>
                       trackStoreButtonClick({ store: 'google_play', availability: 'available' })
                     }
                   />
                   <QRCodeCard
                     href={TESTFLIGHT_URL}
-                    label={t('qrAppleLabel', { defaultValue: 'TestFlight' })}
-                    alt={t('qrAppleAlt', { defaultValue: 'TestFlight QR code' })}
+                    label={t('qrAppleLabel')}
+                    alt={t('qrAppleAlt')}
                     onLinkClick={() =>
                       trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
                     }

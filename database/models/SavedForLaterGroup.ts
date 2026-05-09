@@ -1,6 +1,8 @@
 import { Model, Query } from '@nozbe/watermelondb';
 import { children, field } from '@nozbe/watermelondb/decorators';
 
+import { decryptOptionalString } from '@/database/encryptionHelpers';
+
 import type SavedForLaterItem from './SavedForLaterItem';
 
 export default class SavedForLaterGroup extends Model {
@@ -11,6 +13,7 @@ export default class SavedForLaterGroup extends Model {
   };
 
   @field('name') name!: string;
+  @field('note') noteRaw?: string;
   @field('original_meal_type') originalMealType!: string;
   @field('original_date') originalDate!: number;
 
@@ -19,4 +22,8 @@ export default class SavedForLaterGroup extends Model {
   @field('deleted_at') deletedAt?: number;
 
   @children('saved_for_later_items') items!: Query<SavedForLaterItem>;
+
+  async getNote(): Promise<string> {
+    return decryptOptionalString(this.noteRaw);
+  }
 }

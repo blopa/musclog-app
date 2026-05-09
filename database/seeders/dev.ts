@@ -1460,7 +1460,13 @@ async function seedFoods(): Promise<{ created: number }> {
       return { created: 0 };
     }
 
-    const shared100gPortion = await FoodPortionService.createFoodPortion('100g', 100);
+    const shared100gPortion = await FoodPortionService.createFoodPortion(
+      '100g',
+      100,
+      'scale',
+      'basic',
+      { kind: 'mass', scope: 'global' }
+    );
 
     await database.write(async () => {
       // Simple foods for easy testing
@@ -1649,7 +1655,10 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       { name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
     ];
 
-    const portion100g = await FoodPortionService.createFoodPortion('100g', 100);
+    const portion100g = await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+      kind: 'mass',
+      scope: 'global',
+    });
 
     const devFoods = new Map<string, Food>();
 

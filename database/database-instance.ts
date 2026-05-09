@@ -20,6 +20,7 @@ import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
+import MealFoodPortion from './models/MealFoodPortion';
 import MenstrualCycle from './models/MenstrualCycle';
 import Muscle from './models/Muscle';
 import NutritionCheckin from './models/NutritionCheckin';
@@ -69,6 +70,7 @@ export const database = new Database({
     FoodFoodPortion,
     Meal,
     MealFood,
+    MealFoodPortion,
     Muscle,
     NutritionLog,
     SavedForLaterGroup,

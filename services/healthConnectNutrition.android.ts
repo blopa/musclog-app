@@ -200,7 +200,10 @@ async function getOrCreateSentinelFood(): Promise<Food> {
 
   const portion =
     (await FoodPortionService.get100gPortion()) ??
-    (await FoodPortionService.getOrCreatePortion('100g', 100, 'scale', 'user'));
+    (await FoodPortionService.getOrCreatePortion('100g', 100, 'scale', 'basic', {
+      kind: 'mass',
+      scope: 'global',
+    }));
 
   const food = await database.get<Food>('foods').create((f) => {
     f.name = HC_SENTINEL_FOOD_NAME;

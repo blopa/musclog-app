@@ -1,4 +1,5 @@
 import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
@@ -8,6 +9,9 @@ import { blurFilter } from '@/utils/blurFilter';
 
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
+import { IngredientListModal, MealIngredient } from './IngredientListModal';
+
+export type { MealIngredient };
 
 type FoodData = {
   name: string;
@@ -43,9 +47,10 @@ type FoodNutritionSectionProps = {
   canEdit: boolean;
   showIncompleteWarning?: boolean;
   mode: FoodDetailsNutritionSectionMode;
-  onEditPress: () => void;
+  onEditPress?: () => void;
   nutritionalData: NutritionalData;
   servingSize: number;
+  servingBasis?: 'per_100g' | 'per_serving';
   isLoadingDetails: boolean;
   onTryAnotherSource?: () => void;
   isRefetchingSource?: boolean;
@@ -56,6 +61,8 @@ type FoodNutritionSectionProps = {
     onAccept: () => void;
   };
   intuitiveMode?: boolean;
+  showName?: boolean;
+  ingredients?: MealIngredient[];
 };
 
 export function FoodNutritionSectionCard({
@@ -65,6 +72,7 @@ export function FoodNutritionSectionCard({
   onEditPress,
   nutritionalData,
   servingSize,
+  servingBasis = 'per_100g',
   isLoadingDetails,
   showIncompleteWarning = false,
   onTryAnotherSource,
@@ -72,12 +80,15 @@ export function FoodNutritionSectionCard({
   alternateSourceNotFound = false,
   caloriesTooLowWarning,
   intuitiveMode = false,
+  showName = true,
+  ingredients,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
 
-  const scaleFactor = servingSize / 100;
+  const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
 
   const showAdditionalNutrition =
     mode !== 'meal' &&
@@ -95,8 +106,17 @@ export function FoodNutritionSectionCard({
   return (
     <View className="mt-6">
       <View className="relative">
-        <FoodInfoCard food={food} intuitiveMode={intuitiveMode} />
-        {canEdit && mode !== 'meal' ? (
+        <FoodInfoCard
+          food={food}
+          intuitiveMode={intuitiveMode}
+          showName={showName}
+          onInfoPress={
+            ingredients && ingredients.length > 0
+              ? () => setIngredientsModalVisible(true)
+              : undefined
+          }
+        />
+        {canEdit && mode !== 'meal' && onEditPress ? (
           <Pressable
             onPress={onEditPress}
             className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
@@ -112,6 +132,15 @@ export function FoodNutritionSectionCard({
           </Pressable>
         ) : null}
       </View>
+
+      {ingredients && ingredients.length > 0 ? (
+        <IngredientListModal
+          visible={ingredientsModalVisible}
+          onClose={() => setIngredientsModalVisible(false)}
+          ingredients={ingredients}
+          intuitiveMode={intuitiveMode}
+        />
+      ) : null}
 
       {showIncompleteWarning ? (
         <View

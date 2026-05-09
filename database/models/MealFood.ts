@@ -3,7 +3,7 @@ import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { handleError } from '@/utils/handleError';
 
-import Food from './Food';
+import Food, { type MicrosData } from './Food';
 import FoodPortion from './FoodPortion';
 import Meal from './Meal';
 
@@ -55,6 +55,15 @@ export default class MealFood extends Model {
 
   // Get the actual gram weight for this meal food entry
   async getGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        return 0;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
     if (this.portionId) {
       try {
         const portion = await this.portion;
@@ -68,6 +77,58 @@ export default class MealFood extends Model {
 
     // If no portion, assume amount is in grams
     return this.amount;
+  }
+
+  // Get a gram-equivalent for meal scaling/reference math.
+  async getReferenceGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        let baseGrams = await food.getBaseGramWeight();
+        if (this.portionId) {
+          try {
+            const portion = await this.portion;
+            baseGrams = portion?.gramWeight ?? baseGrams;
+          } catch {
+            // Fall back to the food default portion grams.
+          }
+        }
+        return this.amount * baseGrams;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
+    return this.getGramWeight();
+  }
+
+  async getMicros(): Promise<MicrosData> {
+    try {
+      const food = await this.food;
+      if (!food) {
+        return {};
+      }
+
+      if (food.resolvedNutritionBasis === 'per_serving') {
+        return Object.fromEntries(
+          Object.entries(food.micros ?? {}).map(([key, value]) => [
+            key,
+            value != null ? value * this.amount : undefined,
+          ])
+        ) as MicrosData;
+      }
+
+      const totalGrams = await this.getReferenceGramWeight();
+      const scale = totalGrams / 100;
+      return Object.fromEntries(
+        Object.entries(food.micros ?? {}).map(([key, value]) => [
+          key,
+          value != null ? value * scale : undefined,
+        ])
+      ) as MicrosData;
+    } catch {
+      return {};
+    }
   }
 
   // Get nutrients for this specific meal food entry
@@ -109,6 +170,10 @@ export default class MealFood extends Model {
         fat: 0,
         fiber: 0,
       };
+    }
+
+    if (food.resolvedNutritionBasis === 'per_serving') {
+      return food.getNutrientsForServingCount(this.amount);
     }
 
     if (this.portionId) {

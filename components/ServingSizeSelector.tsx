@@ -34,6 +34,12 @@ function isFarEnough(candidateGrams: number, existingGrams: number[]): boolean {
   });
 }
 
+function hasGramWeight<T extends { gramWeight?: number }>(
+  item: T
+): item is T & { gramWeight: number } {
+  return item.gramWeight != null;
+}
+
 export function ServingSizeSelector({
   value,
   onChange,
@@ -61,7 +67,7 @@ export function ServingSizeSelector({
 
   // Transform database portions to quick sizes format (label in display unit, value stays in grams)
   const databaseQuickSizes = useMemo(() => {
-    return portions.map((portion) => {
+    return portions.filter(hasGramWeight).map((portion) => {
       const display = gramsToDisplay(portion.gramWeight, units);
       const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
       const valueLabel =
@@ -80,7 +86,9 @@ export function ServingSizeSelector({
 
   const commonPortionQuickSizes = useMemo(() => {
     return COMMON_GRAM_WEIGHTS.flatMap((gw) => {
-      const match = allGlobalPortions.find((p) => p.gramWeight === gw);
+      const match = allGlobalPortions.find(
+        (p): p is typeof p & { gramWeight: number } => p.gramWeight != null && p.gramWeight === gw
+      );
       if (!match) {
         return [];
       }
@@ -167,8 +175,10 @@ export function ServingSizeSelector({
     // Food-specific DB portions (only present when food prop is passed with specific portions)
     const foodDbPortions = databaseQuickSizes;
 
-    // All already-shown items, used for dedup and ≥20% proximity check
-    const alreadyShown = [...apiPortions, ...foodDbPortions].filter(
+    // All already-shown items, used for dedup and >=20% proximity check.
+    // Food-specific portions are intentionally first so their labels win over
+    // generic API/default portions with the same gram weight.
+    const alreadyShown = [...foodDbPortions, ...apiPortions].filter(
       (p, i, arr) => arr.findIndex((q) => q.value === p.value) === i
     );
 
@@ -215,9 +225,12 @@ export function ServingSizeSelector({
     }
     // Rule 4 (apiCount >= 4): no supplement
 
-    // Build final list: API first, then food-specific DB, then common supplement (deduped)
-    const result: { label: string; value: number }[] = [...apiPortions];
-    for (const p of foodDbPortions) {
+    // Build final list: food-specific DB first, then API, then common supplement (deduped)
+    const result: { label: string; value: number }[] = foodDbPortions.filter(
+      (p, i, arr) => arr.findIndex((q) => q.value === p.value) === i
+    );
+
+    for (const p of apiPortions) {
       if (!result.some((r) => r.value === p.value)) {
         result.push(p);
       }
@@ -240,10 +253,12 @@ export function ServingSizeSelector({
   const handleIncrease = () => onChange(value + stepAmount);
   const handleChangeValue = (displayVal: number) => onChange(displayToGrams(displayVal, units));
 
-  const quickSizeTabs = effectiveQuickSizes.map((size) => ({
-    id: String(size.value),
-    label: size.label,
-  }));
+  const quickSizeTabs = effectiveQuickSizes
+    .filter((size, i, arr) => arr.findIndex((s) => s.value === size.value) === i)
+    .map((size) => ({
+      id: String(size.value),
+      label: size.label,
+    }));
 
   return (
     <GenericCard variant="default">

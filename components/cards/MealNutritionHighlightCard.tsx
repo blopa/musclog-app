@@ -1,12 +1,16 @@
-import { ReactNode } from 'react';
+import { Info } from 'lucide-react-native';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
 import { GenericCard } from './GenericCard';
+import { IngredientListModal, MealIngredient } from './IngredientListModal';
+
+export type { MealIngredient };
 
 export type MealNutritionHighlightCardProps = {
   /** Optional block above the nutrition grid (e.g. meal title + image in LogMealModal). */
@@ -20,10 +24,12 @@ export type MealNutritionHighlightCardProps = {
   /** When greater than zero, shown as a line below the macro grid. */
   fiber?: number;
   intuitiveMode?: boolean;
+  showIngredientsInfo?: boolean;
+  ingredients?: MealIngredient[];
 };
 
 /**
- * Gradient “meal details” card with the same layout as LogMealModal — calories + P/C/F columns.
+ * Gradient "meal details" card with the same layout as LogMealModal — calories + P/C/F columns.
  */
 export function MealNutritionHighlightCard({
   header,
@@ -34,13 +40,18 @@ export function MealNutritionHighlightCard({
   fat,
   fiber,
   intuitiveMode = false,
+  showIngredientsInfo = false,
+  ingredients,
 }: MealNutritionHighlightCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
+  const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
 
   const narrow = windowWidth < 380;
+
+  const showInfoButton = showIngredientsInfo && ingredients && ingredients.length > 0;
 
   let statsMarginTop = '';
   if (header && !caption) {
@@ -50,152 +61,173 @@ export function MealNutritionHighlightCard({
   }
 
   return (
-    <GenericCard variant="highlighted" backgroundVariant="gradient">
-      <View className="relative">
-        <View
-          className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: theme.colors.accent.primary }}
-        />
+    <>
+      <GenericCard variant="highlighted" backgroundVariant="gradient">
+        <View className="relative">
+          <View
+            className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
+            style={{ backgroundColor: theme.colors.accent.primary }}
+          />
 
-        <View className="relative z-10 px-4 py-4">
-          {header}
-
-          {caption ? (
-            <Text
-              className={`text-sm ${header ? 'mt-4' : ''} mb-2`}
-              style={{ color: theme.colors.text.secondary }}
+          {showInfoButton ? (
+            <Pressable
+              onPress={() => setIngredientsModalVisible(true)}
+              hitSlop={8}
+              className="absolute right-3 top-3 z-20 active:opacity-60"
             >
-              {caption}
-            </Text>
+              <Info size={16} color={theme.colors.accent.primary} />
+            </Pressable>
           ) : null}
 
-          <View className={`flex-row gap-2 ${statsMarginTop}`}>
-            <View
-              className="flex-1 flex-col items-center rounded-lg p-2"
-              style={{
-                backgroundColor: theme.colors.background.white5,
-                alignItems: 'center',
-              }}
-            >
+          <View className="relative z-10 px-4 py-4">
+            {header}
+
+            {caption ? (
               <Text
-                className="mb-1 text-xs font-medium"
+                className={`text-sm ${header ? 'mt-4' : ''} mb-2`}
                 style={{ color: theme.colors.text.secondary }}
               >
-                {t('food.calories')}
+                {caption}
               </Text>
-              <Text
-                className="text-lg font-bold"
-                style={[
-                  { color: theme.colors.text.primary },
-                  intuitiveMode ? blurFilter(4) : undefined,
-                ]}
+            ) : null}
+
+            <View className={`flex-row gap-2 ${statsMarginTop}`}>
+              <View
+                className="flex-1 flex-col items-center rounded-lg p-2"
+                style={{
+                  backgroundColor: theme.colors.background.white5,
+                  alignItems: 'center',
+                }}
               >
-                {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)}
-              </Text>
-              <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                {t('food.common.kcal')}
-              </Text>
+                <Text
+                  className="mb-1 text-xs font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('food.calories')}
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={[
+                    { color: theme.colors.text.primary },
+                    intuitiveMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)}
+                </Text>
+                <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                  {t('food.common.kcal')}
+                </Text>
+              </View>
+
+              <View
+                className="flex-1 flex-col items-center rounded-lg p-2"
+                style={{
+                  backgroundColor: theme.colors.background.white5,
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  className="mb-1 text-xs font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {narrow ? t('food.macros.proteinShort') : t('food.macros.protein')}
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={[
+                    { color: theme.colors.accent.primary },
+                    intuitiveMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {intuitiveMode ? '0' : formatRoundedDecimal(protein, 2)}
+                </Text>
+                <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                  g
+                </Text>
+              </View>
+
+              <View
+                className="flex-1 flex-col items-center rounded-lg p-2"
+                style={{
+                  backgroundColor: theme.colors.background.white5,
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  className="mb-1 text-xs font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {narrow ? t('food.macros.carbsShort') : t('food.macros.carbs')}
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={[
+                    { color: theme.colors.status.info },
+                    intuitiveMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {intuitiveMode ? '0' : formatRoundedDecimal(carbs, 2)}
+                </Text>
+                <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                  g
+                </Text>
+              </View>
+
+              <View
+                className="flex-1 flex-col items-center rounded-lg p-2"
+                style={{
+                  backgroundColor: theme.colors.background.white5,
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  className="mb-1 text-xs font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {narrow ? t('food.macros.fatShort') : t('food.macros.fat')}
+                </Text>
+                <Text
+                  className="text-lg font-bold"
+                  style={[
+                    { color: theme.colors.status.amber },
+                    intuitiveMode ? blurFilter(4) : undefined,
+                  ]}
+                >
+                  {intuitiveMode ? '0' : formatRoundedDecimal(fat, 2)}
+                </Text>
+                <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                  g
+                </Text>
+              </View>
             </View>
 
-            <View
-              className="flex-1 flex-col items-center rounded-lg p-2"
-              style={{
-                backgroundColor: theme.colors.background.white5,
-                alignItems: 'center',
-              }}
-            >
+            {fiber != null && fiber > 0.05 ? (
               <Text
-                className="mb-1 text-xs font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {narrow ? t('food.macros.proteinShort') : t('food.macros.protein')}
-              </Text>
-              <Text
-                className="text-lg font-bold"
+                className="mt-3 text-center text-xs"
                 style={[
-                  { color: theme.colors.accent.primary },
+                  { color: theme.colors.text.secondary },
                   intuitiveMode ? blurFilter(4) : undefined,
                 ]}
               >
-                {intuitiveMode ? '0' : formatRoundedDecimal(protein, 2)}
+                {t('food.macroValueFormat', {
+                  value: intuitiveMode ? '0' : formatRoundedDecimal(fiber, 1),
+                  unit: t('common.units.g'),
+                  label: t('food.macros.fiber'),
+                })}
               </Text>
-              <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                g
-              </Text>
-            </View>
-
-            <View
-              className="flex-1 flex-col items-center rounded-lg p-2"
-              style={{
-                backgroundColor: theme.colors.background.white5,
-                alignItems: 'center',
-              }}
-            >
-              <Text
-                className="mb-1 text-xs font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {narrow ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-              </Text>
-              <Text
-                className="text-lg font-bold"
-                style={[
-                  { color: theme.colors.status.info },
-                  intuitiveMode ? blurFilter(4) : undefined,
-                ]}
-              >
-                {intuitiveMode ? '0' : formatRoundedDecimal(carbs, 2)}
-              </Text>
-              <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                g
-              </Text>
-            </View>
-
-            <View
-              className="flex-1 flex-col items-center rounded-lg p-2"
-              style={{
-                backgroundColor: theme.colors.background.white5,
-                alignItems: 'center',
-              }}
-            >
-              <Text
-                className="mb-1 text-xs font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {narrow ? t('food.macros.fatShort') : t('food.macros.fat')}
-              </Text>
-              <Text
-                className="text-lg font-bold"
-                style={[
-                  { color: theme.colors.status.amber },
-                  intuitiveMode ? blurFilter(4) : undefined,
-                ]}
-              >
-                {intuitiveMode ? '0' : formatRoundedDecimal(fat, 2)}
-              </Text>
-              <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                g
-              </Text>
-            </View>
+            ) : null}
           </View>
-
-          {fiber != null && fiber > 0.05 ? (
-            <Text
-              className="mt-3 text-center text-xs"
-              style={[
-                { color: theme.colors.text.secondary },
-                intuitiveMode ? blurFilter(4) : undefined,
-              ]}
-            >
-              {t('food.macroValueFormat', {
-                value: intuitiveMode ? '0' : formatRoundedDecimal(fiber, 1),
-                unit: t('common.units.g'),
-                label: t('food.macros.fiber'),
-              })}
-            </Text>
-          ) : null}
         </View>
-      </View>
-    </GenericCard>
+      </GenericCard>
+
+      {showInfoButton ? (
+        <IngredientListModal
+          visible={ingredientsModalVisible}
+          onClose={() => setIngredientsModalVisible(false)}
+          ingredients={ingredients ?? []}
+          intuitiveMode={intuitiveMode}
+        />
+      ) : null}
+    </>
   );
 }

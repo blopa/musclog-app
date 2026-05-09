@@ -57,7 +57,13 @@ export class MealService {
   static async createMeal(
     name: string,
     description?: string,
-    preparedWeightGrams?: number
+    preparedWeightGrams?: number,
+    options?: {
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number;
+      defaultPortionName?: string;
+      servingGrams?: number;
+    }
   ): Promise<Meal> {
     return await database.write(async () => {
       const now = Date.now();
@@ -68,6 +74,10 @@ export class MealService {
         meal.description = description ?? '';
         meal.isFavorite = false;
         meal.preparedWeightGrams = preparedWeightGrams;
+        meal.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
+        meal.recipeServingsCount = options?.recipeServingsCount ?? 1;
+        meal.defaultPortionName = options?.defaultPortionName;
+        meal.servingGrams = options?.servingGrams;
         meal.createdAt = now;
         meal.updatedAt = now;
       });
@@ -180,6 +190,10 @@ export class MealService {
       name?: string;
       description?: string;
       preparedWeightGrams?: number | null;
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number | null;
+      defaultPortionName?: string | null;
+      servingGrams?: number | null;
     }
   ): Promise<Meal> {
     return await database.write(async () => {
@@ -200,6 +214,22 @@ export class MealService {
 
         if ('preparedWeightGrams' in updates) {
           record.preparedWeightGrams = updates.preparedWeightGrams ?? undefined;
+        }
+
+        if ('nutritionBasis' in updates && updates.nutritionBasis !== undefined) {
+          record.nutritionBasis = updates.nutritionBasis;
+        }
+
+        if ('recipeServingsCount' in updates) {
+          record.recipeServingsCount = updates.recipeServingsCount ?? undefined;
+        }
+
+        if ('defaultPortionName' in updates) {
+          record.defaultPortionName = updates.defaultPortionName ?? undefined;
+        }
+
+        if ('servingGrams' in updates) {
+          record.servingGrams = updates.servingGrams ?? undefined;
         }
 
         record.updatedAt = Date.now();
@@ -274,6 +304,10 @@ export class MealService {
       meal.description = originalMeal.description;
       meal.isFavorite = false;
       meal.preparedWeightGrams = originalMeal.preparedWeightGrams;
+      meal.nutritionBasis = originalMeal.nutritionBasis;
+      meal.recipeServingsCount = originalMeal.recipeServingsCount;
+      meal.defaultPortionName = originalMeal.defaultPortionName;
+      meal.servingGrams = originalMeal.servingGrams;
       meal.createdAt = now;
       meal.updatedAt = now;
     });
@@ -309,7 +343,13 @@ export class MealService {
     }[],
     description?: string,
     isAiGenerated = false,
-    preparedWeightGrams?: number
+    preparedWeightGrams?: number,
+    options?: {
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number;
+      defaultPortionName?: string;
+      servingGrams?: number;
+    }
   ): Promise<Meal> {
     this.validateMealFoodItems(foodItems);
 
@@ -323,6 +363,10 @@ export class MealService {
       mealRecord.description = description ?? '';
       mealRecord.isFavorite = false;
       mealRecord.preparedWeightGrams = preparedWeightGrams;
+      mealRecord.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
+      mealRecord.recipeServingsCount = options?.recipeServingsCount ?? 1;
+      mealRecord.defaultPortionName = options?.defaultPortionName;
+      mealRecord.servingGrams = options?.servingGrams;
       mealRecord.createdAt = now;
       mealRecord.updatedAt = now;
     });

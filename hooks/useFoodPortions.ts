@@ -12,8 +12,8 @@ export const FoodPortionUtils = {
    */
   getDefaultPortion: (portions: FoodPortion[]): FoodPortion | null => {
     return (
-      portions.find((p) => p.source === 'app' && p.gramWeight === 100) ||
-      portions.find((p) => p.source === 'app') ||
+      portions.find((p) => p.resolvedSource === 'basic' && p.gramWeight === 100) ||
+      portions.find((p) => p.resolvedSource === 'basic') ||
       null
     );
   },
@@ -22,7 +22,7 @@ export const FoodPortionUtils = {
    * User-defined portions (`source !== 'app'`).
    */
   getNonDefaultPortions: (portions: FoodPortion[]): FoodPortion[] => {
-    return portions.filter((p) => p.source !== 'app');
+    return portions.filter((p) => p.resolvedSource !== 'basic');
   },
 
   /**
@@ -30,8 +30,8 @@ export const FoodPortionUtils = {
    */
   sortPortions: (portions: FoodPortion[]): FoodPortion[] => {
     return [...portions].sort((a, b) => {
-      const aApp = a.source === 'app';
-      const bApp = b.source === 'app';
+      const aApp = a.resolvedSource === 'basic';
+      const bApp = b.resolvedSource === 'basic';
       if (aApp !== bApp) {
         return aApp ? -1 : 1;
       }
@@ -131,7 +131,7 @@ export function useFoodPortions({
       } else {
         // Newest first (created_at desc); fetch one extra row to detect hasMore
         const pageSize = initialLimit;
-        const sourceOpt = includeAllPortionSources ? undefined : { source: 'app' as const };
+        const sourceOpt = includeAllPortionSources ? undefined : { source: 'basic' as const };
         const batch = await FoodPortionService.getPortionsPaginated(pageSize + 1, 0, sourceOpt);
 
         if (batch.length === 0) {
@@ -171,7 +171,7 @@ export function useFoodPortions({
     await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
     try {
-      const sourceOpt = includeAllPortionSources ? undefined : { source: 'app' as const };
+      const sourceOpt = includeAllPortionSources ? undefined : { source: 'basic' as const };
       const batch = await FoodPortionService.getPortionsPaginated(
         batchSize + 1,
         currentOffset,
@@ -300,8 +300,8 @@ export function useFoodPortions({
       return allPortions;
     }
 
-    // Otherwise, show built-in catalog portions (createCommonPortions uses source='app').
-    return allPortions.filter((portion) => portion.source === 'app');
+    // Otherwise, show built-in catalog portions.
+    return allPortions.filter((portion) => portion.resolvedSource === 'basic');
   }, [food, foodSpecificPortions, allPortions, includeAllPortionSources]);
 
   // Return appropriate type based on mode

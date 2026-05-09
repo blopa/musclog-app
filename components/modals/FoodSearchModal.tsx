@@ -1,4 +1,5 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import type { TFunction } from 'i18next';
 import {
   AlertTriangle,
   Apple,
@@ -103,6 +104,7 @@ type FoodSearchModalProps = {
   mealType?: MealType; // e.g., "Breakfast", "Lunch", etc. If not provided, inferred from current hour
   /** Date to use when logging food (e.g. the date currently selected on the food screen). */
   logDate?: Date;
+  initialTab?: 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
@@ -122,7 +124,7 @@ function getMealsTabLabel(options: {
   searchQuery: string;
   filteredCount: number;
   totalCount?: number;
-  t: (key: string) => string;
+  t: TFunction;
 }): string {
   const { searchQuery, filteredCount, totalCount, t } = options;
   const base = t('foodSearch.filters.meals');
@@ -294,7 +296,7 @@ function getSectionHeaderTitle(
   hasLocalResults: boolean,
   hasApiResults: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isInitialLoad) {
     return t('foodSearch.searching');
@@ -310,7 +312,7 @@ function getSectionHeaderTitle(
 function getSearchingStatusText(
   isLoadingLocal: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isLoadingLocal && isLoadingAPI) {
     return t('foodSearch.searchingLocalAndAPI');
@@ -328,6 +330,7 @@ export function FoodSearchModal({
   onClose,
   mealType,
   logDate,
+  initialTab = 'all',
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
@@ -854,6 +857,14 @@ export function FoodSearchModal({
     filteredMealCardsData.length,
     mealsTotalCount,
   ]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    setActiveFilter(initialTab);
+  }, [initialTab, visible]);
 
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {

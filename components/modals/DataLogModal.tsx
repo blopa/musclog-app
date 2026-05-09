@@ -707,7 +707,7 @@ export function DataLogModal({
       // Check if portion is used in any foods
       const foodFoodPortions = await database
         .get('food_food_portions')
-        .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       // Check if portion is used in any meals
@@ -716,13 +716,23 @@ export function DataLogModal({
         .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const mealFoodPortions = await database
+        .get('meal_food_portions')
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
       // Check if portion is used in any nutrition logs
       const nutritionLogs = await database
         .get('nutrition_logs')
         .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      if (foodFoodPortions.length > 0 || mealFoods.length > 0 || nutritionLogs.length > 0) {
+      if (
+        foodFoodPortions.length > 0 ||
+        mealFoods.length > 0 ||
+        mealFoodPortions.length > 0 ||
+        nutritionLogs.length > 0
+      ) {
         const parts = [];
         if (foodFoodPortions.length > 0) {
           parts.push(
@@ -731,13 +741,15 @@ export function DataLogModal({
             })
           );
         }
-        if (mealFoods.length > 0) {
+
+        if (mealFoods.length > 0 || mealFoodPortions.length > 0) {
           parts.push(
             t('food.managePortionData.usedInMeals', {
-              count: mealFoods.length,
+              count: mealFoods.length + mealFoodPortions.length,
             })
           );
         }
+
         if (nutritionLogs.length > 0) {
           parts.push(
             t('food.managePortionData.usedInLogs', {
@@ -745,6 +757,7 @@ export function DataLogModal({
             })
           );
         }
+
         return t('food.managePortionData.deletePortionWarning', {
           usage: parts.join(', '),
         });

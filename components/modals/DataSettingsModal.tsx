@@ -19,7 +19,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
@@ -29,6 +29,7 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { clearAllAppData } from '@/utils/clearAppData';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 
@@ -90,6 +91,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
 
   // Advanced data management confirmation modal state
   const [advancedDataConfirmModalVisible, setAdvancedDataConfirmModalVisible] = useState(false);
+  const [clearAppDataModalVisible, setClearAppDataModalVisible] = useState(false);
 
   const handleExportConfirm = useCallback(async () => {
     if (debouncedRequireExportEncryption && !encryptionPhrase.trim()) {
@@ -125,15 +127,49 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
     }
   }, [decryptionPhrase, t]);
 
-  const handleOpenAppSettings = useCallback(async () => {
-    try {
-      await Linking.openSettings();
-    } catch (err) {
-      handleError(err, 'AdvancedSettingsModal.handleOpenAppSettings', {
-        snackbarMessage: t('settings.advancedSettings.openSettingsFailedMessage'),
-      });
+  const authenticateForDangerousAction = useCallback(
+    async (promptMessage: string): Promise<boolean> => {
+      try {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+        if (!hasHardware || !isEnrolled) {
+          return true;
+        }
+
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage,
+        });
+
+        return result.success;
+      } catch (error) {
+        handleError(error, 'DataSettingsModal.authenticateForDangerousAction');
+        return false;
+      }
+    },
+    []
+  );
+
+  const handleClearAppDataConfirm = useCallback(async () => {
+    const authenticated = await authenticateForDangerousAction(
+      t('settings.advancedSettings.clearAppDataAuthPrompt')
+    );
+
+    if (!authenticated) {
+      return;
     }
-  }, [t]);
+
+    setLoading(true);
+    try {
+      await clearAllAppData();
+    } catch (err) {
+      handleError(err, 'DataSettingsModal.handleClearAppDataConfirm', {
+        snackbarMessage: t('settings.advancedSettings.clearAppDataFailedMessage'),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [authenticateForDangerousAction, t]);
 
   const onRequireExportEncryptionToggle = useCallback(
     async (value: boolean) => {
@@ -522,7 +558,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         >
           {t('settings.advancedSettings.dangerZone')}
         </Text>
-        {/* Clear App Data - Android only */}
+        {/* Clear App Data */}
         <SettingsCard
           icon={<Database size={theme.iconSize.xl} color={theme.colors.status.error} />}
           iconContainerStyle={{
@@ -534,7 +570,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
           title={t('settings.advancedSettings.clearAppData')}
           subtitle={t('settings.advancedSettings.clearAppDataSubtitle')}
           titleColor={theme.colors.status.error}
-          onPress={handleOpenAppSettings}
+          onPress={() => setClearAppDataModalVisible(true)}
           rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />}
         />
         <LegalLinksCard />
@@ -767,6 +803,21 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         message={t('settings.advancedSettings.enableAdvancedDataManagementConfirmMessage')}
         confirmLabel={t('common.confirm')}
         variant="destructive"
+      />
+      <ConfirmationModal
+        visible={clearAppDataModalVisible}
+        onClose={() => {
+          if (!loading) {
+            setClearAppDataModalVisible(false);
+          }
+        }}
+        onConfirm={handleClearAppDataConfirm}
+        title={t('settings.advancedSettings.clearAppDataConfirmTitle')}
+        message={t('settings.advancedSettings.clearAppDataConfirmMessage')}
+        warning={t('settings.advancedSettings.clearAppDataWarning')}
+        confirmLabel={t('settings.advancedSettings.clearAppDataConfirmButton')}
+        variant="destructive"
+        isLoading={loading}
       />
     </FullScreenModal>
   );

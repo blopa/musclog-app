@@ -21,6 +21,7 @@ import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
 } from '@/components/cards/FoodNutritionSectionCard';
+import { MealIngredient } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import {
@@ -31,6 +32,7 @@ import {
 } from '@/components/MicronutrientsExpandableSection';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
+import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useSmartCamera } from '@/context/SmartCameraContext';
@@ -99,6 +101,38 @@ import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
+
+function computeMealScaleFactor(
+  meal:
+    | {
+        resolvedNutritionBasis: 'per_recipe' | 'per_serving' | 'per_gram';
+        recipeServingsCount?: number;
+        servingGrams?: number;
+      }
+    | null
+    | undefined,
+  mealAmountGrams: number,
+  effectiveMealAmountGrams: number,
+  totalMealGrams: number
+): number {
+  if (!meal) {
+    return 1;
+  }
+
+  const clamped = Math.max(0.01, mealAmountGrams);
+
+  if (meal.resolvedNutritionBasis === 'per_serving') {
+    return clamped / Math.max(1, meal.recipeServingsCount ?? 1);
+  }
+
+  if (meal.resolvedNutritionBasis === 'per_gram') {
+    return totalMealGrams > 0
+      ? (clamped * Math.max(1, meal.servingGrams ?? 1)) / totalMealGrams
+      : 1;
+  }
+
+  return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
+}
 
 function areCoreMacrosEffectivelyZero(data: {
   calories?: unknown;
@@ -236,11 +270,13 @@ export function FoodMealDetailsModal({
     fat: number;
     fiber: number;
   } | null>(null);
+  const [mealIngredientLabels, setMealIngredientLabels] = useState<MealIngredient[]>([]);
 
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
   );
+  const [servingUnitLabel, setServingUnitLabel] = useState<string>('');
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
   const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
@@ -301,6 +337,12 @@ export function FoodMealDetailsModal({
   };
 
   const mode = getMode();
+  const resolvedFoodServingMode = foodLog
+    ? foodLogDecrypted?.snapshotBasis === 'per_serving'
+    : food?.resolvedNutritionBasis === 'per_serving' ||
+      localFood?.resolvedNutritionBasis === 'per_serving';
+  const resolvedMealServingMode =
+    meal?.resolvedNutritionBasis === 'per_serving' || meal?.resolvedNutritionBasis === 'per_gram';
 
   // Sync localCanEdit when the canEdit prop changes or alwaysAllowFoodEditing changes.
   useEffect(() => {
@@ -429,7 +471,9 @@ export function FoodMealDetailsModal({
         }
 
         // Try to find close match (within 5g)
-        const closeMatch = allPortions.find((p) => Math.abs(p.gramWeight - servingSizeGrams) <= 5);
+        const closeMatch = allPortions.find(
+          (p) => p.gramWeight != null && Math.abs(p.gramWeight - servingSizeGrams) <= 5
+        );
         if (closeMatch) {
           return closeMatch;
         }
@@ -441,7 +485,8 @@ export function FoodMealDetailsModal({
           portionName,
           servingSizeGrams,
           undefined, // icon
-          'user'
+          'custom',
+          { kind: 'mass', scope: 'private' }
         );
 
         return newPortion;
@@ -523,6 +568,7 @@ export function FoodMealDetailsModal({
   useEffect(() => {
     if (!meal) {
       setMealNutrients(null);
+      setMealIngredientLabels([]);
       setTotalMealGrams(0);
       setMealAmountGrams(0);
       return;
@@ -544,30 +590,61 @@ export function FoodMealDetailsModal({
         });
         if (mealWithFoods?.foods) {
           let rawGrams = 0;
+          const ingredientLabels: MealIngredient[] = [];
           for (const mf of mealWithFoods.foods) {
-            rawGrams += await mf.getGramWeight();
+            const [gramWeight, nutrients] = await Promise.all([
+              mf.getReferenceGramWeight(),
+              mf.getNutrients(),
+            ]);
+            rawGrams += gramWeight;
+
+            let ingredientName = t('food.unknownFood');
+            try {
+              const ingredientFood = await mf.food;
+              if (ingredientFood?.name?.trim()) {
+                ingredientName = ingredientFood.name.trim();
+              }
+            } catch (error) {
+              console.warn('Error loading meal ingredient food:', error);
+            }
+
+            ingredientLabels.push({
+              name: ingredientName,
+              grams: roundToDecimalPlaces(gramWeight),
+              kcal: roundToDecimalPlaces(nutrients.calories),
+              protein: roundToDecimalPlaces(nutrients.protein),
+              carbs: roundToDecimalPlaces(nutrients.carbs),
+              fat: roundToDecimalPlaces(nutrients.fat),
+            });
           }
+          setMealIngredientLabels(ingredientLabels);
           // Use prepared weight as the portion reference when the user set it,
           // otherwise fall back to the raw ingredient sum.
           const referenceGrams = Math.round(meal.preparedWeightGrams ?? rawGrams);
           setTotalMealGrams(referenceGrams);
-          setMealAmountGrams(referenceGrams > 0 ? referenceGrams : 100);
+          if (meal.resolvedNutritionBasis === 'per_recipe') {
+            setMealAmountGrams(referenceGrams > 0 ? referenceGrams : 100);
+          } else {
+            setMealAmountGrams(1);
+          }
         } else {
+          setMealIngredientLabels([]);
           setTotalMealGrams(0);
-          setMealAmountGrams(100);
+          setMealAmountGrams(meal.resolvedNutritionBasis === 'per_recipe' ? 100 : 1);
         }
       } catch (error) {
         console.error('Error loading meal nutrients:', error);
         setMealNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+        setMealIngredientLabels([]);
         setTotalMealGrams(0);
-        setMealAmountGrams(100);
+        setMealAmountGrams(meal.resolvedNutritionBasis === 'per_recipe' ? 100 : 1);
       } finally {
         setIsLoadingMealNutrients(false);
       }
     };
 
     loadMealNutrients();
-  }, [meal]);
+  }, [locale, meal, t, units]);
 
   // If we are given a foodLog, initialize edit mode values from it and load decrypted snapshot
   useEffect(() => {
@@ -1239,16 +1316,20 @@ export function FoodMealDetailsModal({
       const loadDefaultSize = async () => {
         if (foodLog) {
           try {
-            const grams = await foodLog.getGramWeight();
-            if (typeof grams === 'number' && !Number.isNaN(grams)) {
-              setServingSize(Math.round(grams));
+            const displayAmount = await foodLog.getDisplayAmount();
+            if (typeof displayAmount.value === 'number' && !Number.isNaN(displayAmount.value)) {
+              setServingSize(Math.round(displayAmount.value * 1000) / 1000);
               hasInitializedServingSizeRef.current = true;
             }
           } catch (e) {
             // ignore
           }
         } else if (food || localFood) {
-          setServingSize(initialServingSize || 100);
+          const baseValue =
+            (food || localFood)?.resolvedNutritionBasis === 'per_serving'
+              ? initialServingSize || 1
+              : initialServingSize || 100;
+          setServingSize(baseValue);
           hasInitializedServingSizeRef.current = true;
         } else {
           const defaultSize = await getDefaultServingSize();
@@ -1337,10 +1418,71 @@ export function FoodMealDetailsModal({
     return result.length > 0 ? result : undefined;
   }, [productFromSearch, productDetails]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadServingUnit = async () => {
+      if (
+        meal?.resolvedNutritionBasis === 'per_serving' ||
+        meal?.resolvedNutritionBasis === 'per_gram'
+      ) {
+        if (!cancelled) {
+          setServingUnitLabel(meal.defaultPortionName || t('food.foodDetails.serving'));
+        }
+
+        return;
+      }
+
+      if (foodLog?.snapshotBasis === 'per_serving') {
+        try {
+          const portion = foodLog.portionId ? await foodLog.portion : null;
+          if (!cancelled) {
+            setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
+          }
+        } catch {
+          if (!cancelled) {
+            setServingUnitLabel(t('food.foodDetails.serving'));
+          }
+        }
+
+        return;
+      }
+
+      const targetFood = food || localFood;
+      if (targetFood?.resolvedNutritionBasis === 'per_serving') {
+        try {
+          const portion = await targetFood.getDefaultPortionAsync();
+          if (!cancelled) {
+            setServingUnitLabel(portion?.name || t('food.foodDetails.serving'));
+          }
+        } catch {
+          if (!cancelled) {
+            setServingUnitLabel(t('food.foodDetails.serving'));
+          }
+        }
+
+        return;
+      }
+
+      if (!cancelled) {
+        setServingUnitLabel(getMassUnitLabel(units));
+      }
+    };
+
+    loadServingUnit();
+    return () => {
+      cancelled = true;
+    };
+  }, [meal, foodLog, food, localFood, t, units]);
+
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
   const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
-  const mealScaleFactor =
-    meal && totalMealGrams > 0 ? effectiveMealAmountGrams / totalMealGrams : 1;
+  const mealScaleFactor = computeMealScaleFactor(
+    meal,
+    mealAmountGrams,
+    effectiveMealAmountGrams,
+    totalMealGrams
+  );
 
   // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
@@ -1357,7 +1499,7 @@ export function FoodMealDetailsModal({
     }
 
     // For foods, scale by serving size
-    const scaleFactor = servingSize / 100; // API data is per 100g
+    const scaleFactor = resolvedFoodServingMode ? servingSize : servingSize / 100;
 
     const effectiveProductDetails = refetchedProductDetails ?? productDetails;
     let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined;
@@ -1407,6 +1549,7 @@ export function FoodMealDetailsModal({
     nutritionalData.carbs,
     nutritionalData.fat,
     mealScaleFactor,
+    resolvedFoodServingMode,
   ]);
 
   const scaledFood = getScaledNutrition();
@@ -1481,13 +1624,17 @@ export function FoodMealDetailsModal({
         try {
           const dateTimestamp = localDayStartMs(selectedDate);
 
-          await Promise.all([
-            // Update amount in grams (set portion to undefined so amount is grams)
+          const updates: Promise<unknown>[] = [
             foodLog.updateAmount(servingSize),
             foodLog.updateMealType(selectedMeal),
-            foodLog.updatePortion(undefined),
             foodLog.updateDate(dateTimestamp),
-          ]);
+          ];
+
+          if (!resolvedFoodServingMode) {
+            updates.push(foodLog.updatePortion(undefined));
+          }
+
+          await Promise.all(updates);
 
           // Call callback if provided
           onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });
@@ -1775,6 +1922,7 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    resolvedFoodServingMode,
     refetchedProductDetails,
     barcode,
     effectiveMicrosPer100g,
@@ -2054,7 +2202,7 @@ export function FoodMealDetailsModal({
             onPress={handleAddFood}
             disabled={
               isAddingFood ||
-              (mode === 'meal' && mealAmountGrams < 1) ||
+              (mode === 'meal' && mealAmountGrams < (resolvedMealServingMode ? 0.5 : 1)) ||
               (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
               (isLoadingMealNutrients && mode === 'meal')
             }
@@ -2072,6 +2220,7 @@ export function FoodMealDetailsModal({
           onEditPress={handleOpenEditPopUp}
           nutritionalData={nutritionalData}
           servingSize={servingSize}
+          servingBasis={resolvedFoodServingMode ? 'per_serving' : 'per_100g'}
           isLoadingDetails={isLoadingDetails}
           onTryAnotherSource={
             hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
@@ -2087,19 +2236,51 @@ export function FoodMealDetailsModal({
               : undefined
           }
           intuitiveMode={intuitiveEatingMode}
+          ingredients={mode === 'meal' ? mealIngredientLabels : undefined}
         />
 
         {/* Form Sections */}
         <View className="mt-6 gap-6">
           {/* Same serving size input for both food and meal (editable, same UX) */}
           {mode !== 'meal' ? (
-            <ServingSizeSelector
-              value={servingSize}
-              onChange={setServingSize}
-              onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-              productServingSize={parsedProductServingSize}
-              productMeasures={parsedProductMeasures}
-            />
+            resolvedFoodServingMode ? (
+              <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+                <StepperInput
+                  label={t('food.foodDetails.servings')}
+                  value={servingSize}
+                  step={0.5}
+                  maxFractionDigits={2}
+                  onIncrement={() => setServingSize((prev) => prev + 0.5)}
+                  onDecrement={() => setServingSize((prev) => Math.max(0.5, prev - 0.5))}
+                  onChangeValue={setServingSize}
+                  onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                  unit={servingUnitLabel || t('food.foodDetails.serving')}
+                />
+              </View>
+            ) : (
+              <ServingSizeSelector
+                value={servingSize}
+                onChange={setServingSize}
+                food={food || localFood || undefined}
+                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                productServingSize={parsedProductServingSize}
+                productMeasures={parsedProductMeasures}
+              />
+            )
+          ) : resolvedMealServingMode ? (
+            <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+              <StepperInput
+                label={t('food.foodDetails.servings')}
+                value={mealAmountGrams}
+                step={0.5}
+                maxFractionDigits={2}
+                onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
+                onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
+                onChangeValue={setMealAmountGrams}
+                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                unit={servingUnitLabel || t('food.foodDetails.serving')}
+              />
+            </View>
           ) : (
             <ServingSizeSelector
               value={mealAmountGrams}

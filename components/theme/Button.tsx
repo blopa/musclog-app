@@ -1,7 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, Text, View, ViewStyle } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Theme } from '@/theme';
@@ -21,6 +29,7 @@ type ThemeButtonVariant =
 
 type ThemeButtonProps = {
   label: string;
+  labelAccessory?: string;
   onPress?: () => void;
   iconBgColor?: string;
   iconColor?: string;
@@ -289,6 +298,7 @@ const getBorderColor = (
 
 export function Button({
   label,
+  labelAccessory,
   onPress,
   icon: Icon,
   iconBgColor,
@@ -426,6 +436,14 @@ export function Button({
     }
   }
 
+  const accessoryTextStyle: TextStyle = {
+    color: isOutlineVariant ? theme.colors.text.gray500 : textColor,
+    fontSize: Math.max(theme.typography.fontSize.sm, config.fontSize - 6),
+    fontWeight: theme.typography.fontWeight.semibold,
+    letterSpacing: theme.typography.letterSpacing.normal,
+    opacity: isOutlineVariant ? theme.colors.opacity.full : theme.colors.opacity.strong,
+  };
+
   const textElement = (
     <Text
       className={`tracking-wide ${getButtonTextClassName(isDisabled, isOutlineVariant, isDashedVariant, isSecondaryVariant)}`}
@@ -440,6 +458,7 @@ export function Button({
       ellipsizeMode="tail"
     >
       {label}
+      {labelAccessory ? <Text style={accessoryTextStyle}>{`  ${labelAccessory}`}</Text> : null}
     </Text>
   );
 

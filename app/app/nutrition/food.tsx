@@ -121,6 +121,9 @@ export default function FoodScreen() {
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
+    'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
+  >('all');
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
@@ -574,7 +577,13 @@ export default function FoodScreen() {
         if (!entry.food) {
           return null;
         }
-        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+        return {
+          food: entry.food,
+          amount:
+            entry.food.resolvedNutritionBasis === 'per_serving'
+              ? entry.log.amount
+              : Math.round(entry.gramWeight),
+        };
       })
       .filter(Boolean) as { food: Food; amount: number }[];
 
@@ -602,7 +611,8 @@ export default function FoodScreen() {
   const handleSaveMealForLater = async (
     logs: NutritionLog[],
     mealType: MealType,
-    percentage: number = 100
+    percentage: number = 100,
+    note?: string
   ) => {
     setIsSaveForLaterLoading(true);
     try {
@@ -617,7 +627,8 @@ export default function FoodScreen() {
         defaultName,
         mealType,
         selectedDate.getTime(),
-        percentage
+        percentage,
+        note
       );
 
       showSnackbar('success', t('food.mealGroup.saveForLaterSuccess'));
@@ -932,7 +943,13 @@ export default function FoodScreen() {
           return null;
         }
 
-        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+        return {
+          food: entry.food,
+          amount:
+            entry.food.resolvedNutritionBasis === 'per_serving'
+              ? entry.log.amount
+              : Math.round(entry.gramWeight),
+        };
       })
       .filter(Boolean) as { food: Food; amount: number }[];
 
@@ -1792,6 +1809,7 @@ export default function FoodScreen() {
         onMealTypeSelect={(mealType) => {
           setSelectedMealType(mealType);
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onAiCameraPress={() => {
@@ -1814,6 +1832,7 @@ export default function FoodScreen() {
         }}
         onSearchFoodPress={() => {
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onCreateCustomFoodPress={() => {
@@ -1822,8 +1841,9 @@ export default function FoodScreen() {
           setIsCreateCustomFoodVisible(true);
         }}
         onTrackCustomMealPress={() => {
-          setIsMyMealsModalVisible(true);
           setIsAddFoodModalVisible(false);
+          setFoodSearchInitialTab('meals');
+          setIsFoodSearchModalVisible(true);
         }}
         onQuickTrackMealPress={() => {
           setIsQuickTrackMealModalVisible(true);
@@ -1882,6 +1902,7 @@ export default function FoodScreen() {
         onClose={() => setIsFoodSearchModalVisible(false)}
         mealType={selectedMealType}
         logDate={selectedDate}
+        initialTab={foodSearchInitialTab}
         onFoodTracked={refresh}
         onCreatePress={() => {
           // Open CreateCustomFoodModal
@@ -2093,12 +2114,13 @@ export default function FoodScreen() {
           setSaveForLaterPendingLogs(null);
           setSaveForLaterPendingMealType(null);
         }}
-        onConfirm={async (percentage) => {
+        onConfirm={async (percentage, note) => {
           if (saveForLaterPendingLogs && saveForLaterPendingMealType) {
             await handleSaveMealForLater(
               saveForLaterPendingLogs,
               saveForLaterPendingMealType,
-              percentage
+              percentage,
+              note
             );
           }
           setSaveForLaterPendingLogs(null);

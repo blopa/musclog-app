@@ -7,6 +7,7 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
+import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedForLaterFoodMealModal';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
@@ -29,6 +30,7 @@ type SavedForLaterModalProps = {
 
 type GroupWithNutrients = {
   group: SavedForLaterGroup;
+  note: string;
   nutrients: {
     calories: number;
     protein: number;
@@ -70,7 +72,9 @@ export function SavedForLaterModal({
             nutrients.carbs += itemNutrients.carbs;
             nutrients.fat += itemNutrients.fat;
           }
-          return { group, nutrients };
+
+          const note = await group.getNote();
+          return { group, note, nutrients };
         })
       );
       setGroups(resolvedGroups);
@@ -155,6 +159,11 @@ export function SavedForLaterModal({
               <Text className="text-xs text-text-secondary">
                 {originalDate} • {mealTypeLabel}
               </Text>
+              {item.note ? (
+                <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
+                  {item.note}
+                </Text>
+              ) : null}
               <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
                 <Text className="text-sm font-semibold text-accent-primary">
                   {formatInteger(Math.round(item.nutrients.calories))} kcal
@@ -258,15 +267,21 @@ export function SavedForLaterModal({
       />
 
       {isTrackModalVisible && selectedGroup ? (
-        <MoveCopyMealModal
+        <TrackSavedForLaterFoodMealModal
           visible={isTrackModalVisible}
           onClose={() => setIsTrackModalVisible(false)}
           onConfirm={handleConfirmTrack}
           mode="copy"
           title={t('food.mealGroup.savedForLaterModal.trackThisMeal')}
+          note={selectedGroup.note}
           sourceMealType={(initialMealType as any) || selectedGroup.group.originalMealType}
           sourceDate={initialDate || new Date()}
           isLoading={isActionLoading}
+          mealName={selectedGroup.group.name}
+          calories={selectedGroup.nutrients.calories}
+          protein={selectedGroup.nutrients.protein}
+          carbs={selectedGroup.nutrients.carbs}
+          fat={selectedGroup.nutrients.fat}
         />
       ) : null}
     </FullScreenModal>

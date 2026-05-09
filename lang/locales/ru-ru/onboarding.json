@@ -87,7 +87,23 @@
         "bodyComposition": "Состав тела"
       },
       "allowHealthAccess": "Разрешить доступ к здоровью",
+      "reviewHealthAccess": "Проверить доступ к здоровью",
       "connectedCount": "Подключено {{granted}}/{{total}}",
+      "accessCount": "Доступ запрошен {{granted}}/{{total}}",
+      "connectedTypes": "Подключено: {{types}}",
+      "requestedTypes": "Запрошено: {{types}}",
+      "permissionTypes": {
+        "height": "Рост",
+        "weight": "Вес",
+        "bodyFat": "Жир",
+        "nutrition": "Питание",
+        "totalCalories": "Всего калорий",
+        "activeCalories": "Активные калории",
+        "basalMetabolicRate": "Базовый метаболизм",
+        "exerciseSession": "Тренировки",
+        "leanBodyMass": "Безжировая масса",
+        "steps": "Шаги"
+      },
       "maybeLater": "Позже",
       "privacyStatement": "Musclog ценит вашу конфиденциальность. Ваши данные зашифрованы и используются только для вашей личной аналитики.",
       "initializing": "Инициализация Health Connect...",

@@ -87,7 +87,23 @@
         "bodyComposition": "Lichaamssamenstelling"
       },
       "allowHealthAccess": "Gezondheidstoegang toestaan",
+      "reviewHealthAccess": "Gezondheidstoegang bekijken",
       "connectedCount": "Verbonden {{granted}}/{{total}}",
+      "accessCount": "Toegang aangevraagd {{granted}}/{{total}}",
+      "connectedTypes": "Verbonden: {{types}}",
+      "requestedTypes": "Aangevraagd: {{types}}",
+      "permissionTypes": {
+        "height": "Lengte",
+        "weight": "Gewicht",
+        "bodyFat": "Vetpercentage",
+        "nutrition": "Voeding",
+        "totalCalories": "Totale calorieën",
+        "activeCalories": "Actieve calorieën",
+        "basalMetabolicRate": "Rustmetabolisme",
+        "exerciseSession": "Workouts",
+        "leanBodyMass": "Vetvrije massa",
+        "steps": "Stappen"
+      },
       "maybeLater": "Misschien later",
       "privacyStatement": "Musclog hecht veel waarde aan je privacy. Je gegevens worden versleuteld en alleen gebruikt voor je persoonlijke analyses.",
       "initializing": "Health Connect initialiseren...",

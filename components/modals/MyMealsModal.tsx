@@ -388,7 +388,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         const ingredientLines: string[] = [];
 
         for (const mealFood of foods) {
-          const grams = await mealFood.getGramWeight();
+          const grams = await mealFood.getReferenceGramWeight();
           const food = await mealFood.food;
           const name = food?.name?.trim() || t('food.unknownFood');
           const gramsStr = formatRoundedDecimal(grams, 2);

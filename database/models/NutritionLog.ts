@@ -7,7 +7,7 @@ import { formatLocalCalendarDayIso, localDayStartFromUtcMs } from '@/utils/calen
 import { handleError } from '@/utils/handleError';
 import { inferCaloriesFromMacrosPer100g } from '@/utils/inferCaloriesFromMacros';
 
-import type { MicrosData } from './Food';
+import type { FoodNutritionBasis, MicrosData } from './Food';
 import Food from './Food';
 import FoodPortion from './FoodPortion';
 
@@ -21,6 +21,7 @@ export interface DecryptedNutritionLogSnapshot {
   loggedFat: number;
   loggedFiber: number;
   loggedMicros?: MicrosData;
+  snapshotBasis?: FoodNutritionBasis;
 }
 
 export default class NutritionLog extends Model {
@@ -47,6 +48,7 @@ export default class NutritionLog extends Model {
   @field('logged_fat') loggedFatRaw?: string;
   @field('logged_fiber') loggedFiberRaw?: string;
   @field('logged_micros_json') loggedMicrosRaw?: string;
+  @field('snapshot_basis') snapshotBasis?: FoodNutritionBasis;
 
   @field('group_id') groupId?: string;
   @field('logged_meal_name') loggedMealName?: string;
@@ -125,6 +127,7 @@ export default class NutritionLog extends Model {
       loggedFat,
       loggedFiber,
       loggedMicros: Object.keys(loggedMicros).length > 0 ? loggedMicros : undefined,
+      snapshotBasis: this.snapshotBasis ?? 'per_100g',
     };
   }
 
@@ -146,6 +149,10 @@ export default class NutritionLog extends Model {
 
   // Get the actual gram weight for this nutrition log entry
   async getGramWeight(): Promise<number> {
+    if (this.snapshotBasis === 'per_serving') {
+      return 0;
+    }
+
     if (this.portionId) {
       try {
         const portion = await this.portion;
@@ -161,6 +168,25 @@ export default class NutritionLog extends Model {
     return this.amount;
   }
 
+  async getDisplayAmount(): Promise<{ value: number; unit: string }> {
+    if (this.snapshotBasis === 'per_serving') {
+      try {
+        const portion = this.portionId ? await this.portion : null;
+        return {
+          value: this.amount,
+          unit: portion?.name || i18n.t('food.foodDetails.serving'),
+        };
+      } catch {
+        return {
+          value: this.amount,
+          unit: i18n.t('food.foodDetails.serving'),
+        };
+      }
+    }
+
+    return { value: await this.getGramWeight(), unit: 'g' };
+  }
+
   // Get nutrients for this specific nutrition log entry (uses snapshot when present)
   async getNutrients(): Promise<{
     calories: number;
@@ -170,11 +196,23 @@ export default class NutritionLog extends Model {
     fiber: number;
     alcohol: number;
   }> {
-    const totalGrams = await this.getGramWeight();
-    const scale = totalGrams / 100;
     const hasSnap = await this.hasSnapshot();
     if (hasSnap) {
       const s = await this.getDecryptedSnapshot();
+      if (s.snapshotBasis === 'per_serving') {
+        const servings = this.amount;
+        return {
+          calories: (s.loggedCalories ?? 0) * servings,
+          protein: (s.loggedProtein ?? 0) * servings,
+          carbs: (s.loggedCarbs ?? 0) * servings,
+          fat: (s.loggedFat ?? 0) * servings,
+          fiber: (s.loggedFiber ?? 0) * servings,
+          alcohol: (s.loggedMicros?.alcohol ?? 0) * servings,
+        };
+      }
+
+      const totalGrams = await this.getGramWeight();
+      const scale = totalGrams / 100;
       const loggedAlcohol = s.loggedMicros?.alcohol ?? 0;
 
       // If no explicit calories but alcohol is present, derive calories including alcohol.
@@ -206,6 +244,16 @@ export default class NutritionLog extends Model {
       if (!food) {
         throw new Error('Food not found for nutrition log');
       }
+      if (food.resolvedNutritionBasis === 'per_serving') {
+        const nutrients = food.getNutrientsForServingCount(this.amount);
+        return {
+          ...nutrients,
+          alcohol: (food.micros?.alcohol ?? 0) * this.amount,
+        };
+      }
+
+      const totalGrams = await this.getGramWeight();
+      const scale = totalGrams / 100;
       const nutrients = food.getNutrientsForAmount(totalGrams);
       return {
         ...nutrients,

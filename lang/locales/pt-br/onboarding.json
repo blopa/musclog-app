@@ -87,7 +87,23 @@
         "bodyComposition": "Composição Corporal"
       },
       "allowHealthAccess": "Permitir Acesso à Saúde",
+      "reviewHealthAccess": "Revisar acesso à Saúde",
       "connectedCount": "Conectado {{granted}}/{{total}}",
+      "accessCount": "Acesso solicitado {{granted}}/{{total}}",
+      "connectedTypes": "Conectado: {{types}}",
+      "requestedTypes": "Solicitado: {{types}}",
+      "permissionTypes": {
+        "height": "Altura",
+        "weight": "Peso",
+        "bodyFat": "Gordura corporal",
+        "nutrition": "Nutrição",
+        "totalCalories": "Calorias totais",
+        "activeCalories": "Calorias ativas",
+        "basalMetabolicRate": "Metabolismo basal",
+        "exerciseSession": "Treinos",
+        "leanBodyMass": "Massa magra",
+        "steps": "Passos"
+      },
       "maybeLater": "Talvez depois",
       "privacyStatement": "O Musclog valoriza sua privacidade. Seus dados são criptografados e usados apenas para suas análises pessoais.",
       "initializing": "Inicializando Health Connect...",

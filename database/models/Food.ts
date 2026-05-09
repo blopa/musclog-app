@@ -52,6 +52,8 @@ export interface MicrosData {
   [key: string]: number | undefined;
 }
 
+export type FoodNutritionBasis = 'per_100g' | 'per_serving';
+
 export default class Food extends Model {
   static table = 'foods';
 
@@ -133,6 +135,7 @@ export default class Food extends Model {
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood', 'foundation'
   @field('image_url') imageUrl?: string; // URL to product image
+  @field('nutrition_basis') nutritionBasis?: FoodNutritionBasis;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -173,7 +176,7 @@ export default class Food extends Model {
   async getDefaultPortionAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      const defaultEntry = ffp.find((entry: any) => entry.isDefault);
+      const defaultEntry = ffp.find((entry: any) => entry.isDefault && !entry.deletedAt);
       if (defaultEntry) {
         return defaultEntry.foodPortion;
       }
@@ -189,7 +192,10 @@ export default class Food extends Model {
   async getPortionsAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      return Promise.all(ffp.map((fp: any) => fp.foodPortion));
+      const activeLinks = ffp.filter((fp: any) => !fp.deletedAt);
+      const portions = await Promise.all(activeLinks.map((fp: any) => fp.foodPortion));
+
+      return portions.filter((portion: any) => !portion?.deletedAt);
     } catch (error) {
       console.warn('Error getting portions:', error);
       return [];
@@ -202,6 +208,10 @@ export default class Food extends Model {
   async getBaseGramWeight(): Promise<number> {
     const portion = await this.getDefaultPortionAsync();
     return portion?.gramWeight ?? 100;
+  }
+
+  get resolvedNutritionBasis(): FoodNutritionBasis {
+    return this.nutritionBasis === 'per_serving' ? 'per_serving' : 'per_100g';
   }
 
   getCaloriesPer100g(): number {
@@ -252,6 +262,31 @@ export default class Food extends Model {
             Object.entries(this.micros).map(([key, value]) => [
               key,
               value ? value * gramMultiplier : undefined,
+            ])
+          )
+        : undefined,
+    };
+  }
+
+  getNutrientsForServingCount(servings: number): {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    micros?: MicrosData;
+  } {
+    return {
+      calories: this.calories * servings,
+      protein: this.protein * servings,
+      carbs: this.carbs * servings,
+      fat: this.fat * servings,
+      fiber: this.fiber * servings,
+      micros: this.micros
+        ? Object.fromEntries(
+            Object.entries(this.micros).map(([key, value]) => [
+              key,
+              value ? value * servings : undefined,
             ])
           )
         : undefined,

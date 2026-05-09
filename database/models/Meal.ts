@@ -8,6 +8,7 @@ export default class Meal extends Model {
 
   static associations = {
     meal_foods: { type: 'has_many' as const, foreignKey: 'meal_id' },
+    meal_food_portions: { type: 'has_many' as const, foreignKey: 'meal_id' },
   };
 
   @field('is_ai_generated') isAiGenerated!: boolean;
@@ -16,12 +17,27 @@ export default class Meal extends Model {
   @field('image_url') imageUrl?: string; // URL to meal image
   @field('is_favorite') isFavorite!: boolean;
   @field('prepared_weight_grams') preparedWeightGrams?: number;
+  @field('nutrition_basis') nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+  @field('recipe_servings_count') recipeServingsCount?: number;
+  @field('default_portion_name') defaultPortionName?: string;
+  @field('serving_grams') servingGrams?: number;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
   @children('meal_foods') mealFoods!: Query<MealFood>;
+
+  get resolvedNutritionBasis(): 'per_recipe' | 'per_serving' | 'per_gram' {
+    if (this.nutritionBasis === 'per_serving') {
+      return 'per_serving';
+    }
+
+    if (this.nutritionBasis === 'per_gram') {
+      return 'per_gram';
+    }
+    return 'per_recipe';
+  }
 
   @writer
   async markAsDeleted(): Promise<void> {
