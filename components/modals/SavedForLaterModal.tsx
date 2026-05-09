@@ -272,6 +272,7 @@ export function SavedForLaterModal({
           onConfirm={handleConfirmTrack}
           mode="copy"
           title={t('food.mealGroup.savedForLaterModal.trackThisMeal')}
+          note={selectedGroup.note}
           sourceMealType={(initialMealType as any) || selectedGroup.group.originalMealType}
           sourceDate={initialDate || new Date()}
           isLoading={isActionLoading}

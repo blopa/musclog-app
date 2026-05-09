@@ -24,6 +24,7 @@ type MoveCopyMealModalProps = {
   ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
   title?: string;
+  note?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
@@ -37,6 +38,7 @@ export function MoveCopyMealModal({
   onConfirm,
   mode,
   title: customTitle,
+  note,
   sourceMealType,
   sourceDate,
   isLoading = false,
@@ -139,6 +141,20 @@ export function MoveCopyMealModal({
         pointerEvents={isBusy ? 'none' : 'auto'}
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
+        {note ? (
+          <View
+            className="rounded-xl border px-4 py-3"
+            style={{
+              borderColor: theme.colors.accent.primary30,
+              backgroundColor: theme.colors.accent.primary10,
+            }}
+          >
+            <Text className="text-sm leading-5" style={{ color: theme.colors.text.secondary }}>
+              "{note}"
+            </Text>
+          </View>
+        ) : null}
+
         {/* Target Date */}
         <DatePickerInput
           label={t('food.actions.targetDate')}
