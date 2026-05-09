@@ -277,6 +277,11 @@ export function SavedForLaterModal({
           sourceMealType={(initialMealType as any) || selectedGroup.group.originalMealType}
           sourceDate={initialDate || new Date()}
           isLoading={isActionLoading}
+          mealName={selectedGroup.group.name}
+          calories={selectedGroup.nutrients.calories}
+          protein={selectedGroup.nutrients.protein}
+          carbs={selectedGroup.nutrients.carbs}
+          fat={selectedGroup.nutrients.fat}
         />
       ) : null}
     </FullScreenModal>

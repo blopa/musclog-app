@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { BottomPopUp } from '@/components/BottomPopUp';
 import { FilterTabs } from '@/components/FilterTabs';
+import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { Button } from '@/components/theme/Button';
 import { QuoteCallout } from '@/components/theme/QuoteCallout';
 import { Slider } from '@/components/theme/Slider';
@@ -14,6 +14,7 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
+import { FullScreenModal } from './FullScreenModal';
 
 type TrackSavedForLaterFoodMealModalProps = {
   visible: boolean;
@@ -29,6 +30,11 @@ type TrackSavedForLaterFoodMealModalProps = {
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
+  mealName?: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 };
 
 const SPLIT_PRESETS = [25, 33, 50, 75];
@@ -43,6 +49,11 @@ export function TrackSavedForLaterFoodMealModal({
   sourceMealType,
   sourceDate,
   isLoading = false,
+  mealName,
+  calories = 0,
+  protein = 0,
+  carbs = 0,
+  fat = 0,
 }: TrackSavedForLaterFoodMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -110,11 +121,14 @@ export function TrackSavedForLaterFoodMealModal({
   const isConfirmDisabled =
     isBusy || (mode === 'split' && (splitPercentage < 1 || splitPercentage > 99));
 
+  const hasNutrition = calories > 0 || protein > 0 || carbs > 0 || fat > 0;
+
   return (
-    <BottomPopUp
+    <FullScreenModal
       visible={visible}
-      onClose={isBusy ? undefined : onClose}
-      title={title}
+      onClose={onClose}
+      closable={!isBusy}
+      title={title ?? ''}
       footer={
         <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
           <Button
@@ -138,24 +152,47 @@ export function TrackSavedForLaterFoodMealModal({
       }
     >
       <View
-        className="gap-5"
+        className="px-4"
         pointerEvents={isBusy ? 'none' : 'auto'}
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
-        {note ? <QuoteCallout text={note} /> : null}
+        {hasNutrition ? (
+          <FoodNutritionSectionCard
+            food={{
+              name: mealName || title || '',
+              category: '',
+              calories,
+              protein,
+              carbs,
+              fat,
+            }}
+            canEdit={false}
+            mode="meal"
+            nutritionalData={{ fiber: 0, saturatedFat: 0, sodium: 0 }}
+            servingSize={1}
+            servingBasis="per_serving"
+            isLoadingDetails={false}
+          />
+        ) : null}
 
-        {/* Target Date */}
-        <DatePickerInput
-          label={t('food.actions.targetDate')}
-          selectedDate={targetDate}
-          onPress={() => setIsDatePickerVisible(true)}
-          disabled={isBusy}
-          variant="compact"
-        />
+        {note ? (
+          <View className="mt-2">
+            <QuoteCallout text={note} />
+          </View>
+        ) : null}
 
-        {/* Split Percentage (only for split mode) */}
+        <View className="mt-6">
+          <DatePickerInput
+            label={t('food.actions.targetDate')}
+            selectedDate={targetDate}
+            onPress={() => setIsDatePickerVisible(true)}
+            disabled={isBusy}
+            variant="compact"
+          />
+        </View>
+
         {mode === 'split' ? (
-          <View className="gap-2">
+          <View className="mt-6 gap-2">
             <View className="flex-row items-center justify-between">
               <Text
                 className="text-xs font-bold uppercase tracking-wider"
@@ -173,7 +210,6 @@ export function TrackSavedForLaterFoodMealModal({
                 {splitPercentage}%
               </Text>
             </View>
-            {/* Preset buttons */}
             <View className="flex-row gap-2">
               {SPLIT_PRESETS.map((preset) => (
                 <Pressable
@@ -206,7 +242,6 @@ export function TrackSavedForLaterFoodMealModal({
                 </Pressable>
               ))}
             </View>
-            {/* Slider */}
             <Slider
               value={splitPercentage}
               min={1}
@@ -217,8 +252,7 @@ export function TrackSavedForLaterFoodMealModal({
           </View>
         ) : null}
 
-        {/* Target Meal Type */}
-        <View className="gap-2">
+        <View className="mt-6 gap-2">
           <Text
             className="text-xs font-bold uppercase tracking-wider"
             style={{ color: theme.colors.text.secondary }}
@@ -234,7 +268,6 @@ export function TrackSavedForLaterFoodMealModal({
           />
         </View>
       </View>
-      <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
 
       {isDatePickerVisible ? (
         <DatePickerModal
@@ -247,6 +280,6 @@ export function TrackSavedForLaterFoodMealModal({
           }}
         />
       ) : null}
-    </BottomPopUp>
+    </FullScreenModal>
   );
 }
