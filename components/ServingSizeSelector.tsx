@@ -226,7 +226,10 @@ export function ServingSizeSelector({
     // Rule 4 (apiCount >= 4): no supplement
 
     // Build final list: food-specific DB first, then API, then common supplement (deduped)
-    const result: { label: string; value: number }[] = [...foodDbPortions];
+    const result: { label: string; value: number }[] = foodDbPortions.filter(
+      (p, i, arr) => arr.findIndex((q) => q.value === p.value) === i
+    );
+
     for (const p of apiPortions) {
       if (!result.some((r) => r.value === p.value)) {
         result.push(p);
@@ -250,10 +253,12 @@ export function ServingSizeSelector({
   const handleIncrease = () => onChange(value + stepAmount);
   const handleChangeValue = (displayVal: number) => onChange(displayToGrams(displayVal, units));
 
-  const quickSizeTabs = effectiveQuickSizes.map((size) => ({
-    id: String(size.value),
-    label: size.label,
-  }));
+  const quickSizeTabs = effectiveQuickSizes
+    .filter((size, i, arr) => arr.findIndex((s) => s.value === size.value) === i)
+    .map((size) => ({
+      id: String(size.value),
+      label: size.label,
+    }));
 
   return (
     <GenericCard variant="default">
