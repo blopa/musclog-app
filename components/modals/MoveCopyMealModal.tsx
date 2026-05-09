@@ -5,6 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
+import { QuoteCallout } from '@/components/theme/QuoteCallout';
 import { Slider } from '@/components/theme/Slider';
 import type { MealType } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
@@ -141,19 +142,7 @@ export function MoveCopyMealModal({
         pointerEvents={isBusy ? 'none' : 'auto'}
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
-        {note ? (
-          <View
-            className="rounded-xl border px-4 py-3"
-            style={{
-              borderColor: theme.colors.accent.primary30,
-              backgroundColor: theme.colors.accent.primary10,
-            }}
-          >
-            <Text className="text-sm leading-5" style={{ color: theme.colors.text.secondary }}>
-              "{note}"
-            </Text>
-          </View>
-        ) : null}
+        {note ? <QuoteCallout text={note} /> : null}
 
         {/* Target Date */}
         <DatePickerInput
