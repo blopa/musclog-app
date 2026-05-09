@@ -5,6 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
+import { QuoteCallout } from '@/components/theme/QuoteCallout';
 import { Slider } from '@/components/theme/Slider';
 import type { MealType } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
@@ -14,7 +15,7 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
-type MoveCopyMealModalProps = {
+type TrackSavedForLaterFoodMealModalProps = {
   visible: boolean;
   onClose: () => void;
   onConfirm: (
@@ -24,6 +25,7 @@ type MoveCopyMealModalProps = {
   ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
   title?: string;
+  note?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
@@ -31,16 +33,17 @@ type MoveCopyMealModalProps = {
 
 const SPLIT_PRESETS = [25, 33, 50, 75];
 
-export function MoveCopyMealModal({
+export function TrackSavedForLaterFoodMealModal({
   visible,
   onClose,
   onConfirm,
   mode,
   title: customTitle,
+  note,
   sourceMealType,
   sourceDate,
   isLoading = false,
-}: MoveCopyMealModalProps) {
+}: TrackSavedForLaterFoodMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
@@ -139,6 +142,8 @@ export function MoveCopyMealModal({
         pointerEvents={isBusy ? 'none' : 'auto'}
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
+        {note ? <QuoteCallout text={note} /> : null}
+
         {/* Target Date */}
         <DatePickerInput
           label={t('food.actions.targetDate')}

@@ -18,6 +18,7 @@ import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/u
 import { handleError } from '@/utils/handleError';
 
 import { MoveCopyMealModal } from './MoveCopyMealModal';
+import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedForLaterFoodMealModal';
 
 type SavedForLaterModalProps = {
   visible: boolean;
@@ -266,7 +267,7 @@ export function SavedForLaterModal({
       />
 
       {isTrackModalVisible && selectedGroup ? (
-        <MoveCopyMealModal
+        <TrackSavedForLaterFoodMealModal
           visible={isTrackModalVisible}
           onClose={() => setIsTrackModalVisible(false)}
           onConfirm={handleConfirmTrack}
