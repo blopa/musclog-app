@@ -311,11 +311,11 @@ async function syncNutritionOnce(timeRange: {
       date: localDayStartMs(new Date(rec.startTime)),
       mealType: mapMealType(rec.mealType),
       foodName: rec.name ?? HC_SENTINEL_FOOD_NAME,
-      calories: rec.energy?.inKilocalories ?? 0,
-      protein: rec.protein?.inGrams ?? 0,
-      carbs: rec.totalCarbohydrate?.inGrams ?? 0,
-      fat: rec.totalFat?.inGrams ?? 0,
-      fiber: rec.dietaryFiber?.inGrams ?? 0,
+      calories: Math.max(0, rec.energy?.inKilocalories ?? 0),
+      protein: Math.max(0, rec.protein?.inGrams ?? 0),
+      carbs: Math.max(0, rec.totalCarbohydrate?.inGrams ?? 0),
+      fat: Math.max(0, rec.totalFat?.inGrams ?? 0),
+      fiber: Math.max(0, rec.dietaryFiber?.inGrams ?? 0),
     });
   }
 

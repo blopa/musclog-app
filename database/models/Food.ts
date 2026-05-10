@@ -252,16 +252,16 @@ export default class Food extends Model {
     const gramMultiplier = amountInGrams / 100;
 
     return {
-      calories: this.calories * gramMultiplier,
-      protein: this.protein * gramMultiplier,
-      carbs: this.carbs * gramMultiplier,
-      fat: this.fat * gramMultiplier,
-      fiber: this.fiber * gramMultiplier,
+      calories: Math.max(0, this.calories) * gramMultiplier,
+      protein: Math.max(0, this.protein) * gramMultiplier,
+      carbs: Math.max(0, this.carbs) * gramMultiplier,
+      fat: Math.max(0, this.fat) * gramMultiplier,
+      fiber: Math.max(0, this.fiber) * gramMultiplier,
       micros: this.micros
         ? Object.fromEntries(
             Object.entries(this.micros).map(([key, value]) => [
               key,
-              value ? value * gramMultiplier : undefined,
+              value ? Math.max(0, value) * gramMultiplier : undefined,
             ])
           )
         : undefined,
@@ -277,16 +277,16 @@ export default class Food extends Model {
     micros?: MicrosData;
   } {
     return {
-      calories: this.calories * servings,
-      protein: this.protein * servings,
-      carbs: this.carbs * servings,
-      fat: this.fat * servings,
-      fiber: this.fiber * servings,
+      calories: Math.max(0, this.calories) * servings,
+      protein: Math.max(0, this.protein) * servings,
+      carbs: Math.max(0, this.carbs) * servings,
+      fat: Math.max(0, this.fat) * servings,
+      fiber: Math.max(0, this.fiber) * servings,
       micros: this.micros
         ? Object.fromEntries(
             Object.entries(this.micros).map(([key, value]) => [
               key,
-              value ? value * servings : undefined,
+              value ? Math.max(0, value) * servings : undefined,
             ])
           )
         : undefined,

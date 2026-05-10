@@ -203,11 +203,11 @@ export default function CreateCustomFoodModal({
       try {
         // Parse numeric values
         const nutrition = {
-          calories: parseLocalizedDecimalString(calories, decimalSeparator),
-          protein: parseLocalizedDecimalString(protein, decimalSeparator),
-          carbs: parseLocalizedDecimalString(carbs, decimalSeparator),
-          fat: parseLocalizedDecimalString(fat, decimalSeparator),
-          fiber: parseLocalizedDecimalString(fiber, decimalSeparator),
+          calories: Math.max(0, parseLocalizedDecimalString(calories, decimalSeparator)),
+          protein: Math.max(0, parseLocalizedDecimalString(protein, decimalSeparator)),
+          carbs: Math.max(0, parseLocalizedDecimalString(carbs, decimalSeparator)),
+          fat: Math.max(0, parseLocalizedDecimalString(fat, decimalSeparator)),
+          fiber: Math.max(0, parseLocalizedDecimalString(fiber, decimalSeparator)),
         };
 
         // Determine serving amount/unit based on selected portion
