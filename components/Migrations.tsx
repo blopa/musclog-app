@@ -8,7 +8,10 @@ import { waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseService,
   FoodPortionService,
+  FoodService,
   MuscleService,
+  NutritionGoalService,
+  NutritionService,
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -31,6 +34,26 @@ import {
 export function Migrations() {
   const segments = useSegments();
   const { language } = useSettings();
+
+  // Fix negative fiber values in nutrition_goals, foods, and nutrition_logs by clamping to zero.
+  // nutrition_logs fiber is encrypted so all non-deleted logs are fetched and decrypted in JS.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    NutritionGoalService.fixNegativeFiber().catch((err) =>
+      console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+    );
+
+    FoodService.fixNegativeFiber().catch((err) =>
+      console.warn('[FoodService] fixNegativeFiber error:', err)
+    );
+
+    NutritionService.fixNegativeFiber().catch((err) =>
+      console.warn('[NutritionService] fixNegativeFiber error:', err)
+    );
+  }, []);
 
   // Prune orphaned workout insights dismissal state when leaving the workout domain.
   // This prevents accumulation of old keys if the app is killed or navigates away.

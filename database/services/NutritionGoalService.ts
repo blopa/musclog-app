@@ -437,6 +437,29 @@ export class NutritionGoalService {
     });
   }
 
+  static async fixNegativeFiber(): Promise<void> {
+    const goals = await database
+      .get<NutritionGoal>('nutrition_goals')
+      .query(Q.where('fiber', Q.lt(0)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (goals.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...goals.map((goal) =>
+          goal.prepareUpdate((r) => {
+            r.fiber = 0;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
   /**
    * Delete nutrition goal (soft delete).
    * If deleting the current goal (effectiveUntil == null), promotes the previous

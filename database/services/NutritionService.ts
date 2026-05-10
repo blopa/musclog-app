@@ -3,7 +3,11 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { database } from '@/database';
-import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import {
+  decryptNumber,
+  encryptNumber,
+  encryptNutritionLogSnapshot,
+} from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
@@ -1272,5 +1276,38 @@ export class NutritionService {
     }
 
     return logs;
+  }
+
+  static async fixNegativeFiber(): Promise<void> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const negativeFiberLogs = (
+      await Promise.all(
+        logs.map(async (log) => {
+          const fiber = await decryptNumber(log.loggedFiberRaw);
+          return fiber < 0 ? log : null;
+        })
+      )
+    ).filter((log): log is NutritionLog => log !== null);
+
+    if (negativeFiberLogs.length === 0) {
+      return;
+    }
+
+    const zeroFiber = await encryptNumber(0);
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...negativeFiberLogs.map((log) =>
+          log.prepareUpdate((r) => {
+            r.loggedFiberRaw = zeroFiber;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
   }
 }

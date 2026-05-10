@@ -656,4 +656,27 @@ export class FoodService {
       .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)), Q.take(limit))
       .fetch();
   }
+
+  static async fixNegativeFiber(): Promise<void> {
+    const foods = await database
+      .get<Food>('foods')
+      .query(Q.where('fiber', Q.lt(0)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (foods.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...foods.map((food) =>
+          food.prepareUpdate((r) => {
+            r.fiber = 0;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
 }
