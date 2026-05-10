@@ -1,7 +1,7 @@
 import {
   inferCaloriesFromMacrosPer100g,
   resolveRoundedPer100gCaloriesForDisplay,
-} from '../inferCaloriesFromMacros';
+} from '@/utils/inferCaloriesFromMacros';
 
 describe('inferCaloriesFromMacros', () => {
   describe('inferCaloriesFromMacrosPer100g', () => {
