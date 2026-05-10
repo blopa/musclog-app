@@ -401,7 +401,7 @@ export default function DynamicMealCreatorModal({
 
             {/* Prepared weight */}
             <StepperInput
-              label={t('food.foodDetails.preparedWeight', { unit: massUnit })}
+              label={t('food.createMeal.preparedWeight', { unit: massUnit })}
               value={preparedWeightGrams ?? 0}
               step={10}
               maxFractionDigits={0}
