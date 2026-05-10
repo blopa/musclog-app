@@ -9,12 +9,13 @@ import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
-import { MealService } from '@/database/services';
+import Meal from '@/database/models/Meal';
+import { FoodPortionService, MealService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
-import { getMassUnitLabel } from '@/utils/unitConversion';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
 
@@ -112,6 +113,8 @@ export default function DynamicMealCreatorModal({
   const [isSaving, setIsSaving] = useState(false);
 
   const massUnit = getMassUnitLabel(units);
+  const stepDisplay = units === 'imperial' ? 0.5 : 10;
+  const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
 
   const NUTRITION_BASIS_TABS = [
     { id: 'per_recipe', label: t('food.foodDetails.perRecipe') },
@@ -176,6 +179,48 @@ export default function DynamicMealCreatorModal({
     setStep('save');
   }, [preparedWeightGrams, totalRawWeightGrams]);
 
+  const syncMealPortion = useCallback(
+    async (targetMeal: Meal) => {
+      await FoodPortionService.clearMealPortions(targetMeal.id);
+
+      if (nutritionBasis === 'per_recipe') {
+        return;
+      }
+
+      const trimmedPortionName =
+        defaultPortionName.trim() || mealName.trim() || t('food.foodDetails.serving');
+
+      if (nutritionBasis === 'per_serving') {
+        const portion = await FoodPortionService.createPrivateNamedPortion(
+          trimmedPortionName,
+          'meal',
+          targetMeal.id
+        );
+        await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
+        return;
+      }
+
+      if (nutritionBasis === 'per_gram') {
+        const portion = await FoodPortionService.createFoodPortion(
+          trimmedPortionName,
+          Math.max(1, servingGrams),
+          undefined,
+          'custom',
+          {
+            kind: 'mass',
+            scope: 'private',
+            ownerType: 'meal',
+            ownerId: targetMeal.id,
+            dedupe: false,
+          }
+        );
+
+        await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
+      }
+    },
+    [nutritionBasis, defaultPortionName, mealName, servingGrams, t]
+  );
+
   const handleFinishAndSave = useCallback(async () => {
     if (!mealName.trim()) {
       setMealNameError(true);
@@ -184,7 +229,7 @@ export default function DynamicMealCreatorModal({
 
     setIsSaving(true);
     try {
-      await MealService.createMealFromFoods(
+      const savedMeal = await MealService.createMealFromFoods(
         mealName.trim(),
         ingredients.map(({ food, amount }) => ({ foodId: food.id, amount })),
         mealDescription.trim() || undefined,
@@ -198,6 +243,8 @@ export default function DynamicMealCreatorModal({
           servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : undefined,
         }
       );
+
+      await syncMealPortion(savedMeal);
       showSnackbar('success', t('meals.dynamicCreator.savedSuccess'));
       onSaved();
     } catch (error) {
@@ -218,6 +265,7 @@ export default function DynamicMealCreatorModal({
     ingredients,
     onSaved,
     showSnackbar,
+    syncMealPortion,
     t,
   ]);
 
@@ -397,19 +445,10 @@ export default function DynamicMealCreatorModal({
               multiline
             />
 
-            {/*TODO: improve portion creation, make it the same as CreateMealModal*/}
-            {/* Nutrition basis */}
-            <View className="gap-2">
-              <Text
-                className="font-semibold"
-                style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.typography.fontSize.xs,
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                }}
-              >
-                {t('meals.dynamicCreator.nutritionBasisLabel')}
+            {/* Portion creation */}
+            <View className="gap-4">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('food.foodDetails.serving')}
               </Text>
               <FilterTabs
                 tabs={NUTRITION_BASIS_TABS}
@@ -417,52 +456,46 @@ export default function DynamicMealCreatorModal({
                 onTabChange={(id) =>
                   setNutritionBasis(id as 'per_recipe' | 'per_serving' | 'per_gram')
                 }
+                showContainer={false}
               />
+              {nutritionBasis === 'per_serving' || nutritionBasis === 'per_gram' ? (
+                <>
+                  <TextInput
+                    label={t('food.foodDetails.servingName')}
+                    value={defaultPortionName}
+                    onChangeText={setDefaultPortionName}
+                    placeholder={t('food.foodDetails.servingNamePlaceholder')}
+                  />
+                  {nutritionBasis === 'per_serving' ? (
+                    <StepperInput
+                      label={t('food.foodDetails.recipeServings')}
+                      value={recipeServingsCount}
+                      maxFractionDigits={0}
+                      onChangeValue={(v) => setRecipeServingsCount(Math.max(1, Math.round(v)))}
+                      onIncrement={() => setRecipeServingsCount((prev) => prev + 1)}
+                      onDecrement={() => setRecipeServingsCount((prev) => Math.max(1, prev - 1))}
+                    />
+                  ) : (
+                    <StepperInput
+                      label={t('food.foodDetails.servingWeight', { unit: massUnit })}
+                      value={gramsToDisplay(servingGrams, units)}
+                      step={stepDisplay}
+                      maxFractionDigits={units === 'imperial' ? 1 : 0}
+                      onChangeValue={(displayVal) =>
+                        setServingGrams(Math.max(1, Math.round(displayToGrams(displayVal, units))))
+                      }
+                      onIncrement={() =>
+                        setServingGrams((prev) => Math.max(1, Math.round(prev + stepAmount)))
+                      }
+                      onDecrement={() =>
+                        setServingGrams((prev) => Math.max(1, Math.round(prev - stepAmount)))
+                      }
+                      unit={massUnit}
+                    />
+                  )}
+                </>
+              ) : null}
             </View>
-
-            {/* Per-serving options */}
-            {nutritionBasis === 'per_serving' ? (
-              <>
-                <StepperInput
-                  label={t('food.foodDetails.recipeServings')}
-                  value={recipeServingsCount}
-                  step={1}
-                  maxFractionDigits={0}
-                  onChangeValue={(v) => setRecipeServingsCount(Math.max(1, Math.round(v)))}
-                  onIncrement={() => setRecipeServingsCount((prev) => prev + 1)}
-                  onDecrement={() => setRecipeServingsCount((prev) => Math.max(1, prev - 1))}
-                  unit={t('food.foodDetails.serving')}
-                />
-                <TextInput
-                  label={t('food.foodDetails.servingName')}
-                  value={defaultPortionName}
-                  onChangeText={setDefaultPortionName}
-                  placeholder={t('food.foodDetails.servingNamePlaceholder')}
-                />
-              </>
-            ) : null}
-
-            {/* Per-gram options */}
-            {nutritionBasis === 'per_gram' ? (
-              <>
-                <StepperInput
-                  label={t('food.foodDetails.servingWeight', { unit: massUnit })}
-                  value={servingGrams}
-                  step={10}
-                  maxFractionDigits={0}
-                  onChangeValue={(v) => setServingGrams(Math.max(1, Math.round(v)))}
-                  onIncrement={() => setServingGrams((prev) => prev + 10)}
-                  onDecrement={() => setServingGrams((prev) => Math.max(1, prev - 10))}
-                  unit={massUnit}
-                />
-                <TextInput
-                  label={t('food.foodDetails.servingName')}
-                  value={defaultPortionName}
-                  onChangeText={setDefaultPortionName}
-                  placeholder={t('food.foodDetails.servingNamePlaceholder')}
-                />
-              </>
-            ) : null}
             <View className="mb-6">
               {/* Prepared weight */}
               <StepperInput
