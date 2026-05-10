@@ -31,7 +31,6 @@ export function SwipeToReturnWrapper({
   pointerEvents,
 }: Props) {
   const translateX = useSharedValue(0);
-  // Track whether the current gesture started within the left edge zone
   const isEdgeGesture = useSharedValue(false);
 
   const panGesture = Gesture.Pan()

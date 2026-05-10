@@ -99,7 +99,6 @@ export default function DynamicMealCreatorModal({
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [addFoodModalVisible, setAddFoodModalVisible] = useState(false);
 
-  // Save-step form fields
   const [mealName, setMealName] = useState('');
   const [mealDescription, setMealDescription] = useState('');
   const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);

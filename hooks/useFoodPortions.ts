@@ -300,7 +300,6 @@ export function useFoodPortions({
       return allPortions;
     }
 
-    // Otherwise, show built-in catalog portions.
     return allPortions.filter((portion) => portion.resolvedSource === 'basic');
   }, [food, foodSpecificPortions, allPortions, includeAllPortionSources]);
 
