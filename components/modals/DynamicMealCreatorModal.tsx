@@ -155,7 +155,18 @@ export default function DynamicMealCreatorModal({
   }, []);
 
   const handleRemoveIngredient = useCallback((localId: string) => {
-    setIngredients((prev) => prev.filter((i) => i.localId !== localId));
+    setIngredients((prev) => {
+      const removed = prev.find((i) => i.localId === localId);
+      if (removed?.food.resolvedNutritionBasis === 'per_100g') {
+        setPreparedWeightGrams((pw) => {
+          if (pw == null) return pw;
+          const next = Math.round(pw - removed.amount);
+          return next > 0 ? next : undefined;
+        });
+      }
+
+      return prev.filter((i) => i.localId !== localId);
+    });
   }, []);
 
   const handleGoToSave = useCallback(() => {
@@ -386,6 +397,7 @@ export default function DynamicMealCreatorModal({
               multiline
             />
 
+            {/*TODO: improve portion creation, make it the same as CreateMealModal*/}
             {/* Nutrition basis */}
             <View className="gap-2">
               <Text
@@ -451,23 +463,32 @@ export default function DynamicMealCreatorModal({
                 />
               </>
             ) : null}
-
-            {/* Prepared weight */}
-            <StepperInput
-              label={t('food.createMeal.preparedWeight', { unit: massUnit })}
-              value={preparedWeightGrams ?? 0}
-              step={10}
-              maxFractionDigits={0}
-              onChangeValue={(v) => setPreparedWeightGrams(v > 0 ? Math.round(v) : undefined)}
-              onIncrement={() => setPreparedWeightGrams((prev) => (prev ?? 0) + 10)}
-              onDecrement={() =>
-                setPreparedWeightGrams((prev) =>
-                  prev != null && prev > 10 ? prev - 10 : undefined
-                )
-              }
-              unit={massUnit}
-            />
-
+            <View className="mb-6">
+              {/* Prepared weight */}
+              <StepperInput
+                label={t('food.createMeal.preparedWeight', { unit: massUnit })}
+                value={preparedWeightGrams ?? 0}
+                step={10}
+                maxFractionDigits={0}
+                onChangeValue={(v) => setPreparedWeightGrams(v > 0 ? Math.round(v) : undefined)}
+                onIncrement={() => setPreparedWeightGrams((prev) => (prev ?? 0) + 10)}
+                onDecrement={() =>
+                  setPreparedWeightGrams((prev) =>
+                    prev != null && prev > 10 ? prev - 10 : undefined
+                  )
+                }
+                unit={massUnit}
+              />
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.secondary,
+                  marginTop: theme.spacing.padding.sm,
+                }}
+              >
+                {t('food.createMeal.preparedWeightHelper')}
+              </Text>
+            </View>
             {/* Bottom spacing for footer */}
             <View style={{ height: theme.size['20'] }} />
           </ScrollView>
