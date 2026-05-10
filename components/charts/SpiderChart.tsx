@@ -213,7 +213,6 @@ export function SpiderChart({
               fontWeight="600"
               textAnchor={pos.anchor}
               alignmentBaseline="middle"
-              verticalAlign="middle"
             >
               {String(axes[idx]).toUpperCase()}
             </SvgText>
