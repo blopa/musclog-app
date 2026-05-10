@@ -32,7 +32,7 @@ type IngredientRowProps = {
   amountLabel: string;
   caloriesLabel: string;
   kcalLabel: string;
-  onRemove: (localId: string) => void;
+  onRemove?: (localId: string) => void;
 };
 
 function IngredientRow({ ingredient, amountLabel, caloriesLabel, kcalLabel, onRemove }: IngredientRowProps) {
@@ -64,13 +64,15 @@ function IngredientRow({ ingredient, amountLabel, caloriesLabel, kcalLabel, onRe
           {caloriesLabel} {kcalLabel}
         </Text>
       </View>
-      <Pressable
-        onPress={() => onRemove(ingredient.localId)}
-        style={{ padding: theme.spacing.padding.sm }}
-        hitSlop={8}
-      >
-        <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
-      </Pressable>
+      {onRemove ? (
+        <Pressable
+          onPress={() => onRemove(ingredient.localId)}
+          style={{ padding: theme.spacing.padding.sm }}
+          hitSlop={8}
+        >
+          <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -326,33 +328,13 @@ export default function DynamicMealCreatorModal({
             {/* Ingredient recap list */}
             <View className="gap-1.5">
               {ingredients.map((ingredient) => (
-                // TODO: use IngredientRow instead
-                <View
+                <IngredientRow
                   key={ingredient.localId}
-                  className="flex-row items-center justify-between rounded-lg px-3 py-2"
-                  style={{ backgroundColor: theme.colors.background.cardElevated }}
-                >
-                  <Text
-                    className="flex-1 font-medium"
-                    style={{
-                      color: theme.colors.text.primary,
-                      fontSize: theme.typography.fontSize.sm,
-                    }}
-                    numberOfLines={1}
-                  >
-                    {ingredient.food.name}
-                  </Text>
-                  <Text
-                    style={{
-                      color: theme.colors.text.secondary,
-                      fontSize: theme.typography.fontSize.xs,
-                    }}
-                  >
-                    {ingredientAmountLabel(ingredient.food, ingredient.amount)}
-                    {' · '}
-                    {ingredientCalories(ingredient.food, ingredient.amount)} {t('common.kcal')}
-                  </Text>
-                </View>
+                  ingredient={ingredient}
+                  amountLabel={ingredientAmountLabel(ingredient.food, ingredient.amount)}
+                  caloriesLabel={ingredientCalories(ingredient.food, ingredient.amount)}
+                  kcalLabel={t('common.kcal')}
+                />
               ))}
             </View>
 
