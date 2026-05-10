@@ -341,11 +341,11 @@ async function syncNutritionOnce(timeRange: {
       date: localDayStartMs(new Date(corr.startDate)),
       mealType: mapMealType(mealRaw),
       foodName: nameRaw ?? HC_SENTINEL_FOOD_NAME,
-      calories,
-      protein,
-      carbs,
-      fat,
-      fiber,
+      calories: Math.max(0, calories),
+      protein: Math.max(0, protein),
+      carbs: Math.max(0, carbs),
+      fat: Math.max(0, fat),
+      fiber: Math.max(0, fiber),
     });
   }
 

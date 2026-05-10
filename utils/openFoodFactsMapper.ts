@@ -327,17 +327,21 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const allNutriments = mapAllNutriments(nutriments);
 
   // Extract key macronutrients with proper fallback
-  const protein = getNutrimentValue(nutriments, 'proteins');
-  const carbs = getNutrimentValue(nutriments, 'carbohydrates');
-  const fat = getNutrimentValue(nutriments, 'fat');
+  const rawProtein = getNutrimentValue(nutriments, 'proteins');
+  const rawCarbs = getNutrimentValue(nutriments, 'carbohydrates');
+  const rawFat = getNutrimentValue(nutriments, 'fat');
+
+  const protein = rawProtein !== undefined ? Math.max(0, rawProtein) : undefined;
+  const carbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
+  const fat = rawFat !== undefined ? Math.max(0, rawFat) : undefined;
 
   // Improved fiber extraction with fallback calculation and negative value protection
   const directFiber = getNutrimentValue(nutriments, 'fiber');
   let fiber = 0;
 
-  if (directFiber !== undefined && directFiber >= 0) {
-    // Use direct fiber value when available and non-negative
-    fiber = directFiber;
+  if (directFiber !== undefined) {
+    // Use direct fiber value when available and clamp to non-negative
+    fiber = Math.max(0, directFiber);
   } else {
     // Fallback: calculate from carbohydrates-total - carbohydrates
     // Only use this if result is positive (some OFF products have inconsistent data)

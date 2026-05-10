@@ -51,11 +51,11 @@ export class FoodService {
         food.imageUrl = product.image_url; // Save image URL from API
         food.description = (product as any).ingredients_text || undefined;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -127,11 +127,11 @@ export class FoodService {
         food.externalId = externalId ?? String(product.fdcId); // Use provided externalId or default to fdcId
         food.description = product.ingredients || undefined;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -203,11 +203,11 @@ export class FoodService {
         food.externalId = barcode;
         food.description = product.description;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         const micros = {
           sugar: nutritionData.sugar,
@@ -307,11 +307,11 @@ export class FoodService {
         food.brand = brand;
         food.description = description;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -526,19 +526,19 @@ export class FoodService {
           record.externalId = updates.externalId;
         }
         if (updates.calories !== undefined) {
-          record.calories = updates.calories;
+          record.calories = Math.max(0, updates.calories);
         }
         if (updates.protein !== undefined) {
-          record.protein = updates.protein;
+          record.protein = Math.max(0, updates.protein);
         }
         if (updates.carbs !== undefined) {
-          record.carbs = updates.carbs;
+          record.carbs = Math.max(0, updates.carbs);
         }
         if (updates.fat !== undefined) {
-          record.fat = updates.fat;
+          record.fat = Math.max(0, updates.fat);
         }
         if (updates.fiber !== undefined) {
-          record.fiber = updates.fiber;
+          record.fiber = Math.max(0, updates.fiber);
         }
         if (updates.micros !== undefined) {
           record.micros = updates.micros;
