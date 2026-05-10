@@ -82,6 +82,7 @@ devenv.local.yaml
 .direnv
 
 .codex
+.claude
 
 # pre-commit
 .pre-commit-config.yaml

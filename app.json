@@ -15,6 +15,7 @@
       "baseUrl": "/"
     },
     "plugins": [
+      ["./plugins/withGradleVersion", { "version": "8.13" }],
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
