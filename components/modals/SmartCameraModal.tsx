@@ -84,6 +84,38 @@ const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string 
   }
 };
 
+const getContextButtonOpacity = (
+  hideCameraModePicker: boolean,
+  cameraMode: CameraMode,
+  strongOpacity: number
+): number => {
+  if (hideCameraModePicker) {
+    return 0;
+  }
+
+  if (cameraMode === 'barcode-scan') {
+    return strongOpacity;
+  }
+
+  return 1;
+};
+
+const getContextIconColor = (
+  cameraMode: CameraMode,
+  aiContext: { description: string; tags: string[] } | null,
+  colors: { gray500: string; accent: string; primary: string }
+): string => {
+  if (cameraMode === 'barcode-scan') {
+    return colors.gray500;
+  }
+
+  if (aiContext) {
+    return colors.accent;
+  }
+
+  return colors.primary;
+};
+
 type CameraModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -136,7 +168,10 @@ export default function SmartCameraModal({
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
 
   const [aiContext, setAiContext] = useState<{ description: string; tags: string[] } | null>(null);
-  const [draftContext, setDraftContext] = useState<{ description: string; tags: string[] }>({ description: '', tags: [] });
+  const [draftContext, setDraftContext] = useState<{ description: string; tags: string[] }>({
+    description: '',
+    tags: [],
+  });
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
     'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
@@ -409,8 +444,6 @@ export default function SmartCameraModal({
               return;
             }
 
-            // TODO: totalGrams not needed?
-            const totalGrams = allIngredients.reduce((sum, ing) => sum + (ing.grams || 0), 0);
             const totalKcal = allIngredients.reduce((sum, ing) => sum + ing.kcal, 0);
             const totalProtein = allIngredients.reduce((sum, ing) => sum + ing.protein, 0);
             const totalCarbs = allIngredients.reduce((sum, ing) => sum + ing.carbs, 0);
@@ -1160,25 +1193,21 @@ export default function SmartCameraModal({
                     backgroundColor: theme.colors.background.darkGray50,
                     borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.background.white10,
-                    // TODO: move this to a helper function to avoid nested ternary
-                    opacity: hideCameraModePicker
-                      ? 0
-                      : cameraMode === 'barcode-scan'
-                        ? theme.colors.opacity.strong
-                        : 1,
+                    opacity: getContextButtonOpacity(
+                      hideCameraModePicker,
+                      cameraMode,
+                      theme.colors.opacity.strong
+                    ),
                   }}
                   disabled={cameraMode === 'barcode-scan'}
                 >
                   <MessageSquareText
                     size={theme.iconSize.lg}
-                    color={
-                      // TODO: move this to a helper function to avoid nested ternary
-                      cameraMode === 'barcode-scan'
-                        ? theme.colors.text.gray500
-                        : aiContext
-                          ? theme.colors.text.accent
-                          : theme.colors.text.primary
-                    }
+                    color={getContextIconColor(cameraMode, aiContext, {
+                      gray500: theme.colors.text.gray500,
+                      accent: theme.colors.text.accent,
+                      primary: theme.colors.text.primary,
+                    })}
                   />
                 </Pressable>
               ) : (
