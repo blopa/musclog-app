@@ -256,6 +256,7 @@
     "portions": {
       "100g": "Padrão",
       "twoSlices": "Duas fatias",
+      "slice": "Fatia",
       "cup": "Xícara",
       "tbsp": "Colher de sopa",
       "tsp": "Colher de chá",
@@ -417,6 +418,7 @@
     },
     "newCustomFood": {
       "title": "Criar Alimento Personalizado",
+      "oneServing": "1 porção",
       "foodName": "Nome do Alimento",
       "foodNamePlaceholder": "ex: Salada de Frango Caseira",
       "barcode": "Código de Barras",

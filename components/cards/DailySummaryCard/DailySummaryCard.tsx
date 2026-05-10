@@ -117,7 +117,6 @@ export function DailySummaryCard({
     fiberStatus,
   } = calculateDailySummaryMetrics(calories, macros);
 
-
   const dailyMacroItems = macros
     ? [
         ...(showProtein
@@ -149,9 +148,7 @@ export function DailySummaryCard({
         ...(showFats
           ? [
               {
-                label: isNarrowFats
-                  ? t('dailySummaryCard.fatsShort')
-                  : t('dailySummaryCard.fats'),
+                label: isNarrowFats ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats'),
                 value: macros.fats.value,
                 goal: macros.fats.goal,
                 progress: fatsProgress,
@@ -226,7 +223,9 @@ export function DailySummaryCard({
       <View
         onLayout={(e) => {
           const w = e.nativeEvent.layout.width;
-          if (w > 0 && w !== pageWidth) {setPageWidth(w);}
+          if (w > 0 && w !== pageWidth) {
+            setPageWidth(w);
+          }
         }}
         style={{ overflow: 'hidden' }}
       >
@@ -239,7 +238,9 @@ export function DailySummaryCard({
           onScroll={(e) => {
             if (pageWidth > 0) {
               const page = Math.round(e.nativeEvent.contentOffset.x / pageWidth);
-              if (page !== currentPage) {setCurrentPage(page);}
+              if (page !== currentPage) {
+                setCurrentPage(page);
+              }
             }
           }}
         >
