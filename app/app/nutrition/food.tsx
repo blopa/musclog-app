@@ -2286,7 +2286,6 @@ export default function FoodScreen() {
         isLoading={isMealGroupActionLoading}
       />
 
-
       {/* Meal Group Insights Modal */}
       <MealInsightsModal
         visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
