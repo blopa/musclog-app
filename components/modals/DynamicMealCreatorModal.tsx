@@ -345,6 +345,7 @@ export default function DynamicMealCreatorModal({
                   amountLabel={ingredientAmountLabel(ingredient.food, ingredient.amount)}
                   caloriesLabel={ingredientCalories(ingredient.food, ingredient.amount)}
                   kcalLabel={t('common.kcal')}
+                  onRemove={handleRemoveIngredient}
                 />
               ))}
             </View>
