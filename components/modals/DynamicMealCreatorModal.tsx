@@ -135,6 +135,16 @@ export default function DynamicMealCreatorModal({
     );
   }, [ingredients]);
 
+  const totalRawWeightGrams = useMemo(
+    () =>
+      Math.round(
+        ingredients.reduce((sum, { food, amount }) => {
+          return food.resolvedNutritionBasis === 'per_100g' ? sum + amount : sum;
+        }, 0)
+      ),
+    [ingredients]
+  );
+
   const handleAddFoods = useCallback((foods: { food: Food; amount: number }[]) => {
     const newIngredients: Ingredient[] = foods.map((item, idx) => ({
       localId: `${Date.now()}-${idx}`,
@@ -149,15 +159,11 @@ export default function DynamicMealCreatorModal({
   }, []);
 
   const handleGoToSave = useCallback(() => {
-    setPreparedWeightGrams((prev) => {
-      if (prev !== undefined) return prev;
-      const totalGrams = ingredients.reduce((sum, { food, amount }) => {
-        return food.resolvedNutritionBasis === 'per_100g' ? sum + amount : sum;
-      }, 0);
-      return totalGrams > 0 ? Math.round(totalGrams) : undefined;
-    });
+    if (preparedWeightGrams === undefined && totalRawWeightGrams > 0) {
+      setPreparedWeightGrams(totalRawWeightGrams);
+    }
     setStep('save');
-  }, [ingredients]);
+  }, [preparedWeightGrams, totalRawWeightGrams]);
 
   const handleFinishAndSave = useCallback(async () => {
     if (!mealName.trim()) {
