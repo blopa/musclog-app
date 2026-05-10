@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
@@ -16,8 +17,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
-
-import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
 
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -36,7 +35,13 @@ type IngredientRowProps = {
   onRemove?: (localId: string) => void;
 };
 
-function IngredientRow({ ingredient, amountLabel, caloriesLabel, kcalLabel, onRemove }: IngredientRowProps) {
+function IngredientRow({
+  ingredient,
+  amountLabel,
+  caloriesLabel,
+  kcalLabel,
+  onRemove,
+}: IngredientRowProps) {
   const theme = useTheme();
   return (
     <View
@@ -161,7 +166,10 @@ export default function DynamicMealCreatorModal({
       const removed = prev.find((i) => i.localId === localId);
       if (removed?.food.resolvedNutritionBasis === 'per_100g') {
         setPreparedWeightGrams((pw) => {
-          if (pw == null) return pw;
+          if (pw == null) {
+            return pw;
+          }
+
           const next = Math.round(pw - removed.amount);
           return next > 0 ? next : undefined;
         });
