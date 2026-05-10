@@ -206,10 +206,6 @@ export default function FoodScreen() {
   const [isMealGroupActionModalVisible, setIsMealGroupActionModalVisible] = useState(false);
   const [mealGroupActionMode, setMealGroupActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealGroupActionLoading, setIsMealGroupActionLoading] = useState(false);
-  const [isMealGroupCreateMealModalVisible, setIsMealGroupCreateMealModalVisible] = useState(false);
-  const [mealGroupCreateMealInitialFoods, setMealGroupCreateMealInitialFoods] = useState<
-    { food: Food; amount: number }[]
-  >([]);
   const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
   const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
 
@@ -566,37 +562,6 @@ export default function FoodScreen() {
     }
   };
 
-  const handleMealGroupCreateMeal = () => {
-    setIsMealGroupMenuVisible(false);
-    if (!selectedMealGroup) {
-      return;
-    }
-
-    const items = selectedMealGroup.entries
-      .map((entry) => {
-        if (!entry.food) {
-          return null;
-        }
-        return {
-          food: entry.food,
-          amount:
-            entry.food.resolvedNutritionBasis === 'per_serving'
-              ? entry.log.amount
-              : Math.round(entry.gramWeight),
-        };
-      })
-      .filter(Boolean) as { food: Food; amount: number }[];
-
-    if (items.length === 0) {
-      showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
-      setSelectedMealGroup(null);
-      return;
-    }
-
-    setMealGroupCreateMealInitialFoods(items);
-    setIsMealGroupCreateMealModalVisible(true);
-  };
-
   const handleMealGroupGetInsights = () => {
     setIsMealGroupMenuVisible(false);
     setIsMealGroupInsightsVisible(true);
@@ -739,6 +704,26 @@ export default function FoodScreen() {
     setIsFoodSplitModalVisible(true);
   };
 
+  const handleFoodCreateMeal = () => {
+    setIsFoodMenuVisible(false);
+    if (!selectedFoodItem || !selectedFoodItem.food) {
+      return;
+    }
+
+    const items = [
+      {
+        food: selectedFoodItem.food,
+        amount:
+          selectedFoodItem.food.resolvedNutritionBasis === 'per_serving'
+            ? selectedFoodItem.log.amount
+            : Math.round(selectedFoodItem.gramWeight),
+      },
+    ];
+
+    setCreateMealInitialFoods(items);
+    setIsCreateMealModalVisible(true);
+  };
+
   const handleConfirmFoodMove = async (targetDate: Date, targetMealType: MealType) => {
     if (!selectedFoodItem) {
       return;
@@ -854,6 +839,14 @@ export default function FoodScreen() {
       title: t('food.actions.split'),
       description: t('food.actions.splitDesc'),
       onPress: handleSplitFood,
+    },
+    {
+      icon: UtensilsCrossed,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.createMeal'),
+      description: t('food.actions.createMealDesc'),
+      onPress: handleFoodCreateMeal,
     },
     {
       icon: Save,
@@ -1870,12 +1863,14 @@ export default function FoodScreen() {
           setIsCreateMealModalVisible(false);
           setCreateMealInitialFoods([]);
           setSelectedMealForMenu(null);
+          setSelectedFoodItem(null);
         }}
         onSave={() => {
           refresh();
           setIsCreateMealModalVisible(false);
           setCreateMealInitialFoods([]);
           setSelectedMealForMenu(null);
+          setSelectedFoodItem(null);
         }}
         initialFoods={createMealInitialFoods}
       />
@@ -2201,14 +2196,6 @@ export default function FoodScreen() {
               ]
             : []),
           {
-            icon: UtensilsCrossed,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
-            title: t('food.actions.createMeal'),
-            description: t('food.actions.createMealDesc'),
-            onPress: handleMealGroupCreateMeal,
-          },
-          {
             icon: Scale,
             iconColor: theme.colors.accent.primary,
             iconBgColor: theme.colors.accent.primary10,
@@ -2299,22 +2286,6 @@ export default function FoodScreen() {
         isLoading={isMealGroupActionLoading}
       />
 
-      {/* Meal Group Create Meal Modal */}
-      <CreateMealModal
-        visible={isMealGroupCreateMealModalVisible}
-        onClose={() => {
-          setIsMealGroupCreateMealModalVisible(false);
-          setMealGroupCreateMealInitialFoods([]);
-          setSelectedMealGroup(null);
-        }}
-        onSave={() => {
-          refresh();
-          setIsMealGroupCreateMealModalVisible(false);
-          setMealGroupCreateMealInitialFoods([]);
-          setSelectedMealGroup(null);
-        }}
-        initialFoods={mealGroupCreateMealInitialFoods}
-      />
 
       {/* Meal Group Insights Modal */}
       <MealInsightsModal
