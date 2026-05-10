@@ -2,6 +2,8 @@
   "addMeal": {
     "createMeal": "Create Meal",
     "createMealDesc": "Add a new meal to your daily log",
+    "dynamicCreator": "Dynamic Meal Creator",
+    "dynamicCreatorDesc": "Build a meal step-by-step by scanning or searching foods",
     "generateMealAI": "Generate Meal with AI",
     "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
     "manageCategories": "Manage Categories",

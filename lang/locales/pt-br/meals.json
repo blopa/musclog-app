@@ -60,6 +60,24 @@
       "errorMessage": "Não foi possível gerar refeições. Por favor, tente novamente.",
       "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações.",
       "generating": "Gerando refeições..."
+    },
+    "dynamicCreator": {
+      "title": "Criador Dinâmico de Refeições",
+      "saveMealTitle": "Salvar Refeição",
+      "noIngredients": "Nenhum ingrediente ainda.\nToque em \"Adicionar Alimento\" para começar a criar sua refeição.",
+      "addFood": "Adicionar Alimento",
+      "finishAndSave": "Concluir e Salvar",
+      "saveButton": "Salvar Refeição",
+      "totalNutrition": "Nutrição Total",
+      "ingredientsSummary_one": "{{count}} ingrediente",
+      "ingredientsSummary_other": "{{count}} ingredientes",
+      "mealNameLabel": "Nome da Refeição",
+      "mealNamePlaceholder": "ex: Bowl pós-treino",
+      "mealNameRequired": "Por favor, insira um nome para a refeição",
+      "descriptionLabel": "Descrição (opcional)",
+      "descriptionPlaceholder": "ex: Refeição rica em proteína com frango e arroz",
+      "nutritionBasisLabel": "Base Nutricional",
+      "savedSuccess": "Refeição salva com sucesso!"
     }
   }
 }

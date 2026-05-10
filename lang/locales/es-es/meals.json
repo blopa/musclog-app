@@ -60,6 +60,24 @@
       "errorMessage": "No se pudieron generar las comidas. Por favor, inténtalo de nuevo.",
       "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
       "generating": "Generando comidas..."
+    },
+    "dynamicCreator": {
+      "title": "Creador Dinámico de Comidas",
+      "saveMealTitle": "Guardar Comida",
+      "noIngredients": "Aún no hay ingredientes.\nToca \"Añadir Alimento\" para empezar a crear tu comida.",
+      "addFood": "Añadir Alimento",
+      "finishAndSave": "Finalizar y Guardar",
+      "saveButton": "Guardar Comida",
+      "totalNutrition": "Nutrición Total",
+      "ingredientsSummary_one": "{{count}} ingrediente",
+      "ingredientsSummary_other": "{{count}} ingredientes",
+      "mealNameLabel": "Nombre de la Comida",
+      "mealNamePlaceholder": "ej. Bol post-entrenamiento",
+      "mealNameRequired": "Por favor, introduce un nombre para la comida",
+      "descriptionLabel": "Descripción (opcional)",
+      "descriptionPlaceholder": "ej. Comida rica en proteínas con pollo y arroz",
+      "nutritionBasisLabel": "Base Nutricional",
+      "savedSuccess": "¡Comida guardada con éxito!"
     }
   }
 }

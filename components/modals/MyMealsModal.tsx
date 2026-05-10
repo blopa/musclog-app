@@ -31,6 +31,7 @@ import { AddMealModal } from './AddMealModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
+import DynamicMealCreatorModal from './DynamicMealCreatorModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -116,6 +117,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   ];
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
+  const [dynamicMealCreatorVisible, setDynamicMealCreatorVisible] = useState(false);
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
   const [menuMealId, setMenuMealId] = useState<string | null>(null);
@@ -129,6 +131,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     if (!visible) {
       setAddMealModalVisible(false);
       setCreateMealModalVisible(false);
+      setDynamicMealCreatorVisible(false);
       setLogMealModalVisible(false);
       setSelectedMealForLogging(null);
       setMenuMealId(null);
@@ -256,6 +259,11 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const handleCreateMeal = () => {
     setAddMealModalVisible(false);
     setTimeout(() => setCreateMealModalVisible(true), 300); // Wait for modal close animation
+  };
+
+  const handleDynamicMealCreator = () => {
+    setAddMealModalVisible(false);
+    setTimeout(() => setDynamicMealCreatorVisible(true), 300);
   };
 
   const handleGenerateMealAI = useCallback(() => {
@@ -589,6 +597,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             visible={addMealModalVisible}
             onClose={() => setAddMealModalVisible(false)}
             onCreateMeal={handleCreateMeal}
+            onDynamicMealCreator={handleDynamicMealCreator}
             onGenerateMealAI={handleGenerateMealAI}
             isAiEnabled={isAiConfigured}
           />
@@ -603,6 +612,17 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             describeLabel={t('meals.generateAI.describeLabel')}
             placeholder={t('meals.generateAI.placeholder')}
             applyLabel={t('meals.generateAI.applyLabel')}
+          />
+        ) : null}
+        {/* Dynamic Meal Creator */}
+        {dynamicMealCreatorVisible ? (
+          <DynamicMealCreatorModal
+            visible={dynamicMealCreatorVisible}
+            onClose={() => setDynamicMealCreatorVisible(false)}
+            onSaved={() => {
+              refresh();
+              setDynamicMealCreatorVisible(false);
+            }}
           />
         ) : null}
         {/* CreateMealModal (create or edit) */}

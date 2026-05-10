@@ -60,6 +60,24 @@
       "errorMessage": "Kon geen maaltijden genereren. Probeer het opnieuw.",
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
       "generating": "Maaltijden genereren..."
+    },
+    "dynamicCreator": {
+      "title": "Dynamische Maaltijdmaker",
+      "saveMealTitle": "Maaltijd opslaan",
+      "noIngredients": "Nog geen ingrediënten.\nTik op \"Voedsel toevoegen\" om je maaltijd samen te stellen.",
+      "addFood": "Voedsel toevoegen",
+      "finishAndSave": "Afronden en opslaan",
+      "saveButton": "Maaltijd opslaan",
+      "totalNutrition": "Totale voeding",
+      "ingredientsSummary_one": "{{count}} ingrediënt",
+      "ingredientsSummary_other": "{{count}} ingrediënten",
+      "mealNameLabel": "Naam van de maaltijd",
+      "mealNamePlaceholder": "bijv. Post-workout bowl",
+      "mealNameRequired": "Voer een naam in voor de maaltijd",
+      "descriptionLabel": "Beschrijving (optioneel)",
+      "descriptionPlaceholder": "bijv. Eiwitrijke maaltijd met kip en rijst",
+      "nutritionBasisLabel": "Voedingsbasis",
+      "savedSuccess": "Maaltijd succesvol opgeslagen!"
     }
   }
 }

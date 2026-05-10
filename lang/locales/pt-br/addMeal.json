@@ -2,6 +2,8 @@
   "addMeal": {
     "createMeal": "Criar Refeição",
     "createMealDesc": "Adicione uma nova refeição ao seu registro diário",
+    "dynamicCreator": "Criador Dinâmico de Refeições",
+    "dynamicCreatorDesc": "Crie uma refeição passo a passo escaneando ou pesquisando alimentos",
     "generateMealAI": "Gerar Refeição com IA",
     "generateMealAIDesc": "Deixe a IA sugerir uma refeição baseada nas suas preferências",
     "manageCategories": "Gerenciar Categorias",
