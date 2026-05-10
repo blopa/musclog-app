@@ -136,6 +136,7 @@ export default function SmartCameraModal({
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
 
   const [aiContext, setAiContext] = useState<{ description: string; tags: string[] } | null>(null);
+  const [draftContext, setDraftContext] = useState<{ description: string; tags: string[] }>({ description: '', tags: [] });
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<
     'all' | 'myFoods' | 'openfood' | 'usda' | 'meals'
@@ -567,6 +568,7 @@ export default function SmartCameraModal({
 
   const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
     setAiContext(context);
+    setDraftContext(context);
   }, []);
 
   const handleFoodDetailsClose = useCallback(() => {
@@ -1158,6 +1160,7 @@ export default function SmartCameraModal({
                     backgroundColor: theme.colors.background.darkGray50,
                     borderWidth: theme.borderWidth.thin,
                     borderColor: theme.colors.background.white10,
+                    // TODO: move this to a helper function to avoid nested ternary
                     opacity: hideCameraModePicker
                       ? 0
                       : cameraMode === 'barcode-scan'
@@ -1169,9 +1172,12 @@ export default function SmartCameraModal({
                   <MessageSquareText
                     size={theme.iconSize.lg}
                     color={
+                      // TODO: move this to a helper function to avoid nested ternary
                       cameraMode === 'barcode-scan'
                         ? theme.colors.text.gray500
-                        : theme.colors.text.primary
+                        : aiContext
+                          ? theme.colors.text.accent
+                          : theme.colors.text.primary
                     }
                   />
                 </Pressable>
@@ -1188,6 +1194,9 @@ export default function SmartCameraModal({
             visible={isContextModalVisible}
             onClose={() => setIsContextModalVisible(false)}
             onApply={handleApplyContext}
+            initialDescription={draftContext.description}
+            initialTags={draftContext.tags}
+            onDraftChange={setDraftContext}
           />
         ) : null}
 
