@@ -148,6 +148,17 @@ export default function DynamicMealCreatorModal({
     setIngredients((prev) => prev.filter((i) => i.localId !== localId));
   }, []);
 
+  const handleGoToSave = useCallback(() => {
+    setPreparedWeightGrams((prev) => {
+      if (prev !== undefined) return prev;
+      const totalGrams = ingredients.reduce((sum, { food, amount }) => {
+        return food.resolvedNutritionBasis === 'per_100g' ? sum + amount : sum;
+      }, 0);
+      return totalGrams > 0 ? Math.round(totalGrams) : undefined;
+    });
+    setStep('save');
+  }, [ingredients]);
+
   const handleFinishAndSave = useCallback(async () => {
     if (!mealName.trim()) {
       setMealNameError(true);
@@ -239,7 +250,7 @@ export default function DynamicMealCreatorModal({
               size="md"
               width="full"
               disabled={ingredients.length === 0}
-              onPress={() => setStep('save')}
+              onPress={handleGoToSave}
             />
           ) : (
             <Button
