@@ -2241,18 +2241,6 @@ export default function FoodScreen() {
             onPress: handleMealGroupSplit,
           },
           {
-            icon: Trash2,
-            iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
-            title: t('food.actions.deleteAll'),
-            description: t('food.actions.deleteAllDesc'),
-            titleColor: theme.colors.status.error,
-            onPress: () => {
-              setIsMealGroupMenuVisible(false);
-              setIsDeleteMealGroupVisible(true);
-            },
-          },
-          {
             icon: Save,
             iconColor: theme.colors.accent.primary,
             iconBgColor: theme.colors.accent.primary10,
@@ -2267,6 +2255,18 @@ export default function FoodScreen() {
                 );
                 setSelectedMealGroup(null);
               }
+            },
+          },
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('food.actions.deleteAll'),
+            description: t('food.actions.deleteAllDesc'),
+            titleColor: theme.colors.status.error,
+            onPress: () => {
+              setIsMealGroupMenuVisible(false);
+              setIsDeleteMealGroupVisible(true);
             },
           },
         ]}
