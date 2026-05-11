@@ -109,8 +109,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       },
       {
         question: 'How is my Total Daily Energy Expenditure (TDEE) estimated?',
-        answer:
-          'Musclog uses two modes, automatically choosing the best one for your data.',
+        answer: 'Musclog uses two modes, automatically choosing the best one for your data.',
         bullets: [
           'Statistical (new users): TDEE = BMR × Activity Multiplier. Multipliers range from 1.2 (sedentary) to 1.9 (very active + physical job), based on the Harris-Benedict / Mifflin-St Jeor scale.',
           'Empirical / Observed TDEE (preferred, requires ≥2 weeks of food + weight data): Applies the First Law of Thermodynamics directly. TDEE = (Calories in − Energy stored in tissue) / Days. Fat tissue stores 7,730 kcal/kg when catabolised and costs 8,840 kcal/kg to build; muscle stores 1,250 kcal/kg and costs 3,900 kcal/kg. These asymmetric values account for thermodynamic synthesis efficiency.',
@@ -137,8 +136,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       },
       {
         question: 'How does providing body fat percentage improve the calculation?',
-        answer:
-          'When a valid body fat percentage (5–60 %) is entered, three things change:',
+        answer: 'When a valid body fat percentage (5–60 %) is entered, three things change:',
         bullets: [
           'BMR switches to Katch-McArdle, which is body-composition-aware and ignores metabolically inert fat mass.',
           'The fat/lean split of weight changes is computed from the Forbes Curve (Hall 2007), solved analytically via the Lambert W function. The key insight: leaner individuals lose a higher fraction of lean mass per kg because the body defends fat stores more aggressively. A person at 12 % BF loses tissue at roughly 5,800–6,200 kcal/kg, far below the classical "7,700 kcal/kg" rule which assumes pure fat loss.',
@@ -153,7 +151,8 @@ const FAQ_CATEGORIES: FaqCategory[] = [
             url: 'https://link.springer.com/book/10.1007/978-1-4612-4654-1',
           },
           {
-            label: 'Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes',
+            label:
+              'Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes',
             url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/',
           },
           {
@@ -188,8 +187,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       },
       {
         question: 'How does the weight projection model work?',
-        answer:
-          'The projection uses two phases to accurately predict 90-day weight change.',
+        answer: 'The projection uses two phases to accurately predict 90-day weight change.',
         bullets: [
           'Early phase — Glycogen depletion: The whole-body glycogen pool is approximately 15 g/kg of body weight (dry), bound to about 3 g of water each, totalling roughly 6 % of body weight as hydrated glycogen. Only the portion of the cumulative calorie deficit that fits within this glycogen energy pool (~4,206 kcal/kg dry) drives the early "water weight" loss. This prevents wildly over-predicting early losses for aggressive deficits.',
           'Steady-state phase: All remaining deficit drives fat/lean tissue loss at the composition-aware energy density from the Hall/Forbes model. The reported "weekly rate" always reflects this steady-state figure — what users experience after the first few days.',
@@ -213,10 +211,34 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         table: {
           head: ['Goal', 'Carbs', 'Protein', 'Fat', 'Rationale'],
           rows: [
-            ['Weight Loss', '40 %', '30 %', '30 %', 'High protein to preserve muscle in deficit (ISSN/Helms 2014)'],
-            ['Hypertrophy', '45 %', '30 %', '25 %', 'Protein for MPS; carbs support volume training'],
-            ['Strength', '50 %', '30 %', '20 %', 'Carbs for glycolytic demand of heavy compound work'],
-            ['Endurance', '55 %', '20 %', '25 %', 'Glycogen priority (ACSM 6–10 g/kg/day guidance)'],
+            [
+              'Weight Loss',
+              '40 %',
+              '30 %',
+              '30 %',
+              'High protein to preserve muscle in deficit (ISSN/Helms 2014)',
+            ],
+            [
+              'Hypertrophy',
+              '45 %',
+              '30 %',
+              '25 %',
+              'Protein for MPS; carbs support volume training',
+            ],
+            [
+              'Strength',
+              '50 %',
+              '30 %',
+              '20 %',
+              'Carbs for glycolytic demand of heavy compound work',
+            ],
+            [
+              'Endurance',
+              '55 %',
+              '20 %',
+              '25 %',
+              'Glycogen priority (ACSM 6–10 g/kg/day guidance)',
+            ],
             ['General', '45 %', '25 %', '30 %', 'Centered within IOM AMDR for general fitness'],
           ],
         },
@@ -261,12 +283,8 @@ const FAQ_CATEGORIES: FaqCategory[] = [
             url: 'https://pubmed.ncbi.nlm.nih.gov/37787845/',
           },
           {
-            label: 'Smith et al. (2020) / Slater et al. (2023) — Intermediate fat/lean gain partitioning',
-            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6942464/',
-          },
-          {
-            label: 'NCBI (2021) — Thermodynamic efficiency of muscle protein synthesis',
-            url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8387577/#sec-10title',
+            label: 'NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/',
           },
         ],
       },
@@ -282,7 +300,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Müller et al. (2013) — Metabolic adaptation to caloric restriction',
-            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4535334/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/26399868/',
           },
           {
             label: 'St-Onge & Gallagher (2010) — Body composition changes with aging',
@@ -311,7 +329,11 @@ const FAQ_CATEGORIES: FaqCategory[] = [
             ['Epley (1985)', 'w × (1 + r / 30)', 'General use; slightly conservative'],
             ['Lander (1985)', 'w / (1.013 − 0.0267 × r)', 'Moderate rep ranges'],
             ['Lombardi (1989)', 'w × r^0.1', 'Low rep ranges'],
-            ['Mayhew et al. (1992)', 'w / (0.522 + 0.419 × e^{−0.055r})', 'Wide rep range; exponential model'],
+            [
+              'Mayhew et al. (1992)',
+              'w / (0.522 + 0.419 × e^{−0.055r})',
+              'Wide rep range; exponential model',
+            ],
             ["O'Connor et al. (1989)", 'w × (1 + 0.025 × r)', 'Linear; conservative'],
             ['Wathan (1994)', 'w / (0.488 + 0.539 × e^{−0.035r})', 'Higher rep ranges'],
           ],
@@ -341,7 +363,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
           },
           {
             label: "O'Connor et al. (1989)",
-            url: 'https://en.wikipedia.org/wiki/One-repetition_maximum#O\'Connor_et_al._formula',
+            url: "https://en.wikipedia.org/wiki/One-repetition_maximum#O'Connor_et_al._formula",
           },
           {
             label: 'Wathan (1994)',
@@ -354,7 +376,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         answer:
           'Musclog uses the average 1RM estimate as the unit of volume for each set, rather than raw tonnage (weight × reps). This produces a more meaningful measure because the 1RM normalises for the fact that higher-rep sets represent more total effort than the raw weight would suggest.',
         bullets: [
-          'For bodyweight exercises, the user\'s current body weight is added to the bar weight before the 1RM calculation.',
+          "For bodyweight exercises, the user's current body weight is added to the bar weight before the 1RM calculation.",
           'Total session volume = sum of average 1RM estimates across all sets in the session.',
           'Progressive overload tracking compares this number across sessions for the same exercises.',
         ],
@@ -388,8 +410,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       },
       {
         question: 'How does the app calculate weight and reps for a target RIR?',
-        answer:
-          'Two inverse 1RM problems are solved:',
+        answer: 'Two inverse 1RM problems are solved:',
         bullets: [
           'Weight for target RIR: All seven 1RM formulas are linear in weight (1RM = weight × f(reps, RIR)), so weight = 1RM / f(reps, RIR). The multiplier f is computed by calling the ensemble with weight = 1.',
           'Reps for target weight: The averaged ensemble has no closed-form inverse, so the app uses binary search. Because 1RM estimates are monotonically increasing in reps, binary search converges within ~6 iterations for any practical rep range (1–50). See Helms et al. (2016) for RIR-based autoregulation research basis.',
@@ -429,7 +450,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         bullets: [
           'Leaner people sacrifice more lean mass per kg lost — the body defends fat stores more aggressively when fat reserves are low.',
           'Conversely, people with high body fat lose a higher proportion of fat per kg, making their effective energy density closer to the classic 7,700 kcal/kg rule.',
-          'The curve is parameterised by a constant C (≈13.8 for males, ≈10.4 for females), solved using the Lambert W function (principal branch). Musclog implements this solver numerically with Newton\'s method to avoid any library dependency.',
+          "The curve is parameterised by a constant C (≈13.8 for males, ≈10.4 for females), solved using the Lambert W function (principal branch). Musclog implements this solver numerically with Newton's method to avoid any library dependency.",
           'Without this model, cuts for lean individuals are systematically under-estimated — the classic rule treats all weight loss as fat and would over-predict how much fat is actually lost.',
         ],
         citations: [
@@ -446,7 +467,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       {
         question: 'What is Adaptive Thermogenesis and how does the app account for it?',
         answer:
-          'Adaptive thermogenesis (AT) is the phenomenon where the body\'s energy expenditure drops by more than can be explained by changes in body mass alone, in response to sustained caloric restriction. It is driven by:',
+          "Adaptive thermogenesis (AT) is the phenomenon where the body's energy expenditure drops by more than can be explained by changes in body mass alone, in response to sustained caloric restriction. It is driven by:",
         bullets: [
           'Hormonal suppression: leptin falls with fat loss, reducing sympathetic nervous system activity and thyroid hormone output.',
           'NEAT (Non-Exercise Activity Thermogenesis) reduction: the body unconsciously reduces fidgeting, posture changes, and spontaneous movement.',
