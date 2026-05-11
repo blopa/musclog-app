@@ -661,8 +661,11 @@ export class ProgressService {
     endDate: number,
     isImperial: boolean
   ): Promise<ProgressInsights> {
-    const user = await UserService.getCurrentUser();
-    const currentGoal = await NutritionGoalService.getCurrent();
+    const [user, currentGoal, useBfForCalculations] = await Promise.all([
+      UserService.getCurrentUser(),
+      NutritionGoalService.getCurrent(),
+      SettingsService.getUseBfForCalculations(),
+    ]);
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
     // For empirical TDEE, we find the tracking window and anchor values.
@@ -671,10 +674,13 @@ export class ProgressService {
       empiricalEnd,
       initialWeight: initW,
       finalWeight: finW,
-      initialFat,
-      finalFat,
+      initialFat: rawInitialFat,
+      finalFat: rawFinalFat,
       empiricalDays,
     } = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, startDate, endDate);
+
+    const initialFat = useBfForCalculations ? rawInitialFat : undefined;
+    const finalFat = useBfForCalculations ? rawFinalFat : undefined;
 
     let initialWeight = initW;
     let finalWeight = finW;
