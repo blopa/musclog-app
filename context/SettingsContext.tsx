@@ -13,6 +13,7 @@ import {
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
+  USE_BF_FOR_CALCULATIONS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -110,6 +111,7 @@ type SettingsState = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
@@ -162,6 +164,7 @@ const DEFAULT_STATE: SettingsState = {
   showWeightPrediction: true,
   requireExportEncryption: true,
   disableMinimumCalories: false,
+  useBfForCalculations: false,
   intuitiveEatingMode: false,
   progressionMode: 'reps_first',
   nutritionDisplay: '11111',
@@ -281,6 +284,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     disableMinimumCalories: getBoolean(map, DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false),
+    useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
@@ -334,6 +338,7 @@ export type SettingsContextType = UseSettingsResult & {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;

@@ -246,6 +246,12 @@ export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption
 export const DISABLE_MINIMUM_CALORIES_SETTING_TYPE = 'disable_minimum_calories';
 
 /**
+ * Setting type for using body fat percentage in nutrition calculations.
+ * value: 'true' | 'false'.
+ */
+export const USE_BF_FOR_CALCULATIONS_SETTING_TYPE = 'use_bf_for_calculations';
+
+/**
  * Setting type for intuitive eating mode.
  * When enabled, the daily summary card hides consumed amounts and shows '??' instead.
  * value: 'true' | 'false'.
@@ -317,6 +323,7 @@ export type UseSettingsResult = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
