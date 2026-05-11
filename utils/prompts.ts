@@ -959,7 +959,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
     await getBaseSystemPrompt(language),
     `The user just completed a "${workoutTitle}" workout. Your task is to:`,
     '1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)',
-    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan",
+    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathen",
     "3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals",
     userDetails,
     'Historical data for this workout:',

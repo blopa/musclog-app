@@ -172,7 +172,7 @@ export type FormulaType =
   | 'Lombardi'
   | 'Mayhew'
   | 'OConner'
-  | 'Wathan';
+  | 'Wathen';
 
 /**
  * Calculates the average one-rep max (1RM) across multiple validated formulas.
@@ -191,7 +191,7 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
     'Lombardi',
     'Mayhew',
     'OConner',
-    'Wathan',
+    'Wathen',
   ];
 
   let total1RM = 0;
@@ -218,7 +218,7 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
  * - Lombardi (1989): Uses power function, works well for low reps
  * - Mayhew et al. (1992): Exponential model, accurate across wide rep range
  * - O'Connor et al. (1989): Linear model, conservative estimates
- * - Wathan (1994): Exponential model, good for higher rep ranges
+ * - Wathen (1994): Exponential model, good for higher rep ranges
  *
  * @param weight - The weight lifted in the set
  * @param reps - Number of repetitions performed
@@ -260,8 +260,8 @@ export function calculate1RM(
         // O'Connor formula: 1RM = weight × (1 + 0.025 × reps)
         return weight * (1 + 0.025 * adjustedReps);
       }
-      case 'Wathan': {
-        // Wathan formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
+      case 'Wathen': {
+        // Wathen formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
         return weight / (0.488 + 0.539 * Math.exp(-0.035 * adjustedReps));
       }
       default: {

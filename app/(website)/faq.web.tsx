@@ -335,7 +335,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
               'Wide rep range; exponential model',
             ],
             ["O'Connor et al. (1989)", 'w × (1 + 0.025 × r)', 'Linear; conservative'],
-            ['Wathan (1994)', 'w / (0.488 + 0.539 × e^{−0.035r})', 'Higher rep ranges'],
+            ['Wathen (1994)', 'w / (0.488 + 0.539 × e^{−0.035r})', 'Higher rep ranges'],
           ],
         },
         answer2:
@@ -347,27 +347,27 @@ const FAQ_CATEGORIES: FaqCategory[] = [
           },
           {
             label: 'Epley (1985)',
-            url: 'https://en.wikipedia.org/wiki/One-repetition_maximum#Epley_formula',
+            url: 'https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7',
           },
           {
             label: 'Lander (1985)',
-            url: 'https://journals.lww.com/nsca-jscr/abstract/1985/01000/maximum_based_on_reps.3.aspx',
+            url: 'https://www.vcalc.com/wiki/landers-formula',
           },
           {
             label: 'Lombardi (1989)',
-            url: 'https://books.google.com/books/about/Beginning_Weight_Training.html',
+            url: 'https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum',
           },
           {
             label: 'Mayhew et al. (1992)',
-            url: 'https://journals.lww.com/nsca-jscr/Abstract/1992/05000/A_Derivation_of_a_Formula_to_Predict.3.aspx',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/18714230/',
           },
           {
             label: "O'Connor et al. (1989)",
-            url: "https://en.wikipedia.org/wiki/One-repetition_maximum#O'Connor_et_al._formula",
+            url: 'https://www.vcalc.com/wiki/oconner-et-al',
           },
           {
-            label: 'Wathan (1994)',
-            url: 'https://books.google.com/books/about/Essentials_of_Strength_Training_and_Cond.html',
+            label: 'Wathen (1994)',
+            url: 'https://www.vcalc.com/wiki/wathen-formula',
           },
         ],
       },
@@ -403,8 +403,8 @@ const FAQ_CATEGORIES: FaqCategory[] = [
             url: 'https://www.mdpi.com/2072-4292/11/1/55',
           },
           {
-            label: 'Hoover et al. (2017) — Stride length and height ratios',
-            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9646807/',
+            label: 'Meta-Analysis — Stride length and height ratios',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/',
           },
         ],
       },
