@@ -347,7 +347,10 @@ export class NutritionGoalService {
       const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
       const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
 
-      const disableMinimumCalories = await SettingsService.getDisableMinimumCalories();
+      const [disableMinimumCalories, useBfForCalculations] = await Promise.all([
+        SettingsService.getDisableMinimumCalories(),
+        SettingsService.getUseBfForCalculations(),
+      ]);
 
       const plan = calculateNutritionPlan({
         gender: user.gender,
@@ -358,7 +361,7 @@ export class NutritionGoalService {
         weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
         fitnessGoal: user.fitnessGoal,
         liftingExperience: user.liftingExperience,
-        bodyFatPercent: bodyFatDecrypted?.value,
+        bodyFatPercent: useBfForCalculations ? bodyFatDecrypted?.value : undefined,
         disableMinimumCalories,
       });
 
@@ -367,7 +370,7 @@ export class NutritionGoalService {
         goal.createdAt,
         goal.targetDate ?? localDayKeyPlusCalendarDays(localDayStartFromUtcMs(goal.createdAt), 90),
         heightCm / 100,
-        bodyFatDecrypted?.value ?? null,
+        useBfForCalculations ? (bodyFatDecrypted?.value ?? null) : null,
         7,
         normalizeNutritionGoalTargetWeight(goal.targetWeight)
       );

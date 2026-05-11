@@ -53,7 +53,7 @@ function getFallbackDefaults(
 
 export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') {
   const { user } = useUser();
-  const { disableMinimumCalories } = useSettings();
+  const { disableMinimumCalories, useBfForCalculations } = useSettings();
   const [defaults, setDefaults] = useState<Partial<NutritionGoals> & RequiredMacroFields>(() =>
     getFallbackDefaults(eatingPhase)
   );
@@ -112,7 +112,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           weightGoal: eatingPhaseToWeightGoal(eatingPhase),
           fitnessGoal,
           liftingExperience,
-          bodyFatPercent,
+          bodyFatPercent: useBfForCalculations ? bodyFatPercent : undefined,
           disableMinimumCalories,
         });
 
@@ -157,7 +157,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
     return () => {
       isMounted = false;
     };
-  }, [user, eatingPhase, disableMinimumCalories]);
+  }, [user, eatingPhase, disableMinimumCalories, useBfForCalculations]);
 
   return { defaults, isLoading, planData };
 }

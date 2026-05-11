@@ -24,6 +24,7 @@ import {
 } from '@/database/models/User';
 import { UserMetricService, UserService } from '@/database/services';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
@@ -46,6 +47,7 @@ export default function PersonalizedBodyStatsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { useBfForCalculations } = useSettings();
 
   const [setupData, setSetupData] = useState<PersonalizedSetupData>({});
   const [height, setHeight] = useState('');
@@ -175,7 +177,7 @@ export default function PersonalizedBodyStatsScreen() {
         weightGoal,
         fitnessGoal,
         liftingExperience,
-        bodyFatPercent: bodyFat ?? undefined,
+        bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,
       });
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
@@ -186,7 +188,7 @@ export default function PersonalizedBodyStatsScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [weight, height, units, bodyFat, birthday, setupData, router]);
+  }, [weight, height, units, bodyFat, birthday, setupData, router, useBfForCalculations]);
 
   const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0;
 
