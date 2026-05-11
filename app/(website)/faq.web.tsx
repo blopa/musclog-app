@@ -95,7 +95,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Katch-McArdle (1996)',
-            url: 'https://www.sciencedirect.com/science/article/abs/pii/0026049582901573',
+            url: 'https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27',
           },
           {
             label: 'Mifflin et al. (1990)',
@@ -119,15 +119,15 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Hall (2008) — Energy deficit per unit weight loss',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/17904943/',
+            url: 'https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045',
           },
           {
             label: 'Elia (1992) — RMR tissue coefficients',
-            url: 'https://www.ncbi.nlm.nih.gov/books/NBK201367/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/',
           },
           {
             label: 'Müller et al. (2022) — Adaptive thermogenesis',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/35105604/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/36863769/',
           },
           {
             label: 'Hall et al. (NIH) — Dynamic energy balance',
@@ -150,7 +150,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity',
-            url: 'https://link.springer.com/book/9780387964065',
+            url: 'https://link.springer.com/book/10.1007/978-1-4612-4654-1',
           },
           {
             label: 'Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes',
@@ -158,7 +158,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
           },
           {
             label: 'Hall (2008) — Required Energy Deficit per unit Weight Loss',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/17904943/',
+            url: 'https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045',
           },
         ],
       },
@@ -174,15 +174,15 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Garthe et al. (2011) — Rate of weight loss and body composition',
-            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9012799/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/21558571/',
           },
           {
             label: 'Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders',
-            url: 'https://jissn.biomedcentral.com/articles/10.1186/s12970-019-0297-8',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/31247944/',
           },
           {
             label: 'ACE — Body fat percentage classifications',
-            url: 'https://www.acefitness.org/education-and-resources/lifestyle/tools-calculators/percent-body-fat-calculator/',
+            url: 'https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/',
           },
         ],
       },
@@ -198,11 +198,11 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Hall (2008) — Energy density of weight loss tissue',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/17904943/',
+            url: 'https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045',
           },
           {
             label: 'Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/28000867/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/33497853/',
           },
         ],
       },
@@ -233,7 +233,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
           },
           {
             label: 'Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/25000063/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/',
           },
           {
             label: 'Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand',
@@ -254,15 +254,15 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Schoenfeld et al. — Resistance training load meta-analysis',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/28000867/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/33497853/',
           },
           {
             label: 'Sports Med (2023) — Plateau in muscle growth with resistance training',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/36478055/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/37787845/',
           },
           {
             label: 'Smith et al. (2020) / Slater et al. (2023) — Intermediate fat/lean gain partitioning',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/30102810/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6942464/',
           },
           {
             label: 'NCBI (2021) — Thermodynamic efficiency of muscle protein synthesis',
@@ -282,11 +282,11 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Müller et al. (2013) — Metabolic adaptation to caloric restriction',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/23440652/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4535334/',
           },
           {
             label: 'St-Onge & Gallagher (2010) — Body composition changes with aging',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/20014064/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/',
           },
         ],
       },
@@ -321,11 +321,11 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Brzycki (1993)',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/8784495/',
+            url: 'https://doi.org/10.1080/07303084.1993.10606684',
           },
           {
             label: 'Epley (1985)',
-            url: 'https://www.sciencedirect.com/science/article/abs/pii/S1050642785800516',
+            url: 'https://en.wikipedia.org/wiki/One-repetition_maximum#Epley_formula',
           },
           {
             label: 'Lander (1985)',
@@ -337,11 +337,11 @@ const FAQ_CATEGORIES: FaqCategory[] = [
           },
           {
             label: 'Mayhew et al. (1992)',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/1542664/',
+            url: 'https://journals.lww.com/nsca-jscr/Abstract/1992/05000/A_Derivation_of_a_Formula_to_Predict.3.aspx',
           },
           {
             label: "O'Connor et al. (1989)",
-            url: 'https://pubmed.ncbi.nlm.nih.gov/2520974/',
+            url: 'https://en.wikipedia.org/wiki/One-repetition_maximum#O\'Connor_et_al._formula',
           },
           {
             label: 'Wathan (1994)',
@@ -397,7 +397,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Helms et al. (2016) — RPE and RIR-based autoregulation',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/26049792/',
+            url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/',
           },
         ],
       },
@@ -435,7 +435,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Forbes (1987) — Human Body Composition',
-            url: 'https://link.springer.com/book/9780387964065',
+            url: 'https://link.springer.com/book/10.1007/978-1-4612-4654-1',
           },
           {
             label: 'Hall (2007) — PMC2376748 — Forbes curve formalisation',
@@ -456,7 +456,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         citations: [
           {
             label: 'Müller et al. (2022) — Magnitude of AT in clinical trials',
-            url: 'https://pubmed.ncbi.nlm.nih.gov/35105604/',
+            url: 'https://pubmed.ncbi.nlm.nih.gov/36863769/',
           },
           {
             label: 'Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)',
@@ -539,35 +539,35 @@ function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
     <div className="my-4 overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       <table className="w-full min-w-[520px] text-sm">
         <thead>
-          <tr style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
-            {head.map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 text-left font-semibold text-white first:rounded-tl-xl last:rounded-tr-xl"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
+        <tr style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+          {head.map((h) => (
+            <th
+              key={h}
+              className="px-4 py-3 text-left font-semibold text-white first:rounded-tl-xl last:rounded-tr-xl"
+            >
+              {h}
+            </th>
+          ))}
+        </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr
-              key={i}
-              className="border-t"
-              style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-            >
-              {row.map((cell, j) => (
-                <td
-                  key={j}
-                  className="px-4 py-3"
-                  style={{ color: j === 0 ? '#E5E7EB' : BODY_TEXT_SOFT }}
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
+        {rows.map((row, i) => (
+          <tr
+            key={i}
+            className="border-t"
+            style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+          >
+            {row.map((cell, j) => (
+              <td
+                key={j}
+                className="px-4 py-3"
+                style={{ color: j === 0 ? '#E5E7EB' : BODY_TEXT_SOFT }}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
         </tbody>
       </table>
     </div>
@@ -575,11 +575,11 @@ function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
 }
 
 function AccordionItem({
-  item,
-  isOpen,
-  onToggle,
-  accentColor,
-}: {
+                         item,
+                         isOpen,
+                         onToggle,
+                         accentColor,
+                       }: {
   item: FaqItem;
   isOpen: boolean;
   onToggle: () => void;
