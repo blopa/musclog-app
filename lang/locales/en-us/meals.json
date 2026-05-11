@@ -60,6 +60,24 @@
       "errorMessage": "Couldn't generate meals. Please try again.",
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "generating": "Generating meals..."
+    },
+    "dynamicCreator": {
+      "title": "Dynamic Meal Creator",
+      "saveMealTitle": "Save Meal",
+      "noIngredients": "No ingredients yet.\nTap \"Add Food\" to start building your meal.",
+      "addFood": "Add Food",
+      "finishAndSave": "Finish & Save",
+      "saveButton": "Save Meal",
+      "totalNutrition": "Total Nutrition",
+      "ingredientsSummary_one": "{{count}} ingredient",
+      "ingredientsSummary_other": "{{count}} ingredients",
+      "mealNameLabel": "Meal Name",
+      "mealNamePlaceholder": "e.g. Post-workout bowl",
+      "mealNameRequired": "Please enter a meal name",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "e.g. High protein meal with chicken and rice",
+      "nutritionBasisLabel": "Nutrition Basis",
+      "savedSuccess": "Meal saved successfully!"
     }
   }
 }

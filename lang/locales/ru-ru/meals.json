@@ -60,6 +60,24 @@
       "errorMessage": "Не удалось создать приёмы пищи. Попробуйте снова.",
       "aiNotConfigured": "Функции ИИ не настроены. Добавьте API-ключ Gemini или OpenAI в Настройках.",
       "generating": "Создание приёмов пищи..."
+    },
+    "dynamicCreator": {
+      "title": "Динамический конструктор блюд",
+      "saveMealTitle": "Сохранить блюдо",
+      "noIngredients": "Ингредиентов пока нет.\nНажмите «Добавить продукт», чтобы начать составлять блюдо.",
+      "addFood": "Добавить продукт",
+      "finishAndSave": "Завершить и сохранить",
+      "saveButton": "Сохранить блюдо",
+      "totalNutrition": "Итоговое питание",
+      "ingredientsSummary_one": "{{count}} ингредиент",
+      "ingredientsSummary_other": "{{count}} ингредиентов",
+      "mealNameLabel": "Название блюда",
+      "mealNamePlaceholder": "например: Боул после тренировки",
+      "mealNameRequired": "Введите название блюда",
+      "descriptionLabel": "Описание (необязательно)",
+      "descriptionPlaceholder": "например: Высокобелковое блюдо с курицей и рисом",
+      "nutritionBasisLabel": "Основа питания",
+      "savedSuccess": "Блюдо успешно сохранено!"
     }
   }
 }

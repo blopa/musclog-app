@@ -97,7 +97,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
         >
           <Pressable
             style={linkRowStyle}
-            onPress={() => Linking.openURL('https://musclog.app/en-us/terms')}
+            onPress={() => Linking.openURL('https://musclog.app/terms')}
           >
             <Text
               style={{
@@ -115,7 +115,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
 
           <Pressable
             style={linkRowStyle}
-            onPress={() => Linking.openURL('https://musclog.app/en-us/privacy')}
+            onPress={() => Linking.openURL('https://musclog.app/privacy')}
           >
             <Text
               style={{

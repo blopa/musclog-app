@@ -3252,7 +3252,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   GutenOCR: b2a2d2f7eab56c9735e0e2dca69fba34902a13c7
-  hermes-engine: 32ad5d3746462d03b8a1df2cdb4e1aa91aa84e86
+  hermes-engine: e35d3a9e3f3e3e148b5c388da13a3f336e0c86d4
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3275,7 +3275,7 @@ SPEC CHECKSUMS:
   React: 9b033c7a99e1c8eec40960b6b2e6844e011e8bd1
   React-callinvoker: f64c8d57f45173835b6b9891cda27f1625551972
   React-Core: 341863a2597c4a2320f916b4232d280cb8a28e4b
-  React-Core-prebuilt: 9432ea18427340e7c8c0724074eb41c175a00f0a
+  React-Core-prebuilt: 5a4fb73e26edb7913001b35b3c967153a18d1cd9
   React-CoreModules: 9370769c9b2b1732c58960687f4d50d9d3510efc
   React-cxxreact: 41ae74bd9eab80af9c5da6a9b4934eb97e2c7569
   React-debug: eb0f19ff879ad3870dc760b6c21ad56cbb3e4b98
@@ -3344,7 +3344,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 3ec8fc5d32ad422f5b805523a5a5ea5556d8b3a2
   ReactCodegen: 169fa6c4ad3c3065f98fa2364bf95e9a21c3afec
   ReactCommon: ba28cd4e7d9e24014d2772a80e32da020c732b00
-  ReactNativeDependencies: 6a98da4878deee83d620546c0eb94ee45b7955e1
+  ReactNativeDependencies: e7ed031d5192cae9327ca6a869e0cf089fd268f5
   ReactNativeHealthkit: 788f77d24cba9b6b4a44d4a6b34e017acb29e830
   RNCAsyncStorage: 3a4f5e2777dae1688b781a487923a08569e27fe4
   RNCMaskedView: d2578d41c59b936db122b2798ba37e4722d21035

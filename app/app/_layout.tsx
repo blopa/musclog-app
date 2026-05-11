@@ -19,7 +19,6 @@ import { DocumentTitle } from '@/components/DocumentTitle';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
-import { Migrations } from '@/components/Migrations';
 import { isStaticExport } from '@/constants/platform';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
@@ -99,7 +98,6 @@ function AppContent() {
     <>
       <DocumentTitle />
       {Platform.OS !== 'web' ? <SystemBars style={isDark ? 'light' : 'dark'} /> : null}
-      <Migrations />
       <LanguageInitializer />
       <Stack
         screenOptions={{

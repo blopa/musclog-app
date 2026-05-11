@@ -202,12 +202,12 @@ export default class NutritionLog extends Model {
       if (s.snapshotBasis === 'per_serving') {
         const servings = this.amount;
         return {
-          calories: (s.loggedCalories ?? 0) * servings,
-          protein: (s.loggedProtein ?? 0) * servings,
-          carbs: (s.loggedCarbs ?? 0) * servings,
-          fat: (s.loggedFat ?? 0) * servings,
-          fiber: (s.loggedFiber ?? 0) * servings,
-          alcohol: (s.loggedMicros?.alcohol ?? 0) * servings,
+          calories: Math.max(0, s.loggedCalories ?? 0) * servings,
+          protein: Math.max(0, s.loggedProtein ?? 0) * servings,
+          carbs: Math.max(0, s.loggedCarbs ?? 0) * servings,
+          fat: Math.max(0, s.loggedFat ?? 0) * servings,
+          fiber: Math.max(0, s.loggedFiber ?? 0) * servings,
+          alcohol: Math.max(0, s.loggedMicros?.alcohol ?? 0) * servings,
         };
       }
 
@@ -229,12 +229,12 @@ export default class NutritionLog extends Model {
       }
 
       return {
-        calories: caloriesPer100g * scale,
-        protein: (s.loggedProtein ?? 0) * scale,
-        carbs: (s.loggedCarbs ?? 0) * scale,
-        fat: (s.loggedFat ?? 0) * scale,
-        fiber: (s.loggedFiber ?? 0) * scale,
-        alcohol: loggedAlcohol * scale,
+        calories: Math.max(0, caloriesPer100g) * scale,
+        protein: Math.max(0, s.loggedProtein ?? 0) * scale,
+        carbs: Math.max(0, s.loggedCarbs ?? 0) * scale,
+        fat: Math.max(0, s.loggedFat ?? 0) * scale,
+        fiber: Math.max(0, s.loggedFiber ?? 0) * scale,
+        alcohol: Math.max(0, loggedAlcohol) * scale,
       };
     }
 

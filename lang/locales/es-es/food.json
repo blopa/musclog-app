@@ -256,6 +256,7 @@
     "portions": {
       "100g": "Estándar",
       "twoSlices": "Dos rebanadas",
+      "slice": "Rebanada",
       "cup": "Taza",
       "tbsp": "Cucharada",
       "tsp": "Cucharadita",
@@ -417,6 +418,7 @@
     },
     "newCustomFood": {
       "title": "Crear Alimento Personalizado",
+      "oneServing": "1 porción",
       "foodName": "Nombre del Alimento",
       "foodNamePlaceholder": "ej., Ensalada de Pollo Casera",
       "barcode": "Código de Barras",
