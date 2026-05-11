@@ -8,6 +8,7 @@ import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { calculateCaloriesBurnedBySteps } from '@/utils/workoutCalculator';
 
 import { useEmpiricalTDEE } from './useEmpiricalTDEE';
+import { useSettings } from './useSettings';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
 
@@ -65,6 +66,7 @@ export function useWeightPrediction(): UseWeightPredictionResult {
 
   const { user, isLoading: userLoading } = useUser();
   const { metrics, isLoading: metricsLoading } = useUserMetrics();
+  const { useBfForCalculations } = useSettings();
 
   useEffect(() => {
     const check = async () => {
@@ -236,7 +238,7 @@ export function useWeightPrediction(): UseWeightPredictionResult {
       user?.liftingExperience ?? (hadWorkouts ? 'intermediate' : undefined);
 
     const weightChangeKg = computeWeightChangeFromCalorieDelta(totalDeltaKcal, lastWeightKg, {
-      bodyFatPercent: metrics?.bodyFat ?? undefined,
+      bodyFatPercent: useBfForCalculations ? (metrics?.bodyFat ?? undefined) : undefined,
       liftingExperience: inferredExperience,
     });
 
@@ -253,6 +255,7 @@ export function useWeightPrediction(): UseWeightPredictionResult {
     user?.liftingExperience,
     hadWorkouts,
     stepCalorieAdjustmentKcal,
+    useBfForCalculations,
   ]);
 
   const isLoading = dataLoading || tdeeLoading || userLoading || metricsLoading;
