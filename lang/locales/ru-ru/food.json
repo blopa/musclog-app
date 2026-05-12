@@ -11,7 +11,8 @@
     "logDetails": {
       "title": "Детали записи",
       "trackedAmount": "{{amount}} {{unit}} отслежено",
-      "dateAndTime": "Дата и время"
+      "dateAndTime": "Дата и время",
+      "mealType": "Тип приёма пищи"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Вы уверены, что хотите удалить этот продукт? Это действие нельзя отменить.",

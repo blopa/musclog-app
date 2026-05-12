@@ -11,7 +11,8 @@
     "logDetails": {
       "title": "Detalles del Registro",
       "trackedAmount": "{{amount}} {{unit}} registrado",
-      "dateAndTime": "Fecha y Hora"
+      "dateAndTime": "Fecha y Hora",
+      "mealType": "Tipo de comida"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "¿Estás seguro de que deseas eliminar este alimento? Esta acción no se puede deshacer.",
