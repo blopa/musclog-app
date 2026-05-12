@@ -13,10 +13,12 @@ export function mapUSDANutritient(
   if (!nutrients || !Array.isArray(nutrients)) {
     return undefined;
   }
+
   const nutrient = nutrients.find((n: any) => {
     const num = n.nutrientNumber || n.number || n.nutrient?.number;
     return String(num) === nutrientNumber;
   });
+
   return nutrient ? (nutrient.value ?? nutrient.amount) : undefined;
 }
 
