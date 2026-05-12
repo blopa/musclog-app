@@ -9,7 +9,9 @@
     "unitOz": "унц",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
     "logDetails": {
-      "trackedAmount": "{{amount}} {{unit}} отслежено"
+      "title": "Детали записи",
+      "trackedAmount": "{{amount}} {{unit}} отслежено",
+      "dateAndTime": "Дата и время"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Вы уверены, что хотите удалить этот продукт? Это действие нельзя отменить.",

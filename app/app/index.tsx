@@ -170,6 +170,7 @@ export default function HomeScreen() {
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
   const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
   const [selectedLogEntry, setSelectedLogEntry] = useState<{
+    log: (typeof recentNutritionLogs)[0]['log'];
     food: (typeof recentNutritionLogs)[0]['food'];
     nutrients: (typeof recentNutritionLogs)[0]['nutrients'];
     gramWeight: number;
@@ -576,6 +577,7 @@ export default function HomeScreen() {
                     intuitiveMode={intuitiveEatingMode}
                     onPress={() =>
                       setSelectedLogEntry({
+                        log: entry.log,
                         food: entry.food,
                         nutrients: entry.nutrients,
                         gramWeight: entry.gramWeight,

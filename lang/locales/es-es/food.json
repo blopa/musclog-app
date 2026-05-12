@@ -9,7 +9,9 @@
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
     "logDetails": {
-      "trackedAmount": "{{amount}} {{unit}} registrado"
+      "title": "Detalles del Registro",
+      "trackedAmount": "{{amount}} {{unit}} registrado",
+      "dateAndTime": "Fecha y Hora"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "¿Estás seguro de que deseas eliminar este alimento? Esta acción no se puede deshacer.",

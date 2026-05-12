@@ -9,7 +9,10 @@
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
     "logDetails": {
-      "trackedAmount": "{{amount}} {{unit}} tracked"
+      "title": "Food Log Details",
+      "trackedAmount": "{{amount}} {{unit}} tracked",
+      "dateAndTime": "Date & Time",
+      "mealType": "Meal type"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Are you sure you want to delete this food? This action cannot be undone.",

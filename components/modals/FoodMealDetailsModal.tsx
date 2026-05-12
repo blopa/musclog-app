@@ -1,18 +1,24 @@
+import { format, isToday, isYesterday } from 'date-fns';
+import { Clock, LucideScale, Utensils } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
-import { useSettings } from '@/hooks/useSettings';
-import { useTheme } from '@/hooks/useTheme';
+import { GenericCard } from '@/components/cards/GenericCard';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
+import NutritionLog from '@/database/models/NutritionLog';
+import { useSettings } from '@/hooks/useSettings';
+import { useTheme } from '@/hooks/useTheme';
+import i18n from '@/lang/lang';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import { getMassUnitLabel } from '@/utils/unitConversion';
-import i18n from '@/lang/lang';
 
 import { FullScreenModal } from './FullScreenModal';
+import { TFunction } from 'i18next';
 
 type LogEntry = {
+  log: NutritionLog;
   food: Food | null;
   nutrients: {
     calories: number;
@@ -33,19 +39,33 @@ type FoodMealDetailsModalProps = {
   entry: LogEntry | null;
 };
 
-function getMealTypeLabel(mealType: MealType): string {
+function getMealTypeLabel(mealType: MealType, t: TFunction): string {
   switch (mealType) {
     case 'breakfast':
-      return i18n.t('food.meals.breakfast');
+      return t('food.meals.breakfast');
     case 'lunch':
-      return i18n.t('food.meals.lunch');
+      return t('food.meals.lunch');
     case 'dinner':
-      return i18n.t('food.meals.dinner');
+      return t('food.meals.dinner');
     case 'snack':
-      return i18n.t('food.meals.snack');
+      return t('food.meals.snack');
     default:
-      return i18n.t('food.meals.other');
+      return t('food.meals.other');
   }
+}
+
+function formatLogDateTime(createdAt: number, t: ReturnType<typeof useTranslation>['t']): string {
+  const date = new Date(createdAt);
+  const timeStr = format(date, 'h:mm a');
+  if (isToday(date)) {
+    return `${t('food.header.today')}, ${timeStr}`;
+  }
+
+  if (isYesterday(date)) {
+    return `${t('common.yesterday')}, ${timeStr}`;
+  }
+
+  return `${format(date, 'MMM d')}, ${timeStr}`;
 }
 
 export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetailsModalProps) {
@@ -57,9 +77,8 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
     return null;
   }
 
-  const { food, nutrients, gramWeight, displayName, mealType } = entry;
+  const { log, food, nutrients, gramWeight, displayName, mealType } = entry;
 
-  // Use per-100g values from food model when available; fall back to computing from logged nutrients
   const scale = gramWeight > 0 ? 100 / gramWeight : 1;
   const per100gCalories = food ? food.calories : nutrients.calories * scale;
   const per100gProtein = food ? food.protein : nutrients.protein * scale;
@@ -71,7 +90,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
 
   const foodData = {
     name: displayName,
-    category: food?.brand ?? getMealTypeLabel(mealType),
+    category: food?.brand ?? getMealTypeLabel(mealType, t),
     calories: per100gCalories,
     protein: per100gProtein,
     carbs: per100gCarbs,
@@ -93,32 +112,71 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const massUnit = getMassUnitLabel(units);
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formattedGrams = formatDisplayGrams(locale, units, gramWeight);
+  const dateTimeLabel = formatLogDateTime(log.createdAt, t);
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={displayName} scrollable={false}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('food.logDetails.title')}
+      scrollable={false}
+    >
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: theme.spacing.padding.base, paddingBottom: 40 }}
       >
-        {/* Tracked info row */}
-        <View className="mb-2 flex-row items-center gap-3">
-          <View
-            className="rounded-full px-3 py-1"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          >
-            <Text className="text-xs font-semibold" style={{ color: theme.colors.accent.primary }}>
-              {getMealTypeLabel(mealType)}
-            </Text>
-          </View>
-          <Text className="text-sm text-text-secondary">
-            {t('food.logDetails.trackedAmount', {
-              amount: formattedGrams,
-              unit: massUnit,
-            })}
-          </Text>
-        </View>
+        {/* Info card matching the screenshot layout */}
+        <GenericCard variant="highlighted" backgroundVariant="gradient">
+          <View className="p-5">
+            {/* Food name */}
+            <Text className="mb-5 text-2xl font-bold text-text-primary">{displayName}</Text>
 
+            {/* Meal Type + Portion Size row */}
+            <View className="mb-4 flex-row gap-4">
+              <View className="flex-1">
+                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                  {t('food.logDetails.mealType')}
+                </Text>
+                <View className="flex-row items-center gap-2">
+                  <Utensils size={theme.iconSize.md} color={theme.colors.text.primary} />
+                  <Text className="text-xl font-bold text-text-primary">
+                    {getMealTypeLabel(mealType, t)}
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                className="w-px self-stretch"
+                style={{ backgroundColor: theme.colors.border.light }}
+              />
+
+              <View className="flex-1">
+                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                  {t('food.foodDetails.portionSize')}
+                </Text>
+                <View className="flex-row items-baseline gap-1">
+                  <LucideScale size={theme.iconSize.md} color={theme.colors.text.primary} />
+                  <Text className="text-xl font-bold text-text-primary">{formattedGrams}</Text>
+                  <Text className="text-sm text-text-secondary">{massUnit}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Date & Time row */}
+            <View>
+              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                {t('food.logDetails.dateAndTime')}
+              </Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-lg font-semibold text-text-primary">{dateTimeLabel}</Text>
+                <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+              </View>
+            </View>
+          </View>
+        </GenericCard>
+
+        {/* Nutrition section — macros + micronutrients */}
         <FoodNutritionSectionCard
           food={foodData}
           canEdit={false}
