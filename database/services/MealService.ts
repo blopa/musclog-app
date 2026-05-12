@@ -160,6 +160,19 @@ export class MealService {
   /**
    * Get meal by ID with foods
    */
+  static async getMealImageUrl(mealId: string): Promise<string | undefined> {
+    try {
+      const meal = await database.get<Meal>('meals').find(mealId);
+      if (meal.deletedAt) {
+        return undefined;
+      }
+
+      return meal.imageUrl ?? undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   static async getMealWithFoods(mealId: string): Promise<{ meal: Meal; foods: MealFood[] } | null> {
     try {
       const meal = await database.get<Meal>('meals').find(mealId);

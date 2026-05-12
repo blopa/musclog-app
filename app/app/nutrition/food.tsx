@@ -51,6 +51,7 @@ import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import {
   ChatService,
+  MealService,
   NutritionGoalService,
   NutritionService,
   SavedForLaterService,
@@ -442,6 +443,37 @@ export default function FoodScreen() {
 
     return groups;
   }, [resolvedLogs]);
+
+  const [mealGroupImageUrls, setMealGroupImageUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const allGroupIds = new Set<string>();
+    for (const groups of Object.values(mealGroupsByType)) {
+      for (const group of groups) {
+        allGroupIds.add(group.groupId);
+      }
+    }
+
+    if (allGroupIds.size === 0) {
+      return;
+    }
+
+    // TODO: change this to an async function call
+    Promise.all(
+      [...allGroupIds].map(async (id) => {
+        const url = await MealService.getMealImageUrl(id);
+        return [id, url] as const;
+      })
+    ).then((results) => {
+      const map: Record<string, string> = {};
+      for (const [id, url] of results) {
+        if (url) {
+          map[id] = url;
+        }
+      }
+      setMealGroupImageUrls(map);
+    });
+  }, [mealGroupsByType]);
 
   // Check if all meals are empty AND no food has ever been tracked
   const hasNoFood = !isScreenLoading && totalCount === 0;
@@ -1558,8 +1590,8 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="breakfast"
-                        // TODO: use photo saved onto the meal instead
                         imageUrl={
+                          mealGroupImageUrls[group.groupId] ??
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
@@ -1613,8 +1645,8 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="lunch"
-                        // TODO: use photo saved onto the meal instead
                         imageUrl={
+                          mealGroupImageUrls[group.groupId] ??
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
@@ -1668,8 +1700,8 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="dinner"
-                        // TODO: use photo saved onto the meal instead
                         imageUrl={
+                          mealGroupImageUrls[group.groupId] ??
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
@@ -1723,8 +1755,8 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="snack"
-                        // TODO: use photo saved onto the meal instead
                         imageUrl={
+                          mealGroupImageUrls[group.groupId] ??
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
@@ -1778,8 +1810,8 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="other"
-                        // TODO: use photo saved onto the meal instead
                         imageUrl={
+                          mealGroupImageUrls[group.groupId] ??
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
