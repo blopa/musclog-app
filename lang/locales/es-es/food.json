@@ -371,6 +371,7 @@
       "mealNamePlaceholder": "ej. Smoothie Post-Entrenamiento",
       "mealDescriptionPlaceholder": "Opcional — notas de preparación, cuándo comes esto, etc.",
       "ingredients": "Ingredientes ({{count}})",
+      "addPhoto": "Añadir foto",
       "editList": "Editar Lista",
       "noIngredients": "Sin Ingredientes",
       "addFoodItem": "Añadir Artículo de Comida",

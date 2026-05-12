@@ -156,10 +156,67 @@ export async function saveExerciseImage(tempUri: string, existingUri?: string): 
 }
 
 /**
+ * Copies a temporary image URI (e.g. from expo-image-picker) into the app's
+ * permanent document directory so it survives app restarts and OS cache clears.
+ *
+ * @param tempUri  - The temporary `file:///` URI returned by the image picker.
+ * @param existingUri - Optional URI of a previously saved meal image to delete.
+ * @returns The permanent `file:///` URI that should be stored in the database.
+ */
+export async function saveMealImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Ensure the meals directory exists
+  const mealsDir = new Directory(Paths.document, 'meals');
+  if (!mealsDir.exists) {
+    mealsDir.create();
+  }
+
+  // Build a unique filename from the current timestamp and a random suffix,
+  // preserving the original extension when possible.
+  const ext = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `meal-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  // Copy from the temporary picker URI to the permanent destination
+  const srcFile = new File(tempUri);
+  const destFile = new File(mealsDir, filename);
+  srcFile.copy(destFile);
+
+  // Remove the old file if one was provided (best-effort; ignore errors)
+  if (existingUri) {
+    try {
+      const oldFile = new File(existingUri);
+      if (oldFile.exists) {
+        oldFile.delete();
+      }
+    } catch {
+      // Non-fatal: old file may have already been removed
+    }
+  }
+
+  return destFile.uri;
+}
+
+/**
  * Deletes a permanently stored exercise image file.
  * Safe to call with any URI — non-local or missing files are silently ignored.
  */
 export async function deleteExerciseImage(imageUri: string): Promise<void> {
+  try {
+    if (!imageUri.startsWith('file://')) {
+      return;
+    }
+    const file = new File(imageUri);
+    if (file.exists) {
+      file.delete();
+    }
+  } catch {
+    // Non-fatal
+  }
+}
+
+/**
+ * Deletes a permanently stored meal image file.
+ */
+export async function deleteMealImage(imageUri: string): Promise<void> {
   try {
     if (!imageUri.startsWith('file://')) {
       return;

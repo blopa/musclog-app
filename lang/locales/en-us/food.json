@@ -371,6 +371,7 @@
       "mealNamePlaceholder": "e.g. Post-Workout Smoothie",
       "mealDescriptionPlaceholder": "Optional — prep notes, when you eat this, etc.",
       "ingredients": "Ingredients ({{count}})",
+      "addPhoto": "Add Photo",
       "editList": "Edit List",
       "noIngredients": "No Ingredients",
       "addFoodItem": "Add Food Item",
