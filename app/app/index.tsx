@@ -18,6 +18,7 @@ import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
+import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
@@ -168,6 +169,13 @@ export default function HomeScreen() {
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
   const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
+  const [selectedLogEntry, setSelectedLogEntry] = useState<{
+    food: (typeof recentNutritionLogs)[0]['food'];
+    nutrients: (typeof recentNutritionLogs)[0]['nutrients'];
+    gramWeight: number;
+    displayName: string;
+    mealType: MealType;
+  } | null>(null);
 
   // Get time-based greeting
   const getTimeBasedGreeting = useCallback(() => {
@@ -566,6 +574,15 @@ export default function HomeScreen() {
                     image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                     mealType={entry.log.type}
                     intuitiveMode={intuitiveEatingMode}
+                    onPress={() =>
+                      setSelectedLogEntry({
+                        food: entry.food,
+                        nutrients: entry.nutrients,
+                        gramWeight: entry.gramWeight,
+                        displayName: entry.displayName,
+                        mealType: entry.log.type,
+                      })
+                    }
                   />
                 ))}
 
@@ -770,6 +787,13 @@ export default function HomeScreen() {
         trackFoodAfterSave={true}
         onClose={handleCloseCreateCustomFood}
         isAiEnabled={isAiConfigured}
+      />
+
+      {/* Tracked Food Log Details Modal */}
+      <FoodMealDetailsModal
+        visible={selectedLogEntry !== null}
+        onClose={() => setSelectedLogEntry(null)}
+        entry={selectedLogEntry}
       />
     </MasterLayout>
   );

@@ -28,6 +28,7 @@ type FoodItemCardProps = {
   description?: string;
   calories: number;
   image?: ImageSourcePropType;
+  onPress?: () => void;
   onMorePress?: () => void;
   protein?: number;
   carbs?: number;
@@ -90,6 +91,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   description,
   calories,
   image,
+  onPress,
   onMorePress,
   protein,
   carbs,
@@ -142,7 +144,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   }, [image]);
 
   return (
-    <GenericCard variant="default">
+    <GenericCard variant="default" isPressable={!!onPress} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
         <View
           className={`flex-shrink-0 overflow-hidden rounded-xl ${

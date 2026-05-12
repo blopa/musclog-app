@@ -8,6 +8,9 @@
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "logDetails": {
+      "trackedAmount": "{{amount}} {{unit}} registrado"
+    },
     "manageFoodLibrary": {
       "deleteFoodWarning": "¿Estás seguro de que deseas eliminar este alimento? Esta acción no se puede deshacer.",
       "usedInLogs": "Usado en {{count}} registro de comida",

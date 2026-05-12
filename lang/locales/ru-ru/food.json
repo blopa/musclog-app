@@ -8,6 +8,9 @@
     "unitGrams": "г",
     "unitOz": "унц",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "logDetails": {
+      "trackedAmount": "{{amount}} {{unit}} отслежено"
+    },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Вы уверены, что хотите удалить этот продукт? Это действие нельзя отменить.",
       "usedInLogs": "Используется в {{count}} журнале питания",
