@@ -60,7 +60,7 @@ import {
 import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
 
@@ -959,7 +959,7 @@ export default function CreateCustomFoodModal({
         </View>
       </ScrollView>
       {isFoodDetailsVisible && createdFood ? (
-        <FoodMealDetailsModal
+        <FoodMealTrackingDetailsModal
           visible={isFoodDetailsVisible}
           onClose={() => {
             setIsFoodDetailsVisible(false);

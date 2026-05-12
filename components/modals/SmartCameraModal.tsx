@@ -45,7 +45,7 @@ import { generateUUID } from '@/utils/uuid';
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FoodSearchModal } from './FoodSearchModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -184,7 +184,7 @@ export default function SmartCameraModal({
   const isSearchingBarcodeRef = useRef(false);
   const [isProcessingAi, setIsProcessingAi] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
-  /** Synthetic product from AI label (OCR or vision) for FoodMealDetailsModal */
+  /** Synthetic product from AI label (OCR or vision) for FoodMealTrackingDetailsModal */
   const [productFromAiLabel, setProductFromAiLabel] = useState<SearchResultProduct | null>(null);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
@@ -234,7 +234,7 @@ export default function SmartCameraModal({
     [t]
   );
 
-  /** Map AI label macro result to synthetic SearchResultProduct for FoodMealDetailsModal. */
+  /** Map AI label macro result to synthetic SearchResultProduct for FoodMealTrackingDetailsModal. */
   const macroEstimateToSearchResultProduct = useCallback(
     (result: MacroEstimate): SearchResultProduct => {
       const grams = result.grams ?? 100;
@@ -262,7 +262,7 @@ export default function SmartCameraModal({
     }
   }, [mode, isAiEnabled, isAIVisionEnabled]);
 
-  // Show FoodMealDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
+  // Show FoodMealTrackingDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
   useEffect(() => {
     if (detectedBarcode || productFromAiLabel) {
       setIsFoodDetailsModalVisible(true);
@@ -1231,7 +1231,7 @@ export default function SmartCameraModal({
 
         {/* Food Details Modal */}
         {isFoodDetailsModalVisible ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isFoodDetailsModalVisible}
             onClose={handleFoodDetailsClose}
             barcode={productFromAiLabel ? null : detectedBarcode}

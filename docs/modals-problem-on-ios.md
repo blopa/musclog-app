@@ -27,8 +27,8 @@ outer `FullScreenModal`:
 <FullScreenModal visible={visible} ...>
   {/* content */}
 
-  {selectedFood ? <FoodMealDetailsModal ... /> : null}
-  {selectedMeal ? <FoodMealDetailsModal ... /> : null}
+  {selectedFood ? <FoodMealTrackingDetailsModal ... /> : null}
+  {selectedMeal ? <FoodMealTrackingDetailsModal ... /> : null}
   <RecentNutritionHistoryModal ... />
   <ConfirmationModal ... />
 </FullScreenModal>
@@ -268,11 +268,11 @@ Fix:
 
 - Render the `BottomPopUpMenu` inside the `FullScreenModal`.
 
-### 10. `FoodMealDetailsModal` mixes a safe child modal and an unsafe sibling popup
+### 10. `FoodMealTrackingDetailsModal` mixes a safe child modal and an unsafe sibling popup
 
 File:
 
-- `components/modals/FoodMealDetailsModal.tsx:2172-2323`
+- `components/modals/FoodMealTrackingDetailsModal.tsx:2172-2323`
 
 Problem:
 

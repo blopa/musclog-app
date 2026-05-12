@@ -221,7 +221,7 @@ export const LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE =
   'last_home_water_prompt_answered_day';
 
 /**
- * Setting type for always allowing food editing in FoodMealDetailsModal.
+ * Setting type for always allowing food editing in FoodMealTrackingDetailsModal.
  * value: 'true' | 'false'.
  */
 export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';

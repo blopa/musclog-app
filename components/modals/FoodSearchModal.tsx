@@ -59,7 +59,7 @@ import { handleError } from '@/utils/handleError';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 
 import { ConfirmationModal } from './ConfirmationModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
 
@@ -1553,7 +1553,7 @@ export function FoodSearchModal({
 
         {/* Food Details Modal */}
         {selectedFood ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isFoodDetailsVisible}
             onClose={() => {
               setIsFoodDetailsVisible(false);
@@ -1597,7 +1597,7 @@ export function FoodSearchModal({
 
         {/* Meal Details Modal */}
         {selectedMeal ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isMealDetailsVisible}
             onClose={() => {
               setIsMealDetailsVisible(false);

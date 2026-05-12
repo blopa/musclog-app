@@ -178,7 +178,7 @@ type FoodDetailsModalProps = {
   canEdit?: boolean;
 };
 
-export function FoodMealDetailsModal({
+export function FoodMealTrackingDetailsModal({
   visible,
   onClose,
   barcode,
@@ -1609,7 +1609,7 @@ export function FoodMealDetailsModal({
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
-          handleError(err, 'FoodMealDetailsModal.handleAddFood', {
+          handleError(err, 'FoodMealTrackingDetailsModal.handleAddFood', {
             snackbarMessage: t('food.foodDetails.errorMessage'),
           });
         } finally {
@@ -1644,7 +1644,7 @@ export function FoodMealDetailsModal({
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
-          handleError(err, 'FoodMealDetailsModal.handleAddFood', {
+          handleError(err, 'FoodMealTrackingDetailsModal.handleAddFood', {
             snackbarMessage: t('food.foodDetails.errorMessage'),
           });
         } finally {
@@ -1888,7 +1888,7 @@ export function FoodMealDetailsModal({
 
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
-      handleError(error, 'FoodMealDetailsModal.handleAddFood 2', {
+      handleError(error, 'FoodMealTrackingDetailsModal.handleAddFood 2', {
         snackbarMessage: t('food.foodDetails.errorMessage'),
       });
     } finally {
@@ -2098,7 +2098,7 @@ export function FoodMealDetailsModal({
         setLocalCanEdit(true);
       }
     } catch (error) {
-      handleError(error, 'FoodMealDetailsModal.handleTryAnotherSource');
+      handleError(error, 'FoodMealTrackingDetailsModal.handleTryAnotherSource');
       setAlternateSourceLookupFailed(true);
       setLocalCanEdit(true);
     } finally {

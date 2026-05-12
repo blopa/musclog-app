@@ -32,7 +32,7 @@ import { AINutritionTrackingContextModal } from './AINutritionTrackingContextMod
 import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
 import DynamicMealCreatorModal from './DynamicMealCreatorModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 // Type for transformed meal data that matches MealItemCard props
@@ -686,7 +686,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         ) : null}
         {/* FoodDetailsModal for Meal */}
         {logMealModalVisible && selectedMealForLogging ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={logMealModalVisible}
             meal={selectedMealForLogging}
             onClose={() => {

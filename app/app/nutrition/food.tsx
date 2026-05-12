@@ -30,7 +30,7 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
-import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from '../../../components/modals/FoodMealTrackingDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
@@ -147,7 +147,7 @@ export default function FoodScreen() {
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
-  // (which has no logDate) also opens FoodMealDetailsModal on the right date.
+  // (which has no logDate) also opens FoodMealTrackingDetailsModal on the right date.
   useEffect(() => {
     setCurrentDate(selectedDate);
     return () => setCurrentDate(undefined);
@@ -2137,7 +2137,7 @@ export default function FoodScreen() {
         initialDate={selectedDate}
       />
 
-      <FoodMealDetailsModal
+      <FoodMealTrackingDetailsModal
         visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
         onClose={() => {
           setIsFoodDetailsModalVisible(false);
