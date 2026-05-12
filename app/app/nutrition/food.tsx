@@ -455,16 +455,24 @@ export default function FoodScreen() {
     }
 
     if (allGroupIds.size === 0) {
+      setMealGroupImageUrls({});
       return;
     }
 
-    // TODO: change this to an async function call
-    Promise.all(
-      [...allGroupIds].map(async (id) => {
-        const url = await MealService.getMealImageUrl(id);
-        return [id, url] as const;
-      })
-    ).then((results) => {
+    let isMounted = true;
+
+    async function loadMealGroupImageUrls() {
+      const results = await Promise.all(
+        [...allGroupIds].map(async (id) => {
+          const url = await MealService.getMealImageUrl(id);
+          return [id, url] as const;
+        })
+      );
+
+      if (!isMounted) {
+        return;
+      }
+
       const map: Record<string, string> = {};
       for (const [id, url] of results) {
         if (url) {
@@ -472,7 +480,13 @@ export default function FoodScreen() {
         }
       }
       setMealGroupImageUrls(map);
-    });
+    }
+
+    void loadMealGroupImageUrls();
+
+    return () => {
+      isMounted = false;
+    };
   }, [mealGroupsByType]);
 
   // Check if all meals are empty AND no food has ever been tracked
