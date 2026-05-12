@@ -50,7 +50,7 @@ import EditWorkoutMetadataModal from '@/components/modals/EditWorkoutMetadataMod
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import ExercisesModal from '@/components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
-import { FoodMealTrackingDetailsModal } from '../../../components/modals/FoodMealTrackingDetailsModal';
+import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from '@/components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
