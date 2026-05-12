@@ -412,7 +412,7 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       ? i18n.t('food.descriptionFormat', {
           brand: product.brands || product.generic_name || i18n.t('food.generic'),
           calories,
-          amount: product.serving_size || '100',
+          amount: '100',
           unit: 'g',
         })
       : `${product.brands || product.generic_name || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`,
