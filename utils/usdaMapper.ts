@@ -1,8 +1,11 @@
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { components } from '@/types/usda-types';
+import { Units } from '@/constants/settings';
 
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
+import { gramsToDisplay } from './unitConversion';
+import { getMassUnitI18nKey } from './units';
 
 type USDAFood = components['schemas']['SearchResultFood'];
 
@@ -22,7 +25,7 @@ export function mapUSDANutritient(
   return nutrient ? (nutrient.value ?? nutrient.amount) : undefined;
 }
 
-export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
+export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): UnifiedFoodResult {
   const nutrients = food.foodNutrients;
 
   const rawCalories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
@@ -47,13 +50,26 @@ export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
   const servingSizeUnit = (food as any).servingSizeUnit || 'g';
   const servingSize = servingSizeValue ? `${servingSizeValue}${servingSizeUnit}` : '100g';
 
+  // When the USDA serving is in grams, convert to oz for imperial users
+  let descriptionAmount: number | string;
+  let descriptionUnit: string;
+  if (servingSizeUnit === 'g') {
+    const rawGrams = servingSizeValue ?? 100;
+    descriptionAmount = units === 'imperial' ? Math.round(gramsToDisplay(rawGrams, units)) : rawGrams;
+    descriptionUnit = i18n.t(getMassUnitI18nKey(units));
+  } else {
+    // Non-gram unit (ml, cup, etc.) — keep as-is combined in the amount field
+    descriptionAmount = servingSize;
+    descriptionUnit = '';
+  }
+
   const description =
     calories !== undefined
       ? i18n.t('food.descriptionFormat', {
           brand: brand || food.dataType || i18n.t('food.generic'),
           calories,
-          amount: servingSize,
-          unit: '',
+          amount: descriptionAmount,
+          unit: descriptionUnit,
         })
       : `${brand || food.dataType || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`;
 

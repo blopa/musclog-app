@@ -1,8 +1,11 @@
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
+import { Units } from '@/constants/settings';
 
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
+import { gramsToDisplay } from './unitConversion';
+import { getMassUnitI18nKey } from './units';
 import { getProductName as _getProductName } from './productName';
 
 export type { ProductNameResult } from './productName';
@@ -319,7 +322,7 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 }
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
-export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFoodResult {
+export function mapOpenFoodFactsProduct(product: SearchResultProduct, units: Units = 'metric'): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const kcal = nutriments?.['energy-kcal'];
 
@@ -412,8 +415,8 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       ? i18n.t('food.descriptionFormat', {
           brand: product.brands || product.generic_name || i18n.t('food.generic'),
           calories,
-          amount: '100',
-          unit: 'g',
+          amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+          unit: i18n.t(getMassUnitI18nKey(units)),
         })
       : `${product.brands || product.generic_name || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`,
     brand: product.brands,

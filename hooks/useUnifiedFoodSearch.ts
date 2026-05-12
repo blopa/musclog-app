@@ -416,17 +416,17 @@ export function useUnifiedFoodSearch({
           return null;
         }
 
-        return mapOpenFoodFactsProduct(product);
+        return mapOpenFoodFactsProduct(product, units);
       })
       .filter((product) => product) as UnifiedFoodResult[];
-  }, [accumulatedApiResults, includeAPI, includeOpenFood]);
+  }, [accumulatedApiResults, includeAPI, includeOpenFood, units]);
 
   const usdaResultsFormatted = useMemo(() => {
     if (!includeAPI || !includeUSDA) {
       return [];
     }
-    return accumulatedUsdaResults.map(mapUSDAFoodToUnified);
-  }, [accumulatedUsdaResults, includeAPI, includeUSDA]);
+    return accumulatedUsdaResults.map((food) => mapUSDAFoodToUnified(food, units));
+  }, [accumulatedUsdaResults, includeAPI, includeUSDA, units]);
 
   // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {
