@@ -1,12 +1,12 @@
+import { Units } from '@/constants/settings';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
-import { Units } from '@/constants/settings';
 
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
+import { getProductName as _getProductName } from './productName';
 import { gramsToDisplay } from './unitConversion';
 import { getMassUnitI18nKey } from './units';
-import { getProductName as _getProductName } from './productName';
 
 export type { ProductNameResult } from './productName';
 

@@ -1,7 +1,7 @@
+import { Units } from '@/constants/settings';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { components } from '@/types/usda-types';
-import { Units } from '@/constants/settings';
 
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { gramsToDisplay } from './unitConversion';

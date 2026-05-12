@@ -1,4 +1,5 @@
 import { format, isToday, isYesterday } from 'date-fns';
+import { TFunction } from 'i18next';
 import { Clock, LucideScale, Utensils } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -15,7 +16,6 @@ import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 
 import { FullScreenModal } from './FullScreenModal';
-import { TFunction } from 'i18next';
 
 type LogEntry = {
   log: NutritionLog;
@@ -95,7 +95,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
     protein: per100gProtein,
     carbs: per100gCarbs,
     fat: per100gFat,
-    source: (food?.source as any) ?? undefined,
+    source: food?.source as 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined,
   };
 
   const nutritionalData = {
@@ -126,13 +126,10 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: theme.spacing.padding.base, paddingBottom: 40 }}
       >
-        {/* Info card matching the screenshot layout */}
         <GenericCard variant="highlighted" backgroundVariant="gradient">
           <View className="p-5">
-            {/* Food name */}
             <Text className="mb-5 text-2xl font-bold text-text-primary">{displayName}</Text>
 
-            {/* Meal Type + Portion Size row */}
             <View className="mb-4 flex-row gap-4">
               <View className="flex-1">
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
@@ -163,7 +160,6 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
               </View>
             </View>
 
-            {/* Date & Time row */}
             <View>
               <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                 {t('food.logDetails.dateAndTime')}
@@ -176,7 +172,6 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           </View>
         </GenericCard>
 
-        {/* Nutrition section — macros + micronutrients */}
         <FoodNutritionSectionCard
           food={foodData}
           canEdit={false}
