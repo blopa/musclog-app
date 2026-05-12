@@ -234,6 +234,14 @@
       "comingSoon": "App Store скоро!",
       "qrButton": "Показать QR-коды"
     },
+    "download": {
+      "pageTitle": "Скачать Musclog",
+      "eyebrow": "Начните отслеживать сегодня",
+      "title": "Готовы собраться?",
+      "subtitle": "Скачайте Musclog сейчас и держите тренировки, питание и прогресс в одном приватном месте.",
+      "googleLabel": "Скачать Musclog в Google Play",
+      "appleLabel": "Скачать Musclog в App Store"
+    },
     "footer": {
       "privacyPolicy": "Политика Конфиденциальности",
       "terms": "Условия",

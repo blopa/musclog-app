@@ -234,6 +234,14 @@
       "comingSoon": "App Store em breve!",
       "qrButton": "Mostrar códigos QR"
     },
+    "download": {
+      "pageTitle": "Baixar Musclog",
+      "eyebrow": "Comece a acompanhar hoje",
+      "title": "Pronto para focar?",
+      "subtitle": "Baixe o Musclog agora e mantenha treinos, nutrição e progresso em um só lugar privado.",
+      "googleLabel": "Baixar Musclog no Google Play",
+      "appleLabel": "Baixar Musclog na App Store"
+    },
     "footer": {
       "privacyPolicy": "Política de Privacidade",
       "terms": "Termos",

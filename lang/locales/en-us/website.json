@@ -234,6 +234,14 @@
       "comingSoon": "App Store coming soon!",
       "qrButton": "Show QR codes"
     },
+    "download": {
+      "pageTitle": "Download Musclog",
+      "eyebrow": "Start tracking today",
+      "title": "Ready to lock in?",
+      "subtitle": "Download Musclog now and keep your training, nutrition, and progress in one private place.",
+      "googleLabel": "Download Musclog on Google Play",
+      "appleLabel": "Download Musclog on the App Store"
+    },
     "footer": {
       "privacyPolicy": "Privacy Policy",
       "terms": "Terms",

@@ -234,6 +234,14 @@
       "comingSoon": "App Store binnenkort beschikbaar!",
       "qrButton": "QR-codes weergeven"
     },
+    "download": {
+      "pageTitle": "Musclog downloaden",
+      "eyebrow": "Begin vandaag met tracken",
+      "title": "Klaar om te focussen?",
+      "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
+      "googleLabel": "Download Musclog via Google Play",
+      "appleLabel": "Download Musclog via de App Store"
+    },
     "footer": {
       "privacyPolicy": "Privacybeleid",
       "terms": "Voorwaarden",
