@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 
 /**
- * Copies assets/phone-wrapper.png and assets/google-play-qrcode.png
+ * Copies assets/phone-wrapper.png and assets/download-qrcode.png
  * → public/musclog-app/images/ so dev and export serve them at /musclog-app/images/...
  * (matches experiments.baseUrl).
  * The public/musclog-app folder is gitignored; run via prestart or before web/export.
@@ -19,8 +19,8 @@ const filesToSync = [
     dest: path.join(destDir, 'phone-wrapper.png'),
   },
   {
-    src: path.join(root, 'assets', 'google-play-qrcode.png'),
-    dest: path.join(destDir, 'google-play-qrcode.png'),
+    src: path.join(root, 'assets', 'download-qrcode.png'),
+    dest: path.join(destDir, 'download-qrcode.png'),
   },
   {
     src: path.join(root, 'assets', 'app-screenshot.png'),

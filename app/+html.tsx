@@ -16,7 +16,7 @@ import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
  * `assets/phone-wrapper.png` into `public/musclog-app/images/` (gitignored).
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
-const GOOGLE_PLAY_QR_CODE = '/images/google-play-qrcode.png';
+const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
 const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 type LandingCopy = {
