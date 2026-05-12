@@ -783,16 +783,15 @@ export function useChatMessages(
             sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
-          const totalIngredients = normalizedMeals.flatMap((m) => m.ingredients).length;
-          let singleFoodImageUri: string | undefined;
-          if (totalIngredients === 1 && base64Image) {
-            singleFoodImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
+          let mealImageUri: string | undefined;
+          if (base64Image) {
+            mealImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
           }
 
           const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
             meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
-            ...(singleFoodImageUri ? { singleFoodImageUri } : {}),
+            ...(mealImageUri ? { mealImageUri } : {}),
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
@@ -892,22 +891,19 @@ export function useChatMessages(
         };
       });
 
+      let savedImageUri: string | undefined;
+      const msgRecord = rawMessagesRef.current.find((r) => r.id === messageId);
+      if (msgRecord?.payloadJson) {
+        try {
+          const payload = JSON.parse(msgRecord.payloadJson) as ChatMessagePayload;
+          if (isTrackMealPayload(payload) && payload.mealImageUri) {
+            savedImageUri = payload.mealImageUri;
+          }
+        } catch {}
+      }
+
       if (scaledIngredients.length === 1) {
         const ing = scaledIngredients[0];
-
-        let singleFoodImageUrl: string | undefined;
-        if (!ing.foodId) {
-          const record = rawMessagesRef.current.find((r) => r.id === messageId);
-          if (record?.payloadJson) {
-            try {
-              const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
-              if (isTrackMealPayload(payload) && payload.singleFoodImageUri) {
-                singleFoodImageUrl = payload.singleFoodImageUri;
-              }
-            } catch {}
-          }
-        }
-
         await NutritionService.logCustomMeal(
           {
             name: ing.name,
@@ -917,7 +913,7 @@ export function useChatMessages(
             fat: ing.fat,
             fiber: ing.fiber,
             foodId: ing.foodId,
-            imageUrl: singleFoodImageUrl,
+            imageUrl: ing.foodId ? undefined : savedImageUri,
           },
           date,
           logMealType,
@@ -927,6 +923,7 @@ export function useChatMessages(
         await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
           groupId: generateUUID(),
           loggedMealName: mealName,
+          imageUrl: savedImageUri,
         });
       }
 

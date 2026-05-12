@@ -1558,6 +1558,11 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="breakfast"
+                        // TODO: use photo saved onto the meal instead
+                        imageUrl={
+                          group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                          undefined
+                        }
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1608,6 +1613,11 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="lunch"
+                        // TODO: use photo saved onto the meal instead
+                        imageUrl={
+                          group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                          undefined
+                        }
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1658,6 +1668,11 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="dinner"
+                        // TODO: use photo saved onto the meal instead
+                        imageUrl={
+                          group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                          undefined
+                        }
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1708,6 +1723,11 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="snack"
+                        // TODO: use photo saved onto the meal instead
+                        imageUrl={
+                          group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                          undefined
+                        }
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1758,6 +1778,11 @@ export default function FoodScreen() {
                         carbs={group.totalNutrients.carbs}
                         fat={group.totalNutrients.fat}
                         mealType="other"
+                        // TODO: use photo saved onto the meal instead
+                        imageUrl={
+                          group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                          undefined
+                        }
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />

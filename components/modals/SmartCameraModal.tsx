@@ -687,7 +687,7 @@ export default function SmartCameraModal({
 
         const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
         const persistedImageUri =
-          isSingleFood && !selectedMealForLogging.foodId && aiPhotoUri
+          !selectedMealForLogging.foodId && aiPhotoUri
             ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
             : undefined;
         await NutritionService.logCustomMeal(

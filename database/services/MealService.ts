@@ -349,6 +349,7 @@ export class MealService {
       recipeServingsCount?: number;
       defaultPortionName?: string;
       servingGrams?: number;
+      imageUrl?: string;
     }
   ): Promise<Meal> {
     this.validateMealFoodItems(foodItems);
@@ -361,6 +362,7 @@ export class MealService {
       mealRecord.isAiGenerated = isAiGenerated;
       mealRecord.name = name;
       mealRecord.description = description ?? '';
+      mealRecord.imageUrl = options?.imageUrl;
       mealRecord.isFavorite = false;
       mealRecord.preparedWeightGrams = preparedWeightGrams;
       mealRecord.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
