@@ -1,6 +1,14 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  copyAsync,
+  documentDirectory,
+  EncodingType,
+  makeDirectoryAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -176,4 +184,29 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 export function shouldSeedDevData() {
   // return !isProduction();
   return false;
+}
+
+const FOOD_IMAGES_DIR = `${documentDirectory}food_images/`;
+
+async function ensureFoodImagesDir(): Promise<void> {
+  await makeDirectoryAsync(FOOD_IMAGES_DIR, { intermediates: true });
+}
+
+/** Saves a raw base64 string (no data-URI prefix) as a JPEG in the app's document directory. Returns the local file URI. */
+export async function saveBase64ImageToFile(base64: string): Promise<string> {
+  await ensureFoodImagesDir();
+  const filename = `food_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+  const destUri = `${FOOD_IMAGES_DIR}${filename}`;
+  await writeAsStringAsync(destUri, base64, { encoding: EncodingType.Base64 });
+  return destUri;
+}
+
+/** Copies a local image file (e.g. a temp crop path) into the app's document directory for persistent storage. Returns the new local file URI. */
+export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {
+  await ensureFoodImagesDir();
+  const ext = sourceUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `food_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const destUri = `${FOOD_IMAGES_DIR}${filename}`;
+  await copyAsync({ from: sourceUri, to: destUri });
+  return destUri;
 }

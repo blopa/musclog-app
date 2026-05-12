@@ -289,3 +289,17 @@ export function shouldSeedDevData() {
 
   return false;
 }
+
+async function ensureFoodImagesDir(): Promise<void> {
+  // TODO
+}
+
+export async function saveBase64ImageToFile(base64: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
+}
+
+export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
+}

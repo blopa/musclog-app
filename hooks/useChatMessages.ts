@@ -54,6 +54,7 @@ import {
   type TrackMealIngredient,
 } from '@/utils/coachAI';
 import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
@@ -782,9 +783,16 @@ export function useChatMessages(
             sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
+          const totalIngredients = normalizedMeals.flatMap((m) => m.ingredients).length;
+          let singleFoodImageUri: string | undefined;
+          if (totalIngredients === 1 && base64Image) {
+            singleFoodImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
+          }
+
           const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
             meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
+            ...(singleFoodImageUri ? { singleFoodImageUri } : {}),
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
@@ -886,6 +894,20 @@ export function useChatMessages(
 
       if (scaledIngredients.length === 1) {
         const ing = scaledIngredients[0];
+
+        let singleFoodImageUrl: string | undefined;
+        if (!ing.foodId) {
+          const record = rawMessagesRef.current.find((r) => r.id === messageId);
+          if (record?.payloadJson) {
+            try {
+              const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+              if (isTrackMealPayload(payload) && payload.singleFoodImageUri) {
+                singleFoodImageUrl = payload.singleFoodImageUri;
+              }
+            } catch {}
+          }
+        }
+
         await NutritionService.logCustomMeal(
           {
             name: ing.name,
@@ -895,6 +917,7 @@ export function useChatMessages(
             fat: ing.fat,
             fiber: ing.fiber,
             foodId: ing.foodId,
+            imageUrl: singleFoodImageUrl,
           },
           date,
           logMealType,

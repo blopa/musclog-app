@@ -967,6 +967,7 @@ export class NutritionService {
       fat: number;
       fiber?: number;
       foodId?: string;
+      imageUrl?: string;
     },
     date: Date,
     mealType: MealType,
@@ -1015,6 +1016,7 @@ export class NutritionService {
           sodium: 0,
         };
         food.isFavorite = false;
+        food.imageUrl = mealData.imageUrl;
         food.createdAt = now;
         food.updatedAt = now;
       });

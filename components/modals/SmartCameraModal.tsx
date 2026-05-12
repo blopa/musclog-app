@@ -37,7 +37,12 @@ import {
   type TrackMealIngredient,
   type TrackMealResponse,
 } from '@/utils/coachAI';
-import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
+import {
+  copyImageToDocumentDirectory,
+  detectBarcodes,
+  openCropperAsync,
+  readFileAsStringAsync,
+} from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
@@ -179,6 +184,7 @@ export default function SmartCameraModal({
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
+  const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
   const isSearchingBarcodeRef = useRef(false);
@@ -346,6 +352,7 @@ export default function SmartCameraModal({
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
       setIsProcessingAi(true);
+      setAiPhotoUri(fileUri);
       try {
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi || !isAIVisionEnabled) {
@@ -678,6 +685,11 @@ export default function SmartCameraModal({
         const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
         const scale = portionGrams / baseGrams;
 
+        const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
+        const persistedImageUri =
+          isSingleFood && !selectedMealForLogging.foodId && aiPhotoUri
+            ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
+            : undefined;
         await NutritionService.logCustomMeal(
           {
             name: selectedMealForLogging.name,
@@ -686,19 +698,21 @@ export default function SmartCameraModal({
             carbs: selectedMealForLogging.carbs * scale,
             fat: selectedMealForLogging.fat * scale,
             foodId: selectedMealForLogging.foodId,
+            imageUrl: persistedImageUri,
           },
           date,
           mealType,
           portionGrams,
-          aiIngredients && aiIngredients.length > 1
-            ? { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
-            : { loggedMealName: selectedMealForLogging.name }
+          isSingleFood
+            ? { loggedMealName: selectedMealForLogging.name }
+            : { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
         setIsLogMealModalVisible(false);
         setSelectedMealForLogging(null);
         setAiIngredients(undefined);
+        setAiPhotoUri(undefined);
         // Close the camera modal after successful logging
         onClose();
       } catch (error) {
@@ -707,7 +721,7 @@ export default function SmartCameraModal({
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
-    [selectedMealForLogging, aiIngredients, t, onClose]
+    [selectedMealForLogging, aiIngredients, aiPhotoUri, t, onClose]
   );
 
   const handleScanBarcodePress = useCallback(() => {
@@ -1304,6 +1318,7 @@ export default function SmartCameraModal({
               setIsLogMealModalVisible(false);
               setSelectedMealForLogging(null);
               setAiIngredients(undefined);
+              setAiPhotoUri(undefined);
             }}
             meal={selectedMealForLogging}
             ingredients={aiIngredients}
