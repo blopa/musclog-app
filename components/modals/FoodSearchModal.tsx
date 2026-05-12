@@ -637,8 +637,8 @@ export function FoodSearchModal({
           (f) =>
             ({
               id: f.id,
-              name: f.name ?? '',
-              description: t('foodSearch.foodDescriptionFormat', {
+              name: f.name ?? t('food.generic'),
+              description: t('foodSearch.foodDescriptionPer100g', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
                 calories: formatInteger(
                   resolveRoundedPer100gCaloriesForDisplay({
@@ -703,8 +703,8 @@ export function FoodSearchModal({
       (f) =>
         ({
           id: f.id,
-          name: f.name ?? '',
-          description: t('foodSearch.foodDescriptionFormat', {
+          name: f.name ?? t('food.generic'),
+          description: t('foodSearch.foodDescriptionPer100g', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
             calories: formatInteger(
               resolveRoundedPer100gCaloriesForDisplay({

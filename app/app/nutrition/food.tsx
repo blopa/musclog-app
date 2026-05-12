@@ -1960,7 +1960,7 @@ export default function FoodScreen() {
       <BottomPopUpMenu
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
-        title={selectedFoodItem?.displayName ?? ''}
+        title={selectedFoodItem?.displayName ?? t('food.generic')}
         subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false })} kcal`}
         items={foodMenuItems}
       />
