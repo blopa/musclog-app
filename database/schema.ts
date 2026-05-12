@@ -327,7 +327,7 @@ export const schema = appSchema({
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'snapshot_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
-        { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal)
+        { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal) - can also be the meal.id
         { name: 'logged_meal_name', type: 'string', isOptional: true }, // Display name for the meal group
 
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
