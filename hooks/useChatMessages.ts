@@ -884,11 +884,28 @@ export function useChatMessages(
         };
       });
 
-      const groupId = generateUUID();
-      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-        groupId,
-        loggedMealName: mealName,
-      });
+      if (scaledIngredients.length === 1) {
+        const ing = scaledIngredients[0];
+        await NutritionService.logCustomMeal(
+          {
+            name: ing.name,
+            calories: ing.calories,
+            protein: ing.protein,
+            carbs: ing.carbs,
+            fat: ing.fat,
+            fiber: ing.fiber,
+            foodId: ing.foodId,
+          },
+          date,
+          logMealType,
+          ing.grams
+        );
+      } else {
+        await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
+          groupId: generateUUID(),
+          loggedMealName: mealName,
+        });
+      }
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

@@ -690,7 +690,9 @@ export default function SmartCameraModal({
           date,
           mealType,
           portionGrams,
-          { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
+          aiIngredients && aiIngredients.length > 1
+            ? { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
+            : { loggedMealName: selectedMealForLogging.name }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
@@ -705,7 +707,7 @@ export default function SmartCameraModal({
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
-    [selectedMealForLogging, t, onClose]
+    [selectedMealForLogging, aiIngredients, t, onClose]
   );
 
   const handleScanBarcodePress = useCallback(() => {
