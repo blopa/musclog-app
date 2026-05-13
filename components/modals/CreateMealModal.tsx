@@ -1,5 +1,5 @@
-import type { TFunction } from 'i18next';
 import * as ImagePicker from 'expo-image-picker';
+import type { TFunction } from 'i18next';
 import {
   Apple,
   Camera,
@@ -781,23 +781,36 @@ export function CreateMealModal({
                 <View className="relative h-48 w-full overflow-hidden rounded-2xl">
                   <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
                   <View className="absolute bottom-2 right-2 flex-row gap-2">
-                    <Button
-                      label=""
-                      variant="secondary"
-                      size="sm"
-                      icon={Camera}
+                    <Pressable
                       onPress={handlePickImage}
-                      className="h-10 w-10 p-0"
-                    />
-                    <Button
-                      label=""
-                      variant="secondary"
-                      size="sm"
-                      icon={Trash2}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+                    </Pressable>
+                    <Pressable
                       onPress={handleRemoveImage}
-                      className="h-10 w-10 p-0"
-                      iconColor={theme.colors.status.error}
-                    />
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
                   </View>
                 </View>
               ) : (
