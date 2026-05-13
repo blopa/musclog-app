@@ -222,8 +222,9 @@ export default function WorkoutSummaryScreen() {
       '',
       `⏱ ${totalTime}`,
       `🏋️ ${volume}`,
+      // TODO: use translation (common.amount_kcal)
       ...(caloriesBurned > 0 ? [`🔥 ${formatAppInteger(locale, caloriesBurned)} kcal`] : []),
-      ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []),
+      ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []), // TODO: use translations - create a copy for PRs
     ];
 
     try {

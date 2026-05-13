@@ -166,6 +166,7 @@ export function SavedForLaterModal({
               ) : null}
               <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
                 <Text className="text-sm font-semibold text-accent-primary">
+                  {/*TODO: use translation (common.amount_kcal)*/}
                   {formatInteger(Math.round(item.nutrients.calories))} kcal
                 </Text>
                 <Text className="text-xs text-text-secondary">

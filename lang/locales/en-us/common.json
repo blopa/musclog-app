@@ -14,6 +14,7 @@
     "select": "Select...",
     "today": "Today",
     "none": "None",
+    "amount_kcal": "{{amount}} kcal",
     "duplicateFailed": "Duplicate Failed",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",

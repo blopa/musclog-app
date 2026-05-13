@@ -55,6 +55,7 @@ export function NutritionConfirmationModal({
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
+              {/*TODO: use translation  (common.amount_kcal)*/}
               {formatRoundedDecimal(item.calories, 2)} kcal
             </Text>
           </View>
@@ -111,6 +112,7 @@ export function NutritionConfirmationModal({
                 {t('common.labelWithColon', { label: t('nutrition.calories') })}
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
+                {/*TODO: use translation (common.amount_kcal)*/}
                 {formatRoundedDecimal(totals.totalCalories, 2)} kcal
               </Text>
             </View>
