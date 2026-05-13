@@ -30,6 +30,7 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
+import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
@@ -143,6 +144,21 @@ export default function FoodScreen() {
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
+  const [selectedFoodLogDetails, setSelectedFoodLogDetails] = useState<{
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
+    gramWeight: number;
+    displayName: string;
+    mealType: MealType;
+  } | null>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [addFoodModalPreselectedMealType, setAddFoodModalPreselectedMealType] =
     useState<MealType | null>(null);
@@ -515,6 +531,23 @@ export default function FoodScreen() {
   }) => {
     setSelectedFoodItem(entry);
     setIsFoodMenuVisible(true);
+  };
+
+  const handleFoodCardPress = (entry: {
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
+    gramWeight: number;
+    displayName: string;
+  }) => {
+    setSelectedFoodLogDetails({ ...entry, mealType: entry.log.type });
   };
 
   const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
@@ -1634,7 +1667,6 @@ export default function FoodScreen() {
                       />
                     ))}
                     {ungroupedByType.breakfast.map((entry) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1646,6 +1678,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="breakfast"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1691,7 +1724,6 @@ export default function FoodScreen() {
                       />
                     ))}
                     {ungroupedByType.lunch.map((entry) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1703,6 +1735,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="lunch"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1748,7 +1781,6 @@ export default function FoodScreen() {
                       />
                     ))}
                     {ungroupedByType.dinner.map((entry) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1760,6 +1792,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="dinner"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1805,7 +1838,6 @@ export default function FoodScreen() {
                       />
                     ))}
                     {ungroupedByType.snack.map((entry) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1817,6 +1849,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="snack"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1862,7 +1895,6 @@ export default function FoodScreen() {
                       />
                     ))}
                     {ungroupedByType.other.map((entry) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1874,6 +1906,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="other"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -2270,6 +2303,12 @@ export default function FoodScreen() {
           }
         }}
         isAiEnabled={isAiConfigured}
+      />
+
+      <FoodMealDetailsModal
+        visible={selectedFoodLogDetails !== null}
+        onClose={() => setSelectedFoodLogDetails(null)}
+        entry={selectedFoodLogDetails}
       />
 
       {/* Meal Group Options Menu */}
