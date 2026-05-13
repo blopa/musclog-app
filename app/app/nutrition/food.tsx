@@ -1597,6 +1597,7 @@ export default function FoodScreen() {
                             openCamera({
                               mode: 'ai-meal-photo',
                               hideCameraModePicker: false,
+                              showBarcodeTextSearch: false,
                               logDate: selectedDate,
                             });
                           }}
