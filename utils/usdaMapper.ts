@@ -55,7 +55,8 @@ export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): U
   let descriptionUnit: string;
   if (servingSizeUnit === 'g') {
     const rawGrams = servingSizeValue ?? 100;
-    descriptionAmount = units === 'imperial' ? Math.round(gramsToDisplay(rawGrams, units)) : rawGrams;
+    descriptionAmount =
+      units === 'imperial' ? Math.round(gramsToDisplay(rawGrams, units)) : rawGrams;
     descriptionUnit = i18n.t(getMassUnitI18nKey(units));
   } else {
     // Non-gram unit (ml, cup, etc.) — keep as-is combined in the amount field

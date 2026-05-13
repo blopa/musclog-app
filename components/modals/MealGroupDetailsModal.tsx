@@ -80,12 +80,7 @@ export function MealGroupDetailsModal({
   const massUnit = getMassUnitLabel(units);
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={mealName}
-      scrollable={false}
-    >
+    <FullScreenModal visible={visible} onClose={onClose} title={mealName} scrollable={false}>
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -146,16 +141,11 @@ export function MealGroupDetailsModal({
                   </View>
 
                   <View className="min-w-0 flex-1">
-                    <Text
-                      className="text-sm font-semibold text-text-primary"
-                      numberOfLines={1}
-                    >
+                    <Text className="text-sm font-semibold text-text-primary" numberOfLines={1}>
                       {entry.displayName}
                     </Text>
                     <Text className="text-xs text-text-secondary">
-                      {intuitiveEatingMode
-                        ? `— ${massUnit}`
-                        : `${formattedGrams} ${massUnit}`}
+                      {intuitiveEatingMode ? `— ${massUnit}` : `${formattedGrams} ${massUnit}`}
                     </Text>
                   </View>
 

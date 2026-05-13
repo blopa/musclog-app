@@ -322,7 +322,10 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 }
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
-export function mapOpenFoodFactsProduct(product: SearchResultProduct, units: Units = 'metric'): UnifiedFoodResult {
+export function mapOpenFoodFactsProduct(
+  product: SearchResultProduct,
+  units: Units = 'metric'
+): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const kcal = nutriments?.['energy-kcal'];
 

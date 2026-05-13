@@ -529,8 +529,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
-    useThinkingMode:
-      (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
+    useThinkingMode: (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     language: (localSettings.language as string) ?? actualSettings.language,

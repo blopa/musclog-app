@@ -59,7 +59,9 @@ declare global {
   var __PENDING_WIDGET_ACTION: string | undefined;
 }
 
-function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode, showBarcodeTextSearch?: boolean }) => void) {
+function drainPendingWidgetAction(
+  openCamera: (opts: { mode: CameraMode; showBarcodeTextSearch?: boolean }) => void
+) {
   const action = global.__PENDING_WIDGET_ACTION;
   if (!action) {
     return;

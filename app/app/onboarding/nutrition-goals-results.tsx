@@ -330,7 +330,12 @@ export default function NutritionGoalsResults() {
             heightM = convert(heightCm, 'cm').to('m') as number;
           }
 
-          if (useBfForCalculations && bodyFatDec && bodyFatDec.value >= 1 && bodyFatDec.value <= 99) {
+          if (
+            useBfForCalculations &&
+            bodyFatDec &&
+            bodyFatDec.value >= 1 &&
+            bodyFatDec.value <= 99
+          ) {
             currentBodyFatPercent = bodyFatDec.value;
           }
         } catch (e) {

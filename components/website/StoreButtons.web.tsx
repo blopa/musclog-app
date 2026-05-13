@@ -257,12 +257,7 @@ export function StoreButtons() {
                     <h3 id="store-qr-popover-title" className="text-base font-bold text-white">
                       {t('qrTitle')}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-300">
-                      {t('qrDescription', {
-                        defaultValue:
-                          'Open the Android or iOS install page directly on your phone.',
-                      })}
-                    </p>
+                    <p className="mt-1 text-sm text-gray-300">{t('qrDescription')}</p>
                   </div>
                   <button
                     type="button"

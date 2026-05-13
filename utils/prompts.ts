@@ -1999,37 +1999,37 @@ export const getRecipeExtractionFunctions = (
   ];
 };
 
-export const getEstimateMissingIngredientsFunctions =
-  (): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
-    {
-      name: 'estimateMissingIngredients',
-      description:
-        'Estimate macronutrients for a list of ingredients that have known gram weights.',
-      parameters: {
-        type: 'object',
-        properties: {
-          ingredients: {
-            type: 'array',
-            minItems: 1,
-            items: {
-              type: 'object',
-              properties: {
-                name: { type: 'string', description: 'Name of the ingredient' },
-                kcal: { type: 'number', description: 'Kilocalories' },
-                protein: { type: 'number', description: 'Protein in grams' },
-                carbs: { type: 'number', description: 'Carbohydrates in grams' },
-                fat: { type: 'number', description: 'Fat in grams' },
-                fiber: { type: 'number', description: 'Fiber in grams' },
-                grams: { type: 'number', description: 'Weight of this ingredient in grams' },
-              },
-              required: ['name', 'kcal', 'protein', 'carbs', 'fat', 'fiber', 'grams'],
+export const getEstimateMissingIngredientsFunctions = ():
+  | FunctionDeclaration[]
+  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
+  {
+    name: 'estimateMissingIngredients',
+    description: 'Estimate macronutrients for a list of ingredients that have known gram weights.',
+    parameters: {
+      type: 'object',
+      properties: {
+        ingredients: {
+          type: 'array',
+          minItems: 1,
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', description: 'Name of the ingredient' },
+              kcal: { type: 'number', description: 'Kilocalories' },
+              protein: { type: 'number', description: 'Protein in grams' },
+              carbs: { type: 'number', description: 'Carbohydrates in grams' },
+              fat: { type: 'number', description: 'Fat in grams' },
+              fiber: { type: 'number', description: 'Fiber in grams' },
+              grams: { type: 'number', description: 'Weight of this ingredient in grams' },
             },
+            required: ['name', 'kcal', 'protein', 'carbs', 'fat', 'fiber', 'grams'],
           },
         },
-        required: ['ingredients'],
       },
+      required: ['ingredients'],
     },
-  ];
+  },
+];
 
 /**
  * Function schema for nutrition estimation from photos
