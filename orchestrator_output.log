@@ -1,0 +1,43 @@
+Starting built-in Node server...
+Server listening on port 8081 at /musclog-app
+Server is up. Running Playwright tests...
+Running: npx playwright test
+
+Running 2 tests using 2 workers
+
+  ✘  2 [portrait-6.5] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals (5ms)
+  ✘  1 [portrait-6.7] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals (7ms)
+
+
+  1) [portrait-6.5] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals
+
+    Error: browserType.launch: Executable doesn't exist at /home/jules/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/tests-screenshot-automatio-0b632--key-screens-and-all-modals-portrait-6-5/error-context.md
+
+  2) [portrait-6.7] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals
+
+    Error: browserType.launch: Executable doesn't exist at /home/jules/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/tests-screenshot-automatio-0b632--key-screens-and-all-modals-portrait-6-7/error-context.md
+
+  2 failed
+    [portrait-6.5] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals
+    [portrait-6.7] › tests/screenshot-automation.spec.ts:11:7 › App Store Screenshots › Capture key screens and all modals
+Tests failed: Playwright exited with code 1

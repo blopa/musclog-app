@@ -63,6 +63,7 @@ export class MealService {
       recipeServingsCount?: number;
       defaultPortionName?: string;
       servingGrams?: number;
+      imageUrl?: string;
     }
   ): Promise<Meal> {
     return await database.write(async () => {
@@ -72,6 +73,7 @@ export class MealService {
         meal.isAiGenerated = false;
         meal.name = name;
         meal.description = description ?? '';
+        meal.imageUrl = options?.imageUrl;
         meal.isFavorite = false;
         meal.preparedWeightGrams = preparedWeightGrams;
         meal.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
@@ -203,6 +205,7 @@ export class MealService {
       name?: string;
       description?: string;
       preparedWeightGrams?: number | null;
+      imageUrl?: string | null;
       nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
       recipeServingsCount?: number | null;
       defaultPortionName?: string | null;
@@ -223,6 +226,10 @@ export class MealService {
 
         if (updates.description !== undefined) {
           record.description = updates.description;
+        }
+
+        if ('imageUrl' in updates) {
+          record.imageUrl = updates.imageUrl ?? undefined;
         }
 
         if ('preparedWeightGrams' in updates) {

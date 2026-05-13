@@ -371,6 +371,7 @@
       "mealNamePlaceholder": "bijv. Smoothie na workout",
       "mealDescriptionPlaceholder": "Optioneel — bereidingsnotities, wanneer je dit eet, enz.",
       "ingredients": "Ingrediënten ({{count}})",
+      "addPhoto": "Foto toevoegen",
       "editList": "Lijst bewerken",
       "noIngredients": "Geen ingrediënten",
       "addFoodItem": "Item toevoegen",
