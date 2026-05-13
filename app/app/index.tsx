@@ -59,7 +59,7 @@ declare global {
   var __PENDING_WIDGET_ACTION: string | undefined;
 }
 
-function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode }) => void) {
+function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode, showBarcodeTextSearch?: boolean }) => void) {
   const action = global.__PENDING_WIDGET_ACTION;
   if (!action) {
     return;
@@ -67,7 +67,7 @@ function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode }) => vo
 
   global.__PENDING_WIDGET_ACTION = undefined;
   if (action === 'open-camera') {
-    openCamera({ mode: 'barcode-scan' });
+    openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true });
   }
 }
 
@@ -227,7 +227,7 @@ export default function HomeScreen() {
 
   const handleScanBarcodePress = useCallback(() => {
     setIsAddFoodVisible(false);
-    openCamera({ mode: 'barcode-scan' });
+    openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true });
   }, [openCamera]);
 
   const handleSearchFoodPress = useCallback(() => {
@@ -294,7 +294,7 @@ export default function HomeScreen() {
 
   const handleFoodSearchBarcodePress = useCallback(() => {
     setIsFoodSearchVisible(false);
-    openCamera({ mode: 'barcode-scan', mealType: selectedMealType });
+    openCamera({ mode: 'barcode-scan', mealType: selectedMealType, showBarcodeTextSearch: true });
   }, [openCamera, selectedMealType]);
 
   // Handle widget action stored by +native-intent.tsx on cold start (camera only —
@@ -323,7 +323,7 @@ export default function HomeScreen() {
     const handleUrl = ({ url }: { url: string }) => {
       const { queryParams } = ExpoLinking.parse(url);
       if (queryParams?.action === 'open-camera') {
-        openCamera({ mode: 'barcode-scan' });
+        openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true });
       } else if (queryParams?.action === 'open-nutrition') {
         router.navigate('/app/nutrition/food');
       }

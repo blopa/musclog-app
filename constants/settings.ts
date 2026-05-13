@@ -196,6 +196,12 @@ export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
 export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 
 /**
+ * Setting type for enabling AI thinking mode.
+ * value: 'true' | 'false'.
+ */
+export const USE_THINKING_MODE_SETTING_TYPE = 'use_thinking_mode';
+
+/**
  * Setting type for showing the daily mood prompt on the home screen.
  * value: 'true' | 'false'.
  */
@@ -321,6 +327,7 @@ export type UseSettingsResult = {
   chartTooltipPosition: ChartTooltipPosition;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  useThinkingMode: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
   useBfForCalculations: boolean;

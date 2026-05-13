@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
 import type { MealType } from '@/database/models';
@@ -11,6 +19,7 @@ type OpenCameraOptions = {
   hideCameraModePicker?: boolean;
   logDate?: Date;
   mealType?: MealType;
+  showBarcodeTextSearch?: boolean;
   onBarcodeScanned?: (data: string) => void;
 };
 
@@ -28,6 +37,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
   const [logDate, setLogDate] = useState<Date | undefined>(undefined);
   const [mealTypeForLog, setMealTypeForLog] = useState<MealType | undefined>(undefined);
+  const [showBarcodeTextSearch, setShowBarcodeTextSearch] = useState(false);
   const onBarcodeScannedRef = useRef<((data: string) => void) | undefined>(undefined);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
@@ -35,6 +45,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
     setLogDate(options?.logDate);
     setMealTypeForLog(options?.mealType);
+    setShowBarcodeTextSearch(options?.showBarcodeTextSearch ?? false);
     onBarcodeScannedRef.current = options?.onBarcodeScanned;
     setIsVisible(true);
   }, []);
@@ -42,6 +53,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const handleCameraModalClose = useCallback(() => {
     setIsVisible(false);
     setMealTypeForLog(undefined);
+    setShowBarcodeTextSearch(false);
     onBarcodeScannedRef.current = undefined;
   }, []);
 
@@ -53,8 +65,10 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     onBarcodeScannedRef.current?.(data);
   }, []);
 
+  const value = useMemo(() => ({ openCamera, setCurrentDate }), [openCamera, setCurrentDate]);
+
   return (
-    <SmartCameraContext.Provider value={{ openCamera, setCurrentDate }}>
+    <SmartCameraContext.Provider value={value}>
       {children}
       {isVisible ? (
         <SmartCameraModal
@@ -65,6 +79,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
           isAIVisionEnabled={isAiMealPhotoEnabled}
           useOcrBeforeAi={useOcrBeforeAi}
+          showBarcodeTextSearch={showBarcodeTextSearch}
           logDate={logDate}
           mealTypeForLog={mealTypeForLog}
           onBarcodeScanned={onBarcodeScannedRef.current ? handleBarcodeScanned : undefined}

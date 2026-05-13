@@ -101,6 +101,8 @@ import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
+import { TimePickerInput } from './TimePickerInput';
+import { TimePickerModal } from './TimePickerModal';
 
 function computeMealScaleFactor(
   meal:
@@ -250,6 +252,8 @@ export function FoodMealTrackingDetailsModal({
     localCalendarDayDate(initialDate ? new Date(initialDate) : new Date())
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(
     () => !!meal || !!food || !!foodLog || !!productFromSearch
@@ -665,6 +669,12 @@ export function FoodMealTrackingDetailsModal({
       setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
     } catch (e) {
       setSelectedDate(localCalendarDayDate(new Date()));
+    }
+
+    try {
+      setSelectedTime(new Date(foodLog.createdAt));
+    } catch (e) {
+      setSelectedTime(new Date());
     }
 
     let cancelled = false;
@@ -2118,6 +2128,7 @@ export function FoodMealTrackingDetailsModal({
       setAlternateSourceLookupFailed(false);
       setLocalCanEdit(canEdit);
       hasInitializedServingSizeRef.current = false;
+      setSelectedTime(new Date());
     }
   }, [visible, canEdit]);
 
@@ -2318,6 +2329,12 @@ export function FoodMealTrackingDetailsModal({
             onPress={() => setIsDatePickerVisible(true)}
             variant="default"
           />
+
+          <TimePickerInput
+            selectedTime={selectedTime}
+            onPress={() => setIsTimePickerVisible(true)}
+            variant="default"
+          />
         </View>
       </View>
 
@@ -2335,6 +2352,14 @@ export function FoodMealTrackingDetailsModal({
           }}
         />
       ) : null}
+
+      <TimePickerModal
+        visible={isTimePickerVisible}
+        onClose={() => setIsTimePickerVisible(false)}
+        selectedTime={selectedTime}
+        title={t('timePicker.selectTime')}
+        onTimeSelect={setSelectedTime}
+      />
       <BottomPopUp
         visible={isEditPopUpVisible ? editForm !== null : false}
         onClose={() => {
@@ -2403,6 +2428,7 @@ export function FoodMealTrackingDetailsModal({
                   openCamera({
                     mode: 'barcode-scan',
                     hideCameraModePicker: true,
+                    showBarcodeTextSearch: true,
                     onBarcodeScanned: (data) =>
                       setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
                   })

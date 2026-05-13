@@ -262,6 +262,7 @@ export class FoodService {
       nutritionBasis?: 'per_100g' | 'per_serving';
       servingName?: string;
       selectedPortionIds?: string[];
+      imageUrl?: string;
     }
   ): Promise<Food> {
     const nutritionBasis = options?.nutritionBasis ?? 'per_100g';
@@ -306,6 +307,7 @@ export class FoodService {
         food.name = name;
         food.brand = brand;
         food.description = description;
+        food.imageUrl = options?.imageUrl;
 
         food.calories = Math.max(0, nutritionData.calories);
         food.protein = Math.max(0, nutritionData.protein);
@@ -500,6 +502,7 @@ export class FoodService {
       fat?: number;
       fiber?: number;
       micros?: any;
+      imageUrl?: string | null;
     }
   ): Promise<Food> {
     return await database.write(async () => {
@@ -542,6 +545,9 @@ export class FoodService {
         }
         if (updates.micros !== undefined) {
           record.micros = updates.micros;
+        }
+        if ('imageUrl' in updates) {
+          record.imageUrl = updates.imageUrl ?? undefined;
         }
         record.updatedAt = Date.now();
       });

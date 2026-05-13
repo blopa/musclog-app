@@ -250,6 +250,8 @@
       "promptContextNutrition": "Nutrición",
       "promptContextExercise": "Ejercicio",
       "memorySettings": "AJUSTES DE MEMORIA",
+      "useThinkingMode": "Usar modo de razonamiento",
+      "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible",
       "maxAiMemories": "Máximo de Memorias de IA",
       "maxAiMemoriesSubtitle": "Número de mensajes anteriores que se recordarán en las conversaciones",
       "onDeviceAi": {

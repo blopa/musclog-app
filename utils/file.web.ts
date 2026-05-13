@@ -242,6 +242,15 @@ export async function deleteMealImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
 }
 
+export async function saveFoodImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteFoodImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
+}
+
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
   return { path: options.imageUri };
 }

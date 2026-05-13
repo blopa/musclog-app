@@ -250,6 +250,8 @@
       "promptContextNutrition": "Voeding",
       "promptContextExercise": "Oefening",
       "memorySettings": "GEHEUGENINSTELLINGEN",
+      "useThinkingMode": "Denkmodus gebruiken",
+      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",
       "onDeviceAi": {

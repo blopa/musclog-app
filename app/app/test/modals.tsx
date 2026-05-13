@@ -749,6 +749,7 @@ export default function ModalsTestScreen() {
                 openCamera({
                   mode: 'barcode-scan',
                   hideCameraModePicker: true,
+                  showBarcodeTextSearch: true,
                   onBarcodeScanned: (data) => console.log('Barcode scanned:', data),
                 })
               }
@@ -1621,7 +1622,7 @@ export default function ModalsTestScreen() {
               label="Open Smart Camera Modal"
               variant="accent"
               width="full"
-              onPress={() => openCamera({ mode: 'barcode-scan' })}
+              onPress={() => openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true })}
             />
           </View>
 

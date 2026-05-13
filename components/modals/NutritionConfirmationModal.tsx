@@ -37,7 +37,7 @@ export function NutritionConfirmationModal({
     onConfirm(entries);
   }, [entries, onConfirm]);
 
-  const renderNutritionEntry = ({ item, index }: { item: NutritionEntry; index: number }) => (
+  const renderNutritionEntry = useCallback(({ item, index }: { item: NutritionEntry; index: number }) => (
     <View
       key={index}
       className="mb-3 rounded-lg p-4"
@@ -83,7 +83,7 @@ export function NutritionConfirmationModal({
         ) : null}
       </View>
     </View>
-  );
+  ), []);
 
   return (
     <FullScreenModal

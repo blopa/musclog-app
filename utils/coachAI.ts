@@ -15,6 +15,7 @@ import {
   getCalculateNextWorkoutVolumePrompt,
   getChatMessagePromptContent,
   getEstimateMacrosFunctions,
+  getEstimateMissingIngredientsFunctions,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getGenerateMealPlanFunctions,
@@ -22,6 +23,7 @@ import {
   getGenerateWorkoutPlanFunctions,
   getMealAnalysisPrompt,
   getMealCritiquePrompt,
+  getMissingIngredientsMacrosPrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
   getParsePastNutritionPrompt,
@@ -30,6 +32,8 @@ import {
   getParseRetrospectiveNutritionFunctions,
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
+  getRecipeExtractionFunctions,
+  getRecipeExtractionPrompt,
   getRetrospectiveNutritionPrompt,
   getTrackMealFunctions,
   getWorkoutInsightsPrompt,
@@ -362,6 +366,26 @@ export type TrackedMeal = {
 
 export type TrackMealResponse = {
   meals: TrackedMeal[];
+};
+
+export type RecipeIngredient = {
+  name: string;
+  grams: number;
+  foodId?: string;
+};
+
+export type RecipeTrackedMeal = {
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealName: string;
+  ingredients: RecipeIngredient[];
+};
+
+export type RecipeExtractionResponse = {
+  meals: RecipeTrackedMeal[];
+};
+
+export type MissingIngredientMacrosResponse = {
+  ingredients: TrackMealIngredient[];
 };
 
 export type GenerateMealPlanResponse = {
@@ -1281,6 +1305,134 @@ async function generateWithImageStructured<T>(
   }
 }
 
+async function extractRecipe(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<RecipeExtractionResponse | null> {
+  const lang = config.language ?? 'en-US';
+  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
+  const includeFoundationFoods = providerConfig.enableFoundationFoods
+    ? await SettingsService.getSendFoundationFoodsToLlm()
+    : false;
+  const systemPrompt = await getRecipeExtractionPrompt(includeFoundationFoods, lang);
+  const fns = getRecipeExtractionFunctions(includeFoundationFoods);
+  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+  if (base64Image) {
+    if (config.provider === 'on-device') {
+      // TODO: for now, on-device cant parse images
+      return null;
+    }
+
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    return generateWithImageStructured<RecipeExtractionResponse>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'extractRecipe',
+      userMessage
+    );
+  }
+
+  return generateStructured<RecipeExtractionResponse>(
+    config,
+    systemPrompt,
+    userMessage,
+    schema,
+    'extractRecipe'
+  );
+}
+
+async function estimateMissingIngredients(
+  config: CoachAIConfig,
+  newIngredients: RecipeIngredient[],
+  knownIngredients: TrackMealIngredient[],
+  mealName: string
+): Promise<MissingIngredientMacrosResponse | null> {
+  const systemPrompt = getMissingIngredientsMacrosPrompt(mealName, knownIngredients, newIngredients);
+  const fns = getEstimateMissingIngredientsFunctions();
+  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+  return generateStructured<MissingIngredientMacrosResponse>(
+    config,
+    systemPrompt,
+    `Estimate macros for the missing ingredients in "${mealName}".`,
+    schema,
+    'estimateMissingIngredients'
+  );
+}
+
+async function trackMealWithThinking(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<TrackMealResponse | null> {
+  const recipeResponse = await extractRecipe(config, userMessage, base64Image);
+  if (!recipeResponse?.meals?.length) {
+    return null;
+  }
+
+  const resultMeals: TrackedMeal[] = [];
+
+  for (const meal of recipeResponse.meals) {
+    const matchedIngredients = meal.ingredients.filter((i) => i.foodId);
+    const newIngredients = meal.ingredients.filter((i) => !i.foodId);
+
+    const matchedStubs: TrackMealIngredient[] = matchedIngredients.map((i) => ({
+      name: i.name,
+      grams: i.grams,
+      foodId: i.foodId,
+      kcal: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+    }));
+
+    let fullIngredients: TrackMealIngredient[] = matchedStubs;
+
+    if (newIngredients.length > 0) {
+      const normalizedMatched = await NutritionService.normalizeAiMealIngredients(matchedStubs);
+      const estimated = await estimateMissingIngredients(
+        config,
+        newIngredients,
+        normalizedMatched,
+        meal.mealName
+      );
+
+      fullIngredients = [
+        ...matchedStubs,
+        ...(estimated?.ingredients ??
+          newIngredients.map((i) => ({
+            name: i.name,
+            grams: i.grams,
+            kcal: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            fiber: 0,
+          }))),
+      ];
+    }
+
+    resultMeals.push({
+      mealType: meal.mealType,
+      mealName: meal.mealName,
+      ingredients: fullIngredients,
+    });
+  }
+
+  for (const meal of resultMeals) {
+    meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+  }
+
+  return { meals: resultMeals };
+}
+
 /**
  * Track a meal from description or base64 image
  */
@@ -1290,6 +1442,11 @@ export async function trackMeal(
   base64Image?: string
 ): Promise<TrackMealResponse | null> {
   try {
+    const useThinkingMode = await SettingsService.getUseThinkingMode();
+    if (useThinkingMode) {
+      return await trackMealWithThinking(config, userMessage, base64Image);
+    }
+
     const lang = config.language ?? 'en-US';
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
     const includeFoundationFoods = providerConfig.enableFoundationFoods
@@ -1646,6 +1803,20 @@ export async function estimateNutritionFromPhoto(
   }
 
   try {
+    const useThinkingMode = await SettingsService.getUseThinkingMode();
+    if (useThinkingMode) {
+      let thinkingUserMessage = 'Analyze this meal photo.';
+      if (context?.description?.trim()) {
+        thinkingUserMessage += `\nUser description: ${context.description.trim()}`;
+      }
+
+      if (context?.tags?.length) {
+        thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
+      }
+
+      return await trackMealWithThinking(config, thinkingUserMessage, base64Image);
+    }
+
     const customPrompts = await getActiveCustomPrompts();
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
     const includeFoundationFoods = providerConfig.enableFoundationFoods

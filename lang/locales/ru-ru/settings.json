@@ -250,6 +250,8 @@
       "promptContextNutrition": "Питание",
       "promptContextExercise": "Тренировка",
       "memorySettings": "НАСТРОЙКИ ПАМЯТИ",
+      "useThinkingMode": "Использовать режим размышления",
+      "useThinkingModeSubtitle": "Разрешить провайдерам ИИ использовать более глубокое рассуждение, если поддерживается",
       "maxAiMemories": "Макс. воспоминаний ИИ",
       "maxAiMemoriesSubtitle": "Количество предыдущих сообщений для запоминания в разговорах",
       "onDeviceAi": {

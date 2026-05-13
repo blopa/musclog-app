@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,8 +96,10 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
     <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
   ));
 
+  const value = useMemo(() => ({ showSnackbar, dismissSnackbar }), [showSnackbar, dismissSnackbar]);
+
   return (
-    <SnackbarContext.Provider value={{ showSnackbar, dismissSnackbar }}>
+    <SnackbarContext.Provider value={value}>
       {children}
 
       {Platform.OS === 'web' ? (

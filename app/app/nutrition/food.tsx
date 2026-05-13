@@ -30,9 +30,11 @@ import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
+import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { MealGroupDetailsModal } from '@/components/modals/MealGroupDetailsModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
@@ -142,6 +144,21 @@ export default function FoodScreen() {
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
+  const [selectedFoodLogDetails, setSelectedFoodLogDetails] = useState<{
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
+    gramWeight: number;
+    displayName: string;
+    mealType: MealType;
+  } | null>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [addFoodModalPreselectedMealType, setAddFoodModalPreselectedMealType] =
     useState<MealType | null>(null);
@@ -209,6 +226,19 @@ export default function FoodScreen() {
   const [isMealGroupActionLoading, setIsMealGroupActionLoading] = useState(false);
   const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
   const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
+  const [isMealGroupDetailsVisible, setIsMealGroupDetailsVisible] = useState(false);
+  const [selectedMealGroupForDetails, setSelectedMealGroupForDetails] = useState<{
+    groupId: string;
+    mealName: string;
+    entries: {
+      log: NutritionLog;
+      food: Food | null;
+      nutrients: any;
+      gramWeight: number;
+      displayName: string;
+    }[];
+    totalNutrients: { calories: number; protein: number; carbs: number; fat: number };
+  } | null>(null);
 
   const {
     logs,
@@ -503,9 +533,31 @@ export default function FoodScreen() {
     setIsFoodMenuVisible(true);
   };
 
+  const handleFoodCardPress = (entry: {
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
+    gramWeight: number;
+    displayName: string;
+  }) => {
+    setSelectedFoodLogDetails({ ...entry, mealType: entry.log.type });
+  };
+
   const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
     setSelectedMealGroup(group);
     setIsMealGroupMenuVisible(true);
+  };
+
+  const handleMealGroupCardPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
+    setSelectedMealGroupForDetails(group);
+    setIsMealGroupDetailsVisible(true);
   };
 
   // Meal Group menu action handlers
@@ -1529,6 +1581,7 @@ export default function FoodScreen() {
                           openCamera({
                             mode: 'barcode-scan',
                             hideCameraModePicker: false,
+                            showBarcodeTextSearch: true,
                             logDate: selectedDate,
                           });
                         }}
@@ -1609,6 +1662,7 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1625,6 +1679,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="breakfast"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1664,6 +1719,7 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1680,6 +1736,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="lunch"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1719,6 +1776,7 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1735,6 +1793,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="dinner"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1774,6 +1833,7 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1790,6 +1850,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="snack"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1829,6 +1890,7 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1845,6 +1907,7 @@ export default function FoodScreen() {
                         fat={entry.nutrients.fat}
                         image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                         mealType="other"
+                        onPress={() => handleFoodCardPress(entry)}
                         onMorePress={() => handleFoodMenuPress(entry)}
                         intuitiveMode={intuitiveEatingMode}
                       />
@@ -1890,6 +1953,7 @@ export default function FoodScreen() {
           openCamera({
             mode: 'barcode-scan',
             hideCameraModePicker: false,
+            showBarcodeTextSearch: true,
             logDate: selectedDate,
             mealType: selectedMealType,
           });
@@ -1980,6 +2044,7 @@ export default function FoodScreen() {
           openCamera({
             mode: 'barcode-scan',
             hideCameraModePicker: true,
+            showBarcodeTextSearch: true,
             logDate: selectedDate,
             mealType: selectedMealType,
           });
@@ -2243,6 +2308,12 @@ export default function FoodScreen() {
         isAiEnabled={isAiConfigured}
       />
 
+      <FoodMealDetailsModal
+        visible={selectedFoodLogDetails !== null}
+        onClose={() => setSelectedFoodLogDetails(null)}
+        entry={selectedFoodLogDetails}
+      />
+
       {/* Meal Group Options Menu */}
       <BottomPopUpMenu
         visible={isMealGroupMenuVisible}
@@ -2367,6 +2438,25 @@ export default function FoodScreen() {
         mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
         isLoading={isMealGroupInsightsLoading}
         onSubmit={handleSubmitMealGroupInsights}
+      />
+
+      {/* Meal Group Details Modal */}
+      <MealGroupDetailsModal
+        visible={isMealGroupDetailsVisible}
+        onClose={() => {
+          setIsMealGroupDetailsVisible(false);
+          setSelectedMealGroupForDetails(null);
+        }}
+        mealName={selectedMealGroupForDetails?.mealName ?? ''}
+        entries={selectedMealGroupForDetails?.entries ?? []}
+        totalNutrients={
+          selectedMealGroupForDetails?.totalNutrients ?? {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+          }
+        }
       />
 
       {/* Delete Meal Group Confirmation */}

@@ -1406,6 +1406,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     [theme]
   );
 
+  // TODO: implement using this
   const gcScrollToBottomComponent = useCallback(() => null, []);
 
   const contextIcon = useMemo(() => {
@@ -1650,6 +1651,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       {selectedMealForTracking && mealForLogMealModal ? (
         <LogMealModal
+          key={`log-meal-${selectedMealForTracking.messageId}-${selectedMealForTracking.mealTypeIdentifier}`}
           visible
           onClose={() => setSelectedMealForTracking(null)}
           meal={mealForLogMealModal}
