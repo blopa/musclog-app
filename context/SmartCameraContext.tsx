@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
 import type { MealType } from '@/database/models';
@@ -53,8 +61,10 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     onBarcodeScannedRef.current?.(data);
   }, []);
 
+  const value = useMemo(() => ({ openCamera, setCurrentDate }), [openCamera, setCurrentDate]);
+
   return (
-    <SmartCameraContext.Provider value={{ openCamera, setCurrentDate }}>
+    <SmartCameraContext.Provider value={value}>
       {children}
       {isVisible ? (
         <SmartCameraModal

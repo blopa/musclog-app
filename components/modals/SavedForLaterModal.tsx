@@ -1,5 +1,5 @@
 import { Trash2, Utensils } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 
@@ -11,7 +11,7 @@ import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedF
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
-import { SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
+import { MealType, SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
 import { SavedForLaterService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -123,7 +123,7 @@ export function SavedForLaterModal({
     }
   };
 
-  const handleConfirmTrack = async (targetDate: Date, targetMealType: any) => {
+  const handleConfirmTrack = async (targetDate: Date, targetMealType: MealType) => {
     if (!selectedGroup) {
       return;
     }
@@ -142,7 +142,7 @@ export function SavedForLaterModal({
     }
   };
 
-  const renderItem = ({ item }: { item: GroupWithNutrients }) => {
+  const renderItem = useCallback(({ item }: { item: GroupWithNutrients }) => {
     const originalDate = formatLocalCalendarDayIso(
       new Date(localCalendarDayDateFromDayKeyMs(item.group.originalDate))
     );
@@ -189,7 +189,7 @@ export function SavedForLaterModal({
         </GenericCard>
       </View>
     );
-  };
+  }, []);
 
   return (
     <FullScreenModal
@@ -274,7 +274,9 @@ export function SavedForLaterModal({
           mode="copy"
           title={t('food.mealGroup.savedForLaterModal.trackThisMeal')}
           note={selectedGroup.note}
-          sourceMealType={(initialMealType as any) || selectedGroup.group.originalMealType}
+          sourceMealType={
+            (initialMealType as MealType) ?? (selectedGroup.group.originalMealType as MealType)
+          }
           sourceDate={initialDate || new Date()}
           isLoading={isActionLoading}
           mealName={selectedGroup.group.name}

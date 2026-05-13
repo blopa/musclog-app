@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import convert from 'convert';
+import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
@@ -291,7 +291,7 @@ export class WorkoutService {
             const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
             heightCm =
               heightUnit === 'in' || heightUnit === 'ft'
-                ? (convert(rawHeight, heightUnit as any).to('cm') as number)
+                ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
                 : rawHeight;
           }
 

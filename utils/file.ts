@@ -196,6 +196,40 @@ export async function saveMealImage(tempUri: string, existingUri?: string): Prom
 }
 
 /**
+ * Copies a temporary food image URI into permanent document storage.
+ *
+ * @param tempUri  - The temporary `file:///` URI returned by the image picker.
+ * @param existingUri - Optional URI of a previously saved food image to delete.
+ * @returns The permanent `file:///` URI that should be stored in the database.
+ */
+export async function saveFoodImage(tempUri: string, existingUri?: string): Promise<string> {
+  const foodsDir = new Directory(Paths.document, 'foods');
+  if (!foodsDir.exists) {
+    foodsDir.create();
+  }
+
+  const ext = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `food-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const srcFile = new File(tempUri);
+  const destFile = new File(foodsDir, filename);
+  srcFile.copy(destFile);
+
+  if (existingUri) {
+    try {
+      const oldFile = new File(existingUri);
+      if (oldFile.exists) {
+        oldFile.delete();
+      }
+    } catch {
+      // Non-fatal: old file may have already been removed
+    }
+  }
+
+  return destFile.uri;
+}
+
+/**
  * Deletes a permanently stored exercise image file.
  * Safe to call with any URI — non-local or missing files are silently ignored.
  */
@@ -217,6 +251,23 @@ export async function deleteExerciseImage(imageUri: string): Promise<void> {
  * Deletes a permanently stored meal image file.
  */
 export async function deleteMealImage(imageUri: string): Promise<void> {
+  try {
+    if (!imageUri.startsWith('file://')) {
+      return;
+    }
+    const file = new File(imageUri);
+    if (file.exists) {
+      file.delete();
+    }
+  } catch {
+    // Non-fatal
+  }
+}
+
+/**
+ * Deletes a permanently stored food image file.
+ */
+export async function deleteFoodImage(imageUri: string): Promise<void> {
   try {
     if (!imageUri.startsWith('file://')) {
       return;

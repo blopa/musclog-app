@@ -1,10 +1,11 @@
+import * as ImagePicker from 'expo-image-picker';
 import {
-  Activity,
   AlignLeft,
   Apple,
   BarChart,
   Battery,
   Beaker,
+  Camera,
   Carrot,
   ChevronDown,
   Cookie,
@@ -26,6 +27,7 @@ import {
   Sun,
   TestTube,
   Thermometer,
+  Trash2,
   Waves,
   Wine,
   X,
@@ -33,7 +35,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
@@ -50,6 +52,7 @@ import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { deleteFoodImage, saveFoodImage } from '@/utils/file';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
 import { handleError } from '@/utils/handleError';
 import {
@@ -235,6 +238,7 @@ export default function CreateCustomFoodModal({
             servingName:
               servingName.trim() || foodName.trim() || t('food.newCustomFood.oneServing'),
             selectedPortionIds,
+            imageUrl: imageUrl || undefined,
           }
         );
 
@@ -283,6 +287,38 @@ export default function CreateCustomFoodModal({
       hideCameraModePicker: true,
       onBarcodeScanned: (data) => setBarcode(data),
     });
+  };
+
+  const handlePickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        showSnackbar('error', t('food.smartCamera.galleryPermissionRequired'));
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        const permanentUri = await saveFoodImage(result.assets[0].uri, imageUrl || undefined);
+        setImageUrl(permanentUri);
+      }
+    } catch (error) {
+      handleError(error, 'CreateCustomFoodModal.handlePickImage', {
+        snackbarMessage: t('food.newCustomFood.errorSaving'),
+      });
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (imageUrl) {
+      await deleteFoodImage(imageUrl);
+    }
+    setImageUrl('');
   };
 
   const micronutrientsData = [
@@ -670,14 +706,65 @@ export default function CreateCustomFoodModal({
             multiline
           />
 
-          {/* Image URL */}
-          <TextInput
-            label={t('food.newCustomFood.imageUrl')}
-            value={imageUrl}
-            onChangeText={setImageUrl}
-            placeholder={t('food.newCustomFood.imageUrlPlaceholder')}
-            icon={<Activity size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-          />
+          {/* Food Photo */}
+          <View>
+            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+              {t('common.photo')}
+            </Text>
+            {imageUrl ? (
+              <View className="relative h-48 w-full overflow-hidden rounded-2xl">
+                <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
+                <View className="absolute bottom-2 right-2 flex-row gap-2">
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('food.newCustomFood.addPhoto')}
+                    onPress={handlePickImage}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: theme.borderRadius.lg,
+                      backgroundColor: theme.colors.background.overlay,
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.border.default,
+                    }}
+                  >
+                    <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.delete')}
+                    onPress={handleRemoveImage}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: theme.borderRadius.lg,
+                      backgroundColor: theme.colors.background.overlay,
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.border.default,
+                    }}
+                  >
+                    <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('food.newCustomFood.addPhoto')}
+                onPress={handlePickImage}
+                className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
+              >
+                <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                <Text className="mt-2 text-sm text-text-tertiary">
+                  {t('food.newCustomFood.addPhoto')}
+                </Text>
+              </Pressable>
+            )}
+          </View>
 
           {/* Favorite Toggle */}
           <ToggleInput

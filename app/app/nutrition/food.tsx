@@ -1596,6 +1596,7 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.breakfast.map((group) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1651,6 +1652,7 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.lunch.map((group) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1706,6 +1708,7 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.dinner.map((group) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1761,6 +1764,7 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.snack.map((group) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1816,6 +1820,7 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.other.map((group) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
