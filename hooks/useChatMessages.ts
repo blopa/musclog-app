@@ -54,6 +54,7 @@ import {
   type TrackMealIngredient,
 } from '@/utils/coachAI';
 import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
@@ -782,9 +783,15 @@ export function useChatMessages(
             sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
+          let mealImageUri: string | undefined;
+          if (base64Image) {
+            mealImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
+          }
+
           const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
             meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
+            ...(mealImageUri ? { mealImageUri } : {}),
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
@@ -884,11 +891,41 @@ export function useChatMessages(
         };
       });
 
-      const groupId = generateUUID();
-      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-        groupId,
-        loggedMealName: mealName,
-      });
+      let savedImageUri: string | undefined;
+      const msgRecord = rawMessagesRef.current.find((r) => r.id === messageId);
+      if (msgRecord?.payloadJson) {
+        try {
+          const payload = JSON.parse(msgRecord.payloadJson) as ChatMessagePayload;
+          if (isTrackMealPayload(payload) && payload.mealImageUri) {
+            savedImageUri = payload.mealImageUri;
+          }
+        } catch {}
+      }
+
+      if (scaledIngredients.length === 1) {
+        const ing = scaledIngredients[0];
+        await NutritionService.logCustomMeal(
+          {
+            name: ing.name,
+            calories: ing.calories,
+            protein: ing.protein,
+            carbs: ing.carbs,
+            fat: ing.fat,
+            fiber: ing.fiber,
+            foodId: ing.foodId,
+            imageUrl: ing.foodId ? undefined : savedImageUri,
+          },
+          date,
+          logMealType,
+          ing.grams
+        );
+      } else {
+        await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
+          groupId: generateUUID(),
+          loggedMealName: mealName,
+          imageUrl: savedImageUri,
+        });
+      }
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

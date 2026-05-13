@@ -42,7 +42,7 @@ interface GoalsManagementModalProps {
 
 export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
   const { t } = useTranslation();
-  const { disableMinimumCalories } = useSettings();
+  const { disableMinimumCalories, useBfForCalculations } = useSettings();
   const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
   const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
   const [wizardModalVisible, setWizardModalVisible] = useState(false);
@@ -275,13 +275,13 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
             remainingDays: daysToGoal,
             gender: planData.gender,
             liftingExperience: planData.liftingExperience,
-            bodyFatPercent: planData.bodyFatPercent,
+            bodyFatPercent: useBfForCalculations ? planData.bodyFatPercent : undefined,
             disableMinimumCalories,
           });
 
           const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal, {
             weightKg: planData.currentWeightKg,
-            bodyFatPercent: planData.bodyFatPercent,
+            bodyFatPercent: useBfForCalculations ? planData.bodyFatPercent : undefined,
           });
           return {
             ...base,
@@ -300,6 +300,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     return currentGoalsData ?? computedDefaults;
   }, [
     disableMinimumCalories,
+    useBfForCalculations,
     isEditing,
     selectedGoal,
     pendingWizardPrefill,

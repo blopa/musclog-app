@@ -9,6 +9,7 @@ import {
 import { calculateTDEE } from '@/utils/nutritionCalculator';
 import { storedWeightToKg } from '@/utils/unitConversion';
 
+import { useSettings } from './useSettings';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
 
@@ -194,6 +195,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
 
   const { user, isLoading: userLoading } = useUser();
   const { metrics, isLoading: metricsLoading } = useUserMetrics();
+  const { useBfForCalculations } = useSettings();
   const [historicalData, setHistoricalData] = useState<HistoricalNutritionParams | null>(null);
   const [historicalLoading, setHistoricalLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -256,11 +258,11 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         tdeeParams.initialWeight = historicalData.historicalInitialWeightKg;
         tdeeParams.finalWeight = historicalData.historicalFinalWeightKg;
 
-        if (historicalData.historicalInitialFatPercent !== undefined) {
+        if (useBfForCalculations && historicalData.historicalInitialFatPercent !== undefined) {
           tdeeParams.initialFatPercentage = historicalData.historicalInitialFatPercent;
         }
 
-        if (historicalData.historicalFinalFatPercent !== undefined) {
+        if (useBfForCalculations && historicalData.historicalFinalFatPercent !== undefined) {
           tdeeParams.finalFatPercentage = historicalData.historicalFinalFatPercent;
         }
 
@@ -284,6 +286,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
     metricsLoading,
     historicalLoading,
     fallbackValue,
+    useBfForCalculations,
   ]);
 
   const isLoading = userLoading || metricsLoading || historicalLoading;

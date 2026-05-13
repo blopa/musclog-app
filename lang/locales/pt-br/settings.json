@@ -141,6 +141,8 @@
       "nutrition": "NUTRIÇÃO",
       "disableMinimumCalories": "Desativar o mínimo de calorias",
       "disableMinimumCaloriesSubtitle": "Permitir metas de calorias abaixo dos mínimos padrão de 1200 / 1500 kcal",
+      "useBfForCalculations": "Usar Gordura Corporal para Cálculos",
+      "useBfForCalculationsSubtitle": "Usar percentual de gordura corporal para cálculos de calorias e macros",
       "disableMinimumCaloriesConfirmTitle": "Desativar o mínimo de calorias?",
       "disableMinimumCaloriesConfirmMessage": "Isso remove as proteções mínimas de calorias padrão do Musclog e permite metas tão baixas quanto 0 kcal.",
       "disableMinimumCaloriesWarning": "Não é recomendado ficar abaixo das necessidades mínimas de calorias e isso pode não ser seguro. Ao ativar isso, você confirma que está agindo por sua própria responsabilidade, que o Musclog não recomenda ficar abaixo desses mínimos e que entende os riscos antes de prosseguir.",
@@ -248,6 +250,8 @@
       "promptContextNutrition": "Nutrição",
       "promptContextExercise": "Exercício",
       "memorySettings": "CONFIGURAÇÕES DE MEMÓRIA",
+      "useThinkingMode": "Usar modo de pensamento",
+      "useThinkingModeSubtitle": "Permitir que provedores de IA usem raciocínio mais profundo quando compatível",
       "maxAiMemories": "Máximo de Memórias de IA",
       "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas",
       "onDeviceAi": {

@@ -48,7 +48,7 @@ export default function NutritionGoalsResults() {
   const { t } = useTranslation();
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
-  const { units } = useSettings();
+  const { units, useBfForCalculations } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
@@ -330,7 +330,7 @@ export default function NutritionGoalsResults() {
             heightM = convert(heightCm, 'cm').to('m') as number;
           }
 
-          if (bodyFatDec && bodyFatDec.value >= 1 && bodyFatDec.value <= 99) {
+          if (useBfForCalculations && bodyFatDec && bodyFatDec.value >= 1 && bodyFatDec.value <= 99) {
             currentBodyFatPercent = bodyFatDec.value;
           }
         } catch (e) {

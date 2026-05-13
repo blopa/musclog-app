@@ -50,6 +50,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleShowWeightPredictionChange,
     disableMinimumCalories: debouncedDisableMinimumCalories,
     handleDisableMinimumCaloriesChange,
+    useBfForCalculations: debouncedUseBfForCalculations,
+    handleUseBfForCalculationsChange,
     intuitiveEatingMode: debouncedIntuitiveEatingMode,
     handleIntuitiveEatingModeChange,
     progressionMode: debouncedProgressionMode,
@@ -280,6 +282,27 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       ),
       value: debouncedDisableMinimumCalories,
       onValueChange: handleDisableMinimumCaloriesToggle,
+    },
+    {
+      key: 'use-bf-for-calculations',
+      label: t('settings.advancedSettings.useBfForCalculations'),
+      subtitle: t('settings.advancedSettings.useBfForCalculationsSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Activity size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedUseBfForCalculations,
+      onValueChange: handleUseBfForCalculationsChange,
     },
   ];
 

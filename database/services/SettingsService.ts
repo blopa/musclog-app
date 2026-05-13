@@ -50,9 +50,11 @@ import {
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  USE_BF_FOR_CALCULATIONS_SETTING_TYPE,
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -76,6 +78,13 @@ export class SettingsService {
       return getDefaultUnits();
     }
     return settings[0].value === '1' ? 'imperial' : 'metric';
+  }
+
+  /**
+   * Upsert the use body fat for calculations setting
+   */
+  static async setUseBfForCalculations(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_BF_FOR_CALCULATIONS_SETTING_TYPE, value);
   }
 
   /**
@@ -375,6 +384,13 @@ export class SettingsService {
     await SettingsService.setBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, value);
   }
 
+  /**
+   * Upsert the use thinking mode setting
+   */
+  static async setUseThinkingMode(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
+  }
+
   static async setDumpLlmRequests(value: boolean) {
     await SettingsService.setBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, value);
   }
@@ -481,6 +497,10 @@ export class SettingsService {
 
   static async getSendFoundationFoodsToLlm(): Promise<boolean> {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
+  }
+
+  static async getUseThinkingMode(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, false);
   }
 
   static async getDumpLlmRequests(): Promise<boolean> {
@@ -625,6 +645,13 @@ export class SettingsService {
    */
   static async getDisableMinimumCalories(): Promise<boolean> {
     return SettingsService.getBooleanSetting(DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the use body fat for calculations setting
+   */
+  static async getUseBfForCalculations(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false);
   }
 
   /**

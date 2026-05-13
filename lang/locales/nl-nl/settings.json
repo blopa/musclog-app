@@ -141,6 +141,8 @@
       "nutrition": "VOEDING",
       "disableMinimumCalories": "Minimale caloriegrens uitschakelen",
       "disableMinimumCaloriesSubtitle": "Sta caloriedoelen toe onder de standaardminimums van 1200 / 1500 kcal",
+      "useBfForCalculations": "Vetpercentage gebruiken voor berekeningen",
+      "useBfForCalculationsSubtitle": "Lichaamsvetpercentage gebruiken voor calorie- en macroberekeningen",
       "disableMinimumCaloriesConfirmTitle": "Minimale caloriegrens uitschakelen?",
       "disableMinimumCaloriesConfirmMessage": "Hiermee verwijder je de standaard minimale caloriebeveiliging van Musclog en kunnen doelen zo laag als 0 kcal worden ingesteld.",
       "disableMinimumCaloriesWarning": "Onder de minimale caloriebehoefte gaan wordt niet aanbevolen en kan onveilig zijn. Door dit in te schakelen bevestig je dat je op eigen verantwoordelijkheid handelt, dat Musclog niet aanbeveelt om onder die minimums te gaan, en dat je de risico's begrijpt voordat je doorgaat.",
@@ -248,6 +250,8 @@
       "promptContextNutrition": "Voeding",
       "promptContextExercise": "Oefening",
       "memorySettings": "GEHEUGENINSTELLINGEN",
+      "useThinkingMode": "Denkmodus gebruiken",
+      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",
       "onDeviceAi": {

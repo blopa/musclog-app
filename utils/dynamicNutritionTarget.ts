@@ -131,6 +131,7 @@ async function resolveDynamicGoalLike(
     bodyFatMetric,
     historicalParams,
     disableMinimumCalories,
+    useBfForCalculations,
   ] = await Promise.all([
     UserService.getCurrentUser(),
     UserMetricService.getLatestOnOrBefore('weight', asOfMetricMaxMs),
@@ -140,6 +141,7 @@ async function resolveDynamicGoalLike(
       ? Promise.resolve(null)
       : getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
     SettingsService.getDisableMinimumCalories(),
+    SettingsService.getUseBfForCalculations(),
   ]);
 
   if (!user) {
@@ -158,16 +160,26 @@ async function resolveDynamicGoalLike(
     heightCm = storedHeightToCm(d.value, d.unit);
   }
 
-  let bodyFatPercent: number | undefined;
+  let rawBodyFatPercent: number | undefined;
   if (bodyFatMetric) {
     const d = await bodyFatMetric.getDecrypted();
-    bodyFatPercent = d.value;
+    rawBodyFatPercent = d.value;
   }
+
+  const bodyFatPercent = useBfForCalculations ? rawBodyFatPercent : undefined;
 
   const activityLevel = Math.max(1, Math.min(5, user.activityLevel ?? 2)) as 1 | 2 | 3 | 4 | 5;
   const gender = user.gender ?? 'other';
   const fitnessGoal = user.fitnessGoal ?? 'general';
   const liftingExperience = user.liftingExperience ?? 'intermediate';
+
+  const effectiveHistoricalParams = useBfForCalculations
+    ? (historicalParams ?? {})
+    : {
+        ...historicalParams,
+        historicalInitialFatPercent: undefined,
+        historicalFinalFatPercent: undefined,
+      };
 
   const basePlan = calculateNutritionPlan({
     gender,
@@ -180,7 +192,7 @@ async function resolveDynamicGoalLike(
     liftingExperience,
     bodyFatPercent,
     disableMinimumCalories,
-    ...(historicalParams ?? {}),
+    ...effectiveHistoricalParams,
   });
 
   let targetCalories = Math.round(basePlan.targetCalories);

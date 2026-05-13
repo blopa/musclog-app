@@ -1,6 +1,14 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  copyAsync,
+  documentDirectory,
+  EncodingType,
+  makeDirectoryAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -148,10 +156,118 @@ export async function saveExerciseImage(tempUri: string, existingUri?: string): 
 }
 
 /**
+ * Copies a temporary image URI (e.g. from expo-image-picker) into the app's
+ * permanent document directory so it survives app restarts and OS cache clears.
+ *
+ * @param tempUri  - The temporary `file:///` URI returned by the image picker.
+ * @param existingUri - Optional URI of a previously saved meal image to delete.
+ * @returns The permanent `file:///` URI that should be stored in the database.
+ */
+export async function saveMealImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Ensure the meals directory exists
+  const mealsDir = new Directory(Paths.document, 'meals');
+  if (!mealsDir.exists) {
+    mealsDir.create();
+  }
+
+  // Build a unique filename from the current timestamp and a random suffix,
+  // preserving the original extension when possible.
+  const ext = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `meal-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  // Copy from the temporary picker URI to the permanent destination
+  const srcFile = new File(tempUri);
+  const destFile = new File(mealsDir, filename);
+  srcFile.copy(destFile);
+
+  // Remove the old file if one was provided (best-effort; ignore errors)
+  if (existingUri) {
+    try {
+      const oldFile = new File(existingUri);
+      if (oldFile.exists) {
+        oldFile.delete();
+      }
+    } catch {
+      // Non-fatal: old file may have already been removed
+    }
+  }
+
+  return destFile.uri;
+}
+
+/**
+ * Copies a temporary food image URI into permanent document storage.
+ *
+ * @param tempUri  - The temporary `file:///` URI returned by the image picker.
+ * @param existingUri - Optional URI of a previously saved food image to delete.
+ * @returns The permanent `file:///` URI that should be stored in the database.
+ */
+export async function saveFoodImage(tempUri: string, existingUri?: string): Promise<string> {
+  const foodsDir = new Directory(Paths.document, 'foods');
+  if (!foodsDir.exists) {
+    foodsDir.create();
+  }
+
+  const ext = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `food-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const srcFile = new File(tempUri);
+  const destFile = new File(foodsDir, filename);
+  srcFile.copy(destFile);
+
+  if (existingUri) {
+    try {
+      const oldFile = new File(existingUri);
+      if (oldFile.exists) {
+        oldFile.delete();
+      }
+    } catch {
+      // Non-fatal: old file may have already been removed
+    }
+  }
+
+  return destFile.uri;
+}
+
+/**
  * Deletes a permanently stored exercise image file.
  * Safe to call with any URI — non-local or missing files are silently ignored.
  */
 export async function deleteExerciseImage(imageUri: string): Promise<void> {
+  try {
+    if (!imageUri.startsWith('file://')) {
+      return;
+    }
+    const file = new File(imageUri);
+    if (file.exists) {
+      file.delete();
+    }
+  } catch {
+    // Non-fatal
+  }
+}
+
+/**
+ * Deletes a permanently stored meal image file.
+ */
+export async function deleteMealImage(imageUri: string): Promise<void> {
+  try {
+    if (!imageUri.startsWith('file://')) {
+      return;
+    }
+    const file = new File(imageUri);
+    if (file.exists) {
+      file.delete();
+    }
+  } catch {
+    // Non-fatal
+  }
+}
+
+/**
+ * Deletes a permanently stored food image file.
+ */
+export async function deleteFoodImage(imageUri: string): Promise<void> {
   try {
     if (!imageUri.startsWith('file://')) {
       return;
@@ -176,4 +292,29 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 export function shouldSeedDevData() {
   // return !isProduction();
   return false;
+}
+
+const FOOD_IMAGES_DIR = `${documentDirectory}food_images/`;
+
+async function ensureFoodImagesDir(): Promise<void> {
+  await makeDirectoryAsync(FOOD_IMAGES_DIR, { intermediates: true });
+}
+
+/** Saves a raw base64 string (no data-URI prefix) as a JPEG in the app's document directory. Returns the local file URI. */
+export async function saveBase64ImageToFile(base64: string): Promise<string> {
+  await ensureFoodImagesDir();
+  const filename = `food_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+  const destUri = `${FOOD_IMAGES_DIR}${filename}`;
+  await writeAsStringAsync(destUri, base64, { encoding: EncodingType.Base64 });
+  return destUri;
+}
+
+/** Copies a local image file (e.g. a temp crop path) into the app's document directory for persistent storage. Returns the new local file URI. */
+export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {
+  await ensureFoodImagesDir();
+  const ext = sourceUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `food_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const destUri = `${FOOD_IMAGES_DIR}${filename}`;
+  await copyAsync({ from: sourceUri, to: destUri });
+  return destUri;
 }

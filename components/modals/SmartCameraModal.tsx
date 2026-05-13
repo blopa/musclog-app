@@ -11,15 +11,25 @@ import {
   LightbulbOff,
   MessageSquareText,
   ScanBarcode,
+  Search,
   Sparkles,
   X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput as RNTextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BottomPopUp } from '@/components/BottomPopUp';
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
 import { CameraView, useCameraPermissions } from '@/components/CameraView';
 import { type MealType } from '@/database/models';
@@ -37,7 +47,12 @@ import {
   type TrackMealIngredient,
   type TrackMealResponse,
 } from '@/utils/coachAI';
-import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '@/utils/file';
+import {
+  copyImageToDocumentDirectory,
+  detectBarcodes,
+  openCropperAsync,
+  readFileAsStringAsync,
+} from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
@@ -45,7 +60,7 @@ import { generateUUID } from '@/utils/uuid';
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FoodSearchModal } from './FoodSearchModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -125,6 +140,8 @@ type CameraModalProps = {
   /** When false, the meal-photo mode button is hidden and the mode falls back to ai-label-scan. */
   isAIVisionEnabled?: boolean;
   useOcrBeforeAi?: boolean;
+  /** Shows a manual barcode search entry point while the camera is in barcode mode. */
+  showBarcodeTextSearch?: boolean;
   logDate?: Date;
   mealTypeForLog?: MealType;
   /** Called when user wants to open food search. Parent should close camera and open food search to avoid nested modals. */
@@ -137,6 +154,92 @@ type CameraModalProps = {
   onBarcodeScanned?: (data: string) => void;
 };
 
+type BarcodeTextSearchSheetProps = {
+  visible: boolean;
+  value: string;
+  onChangeText: (value: string) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+};
+
+function BarcodeTextSearchSheet({
+  visible,
+  value,
+  onChangeText,
+  onClose,
+  onSubmit,
+}: BarcodeTextSearchSheetProps) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+
+  return (
+    <BottomPopUp
+      visible={visible}
+      onClose={onClose}
+      title={t('food.aiCamera.barcodeTextSearchTitle')}
+      subtitle={t('food.aiCamera.barcodeTextSearchDescription')}
+      maxHeight="55%"
+      headerIcon={
+        <View
+          className="h-10 w-10 items-center justify-center rounded-xl"
+          style={{ backgroundColor: theme.colors.background.darkGraySolid }}
+        >
+          <ScanBarcode size={theme.iconSize.xl} color={theme.colors.text.primary} />
+        </View>
+      }
+    >
+      <View className="pt-2">
+        <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+          {t('food.aiCamera.barcodeTextSearchLabel')}
+        </Text>
+        <View
+          className="mb-6 w-full rounded-lg border px-4 py-3"
+          style={{
+            backgroundColor: theme.colors.background.darkGraySolid,
+            borderColor: theme.colors.background.white10,
+          }}
+        >
+          <RNTextInput
+            className="w-full bg-transparent text-text-primary"
+            style={{
+              fontSize: theme.typography.fontSize.base,
+              color: theme.colors.text.primary,
+            }}
+            placeholder={t('food.aiCamera.barcodeTextSearchPlaceholder')}
+            placeholderTextColor={theme.colors.background.white20}
+            value={value}
+            onChangeText={onChangeText}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="default"
+            returnKeyType="search"
+            onSubmitEditing={onSubmit}
+          />
+        </View>
+
+        <Pressable
+          onPress={onSubmit}
+          className="rounded-xl px-6 py-4 active:scale-[0.98]"
+          style={{ overflow: 'hidden' }}
+        >
+          <LinearGradient
+            colors={theme.colors.gradients.cta}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <View className="flex-row items-center justify-center gap-2">
+            <Text className="text-sm font-bold text-white">
+              {t('food.aiCamera.barcodeTextSearchSubmit')}
+            </Text>
+            <Search size={theme.iconSize.md} color={theme.colors.text.white} />
+          </View>
+        </Pressable>
+      </View>
+    </BottomPopUp>
+  );
+}
+
 export default function SmartCameraModal({
   visible,
   onClose,
@@ -145,6 +248,7 @@ export default function SmartCameraModal({
   isAiEnabled = true,
   isAIVisionEnabled = true,
   useOcrBeforeAi = false,
+  showBarcodeTextSearch = false,
   logDate,
   mealTypeForLog,
   onOpenFoodSearch,
@@ -162,6 +266,8 @@ export default function SmartCameraModal({
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
   );
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
+  const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
+  const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isNewCustomFoodModalVisible, setIsNewCustomFoodModalVisible] = useState(false);
@@ -179,17 +285,19 @@ export default function SmartCameraModal({
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [aiIngredients, setAiIngredients] = useState<TrackMealIngredient[] | undefined>(undefined);
+  const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
   const isSearchingBarcodeRef = useRef(false);
   const [isProcessingAi, setIsProcessingAi] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
-  /** Synthetic product from AI label (OCR or vision) for FoodMealDetailsModal */
+  /** Synthetic product from AI label (OCR or vision) for FoodMealTrackingDetailsModal */
   const [productFromAiLabel, setProductFromAiLabel] = useState<SearchResultProduct | null>(null);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [cameraResumeKey, setCameraResumeKey] = useState(0);
+  const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   // When any overlay modal is open (Food Not Found or Food Details) or we're processing AI/OCR,
   // the camera must be inactive so the feed is not live behind the modal.
@@ -197,6 +305,7 @@ export default function SmartCameraModal({
     visible &&
     !isSearchingBarcode &&
     !isProcessingAi &&
+    !isBarcodeTextSearchModalVisible &&
     !isFoodNotFoundModalVisible &&
     !isFoodDetailsModalVisible;
 
@@ -234,7 +343,7 @@ export default function SmartCameraModal({
     [t]
   );
 
-  /** Map AI label macro result to synthetic SearchResultProduct for FoodMealDetailsModal. */
+  /** Map AI label macro result to synthetic SearchResultProduct for FoodMealTrackingDetailsModal. */
   const macroEstimateToSearchResultProduct = useCallback(
     (result: MacroEstimate): SearchResultProduct => {
       const grams = result.grams ?? 100;
@@ -262,7 +371,7 @@ export default function SmartCameraModal({
     }
   }, [mode, isAiEnabled, isAIVisionEnabled]);
 
-  // Show FoodMealDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
+  // Show FoodMealTrackingDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
   useEffect(() => {
     if (detectedBarcode || productFromAiLabel) {
       setIsFoodDetailsModalVisible(true);
@@ -308,6 +417,7 @@ export default function SmartCameraModal({
   useEffect(() => {
     if (!visible) {
       setIsContextModalVisible(false);
+      setIsBarcodeTextSearchModalVisible(false);
       setIsFoodDetailsModalVisible(false);
       setIsAddFoodModalVisible(false);
       setIsNewCustomFoodModalVisible(false);
@@ -343,9 +453,33 @@ export default function SmartCameraModal({
     [cameraMode, onBarcodeScanned, onClose]
   );
 
+  const handleBarcodeTextSearchSubmit = useCallback(() => {
+    const barcode = barcodeTextSearchValue.trim();
+
+    if (!barcode) {
+      showSnackbar('error', t('food.aiCamera.barcodeTextSearchRequired'));
+      return;
+    }
+
+    isSearchingBarcodeRef.current = true;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    setIsBarcodeTextSearchModalVisible(false);
+    setBarcodeTextSearchValue('');
+
+    if (onBarcodeScanned) {
+      onBarcodeScanned(barcode);
+      onClose();
+      return;
+    }
+
+    setIsSearchingBarcode(true);
+    setDetectedBarcode(barcode);
+  }, [barcodeTextSearchValue, onBarcodeScanned, onClose, t]);
+
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
       setIsProcessingAi(true);
+      setAiPhotoUri(fileUri);
       try {
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi || !isAIVisionEnabled) {
@@ -489,6 +623,7 @@ export default function SmartCameraModal({
       cameraMode,
       aiContext,
       formatRoundedDecimal,
+      isAIVisionEnabled,
       i18n.language,
       i18n.resolvedLanguage,
       macroEstimateToSearchResultProduct,
@@ -678,6 +813,11 @@ export default function SmartCameraModal({
         const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
         const scale = portionGrams / baseGrams;
 
+        const isSingleFood = !aiIngredients || aiIngredients.length <= 1;
+        const persistedImageUri =
+          !selectedMealForLogging.foodId && aiPhotoUri
+            ? await copyImageToDocumentDirectory(aiPhotoUri).catch(() => undefined)
+            : undefined;
         await NutritionService.logCustomMeal(
           {
             name: selectedMealForLogging.name,
@@ -686,17 +826,21 @@ export default function SmartCameraModal({
             carbs: selectedMealForLogging.carbs * scale,
             fat: selectedMealForLogging.fat * scale,
             foodId: selectedMealForLogging.foodId,
+            imageUrl: persistedImageUri,
           },
           date,
           mealType,
           portionGrams,
-          { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
+          isSingleFood
+            ? { loggedMealName: selectedMealForLogging.name }
+            : { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
         setIsLogMealModalVisible(false);
         setSelectedMealForLogging(null);
         setAiIngredients(undefined);
+        setAiPhotoUri(undefined);
         // Close the camera modal after successful logging
         onClose();
       } catch (error) {
@@ -705,7 +849,7 @@ export default function SmartCameraModal({
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
-    [selectedMealForLogging, t, onClose]
+    [selectedMealForLogging, aiIngredients, aiPhotoUri, t, onClose]
   );
 
   const handleScanBarcodePress = useCallback(() => {
@@ -782,6 +926,50 @@ export default function SmartCameraModal({
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
   }, [cameraMode, processAiPhoto, processBarcodeImage, t]);
+
+  let bottomRightControl = <View className="h-12 w-12" />;
+
+  if (shouldShowBarcodeTextSearch) {
+    bottomRightControl = (
+      <Pressable
+        onPress={() => setIsBarcodeTextSearchModalVisible(true)}
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{
+          backgroundColor: theme.colors.background.darkGray50,
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.colors.background.white10,
+        }}
+      >
+        <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
+      </Pressable>
+    );
+  } else if (isAiEnabled && cameraMode !== 'barcode-scan') {
+    bottomRightControl = (
+      <Pressable
+        onPress={() => setIsContextModalVisible(true)}
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{
+          backgroundColor: theme.colors.background.darkGray50,
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.colors.background.white10,
+          opacity: getContextButtonOpacity(
+            hideCameraModePicker,
+            cameraMode,
+            theme.colors.opacity.strong
+          ),
+        }}
+      >
+        <MessageSquareText
+          size={theme.iconSize.lg}
+          color={getContextIconColor(cameraMode, aiContext, {
+            gray500: theme.colors.text.gray500,
+            accent: theme.colors.text.accent,
+            primary: theme.colors.text.primary,
+          })}
+        />
+      </Pressable>
+    );
+  }
 
   if (!visible) {
     isSearchingBarcodeRef.current = false;
@@ -1184,35 +1372,8 @@ export default function SmartCameraModal({
                 />
               </Pressable>
 
-              {/* Context Button — hidden when AI is disabled */}
-              {isAiEnabled ? (
-                <Pressable
-                  onPress={() => setIsContextModalVisible(true)}
-                  className="h-12 w-12 items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor: theme.colors.background.darkGray50,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.white10,
-                    opacity: getContextButtonOpacity(
-                      hideCameraModePicker,
-                      cameraMode,
-                      theme.colors.opacity.strong
-                    ),
-                  }}
-                  disabled={cameraMode === 'barcode-scan'}
-                >
-                  <MessageSquareText
-                    size={theme.iconSize.lg}
-                    color={getContextIconColor(cameraMode, aiContext, {
-                      gray500: theme.colors.text.gray500,
-                      accent: theme.colors.text.accent,
-                      primary: theme.colors.text.primary,
-                    })}
-                  />
-                </Pressable>
-              ) : (
-                <View className="h-12 w-12" />
-              )}
+              {/* Barcode text search or AI context button */}
+              {bottomRightControl}
             </View>
           </View>
         </SafeAreaView>
@@ -1229,9 +1390,20 @@ export default function SmartCameraModal({
           />
         ) : null}
 
+        {/* Barcode Text Search Modal */}
+        {isBarcodeTextSearchModalVisible ? (
+          <BarcodeTextSearchSheet
+            visible={isBarcodeTextSearchModalVisible}
+            value={barcodeTextSearchValue}
+            onChangeText={setBarcodeTextSearchValue}
+            onClose={() => setIsBarcodeTextSearchModalVisible(false)}
+            onSubmit={handleBarcodeTextSearchSubmit}
+          />
+        ) : null}
+
         {/* Food Details Modal */}
         {isFoodDetailsModalVisible ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isFoodDetailsModalVisible}
             onClose={handleFoodDetailsClose}
             barcode={productFromAiLabel ? null : detectedBarcode}
@@ -1302,6 +1474,7 @@ export default function SmartCameraModal({
               setIsLogMealModalVisible(false);
               setSelectedMealForLogging(null);
               setAiIngredients(undefined);
+              setAiPhotoUri(undefined);
             }}
             meal={selectedMealForLogging}
             ingredients={aiIngredients}

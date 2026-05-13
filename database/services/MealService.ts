@@ -63,6 +63,7 @@ export class MealService {
       recipeServingsCount?: number;
       defaultPortionName?: string;
       servingGrams?: number;
+      imageUrl?: string;
     }
   ): Promise<Meal> {
     return await database.write(async () => {
@@ -72,6 +73,7 @@ export class MealService {
         meal.isAiGenerated = false;
         meal.name = name;
         meal.description = description ?? '';
+        meal.imageUrl = options?.imageUrl;
         meal.isFavorite = false;
         meal.preparedWeightGrams = preparedWeightGrams;
         meal.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
@@ -160,6 +162,19 @@ export class MealService {
   /**
    * Get meal by ID with foods
    */
+  static async getMealImageUrl(mealId: string): Promise<string | undefined> {
+    try {
+      const meal = await database.get<Meal>('meals').find(mealId);
+      if (meal.deletedAt) {
+        return undefined;
+      }
+
+      return meal.imageUrl ?? undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   static async getMealWithFoods(mealId: string): Promise<{ meal: Meal; foods: MealFood[] } | null> {
     try {
       const meal = await database.get<Meal>('meals').find(mealId);
@@ -190,6 +205,7 @@ export class MealService {
       name?: string;
       description?: string;
       preparedWeightGrams?: number | null;
+      imageUrl?: string | null;
       nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
       recipeServingsCount?: number | null;
       defaultPortionName?: string | null;
@@ -210,6 +226,10 @@ export class MealService {
 
         if (updates.description !== undefined) {
           record.description = updates.description;
+        }
+
+        if ('imageUrl' in updates) {
+          record.imageUrl = updates.imageUrl ?? undefined;
         }
 
         if ('preparedWeightGrams' in updates) {
@@ -349,6 +369,7 @@ export class MealService {
       recipeServingsCount?: number;
       defaultPortionName?: string;
       servingGrams?: number;
+      imageUrl?: string;
     }
   ): Promise<Meal> {
     this.validateMealFoodItems(foodItems);
@@ -361,6 +382,7 @@ export class MealService {
       mealRecord.isAiGenerated = isAiGenerated;
       mealRecord.name = name;
       mealRecord.description = description ?? '';
+      mealRecord.imageUrl = options?.imageUrl;
       mealRecord.isFavorite = false;
       mealRecord.preparedWeightGrams = preparedWeightGrams;
       mealRecord.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';

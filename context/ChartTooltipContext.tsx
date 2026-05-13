@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef } from 'react';
 
 type DismissFn = () => void;
 
@@ -41,13 +41,12 @@ export function ChartTooltipProvider({
     registry.current.forEach((dismiss) => dismiss());
   }, []);
 
-  return (
-    <ChartTooltipContext.Provider
-      value={{ registerChart, unregisterChart, notifyChartActive, dismissAll, tooltipPosition }}
-    >
-      {children}
-    </ChartTooltipContext.Provider>
+  const value = useMemo(
+    () => ({ registerChart, unregisterChart, notifyChartActive, dismissAll, tooltipPosition }),
+    [registerChart, unregisterChart, notifyChartActive, dismissAll, tooltipPosition]
   );
+
+  return <ChartTooltipContext.Provider value={value}>{children}</ChartTooltipContext.Provider>;
 }
 
 export function useChartTooltip() {

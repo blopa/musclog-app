@@ -243,6 +243,7 @@ export function AISettingsModal({
     useOnDeviceAi: debouncedUseOnDeviceAi,
     useMusclogFreeTier: debouncedUseMusclogFreeTier,
     sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
+    useThinkingMode: debouncedUseThinkingMode,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleEnableLocalLlmChange,
@@ -252,6 +253,7 @@ export function AISettingsModal({
     handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
+    handleUseThinkingModeChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
     flushAllPendingChanges,
@@ -653,6 +655,33 @@ export function AISettingsModal({
           >
             {t('settings.aiSettings.memorySettings')}
           </Text>
+          <View className="mb-3">
+            <ToggleInput
+              items={[
+                {
+                  key: 'use-thinking-mode',
+                  label: t('settings.aiSettings.useThinkingMode'),
+                  subtitle: t('settings.aiSettings.useThinkingModeSubtitle'),
+                  value: debouncedUseThinkingMode,
+                  onValueChange: handleUseThinkingModeChange,
+                  icon: (
+                    <View
+                      style={{
+                        width: theme.size['8'],
+                        height: theme.size['8'],
+                        borderRadius: theme.borderRadius.full / 2,
+                        backgroundColor: theme.colors.status.indigo10,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Cpu size={theme.iconSize.md} color={theme.colors.status.indigo} />
+                    </View>
+                  ),
+                },
+              ]}
+            />
+          </View>
           <View
             className="rounded-lg border bg-bg-card p-4"
             style={{

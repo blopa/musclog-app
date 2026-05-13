@@ -66,6 +66,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'useOnDeviceAi',
       'useMusclogFreeTier',
       'sendFoundationFoodsToLlm',
+      'useThinkingMode',
       'units',
       'foodSearchSource',
       'conversationContext',
@@ -79,6 +80,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'showWeightPrediction',
       'requireExportEncryption',
       'disableMinimumCalories',
+      'useBfForCalculations',
       'intuitiveEatingMode',
       'progressionMode',
       'advancedDataManagement',
@@ -271,6 +273,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
   );
+  const handleUseThinkingModeChange = createSettingHandler(
+    'useThinkingMode',
+    SettingsService.setUseThinkingMode
+  );
   const handleFoodSearchSourceChange = createSettingHandler(
     'foodSearchSource',
     SettingsService.setFoodSearchSource
@@ -317,6 +323,10 @@ export function useDebouncedSettings(debounceMs = 200) {
   const handleDisableMinimumCaloriesChange = createSettingHandler<boolean>(
     'disableMinimumCalories',
     SettingsService.setDisableMinimumCalories
+  );
+  const handleUseBfForCalculationsChange = createSettingHandler<boolean>(
+    'useBfForCalculations',
+    SettingsService.setUseBfForCalculations
   );
   const handleIntuitiveEatingModeChange = createSettingHandler<boolean>(
     'intuitiveEatingMode',
@@ -409,6 +419,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
             break;
+          case 'useThinkingMode':
+            await SettingsService.setUseThinkingMode(value as boolean);
+            break;
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
             break;
@@ -446,6 +459,9 @@ export function useDebouncedSettings(debounceMs = 200) {
             break;
           case 'disableMinimumCalories':
             await SettingsService.setDisableMinimumCalories(value as boolean);
+            break;
+          case 'useBfForCalculations':
+            await SettingsService.setUseBfForCalculations(value as boolean);
             break;
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
@@ -513,6 +529,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
+    useThinkingMode:
+      (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     language: (localSettings.language as string) ?? actualSettings.language,
@@ -538,6 +556,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
     disableMinimumCalories:
       (localSettings.disableMinimumCalories as boolean) ?? actualSettings.disableMinimumCalories,
+    useBfForCalculations:
+      (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
     progressionMode:
@@ -574,6 +594,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
+    handleUseThinkingModeChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,
@@ -586,6 +607,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,
     handleDisableMinimumCaloriesChange,
+    handleUseBfForCalculationsChange,
     handleIntuitiveEatingModeChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,

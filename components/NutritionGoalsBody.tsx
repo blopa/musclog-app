@@ -501,7 +501,7 @@ export function NutritionGoalsBody({
   }, []);
 
   const { user } = useUser();
-  const { disableMinimumCalories } = useSettings();
+  const { disableMinimumCalories, useBfForCalculations } = useSettings();
 
   // Recalculate macros when eating phase changes if inputs are still pristine
   useEffect(() => {
@@ -534,7 +534,7 @@ export function NutritionGoalsBody({
         weightGoal: eatingPhaseToWeightGoal(eatingPhase),
         fitnessGoal,
         liftingExperience,
-        bodyFatPercent: latestBodyFatPercent ?? undefined,
+        bodyFatPercent: useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
         disableMinimumCalories,
       });
 
@@ -559,7 +559,7 @@ export function NutritionGoalsBody({
             remainingDays: daysToGoal,
             gender,
             liftingExperience,
-            bodyFatPercent: latestBodyFatPercent ?? undefined,
+            bodyFatPercent: useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
             disableMinimumCalories,
           });
         }
@@ -569,7 +569,9 @@ export function NutritionGoalsBody({
         finalCalories !== plan.targetCalories
           ? calculateMacros(finalCalories, fitnessGoal, {
               weightKg: latestWeightKg,
-              bodyFatPercent: latestBodyFatPercent ?? undefined,
+              bodyFatPercent: useBfForCalculations
+                ? (latestBodyFatPercent ?? undefined)
+                : undefined,
             })
           : { protein: plan.protein, carbs: plan.carbs, fats: plan.fats };
 
@@ -621,7 +623,7 @@ export function NutritionGoalsBody({
         weightGoal: 'maintain',
         fitnessGoal: user.fitnessGoal ?? 'general',
         liftingExperience: user.liftingExperience ?? 'intermediate',
-        bodyFatPercent: latestBodyFatPercent ?? undefined,
+        bodyFatPercent: useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
         disableMinimumCalories,
       });
 
@@ -646,7 +648,7 @@ export function NutritionGoalsBody({
       eatingPhaseToWeightGoal(eatingPhase),
       latestWeightKg,
       targetWeightKg,
-      latestBodyFatPercent ?? undefined,
+      useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
       user?.gender ?? 'other',
       user?.liftingExperience ?? 'intermediate'
     );

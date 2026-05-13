@@ -38,7 +38,7 @@ export default function NutritionGoalsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { disableMinimumCalories } = useSettings();
+  const { disableMinimumCalories, useBfForCalculations } = useSettings();
   const { goal, isLoading } = useCurrentNutritionGoal();
   const { defaults: computedDefaults, isLoading: isLoadingDefaults } = useDefaultNutritionGoals();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
@@ -172,7 +172,7 @@ export default function NutritionGoalsScreen() {
             weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
-            bodyFatPercent: bodyFatDecrypted?.value,
+            bodyFatPercent: useBfForCalculations ? bodyFatDecrypted?.value : undefined,
             disableMinimumCalories,
           });
 
@@ -181,7 +181,7 @@ export default function NutritionGoalsScreen() {
             Date.now(),
             goals.targetDate ?? localDayKeyPlusCalendarDaysFromNow(90),
             heightDecrypted.value / 100,
-            bodyFatDecrypted?.value ?? null
+            useBfForCalculations ? (bodyFatDecrypted?.value ?? null) : null
           );
 
           if (checkins.length > 0) {
@@ -218,6 +218,7 @@ export default function NutritionGoalsScreen() {
     },
     [
       disableMinimumCalories,
+      useBfForCalculations,
       isAdjusting,
       isCheckinAdjusting,
       isPersonalizedSetup,

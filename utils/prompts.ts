@@ -959,7 +959,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
     await getBaseSystemPrompt(language),
     `The user just completed a "${workoutTitle}" workout. Your task is to:`,
     '1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)',
-    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan",
+    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathen",
     "3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals",
     userDetails,
     'Historical data for this workout:',
@@ -1222,9 +1222,90 @@ export const getFoundationFoodsPrompt = async (): Promise<string> => {
   }
 };
 
-/**
- * System prompt for meal tracking (text or photo)
- */
+export const getFoundationFoodsRecipePrompt = async (): Promise<string> => {
+  try {
+    const foundationFoods = await FoodService.getFoundationFoods(200);
+    if (foundationFoods.length === 0) {
+      return '';
+    }
+
+    const foodList = foundationFoods.map((f) => ({ id: f.id, name: f.name }));
+
+    return [
+      'You MUST prioritize matching ingredients to the "foundation foods" list below.',
+      'If an ingredient matches a foundation food, return its exact "foodId". Do NOT invent IDs.',
+      'If no match exists, omit "foodId" entirely.',
+      'Foundation Foods (for matching only — no macros needed):',
+      '```json',
+      JSON.stringify(foodList, null, 2),
+      '```',
+    ].join('\n');
+  } catch (error) {
+    console.error('[prompts] Error fetching foundation foods for recipe extraction:', error);
+    return '';
+  }
+};
+
+export const getRecipeExtractionPrompt = async (
+  includeFoundationFoods: boolean = false,
+  language?: string
+): Promise<string> => {
+  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsRecipePrompt() : '';
+  const sections = [
+    'You are an expert nutritionist and chef.',
+    'Identify ALL meals in the user message or photo and break each into individual ingredients.',
+    'For each ingredient, estimate only its weight in grams — do NOT estimate calories or macros.',
+    'Break dishes into components (e.g. "Pizza" → "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese").',
+  ];
+
+  if (foundationPrompt) {
+    sections.push(foundationPrompt);
+  }
+
+  if (language) {
+    sections.push(`Your response must be in ${language}.`);
+  }
+
+  sections.push(
+    'Return only ingredient names, gram amounts, and foundation food IDs where matched.'
+  );
+
+  return sections.join('\n');
+};
+
+export const getMissingIngredientsMacrosPrompt = (
+  mealName: string,
+  knownIngredients: {
+    name: string;
+    grams: number;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber?: number;
+  }[],
+  newIngredients: { name: string; grams: number }[]
+): string => {
+  const sections = [
+    'You are an expert nutritionist.',
+    `You are analyzing the meal: "${mealName}".`,
+    '',
+    'The following ingredients are already accounted for (macros per the stated grams):',
+    '```json',
+    JSON.stringify(knownIngredients, null, 2),
+    '```',
+    '',
+    'Estimate macronutrients ONLY for these new ingredients (their gram weights are fixed):',
+    '```json',
+    JSON.stringify(newIngredients, null, 2),
+    '```',
+    '',
+    MACRO_CALORIE_NOTE,
+    'Return ONLY the new ingredients with their estimated macros. Do not return the known ingredients.',
+  ];
+  return sections.join('\n');
+};
+
 /**
  * System prompt for meal plan generation
  */
@@ -1859,6 +1940,96 @@ export const getTrackMealFunctions = (
     },
   ];
 };
+
+export const getRecipeExtractionFunctions = (
+  includeFoundationFoods: boolean = false
+): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const ingredientProperties: any = {
+    name: { type: 'string', description: 'Name of the ingredient' },
+    grams: { type: 'number', description: 'Estimated weight in grams' },
+  };
+
+  if (includeFoundationFoods) {
+    ingredientProperties.foodId = {
+      type: 'string',
+      description: 'The exact ID of the matched foundation food.',
+    };
+  }
+
+  return [
+    {
+      name: 'extractRecipe',
+      description: 'Break down a meal into its ingredients with estimated gram amounts.',
+      parameters: {
+        type: 'object',
+        properties: {
+          meals: {
+            type: 'array',
+            minItems: 1,
+            items: {
+              type: 'object',
+              properties: {
+                mealType: {
+                  type: 'string',
+                  enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+                  description: 'Type of meal',
+                },
+                mealName: {
+                  type: 'string',
+                  description:
+                    'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
+                },
+                ingredients: {
+                  type: 'array',
+                  minItems: 1,
+                  items: {
+                    type: 'object',
+                    properties: ingredientProperties,
+                    required: ['name', 'grams'],
+                  },
+                },
+              },
+              required: ['mealType', 'mealName', 'ingredients'],
+            },
+          },
+        },
+        required: ['meals'],
+      },
+    },
+  ];
+};
+
+export const getEstimateMissingIngredientsFunctions =
+  (): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
+    {
+      name: 'estimateMissingIngredients',
+      description:
+        'Estimate macronutrients for a list of ingredients that have known gram weights.',
+      parameters: {
+        type: 'object',
+        properties: {
+          ingredients: {
+            type: 'array',
+            minItems: 1,
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string', description: 'Name of the ingredient' },
+                kcal: { type: 'number', description: 'Kilocalories' },
+                protein: { type: 'number', description: 'Protein in grams' },
+                carbs: { type: 'number', description: 'Carbohydrates in grams' },
+                fat: { type: 'number', description: 'Fat in grams' },
+                fiber: { type: 'number', description: 'Fiber in grams' },
+                grams: { type: 'number', description: 'Weight of this ingredient in grams' },
+              },
+              required: ['name', 'kcal', 'protein', 'carbs', 'fat', 'fiber', 'grams'],
+            },
+          },
+        },
+        required: ['ingredients'],
+      },
+    },
+  ];
 
 /**
  * Function schema for nutrition estimation from photos

@@ -234,6 +234,14 @@
       "comingSoon": "¡App Store próximamente!",
       "qrButton": "Mostrar códigos QR"
     },
+    "download": {
+      "pageTitle": "Descargar Musclog",
+      "eyebrow": "Empieza a registrar hoy",
+      "title": "¿Listo para enfocarte?",
+      "subtitle": "Descarga Musclog ahora y mantén tu entrenamiento, nutrición y progreso en un solo lugar privado.",
+      "googleLabel": "Descargar Musclog en Google Play",
+      "appleLabel": "Descargar Musclog en la App Store"
+    },
     "footer": {
       "privacyPolicy": "Política de Privacidad",
       "terms": "Términos",
@@ -680,6 +688,291 @@
         "maintenance": "MANTENIMIENTO",
         "calorieSurplus": "SUPERÁVIT CALÓRICO",
         "calorieDeficit": "DÉFICIT CALÓRICO"
+      }
+    },
+    "faq": {
+      "pageTitle": "Preguntas Frecuentes & Ciencia — Musclog",
+      "badge": "Basado en Evidencia",
+      "titlePrefix": "Preguntas &",
+      "titleHighlight": "La Ciencia",
+      "description": "Cada número que Musclog te muestra proviene de investigaciones revisadas por pares. Esta página explica los modelos, fórmulas y estudios detrás de cada cálculo, con enlaces a las fuentes originales.",
+      "sources": "Fuentes",
+      "questionsCount_one": "{{count}} pregunta",
+      "questionsCount_other": "{{count}} preguntas",
+      "footer": {
+        "text": "¿Encontraste una imprecisión o un estudio más reciente que supere una de estas fuentes?",
+        "linkText": "Cuéntanos",
+        "suffix": "— la ciencia evoluciona constantemente y Musclog también."
+      },
+      "categories": {
+        "general": {
+          "label": "General",
+          "items": [
+            {
+              "question": "¿Qué es Musclog?",
+              "answer": "Musclog es una aplicación de fitness centrada en la privacidad para el seguimiento de entrenamientos, nutrición y composición corporal. Todos tus datos se almacenan localmente en tu dispositivo; nada se envía a ningún servidor a menos que habilites explícitamente las funciones opcionales de IA."
+            },
+            {
+              "question": "¿Funciona la aplicación sin conexión a Internet?",
+              "answer": "Sí. Todas las funciones principales — registrar entrenamientos, hacer seguimiento de comidas, ver el progreso y usar la calculadora de nutrición — funcionan completamente sin conexión. La conexión a Internet solo es necesaria para las funciones opcionales de IA (reconocimiento de comidas, entrenador de IA), búsquedas en bases de datos de alimentos de fuentes externas, y la sincronización con Health Connect / HealthKit."
+            },
+            {
+              "question": "¿Qué tan precisos son los cálculos de nutrición?",
+              "answer": "La calculadora usa ecuaciones poblacionales bien validadas (Katch-McArdle / Mifflin-St Jeor para la TMB, modelo de composición corporal Hall 2008 para proyecciones). Ninguna ecuación es perfectamente precisa para cada individuo — el error típico de las ecuaciones de TMB es ±10 %. Los mejores resultados se obtienen suministrando a la aplicación datos de seguimiento reales durante 2–4 semanas para que pueda calcular tu TDEE empírico directamente a partir de las calorías consumidas frente al cambio de peso."
+            },
+            {
+              "question": "¿Qué unidades soporta la aplicación?",
+              "answer": "La base de datos siempre almacena valores métricos (kg, cm, g, kcal). Puedes cambiar al sistema imperial (lbs, pulgadas, oz) en los ajustes en cualquier momento; la aplicación convierte automáticamente todos los valores mostrados. El porcentaje de grasa corporal, el IMC y el FFMI son adimensionales y nunca se convierten."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Ciencia de la Nutrición",
+          "items": [
+            {
+              "question": "¿Cómo se calcula mi Tasa Metabólica Basal (TMB)?",
+              "answer": "Musclog utiliza dos ecuaciones según si se ha proporcionado un porcentaje de grasa corporal.",
+              "bullets": [
+                "Katch-McArdle (preferida cuando se dispone de % de GC): TMB = 370 + 21,6 × Masa Corporal Magra (kg). Al ignorar la masa grasa, que tiene actividad metabólica muy baja, esta ecuación es más precisa para atletas y personas con composiciones corporales no promedio.",
+                "Mifflin-St Jeor (por defecto, sin necesidad de % de GC): TMB = 10 × peso + 6,25 × altura − 5 × edad ± constante de género (+5 hombre, −161 mujer). Validada como la ecuación de TMB más precisa para la población general en varios meta-análisis."
+              ],
+              "citations": [
+                { "label": "Katch-McArdle (1996)", "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27" },
+                { "label": "Mifflin et al. (1990)", "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/" },
+                { "label": "Frankenfield et al. meta-analysis (2005)", "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/" }
+              ]
+            },
+            {
+              "question": "¿Cómo se estima mi Gasto Energético Diario Total (TDEE)?",
+              "answer": "Musclog usa dos modos, eligiendo automáticamente el mejor para tus datos.",
+              "bullets": [
+                "Estadístico (usuarios nuevos): TDEE = TMB × Multiplicador de Actividad. Los multiplicadores van de 1,2 (sedentario) a 1,9 (muy activo + trabajo físico), basados en la escala Harris-Benedict / Mifflin-St Jeor.",
+                "TDEE Empírico / Observado (preferido, requiere ≥2 semanas de datos de alimentos + peso): Aplica directamente la Primera Ley de la Termodinámica. TDEE = (Calorías consumidas − Energía almacenada en tejido) / Días. El tejido graso almacena 7.730 kcal/kg al catabolizarse y requiere 8.840 kcal/kg para formarse; el músculo almacena 1.250 kcal/kg y requiere 3.900 kcal/kg. Estos valores asimétricos tienen en cuenta la eficiencia termodinámica de la síntesis.",
+                "Corrección de deriva del TDEE: El TDEE empírico representa el promedio del período medio. Para proyectarlo al estado corporal actual, se aplican tres ajustes apilados: (1) Caída del tejido en reposo — el tejido magro quema ~13 kcal/kg/día y la grasa ~4,5 kcal/kg/día (Elia 1992); (2) Caída escalada por actividad — el coste mecánico del movimiento escala con la masa corporal; (3) Penalización de termogénesis adaptativa de 20 kcal/día por kg de masa corporal perdida, reflejando la supresión del NEAT y la adaptación hormonal (leptina, tiroides)."
+              ],
+              "citations": [
+                { "label": "Hall (2008) — Energy deficit per unit weight loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
+                { "label": "Elia (1992) — RMR tissue coefficients", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/" },
+                { "label": "Müller et al. (2022) — Adaptive thermogenesis", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
+                { "label": "Hall et al. (NIH) — Dynamic energy balance", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+              ]
+            },
+            {
+              "question": "¿Cómo mejora el cálculo al proporcionar el porcentaje de grasa corporal?",
+              "answer": "Cuando se introduce un porcentaje de grasa corporal válido (5–60 %), tres cosas cambian:",
+              "bullets": [
+                "La TMB cambia a Katch-McArdle, que es consciente de la composición corporal e ignora la masa grasa metabólicamente inerte.",
+                "La proporción grasa/magra de los cambios de peso se calcula a partir de la Curva de Forbes (Hall 2007), resuelta analíticamente mediante la función W de Lambert. La idea clave: las personas más delgadas pierden una mayor fracción de masa magra por kg porque el cuerpo defiende las reservas de grasa más agresivamente. Una persona con 12 % de GC pierde tejido a aproximadamente 5.800–6.200 kcal/kg, muy por debajo de la regla clásica de '7.700 kcal/kg' que asume pérdida de grasa pura.",
+                "Una banda de incertidumbre de ±4 % (error típico de BIA/pliegues cutáneos) genera un rango realista de mínimo/máximo de calorías en lugar de un único número, comunicando la imprecisión inherente de la medición de grasa corporal."
+              ],
+              "formula": "kcal/kg_efectivas = 9.440 × fracción_grasa + 1.820 × fracción_magra",
+              "formulaCaption": "Densidad energética mezclada de Hall (2008) — fracción grasa determinada por curva de Forbes / Lambert W",
+              "citations": [
+                { "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
+                { "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" },
+                { "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" }
+              ]
+            },
+            {
+              "question": "¿Cómo se establece el déficit o superávit calórico recomendado?",
+              "answer": "Musclog escala el ajuste calórico según tu peso corporal en lugar de usar un ±500 kcal fijo, y lo limita a rangos seguros basados en evidencia.",
+              "bullets": [
+                "Definición (pérdida de peso): La tasa de pérdida semanal recomendada es 0,5 % del peso corporal por semana por defecto. Cuando se conoce la grasa corporal, esto se refina usando los umbrales clínicos de la ACE — las personas delgadas (GC < 10 % hombre / < 20 % mujer) tienen una tasa conservadora de 0,35 %/semana para proteger el músculo, mientras que las personas con más grasa corporal pueden perder de forma segura hasta 0,65 %/semana. El déficit diario resultante se limita a 250–750 kcal para prevenir una adaptación metabólica severa.",
+                "Volumen (ganancia de peso): Se apunta a un superávit de aproximadamente 0,25 % del peso corporal por semana, lo que minimiza el almacenamiento de grasa mientras apoya la síntesis de proteínas musculares. El superávit se limita a 150–400 kcal/día.",
+                "Suelo mínimo de calorías: 1.200 kcal/día para mujeres, 1.500 kcal/día para hombres, y nunca por debajo del 80 % de la TMB, coherente con las directrices del IOM / Academias Nacionales."
+              ],
+              "citations": [
+                { "label": "Garthe et al. (2011) — Rate of weight loss and body composition", "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/" },
+                { "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders", "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/" },
+                { "label": "ACE — Body fat percentage classifications", "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/" }
+              ]
+            },
+            {
+              "question": "¿Cómo funciona el modelo de proyección de peso?",
+              "answer": "La proyección usa dos fases para predecir con precisión el cambio de peso en 90 días.",
+              "bullets": [
+                "Fase temprana — Agotamiento del glucógeno: El depósito de glucógeno corporal es aproximadamente 15 g/kg de peso corporal (seco), unido a unos 3 g de agua cada uno, totalizando aproximadamente el 6 % del peso corporal como glucógeno hidratado. Solo la porción del déficit calórico acumulado que cabe dentro de este depósito de energía de glucógeno (~4.206 kcal/kg seco) impulsa la pérdida de 'peso de agua' temprana. Esto evita sobreestimar las pérdidas iniciales para déficits agresivos.",
+                "Fase estacionaria: Todo el déficit restante impulsa la pérdida de tejido graso/magro a la densidad energética consciente de la composición del modelo Hall/Forbes. La 'tasa semanal' reportada siempre refleja esta cifra estacionaria — lo que experimentan los usuarios después de los primeros días.",
+                "Proyección de superávit: Se asume que los depósitos de glucógeno están llenos, por lo que todo el superávit va a la síntesis de grasa/tejido magro a costes ponderados por experiencia (principiante ~5.300 kcal/kg ganado; intermedio ~6.370 kcal/kg; avanzado ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                { "label": "Hall (2008) — Energy density of weight loss tissue", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
+                { "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" }
+              ]
+            },
+            {
+              "question": "¿Cómo se calculan mis macros diarios?",
+              "answer": "Las distribuciones de macros se basan en el objetivo de fitness, utilizando los rangos AMDR del IOM como marco y la investigación específica de deporte del ISSN/ACSM para el refinamiento.",
+              "table": {
+                "head": ["Objetivo", "Carbohidratos", "Proteína", "Grasa", "Justificación"],
+                "rows": [
+                  ["Pérdida de Peso", "40 %", "30 %", "30 %", "Alta proteína para preservar músculo en déficit (ISSN/Helms 2014)"],
+                  ["Hipertrofia", "45 %", "30 %", "25 %", "Proteína para MPS; carbohidratos apoyan el entrenamiento de volumen"],
+                  ["Fuerza", "50 %", "30 %", "20 %", "Carbohidratos para la demanda glucolítica del trabajo compuesto pesado"],
+                  ["Resistencia", "55 %", "20 %", "25 %", "Prioridad al glucógeno (guía ACSM 6–10 g/kg/día)"],
+                  ["General", "45 %", "25 %", "30 %", "Centrado dentro del AMDR del IOM para fitness general"]
+                ]
+              },
+              "answer2": "Para los objetivos de Pérdida de Peso e Hipertrofia, cuando se conoce el % de grasa corporal, la proteína se actualiza de un objetivo porcentual a un objetivo absoluto basado en la MCM (2,7 g/kg MCM para pérdida de peso; 2,0 g/kg MCM para hipertrofia), con las calorías restantes divididas proporcionalmente entre carbohidratos y grasas.",
+              "citations": [
+                { "label": "IOM Dietary Reference Intakes (2005) — AMDR", "url": "https://doi.org/10.17226/10490" },
+                { "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/" },
+                { "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/" },
+                { "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/" }
+              ]
+            },
+            {
+              "question": "¿Cómo afecta la experiencia en el entrenamiento al cálculo de volumen?",
+              "answer": "La fracción de peso ganado que es masa magra frente a grasa depende en gran medida del historial de entrenamiento. Los individuos no entrenados tienen un potencial de hipertrofia mucho mayor que los levantadores avanzados que ya han capturado la mayor parte de su techo genético muscular.",
+              "bullets": [
+                "Principiante: ~60 % magro / 40 % grasa por kg ganado. Coste de construcción efectivo ≈ 5.304 kcal/kg.",
+                "Intermedio: ~50 % magro / 50 % grasa. Coste de construcción efectivo ≈ 6.370 kcal/kg.",
+                "Avanzado: ~40 % magro / 60 % grasa. Coste de construcción efectivo ≈ 7.434 kcal/kg.",
+                "Estas divisiones usan los costes termodinámicos de construcción: 8.840 kcal/kg para la grasa y 3.900 kcal/kg para el músculo, reflejando ~87 % de eficiencia de síntesis para la grasa y ~32 % para el músculo (la mayor parte de la energía de síntesis muscular se pierde como calor)."
+              ],
+              "citations": [
+                { "label": "Schoenfeld et al. — Resistance training load meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" },
+                { "label": "Sports Med (2023) — Plateau in muscle growth with resistance training", "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/" },
+                { "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/" }
+              ]
+            },
+            {
+              "question": "¿Cómo se ajusta la TMR para la obesidad o la edad avanzada?",
+              "answer": "Se aplican dos multiplicadores de penalización basados en evidencia a los coeficientes de tejido de la Tasa Metabólica en Reposo (magro: 13 kcal/kg/día; grasa: 4,5 kcal/kg/día):",
+              "bullets": [
+                "IMC > 30 (Obesidad): reducción del −2 % en ambos coeficientes de tejido magro y graso, reflejando la función mitocondrial deteriorada en individuos obesos (Müller et al. 2013).",
+                "Edad > 50: reducción del −3 %, reflejando el declive en la tasa de renovación celular (St-Onge & Gallagher 2010).",
+                "Ambas penalizaciones se acumulan de forma aditiva cuando son aplicables (p. ej., persona obesa mayor de 50 → −5 % total)."
+              ],
+              "citations": [
+                { "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction", "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/" },
+                { "label": "St-Onge & Gallagher (2010) — Body composition changes with aging", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/" }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Ciencia del Entrenamiento",
+          "items": [
+            {
+              "question": "¿Cómo se calculan las estimaciones de una repetición máxima (1RM)?",
+              "answer": "Musclog calcula el 1RM usando un conjunto de siete fórmulas publicadas y promedia sus resultados. El promedio reduce el error sistemático de cualquier fórmula individual, que tienen diferentes perfiles de precisión en distintos rangos de repeticiones.",
+              "table": {
+                "head": ["Fórmula", "Ecuación", "Mejor Para"],
+                "rows": [
+                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; la más ampliamente usada"],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Uso general; ligeramente conservadora"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Rangos de repeticiones moderados"],
+                  ["Lombardi (1989)", "w × r^0,1", "Rangos de pocas repeticiones"],
+                  ["Mayhew et al. (1992)", "w / (0,522 + 0,419 × e^{−0,055r})", "Amplio rango de reps; modelo exponencial"],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Lineal; conservadora"],
+                  ["Wathen (1994)", "w / (0,488 + 0,539 × e^{−0,035r})", "Rangos de más repeticiones"]
+                ]
+              },
+              "answer2": "Las Repeticiones en Reserva (RIR) se añaden a las repeticiones reales antes de aplicar cualquier fórmula (reps_ajustadas = reps + RIR). Esto mapea el esfuerzo submáximo a un equivalente de esfuerzo máximo, por lo que una serie de 8 reps con 2 RIR se trata como 10 reps al fallo para propósitos de estimación del 1RM.",
+              "citations": [
+                { "label": "Brzycki (1993)", "url": "https://doi.org/10.1080/07303084.1993.10606684" },
+                { "label": "Epley (1985)", "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7" },
+                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                { "label": "Lombardi (1989)", "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum" },
+                { "label": "Mayhew et al. (1992)", "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/" },
+                { "label": "O'Connor et al. (1989)", "url": "https://www.vcalc.com/wiki/oconner-et-al" },
+                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+              ]
+            },
+            {
+              "question": "¿Cómo se calcula el volumen de entrenamiento?",
+              "answer": "Musclog usa la estimación promedio de 1RM como unidad de volumen para cada serie, en lugar del tonelaje bruto (peso × repeticiones). Esto produce una medida más significativa porque el 1RM normaliza el hecho de que las series de más repeticiones representan más esfuerzo total del que el peso bruto sugeriría.",
+              "bullets": [
+                "Para los ejercicios con el peso corporal, el peso corporal actual del usuario se añade al peso de la barra antes del cálculo del 1RM.",
+                "Volumen total de la sesión = suma de las estimaciones promedio de 1RM en todas las series de la sesión.",
+                "El seguimiento de la sobrecarga progresiva compara este número entre sesiones para los mismos ejercicios."
+              ]
+            },
+            {
+              "question": "¿Cómo se calculan las calorías quemadas por los pasos diarios?",
+              "answer": "Musclog usa las ecuaciones metabólicas de marcha del ACSM para calcular el gasto calórico neto (no bruto) a partir del recuento de pasos. Usar el gasto neto evita la doble contabilización contra la TMB/TDEE ya tenidos en cuenta.",
+              "formula": "Calorías Netas = (0,1 × distancia_m × peso_kg) / 200",
+              "formulaCaption": "Derivado de la ecuación VO₂ de marcha del ACSM. El tiempo se cancela: velocidad (m/min) × duración (min) = distancia (m). 1 L O₂ ≈ 5 kcal, por lo que ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "La longitud del paso se estima a partir de la altura usando ratios empíricos específicos por género: 0,415 × altura (cm) / 100 para hombres, 0,413 para mujeres.",
+                "Distancia = pasos × longitud del paso.",
+                "La derivación elimina la necesidad de conocer la cadencia, eliminando la 'paradoja de la cadencia' en la que caminar más rápido parece idéntico a caminar más lento con el mismo conteo de pasos."
+              ],
+              "citations": [
+                { "label": "ACSM Metabolic Equations — Walking VO₂", "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm" },
+                { "label": "Pratama et al. (2012) — Stride length estimation", "url": "https://www.mdpi.com/2072-4292/11/1/55" },
+                { "label": "Meta-Analysis — Stride length and height ratios", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/" }
+              ]
+            },
+            {
+              "question": "¿Cómo calcula la aplicación el peso y las repeticiones para un RIR objetivo?",
+              "answer": "Se resuelven dos problemas inversos de 1RM:",
+              "bullets": [
+                "Peso para RIR objetivo: Las siete fórmulas de 1RM son lineales en el peso (1RM = peso × f(reps, RIR)), por lo que peso = 1RM / f(reps, RIR). El multiplicador f se calcula llamando al conjunto con peso = 1.",
+                "Repeticiones para peso objetivo: El conjunto promediado no tiene inversa en forma cerrada, por lo que la aplicación usa búsqueda binaria. Dado que las estimaciones de 1RM son monótonamente crecientes en las repeticiones, la búsqueda binaria converge en ~6 iteraciones para cualquier rango práctico de repeticiones (1–50). Ver Helms et al. (2016) para la base de investigación de la autorregulación basada en RIR."
+              ],
+              "citations": [
+                { "label": "Helms et al. (2016) — RPE and RIR-based autoregulation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/" }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Metodología",
+          "items": [
+            {
+              "question": "¿Por qué la aplicación muestra un rango de calorías en lugar de un solo número?",
+              "answer": "Las mediciones de porcentaje de grasa corporal — ya sea por impedancia bioeléctrica (BIA), pliegues cutáneos o DEXA — llevan un error de medición típico de ±3–5 %. Musclog aplica una banda de ±4 % (punto medio conservador) a tu porcentaje de grasa corporal introducido y recalcula la TMB, el TDEE y las calorías objetivo en ambos extremos.",
+              "bullets": [
+                "Calorías objetivo mínimas = cálculo al % GC + 4 % (más grasa → menos masa magra → TMB menor).",
+                "Calorías objetivo máximas = cálculo al % GC − 4 % (menos grasa → más masa magra → TMB mayor).",
+                "El único 'objetivo' en el medio es el resultado de la mejor estimación usando tu % GC introducido directamente.",
+                "Este rango comunica la incertidumbre realista y te ayuda a entender que el número 'correcto' para ti personalmente puede estar en cualquier lugar dentro de la banda."
+              ]
+            },
+            {
+              "question": "¿Qué es la Curva de Forbes y por qué importa?",
+              "answer": "La Curva de Forbes, desarrollada por Gilbert Forbes (1987) y formalizada por Kevin Hall (2007), describe cómo el cuerpo distribuye los cambios de peso entre la masa grasa y la masa magra. Tiene una implicación crítica y contraintuitiva:",
+              "bullets": [
+                "Las personas más delgadas sacrifican más masa magra por kg perdido — el cuerpo defiende las reservas de grasa más agresivamente cuando las reservas de grasa son bajas.",
+                "Por el contrario, las personas con alta grasa corporal pierden una mayor proporción de grasa por kg, acercando su densidad energética efectiva a la regla clásica de 7.700 kcal/kg.",
+                "La curva está parametrizada por una constante C (≈13,8 para hombres, ≈10,4 para mujeres), resuelta usando la función W de Lambert (rama principal). Musclog implementa este solucionador numéricamente con el método de Newton para evitar cualquier dependencia de librería.",
+                "Sin este modelo, las dietas de definición para individuos delgados se subestiman sistemáticamente — la regla clásica trata toda la pérdida de peso como grasa y sobreestimaría cuánta grasa se pierde realmente."
+              ],
+              "citations": [
+                { "label": "Forbes (1987) — Human Body Composition", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
+                { "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" }
+              ]
+            },
+            {
+              "question": "¿Qué es la Termogénesis Adaptativa y cómo la tiene en cuenta la aplicación?",
+              "answer": "La termogénesis adaptativa (TA) es el fenómeno por el que el gasto energético del cuerpo cae más de lo que pueden explicar los cambios de masa corporal solos, en respuesta a una restricción calórica sostenida. Está impulsada por:",
+              "bullets": [
+                "Supresión hormonal: la leptina cae con la pérdida de grasa, reduciendo la actividad del sistema nervioso simpático y la producción de hormona tiroidea.",
+                "Reducción del NEAT (Termogénesis por Actividad No-Ejercicio): el cuerpo reduce inconscientemente el movimiento espontáneo, los cambios de postura y la actividad involuntaria.",
+                "Cambios en la eficiencia mitocondrial: las células extraen más ATP por caloría quemada.",
+                "Musclog modela la TA como una penalización de 20 kcal/día por kg de masa corporal total perdida (usando el punto medio del rango de Hall et al. de 20–30 kcal/día/kg). Esto se aplica en la corrección de deriva del TDEE al calcular a partir de datos de seguimiento empírico, y en la proyección de 90 días para mostrar una trayectoria de pérdida de peso realista en lugar de una lineal."
+              ],
+              "citations": [
+                { "label": "Müller et al. (2022) — Magnitude of AT in clinical trials", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
+                { "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+              ]
+            },
+            {
+              "question": "¿Cómo se calcula la recomendación diaria de ingesta de agua?",
+              "answer": "La recomendación de agua escala linealmente con el TDEE a una tasa de 0,75 ml por kcal de gasto energético diario. Esto se deriva de dos directrices convergentes independientemente:",
+              "bullets": [
+                "La Junta de Alimentación y Nutrición de EE. UU. (1945): '1 ml por kcal de energía gastada' (Musclog usa 0,75 ml para representar la fracción de bebidas, ya que ~25 % del agua proviene de los alimentos).",
+                "Las encuestas dietéticas muestran que las bebidas contribuyen aproximadamente el 70–80 % de la ingesta total de agua en adultos (Gandy et al. 2016)."
+              ],
+              "citations": [
+                { "label": "PMC7692653 — Water intake from beverages vs food", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food" },
+                { "label": "PMC5946122 — Percentage of water intake from beverages", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/" }
+              ]
+            }
+          ]
+        }
       }
     }
   }

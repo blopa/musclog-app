@@ -1,6 +1,8 @@
+import * as ImagePicker from 'expo-image-picker';
 import type { TFunction } from 'i18next';
 import {
   Apple,
+  Camera,
   Check,
   CheckCircle2,
   Coffee,
@@ -12,7 +14,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, Switch, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
@@ -39,6 +41,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
+import { deleteMealImage, saveMealImage } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -182,6 +185,7 @@ export function CreateMealModal({
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [mealDescription, setMealDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
@@ -236,6 +240,7 @@ export function CreateMealModal({
   useEffect(() => {
     setMealName(meal?.name ?? '');
     setMealDescription(meal?.description ?? '');
+    setImageUrl(meal?.imageUrl ?? undefined);
     setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
     setNutritionBasis(meal?.nutritionBasis ?? 'per_recipe');
     setRecipeServingsCount(meal?.recipeServingsCount ?? 1);
@@ -441,6 +446,9 @@ export function CreateMealModal({
 
     setIsDeletingMeal(true);
     try {
+      if (meal.imageUrl) {
+        await deleteMealImage(meal.imageUrl);
+      }
       await MealService.deleteMeal(meal.id);
       onSave?.();
       onClose();
@@ -542,6 +550,33 @@ export function CreateMealModal({
     }
   };
 
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        // Save to permanent storage immediately
+        const permanentUri = await saveMealImage(result.assets[0].uri, imageUrl);
+        setImageUrl(permanentUri);
+      }
+    } catch (error) {
+      handleError(error, 'CreateMealModal.handlePickImage', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (imageUrl) {
+      await deleteMealImage(imageUrl);
+    }
+    setImageUrl(undefined);
+  };
+
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
@@ -562,6 +597,7 @@ export function CreateMealModal({
         await MealService.updateMeal(meal.id, {
           name: mealName.trim(),
           description: mealDescription.trim(),
+          imageUrl: imageUrl || null,
           preparedWeightGrams: preparedWeightGrams || null,
           nutritionBasis,
           recipeServingsCount,
@@ -595,6 +631,7 @@ export function CreateMealModal({
           false,
           preparedWeightGrams || undefined,
           {
+            imageUrl,
             nutritionBasis,
             recipeServingsCount,
             defaultPortionName:
@@ -734,6 +771,61 @@ export function CreateMealModal({
               onChangeText={setMealName}
               placeholder={t('food.createMeal.mealNamePlaceholder')}
             />
+
+            {/* Meal Image Picker Section */}
+            <View style={{ marginTop: theme.spacing.margin.lg }}>
+              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+                {t('common.photo')}
+              </Text>
+              {imageUrl ? (
+                <View className="relative h-48 w-full overflow-hidden rounded-2xl">
+                  <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
+                  <View className="absolute bottom-2 right-2 flex-row gap-2">
+                    <Pressable
+                      onPress={handlePickImage}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+                    </Pressable>
+                    <Pressable
+                      onPress={handleRemoveImage}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <Pressable
+                  onPress={handlePickImage}
+                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
+                >
+                  <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                  <Text className="mt-2 text-sm text-text-tertiary">
+                    {t('food.createMeal.addPhoto')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+
             <View style={{ marginTop: theme.spacing.margin.lg }}>
               <TextInput
                 label={t('common.description')}

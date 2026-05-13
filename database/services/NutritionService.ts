@@ -10,6 +10,8 @@ import {
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { MealService } from '@/database/services/MealService';
+import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   localDayClosedRangeMaxMs,
@@ -967,6 +969,7 @@ export class NutritionService {
       fat: number;
       fiber?: number;
       foodId?: string;
+      imageUrl?: string;
     },
     date: Date,
     mealType: MealType,
@@ -1015,6 +1018,7 @@ export class NutritionService {
           sodium: 0,
         };
         food.isFavorite = false;
+        food.imageUrl = mealData.imageUrl;
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -1137,7 +1141,7 @@ export class NutritionService {
     }[],
     date: Date,
     mealType: MealType,
-    options?: { groupId?: string; loggedMealName?: string }
+    options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
     const now = Date.now();
@@ -1202,6 +1206,7 @@ export class NutritionService {
             sugar: 0,
             sodium: 0,
           };
+          food.imageUrl = options?.imageUrl;
           food.isFavorite = false;
           food.createdAt = now;
           food.updatedAt = now;
@@ -1242,6 +1247,20 @@ export class NutritionService {
 
       return createdLogs;
     });
+
+    if (options?.imageUrl && logs.length > 0) {
+      const foodItems = logs.map((log) => ({ foodId: log.foodId, amount: log.amount }));
+      await MealService.createMealFromFoods(
+        options.loggedMealName ?? i18n.t('food.generic'),
+        foodItems,
+        undefined,
+        true,
+        undefined,
+        { imageUrl: options.imageUrl }
+      ).catch((err) => {
+        handleError(err, 'NutritionService.logCustomMealsBatch.createMeal');
+      });
+    }
 
     if (Platform.OS === 'android') {
       triggerWidgetUpdate();

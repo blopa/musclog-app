@@ -196,6 +196,12 @@ export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
 export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 
 /**
+ * Setting type for enabling AI thinking mode.
+ * value: 'true' | 'false'.
+ */
+export const USE_THINKING_MODE_SETTING_TYPE = 'use_thinking_mode';
+
+/**
  * Setting type for showing the daily mood prompt on the home screen.
  * value: 'true' | 'false'.
  */
@@ -221,7 +227,7 @@ export const LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE =
   'last_home_water_prompt_answered_day';
 
 /**
- * Setting type for always allowing food editing in FoodMealDetailsModal.
+ * Setting type for always allowing food editing in FoodMealTrackingDetailsModal.
  * value: 'true' | 'false'.
  */
 export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';
@@ -244,6 +250,12 @@ export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption
  * value: 'true' | 'false'.
  */
 export const DISABLE_MINIMUM_CALORIES_SETTING_TYPE = 'disable_minimum_calories';
+
+/**
+ * Setting type for using body fat percentage in nutrition calculations.
+ * value: 'true' | 'false'.
+ */
+export const USE_BF_FOR_CALCULATIONS_SETTING_TYPE = 'use_bf_for_calculations';
 
 /**
  * Setting type for intuitive eating mode.
@@ -315,8 +327,10 @@ export type UseSettingsResult = {
   chartTooltipPosition: ChartTooltipPosition;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  useThinkingMode: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */

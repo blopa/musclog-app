@@ -233,6 +233,24 @@ export async function deleteExerciseImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
 }
 
+export async function saveMealImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteMealImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
+}
+
+export async function saveFoodImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteFoodImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
+}
+
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
   return { path: options.imageUri };
 }
@@ -288,4 +306,18 @@ export function shouldSeedDevData() {
   }
 
   return false;
+}
+
+async function ensureFoodImagesDir(): Promise<void> {
+  // TODO
+}
+
+export async function saveBase64ImageToFile(base64: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
+}
+
+export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
 }

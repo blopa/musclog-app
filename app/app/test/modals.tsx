@@ -50,7 +50,7 @@ import EditWorkoutMetadataModal from '@/components/modals/EditWorkoutMetadataMod
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import ExercisesModal from '@/components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '@/components/modals/FilterWorkoutsModal';
-import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from '@/components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
@@ -749,6 +749,7 @@ export default function ModalsTestScreen() {
                 openCamera({
                   mode: 'barcode-scan',
                   hideCameraModePicker: true,
+                  showBarcodeTextSearch: true,
                   onBarcodeScanned: (data) => console.log('Barcode scanned:', data),
                 })
               }
@@ -1621,7 +1622,7 @@ export default function ModalsTestScreen() {
               label="Open Smart Camera Modal"
               variant="accent"
               width="full"
-              onPress={() => openCamera({ mode: 'barcode-scan' })}
+              onPress={() => openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true })}
             />
           </View>
 
@@ -1796,7 +1797,7 @@ export default function ModalsTestScreen() {
           console.log('Set details edited:', data);
         }}
       />
-      <FoodMealDetailsModal
+      <FoodMealTrackingDetailsModal
         visible={isFoodDetailsVisible}
         onClose={() => setIsFoodDetailsVisible(false)}
         barcode="3017620425035"

@@ -51,9 +51,9 @@ import { roundToDecimalPlaces } from './roundDecimal';
  *
  * - **`.toFixed(` in `*.tsx`:** only `DataLogModal` (rounding numeric payloads for dev tools / export, not
  *   end-user locale strings) — OK.
- * - **`MacroInput` + nutrition editing:** `CreateCustomFoodModal` + `FoodMealDetailsModal` use
+ * - **`MacroInput` + nutrition editing:** `CreateCustomFoodModal` + `FoodMealTrackingDetailsModal` use
  *   `formatAppRoundedDecimal` for seeded display strings; input uses `localizedDecimalInput.ts` for typing.
- * - **Portion labels:** `FoodMealDetailsModal` `generatePortionName` (auto-created `FoodPortion.name` from
+ * - **Portion labels:** `FoodMealTrackingDetailsModal` `generatePortionName` (auto-created `FoodPortion.name` from
  *   barcode/serving match) uses **`formatDisplayGrams(locale, units, grams)`** so amounts follow locale.
  * - **Serving UI:** `ServingSizeSelector` + `StepperInput` use `useFormatAppNumber` for tab labels; numeric
  *   `gramsToDisplay` is only the internal stepper **value** (Stepper formats for display).

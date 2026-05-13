@@ -57,9 +57,11 @@ import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
+import { gramsToDisplay } from '@/utils/unitConversion';
+import { getMassUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
 
@@ -341,7 +343,7 @@ export function FoodSearchModal({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
-  const { foodSearchSource, intuitiveEatingMode } = useSettings();
+  const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -416,7 +418,7 @@ export function FoodSearchModal({
       return {
         id: food.id,
         name: food.name ?? '',
-        description: t('foodSearch.foodDescriptionPer100g', {
+        description: t('food.descriptionFormat', {
           brand: food.brand || t('foodSearch.customFoodLabel'),
           calories: formatInteger(
             resolveRoundedPer100gCaloriesForDisplay({
@@ -427,6 +429,8 @@ export function FoodSearchModal({
               fiber: food.fiber,
             })
           ),
+          amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+          unit: t(getMassUnitI18nKey(units)),
         }),
         brand: food.brand,
         serving_size: portion100gName,
@@ -448,6 +452,7 @@ export function FoodSearchModal({
     recentFoodsRaw,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -458,6 +463,7 @@ export function FoodSearchModal({
     if (foodSearchSource === 'both') {
       return { apiLimit: 10, usdaLimit: 10 }; // 10 from each source
     }
+
     return { apiLimit: 20, usdaLimit: 20 }; // 20 from single source
   }, [foodSearchSource]);
 
@@ -637,8 +643,8 @@ export function FoodSearchModal({
           (f) =>
             ({
               id: f.id,
-              name: f.name ?? '',
-              description: t('foodSearch.foodDescriptionFormat', {
+              name: f.name ?? t('food.generic'),
+              description: t('food.descriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
                 calories: formatInteger(
                   resolveRoundedPer100gCaloriesForDisplay({
@@ -649,6 +655,8 @@ export function FoodSearchModal({
                     fiber: f.fiber,
                   })
                 ),
+                amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+                unit: t(getMassUnitI18nKey(units)),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -692,6 +700,7 @@ export function FoodSearchModal({
     mealType,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -703,8 +712,8 @@ export function FoodSearchModal({
       (f) =>
         ({
           id: f.id,
-          name: f.name ?? '',
-          description: t('foodSearch.foodDescriptionFormat', {
+          name: f.name ?? t('food.generic'),
+          description: t('food.descriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
             calories: formatInteger(
               resolveRoundedPer100gCaloriesForDisplay({
@@ -715,6 +724,8 @@ export function FoodSearchModal({
                 fiber: f.fiber,
               })
             ),
+            amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+            unit: t(getMassUnitI18nKey(units)),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -735,6 +746,7 @@ export function FoodSearchModal({
     favoriteFoodsRaw,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -1553,7 +1565,7 @@ export function FoodSearchModal({
 
         {/* Food Details Modal */}
         {selectedFood ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isFoodDetailsVisible}
             onClose={() => {
               setIsFoodDetailsVisible(false);
@@ -1597,7 +1609,7 @@ export function FoodSearchModal({
 
         {/* Meal Details Modal */}
         {selectedMeal ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isMealDetailsVisible}
             onClose={() => {
               setIsMealDetailsVisible(false);

@@ -234,6 +234,14 @@
       "comingSoon": "App Store binnenkort beschikbaar!",
       "qrButton": "QR-codes weergeven"
     },
+    "download": {
+      "pageTitle": "Musclog downloaden",
+      "eyebrow": "Begin vandaag met tracken",
+      "title": "Klaar om te focussen?",
+      "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
+      "googleLabel": "Download Musclog via Google Play",
+      "appleLabel": "Download Musclog via de App Store"
+    },
     "footer": {
       "privacyPolicy": "Privacybeleid",
       "terms": "Voorwaarden",
@@ -680,6 +688,291 @@
         "maintenance": "ONDERHOUD",
         "calorieSurplus": "CALORIE-OVERSCHOT",
         "calorieDeficit": "CALORIETEKORT"
+      }
+    },
+    "faq": {
+      "pageTitle": "FAQ & Wetenschap — Musclog",
+      "badge": "Evidence-Based",
+      "titlePrefix": "FAQ &",
+      "titleHighlight": "De Wetenschap",
+      "description": "Elk getal dat Musclog u laat zien komt uit peer-reviewed onderzoek. Deze pagina legt de modellen, formules en studies achter elke berekening uit — met links naar de originele bronnen.",
+      "sources": "Bronnen",
+      "questionsCount_one": "{{count}} vraag",
+      "questionsCount_other": "{{count}} vragen",
+      "footer": {
+        "text": "Een onnauwkeurigheid gevonden of een nieuwer onderzoek dat een van deze bronnen vervangt?",
+        "linkText": "Laat het ons weten",
+        "suffix": "— de wetenschap evolueert voortdurend en Musclog ook."
+      },
+      "categories": {
+        "general": {
+          "label": "Algemeen",
+          "items": [
+            {
+              "question": "Wat is Musclog?",
+              "answer": "Musclog is een privacy-first fitness-app voor het bijhouden van trainingen, voeding en lichaamssamenstelling. Al uw gegevens worden lokaal op uw apparaat opgeslagen — er wordt niets naar een server verzonden tenzij u optionele AI-functies expliciet inschakelt."
+            },
+            {
+              "question": "Werkt de app zonder internetverbinding?",
+              "answer": "Ja. Alle kernfuncties — trainingen loggen, maaltijden bijhouden, voortgang bekijken en de voedingscalculator gebruiken — werken volledig offline. Een internetverbinding is alleen nodig voor optionele AI-functies (maaltijdherkenning, AI-coach), voedingsdatabase-zoekopdrachten van externe bronnen, en Health Connect / HealthKit-synchronisatie."
+            },
+            {
+              "question": "Hoe nauwkeurig zijn de voedingsberekeningen?",
+              "answer": "De calculator gebruikt goed gevalideerde populatievergelijkingen (Katch-McArdle / Mifflin-St Jeor voor BMR, Hall 2008 lichaamssamenstelling model voor projecties). Geen enkele vergelijking is voor ieder individu perfect nauwkeurig — de typische fout voor BMR-vergelijkingen is ±10 %. De beste resultaten komen door de app 2–4 weken echte trackinggegevens te geven zodat het uw empirische TDEE direct kan berekenen uit calorieën in versus gewichtsverandering."
+            },
+            {
+              "question": "Welke eenheden ondersteunt de app?",
+              "answer": "De database slaat altijd metrische waarden op (kg, cm, g, kcal). U kunt op elk moment overschakelen naar imperiaal (lbs, inches, oz) in de instellingen — de app converteert alle weergegeven waarden automatisch. Lichaamsvetpercentage, BMI en FFMI zijn dimensieloos en worden nooit geconverteerd."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Voedingswetenschap",
+          "items": [
+            {
+              "question": "Hoe wordt mijn Basaal Metabolisme (BMR) berekend?",
+              "answer": "Musclog gebruikt twee vergelijkingen afhankelijk van of u een lichaamsvetpercentage heeft opgegeven.",
+              "bullets": [
+                "Katch-McArdle (voorkeur wanneer BV% beschikbaar is): BMR = 370 + 21,6 × Vetvrije Massa (kg). Omdat het vetmassa negeert — die zeer lage metabolische activiteit heeft — is deze vergelijking nauwkeuriger voor atleten en mensen met een niet-gemiddelde lichaamssamenstelling.",
+                "Mifflin-St Jeor (standaard, geen BV% nodig): BMR = 10 × gewicht + 6,25 × lengte − 5 × leeftijd ± geslachtsconstante (+5 man, −161 vrouw). Gevalideerd als de meest nauwkeurige algemene bevolking BMR-vergelijking in meerdere meta-analyses."
+              ],
+              "citations": [
+                { "label": "Katch-McArdle (1996)", "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27" },
+                { "label": "Mifflin et al. (1990)", "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/" },
+                { "label": "Frankenfield et al. meta-analysis (2005)", "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/" }
+              ]
+            },
+            {
+              "question": "Hoe wordt mijn Totaal Dagelijks Energieverbruik (TDEE) geschat?",
+              "answer": "Musclog gebruikt twee modi en kiest automatisch de beste voor uw gegevens.",
+              "bullets": [
+                "Statistisch (nieuwe gebruikers): TDEE = BMR × Activiteitsmultiplicator. Multiplicatoren variëren van 1,2 (sedentair) tot 1,9 (zeer actief + fysiek werk), gebaseerd op de Harris-Benedict / Mifflin-St Jeor schaal.",
+                "Empirische / Waargenomen TDEE (voorkeur, vereist ≥2 weken voedsel + gewichtsgegevens): Past de Eerste Wet van de Thermodynamica direct toe. TDEE = (Calorieën in − Energie opgeslagen in weefsel) / Dagen. Vetweefsel slaat 7.730 kcal/kg op bij katabolisme en kost 8.840 kcal/kg om op te bouwen; spier slaat 1.250 kcal/kg op en kost 3.900 kcal/kg. Deze asymmetrische waarden houden rekening met thermodynamische syntheseëfficiëntie.",
+                "TDEE Driftcorrectie: De empirische TDEE vertegenwoordigt het gemiddelde van de middenperiode. Om het naar de huidige lichamelijke toestand te projecteren, worden drie gestapelde aanpassingen toegepast: (1) Rustend weefselverval — mager weefsel verbrandt ~13 kcal/kg/dag en vet ~4,5 kcal/kg/dag (Elia 1992); (2) Activiteitsgeschaalde val — mechanische bewegingskosten schalen met lichaamsmassa; (3) Adaptieve thermogenese straf van 20 kcal/dag per kg verloren lichaamsmassa, wat NEAT-suppressie en hormonale aanpassing (leptine, schildklier) weerspiegelt."
+              ],
+              "citations": [
+                { "label": "Hall (2008) — Energy deficit per unit weight loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
+                { "label": "Elia (1992) — RMR tissue coefficients", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/" },
+                { "label": "Müller et al. (2022) — Adaptive thermogenesis", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
+                { "label": "Hall et al. (NIH) — Dynamic energy balance", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+              ]
+            },
+            {
+              "question": "Hoe verbetert het opgeven van lichaamsvetpercentage de berekening?",
+              "answer": "Wanneer een geldig lichaamsvetpercentage (5–60 %) wordt ingevoerd, veranderen drie dingen:",
+              "bullets": [
+                "BMR schakelt over naar Katch-McArdle, dat lichaamssamenstelling-bewust is en metabolisch inert vetmassa negeert.",
+                "De vet/mager-verdeling van gewichtsveranderingen wordt berekend uit de Forbes-curve (Hall 2007), analytisch opgelost via de Lambert W-functie. Het kernpunt: slankere individuen verliezen een hoger aandeel vetvrije massa per kg omdat het lichaam vetreserves agressiever verdedigt. Een persoon met 12% BV verliest weefsel bij ongeveer 5.800–6.200 kcal/kg, ver onder de klassieke '7.700 kcal/kg' regel die puur vetverlies aanneemt.",
+                "Een ±4 % onzekerheidsmarge (typische BIA/huidplooi-fout) genereert een realistisch min/max caloriebereik in plaats van één getal, waarmee de inherente onnauwkeurigheid van lichaamsvetmeting wordt gecommuniceerd."
+              ],
+              "formula": "effectieve_kcal/kg = 9.440 × vetfractie + 1.820 × magere_fractie",
+              "formulaCaption": "Hall (2008) gemengde energiedichtheid — vetfractie bepaald door Forbes-curve / Lambert W",
+              "citations": [
+                { "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
+                { "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" },
+                { "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" }
+              ]
+            },
+            {
+              "question": "Hoe wordt mijn aanbevolen calorietekort of -overschot bepaald?",
+              "answer": "Musclog schaalt de calorieaanpassing naar uw lichaamsgewicht in plaats van een vast ±500 kcal te gebruiken, en begrenst het tot evidence-based veilige bereiken.",
+              "bullets": [
+                "Cut (gewichtsverlies): De aanbevolen wekelijkse verliessnelheid is standaard 0,5 % van het lichaamsgewicht per week. Wanneer lichaamsvet bekend is, wordt dit verfijnd met behulp van ACE klinische drempelwaarden — slanke individuen (BV < 10 % man / < 20 % vrouw) krijgen een conservatief 0,35 %/week om spieren te beschermen, terwijl mensen met hoger lichaamsvet veilig kunnen verliezen tot 0,65 %/week. Het resulterende dagelijkse tekort wordt begrensd tot 250–750 kcal om ernstige metabolische aanpassing te voorkomen.",
+                "Bulk (gewichtstoename): Een overschot van ongeveer 0,25 % lichaamsgewicht per week wordt nagestreefd, wat vetopeenhoping minimaliseert terwijl het spierproteïnesynthese ondersteunt. Het overschot wordt begrensd tot 150–400 kcal/dag.",
+                "Minimum caloriegrenzen: 1.200 kcal/dag voor vrouwen, 1.500 kcal/dag voor mannen, en nooit onder 80% van BMR — in overeenstemming met IOM / Nationale Academies richtlijnen."
+              ],
+              "citations": [
+                { "label": "Garthe et al. (2011) — Rate of weight loss and body composition", "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/" },
+                { "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders", "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/" },
+                { "label": "ACE — Body fat percentage classifications", "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/" }
+              ]
+            },
+            {
+              "question": "Hoe werkt het gewichtsprojectiemodel?",
+              "answer": "De projectie gebruikt twee fasen om gewichtsverandering over 90 dagen nauwkeurig te voorspellen.",
+              "bullets": [
+                "Vroege fase — Glycogeenuitputting: De lichaamsglycogoonpool is ongeveer 15 g/kg lichaamsgewicht (droog), gebonden aan ongeveer 3 g water elk, totaal ongeveer 6% van het lichaamsgewicht als gehydrateerd glycogeen. Alleen het gedeelte van het cumulatieve calorietekort dat past binnen deze glycogeenenergiepool (~4.206 kcal/kg droog) drijft het vroege 'watergewicht'-verlies. Dit voorkomt het sterk overschatten van vroege verliezen bij agressieve tekorten.",
+                "Stabiele fase: Al het resterende tekort drijft vet/mager weefselverlies bij de samenstelling-bewuste energiedichtheid van het Hall/Forbes model. De gerapporteerde 'wekelijkse snelheid' weerspiegelt altijd dit stabiele cijfer — wat gebruikers na de eerste paar dagen ervaren.",
+                "Overschotprojectie: Glycogeenvoorraden worden aangenomen vol te zijn, dus al het overschot gaat naar vet/mager weefselsynthese bij ervaringgewogen kosten (beginner ~5.300 kcal/kg gewonnen; gemiddeld ~6.370 kcal/kg; gevorderd ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                { "label": "Hall (2008) — Energy density of weight loss tissue", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
+                { "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" }
+              ]
+            },
+            {
+              "question": "Hoe worden mijn dagelijkse macro's berekend?",
+              "answer": "Macro-verdelingen zijn gebaseerd op fitnessdoel, met behulp van IOM AMDR-bereiken als kader en ISSN/ACSM sportspecifiek onderzoek voor verfijning.",
+              "table": {
+                "head": ["Doel", "Koolhydraten", "Eiwit", "Vet", "Redenering"],
+                "rows": [
+                  ["Gewichtsverlies", "40 %", "30 %", "30 %", "Hoog eiwit om spieren te behouden in tekort (ISSN/Helms 2014)"],
+                  ["Hypertrofie", "45 %", "30 %", "25 %", "Eiwit voor MPS; koolhydraten ondersteunen volumetraining"],
+                  ["Kracht", "50 %", "30 %", "20 %", "Koolhydraten voor glycolytische vraag van zwaar samengesteld werk"],
+                  ["Uithoudingsvermogen", "55 %", "20 %", "25 %", "Glycogeenprioriteit (ACSM 6–10 g/kg/dag richtlijn)"],
+                  ["Algemeen", "45 %", "25 %", "30 %", "Gecentreerd binnen IOM AMDR voor algemene fitness"]
+                ]
+              },
+              "answer2": "Voor Gewichtsverlies- en Hypertrofiedoelen, wanneer lichaamsvet % bekend is, wordt eiwit bijgewerkt van een percentagedoel naar een absoluut VVM-gebaseerd doel (2,7 g/kg VVM voor gewichtsverlies; 2,0 g/kg VVM voor hypertrofie), met resterende calorieën evenredig verdeeld tussen koolhydraten en vetten.",
+              "citations": [
+                { "label": "IOM Dietary Reference Intakes (2005) — AMDR", "url": "https://doi.org/10.17226/10490" },
+                { "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/" },
+                { "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/" },
+                { "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/" }
+              ]
+            },
+            {
+              "question": "Hoe beïnvloedt tilervaring de bulkberekening?",
+              "answer": "Het aandeel gewonnen gewicht dat vetvrije massa versus vet is, hangt sterk af van trainingsgeschiedenis. Ongetrainde individuen hebben een veel groter hypertrofiepotentieel dan gevorderde lifters die al het grootste deel van hun genetisch spierplafond hebben bereikt.",
+              "bullets": [
+                "Beginner: ~60 % mager / 40 % vet per kg gewonnen. Effectieve bouwkosten ≈ 5.304 kcal/kg.",
+                "Gemiddeld: ~50 % mager / 50 % vet. Effectieve bouwkosten ≈ 6.370 kcal/kg.",
+                "Gevorderd: ~40 % mager / 60 % vet. Effectieve bouwkosten ≈ 7.434 kcal/kg.",
+                "Deze verdelingen gebruiken de thermodynamische bouwkosten: 8.840 kcal/kg voor vet en 3.900 kcal/kg voor spier, wat ~87 % syntheseëfficiëntie voor vet en ~32 % voor spier weerspiegelt (de meeste spiersyntheseënergie gaat verloren als warmte)."
+              ],
+              "citations": [
+                { "label": "Schoenfeld et al. — Resistance training load meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" },
+                { "label": "Sports Med (2023) — Plateau in muscle growth with resistance training", "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/" },
+                { "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/" }
+              ]
+            },
+            {
+              "question": "Hoe wordt RMR aangepast voor obesitas of oudere leeftijd?",
+              "answer": "Twee evidence-based strafmultiplicatoren worden toegepast op de Rustend Metabolisch Tempo weefselcoëfficiënten (mager: 13 kcal/kg/dag; vet: 4,5 kcal/kg/dag):",
+              "bullets": [
+                "BMI > 30 (Obesitas): −2 % verlaging voor zowel mager als vet weefselcoëfficiënten, wat verminderde mitochondriale functie bij obese individuen weerspiegelt (Müller et al. 2013).",
+                "Leeftijd > 50: −3 % verlaging, wat de afname in cellulaire omzetsnelheid weerspiegelt (St-Onge & Gallagher 2010).",
+                "Beide straffen stapelen additief wanneer van toepassing (bijv. obese persoon boven 50 → −5 % totaal)."
+              ],
+              "citations": [
+                { "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction", "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/" },
+                { "label": "St-Onge & Gallagher (2010) — Body composition changes with aging", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/" }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Trainingswetenschap",
+          "items": [
+            {
+              "question": "Hoe worden eenherhalingsmaximum (1RM) schattingen berekend?",
+              "answer": "Musclog berekent 1RM met een ensemble van zeven gepubliceerde formules en middelt hun uitkomsten. Middelen vermindert de systematische fout van elke afzonderlijke formule, die elk verschillende nauwkeurigheidsprofielen hebben over herhalingsbereiken.",
+              "table": {
+                "head": ["Formule", "Vergelijking", "Beste Voor"],
+                "rows": [
+                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; meest gebruikt"],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Algemeen gebruik; licht conservatief"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Matige herhalingsbereiken"],
+                  ["Lombardi (1989)", "w × r^0,1", "Lage herhalingsbereiken"],
+                  ["Mayhew et al. (1992)", "w / (0,522 + 0,419 × e^{−0,055r})", "Breed herhalingsbereik; exponentieel model"],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Lineair; conservatief"],
+                  ["Wathen (1994)", "w / (0,488 + 0,539 × e^{−0,035r})", "Hogere herhalingsbereiken"]
+                ]
+              },
+              "answer2": "Herhalingen in Reserve (RIR) worden opgeteld bij de werkelijke herhalingen voordat een formule wordt toegepast (aangepaste_reps = reps + RIR). Dit mapt submaximale inspanning naar een volledig-inspanning equivalent, dus een set van 8 reps met 2 RIR wordt behandeld als 10 reps tot falen voor 1RM-schattingsdoeleinden.",
+              "citations": [
+                { "label": "Brzycki (1993)", "url": "https://doi.org/10.1080/07303084.1993.10606684" },
+                { "label": "Epley (1985)", "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7" },
+                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                { "label": "Lombardi (1989)", "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum" },
+                { "label": "Mayhew et al. (1992)", "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/" },
+                { "label": "O'Connor et al. (1989)", "url": "https://www.vcalc.com/wiki/oconner-et-al" },
+                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+              ]
+            },
+            {
+              "question": "Hoe wordt trainingsvolume berekend?",
+              "answer": "Musclog gebruikt de gemiddelde 1RM-schatting als eenheid van volume voor elke set, in plaats van bruto tonnage (gewicht × herhalingen). Dit produceert een betekenisvollere maatstaf omdat de 1RM normaliseert voor het feit dat sets met meer herhalingen meer totale inspanning vertegenwoordigen dan het ruwe gewicht zou suggereren.",
+              "bullets": [
+                "Voor lichaamsgewichtsoefeningen wordt het huidige lichaamsgewicht van de gebruiker opgeteld bij het staafgewicht voor de 1RM-berekening.",
+                "Totaal sessievolume = som van gemiddelde 1RM-schattingen over alle sets in de sessie.",
+                "Progressieve overbelastingstracking vergelijkt dit getal tussen sessies voor dezelfde oefeningen."
+              ]
+            },
+            {
+              "question": "Hoe worden verbrande calorieën van dagelijkse stappen berekend?",
+              "answer": "Musclog gebruikt de ACSM metabolische loopvergelijkingen om netto (niet bruto) calorieverbruik uit stappentellingen te berekenen. Nettoverbruik gebruiken voorkomt dubbeltelling tegen de al meegerekende BMR/TDEE.",
+              "formula": "Netto Calorieën = (0,1 × afstand_m × gewicht_kg) / 200",
+              "formulaCaption": "Afgeleid van ACSM VO₂ loopvergelijking. Tijd valt weg: snelheid (m/min) × duur (min) = afstand (m). 1 L O₂ ≈ 5 kcal, dus ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "Staplengte wordt geschat uit lengte met geslachtsspecifieke empirische ratio's: 0,415 × lengte (cm) / 100 voor mannen, 0,413 voor vrouwen.",
+                "Afstand = stappen × staplengte.",
+                "De afleiding elimineert de noodzaak om cadans te kennen, waardoor de 'cadansparadox' wordt verwijderd waarbij sneller lopen identiek lijkt aan langzamer lopen bij hetzelfde aantal stappen."
+              ],
+              "citations": [
+                { "label": "ACSM Metabolic Equations — Walking VO₂", "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm" },
+                { "label": "Pratama et al. (2012) — Stride length estimation", "url": "https://www.mdpi.com/2072-4292/11/1/55" },
+                { "label": "Meta-Analysis — Stride length and height ratios", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/" }
+              ]
+            },
+            {
+              "question": "Hoe berekent de app gewicht en herhalingen voor een doel-RIR?",
+              "answer": "Twee inverse 1RM-problemen worden opgelost:",
+              "bullets": [
+                "Gewicht voor doel-RIR: Alle zeven 1RM-formules zijn lineair in gewicht (1RM = gewicht × f(reps, RIR)), dus gewicht = 1RM / f(reps, RIR). De multiplicator f wordt berekend door het ensemble aan te roepen met gewicht = 1.",
+                "Herhalingen voor doelgewicht: Het gemiddelde ensemble heeft geen gesloten-vorm inverse, dus de app gebruikt binair zoeken. Omdat 1RM-schattingen monotoon stijgen in herhalingen, convergeert binair zoeken binnen ~6 iteraties voor elk praktisch herhaalsbereik (1–50). Zie Helms et al. (2016) voor de RIR-gebaseerde autoregulatie onderzoeksbasis."
+              ],
+              "citations": [
+                { "label": "Helms et al. (2016) — RPE and RIR-based autoregulation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/" }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Methodologie",
+          "items": [
+            {
+              "question": "Waarom toont de app een caloriebereik in plaats van één getal?",
+              "answer": "Lichaamsvetpercentagemetingen — of het nu bioelektrische impedantie (BIA), huidplooikaliper of DEXA is — dragen een typische meetfout van ±3–5 %. Musclog past een ±4 % marge (een conservatief middelpunt) toe op uw ingevoerde lichaamsvetpercentage en herberekent BMR, TDEE en doelcalorieën aan beide uitersten.",
+              "bullets": [
+                "Min doelcalorieën = berekening bij BV% + 4 % (meer vet → minder vetvrije massa → lagere BMR).",
+                "Max doelcalorieën = berekening bij BV% − 4 % (minder vet → meer vetvrije massa → hogere BMR).",
+                "Het enkele 'doel' in het midden is het beste-schatting resultaat met uw rechtstreeks ingevoerde BV%.",
+                "Dit bereik communiceert realistische onzekerheid en helpt u begrijpen dat het 'correcte' getal voor u persoonlijk overal binnen de marge kan liggen."
+              ]
+            },
+            {
+              "question": "Wat is de Forbes-curve en waarom is die belangrijk?",
+              "answer": "De Forbes-curve, ontwikkeld door Gilbert Forbes (1987) en verder geformaliseerd door Kevin Hall (2007), beschrijft hoe het lichaam gewichtsveranderingen verdeelt tussen vetmassa en vetvrije massa. Het heeft een kritieke, contra-intuïtieve implicatie:",
+              "bullets": [
+                "Slankere mensen offeren meer vetvrije massa op per kg verloren — het lichaam verdedigt vetreserves agressiever wanneer vetreserves laag zijn.",
+                "Omgekeerd verliezen mensen met veel lichaamsvet een hoger aandeel vet per kg, waardoor hun effectieve energiedichtheid dichter bij de klassieke 7.700 kcal/kg regel ligt.",
+                "De curve wordt geparametriseerd door een constante C (≈13,8 voor mannen, ≈10,4 voor vrouwen), opgelost met de Lambert W-functie (hoofdtak). Musclog implementeert deze oplosser numeriek met de methode van Newton om afhankelijkheden van bibliotheken te vermijden.",
+                "Zonder dit model worden cuts voor slanke individuen systematisch onderschat — de klassieke regel behandelt alle gewichtsverlies als vet en zou overschatten hoeveel vet er daadwerkelijk verloren gaat."
+              ],
+              "citations": [
+                { "label": "Forbes (1987) — Human Body Composition", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
+                { "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" }
+              ]
+            },
+            {
+              "question": "Wat is Adaptieve Thermogenese en hoe houdt de app hier rekening mee?",
+              "answer": "Adaptieve thermogenese (AT) is het fenomeen waarbij het energieverbruik van het lichaam meer daalt dan kan worden verklaard door veranderingen in lichaamsmassa alleen, als reactie op aanhoudende calorierestrictie. Het wordt aangedreven door:",
+              "bullets": [
+                "Hormonale suppressie: leptine daalt bij vetverlies, waardoor de sympathische zenuwstelselactiviteit en schildklierhormoonproductie verminderen.",
+                "NEAT-reductie (Non-Exercise Activity Thermogenesis): het lichaam vermindert onbewust friemelen, houdingsveranderingen en spontane beweging.",
+                "Veranderingen in mitochondriale efficiëntie: cellen halen meer ATP uit elke verbrande calorie.",
+                "Musclog modelleert AT als een straf van 20 kcal/dag per kg totaal verloren lichaamsmassa (met het middelpunt van het Hall et al. bereik van 20–30 kcal/dag/kg). Dit wordt toegepast in de TDEE-driftcorrectie bij berekening van empirische trackinggegevens, en in de 90-daagse projectie om een realistisch gewichtsverliestrajectorium te tonen in plaats van een lineair."
+              ],
+              "citations": [
+                { "label": "Müller et al. (2022) — Magnitude of AT in clinical trials", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
+                { "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+              ]
+            },
+            {
+              "question": "Hoe wordt de dagelijkse waterinname-aanbeveling berekend?",
+              "answer": "Wateraanbeveling schaalt lineair met TDEE bij een verhouding van 0,75 ml per kcal dagelijks energieverbruik. Dit is afgeleid van twee onafhankelijk convergerende richtlijnen:",
+              "bullets": [
+                "Het U.S. Food and Nutrition Board (1945): '1 ml per kcal energieverbruik' (Musclog gebruikt 0,75 ml om de drankenfractie te vertegenwoordigen, aangezien ~25 % van water uit voedsel komt).",
+                "Dieetonderzoeken tonen dat dranken ongeveer 70–80 % bijdragen aan de totale waterinname bij volwassenen (Gandy et al. 2016)."
+              ],
+              "citations": [
+                { "label": "PMC7692653 — Water intake from beverages vs food", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food" },
+                { "label": "PMC5946122 — Percentage of water intake from beverages", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/" }
+              ]
+            }
+          ]
+        }
       }
     }
   }

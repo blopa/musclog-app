@@ -53,9 +53,11 @@ import {
   type ThemeOption,
   type Units,
   UNITS_SETTING_TYPE,
+  USE_BF_FOR_CALCULATIONS_SETTING_TYPE,
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
@@ -95,6 +97,7 @@ type SettingsState = {
   useOnDeviceAi: boolean;
   useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
+  useThinkingMode: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -110,6 +113,7 @@ type SettingsState = {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
@@ -148,6 +152,7 @@ const DEFAULT_STATE: SettingsState = {
   useOnDeviceAi: false,
   useMusclogFreeTier: false,
   sendFoundationFoodsToLlm: true,
+  useThinkingMode: false,
   navSlot1: 'workouts',
   navSlot2: 'food',
   navSlot3: 'coach',
@@ -162,6 +167,7 @@ const DEFAULT_STATE: SettingsState = {
   showWeightPrediction: true,
   requireExportEncryption: true,
   disableMinimumCalories: false,
+  useBfForCalculations: false,
   intuitiveEatingMode: false,
   progressionMode: 'reps_first',
   nutritionDisplay: '11111',
@@ -266,6 +272,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useOnDeviceAi: getBoolean(map, USE_ON_DEVICE_AI_SETTING_TYPE, false),
     useMusclogFreeTier: getBoolean(map, USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false),
     sendFoundationFoodsToLlm: getBoolean(map, SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true),
+    useThinkingMode: getBoolean(map, USE_THINKING_MODE_SETTING_TYPE, false),
     navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
@@ -281,6 +288,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showWeightPrediction: getBoolean(map, SHOW_WEIGHT_PREDICTION_SETTING_TYPE, true),
     requireExportEncryption: getBoolean(map, REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true),
     disableMinimumCalories: getBoolean(map, DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false),
+    useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
@@ -318,6 +326,7 @@ export type SettingsContextType = UseSettingsResult & {
   useOnDeviceAi: boolean;
   useMusclogFreeTier: boolean;
   sendFoundationFoodsToLlm: boolean;
+  useThinkingMode: boolean;
   isAiConfigured: boolean;
   isAiMealPhotoEnabled: boolean;
   navSlot1: NavItemKey;
@@ -334,6 +343,7 @@ export type SettingsContextType = UseSettingsResult & {
   showWeightPrediction: boolean;
   requireExportEncryption: boolean;
   disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
