@@ -29,6 +29,7 @@ type MealGroupCardProps = {
   fat: number;
   mealType: MealType;
   imageUrl?: string;
+  onPress?: () => void;
   onMorePress?: () => void;
   intuitiveMode?: boolean;
 };
@@ -128,6 +129,7 @@ export const MealGroupCard = memo(function MealGroupCard({
   fat,
   mealType,
   imageUrl,
+  onPress,
   onMorePress,
   intuitiveMode = false,
 }: MealGroupCardProps) {
@@ -137,7 +139,7 @@ export const MealGroupCard = memo(function MealGroupCard({
   const { Icon, bgColor, iconColor } = getMealIconAndColor(mealType, theme);
 
   return (
-    <GenericCard variant="default">
+    <GenericCard variant="default" isPressable={!!onPress} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
         {/* Meal icon or photo */}
         <View

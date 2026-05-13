@@ -475,6 +475,8 @@
       "saveForLaterPortionHint": "Оставшиеся {{remaining}}% останутся в вашей {{mealType}}",
       "saveForLaterPortionHintAll": "Вся еда будет сохранена на потом",
       "savedMealDefaultName": "Сохранённое блюдо от {{date}} — {{mealType}}",
+      "totalNutrients": "Всего питательных веществ",
+      "ingredients": "Ингредиенты",
       "savedForLaterModal": {
         "title": "Сохранённые на потом",
         "subtitle": "Ваши временные блюда",

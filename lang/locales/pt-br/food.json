@@ -475,6 +475,8 @@
       "saveForLaterPortionHint": "Os {{remaining}}% restantes permanecerão na sua {{mealType}}",
       "saveForLaterPortionHintAll": "Toda a refeição será salva para depois",
       "savedMealDefaultName": "Refeição salva de {{date}} - {{mealType}}",
+      "totalNutrients": "Nutrientes Totais",
+      "ingredients": "Ingredientes",
       "savedForLaterModal": {
         "title": "Salvas para Depois",
         "subtitle": "Suas refeições temporárias",

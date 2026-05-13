@@ -475,6 +475,8 @@
       "saveForLaterPortionHint": "De resterende {{remaining}}% blijft in je {{mealType}}",
       "saveForLaterPortionHintAll": "De hele maaltijd wordt bewaard voor later",
       "savedMealDefaultName": "Bewaarde maaltijd van {{date}} - {{mealType}}",
+      "totalNutrients": "Totale Voedingsstoffen",
+      "ingredients": "Ingrediënten",
       "savedForLaterModal": {
         "title": "Bewaard voor later",
         "subtitle": "Je tijdelijke maaltijden",

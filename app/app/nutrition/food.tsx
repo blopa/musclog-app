@@ -34,6 +34,7 @@ import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTracki
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
+import { MealGroupDetailsModal } from '@/components/modals/MealGroupDetailsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
 import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
@@ -209,6 +210,19 @@ export default function FoodScreen() {
   const [isMealGroupActionLoading, setIsMealGroupActionLoading] = useState(false);
   const [isMealGroupInsightsVisible, setIsMealGroupInsightsVisible] = useState(false);
   const [isMealGroupInsightsLoading, setIsMealGroupInsightsLoading] = useState(false);
+  const [isMealGroupDetailsVisible, setIsMealGroupDetailsVisible] = useState(false);
+  const [selectedMealGroupForDetails, setSelectedMealGroupForDetails] = useState<{
+    groupId: string;
+    mealName: string;
+    entries: {
+      log: NutritionLog;
+      food: Food | null;
+      nutrients: any;
+      gramWeight: number;
+      displayName: string;
+    }[];
+    totalNutrients: { calories: number; protein: number; carbs: number; fat: number };
+  } | null>(null);
 
   const {
     logs,
@@ -506,6 +520,11 @@ export default function FoodScreen() {
   const handleMealGroupMenuPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
     setSelectedMealGroup(group);
     setIsMealGroupMenuVisible(true);
+  };
+
+  const handleMealGroupCardPress = (group: (typeof mealGroupsByType)['breakfast'][number]) => {
+    setSelectedMealGroupForDetails(group);
+    setIsMealGroupDetailsVisible(true);
   };
 
   // Meal Group menu action handlers
@@ -1596,7 +1615,6 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.breakfast.map((group) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1610,11 +1628,13 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.breakfast.map((entry) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1652,7 +1672,6 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.lunch.map((group) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1666,11 +1685,13 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.lunch.map((entry) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1708,7 +1729,6 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.dinner.map((group) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1722,11 +1742,13 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.dinner.map((entry) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1764,7 +1786,6 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.snack.map((group) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1778,11 +1799,13 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.snack.map((entry) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -1820,7 +1843,6 @@ export default function FoodScreen() {
                     }
                   >
                     {mealGroupsByType.other.map((group) => (
-                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <MealGroupCard
                         key={group.groupId}
                         name={group.mealName}
@@ -1834,11 +1856,13 @@ export default function FoodScreen() {
                           group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
                           undefined
                         }
+                        onPress={() => handleMealGroupCardPress(group)}
                         onMorePress={() => handleMealGroupMenuPress(group)}
                         intuitiveMode={intuitiveEatingMode}
                       />
                     ))}
                     {ungroupedByType.other.map((entry) => (
+                      // TODO: if click/touch on this card, we should open the FoodMealDetailsModal showing the meal/food details
                       <FoodItemCard
                         key={entry.log.id}
                         name={entry.displayName}
@@ -2372,6 +2396,25 @@ export default function FoodScreen() {
         mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
         isLoading={isMealGroupInsightsLoading}
         onSubmit={handleSubmitMealGroupInsights}
+      />
+
+      {/* Meal Group Details Modal */}
+      <MealGroupDetailsModal
+        visible={isMealGroupDetailsVisible}
+        onClose={() => {
+          setIsMealGroupDetailsVisible(false);
+          setSelectedMealGroupForDetails(null);
+        }}
+        mealName={selectedMealGroupForDetails?.mealName ?? ''}
+        entries={selectedMealGroupForDetails?.entries ?? []}
+        totalNutrients={
+          selectedMealGroupForDetails?.totalNutrients ?? {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+          }
+        }
       />
 
       {/* Delete Meal Group Confirmation */}
