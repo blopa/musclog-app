@@ -285,6 +285,7 @@ export default function CreateCustomFoodModal({
     openCamera({
       mode: 'barcode-scan',
       hideCameraModePicker: true,
+      showBarcodeTextSearch: true,
       onBarcodeScanned: (data) => setBarcode(data),
     });
   };

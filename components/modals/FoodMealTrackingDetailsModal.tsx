@@ -2428,6 +2428,7 @@ export function FoodMealTrackingDetailsModal({
                   openCamera({
                     mode: 'barcode-scan',
                     hideCameraModePicker: true,
+                    showBarcodeTextSearch: true,
                     onBarcodeScanned: (data) =>
                       setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
                   })

@@ -1581,6 +1581,7 @@ export default function FoodScreen() {
                           openCamera({
                             mode: 'barcode-scan',
                             hideCameraModePicker: false,
+                            showBarcodeTextSearch: false,
                             logDate: selectedDate,
                           });
                         }}
@@ -2042,6 +2043,7 @@ export default function FoodScreen() {
           openCamera({
             mode: 'barcode-scan',
             hideCameraModePicker: true,
+            showBarcodeTextSearch: true,
             logDate: selectedDate,
             mealType: selectedMealType,
           });

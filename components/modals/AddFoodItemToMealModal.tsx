@@ -320,6 +320,7 @@ export function AddFoodItemToMealModal({
     openCamera({
       mode: 'barcode-scan',
       hideCameraModePicker: true,
+      showBarcodeTextSearch: true,
       onBarcodeScanned: (data) => {
         setScannedBarcode(data);
         setShowScannedFoodDetails(true);
