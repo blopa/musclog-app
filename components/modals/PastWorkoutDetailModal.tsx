@@ -50,6 +50,7 @@ type WorkoutSummaryCardProps = {
   units: Units;
   weightUnitKey: 'workoutSession.kg' | 'workoutSession.lb';
   onEditTime?: () => void;
+  onEdit?: () => void;
 };
 
 function WorkoutSummaryCard({
@@ -59,6 +60,7 @@ function WorkoutSummaryCard({
   units,
   weightUnitKey,
   onEditTime,
+  onEdit,
 }: WorkoutSummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -76,6 +78,15 @@ function WorkoutSummaryCard({
           borderRadius: theme.borderRadius.xl,
         }}
       >
+        {onEdit ? (
+          <Pressable
+            onPress={onEdit}
+            className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+          >
+            <Edit size={14} color="white" />
+          </Pressable>
+        ) : null}
         <View className="flex-row gap-4">
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
@@ -644,6 +655,7 @@ export default function PastWorkoutDetailModal({
           units={units}
           weightUnitKey={weightUnitKey}
           onEditTime={() => setIsEditMetadataVisible(true)}
+          onEdit={() => setIsEditMetadataVisible(true)}
         />
 
         {Platform.OS === 'android' && !externalId ? (
