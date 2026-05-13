@@ -394,6 +394,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setMaxAiMemories(50);
     console.log('Set default max AI memories to 50');
 
+    await SettingsService.setUseThinkingMode(false);
+    console.log('Set default AI thinking mode to false');
+
     await SettingsService.setEnableGoogleGemini(false);
     await SettingsService.setEnableOpenAi(false);
     console.log('Set default Gemini and OpenAI enabled to false');

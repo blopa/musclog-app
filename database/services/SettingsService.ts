@@ -54,6 +54,7 @@ import {
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -383,6 +384,13 @@ export class SettingsService {
     await SettingsService.setBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, value);
   }
 
+  /**
+   * Upsert the use thinking mode setting
+   */
+  static async setUseThinkingMode(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
+  }
+
   static async setDumpLlmRequests(value: boolean) {
     await SettingsService.setBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, value);
   }
@@ -489,6 +497,10 @@ export class SettingsService {
 
   static async getSendFoundationFoodsToLlm(): Promise<boolean> {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
+  }
+
+  static async getUseThinkingMode(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, false);
   }
 
   static async getDumpLlmRequests(): Promise<boolean> {

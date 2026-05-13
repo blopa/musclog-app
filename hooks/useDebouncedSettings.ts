@@ -66,6 +66,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'useOnDeviceAi',
       'useMusclogFreeTier',
       'sendFoundationFoodsToLlm',
+      'useThinkingMode',
       'units',
       'foodSearchSource',
       'conversationContext',
@@ -272,6 +273,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
   );
+  const handleUseThinkingModeChange = createSettingHandler(
+    'useThinkingMode',
+    SettingsService.setUseThinkingMode
+  );
   const handleFoodSearchSourceChange = createSettingHandler(
     'foodSearchSource',
     SettingsService.setFoodSearchSource
@@ -414,6 +419,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
             break;
+          case 'useThinkingMode':
+            await SettingsService.setUseThinkingMode(value as boolean);
+            break;
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
             break;
@@ -521,6 +529,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
+    useThinkingMode:
+      (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     language: (localSettings.language as string) ?? actualSettings.language,
@@ -584,6 +594,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUseOnDeviceAiChange,
     handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
+    handleUseThinkingModeChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,
