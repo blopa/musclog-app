@@ -9,6 +9,8 @@
     "youCrushedIt": "¡Lo Lograste!",
     "feedbackSubmitted": "Comentarios del entrenamiento enviados con éxito.",
     "shareText": "¡Acabo de terminar un entrenamiento!",
+    "sharePersonalRecords_one": "🏆 {{count}} PR",
+    "sharePersonalRecords_other": "🏆 {{count}} PRs",
     "shareSummary": "Compartir Resumen",
     "workoutCompleted": "¡Entrenamiento Completado!",
     "viewDetails": "Ver Detalles",

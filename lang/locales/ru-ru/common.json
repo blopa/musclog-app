@@ -14,6 +14,7 @@
     "select": "Выбрать...",
     "today": "Сегодня",
     "none": "Нет",
+    "amount_kcal": "{{amount}} ккал",
     "duplicateFailed": "Не удалось дублировать",
     "yesterday": "Вчера",
     "daysAgo": "{{count}} дней назад",

@@ -9,6 +9,8 @@
     "youCrushedIt": "Отличная работа!",
     "feedbackSubmitted": "Отзыв о тренировке успешно отправлен.",
     "shareText": "Я только что отлично потренировался!",
+    "sharePersonalRecords_one": "🏆 {{count}} ЛР",
+    "sharePersonalRecords_other": "🏆 {{count}} ЛР",
     "shareSummary": "Поделиться итогами",
     "workoutCompleted": "Тренировка завершена!",
     "viewDetails": "Подробности",

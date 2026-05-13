@@ -55,8 +55,7 @@ export function NutritionConfirmationModal({
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {/*TODO: use translation  (common.amount_kcal)*/}
-              {formatRoundedDecimal(item.calories, 2)} kcal
+              {t('common.amount_kcal', { amount: formatRoundedDecimal(item.calories, 2) })}
             </Text>
           </View>
           <View className="flex-row justify-between">
@@ -88,7 +87,7 @@ export function NutritionConfirmationModal({
         </View>
       </View>
     ),
-    []
+    [formatRoundedDecimal, t, theme.colors.background.card]
   );
 
   return (
@@ -112,8 +111,9 @@ export function NutritionConfirmationModal({
                 {t('common.labelWithColon', { label: t('nutrition.calories') })}
               </Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {/*TODO: use translation (common.amount_kcal)*/}
-                {formatRoundedDecimal(totals.totalCalories, 2)} kcal
+                {t('common.amount_kcal', {
+                  amount: formatRoundedDecimal(totals.totalCalories, 2),
+                })}
               </Text>
             </View>
             <View className="flex-row justify-between">
