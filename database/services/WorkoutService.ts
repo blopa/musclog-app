@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import convert from 'convert';
+import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
@@ -59,7 +59,7 @@ export class WorkoutService {
             // Workout was completed or deleted, clear it from storage
             await clearActiveWorkoutLogId();
           }
-        } catch (error) {
+        } catch {
           // Workout doesn't exist, clear it from storage
           await clearActiveWorkoutLogId();
         }
@@ -72,10 +72,8 @@ export class WorkoutService {
 
       return workoutLog;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to start workout: ${error.message}`);
-      }
-      throw new Error('Failed to start workout: Unknown error');
+      handleError(error, 'WorkoutService.startWorkoutFromTemplate');
+      throw error;
     }
   }
 
@@ -99,7 +97,7 @@ export class WorkoutService {
           } else {
             await clearActiveWorkoutLogId();
           }
-        } catch (error) {
+        } catch {
           await clearActiveWorkoutLogId();
         }
       }
@@ -125,10 +123,8 @@ export class WorkoutService {
       await setActiveWorkoutLogId(workoutLog.id);
       return workoutLog;
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to start free workout: ${error.message}`);
-      }
-      throw new Error('Failed to start free workout: Unknown error');
+      handleError(error, 'WorkoutService.startFreeWorkout');
+      throw error;
     }
   }
 
@@ -153,7 +149,7 @@ export class WorkoutService {
       }
 
       return workoutLog;
-    } catch (error) {
+    } catch {
       // Workout doesn't exist, clear from storage
       await clearActiveWorkoutLogId();
       return null;
@@ -291,7 +287,7 @@ export class WorkoutService {
             const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
             heightCm =
               heightUnit === 'in' || heightUnit === 'ft'
-                ? (convert(rawHeight, heightUnit as any).to('cm') as number)
+                ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
                 : rawHeight;
           }
 
@@ -406,10 +402,8 @@ export class WorkoutService {
         personalRecords,
       };
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to complete workout: ${error.message}`);
-      }
-      throw new Error('Failed to complete workout: Unknown error');
+      handleError(error, 'WorkoutService.completeWorkout');
+      throw error;
     }
   }
 
@@ -730,10 +724,8 @@ export class WorkoutService {
       const finalTotal = await workoutLog.calculateVolume(bodyWeightKg);
       return { workoutLogId, totalVolume: finalTotal };
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to update workout sets: ${error.message}`);
-      }
-      throw new Error('Failed to update workout sets: Unknown error');
+      handleError(error, 'WorkoutService.updateWorkoutSets');
+      throw error;
     }
   }
 
@@ -763,10 +755,8 @@ export class WorkoutService {
         });
       });
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to update workout metadata: ${error.message}`);
-      }
-      throw new Error('Failed to update workout metadata: Unknown error');
+      handleError(error, 'WorkoutService.updateWorkoutMetadata');
+      throw error;
     }
   }
 
@@ -832,10 +822,8 @@ export class WorkoutService {
         }
       });
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to reorder workout log exercises: ${error.message}`);
-      }
-      throw new Error('Failed to reorder workout log exercises: Unknown error');
+      handleError(error, 'WorkoutService.reorderWorkoutLogExercises');
+      throw error;
     }
   }
 

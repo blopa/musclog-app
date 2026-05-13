@@ -1,5 +1,5 @@
 import { Trash2, Utensils } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 
@@ -11,14 +11,13 @@ import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedF
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { type MealType } from '@/database/models';
 import { SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
 import { SavedForLaterService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-
-import { MoveCopyMealModal } from './MoveCopyMealModal';
 
 type SavedForLaterModalProps = {
   visible: boolean;
@@ -95,6 +94,12 @@ export function SavedForLaterModal({
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (!visible) {
+      setIsDeleteConfirmationVisible(false);
+    }
+  }, [visible]);
+
   const handleTrackPress = () => {
     setIsMenuVisible(false);
     setIsTrackModalVisible(true);
@@ -123,7 +128,7 @@ export function SavedForLaterModal({
     }
   };
 
-  const handleConfirmTrack = async (targetDate: Date, targetMealType: any) => {
+  const handleConfirmTrack = async (targetDate: Date, targetMealType: MealType) => {
     if (!selectedGroup) {
       return;
     }
@@ -142,54 +147,59 @@ export function SavedForLaterModal({
     }
   };
 
-  const renderItem = ({ item }: { item: GroupWithNutrients }) => {
-    const originalDate = formatLocalCalendarDayIso(
-      new Date(localCalendarDayDateFromDayKeyMs(item.group.originalDate))
-    );
-    const mealTypeLabel = t(`food.meals.${item.group.originalMealType as any}`);
+  const keyExtractor = useCallback((item: GroupWithNutrients) => item.group.id, []);
 
-    return (
-      <View className="mb-4">
-        <GenericCard variant="card">
-          <View className="flex-row items-center justify-between p-4">
-            <View className="flex-1 pr-4">
-              <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
-                {item.group.name}
-              </Text>
-              <Text className="text-xs text-text-secondary">
-                {originalDate} • {mealTypeLabel}
-              </Text>
-              {item.note ? (
-                <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
-                  {item.note}
-                </Text>
-              ) : null}
-              <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
-                <Text className="text-sm font-semibold text-accent-primary">
-                  {formatInteger(Math.round(item.nutrients.calories))} kcal
+  const renderItem = useCallback(
+    ({ item }: { item: GroupWithNutrients }) => {
+      const originalDate = formatLocalCalendarDayIso(
+        new Date(localCalendarDayDateFromDayKeyMs(item.group.originalDate))
+      );
+      const mealTypeLabel = t(`food.meals.${item.group.originalMealType as MealType}`);
+
+      return (
+        <View className="mb-4">
+          <GenericCard variant="card">
+            <View className="flex-row items-center justify-between p-4">
+              <View className="flex-1 pr-4">
+                <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
+                  {item.group.name}
                 </Text>
                 <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.protein)}g P
+                  {originalDate} • {mealTypeLabel}
                 </Text>
-                <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.carbs)}g C
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.fat)}g F
-                </Text>
+                {item.note ? (
+                  <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
+                    {item.note}
+                  </Text>
+                ) : null}
+                <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
+                  <Text className="text-sm font-semibold text-accent-primary">
+                    {formatInteger(Math.round(item.nutrients.calories))} kcal
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.protein)}g P
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.carbs)}g C
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.fat)}g F
+                  </Text>
+                </View>
               </View>
+              <MenuButton
+                onPress={() => {
+                  setSelectedGroup(item);
+                  setIsMenuVisible(true);
+                }}
+              />
             </View>
-            <MenuButton
-              onPress={() => {
-                setSelectedGroup(item);
-                setIsMenuVisible(true);
-              }}
-            />
-          </View>
-        </GenericCard>
-      </View>
-    );
-  };
+          </GenericCard>
+        </View>
+      );
+    },
+    [formatInteger, t]
+  );
 
   return (
     <FullScreenModal
@@ -223,7 +233,7 @@ export function SavedForLaterModal({
           <FlatList
             data={groups}
             renderItem={renderItem}
-            keyExtractor={(item) => item.group.id}
+            keyExtractor={keyExtractor}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100 }}
           />
@@ -274,7 +284,9 @@ export function SavedForLaterModal({
           mode="copy"
           title={t('food.mealGroup.savedForLaterModal.trackThisMeal')}
           note={selectedGroup.note}
-          sourceMealType={(initialMealType as any) || selectedGroup.group.originalMealType}
+          sourceMealType={
+            (initialMealType as MealType) ?? (selectedGroup.group.originalMealType as MealType)
+          }
           sourceDate={initialDate || new Date()}
           isLoading={isActionLoading}
           mealName={selectedGroup.group.name}

@@ -1,5 +1,5 @@
 import * as ExpoLinking from 'expo-linking';
-import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
+import { useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,8 +70,18 @@ function drainPendingWidgetAction(openCamera: (opts: { mode: CameraMode }) => vo
   }
 }
 
-// No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
+
+function getTimeBasedGreeting(t: (key: string) => string) {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return t('home.greeting.goodMorning');
+  } else if (hour < 18) {
+    return t('home.greeting.goodAfternoon');
+  } else {
+    return t('home.greeting.goodEvening');
+  }
+}
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -87,7 +97,6 @@ export default function HomeScreen() {
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
 
-  const pathname = usePathname();
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
@@ -144,7 +153,6 @@ export default function HomeScreen() {
     endDate: weeklyRange.end,
   });
 
-  // Get recent foods for display (limit to today's logs)
   const { recentNutritionLogs, isLoading: isLoadingRecentFoods } = useNutritionLogs({
     mode: 'recent-logs',
     date: today,
@@ -169,19 +177,6 @@ export default function HomeScreen() {
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
   const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
 
-  // Get time-based greeting
-  const getTimeBasedGreeting = useCallback(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      return t('home.greeting.goodMorning');
-    } else if (hour < 18) {
-      return t('home.greeting.goodAfternoon');
-    } else {
-      return t('home.greeting.goodEvening');
-    }
-  }, [t]);
-
-  // Use reactive hook for recent workouts - only load when visible
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
     initialLimit: 2,
     groupByMonth: false,
@@ -189,21 +184,19 @@ export default function HomeScreen() {
     skipPRDetection: true,
   });
 
-  // Memoize modal close handlers to prevent unnecessary re-renders
-  const handleCloseUserMenu = useCallback(() => setIsUserMenuVisible(false), []);
-  const handleCloseNotifications = useCallback(() => setIsNotificationsVisible(false), []);
-  const handleCloseWorkoutHistory = useCallback(() => setIsWorkoutHistoryVisible(false), []);
-  const handleCloseAddFood = useCallback(() => setIsAddFoodVisible(false), []);
-  const handleCloseNutritionGoals = useCallback(() => setIsNutritionGoalsVisible(false), []);
-  const handleCloseEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(false), []);
-  const handleCloseFoodSearch = useCallback(() => setIsFoodSearchVisible(false), []);
-  const handleCloseMyMeals = useCallback(() => setIsMyMealsVisible(false), []);
-  const handleCloseDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(false), []);
-  const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
-  const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
-  const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
+  const handleCloseUserMenu = () => setIsUserMenuVisible(false);
+  const handleCloseNotifications = () => setIsNotificationsVisible(false);
+  const handleCloseWorkoutHistory = () => setIsWorkoutHistoryVisible(false);
+  const handleCloseAddFood = () => setIsAddFoodVisible(false);
+  const handleCloseNutritionGoals = () => setIsNutritionGoalsVisible(false);
+  const handleCloseEditCurrentGoal = () => setIsEditCurrentGoalVisible(false);
+  const handleCloseFoodSearch = () => setIsFoodSearchVisible(false);
+  const handleCloseMyMeals = () => setIsMyMealsVisible(false);
+  const handleCloseDailySummaryMenu = () => setIsDailySummaryMenuVisible(false);
+  const handleCloseGoalsManagement = () => setIsGoalsManagementModalVisible(false);
+  const handleCloseCreateCustomFood = () => setIsCreateCustomFoodVisible(false);
+  const handleCloseWorkoutDetail = () => setSelectedWorkoutId(undefined);
 
-  // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
     setSelectedMealType(mealType);
     setIsAddFoodVisible(false);
@@ -386,7 +379,7 @@ export default function HomeScreen() {
                     </View>
                   </View>
                   <View>
-                    <Text className="text-sm text-text-secondary">{getTimeBasedGreeting()}</Text>
+                    <Text className="text-sm text-text-secondary">{getTimeBasedGreeting(t)}</Text>
                     <Text className="text-xl font-bold text-text-primary">
                       {dbUser?.fullName || 'Guest'}
                     </Text>

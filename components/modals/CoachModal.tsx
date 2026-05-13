@@ -167,8 +167,18 @@ const renderMessageText = (props: any, theme: Theme) => {
   );
 };
 
-const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
+const MessageImage = ({
+  props,
+  theme,
+}: {
+  props: any;
+  theme: Theme;
+}) => {
   const [hasError, setHasError] = useState(false);
+
+  if (!props.currentMessage?.image) {
+    return null;
+  }
 
   if (hasError) {
     return (
@@ -373,9 +383,11 @@ const renderBubble = (
   }
 };
 
-const renderAvatar = (props: any, theme: Theme) => {
-  const styles = getStyles(theme);
-
+const renderAvatar = (
+  props: BubbleProps<ExtendedIMessage>,
+  theme: Theme,
+  styles: ReturnType<typeof getStyles>
+) => {
   if (props.currentMessage?.user._id === 1) {
     return null;
   }
@@ -400,7 +412,11 @@ const renderAvatar = (props: any, theme: Theme) => {
   );
 };
 
-const renderDay = (props: any, t: TFunction, theme: Theme) => {
+const renderDay = (
+  props: { currentMessage?: ExtendedIMessage },
+  t: TFunction,
+  theme: Theme
+) => {
   if (!props.currentMessage?.createdAt) {
     return null;
   }
@@ -638,6 +654,7 @@ type CoachModalProps = {
 
 export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
   const theme = useTheme();
+  const styles = useMemo(() => getStyles(theme), [theme]);
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -701,22 +718,18 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     });
   }, []);
 
-  // Clear unread badge whenever the modal becomes visible
   useEffect(() => {
     if (visible) {
       clearUnreadCount();
     }
   }, [visible, clearUnreadCount]);
 
-  // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
     if (pendingIntention !== TRACK_MEAL && attachedImage) {
       setAttachedImage(null);
     }
   }, [pendingIntention, attachedImage]);
 
-  // Keep screen awake while sending AI messages to prevent the phone from
-  // turning off the screen and killing network requests
   useEffect(() => {
     if (isSending) {
       activateKeepAwakeAsync('coach-chat-sending').catch(() => {});
@@ -1300,9 +1313,6 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     []
   );
 
-  // Memoize GiftedChat render callbacks so message bubbles don't re-render
-  // on every keystroke / state update. The module-level render functions are
-  // stable; only the wrapper closures need to be stabilized here.
   const gcRenderBubble = useCallback(
     (props: Parameters<typeof renderBubble>[0]) =>
       renderBubble(
@@ -1330,9 +1340,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       t,
     ]
   );
+
   const gcRenderAvatar = useCallback(
-    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
-    [theme]
+    (props: BubbleProps<ExtendedIMessage>) => renderAvatar(props, theme, styles),
+    [theme, styles]
   );
 
   const gcRenderCustomView = useCallback(
@@ -1397,7 +1408,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   );
 
   const gcRenderDay = useCallback(
-    (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme),
+    (props: { currentMessage?: ExtendedIMessage }) => renderDay(props, t, theme),
     [t, theme]
   );
 
@@ -1405,8 +1416,6 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     (props: any) => <MessageImage props={props} theme={theme} />,
     [theme]
   );
-
-  const gcScrollToBottomComponent = useCallback(() => null, []);
 
   const contextIcon = useMemo(() => {
     const { Icon, color } = getConversationContextIcon(conversationContext, theme);
@@ -1556,7 +1565,6 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
             renderAccessory={renderAccessory}
             renderDay={gcRenderDay}
             renderMessageImage={gcRenderMessageImage}
-            scrollToBottomComponent={gcScrollToBottomComponent}
             minInputToolbarHeight={0}
             listProps={{
               contentContainerStyle: {
@@ -1650,6 +1658,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       {selectedMealForTracking && mealForLogMealModal ? (
         <LogMealModal
+          key={`log-meal-${selectedMealForTracking.messageId}-${selectedMealForTracking.mealTypeIdentifier}`}
           visible
           onClose={() => setSelectedMealForTracking(null)}
           meal={mealForLogMealModal}

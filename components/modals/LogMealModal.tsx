@@ -76,28 +76,15 @@ export function LogMealModal({
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);
 
-  const referenceGrams = useMemo(() => Math.max(meal.grams ?? 100, 1), [meal.grams]);
-
-  const [portionGrams, setPortionGrams] = useState(referenceGrams);
-
-  useEffect(() => {
-    if (visible) {
-      setPortionGrams(referenceGrams);
-    }
-  }, [visible, referenceGrams]);
-
-  useEffect(() => {
-    if (visible) {
-      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
-      setSelectedMealType(initialMealType ?? 'lunch');
-    }
-  }, [visible, initialDate, initialMealType]);
-
   useEffect(() => {
     if (!visible) {
       setShowDatePicker(false);
     }
   }, [visible]);
+
+  const referenceGrams = useMemo(() => Math.max(meal.grams ?? 100, 1), [meal.grams]);
+
+  const [portionGrams, setPortionGrams] = useState(referenceGrams);
 
   const portionScale = portionGrams / referenceGrams;
 

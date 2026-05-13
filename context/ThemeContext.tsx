@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 
 import { useTheme, useThemeMode } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
@@ -16,9 +16,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeMode = useThemeMode();
   const isDark = themeMode === 'dark';
 
-  return (
-    <ThemeContext.Provider value={{ theme, isDark, themeMode }}>{children}</ThemeContext.Provider>
-  );
+  const value = useMemo(() => ({ theme, isDark, themeMode }), [theme, isDark, themeMode]);
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext(): ThemeContextType {

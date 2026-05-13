@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -59,19 +59,19 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
  * via a single reactive pipeline, derives enriched sets and current/next/previous
  * in superset-effective order. No refetch, no debounce.
  */
+type WorkoutSessionState = {
+  workoutLog: WorkoutLog | null;
+  logExercises: WorkoutLogExercise[];
+  sets: EnrichedWorkoutLogSet[];
+  exercises: Exercise[];
+};
+
 export function useWorkoutSessionState(workoutLogId: string | undefined) {
-  const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
-  const [logExercises, setLogExercises] = useState<WorkoutLogExercise[]>([]);
-  const [sets, setSets] = useState<EnrichedWorkoutLogSet[]>([]);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [currentSet, setCurrentSet] = useState<EnrichedWorkoutLogSet | null>(null);
-  const [nextSet, setNextSet] = useState<EnrichedWorkoutLogSet | null>(null);
-  const [previousSet, setPreviousSet] = useState<PreviousSetInfo | null>(null);
-  const [progress, setProgress] = useState<WorkoutSessionProgress>({
-    totalSets: 0,
-    completedSets: 0,
-    currentSetOrder: null,
-    isComplete: false,
+  const [state, setState] = useState<WorkoutSessionState>({
+    workoutLog: null,
+    logExercises: [],
+    sets: [],
+    exercises: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,30 +79,18 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
 
   useEffect(() => {
-    const loadBodyWeight = async () => {
-      const weight = await UserMetricService.getUserBodyWeightKgForVolume();
+    Promise.all([
+      UserMetricService.getUserBodyWeightKgForVolume(),
+      SettingsService.getProgressionMode(),
+    ]).then(([weight, mode]) => {
       setBodyWeightKg(weight);
-    };
-
-    const loadProgressionMode = async () => {
-      const mode = await SettingsService.getProgressionMode();
       setProgressionMode(mode);
-    };
-
-    loadBodyWeight();
-    loadProgressionMode();
+    });
   }, []);
 
   useEffect(() => {
     if (!workoutLogId) {
-      setWorkoutLog(null);
-      setLogExercises([]);
-      setSets([]);
-      setExercises([]);
-      setCurrentSet(null);
-      setNextSet(null);
-      setPreviousSet(null);
-      setProgress({ totalSets: 0, completedSets: 0, currentSetOrder: null, isComplete: false });
+      setState({ workoutLog: null, logExercises: [], sets: [], exercises: [] });
       setError(null);
       setIsLoading(false);
       return;
@@ -163,7 +151,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             return null;
           }
           if (log.deletedAt) {
-            return { error: 'Workout has been deleted' as const };
+            throw new Error('Workout has been deleted');
           }
           const leMap = logExs.map((le) => ({
             id: le.id,
@@ -172,155 +160,23 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             notes: le.notes,
           }));
 
-          let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
-
-          // Intra-session RIR adjustment
-          const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
-          if (currentActive) {
-            const effectiveOrder = getEffectiveOrder(enrichedSets);
-            const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
-            if (currentIdx > 0) {
-              const lastSet = effectiveOrder[currentIdx - 1];
-              if (
-                (lastSet.difficultyLevel ?? 0) > 0 &&
-                !(lastSet.isSkipped ?? false) &&
-                lastSet.exerciseId === currentActive.exerciseId
-              ) {
-                // Adjust current set based on lastSet
-                const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
-                const equipmentType = exercise?.equipmentType;
-                const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
-                const oneRM = calculateAverage1RM(
-                  lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
-                  lastSet.reps,
-                  lastSet.repsInReserve ?? 0
-                );
-
-                const targetRIR = currentActive.repsInReserve ?? 2;
-
-                // Carry over weight from last set if it differs from current planned weight
-                // This respects manual adjustments made by the user in the previous set
-                const lastWeight = lastSet.weight ?? 0;
-                const currentPlannedWeight = currentActive.weight ?? 0;
-                if (
-                  lastWeight > 0 &&
-                  currentPlannedWeight > 0 &&
-                  Math.abs(lastWeight - currentPlannedWeight) >= 0.1
-                ) {
-                  currentActive.weight = lastWeight;
-                }
-
-                if (progressionMode === 'weight_first') {
-                  const adjustedWeight = calculateWeightForTargetRIR(
-                    oneRM,
-                    currentActive.reps,
-                    targetRIR
-                  );
-
-                  const roundedWeight = Math.round(adjustedWeight);
-                  if (Math.abs(roundedWeight - (currentActive.weight ?? 0)) >= 1) {
-                    currentActive.weight = roundedWeight;
-                    currentActive.isAutoAdjusted = true;
-                  }
-                } else {
-                  // reps_first: keep (newly carried over) weight, adjust reps to match 1RM at target RIR
-                  const adjustedReps = calculateRepsForTargetRIR(
-                    oneRM,
-                    isBodyweight
-                      ? (currentActive.weight ?? 0) + bodyWeightKg
-                      : (currentActive.weight ?? 0),
-                    targetRIR
-                  );
-
-                  if (Math.abs(adjustedReps - (currentActive.reps ?? 0)) >= 1) {
-                    currentActive.reps = adjustedReps;
-                    currentActive.isAutoAdjusted = true;
-                  }
-                }
-              }
-            }
-          }
-
-          const totalSets = enrichedSets.length;
-          const completedSets = enrichedSets.filter(
-            (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
-          ).length;
-          const isComplete = totalSets > 0 && completedSets === totalSets;
-          const current = currentActive;
-          const next = current
-            ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0)
-            : null;
-          let prev: PreviousSetInfo | null = null;
-
-          if (current) {
-            const effectiveOrder = getEffectiveOrder(enrichedSets);
-            const currentIdx = effectiveOrder.findIndex((s) => s.id === current.id);
-            if (currentIdx > 0) {
-              for (let i = currentIdx - 1; i >= 0; i--) {
-                const s = effectiveOrder[i];
-                if ((s.difficultyLevel ?? 0) > 0) {
-                  prev = {
-                    weight: s.weight ?? 0,
-                    reps: s.reps ?? 0,
-                    exerciseId: s.exerciseId ?? '',
-                  };
-                  break;
-                }
-              }
-            }
-          }
+          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
 
           return {
-            log,
+            workoutLog: log,
             logExercises: logExs,
             sets: enrichedSets,
             exercises: exerciseList,
-            currentSet: current,
-            nextSet: next,
-            previousSet: prev,
-            progress: {
-              totalSets,
-              completedSets,
-              currentSetOrder: current?.setOrder ?? null,
-              isComplete,
-            },
           };
         })
       )
       .subscribe({
         next: (payload) => {
           if (payload === null) {
-            setWorkoutLog(null);
-            setLogExercises([]);
-            setSets([]);
-            setExercises([]);
-            setCurrentSet(null);
-            setNextSet(null);
-            setPreviousSet(null);
-            setProgress({
-              totalSets: 0,
-              completedSets: 0,
-              currentSetOrder: null,
-              isComplete: false,
-            });
-            setIsLoading(false);
-            return;
+            setState({ workoutLog: null, logExercises: [], sets: [], exercises: [] });
+          } else {
+            setState(payload);
           }
-
-          if ('error' in payload) {
-            setError(payload.error || '');
-            setIsLoading(false);
-            return;
-          }
-
-          setWorkoutLog(payload.log);
-          setLogExercises(payload.logExercises);
-          setSets(payload.sets);
-          setExercises(payload.exercises);
-          setCurrentSet(payload.currentSet);
-          setNextSet(payload.nextSet);
-          setPreviousSet(payload.previousSet);
-          setProgress(payload.progress);
           setError(null);
           setIsLoading(false);
         },
@@ -332,7 +188,143 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [bodyWeightKg, progressionMode, workoutLogId]);
+  }, [workoutLogId]);
+
+  const { workoutLog, logExercises, sets, exercises } = state;
+
+  const derivedData = useMemo(() => {
+    if (!workoutLog || sets.length === 0) {
+      return {
+        enrichedSets: sets,
+        currentSet: null,
+        nextSet: null,
+        previousSet: null,
+        progress: { totalSets: 0, completedSets: 0, currentSetOrder: null, isComplete: false },
+      };
+    }
+
+    // Intra-session RIR adjustment
+    const originalCurrentActive = getFirstUnloggedInEffectiveOrder(sets);
+    let enrichedSets = sets;
+    let currentActive = originalCurrentActive;
+
+    if (originalCurrentActive) {
+      const effectiveOrder = getEffectiveOrder(sets);
+      const currentIdx = effectiveOrder.findIndex((s) => s.id === originalCurrentActive.id);
+      if (currentIdx > 0) {
+        const lastSet = effectiveOrder[currentIdx - 1];
+        if (
+          (lastSet.difficultyLevel ?? 0) > 0 &&
+          !(lastSet.isSkipped ?? false) &&
+          lastSet.exerciseId === originalCurrentActive.exerciseId
+        ) {
+          // Clone the active set to avoid mutation
+          const adjustedActive = { ...originalCurrentActive };
+          let changed = false;
+
+          // Adjust current set based on lastSet
+          const exercise = exercises.find((e) => e.id === lastSet.exerciseId);
+          const equipmentType = exercise?.equipmentType;
+          const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
+          const oneRM = calculateAverage1RM(
+            lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
+            lastSet.reps,
+            lastSet.repsInReserve ?? 0
+          );
+
+          const targetRIR = adjustedActive.repsInReserve ?? 2;
+
+          // Carry over weight from last set if it differs from current planned weight
+          const lastWeight = lastSet.weight ?? 0;
+          const currentPlannedWeight = adjustedActive.weight ?? 0;
+          if (
+            lastWeight > 0 &&
+            currentPlannedWeight > 0 &&
+            Math.abs(lastWeight - currentPlannedWeight) >= 0.1
+          ) {
+            adjustedActive.weight = lastWeight;
+            changed = true;
+          }
+
+          if (progressionMode === 'weight_first') {
+            const adjustedWeight = calculateWeightForTargetRIR(
+              oneRM,
+              adjustedActive.reps,
+              targetRIR
+            );
+            const roundedWeight = Math.round(adjustedWeight);
+            if (Math.abs(roundedWeight - (adjustedActive.weight ?? 0)) >= 1) {
+              adjustedActive.weight = roundedWeight;
+              adjustedActive.isAutoAdjusted = true;
+              changed = true;
+            }
+          } else {
+            const adjustedReps = calculateRepsForTargetRIR(
+              oneRM,
+              isBodyweight
+                ? (adjustedActive.weight ?? 0) + bodyWeightKg
+                : (adjustedActive.weight ?? 0),
+              targetRIR
+            );
+            if (Math.abs(adjustedReps - (adjustedActive.reps ?? 0)) >= 1) {
+              adjustedActive.reps = adjustedReps;
+              adjustedActive.isAutoAdjusted = true;
+              changed = true;
+            }
+          }
+
+          if (changed) {
+            currentActive = Object.assign(
+              Object.create(Object.getPrototypeOf(originalCurrentActive)),
+              originalCurrentActive,
+              adjustedActive
+            );
+            enrichedSets = sets.map((s) => (s.id === currentActive!.id ? currentActive! : s));
+          }
+        }
+      }
+    }
+
+    const totalSets = enrichedSets.length;
+    const completedSets = enrichedSets.filter(
+      (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
+    ).length;
+    const isComplete = totalSets > 0 && completedSets === totalSets;
+    const current = currentActive;
+    const next = current ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0) : null;
+    let prev: PreviousSetInfo | null = null;
+
+    if (current) {
+      const effectiveOrder = getEffectiveOrder(enrichedSets);
+      const currentIdx = effectiveOrder.findIndex((s) => s.id === current.id);
+      if (currentIdx > 0) {
+        for (let i = currentIdx - 1; i >= 0; i--) {
+          const s = effectiveOrder[i];
+          if ((s.difficultyLevel ?? 0) > 0) {
+            prev = {
+              weight: s.weight ?? 0,
+              reps: s.reps ?? 0,
+              exerciseId: s.exerciseId ?? '',
+            };
+            break;
+          }
+        }
+      }
+    }
+
+    return {
+      enrichedSets,
+      currentSet: current,
+      nextSet: next,
+      previousSet: prev,
+      progress: {
+        totalSets,
+        completedSets,
+        currentSetOrder: current?.setOrder ?? null,
+        isComplete,
+      },
+    };
+  }, [workoutLog, sets, exercises, bodyWeightKg, progressionMode]);
 
   const refresh = useCallback(() => {
     if (!workoutLogId) {
@@ -340,44 +332,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
     }
     WorkoutService.getWorkoutWithDetails(workoutLogId).then(
       ({ workoutLog: log, sets: s, exercises: ex, logExercises: le }) => {
-        setWorkoutLog(log);
-        setLogExercises(le);
-        setSets(s);
-        setExercises(ex);
-        const totalSets = s.length;
-        const completedSets = s.filter(
-          (x) => (x.difficultyLevel ?? 0) > 0 || (x.isSkipped ?? false)
-        ).length;
-        const isComplete = totalSets > 0 && completedSets === totalSets;
-        const current = getFirstUnloggedInEffectiveOrder(s);
-        const next = current ? getNextSetInEffectiveOrder(s, current.setOrder ?? 0) : null;
-        let prev: PreviousSetInfo | null = null;
-        if (current) {
-          const effectiveOrder = getEffectiveOrder(s);
-          const currentIdx = effectiveOrder.findIndex((x) => x.id === current.id);
-          if (currentIdx > 0) {
-            for (let i = currentIdx - 1; i >= 0; i--) {
-              const set = effectiveOrder[i];
-              if ((set.difficultyLevel ?? 0) > 0) {
-                prev = {
-                  weight: set.weight ?? 0,
-                  reps: set.reps ?? 0,
-                  exerciseId: set.exerciseId ?? '',
-                };
-                break;
-              }
-            }
-          }
-        }
-        setCurrentSet(current);
-        setNextSet(next);
-        setPreviousSet(prev);
-        setProgress({
-          totalSets,
-          completedSets,
-          currentSetOrder: current?.setOrder ?? null,
-          isComplete,
-        });
+        setState({ workoutLog: log, logExercises: le, sets: s, exercises: ex });
       },
       (err) => {
         console.error('Error refreshing workout:', err);
@@ -388,12 +343,12 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   return {
     workoutLog,
     logExercises,
-    sets,
+    sets: derivedData.enrichedSets,
     exercises,
-    currentSet,
-    nextSet,
-    previousSet,
-    progress,
+    currentSet: derivedData.currentSet,
+    nextSet: derivedData.nextSet,
+    previousSet: derivedData.previousSet,
+    progress: derivedData.progress,
     isLoading,
     error,
     refresh,

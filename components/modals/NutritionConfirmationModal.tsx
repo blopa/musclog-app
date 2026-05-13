@@ -37,52 +37,59 @@ export function NutritionConfirmationModal({
     onConfirm(entries);
   }, [entries, onConfirm]);
 
-  const renderNutritionEntry = ({ item, index }: { item: NutritionEntry; index: number }) => (
-    <View
-      key={index}
-      className="mb-3 rounded-lg p-4"
-      style={{ backgroundColor: theme.colors.background.card }}
-    >
-      <View className="mb-2 flex-row items-center justify-between">
-        <Text className="flex-1 text-sm font-semibold text-text-primary">{item.productTitle}</Text>
-        <Text className="text-xs text-text-secondary">{mealTypeToString(item.mealType)}</Text>
-      </View>
+  const keyExtractor = useCallback((item: NutritionEntry, index: number) => `${index}`, []);
 
-      <View className="space-y-1">
-        <View className="flex-row justify-between">
-          <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">
-            {formatRoundedDecimal(item.calories, 2)} kcal
+  const renderNutritionEntry = useCallback(
+    ({ item, index }: { item: NutritionEntry; index: number }) => (
+      <View
+        key={index}
+        className="mb-3 rounded-lg p-4"
+        style={{ backgroundColor: theme.colors.background.card }}
+      >
+        <View className="mb-2 flex-row items-center justify-between">
+          <Text className="flex-1 text-sm font-semibold text-text-primary">
+            {item.productTitle}
           </Text>
+          <Text className="text-xs text-text-secondary">{mealTypeToString(item.mealType)}</Text>
         </View>
-        <View className="flex-row justify-between">
-          <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">
-            {t('common.weightFormatG', { value: formatRoundedDecimal(item.protein, 2) })}
-          </Text>
-        </View>
-        <View className="flex-row justify-between">
-          <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">
-            {t('common.weightFormatG', { value: formatRoundedDecimal(item.carbs, 2) })}
-          </Text>
-        </View>
-        <View className="flex-row justify-between">
-          <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">
-            {t('common.weightFormatG', { value: formatRoundedDecimal(item.fat, 2) })}
-          </Text>
-        </View>
-        {item.fiber ? (
+
+        <View className="space-y-1">
           <View className="flex-row justify-between">
-            <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {t('common.weightFormatG', { value: formatRoundedDecimal(item.fiber, 2) })}
+              {formatRoundedDecimal(item.calories, 2)} kcal
             </Text>
           </View>
-        ) : null}
+          <View className="flex-row justify-between">
+            <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
+            <Text className="text-xs font-medium text-text-primary">
+              {t('common.weightFormatG', { value: formatRoundedDecimal(item.protein, 2) })}
+            </Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
+            <Text className="text-xs font-medium text-text-primary">
+              {t('common.weightFormatG', { value: formatRoundedDecimal(item.carbs, 2) })}
+            </Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
+            <Text className="text-xs font-medium text-text-primary">
+              {t('common.weightFormatG', { value: formatRoundedDecimal(item.fat, 2) })}
+            </Text>
+          </View>
+          {item.fiber ? (
+            <View className="flex-row justify-between">
+              <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
+              <Text className="text-xs font-medium text-text-primary">
+                {t('common.weightFormatG', { value: formatRoundedDecimal(item.fiber, 2) })}
+              </Text>
+            </View>
+          ) : null}
+        </View>
       </View>
-    </View>
+    ),
+    [formatRoundedDecimal, t, theme.colors.background.card]
   );
 
   return (
@@ -148,6 +155,7 @@ export function NutritionConfirmationModal({
         <FlatList
           data={entries}
           renderItem={renderNutritionEntry}
+          keyExtractor={keyExtractor}
           scrollEnabled={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
