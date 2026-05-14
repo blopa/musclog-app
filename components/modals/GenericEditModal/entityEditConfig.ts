@@ -88,6 +88,8 @@ const USER_METRIC_TYPES = [
   'neck',
   'shoulders',
   'mood',
+  'water',
+  'supplement',
   'ffmi',
   'nutrition',
   'exercise',
@@ -365,6 +367,12 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
     case 'nutritionGoal':
       return [
         {
+          type: 'boolean',
+          key: 'isDynamic',
+          label: 'nutritionGoals.dynamic',
+          subtitle: 'nutritionGoals.dynamicInfo',
+        },
+        {
           type: 'number',
           key: 'totalCalories',
           label: 'currentGoalsCard.dailyTarget',
@@ -425,7 +433,8 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           min: 0,
           step: 0.1,
           unit: weightUnitLabel,
-          required: true,
+          clearable: true,
+          unsetPlaceholder: 'exerciseGoals.creation.notSet',
         },
         {
           type: 'number',
@@ -448,6 +457,14 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'currentGoalsCard.ffmi',
           min: 0,
           step: 0.1,
+        },
+        {
+          type: 'date',
+          key: 'targetDate',
+          label: 'nutritionGoals.targetDate',
+          clearable: true,
+          clearLabel: 'goalsManagement.manageGoalData.targetDate.clear',
+          unsetPlaceholder: 'goalsManagement.manageGoalData.targetDate.notSet',
         },
       ];
 
@@ -596,10 +613,12 @@ export async function getInitialValues(
         fats: recordAny.fats ?? 0,
         fiber: recordAny.fiber ?? 0,
         eatingPhase: recordAny.eatingPhase ?? 'maintain',
-        targetWeight: recordAny.targetWeight ?? 0,
-        targetBodyFat: recordAny.targetBodyFat ?? 0,
-        targetBMI: recordAny.targetBmi ?? 0,
-        targetFFMI: recordAny.targetFfmi ?? 0,
+        isDynamic: recordAny.isDynamic ?? false,
+        targetWeight: recordAny.targetWeight > 0 ? recordAny.targetWeight : null,
+        targetBodyFat: recordAny.targetBodyFat ?? undefined,
+        targetBMI: recordAny.targetBmi ?? undefined,
+        targetFFMI: recordAny.targetFfmi ?? undefined,
+        targetDate: recordAny.targetDate ?? null,
       };
 
     case 'chatMessage':
@@ -612,9 +631,9 @@ export async function getInitialValues(
         checkinDate: recordAny.checkinDate ?? Date.now(),
         status: recordAny.status ?? 'pending',
         targetWeight: recordAny.targetWeight ?? 0,
-        targetBodyFat: recordAny.targetBodyFat ?? 0,
-        targetBmi: recordAny.targetBmi ?? 0,
-        targetFfmi: recordAny.targetFfmi ?? 0,
+        targetBodyFat: recordAny.targetBodyFat ?? undefined,
+        targetBmi: recordAny.targetBmi ?? undefined,
+        targetFfmi: recordAny.targetFfmi ?? undefined,
       };
 
     default:
@@ -725,7 +744,7 @@ export async function saveRecord(
       break;
 
     case 'nutritionGoal': {
-      let targetWeightKg = values.targetWeight as number | undefined;
+      let targetWeightKg = values.targetWeight as number | null | undefined;
       if (context?.units && targetWeightKg != null) {
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
@@ -739,10 +758,15 @@ export async function saveRecord(
           fats: values.fats as number | undefined,
           fiber: values.fiber as number | undefined,
           eatingPhase: values.eatingPhase as any,
-          targetWeight: targetWeightKg,
+          isDynamic: values.isDynamic !== undefined ? Boolean(values.isDynamic) : undefined,
+          targetWeight: targetWeightKg ?? null,
           targetBodyFat: values.targetBodyFat as number | undefined,
           targetBMI: values.targetBMI as number | undefined,
           targetFFMI: values.targetFFMI as number | undefined,
+          targetDate:
+            values.targetDate !== undefined
+              ? ((values.targetDate as number | null | undefined) ?? null)
+              : undefined,
         },
         true
       );
@@ -833,10 +857,12 @@ export function getCreateInitialValues(
         fats: 0,
         fiber: 0,
         eatingPhase: 'maintain',
-        targetWeight: 0,
-        targetBodyFat: 0,
-        targetBMI: 0,
-        targetFFMI: 0,
+        isDynamic: false,
+        targetWeight: null,
+        targetBodyFat: undefined,
+        targetBMI: undefined,
+        targetFFMI: undefined,
+        targetDate: null,
       };
 
     case 'nutritionCheckin':
@@ -844,9 +870,9 @@ export function getCreateInitialValues(
         checkinDate: Date.now(),
         status: 'pending',
         targetWeight: 0,
-        targetBodyFat: 0,
-        targetBmi: 0,
-        targetFfmi: 0,
+        targetBodyFat: undefined,
+        targetBmi: undefined,
+        targetFfmi: undefined,
       };
 
     case 'meal':
@@ -933,23 +959,27 @@ export async function createRecord(
     }
 
     case 'nutritionGoal': {
-      let targetWeightKg = values.targetWeight as number;
+      let targetWeightKg = values.targetWeight as number | null | undefined;
       if (context?.units && targetWeightKg != null) {
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
 
-      await NutritionGoalService.saveGoals({
+      const savedGoal = await NutritionGoalService.saveGoals({
         totalCalories: values.totalCalories as number,
         protein: values.protein as number,
         carbs: values.carbs as number,
         fats: values.fats as number,
         fiber: (values.fiber as number) ?? 0,
         eatingPhase: values.eatingPhase as any,
-        targetWeight: targetWeightKg,
-        targetBodyFat: (values.targetBodyFat as number) ?? 0,
-        targetBMI: (values.targetBMI as number) ?? 0,
-        targetFFMI: (values.targetFFMI as number) ?? 0,
+        isDynamic: Boolean(values.isDynamic),
+        targetWeight: targetWeightKg ?? null,
+        targetBodyFat: values.targetBodyFat as number | undefined,
+        targetBMI: values.targetBMI as number | undefined,
+        targetFFMI: values.targetFFMI as number | undefined,
+        targetDate: (values.targetDate as number | null | undefined) ?? null,
       });
+
+      await NutritionGoalService.regenerateCheckins(savedGoal.id);
       break;
     }
 
@@ -968,9 +998,9 @@ export async function createRecord(
         checkinDate: (values.checkinDate as number) ?? Date.now(),
         status: values.status as any,
         targetWeight: targetWeightKg,
-        targetBodyFat: (values.targetBodyFat as number) ?? 0,
-        targetBmi: (values.targetBmi as number) ?? 0,
-        targetFfmi: (values.targetFfmi as number) ?? 0,
+        targetBodyFat: values.targetBodyFat as number | undefined,
+        targetBmi: values.targetBmi as number | undefined,
+        targetFfmi: values.targetFfmi as number | undefined,
       });
       break;
     }

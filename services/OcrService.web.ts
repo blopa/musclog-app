@@ -1,22 +1,36 @@
 /**
  * OCR Service for Web
- * Not supported on web platform
+ * Uses tesseract.js for in-browser on-device OCR.
  */
 
-import type { OcrResult } from './OcrService';
+import { createWorker } from 'tesseract.js';
 
-/**
- * Recognize text from an image (not supported on web)
- * @throws Error indicating OCR is not supported on web platform
- */
-export async function recognizeText(): Promise<OcrResult> {
-  throw new Error('OCR is not supported on web platform');
+import { mapAppLanguageToOcrLanguage } from '@/utils/ocr';
+
+import { type OcrResult } from './OcrService';
+
+export async function initializeOcr(_language?: string): Promise<void> {
+  // tesseract.js initializes lazily on first recognize call
 }
 
-/**
- * Get available languages (not supported on web)
- * @throws Error indicating OCR is not supported on web platform
- */
+export async function recognizeText(imageUri: string, language?: string): Promise<OcrResult> {
+  const startTime = Date.now();
+  const worker = await createWorker(mapAppLanguageToOcrLanguage(language));
+
+  try {
+    const {
+      data: { text },
+    } = await worker.recognize(imageUri);
+    return { text: text.trim(), blocks: [], processingTimeMs: Date.now() - startTime };
+  } finally {
+    await worker.terminate();
+  }
+}
+
 export async function getAvailableLanguages(): Promise<string[]> {
-  throw new Error('OCR is not supported on web platform');
+  return ['eng', 'spa', 'por', 'nld', 'deu', 'fra', 'rus'];
+}
+
+export async function terminateOcr(): Promise<void> {
+  // workers are terminated after each call
 }

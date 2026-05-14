@@ -2,12 +2,13 @@ import { NutritionService, UserMetricService } from '@/database/services';
 
 import {
   localCalendarWeekIndexSince,
+  localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
 } from './calendarDate';
 import { storedWeightToKg } from './unitConversion';
 
-const LOOKBACK_DAYS = 30;
+export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
 const MIN_DAYS_WITH_NUTRITION = 7;
 
 function average(values: number[]): number {
@@ -76,12 +77,13 @@ export async function getHistoricalNutritionParams(options: {
 
   /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
   const endDayStartTs = localDayStartMs(asOfDate);
+  const endMetricTs = localDayClosedRangeMaxMs(asOfDate);
   /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
   const inclusiveRangeEndDate = new Date(endDayStartTs);
-  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -LOOKBACK_DAYS);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -HISTORICAL_NUTRITION_LOOKBACK_DAYS);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endDayStartTs };
+  const dateRange = { startDate: startTs, endDate: endMetricTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
@@ -158,7 +160,7 @@ export async function getHistoricalNutritionParams(options: {
 
   return {
     historicalTotalCalories: Math.round(rangeNutrients.calories),
-    historicalTotalDays: LOOKBACK_DAYS,
+    historicalTotalDays: HISTORICAL_NUTRITION_LOOKBACK_DAYS,
     historicalInitialWeightKg: initialWeight,
     historicalFinalWeightKg: finalWeight,
     ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),

@@ -155,6 +155,7 @@ export function gramsToDisplay(g: number, units: Units): number {
   if (units === 'imperial') {
     return convert(g, 'g').to('oz') as number;
   }
+
   return g;
 }
 

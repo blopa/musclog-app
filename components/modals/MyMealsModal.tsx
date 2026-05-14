@@ -11,6 +11,9 @@ import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
+import type { MealType } from '@/database/models';
+import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
 import { FoodService, MealService, NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -21,14 +24,15 @@ import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
 import { trackMeal } from '@/utils/coachAI';
+import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { captureException } from '@/utils/sentry';
 
 import { AddMealModal } from './AddMealModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import DynamicMealCreatorModal from './DynamicMealCreatorModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 // Type for transformed meal data that matches MealItemCard props
@@ -91,9 +95,11 @@ const deriveTags = (
 type MyMealsModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Pre-selected meal type to use when logging a meal. */
+  initialMealType?: MealType;
 };
 
-export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
+export default function MyMealsModal({ visible, onClose, initialMealType }: MyMealsModalProps) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
@@ -111,6 +117,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   ];
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
+  const [dynamicMealCreatorVisible, setDynamicMealCreatorVisible] = useState(false);
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
   const [menuMealId, setMenuMealId] = useState<string | null>(null);
@@ -124,6 +131,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     if (!visible) {
       setAddMealModalVisible(false);
       setCreateMealModalVisible(false);
+      setDynamicMealCreatorVisible(false);
       setLogMealModalVisible(false);
       setSelectedMealForLogging(null);
       setMenuMealId(null);
@@ -207,7 +215,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
         );
         setMealCardsData(transformedMeals);
       } catch (error) {
-        console.error('Error transforming meals:', error);
+        handleError(error, 'MyMealsModal.transformMeals', {
+          showSnackbar: false,
+        });
       } finally {
         setIsTransforming(false);
       }
@@ -236,8 +246,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       const lowerFilter = activeFilter.toLowerCase();
       filtered = filtered.filter((meal) => {
         if (lowerFilter === 'high-protein') {
-          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein'));
+          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein')); // TODO: shouldn't this use translation?
         }
+
         return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
       });
     }
@@ -249,6 +260,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const handleCreateMeal = () => {
     setAddMealModalVisible(false);
     setTimeout(() => setCreateMealModalVisible(true), 300); // Wait for modal close animation
+  };
+
+  const handleDynamicMealCreator = () => {
+    setAddMealModalVisible(false);
+    setTimeout(() => setDynamicMealCreatorVisible(true), 300);
   };
 
   const handleGenerateMealAI = useCallback(() => {
@@ -272,7 +288,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       try {
         const userContent = [
           context.description.trim(),
-          context.tags.length > 0 ? `Preferences: ${context.tags.join(', ')}` : '',
+          context.tags.length > 0
+            ? `${i18n.t('meals.generateAI.preferencesLabel')}: ${context.tags.join(', ')}`
+            : '',
         ]
           .filter(Boolean)
           .join('. ');
@@ -292,7 +310,12 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
           normalized.map(async (ingredient) => {
             // Reuse the existing food when the LLM matched one; create custom otherwise
             if (ingredient.foodId) {
-              return { foodId: ingredient.foodId, amount: ingredient.grams };
+              try {
+                await database.get<Food>('foods').find(ingredient.foodId);
+                return { foodId: ingredient.foodId, amount: ingredient.grams };
+              } catch (error) {
+                handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext');
+              }
             }
 
             const food = await FoodService.createCustomFood(ingredient.name, {
@@ -316,8 +339,10 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
         await refresh();
         showSnackbar('success', t('meals.generateAI.successMessage'));
-      } catch {
-        showSnackbar('error', t('meals.generateAI.errorMessage'));
+      } catch (error) {
+        handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext', {
+          snackbarMessage: t('meals.generateAI.errorMessage'),
+        });
       } finally {
         setIsGeneratingMealAI(false);
       }
@@ -340,11 +365,16 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       return;
     }
 
+    // Close the options menu before opening the details modal so iOS does not
+    // try to present two sibling modals from the same UIViewController.
+    setMenuMealId(null);
     setSelectedMealForLogging(meal);
     setLogMealModalVisible(true);
   };
 
   const handleEditMeal = (mealId: string) => {
+    // Close the options menu before opening the edit modal (iOS hierarchy fix).
+    setMenuMealId(null);
     setEditMealId(mealId);
   };
 
@@ -367,7 +397,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
         const ingredientLines: string[] = [];
 
         for (const mealFood of foods) {
-          const grams = await mealFood.getGramWeight();
+          const grams = await mealFood.getReferenceGramWeight();
           const food = await mealFood.food;
           const name = food?.name?.trim() || t('food.unknownFood');
           const gramsStr = formatRoundedDecimal(grams, 2);
@@ -392,8 +422,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
         await shareText(message, { title: meal.name ?? undefined });
       } catch (error) {
-        captureException(error, { data: { context: 'MyMealsModal.handleShareMealAsRecipe' } });
-        showSnackbar('error', t('errors.somethingWentWrong'));
+        handleError(error, 'MyMealsModal.handleShareMealAsRecipe', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
       }
     },
     [formatRoundedDecimal, shareText, showSnackbar, t]
@@ -409,9 +440,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       await MealService.deleteMeal(deleteMealId);
       await refresh();
     } catch (error) {
-      console.error('Error deleting meal:', error);
-      captureException(error, { data: { context: 'MyMealsModal.handleConfirmDelete' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'MyMealsModal.handleConfirmDelete', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsDeleting(false);
       setDeleteMealId(null);
@@ -431,7 +462,6 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
   const showLoading = isLoading || isTransforming || isGeneratingMealAI;
 
-  // Helper functions to avoid nested ternaries
   const getEmptyStateTitle = () => {
     if (searchQuery.trim()) {
       return t('meals.noMealsFound');
@@ -568,6 +598,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             visible={addMealModalVisible}
             onClose={() => setAddMealModalVisible(false)}
             onCreateMeal={handleCreateMeal}
+            onDynamicMealCreator={handleDynamicMealCreator}
             onGenerateMealAI={handleGenerateMealAI}
             isAiEnabled={isAiConfigured}
           />
@@ -582,6 +613,17 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             describeLabel={t('meals.generateAI.describeLabel')}
             placeholder={t('meals.generateAI.placeholder')}
             applyLabel={t('meals.generateAI.applyLabel')}
+          />
+        ) : null}
+        {/* Dynamic Meal Creator */}
+        {dynamicMealCreatorVisible ? (
+          <DynamicMealCreatorModal
+            visible={dynamicMealCreatorVisible}
+            onClose={() => setDynamicMealCreatorVisible(false)}
+            onSaved={() => {
+              refresh();
+              setDynamicMealCreatorVisible(false);
+            }}
           />
         ) : null}
         {/* CreateMealModal (create or edit) */}
@@ -645,7 +687,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
         ) : null}
         {/* FoodDetailsModal for Meal */}
         {logMealModalVisible && selectedMealForLogging ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={logMealModalVisible}
             meal={selectedMealForLogging}
             onClose={() => {
@@ -654,6 +696,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             }}
             onLogMeal={handleLogMeal}
             isAiEnabled={isAiConfigured}
+            initialMealType={initialMealType}
           />
         ) : null}
         {/* Delete Confirmation Modal */}

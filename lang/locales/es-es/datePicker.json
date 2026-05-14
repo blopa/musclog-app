@@ -1,0 +1,16 @@
+{
+  "datePicker": {
+    "cancel": "Cancelar",
+    "clearDate": "Borrar fecha",
+    "confirm": "Confirmar",
+    "month": "Mes",
+    "nextMonday": "Próximo Lunes",
+    "selectDate": "Seleccionar Fecha",
+    "selectMonthYear": "Seleccionar Mes y Año",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "year": "Año",
+    "xYearsAgo": "Hace {{count}} años",
+    "yesterday": "Ayer"
+  }
+}

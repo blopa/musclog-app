@@ -1,0 +1,116 @@
+{
+  "coach": {
+    "title": "Chat",
+    "you": "Tú",
+    "name": "Loggy",
+    "status": "En línea",
+    "statusOffline": "Desconectado",
+    "context": {
+      "general": "General",
+      "exercise": "Fitness",
+      "nutrition": "Nutrición"
+    },
+    "placeholder": "Escribe un mensaje...",
+    "todayAt": "Hoy, {{time}}",
+    "imageSent": "Envió una imagen",
+    "actions": {
+      "createWorkout": "Crear Entrenamiento",
+      "analyzeProgress": "Analizar Progreso",
+      "nutritionCheck": "Revisión de Nutrición",
+      "trackMeal": "Registrar Comida",
+      "workoutGen": "Gen. Entrenamiento",
+      "mealPlan": "Plan de Comidas"
+    },
+    "workoutGenerationPrompt": "¡Puedo ayudarte a crear un plan de entrenamiento personalizado! Cuéntame sobre tus objetivos, equipo disponible y cuántos días a la semana te gustaría entrenar.",
+    "mealPlanPrompt": "¡Puedo ayudarte a crear un plan de comidas personalizado para 3 días! Cuéntame sobre tus preferencias, alergias o cualquier alimento específico que te gustaría incluir.",
+    "analyzeProgressPrompt": "Analizaré tus entrenamientos recientes. ¿Algún comentario que quieras decirme antes de que lo haga?",
+    "nutritionCheckPrompt": "Revisaré tu nutrición de los últimos 7 días. ¿Algún comentario que quieras añadir antes de que lo haga?",
+    "trackMealPrompt": "Dime qué has comido (¡incluso puedes enviar una foto!) y estimaré los macros y lo registraré por ti.",
+    "welcomeMessage": "Hola. Mi nombre es Loggy, soy tu Entrenador de Fitness por IA. Estoy aquí para ayudarte a alcanzar tus objetivos de fitness, seguir tu progreso y brindarte orientación personalizada. ¡Siéntete libre de preguntarme cualquier cosa sobre entrenamientos, nutrición o tu viaje de fitness!",
+    "welcomeMessageExercise": "¡Hola! Soy Loggy. Estoy aquí para ayudarte con tu entrenamiento, ya sea creando un nuevo plan de ejercicios, revisando tu técnica o analizando tu progreso. ¿Qué hay en tu agenda de entrenamiento para hoy?",
+    "welcomeMessageNutrition": "¡Hola! Soy Loggy. Puedo ayudarte a mantenerte al día con tu nutrición registrando tus comidas, estimando macros y brindando información dietética. ¡Cuéntame sobre tus comidas recientes o hazme cualquier pregunta sobre nutrición!",
+    "insights": {
+      "noNutritionLogs": "No puedo ofrecerte información sobre nutrición porque no has registrado ninguna comida en los últimos 7 días. ¡Empieza a registrar tu comida para recibir comentarios personalizados!",
+      "noWorkoutLogs": "No puedo ofrecerte información sobre entrenamientos porque no has completado ninguno en los últimos 7 días. ¡Ponte en movimiento y estaré listo para analizar tu entrenamiento!"
+    },
+    "errors": {
+      "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
+      "workoutGenerationFailed": "Lo siento, no pude generar un plan de entrenamiento. Por favor, inténtalo de nuevo.",
+      "mealPlanGenerationFailed": "Lo siento, no pude generar un plan de comidas. Por favor, inténtalo de nuevo.",
+      "generalError": "Lo siento, algo salió mal. Por favor, inténtalo de nuevo.",
+      "progressInsightFailed": "No se pudo analizar el progreso. Inténtalo de nuevo más tarde.",
+      "nutritionInsightFailed": "No se pudo revisar la nutrición. Inténtalo de nuevo más tarde.",
+      "trackMealFailed": "No pude estimar los macros para esa comida. ¿Podrías describirla con más detalle?",
+      "featureRequiresCloudAi": "Esta función no está disponible con Apple Intelligence. Cambia a OpenAI o Gemini en los Ajustes.",
+      "filePickFailed": "Error al elegir el archivo. Por favor, inténtalo de nuevo.",
+      "creditsExhausted": "Parece que tus créditos de IA se han agotado. Por favor, comprueba tu clave API o facturación en Ajustes.",
+      "rateLimited": "Por favor, espera un momento antes de enviar otro mensaje.",
+      "toolRequestFailed": "No pude procesar esa solicitud. Por favor, inténtalo de nuevo.",
+      "conversationFallback": "Puedo ayudarte con preguntas de fitness y nutrición. ¿Qué te gustaría saber?",
+      "requestProcessingFailed": "Tuve problemas para procesar tu solicitud. ¿Podrías intentar reformularla?"
+    },
+    "goToSettings": "Ir a Ajustes",
+    "success": {
+      "workoutPlanGenerated": "¡He creado {{count}} entrenamientos para ti! 💪 {{description}}",
+      "mealPlanGenerated": "¡He creado un plan de comidas de 3 días con {{count}} comidas para ti! 🥗 {{description}}",
+      "trackMealSuccess": "He registrado {{count}} ingredientes para tu comida: {{ingredients}}. Total: {{calories}} kcal.",
+      "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). ¡Toca una comida para revisarla y registrarla!",
+      "historyCleared": "Historial de chat borrado."
+    },
+    "aiInstructions": {
+      "parseWorkouts": "Analiza los entrenamientos y devuelve la lista estructurada.",
+      "parseNutrition": "Analiza los datos de nutrición y devuelve la lista estructurada.",
+      "parseRetrospectiveNutrition": "Analiza las comidas y devuelve la lista estructurada.",
+      "generateWorkoutPlanWithHistory": "Genera un plan de entrenamiento basado en esta conversación.",
+      "generateWorkoutPlanDefault": "Genera un plan de entrenamiento semanal básico (ej. división de 3 días)."
+    },
+    "chatMessages": {
+      "title": "Mensajes del Chat",
+      "searchPlaceholder": "Buscar mensajes...",
+      "noMessages": "Aún no hay mensajes",
+      "noMessagesDesc": "Inicia una conversación con Loggy",
+      "endOfHistory": "Todos los mensajes cargados",
+      "messageOptions": "Opciones de mensaje",
+      "editMessage": "Editar mensaje",
+      "editMessageDesc": "Cambiar el texto del mensaje",
+      "deleteMessage": "Eliminar mensaje",
+      "deleteMessageDesc": "Eliminar permanentemente este mensaje",
+      "createMessage": "Crear mensaje",
+      "createMessageDesc": "Añadir un nuevo mensaje al historial",
+      "createMessageFailed": "Error al crear el mensaje",
+      "sender": "Remitente",
+      "senderUser": "Usuario",
+      "senderCoach": "Entrenador"
+    },
+    "menu": {
+      "title": "Opciones de chat",
+      "clearHistory": "Borrar historial de chat",
+      "clearHistoryDesc": "Eliminar todos los mensajes en este contexto de conversación.",
+      "shareHistory": "Compartir historial de chat",
+      "shareHistoryDesc": "Exportar toda esta conversación como texto sin formato."
+    },
+    "confirmClear": {
+      "title": "¿Borrar historial de chat?",
+      "message": "Esto eliminará permanentemente todos los mensajes en este contexto de conversación. Esta acción no se puede deshacer."
+    },
+    "share": {
+      "title": "Chat con Loggy",
+      "noMessages": "Aún no hay historial de chat para compartir.",
+      "failed": "Error al compartir el historial de chat. Por favor, inténtalo de nuevo.",
+      "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
+    },
+    "disclaimer": "La IA puede cometer errores. Por favor, verifica la información importante.",
+    "message": {
+      "menuTitle": "Acciones de mensaje",
+      "copy": "Copiar",
+      "copyDesc": "Copiar el texto del mensaje al portapapeles",
+      "share": "Compartir",
+      "shareDesc": "Compartir este mensaje",
+      "delete": "Eliminar",
+      "deleteDesc": "Eliminar este mensaje de la conversación",
+      "copied": "Mensaje copiado al portapapeles",
+      "deleted": "Mensaje eliminado"
+    },
+    "sendViaOpenAI": "Enviar a través de OpenAI"
+  }
+}

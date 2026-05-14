@@ -3,6 +3,7 @@ import { fetch } from 'expo/fetch';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { type FoodLabels } from '@/database/models/Food';
 import {
   MappedNutriments,
   SearchResultProduct,
@@ -34,6 +35,10 @@ export type UnifiedFoodResult = {
   fat?: number;
   fiber?: number;
   source: 'local' | 'openfood' | 'usda' | 'foundation';
+  nutriscore?: string;
+  ecoscore?: string;
+  novaGroup?: number;
+  labels?: FoodLabels;
   _raw?: any; // Original data from API or database
 };
 
@@ -250,7 +255,7 @@ export function useUnifiedFoodSearch({
           .join(',');
 
         // v2 API doesn't support text search, so we use the v1 search endpoint directly
-        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url,${localizedFields}`;
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url,nutriscore_grade,ecoscore_grade,nova_group,labels_tags,ingredients_analysis_tags,${localizedFields}`;
 
         const response = await fetch(url, { signal: abortController.signal });
 
@@ -416,17 +421,17 @@ export function useUnifiedFoodSearch({
           return null;
         }
 
-        return mapOpenFoodFactsProduct(product);
+        return mapOpenFoodFactsProduct(product, units);
       })
       .filter((product) => product) as UnifiedFoodResult[];
-  }, [accumulatedApiResults, includeAPI, includeOpenFood]);
+  }, [accumulatedApiResults, includeAPI, includeOpenFood, units]);
 
   const usdaResultsFormatted = useMemo(() => {
     if (!includeAPI || !includeUSDA) {
       return [];
     }
-    return accumulatedUsdaResults.map(mapUSDAFoodToUnified);
-  }, [accumulatedUsdaResults, includeAPI, includeUSDA]);
+    return accumulatedUsdaResults.map((food) => mapUSDAFoodToUnified(food, units));
+  }, [accumulatedUsdaResults, includeAPI, includeUSDA, units]);
 
   // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {

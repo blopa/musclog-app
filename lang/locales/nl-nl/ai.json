@@ -1,0 +1,31 @@
+{
+  "ai": {
+    "settings": {
+      "notConfigured": "AI is niet geconfigureerd. Voeg een API-sleutel toe in AI-instellingen."
+    },
+    "notConfiguredModal": {
+      "title": "AI is nog niet ingesteld",
+      "subtitle": "Voeg een API-sleutel toe voordat je kunt chatten met de coach.",
+      "tipApiKey": "Gebruik OpenAI of Google Gemini API-sleutels via de AI-instellingen.",
+      "tipFeatures": "Eenmaal geconfigureerd, worden je berichten naar het model gestuurd dat je kiest.",
+      "openSettings": "Open AI-instellingen",
+      "notNow": "Niet nu"
+    },
+    "providers": {
+      "openAIGemini": "OpenAI of Google Gemini"
+    },
+    "icons": {
+      "Dumbbell": "Halter",
+      "Target": "Doel",
+      "Zap": "Bliksem",
+      "Trophy": "Trofee",
+      "Activity": "Activiteit",
+      "Heart": "Hart",
+      "Flame": "Vlam"
+    },
+    "chat": {
+      "message": "Bericht",
+      "typeYourMessage": "Typ je bericht..."
+    }
+  }
+}

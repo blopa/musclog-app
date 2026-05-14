@@ -40,7 +40,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUserMetricDataLogs } from '@/hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '@/hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '@/hooks/useWorkoutTemplateDataLogs';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -350,16 +350,27 @@ export function getDataLogModalTranslations(
       deleteTitle: t('goalsManagement.manageGoalData.deleteGoal'),
       deleteDesc: t('goalsManagement.manageGoalData.deleteGoalDesc'),
       formatCaloriesMacros: () => '',
-      formatItemSubtitle: (item) =>
-        t('goalsManagement.manageGoalData.subtitleFormat', {
+      formatItemSubtitle: (item) => {
+        const targetWeight =
+          units != null && item.goalTargetWeight != null
+            ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
+            : item.goalTargetWeight != null
+              ? Number(item.goalTargetWeight.toFixed(1))
+              : null;
+
+        if (item.isDynamic) {
+          return targetWeight != null
+            ? `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''} • ${targetWeight} ${unitLabel}`
+            : `${t('nutritionGoals.dynamicBadge')} • ${item.goalEatingPhase ?? ''}`;
+        }
+
+        return t('goalsManagement.manageGoalData.subtitleFormat', {
           calories: Number((item.goalCalories ?? 0).toFixed(0)),
           phase: item.goalEatingPhase ?? '',
-          targetWeight:
-            units != null && item.goalTargetWeight != null
-              ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
-              : Number((item.goalTargetWeight ?? 0).toFixed(1)),
-          unit: unitLabel,
-        }),
+          targetWeight: targetWeight ?? t('exerciseGoals.creation.notSet'),
+          unit: targetWeight != null ? unitLabel : '',
+        });
+      },
     };
   }
 
@@ -528,6 +539,7 @@ export type DataLogDisplayItem = {
   goalCalories?: number; // Optional - only nutrition goals have this
   goalEatingPhase?: string; // Optional - only nutrition goals have this
   goalTargetWeight?: number; // Optional - only nutrition goals have this
+  isDynamic?: boolean; // Optional - only dynamic nutrition goals have this
   checkinTargetWeight?: number; // Optional - only nutrition check-ins have this
   checkinTargetBodyFat?: number; // Optional - only nutrition check-ins have this
   status?: string; // Optional - only nutrition check-ins have this
@@ -695,7 +707,7 @@ export function DataLogModal({
       // Check if portion is used in any foods
       const foodFoodPortions = await database
         .get('food_food_portions')
-        .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       // Check if portion is used in any meals
@@ -704,13 +716,23 @@ export function DataLogModal({
         .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const mealFoodPortions = await database
+        .get('meal_food_portions')
+        .query(Q.where('food_portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
       // Check if portion is used in any nutrition logs
       const nutritionLogs = await database
         .get('nutrition_logs')
         .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      if (foodFoodPortions.length > 0 || mealFoods.length > 0 || nutritionLogs.length > 0) {
+      if (
+        foodFoodPortions.length > 0 ||
+        mealFoods.length > 0 ||
+        mealFoodPortions.length > 0 ||
+        nutritionLogs.length > 0
+      ) {
         const parts = [];
         if (foodFoodPortions.length > 0) {
           parts.push(
@@ -719,13 +741,15 @@ export function DataLogModal({
             })
           );
         }
-        if (mealFoods.length > 0) {
+
+        if (mealFoods.length > 0 || mealFoodPortions.length > 0) {
           parts.push(
             t('food.managePortionData.usedInMeals', {
-              count: mealFoods.length,
+              count: mealFoods.length + mealFoodPortions.length,
             })
           );
         }
+
         if (nutritionLogs.length > 0) {
           parts.push(
             t('food.managePortionData.usedInLogs', {
@@ -733,6 +757,7 @@ export function DataLogModal({
             })
           );
         }
+
         return t('food.managePortionData.deletePortionWarning', {
           usage: parts.join(', '),
         });
@@ -874,9 +899,9 @@ export function DataLogModal({
       }
       await refresh();
     } catch (error) {
-      console.error('Toggle favorite failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleToggleFavorite' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'DataLogModal.handleToggleFavorite', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
 
@@ -910,9 +935,9 @@ export function DataLogModal({
         await NutritionGoalService.regenerateCheckins(selectedItem.id);
         showSnackbar('success', t('common.success'));
       } catch (error) {
-        console.error('Regenerate check-ins failed:', error);
-        captureException(error, { data: { context: 'DataLogModal.handleRegenerateCheckins' } });
-        showSnackbar('error', t('common.error'));
+        handleError(error, 'DataLogModal.handleRegenerateCheckins', {
+          snackbarMessage: t('common.error'),
+        });
       } finally {
         setIsRegenerating(false);
       }
@@ -957,9 +982,9 @@ export function DataLogModal({
       }
       await refresh();
     } catch (error) {
-      console.error('Duplicate failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleDuplicate' } });
-      showSnackbar('error', t('common.duplicateFailed'));
+      handleError(error, 'DataLogModal.handleDuplicate', {
+        snackbarMessage: t('common.duplicateFailed'),
+      });
     } finally {
       setIsDuplicating(false);
     }
@@ -1046,9 +1071,9 @@ export function DataLogModal({
       await refresh();
       setDeleteModalVisible(false);
     } catch (error) {
-      console.error('Delete failed:', error);
-      captureException(error, { data: { context: 'DataLogModal.handleDelete' } });
-      showSnackbar('error', t('common.deleteFailed'));
+      handleError(error, 'DataLogModal.handleDelete', {
+        snackbarMessage: t('common.deleteFailed'),
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -1364,117 +1389,114 @@ export function DataLogModal({
   const loadingLabel = isLoadingMore ? t('common.loading') : t('bodyMetrics.history.loadMore');
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={translations.title}
-        headerRight={renderHeaderRight()}
-        scrollable
-      >
-        <ScrollView className="mt-6 flex flex-col gap-3 px-4">
-          {/* Search Bar */}
-          <View className="relative">
-            <TextInput
-              label=""
-              value={searchQuery}
-              onChangeText={onSearchQueryChange}
-              placeholder={translations.searchPlaceholder}
-              icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
-            />
-          </View>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={translations.title}
+      headerRight={renderHeaderRight()}
+      scrollable
+    >
+      <ScrollView className="mt-6 flex flex-col gap-3 px-4">
+        {/* Search Bar */}
+        <View className="relative">
+          <TextInput
+            label=""
+            value={searchQuery}
+            onChangeText={onSearchQueryChange}
+            placeholder={translations.searchPlaceholder}
+            icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
+          />
+        </View>
 
-          {/* Item List */}
-          <View className="mt-6 flex flex-col gap-3">
-            {isLoading ? (
-              <View className="flex flex-col gap-4">
-                <SkeletonLoader width={80} height={16} className="mb-2" />
-                {[1, 2, 3].map((i) => (
-                  <View
-                    key={i}
-                    className="rounded-lg border p-4"
-                    style={{
-                      backgroundColor: theme.colors.background.card,
-                      borderColor: theme.colors.background.white5,
-                    }}
-                  >
-                    <View className="flex-row items-center gap-4">
-                      <SkeletonLoader width={40} height={40} borderRadius={20} />
-                      <View className="flex-1 gap-2">
-                        <SkeletonLoader width="70%" height={16} />
-                        <SkeletonLoader width="50%" height={14} />
-                      </View>
+        {/* Item List */}
+        <View className="mt-6 flex flex-col gap-3">
+          {isLoading ? (
+            <View className="flex flex-col gap-4">
+              <SkeletonLoader width={80} height={16} className="mb-2" />
+              {[1, 2, 3].map((i) => (
+                <View
+                  key={i}
+                  className="rounded-lg border p-4"
+                  style={{
+                    backgroundColor: theme.colors.background.card,
+                    borderColor: theme.colors.background.white5,
+                  }}
+                >
+                  <View className="flex-row items-center gap-4">
+                    <SkeletonLoader width={40} height={40} borderRadius={20} />
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width="70%" height={16} />
+                      <SkeletonLoader width="50%" height={14} />
                     </View>
                   </View>
-                ))}
-              </View>
-            ) : typedDayGroups.length === 0 ? (
-              <View
-                className="items-center justify-center py-12"
-                style={{ backgroundColor: theme.colors.background.card }}
-              >
-                <MaterialIcons
-                  name={getEmptyStateIconName(variant)}
-                  size={48}
-                  color={theme.colors.text.tertiary}
-                />
-                <Text
-                  className="mt-3 text-center text-base font-medium"
-                  style={{ color: theme.colors.text.secondary }}
-                >
-                  {translations.noItemsText}
-                </Text>
-                <Text
-                  className="mt-1 text-center text-sm"
-                  style={{ color: theme.colors.text.tertiary }}
-                >
-                  {translations.noItemsDesc}
-                </Text>
-              </View>
-            ) : (
-              typedDayGroups.map((dayData) => (
-                <View
-                  key={`${dayData.date}-${dayData.dateTimestamp}`}
-                  className="flex flex-col gap-2"
-                >
-                  <View>
-                    <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
-                      {dayData.date}
-                    </Text>
-                  </View>
-                  <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
                 </View>
-              ))
-            )}
-
-            {!isLoading && hasMore ? (
-              <View className="py-4">
-                <Button
-                  label={loadingLabel}
-                  variant="outline"
-                  size="sm"
-                  width="full"
-                  disabled={isLoadingMore}
-                  loading={isLoadingMore}
-                  onPress={loadMore}
-                />
-              </View>
-            ) : null}
-          </View>
-
-          {/* End of history indicator */}
-          {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
-            <View className="mt-12 flex flex-col items-center justify-center opacity-40">
-              <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
-              <Text className="mt-2 text-sm font-medium text-text-tertiary">
-                {translations.endOfHistoryText}
+              ))}
+            </View>
+          ) : typedDayGroups.length === 0 ? (
+            <View
+              className="items-center justify-center py-12"
+              style={{ backgroundColor: theme.colors.background.card }}
+            >
+              <MaterialIcons
+                name={getEmptyStateIconName(variant)}
+                size={48}
+                color={theme.colors.text.tertiary}
+              />
+              <Text
+                className="mt-3 text-center text-base font-medium"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                {translations.noItemsText}
+              </Text>
+              <Text
+                className="mt-1 text-center text-sm"
+                style={{ color: theme.colors.text.tertiary }}
+              >
+                {translations.noItemsDesc}
               </Text>
             </View>
-          ) : null}
-        </ScrollView>
-      </FullScreenModal>
+          ) : (
+            typedDayGroups.map((dayData) => (
+              <View
+                key={`${dayData.date}-${dayData.dateTimestamp}`}
+                className="flex flex-col gap-2"
+              >
+                <View>
+                  <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                    {dayData.date}
+                  </Text>
+                </View>
+                <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
+              </View>
+            ))
+          )}
 
-      {/* Item Menu */}
+          {!isLoading && hasMore ? (
+            <View className="py-4">
+              <Button
+                label={loadingLabel}
+                variant="outline"
+                size="sm"
+                width="full"
+                disabled={isLoadingMore}
+                loading={isLoadingMore}
+                onPress={loadMore}
+              />
+            </View>
+          ) : null}
+        </View>
+
+        {/* End of history indicator */}
+        {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
+          <View className="mt-12 flex flex-col items-center justify-center opacity-40">
+            <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
+            <Text className="mt-2 text-sm font-medium text-text-tertiary">
+              {translations.endOfHistoryText}
+            </Text>
+          </View>
+        ) : null}
+      </ScrollView>
+
       <BottomPopUpMenu
         visible={showMenu}
         onClose={() => setShowMenu(false)}
@@ -1483,8 +1505,6 @@ export function DataLogModal({
         isLoading={isRegenerating}
         loadingTitle={t('common.processing')}
       />
-
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         visible={deleteModalVisible}
         onClose={() => {
@@ -1499,8 +1519,6 @@ export function DataLogModal({
         isLoading={isDeleting}
         warning={dependencyWarning}
       />
-
-      {/* Edit Modal */}
       <GenericEditModal
         visible={editModalVisible}
         onClose={handleCloseEditModal}
@@ -1511,8 +1529,6 @@ export function DataLogModal({
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
       />
-
-      {/* Past Workout Detail Modal (workoutLog edit) */}
       {pastWorkoutDetailId ? (
         <PastWorkoutDetailModal
           visible={pastWorkoutDetailVisible}
@@ -1524,8 +1540,6 @@ export function DataLogModal({
           workoutId={pastWorkoutDetailId}
         />
       ) : null}
-
-      {/* Create Menu */}
       {showCreateMenu ? (
         <BottomPopUpMenu
           visible={showCreateMenu}
@@ -1534,8 +1548,6 @@ export function DataLogModal({
           items={getCreateMenuItems()}
         />
       ) : null}
-
-      {/* Create Modals */}
       {createMealModalVisible ? (
         <CreateMealModal
           visible={createMealModalVisible}
@@ -1546,7 +1558,6 @@ export function DataLogModal({
           }}
         />
       ) : null}
-
       {createFoodModalVisible ? (
         <CreateCustomFoodModal
           visible={createFoodModalVisible}
@@ -1558,14 +1569,12 @@ export function DataLogModal({
           isAiEnabled={isAiConfigured}
         />
       ) : null}
-
       {createExerciseModalVisible ? (
         <CreateExerciseModal
           visible={createExerciseModalVisible}
           onClose={() => setCreateExerciseModalVisible(false)}
         />
       ) : null}
-
       {createFoodPortionModalVisible ? (
         <CreateFoodPortionModal
           visible={createFoodPortionModalVisible}
@@ -1576,7 +1585,6 @@ export function DataLogModal({
           }}
         />
       ) : null}
-
       {createWorkoutOptionsModalVisible ? (
         <CreateWorkoutOptionsModal
           visible={createWorkoutOptionsModalVisible}
@@ -1599,14 +1607,12 @@ export function DataLogModal({
           }}
         />
       ) : null}
-
       {createWorkoutModalVisible ? (
         <CreateWorkoutModal
           visible={createWorkoutModalVisible}
           onClose={() => setCreateWorkoutModalVisible(false)}
         />
       ) : null}
-
       {createGenericModalVisible ? (
         <GenericEditModal
           visible={createGenericModalVisible}
@@ -1620,7 +1626,7 @@ export function DataLogModal({
           }}
         />
       ) : null}
-    </>
+    </FullScreenModal>
   );
 }
 

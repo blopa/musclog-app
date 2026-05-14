@@ -117,7 +117,7 @@ export function EditPersonalInfoBody({
           selectedColor={avatarColor}
           onAvatarSelect={setAvatarIcon}
           onColorSelect={setAvatarColor}
-          label={t('chooseAvatar')}
+          label={t('editPersonalInfo.chooseAvatar')}
           avatarOptions={AVATAR_ICONS.map((icon) => ({
             icon,
             component: getAvatarIcon(icon),

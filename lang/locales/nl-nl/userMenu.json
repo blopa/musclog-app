@@ -1,0 +1,14 @@
+{
+  "userMenu": {
+    "greeting": "Account",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "progress": "Voortgang",
+    "cycle": "Cyclus",
+    "workouts": "Workouts",
+    "food": "Voeding",
+    "coach": "Coach",
+    "checkin": "Controles",
+    "debugPage": "Debug-pagina"
+  }
+}

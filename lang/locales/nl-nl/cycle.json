@@ -1,0 +1,31 @@
+{
+  "cycle": {
+    "title": "Focus van de dag",
+    "nextPeriod": "Volgende menstruatie",
+    "insightsAndLog": "Cyclus-inzichten & Logboek",
+    "dailyLog": "Dagelijks logboek",
+    "flowIntensity": "Hevigheid van menstruatie",
+    "symptomsTitle": "Symptomen",
+    "noLogsToday": "Geen symptomen gelogd voor vandaag.",
+    "logSymptoms": "Symptomen loggen",
+    "logDaily": "Dagelijks cyclus-logboek",
+    "settings": {
+      "title": "Cyclus-instellingen",
+      "subtitle": "Bewerk je cyclusconfiguratie",
+      "save": "Wijzigingen opslaan"
+    },
+    "symptoms": {
+      "cramps": "Krampen",
+      "headache": "Hoofdpijn",
+      "bloating": "Opgeblazen gevoel",
+      "moodSwings": "Stemmingswisselingen",
+      "fatigue": "Vermoeidheid"
+    },
+    "phase": {
+      "menstrual": "Menstruatie",
+      "follicular": "Folliculaire fase",
+      "ovulatory": "Ovulatie",
+      "luteal": "Luteale fase"
+    }
+  }
+}

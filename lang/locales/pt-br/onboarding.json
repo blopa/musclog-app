@@ -40,8 +40,8 @@
     },
     "cycleSetup": {
       "anchor": {
-        "title": "Último Período",
-        "description": "Quando seu último período começou? Isso nos ajuda a calibrar sua fase atual."
+        "title": "Última Menstruação",
+        "description": "Quando sua última menstruação começou? Isso nos ajuda a calibrar sua fase atual."
       },
       "birthControl": {
         "title": "Anticoncepcional Hormonal",
@@ -87,7 +87,23 @@
         "bodyComposition": "Composição Corporal"
       },
       "allowHealthAccess": "Permitir Acesso à Saúde",
+      "reviewHealthAccess": "Revisar acesso à Saúde",
       "connectedCount": "Conectado {{granted}}/{{total}}",
+      "accessCount": "Acesso solicitado {{granted}}/{{total}}",
+      "connectedTypes": "Conectado: {{types}}",
+      "requestedTypes": "Solicitado: {{types}}",
+      "permissionTypes": {
+        "height": "Altura",
+        "weight": "Peso",
+        "bodyFat": "Gordura corporal",
+        "nutrition": "Nutrição",
+        "totalCalories": "Calorias totais",
+        "activeCalories": "Calorias ativas",
+        "basalMetabolicRate": "Metabolismo basal",
+        "exerciseSession": "Treinos",
+        "leanBodyMass": "Massa magra",
+        "steps": "Passos"
+      },
       "maybeLater": "Talvez depois",
       "privacyStatement": "O Musclog valoriza sua privacidade. Seus dados são criptografados e usados apenas para suas análises pessoais.",
       "initializing": "Inicializando Health Connect...",
@@ -123,7 +139,77 @@
         "workout_log_sets": "séries de registro de treino",
         "validating": "dados"
       },
-      "importData": "Importar Dados"
+      "importData": "Importar Dados",
+      "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
+      "recommended": "Recomendado",
+      "personalizedSetup": "Configuração Personalizada",
+      "personalizedSetupSteps": "8 etapas",
+      "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
+      "quickSetup": "Configuração Rápida",
+      "quickSetupSteps": "5 etapas",
+      "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
+    },
+    "quickPreferences": {
+      "title": "Vamos começar",
+      "subtitle": "Defina suas preferências de medidas e exibição.",
+      "unitSystem": "Sistema de Unidades",
+      "metric": "Métrico",
+      "imperial": "Imperial",
+      "biologicalSex": "Sexo Biológico",
+      "sexNote": "Selecione seu sexo atribuído ao nascimento para cálculos precisos.",
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro / Prefiro não dizer",
+      "continue": "Continuar"
+    },
+    "quickGoals": {
+      "title": "Quais são seus objetivos?",
+      "subtitle": "Vamos personalizar sua experiência com base nisso.",
+      "fitnessFocus": "Foco de Fitness",
+      "buildMuscle": "Ganhar Músculo",
+      "strength": "Força",
+      "endurance": "Resistência",
+      "general": "Geral",
+      "weightGoal": "Objetivo de Peso",
+      "lose": "Perder",
+      "maintain": "Manter",
+      "gain": "Ganhar",
+      "continue": "Continuar"
+    },
+    "quickBodyStats": {
+      "title": "Suas estatísticas corporais",
+      "subtitle": "Usadas para calcular necessidades calóricas e acompanhar o progresso.",
+      "height": "Altura",
+      "weight": "Peso",
+      "birthday": "Data de nascimento",
+      "birthdayHelper": "Usada para calcular sua idade e estimar calorias com precisão",
+      "bodyFat": "Percentual de gordura corporal",
+      "bodyFatHelper": "Se você souber, ajuda nos cálculos de calorias",
+      "continue": "Continuar"
+    },
+    "musclogApi": {
+      "title": "Musclog AI",
+      "freeBadge": "GRÁTIS",
+      "subtitle": "Melhore sua jornada fitness com insights impulsionados por IA.",
+      "features": {
+        "coach": {
+          "title": "Assistente de Treino IA",
+          "desc": "Receba sugestões de exercícios e dicas de forma"
+        },
+        "insights": {
+          "title": "Análise de Progresso",
+          "desc": "Análise personalizada do seu treinamento"
+        },
+        "recommendations": {
+          "title": "Recomendações Inteligentes",
+          "desc": "Conselhos de treino e nutrição com IA"
+        }
+      },
+      "dataSharingTitle": "Aviso de Compartilhamento de Dados",
+      "dataSharingBody": "Para fornecer recursos de IA, alguns dados de saúde serão compartilhados com os servidores da Musclog. O nível gratuito tem solicitações limitadas por dia.",
+      "readPrivacyPolicy": "Leia nossa Política de Privacidade",
+      "enable": "Ativar Musclog AI",
+      "noThanks": "Não obrigado, continuar sem IA"
     },
     "setGoals": {
       "title": "Cálculo Inteligente",
@@ -134,6 +220,43 @@
       "calculateForMe": "Calcular para Mim",
       "setThemMyself": "Vou Definir Eu Mesmo",
       "missingData": "Por favor, complete seus detalhes de fitness primeiro para que possamos calcular seu plano."
+    },
+    "personalizedPreferences": {
+      "nameLabel": "COMO DEVEMOS TE CHAMAR?",
+      "namePlaceholder": "Digite seu nome (opcional)"
+    },
+    "personalizedExperience": {
+      "title": "Qual é a sua experiência?",
+      "subtitle": "Isso nos ajuda a adaptar as sugestões de treino ao seu nível.",
+      "experienceLabel": "EXPERIÊNCIA DE TREINO",
+      "activityLevelLabel": "NÍVEL DE ATIVIDADE",
+      "beginner": "Iniciante",
+      "beginnerDesc": "Menos de 1 ano de treino",
+      "intermediate": "Intermediário",
+      "intermediateDesc": "1–3 anos de treino consistente",
+      "advanced": "Avançado",
+      "advancedDesc": "3+ anos de treino dedicado",
+      "sedentary": "Sedentário",
+      "sedentaryDesc": "Pouco ou nenhum exercício",
+      "lightlyActive": "Levemente Ativo",
+      "lightlyActiveDesc": "Exercício leve 1–3 dias/semana",
+      "moderatelyActive": "Moderadamente Ativo",
+      "moderatelyActiveDesc": "Exercício moderado 3–5 dias/semana",
+      "veryActive": "Muito Ativo",
+      "veryActiveDesc": "Exercício intenso 6–7 dias/semana",
+      "extremelyActive": "Extremamente Ativo",
+      "extremelyActiveDesc": "Exercício muito intenso ou trabalho físico",
+      "continue": "Continuar"
+    },
+    "personalizedCycle": {
+      "title": "Mais uma pergunta",
+      "subtitle": "Isso nos ajuda a fornecer insights mais personalizados.",
+      "question": "Você menstrua?",
+      "yes": "Sim",
+      "yesDesc": "Gostaria de acompanhar meu ciclo",
+      "no": "Não",
+      "noDesc": "Pular rastreamento do ciclo",
+      "continue": "Continuar"
     }
   }
 }

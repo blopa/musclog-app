@@ -4,6 +4,12 @@
     "subtitle": "Define your targets for nutrition and body composition.",
     "dailyMacroTargets": "Daily Macro Targets",
     "totalDailyCalories": "Total Daily Calories",
+    "tdeeHint": "TDEE: {{kcal}} kcal",
+    "kcalPerKgTissueHint": "Based on {{kcal}} kcal per 1 kg of tissue (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "Based on {{kcal}} kcal per 1 lb of tissue (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} kcal deficit",
+    "calorieSurplus": "+{{kcal}} kcal surplus",
+    "atMaintenance": "At maintenance",
     "targetBodyMetrics": "Target Body Metrics",
     "macrosDistribution": "Macros Distribution",
     "balance": "Balance",
@@ -121,6 +127,12 @@
         "title": "Custom",
         "subtitle": "Your Plan"
       }
-    }
+    },
+    "goalMode": "Goal Mode",
+    "manual": "Manual",
+    "dynamic": "Dynamic",
+    "dynamicInfo": "Daily targets are auto-calculated each day from your current stats and goal timeline. Your current calorie target is {{kcal}} kcal.",
+    "dynamicBadge": "Dynamic",
+    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals."
   }
 }

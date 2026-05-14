@@ -1,0 +1,10 @@
+{
+  "optionsSelector": {
+    "link": "Vincular",
+    "unlink": "Desvincular",
+    "edit": "Editar",
+    "done": "Hecho",
+    "deleteExercise": "Eliminar Ejercicio",
+    "deleteExercises": "Eliminar Ejercicios"
+  }
+}

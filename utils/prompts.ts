@@ -1,9 +1,11 @@
-import { FunctionDeclaration } from '@google/generative-ai';
+import { FunctionDeclaration } from '@google/genai';
 import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 
 import type { Units } from '@/constants/settings';
 import { User } from '@/database/models';
+import Food from '@/database/models/Food';
+import WorkoutLog from '@/database/models/WorkoutLog';
 import {
   AiCustomPromptService,
   ExerciseService,
@@ -25,6 +27,7 @@ import {
   localDayStartMs,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
@@ -33,6 +36,27 @@ import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
+
+/**
+ * Type for nutrition log entries returned by NutritionService.getRecentNutritionLogs
+ */
+export type NutritionHistoryEntry = {
+  log: {
+    date?: number;
+    type?: string;
+  };
+  food: Food | null;
+  nutrients: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    alcohol: number;
+  };
+  gramWeight: number;
+  displayName: string;
+};
 
 /**
  * Base system prompt for Loggy persona
@@ -59,8 +83,14 @@ export const getActiveCustomPrompts = async (
  * Get active memories for the conversation context
  */
 export const getActiveMemories = async (
-  context: 'nutrition' | 'exercise' | 'general'
+  context: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
+  // Skip database memory injection entirely for on-device AI to protect context window
+  if (provider === 'on-device') {
+    return '';
+  }
+
   try {
     const memories = await AiCustomPromptService.getActivePrompts(context, 'memory');
     if (memories.length === 0) {
@@ -80,24 +110,34 @@ export const getActiveMemories = async (
  */
 export const getBaseSystemPrompt = async (
   language: string = 'en-US',
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: string
 ): Promise<string> => {
   const customPrompts = await getActiveCustomPrompts(context);
-  const memories = context ? await getActiveMemories(context) : '';
+  const memories = context ? await getActiveMemories(context, provider) : '';
 
-  const basePrompt =
-    `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
-Your goal is to provide expert, motivating, and practical fitness advice.
+  let finalPrompt = `You are Loggy, a specialized fitness, nutrition, and health assistant.
+Your goal is to provide expert, motivating, and practical advice.
 
-STRICT GUIDELINES:
-1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally—don't sound like a robot.
-2. LANGUAGE: You MUST respond in ${language}, even if the user speaks to you in another language.
-3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health topics and wellness strategies
+- Track fitness activities and nutrition logs
+
+Conversation Guidelines:
+1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
+2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
+3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
-6. MEMORY: If the user shares something personally significant, a specific preference, or an important milestone that should be remembered for future context, provide a brief note in the "remember_me" field.`.trim();
+6. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+7. MEMORY: If the user shares something personally significant, provide a brief note in the "remember_me" field.
 
-  let finalPrompt = basePrompt;
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`.trim();
+
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
@@ -106,6 +146,112 @@ STRICT GUIDELINES:
   }
 
   return finalPrompt;
+};
+
+/**
+ * Check if provider is a small model that needs Markdown-KV format
+ */
+export const isSmallModel = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  const smallModels = ['llama-3.1-8b', 'llama-3-8b', 'on-device', 'apple-intelligence'];
+  return smallModels.some((model) => provider.toLowerCase().includes(model));
+};
+
+/**
+ * Check if provider is Gemini that needs context-first ordering
+ */
+export const isGeminiProvider = (provider?: string): boolean => {
+  if (!provider) {
+    return false;
+  }
+
+  return provider.toLowerCase().includes('gemini');
+};
+
+/**
+ * Convert workout data to Markdown-KV format for small models
+ */
+export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
+  if (!workoutData) {
+    return '';
+  }
+
+  let markdown = '## Recent Workout Data\n\n';
+
+  if (workoutData.summary) {
+    markdown += `Workout Summary: ${workoutData.summary}\n`;
+  }
+
+  if (workoutData.date) {
+    markdown += `Date: ${workoutData.date}\n`;
+  }
+
+  if (workoutData.exercises && Array.isArray(workoutData.exercises)) {
+    markdown += '\n### Exercises\n\n';
+    workoutData.exercises.forEach((exercise: any, index: number) => {
+      markdown += `${index + 1}. Exercise: ${exercise.name || 'Unknown'}\n`;
+      if (exercise.sets) {
+        markdown += `   Sets: ${exercise.sets}\n`;
+      }
+      if (exercise.reps) {
+        markdown += `   Reps: ${exercise.reps}\n`;
+      }
+      if (exercise.weight) {
+        markdown += `   Weight: ${exercise.weight}\n`;
+      }
+      if (exercise.notes) {
+        markdown += `   Notes: ${exercise.notes}\n`;
+      }
+      markdown += '\n';
+    });
+  }
+
+  return markdown;
+};
+
+/**
+ * Implement semantic chunking for Apple Intelligence context management.
+ * Per spec, uses one-line summaries to maximize token efficiency.
+ */
+export const getAppleIntelligenceContext = async (
+  workoutHistory: WorkoutLog[],
+  nutritionHistory: NutritionHistoryEntry[],
+  locale: string = 'en-US'
+): Promise<string> => {
+  let context = '## ANALYZE: Recent Workout History\n\n';
+
+  const units = await SettingsService.getUnits();
+
+  // Add one-line summaries for all available workouts (up to history limit)
+  if (workoutHistory.length > 0) {
+    const summaries: string[] = [];
+    for (const log of workoutHistory) {
+      const summary = await getMinimalWorkoutSummary(log.id, units, locale);
+      if (summary) {
+        summaries.push(`- ${summary}`);
+      }
+    }
+    context += summaries.join('\n');
+  } else {
+    context += 'No recent workout history found.';
+  }
+
+  // Add recent nutrition if available
+  if (nutritionHistory.length > 0) {
+    context += '\n\n## TRACK: Recent Nutrition Summary\n\n';
+    const nutritionSummary = nutritionHistory
+      .map((n, i) => {
+        const date = n.log.date ? new Date(n.log.date).toLocaleDateString(locale) : 'Recent date';
+        return `${i + 1}. ${date}: ${n.displayName || 'Meal logged'}`;
+      })
+      .join('\n');
+    context += nutritionSummary;
+  }
+
+  return context;
 };
 
 /**
@@ -203,6 +349,117 @@ export const getUserDetailsPrompt = async (
     parts.length > 0 ? `The user ${parts.join(', ')}.` : 'User profile information limited.';
 
   return summary;
+};
+
+/**
+ * Compressed user stats for local models.
+ */
+export const getMinimalUserStats = async (user: User | null): Promise<string> => {
+  if (!user) {
+    return '';
+  }
+
+  const units = await SettingsService.getUnits();
+  const weightUnit = getWeightUnit(units);
+  const parts: string[] = [];
+
+  if (user.gender) {
+    parts.push(user.gender);
+  }
+
+  try {
+    const [latestWeight, latestBodyFat] = await Promise.all([
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('body_fat'),
+    ]);
+
+    if (latestWeight) {
+      const { value, unit: storedUnit = 'kg' } = await latestWeight.getDecrypted();
+      const weightKg = storedWeightToKg(value, storedUnit);
+      const displayWeight = kgToDisplay(weightKg, units);
+      parts.push(`${Math.round(displayWeight)}${weightUnit}`);
+    }
+
+    if (latestBodyFat) {
+      const { value } = await latestBodyFat.getDecrypted();
+      parts.push(`${Math.round(value)}%BF`);
+    }
+  } catch (error) {
+    // Continue without metrics
+  }
+
+  if (user.fitnessGoal) {
+    parts.push(user.fitnessGoal);
+  }
+
+  return parts.length > 0 ? `[User: ${parts.join(', ')}]` : '';
+};
+
+/**
+ * Minimal workout summary for local models.
+ */
+export const getMinimalWorkoutSummary = async (
+  workoutLogId: string,
+  units?: Units,
+  locale: string = 'en-US'
+): Promise<string> => {
+  try {
+    const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    const { workoutLog, sets, exercises } = details;
+    const exerciseCount = exercises.length;
+    const setCount = sets.length;
+
+    const resolvedUnits = units ?? (await SettingsService.getUnits());
+    const totalVolumeKg = workoutLog.totalVolume ?? 0;
+    const totalVolumeStr = `${formatDisplayWeightKg(locale, resolvedUnits, totalVolumeKg)} ${resolvedUnits === 'imperial' ? 'lbs' : 'kg'}`;
+
+    return `User finished "${workoutLog.workoutName}" on ${new Date(workoutLog.startedAt).toLocaleDateString(locale)}: ${totalVolumeStr} volume, ${exerciseCount} exercises, ${setCount} sets.`;
+  } catch (error) {
+    return '';
+  }
+};
+
+/**
+ * Minimal system prompt for Apple Intelligence.
+ */
+export const getMinimalSystemPrompt = async (
+  user: User | null,
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const userStats = await getMinimalUserStats(user);
+
+  let role = 'fitness coach';
+  if (context === 'nutrition') {
+    role = 'nutrition coach';
+  } else if (context === 'exercise') {
+    role = 'personal trainer';
+  }
+
+  let focus = 'Focus on fitness, nutrition, and health topics.';
+  if (context === 'nutrition') {
+    focus = 'Focus on nutrition and diet topics.';
+  } else if (context === 'exercise') {
+    focus = 'Focus on exercise and training topics.';
+  }
+
+  return `You are Loggy, a specialized ${role}. ${userStats}
+
+Core Capabilities:
+- Provide workout advice and exercise guidance
+- Offer nutrition tips and meal planning
+- Discuss health and wellness strategies
+
+Conversation Guidelines:
+1. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention language capabilities.
+2. SCOPE: ${focus} If asked about unrelated topics, politely explain your specialization and offer 2-3 fitness alternatives.
+3. TONE: Friendly, professional, and human-like. Use emojis naturally.
+4. CONCISE: Keep responses under 100 words.
+5. META-CONVERSATION: Respond honestly and self-awarely to questions about your behavior or capabilities.
+
+Error Handling:
+- If you cannot fulfill a request, explain why clearly and provide specific suggestions.
+- Avoid canned responses; personalize each interaction.`;
 };
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
@@ -303,43 +560,99 @@ async function buildWorkoutSummaryJson(
 export const getChatMessagePromptContent = async (
   language: string = 'en-US',
   eatingPhase?: string,
-  context: 'nutrition' | 'exercise' | 'general' = 'general'
+  context: 'nutrition' | 'exercise' | 'general' = 'general',
+  provider?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
+
+  // Enhanced Apple Intelligence handling with semantic chunking
+  if (provider === 'on-device' || isSmallModel(provider)) {
+    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
+    const nutritionLogs =
+      context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
+
+    // Use semantic chunking for Apple Intelligence
+    const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
+
+    const sections: string[] = [
+      await getMinimalSystemPrompt(user, language, context),
+      `Date: ${new Date().toLocaleDateString(language)}.`,
+      optimizedContext,
+    ];
+
+    return sections.join('\n');
+  }
+
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  let recentWorkoutsJson = '[]';
+  // Get workout data in appropriate format based on model size
+  let workoutData = '';
   try {
     const units = await SettingsService.getUnits();
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
-    const summaries: string[] = [];
-    for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id, units, language);
-      if (json !== '{}') {
-        summaries.push(json);
+
+    if (isSmallModel(provider)) {
+      // Use Markdown-KV for small models
+      const workoutMarkdowns: string[] = [];
+      for (const log of recentLogs) {
+        const workoutSummary = await getMinimalWorkoutSummary(log.id, units, language);
+        if (workoutSummary) {
+          workoutMarkdowns.push(workoutSummary);
+        }
       }
+      workoutData = workoutMarkdowns.join('\n\n');
+    } else {
+      // Use JSON for large models
+      const summaries: string[] = [];
+      for (const log of recentLogs) {
+        const json = await buildWorkoutSummaryJson(log.id, units, language);
+        if (json !== '{}') {
+          summaries.push(json);
+        }
+      }
+      workoutData = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
     }
-    recentWorkoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching recent workouts for chat prompt:', error);
   }
 
-  const sections = [
-    await getBaseSystemPrompt(language, context),
+  // Build sections based on provider type
+  const contextSections = [
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
-    `The following JSON data are the recent workouts the user did:`,
-    '```json',
-    recentWorkoutsJson,
-    '```',
-    "All weights are in the user's preferred unit (kg or lbs).",
-    'The following content is a conversation between the user and Loggy...',
   ];
 
-  return sections.join('\n');
+  // Add workout data in appropriate format
+  if (isSmallModel(provider)) {
+    contextSections.push(
+      '## Recent Workout Data',
+      workoutData,
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  } else {
+    contextSections.push(
+      'The following JSON data are the recent workouts the user did:',
+      '```json',
+      workoutData,
+      '```',
+      "All weights are in the user's preferred unit (kg or lbs)."
+    );
+  }
+
+  contextSections.push('The following content is a conversation between the user and Loggy...');
+
+  // For Gemini, put context first and instructions last
+  if (isGeminiProvider(provider)) {
+    return [...contextSections, '', await getBaseSystemPrompt(language, context, provider)].join(
+      '\n'
+    );
+  }
+
+  // For other providers, use traditional ordering (instructions first)
+  return [await getBaseSystemPrompt(language, context, provider), ...contextSections].join('\n');
 };
 
 /**
@@ -524,12 +837,13 @@ export const getMealCritiquePrompt = async (
 
   let nutritionGoalInfo = '';
   if (nutritionGoal) {
+    const macros = (await resolveDailyMacros(nutritionGoal, new Date())) ?? nutritionGoal;
     nutritionGoalInfo = [
       'Daily nutrition targets:',
-      `- Calories: ${formatAppInteger(language, Math.round(nutritionGoal.totalCalories))} kcal`,
-      `- Protein: ${formatAppInteger(language, Math.round(nutritionGoal.protein))}g`,
-      `- Carbs: ${formatAppInteger(language, Math.round(nutritionGoal.carbs))}g`,
-      `- Fat: ${formatAppInteger(language, Math.round(nutritionGoal.fats))}g`,
+      `- Calories: ${formatAppInteger(language, Math.round(macros.totalCalories))} kcal`,
+      `- Protein: ${formatAppInteger(language, Math.round(macros.protein))}g`,
+      `- Carbs: ${formatAppInteger(language, Math.round(macros.carbs))}g`,
+      `- Fat: ${formatAppInteger(language, Math.round(macros.fats))}g`,
     ].join('\n');
   }
 
@@ -645,7 +959,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
     await getBaseSystemPrompt(language),
     `The user just completed a "${workoutTitle}" workout. Your task is to:`,
     '1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)',
-    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan",
+    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathen",
     "3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals",
     userDetails,
     'Historical data for this workout:',
@@ -908,9 +1222,90 @@ export const getFoundationFoodsPrompt = async (): Promise<string> => {
   }
 };
 
-/**
- * System prompt for meal tracking (text or photo)
- */
+export const getFoundationFoodsRecipePrompt = async (): Promise<string> => {
+  try {
+    const foundationFoods = await FoodService.getFoundationFoods(200);
+    if (foundationFoods.length === 0) {
+      return '';
+    }
+
+    const foodList = foundationFoods.map((f) => ({ id: f.id, name: f.name }));
+
+    return [
+      'You MUST prioritize matching ingredients to the "foundation foods" list below.',
+      'If an ingredient matches a foundation food, return its exact "foodId". Do NOT invent IDs.',
+      'If no match exists, omit "foodId" entirely.',
+      'Foundation Foods (for matching only — no macros needed):',
+      '```json',
+      JSON.stringify(foodList, null, 2),
+      '```',
+    ].join('\n');
+  } catch (error) {
+    console.error('[prompts] Error fetching foundation foods for recipe extraction:', error);
+    return '';
+  }
+};
+
+export const getRecipeExtractionPrompt = async (
+  includeFoundationFoods: boolean = false,
+  language?: string
+): Promise<string> => {
+  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsRecipePrompt() : '';
+  const sections = [
+    'You are an expert nutritionist and chef.',
+    'Identify ALL meals in the user message or photo and break each into individual ingredients.',
+    'For each ingredient, estimate only its weight in grams — do NOT estimate calories or macros.',
+    'Break dishes into components (e.g. "Pizza" → "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese").',
+  ];
+
+  if (foundationPrompt) {
+    sections.push(foundationPrompt);
+  }
+
+  if (language) {
+    sections.push(`Your response must be in ${language}.`);
+  }
+
+  sections.push(
+    'Return only ingredient names, gram amounts, and foundation food IDs where matched.'
+  );
+
+  return sections.join('\n');
+};
+
+export const getMissingIngredientsMacrosPrompt = (
+  mealName: string,
+  knownIngredients: {
+    name: string;
+    grams: number;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber?: number;
+  }[],
+  newIngredients: { name: string; grams: number }[]
+): string => {
+  const sections = [
+    'You are an expert nutritionist.',
+    `You are analyzing the meal: "${mealName}".`,
+    '',
+    'The following ingredients are already accounted for (macros per the stated grams):',
+    '```json',
+    JSON.stringify(knownIngredients, null, 2),
+    '```',
+    '',
+    'Estimate macronutrients ONLY for these new ingredients (their gram weights are fixed):',
+    '```json',
+    JSON.stringify(newIngredients, null, 2),
+    '```',
+    '',
+    MACRO_CALORIE_NOTE,
+    'Return ONLY the new ingredients with their estimated macros. Do not return the known ingredients.',
+  ];
+  return sections.join('\n');
+};
+
 /**
  * System prompt for meal plan generation
  */
@@ -1069,6 +1464,7 @@ export const getGenerateWorkoutPlanFunctions = ():
           workoutPlan: {
             type: 'array',
             description: 'Array of individual workouts in the plan',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1088,6 +1484,7 @@ export const getGenerateWorkoutPlanFunctions = ():
                   type: 'array',
                   description:
                     'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1144,6 +1541,7 @@ export const getCalculateNextWorkoutVolumeFunctions = ():
           workoutVolume: {
             type: 'array',
             description: 'Recommended volume adjustments per exercise',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1154,6 +1552,7 @@ export const getCalculateNextWorkoutVolumeFunctions = ():
                 sets: {
                   type: 'array',
                   description: 'Recommended sets with reps and weight',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1199,6 +1598,7 @@ export const getParsePastWorkoutsFunctions = ():
         properties: {
           pastWorkouts: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1220,6 +1620,7 @@ export const getParsePastWorkoutsFunctions = ():
                 },
                 exercises: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: {
@@ -1234,6 +1635,7 @@ export const getParsePastWorkoutsFunctions = ():
                       },
                       sets: {
                         type: 'array',
+                        minItems: 1,
                         items: {
                           type: 'object',
                           properties: {
@@ -1273,6 +1675,7 @@ export const getParsePastNutritionFunctions = ():
         properties: {
           pastNutrition: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1340,6 +1743,7 @@ export const getParseRetrospectiveNutritionFunctions = ():
         properties: {
           nutritionEntries: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1433,6 +1837,7 @@ export const getGenerateMealPlanFunctions = (
           meals: {
             type: 'array',
             description: 'List of meals for the 3-day plan',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1445,6 +1850,7 @@ export const getGenerateMealPlanFunctions = (
                 description: { type: 'string', description: 'Brief description of the meal' },
                 ingredients: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     properties: ingredientProperties,
@@ -1504,6 +1910,7 @@ export const getTrackMealFunctions = (
           meals: {
             type: 'array',
             description: 'List of meals identified in the message. Use one entry per meal type.',
+            minItems: 1,
             items: {
               type: 'object',
               properties: {
@@ -1520,6 +1927,7 @@ export const getTrackMealFunctions = (
                 ingredients: {
                   type: 'array',
                   description: 'List of ingredients in this meal',
+                  minItems: 1,
                   items: ingredientSchema,
                 },
               },
@@ -1532,6 +1940,96 @@ export const getTrackMealFunctions = (
     },
   ];
 };
+
+export const getRecipeExtractionFunctions = (
+  includeFoundationFoods: boolean = false
+): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const ingredientProperties: any = {
+    name: { type: 'string', description: 'Name of the ingredient' },
+    grams: { type: 'number', description: 'Estimated weight in grams' },
+  };
+
+  if (includeFoundationFoods) {
+    ingredientProperties.foodId = {
+      type: 'string',
+      description: 'The exact ID of the matched foundation food.',
+    };
+  }
+
+  return [
+    {
+      name: 'extractRecipe',
+      description: 'Break down a meal into its ingredients with estimated gram amounts.',
+      parameters: {
+        type: 'object',
+        properties: {
+          meals: {
+            type: 'array',
+            minItems: 1,
+            items: {
+              type: 'object',
+              properties: {
+                mealType: {
+                  type: 'string',
+                  enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+                  description: 'Type of meal',
+                },
+                mealName: {
+                  type: 'string',
+                  description:
+                    'The name of the dish or meal (e.g. "Butter Chicken", "Caesar Salad"). Use the specific dish name, not the meal type.',
+                },
+                ingredients: {
+                  type: 'array',
+                  minItems: 1,
+                  items: {
+                    type: 'object',
+                    properties: ingredientProperties,
+                    required: ['name', 'grams'],
+                  },
+                },
+              },
+              required: ['mealType', 'mealName', 'ingredients'],
+            },
+          },
+        },
+        required: ['meals'],
+      },
+    },
+  ];
+};
+
+export const getEstimateMissingIngredientsFunctions = ():
+  | FunctionDeclaration[]
+  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
+  {
+    name: 'estimateMissingIngredients',
+    description: 'Estimate macronutrients for a list of ingredients that have known gram weights.',
+    parameters: {
+      type: 'object',
+      properties: {
+        ingredients: {
+          type: 'array',
+          minItems: 1,
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', description: 'Name of the ingredient' },
+              kcal: { type: 'number', description: 'Kilocalories' },
+              protein: { type: 'number', description: 'Protein in grams' },
+              carbs: { type: 'number', description: 'Carbohydrates in grams' },
+              fat: { type: 'number', description: 'Fat in grams' },
+              fiber: { type: 'number', description: 'Fiber in grams' },
+              grams: { type: 'number', description: 'Weight of this ingredient in grams' },
+            },
+            required: ['name', 'kcal', 'protein', 'carbs', 'fat', 'fiber', 'grams'],
+          },
+        },
+      },
+      required: ['ingredients'],
+    },
+  },
+];
 
 /**
  * Function schema for nutrition estimation from photos

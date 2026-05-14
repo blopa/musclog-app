@@ -5,10 +5,12 @@ export { database } from './database-instance';
 
 // Export models for convenience
 export { default as ChatMessage } from './models/ChatMessage';
+export { default as DebugDump } from './models/DebugDump';
 export { default as Exercise } from './models/Exercise';
 export { default as NutritionGoal } from './models/NutritionGoal';
 export { default as Schedule } from './models/Schedule';
 export { default as Setting } from './models/Setting';
+export { default as Supplement } from './models/Supplement';
 export { default as User } from './models/User';
 export { default as UserMetric } from './models/UserMetric';
 export { default as WorkoutLog } from './models/WorkoutLog';

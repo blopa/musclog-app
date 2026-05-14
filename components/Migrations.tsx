@@ -4,7 +4,16 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
-import { ExerciseService, FoodPortionService, WorkoutService } from '@/database/services';
+import { waitForDbReady } from '@/database/dbReady';
+import {
+  ExerciseService,
+  FoodPortionService,
+  FoodService,
+  MuscleService,
+  NutritionGoalService,
+  NutritionService,
+  WorkoutService,
+} from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
@@ -26,6 +35,26 @@ export function Migrations() {
   const segments = useSegments();
   const { language } = useSettings();
 
+  // Fix negative fiber values in nutrition_goals, foods, and nutrition_logs by clamping to zero.
+  // nutrition_logs fiber is encrypted so all non-deleted logs are fetched and decrypted in JS.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    NutritionGoalService.fixNegativeFiber().catch((err) =>
+      console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+    );
+
+    FoodService.fixNegativeFiber().catch((err) =>
+      console.warn('[FoodService] fixNegativeFiber error:', err)
+    );
+
+    NutritionService.fixNegativeFiber().catch((err) =>
+      console.warn('[NutritionService] fixNegativeFiber error:', err)
+    );
+  }, []);
+
   // Prune orphaned workout insights dismissal state when leaving the workout domain.
   // This prevents accumulation of old keys if the app is killed or navigates away.
   useEffect(() => {
@@ -37,7 +66,7 @@ export function Migrations() {
     if (!isInsideWorkoutDomain) {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
-  }, [segments, isStaticExport]);
+  }, [segments]);
 
   // Backfill the exercise `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
@@ -50,7 +79,7 @@ export function Migrations() {
     ExerciseService.backfillExerciseSources().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseSources error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Backfill the food_portion `source` field on web only. Native/SQLite handles
   // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
@@ -63,7 +92,7 @@ export function Migrations() {
     FoodPortionService.backfillPortionSources().catch((err) =>
       console.warn('[FoodPortionService] backfillPortionSources error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
@@ -100,10 +129,10 @@ export function Migrations() {
       return;
     }
 
-    ExerciseService.syncAppExercises().catch((err) =>
-      console.warn('[ExerciseService] syncAppExercises error:', err)
-    );
-  }, [isStaticExport]);
+    ExerciseService.syncAppExercises()
+      .then(() => ExerciseService.syncExerciseMultipliers())
+      .catch((err) => console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err));
+  }, []);
 
   // Backfill order_index for existing app exercises on every boot.
   // Ensures app exercises appear in the same order as the JSON file.
@@ -115,7 +144,26 @@ export function Migrations() {
     ExerciseService.backfillExerciseOrderIndex().catch((err) =>
       console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
+
+  // Backfill exercise-muscle links for users upgrading to v11. Runs on every
+  // boot but is a cheap no-op once all exercises are linked. New installs also
+  // hit this path, but seedProductionData already called backfillExerciseMuscles
+  // during setup — the no-op exit path costs only two DB reads.
+  //
+  // No waitForDbReady() here: upgrading users never trigger unsafeResetDatabase,
+  // so there is no ErrorAdapter race. Consistent with syncAppExercises above.
+  // On a fresh install the rare ErrorAdapter error is caught and logged; the
+  // backfill already ran inside seedProductionData by that point anyway.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    MuscleService.backfillExerciseMuscles().catch((err) =>
+      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
+    );
+  }, []);
 
   // Web fallback for the v7 migration: replace file:// exercise image URIs with
   // cloud URLs. LokiJS (web) silently ignores unsafeExecuteSql, so we run the
@@ -128,7 +176,7 @@ export function Migrations() {
     ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
       console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
   // Runs once per boot but exits immediately when there is nothing to do.
@@ -140,7 +188,7 @@ export function Migrations() {
     WorkoutService.backfillNullTotalVolumes().catch((err) =>
       console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
-  }, [isStaticExport]);
+  }, []);
 
   // Encrypt any API keys that were stored as plaintext before this migration was introduced.
   // Idempotent: already-encrypted keys are detected and left untouched.
@@ -167,6 +215,13 @@ export function Migrations() {
   }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
+  //
+  // IMPORTANT — DB-ready race: this effect fires at mount, which is before (or
+  // concurrent with) seedProductionData() in app/onboarding/landing.tsx.
+  // On a fresh install, seedProductionData() calls unsafeResetDatabase(), which
+  // temporarily replaces the SQLite adapter with an ErrorAdapter that throws on
+  // any query. Any boot task that touches the DB (e.g. configureDailyTasks) must
+  // await waitForDbReady() from database/dbReady.ts before issuing queries.
   useEffect(() => {
     if (Platform.OS === 'web' || isStaticExport) {
       return;
@@ -235,7 +290,7 @@ export function Migrations() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, [isStaticExport]);
+  }, []);
 
   return null;
 }

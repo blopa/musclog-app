@@ -30,6 +30,7 @@ import {
   ChatService,
   NutritionGoalService,
   NutritionService,
+  SettingsService,
   UserMetricService,
   UserService,
 } from '@/database/services';
@@ -52,6 +53,9 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
+import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { saveBase64ImageToFile } from '@/utils/file';
+import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -290,6 +294,7 @@ export function useChatMessages(
           setHasMore(lookAhead.length > 0);
         }
       } catch (err) {
+        handleError(err, 'useChatMessages.loadMessages');
         console.error('[useChatMessages] initial load error:', err);
       } finally {
         if (!cancelled) {
@@ -339,6 +344,7 @@ export function useChatMessages(
         setHasMore(lookAhead.length > 0);
       }
     } catch (err) {
+      handleError(err, 'useChatMessages.loadMoreMessages');
       console.error('[useChatMessages] loadMore error:', err);
     } finally {
       setIsLoadingMore(false);
@@ -403,6 +409,7 @@ export function useChatMessages(
           setPendingIntention(null);
         }
       } catch (err) {
+        handleError(err, 'useChatMessages.clearHistory');
         console.error('[useChatMessages] clearHistory error:', err);
         throw err;
       }
@@ -531,12 +538,16 @@ export function useChatMessages(
           let macroTargets;
           const currentGoal = await NutritionGoalService.getCurrent();
           if (currentGoal) {
+            const resolved = currentGoal.isDynamic
+              ? await resolveDailyMacros(currentGoal, new Date())
+              : null;
+
             macroTargets = {
-              calories: currentGoal.totalCalories,
-              protein: currentGoal.protein,
-              carbs: currentGoal.carbs,
-              fat: currentGoal.fats,
-              fiber: currentGoal.fiber,
+              calories: resolved?.totalCalories ?? currentGoal.totalCalories,
+              protein: resolved?.protein ?? currentGoal.protein,
+              carbs: resolved?.carbs ?? currentGoal.carbs,
+              fat: resolved?.fats ?? currentGoal.fats,
+              fiber: resolved?.fiber ?? currentGoal.fiber,
             };
           } else {
             // Calculate one on the spot
@@ -546,6 +557,7 @@ export function useChatMessages(
               UserMetricService.getLatest('height'),
             ]);
             if (user && latestWeight) {
+              const disableMinimumCalories = await SettingsService.getDisableMinimumCalories();
               const { value: weightKg } = await latestWeight.getDecrypted();
               let heightCm = 170;
               if (latestHeight) {
@@ -558,10 +570,11 @@ export function useChatMessages(
                 weightKg,
                 heightCm,
                 age: user.getAge(),
-                activityLevel: (user.activityLevel as any) || 3,
+                activityLevel: (user.activityLevel as any) || 2,
                 weightGoal: user.weightGoal || eatingPhaseToWeightGoal(user.fitnessGoal as any),
                 fitnessGoal: user.fitnessGoal,
                 liftingExperience: user.liftingExperience,
+                disableMinimumCalories,
               });
               macroTargets = {
                 calories: plan.targetCalories,
@@ -609,7 +622,11 @@ export function useChatMessages(
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.mealPlanGenerationFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.mealPlanGenerationFailed')
+            );
             return;
           }
         } else if (pendingIntention === GENERATE_MY_WORKOUTS) {
@@ -656,7 +673,11 @@ export function useChatMessages(
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.workoutGenerationFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.workoutGenerationFailed')
+            );
             return;
           }
         } else if (pendingIntention === ANALYZE_PROGRESS) {
@@ -729,7 +750,12 @@ export function useChatMessages(
             }
 
             setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.trackMealFailed'));
+            setEphemeralErrorMessage(
+              aiConfig.provider === 'on-device'
+                ? t('coach.errors.featureRequiresCloudAi')
+                : t('coach.errors.trackMealFailed')
+            );
+
             return;
           }
 
@@ -757,9 +783,15 @@ export function useChatMessages(
             sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
+          let mealImageUri: string | undefined;
+          if (base64Image) {
+            mealImageUri = await saveBase64ImageToFile(base64Image).catch(() => undefined);
+          }
+
           const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
             meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
+            ...(mealImageUri ? { mealImageUri } : {}),
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
@@ -859,11 +891,41 @@ export function useChatMessages(
         };
       });
 
-      const groupId = generateUUID();
-      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-        groupId,
-        loggedMealName: mealName,
-      });
+      let savedImageUri: string | undefined;
+      const msgRecord = rawMessagesRef.current.find((r) => r.id === messageId);
+      if (msgRecord?.payloadJson) {
+        try {
+          const payload = JSON.parse(msgRecord.payloadJson) as ChatMessagePayload;
+          if (isTrackMealPayload(payload) && payload.mealImageUri) {
+            savedImageUri = payload.mealImageUri;
+          }
+        } catch {}
+      }
+
+      if (scaledIngredients.length === 1) {
+        const ing = scaledIngredients[0];
+        await NutritionService.logCustomMeal(
+          {
+            name: ing.name,
+            calories: ing.calories,
+            protein: ing.protein,
+            carbs: ing.carbs,
+            fat: ing.fat,
+            fiber: ing.fiber,
+            foodId: ing.foodId,
+            imageUrl: ing.foodId ? undefined : savedImageUri,
+          },
+          date,
+          logMealType,
+          ing.grams
+        );
+      } else {
+        await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
+          groupId: generateUUID(),
+          loggedMealName: mealName,
+          imageUrl: savedImageUri,
+        });
+      }
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

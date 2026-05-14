@@ -1,3 +1,5 @@
+import { isOnboardingCompleted } from '@/utils/onboardingService';
+
 // This file intercepts native deep link intents before Expo Router processes them.
 // On cold start, imperative router.navigate() before the Root Layout mounts causes:
 // "Attempted to navigate before mounting the Root Layout component"
@@ -25,9 +27,9 @@ function isValidAction(action: string | null): action is ValidAction {
   return VALID_ACTIONS.includes(action as ValidAction);
 }
 
-export const redirectSystemPath = ({ path, initial }: { path: string; initial: boolean }) => {
+export const redirectSystemPath = async ({ path, initial }: { path: string; initial: boolean }) => {
   try {
-    if (initial && path.includes('action=')) {
+    if (path.includes('action=')) {
       const fullUrl = `http://localhost${path.startsWith('/') ? path : `/${path}`}`;
       const url = new URL(fullUrl);
       const action = url.searchParams.get('action');
@@ -38,13 +40,23 @@ export const redirectSystemPath = ({ path, initial }: { path: string; initial: b
         return path;
       }
 
+      // Widget shortcuts should stay inert until the user has completed onboarding.
+      const completed = await isOnboardingCompleted();
+      if (!completed) {
+        return null;
+      }
+
       if (action === 'open-camera') {
-        (global as any).__PENDING_WIDGET_ACTION = action;
-        return '/';
+        if (initial) {
+          (global as any).__PENDING_WIDGET_ACTION = action;
+          return '/app';
+        }
+
+        return path;
       }
 
       if (action === 'open-nutrition') {
-        return '/nutrition/food';
+        return '/app/nutrition/food';
       }
     }
   } catch {

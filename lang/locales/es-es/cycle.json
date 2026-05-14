@@ -1,0 +1,31 @@
+{
+  "cycle": {
+    "title": "Enfoque del Ciclo de Hoy",
+    "nextPeriod": "Predicción del Próximo Periodo",
+    "insightsAndLog": "Información y Registro del Ciclo",
+    "dailyLog": "Registro Diario",
+    "flowIntensity": "Intensidad del Flujo",
+    "symptomsTitle": "Síntomas",
+    "noLogsToday": "No se han registrado síntomas para hoy.",
+    "logSymptoms": "Registrar Síntomas",
+    "logDaily": "Registro Diario del Ciclo",
+    "settings": {
+      "title": "Ajustes del Ciclo",
+      "subtitle": "Edita tu configuración del ciclo",
+      "save": "Guardar Cambios"
+    },
+    "symptoms": {
+      "cramps": "Calambres",
+      "headache": "Dolor de cabeza",
+      "bloating": "Hinchazón",
+      "moodSwings": "Cambios de humor",
+      "fatigue": "Fatiga"
+    },
+    "phase": {
+      "menstrual": "Menstrual",
+      "follicular": "Folicular",
+      "ovulatory": "Ovulatoria",
+      "luteal": "Lútea"
+    }
+  }
+}

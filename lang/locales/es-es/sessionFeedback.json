@@ -1,0 +1,16 @@
+{
+  "sessionFeedback": {
+    "title": "Comentarios de la Sesión",
+    "subtitle": "Califica tu rendimiento",
+    "difficulty": "Dificultad",
+    "exhaustion": "Agotamiento",
+    "enjoyment": "Disfrute",
+    "easy": "Fácil",
+    "extreme": "Extremo",
+    "fresh": "Fresco",
+    "drained": "Agotado",
+    "disliked": "No me gustó",
+    "loved": "Me encantó",
+    "submit": "ENVIAR COMENTARIOS"
+  }
+}

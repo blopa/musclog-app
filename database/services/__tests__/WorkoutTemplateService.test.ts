@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import {
   ExerciseInWorkout,

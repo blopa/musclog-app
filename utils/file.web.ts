@@ -1,11 +1,54 @@
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
-import { router } from 'expo-router';
 
-import { dumpDatabase, restoreDatabase } from '@/database/exportImport';
+import { dumpDatabase } from '@/database/exportDb';
+import { restoreDatabase } from '@/database/importDb';
+import { getWebBackupContent } from '@/database/preMigrationBackup';
+import { reloadApp } from '@/utils/app';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   return `${timestamp}-musclog-export.json`;
+}
+
+export async function downloadFile(uri: string, fileName?: string): Promise<void> {
+  if (uri.startsWith('web-backup://')) {
+    const { getWebBackupContent, getStoredBackups } = await import('@/database/preMigrationBackup');
+    const hash = uri.replace('web-backup://', '');
+    const content = getWebBackupContent(hash);
+    if (!content) {
+      throw new Error(`[WebBackup] Backup not found: ${hash}`);
+    }
+
+    // Build a descriptive filename from the metadata index.
+    const backups = await getStoredBackups();
+    const meta = backups.find((b) => b.uri === uri);
+    const ts = meta
+      ? new Date(meta.createdAt).toISOString().replace(/[:.]/g, '-').slice(0, 19)
+      : hash;
+    const versionStr =
+      meta?.fromVersion != null && meta?.toVersion != null
+        ? `-v${meta.fromVersion}-to-v${meta.toVersion}`
+        : '';
+    const resolvedFileName =
+      fileName && fileName !== hash ? fileName : `${ts}-pre-migration${versionStr}.json`;
+
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = resolvedFileName;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    return;
+  }
+
+  const a = document.createElement('a');
+  a.href = uri;
+  if (fileName) {
+    a.download = fileName;
+  }
+  a.click();
 }
 
 export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
@@ -13,10 +56,7 @@ export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
   const fileName = getExportFileName();
   const blob = new Blob([dbDump], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
+  await downloadFile(url, fileName);
   URL.revokeObjectURL(url);
 }
 
@@ -193,11 +233,39 @@ export async function deleteExerciseImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
 }
 
+export async function saveMealImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteMealImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
+}
+
+export async function saveFoodImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteFoodImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
+}
+
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
   return { path: options.imageUri };
 }
 
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
+  if (fileUri.startsWith('web-backup://')) {
+    const hash = fileUri.replace('web-backup://', '');
+    const content = getWebBackupContent(hash);
+    if (!content) {
+      throw new Error(`[WebBackup] Backup not found: ${hash}`);
+    }
+
+    return content;
+  }
+
   try {
     // Fetch the file from the URI
     const response = await fetch(fileUri);
@@ -240,7 +308,16 @@ export function shouldSeedDevData() {
   return false;
 }
 
-export async function reloadApp() {
-  router.replace('/');
-  window.location.reload();
+async function ensureFoodImagesDir(): Promise<void> {
+  // TODO
+}
+
+export async function saveBase64ImageToFile(base64: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
+}
+
+export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {
+  // TODO
+  return Promise.resolve('');
 }

@@ -1,0 +1,1141 @@
+{
+  "website": {
+    "landing": {
+      "title": "Musclog Web Demo",
+      "cta": "Probeer het nu",
+      "f1": "Slimme workouttracking",
+      "f2": "AI-fotologging voor voeding",
+      "f3": "Gedetailleerde voortgangsgrafieken",
+      "f4": "100% privé en op uw apparaat",
+      "tagline": "AI-gestuurde fitness- en voedingsregistratie — gratis en open source.",
+      "qrcode_title": "Download de App",
+      "qrcode_text": "Scan om te downloaden Musclog"
+    },
+    "hero": {
+      "badge1": "★ GRATIS & OPEN SOURCE",
+      "badge2": "FOCUS OP PRIVACY (GEEN LOGIN NODIG)",
+      "title1": "Beheers Uw",
+      "title2": "Fitness Gegevens",
+      "subheading": "Een lokaal-eerst, open-source fitnesstracker. Geen accounts, geen tracking, geen cloud. Alleen u en uw gains.",
+      "github": "Bekijk op GitHub",
+      "demoEyebrow": "Directe preview",
+      "demoTitle": "Probeer de webdemo",
+      "demoDescription": "Open een browserpreview van de app en verken de ervaring voordat u downloadt.",
+      "demoButton": "Open webdemo"
+    },
+    "features": {
+      "title": "Gebouwd voor Prestatie & Privacy",
+      "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",
+      "strengthTracking": {
+        "title": "Offline Krachttraining Tracking",
+        "description": "Registreer uw sets en herhalingen direct op uw apparaat. Geen internet nodig. Uw gegevens verlaten nooit uw zak.",
+        "link": "MEER BEKIJKEN"
+      },
+      "privacyFirst": {
+        "title": "Privacy Eerst",
+        "description": "Geen registraties, geen logins, en geen tracking door derden. Musclog respecteert uw digitale soevereiniteit.",
+        "link": "PRIVACY MANIFEST"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "Musclog wordt gedreven door de community. Controleer de code, draag functies bij, of fork het om het uw eigen te maken.",
+        "link": "BRONCODE BEKIJKEN"
+      }
+    },
+    "featureGrid": {
+      "title": "Alles Wat U Nodig Heeft om Slimmer te Trainen",
+      "description": "Van AI-gestuurde coaching tot gedetailleerde analyses, Musclog geeft u de tools om volledige controle te nemen over uw fitnessreis.",
+      "items": {
+        "aiCoach": {
+          "title": "AI Coach (Loggy)",
+          "description": "Chat met uw AI fitness coach voor gepersonaliseerde workoutplannen, voedingsadvies en maaltijdfoto-schatting."
+        },
+        "barcode": {
+          "title": "Barcode Scanner",
+          "description": "Voeg producten snel toe door barcodes te scannen. Toegang tot de Open Food Facts database met miljoenen producten."
+        },
+        "checkins": {
+          "title": "Wekelijkse Check-ins",
+          "description": "Geautomatiseerde 7-daagse analyse van uw voortgang met dynamische doelaanpassingen om u op koers te houden."
+        },
+        "analytics": {
+          "title": "Voortgangsanalyses",
+          "description": "Interactieve grafieken voor gewicht, lichaamsvet en lifting-voortgang. Volg uw TDEE met echte gegevens."
+        },
+        "cycle": {
+          "title": "Cyclus Bewustzijn",
+          "description": "Volg menstruele fasen en ontvang trainingsaanbevelingen geoptimaliseerd voor uw cyclus."
+        },
+        "templates": {
+          "title": "Workout Sjablonen",
+          "description": "Maak aangepaste routines zoals PPL of Bovenlichaam/Onderlichaam. Toegang tot een uitgebreide oefenbibliotheek met spierdoelgerichtheid."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Synchroniseer met Google Health Connect om gegevens te delen met andere gezondheids- en fitness-apps op Android."
+        },
+        "encryption": {
+          "title": "Gecodeerde Opslag",
+          "description": "Uw gevoelige gezondheidsgegevens worden gecodeerd opgeslagen met AES. Exporteer op elk moment als JSON of Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitaminen & Mineralen",
+        "description": "Die u dagelijks kunt volgen"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Offline Klaar",
+        "description": "Geen internet nodig"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Cloud Uploads",
+        "description": "Gegevens blijven lokaal"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Encryptie",
+        "description": "Veiligheid in rust"
+      }
+    },
+    "howItWorks": {
+      "title": "Hoe Het Werkt",
+      "description": "Begin binnen enkele minuten. Geen ingewikkelde setup, geen abonnementen, geen gegevensverzameling.",
+      "steps": {
+        "step1": {
+          "title": "Download & Ga",
+          "description": "Installeer Musclog vanuit de App Store of Google Play. Geen account nodig — gewoon openen en beginnen met volgen."
+        },
+        "step2": {
+          "title": "Registreer Uw Training",
+          "description": "Registreer sets, herhalingen en gewichten. Scan barcodes of maak foto's om maaltijden te loggen. Alles blijft op uw apparaat."
+        },
+        "step3": {
+          "title": "Volg Voortgang",
+          "description": "Bekijk wekelijkse check-ins, visualiseer trends en laat de AI coach u helpen uw aanpak te optimaliseren."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"Musclog is de eerste app die mijn privacy respecteert terwijl het een wereldklasse trainingservaring biedt. Lokaal-eerst is de toekomst.\"",
+      "author": "Laura F.",
+      "role": "Drukke Ontwikkelaar"
+    },
+    "cta": {
+      "title": "Klaar om te starten?",
+      "description": "Sluit u aan bij duizenden atleten die Musclog gebruiken om hun voortgang te volgen zonder hun privacy op te geven.",
+      "download": "Nu Downloaden",
+      "sourceCode": "Bekijk Broncode"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Lift, Log, Herhaal",
+      "features": "Functies",
+      "progress": "Voortgang",
+      "github": "GitHub",
+      "download": "Nu Downloaden",
+      "language": "Taal"
+    },
+    "progress": {
+      "metaTitle": "Musclog voortgangsimport",
+      "loading": "Uw lokale voortgangsdatabase wordt geladen...",
+      "hero": {
+        "eyebrow": "Desktop voortgangsviewer",
+        "title": "Importeer hier de geëxporteerde gegevens uit uw Musclog-app",
+        "description": "Laad uw Musclog JSON-export in om een browserdashboard te openen met gewichtstrends, voedingspatronen, trainingsvolume en belangrijke correlaties voor grotere schermen.",
+        "points": {
+          "weight": {
+            "title": "Gewicht en lichaamssamenstelling",
+            "description": "Bekijk gewichtstrends, veranderingen in lichaamsvet, FFMI en lichaamsmetingen op één plek."
+          },
+          "nutrition": {
+            "title": "Voeding en TDEE",
+            "description": "Inspecteer calorie-inname, macroverdeling en gemiddelde innames uit uw geïmporteerde log."
+          },
+          "training": {
+            "title": "Training en correlaties",
+            "description": "Vergelijk trainingsvolume, stemming en herstelsignalen op een ruimere desktopweergave."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Lokale import",
+        "title": "Breng uw app-export naar deze browser",
+        "description": "Kies het JSON-exportbestand dat in de mobiele Musclog-app is gemaakt. De import wordt lokaal uitgevoerd in de browseropslag en verlaat uw apparaat niet.",
+        "passphraseLabel": "Decryptiezin",
+        "passphrasePlaceholder": "Optioneel, alleen als uw export versleuteld is",
+        "cta": "Kies JSON-export",
+        "importing": "Gegevens worden geïmporteerd...",
+        "hint": "Ondersteund formaat: Musclog JSON-export",
+        "selectedFile": "Geselecteerd bestand: {{fileName}}",
+        "genericError": "Dit bestand kon niet worden geïmporteerd. Controleer of het een geldige Musclog-export is.",
+        "localOnlyTitle": "Standaard privé",
+        "localOnlyDescription": "Deze pagina leest uw export alleen in de lokale webdatabase in, zodat u voortgangsgegevens kunt bekijken zonder deze naar een server te uploaden."
+      },
+      "dashboard": {
+        "eyebrow": "Geïmporteerde analyse",
+        "title": "Uw Musclog-voortgang, opnieuw ontworpen voor desktopweb",
+        "description": "Dit dashboard gebruikt dezelfde lokale database en voortgangsberekeningen als de app, maar presenteert ze in een ruimere desktoplay-out die beter werkt voor het scannen van trends en het vergelijken van patronen.",
+        "replaceData": "Geïmporteerde gegevens vervangen",
+        "localStorageHint": "Gegevens worden opgeslagen in de lokale Musclog-browserdatabase."
+      },
+      "stats": {
+        "weightHint": "Laatste gewicht binnen uw geselecteerde bereik.",
+        "caloriesHint": "Gemiddelde calorieën over {{count}} gelogde voedingsdagen.",
+        "workoutsHint": "Voltooide workouts in het huidige bereik.",
+        "tdeeHint": "Huidige geschatte onderhoudsbehoefte op basis van beschikbare gegevens."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Overzicht lichaamssamenstelling",
+          "description": "Uw belangrijkste lichaamsmetingen staan vooraan, zodat grote verschuivingen direct zichtbaar zijn."
+        },
+        "nutrition": {
+          "title": "Voedingstrends",
+          "description": "Dagelijkse calorietotalen en recente macrobalans maken het makkelijker om inname te koppelen aan de resultaten die u ziet.",
+          "macroSplit": "Recente macro-calorieverdeling"
+        },
+        "training": {
+          "title": "Trainingsoutput",
+          "description": "Trainingsvolume en sets per spiergroep laten zien waar uw inspanning daadwerkelijk naartoe is gegaan."
+        },
+        "correlations": {
+          "title": "Correlatieweergaven",
+          "description": "Deze desktop-scatterplots maken het eenvoudiger om te zien of inname en veranderingen in lichaamssamenstelling samen bewegen."
+        },
+        "mood": {
+          "title": "Stemmingsmomenten",
+          "description": "Stemmingsregistraties blijven zichtbaar als een lichte paraatheidslaag naast de grotere lichaams- en trainingstrends.",
+          "summaryTitle": "Stemmingsoverzicht",
+          "totalEntries": "Bijgehouden periodes",
+          "averageScore": "Gemiddelde score"
+        },
+        "reminders": {
+          "title": "Herinneringsconsistentie",
+          "description": "Water- en supplementherinneringen verschijnen nu ook als nalevingstrends, zodat u uw consistentie naast andere herstelsignalen kunt bekijken.",
+          "supplementsTitle": "Supplementherinneringen"
+        },
+        "measurements": {
+          "title": "Metingen",
+          "description": "Wanneer omtrekmetingen bestaan, verschijnen ze hier als compacte trendkaarten.",
+          "empty": "Er zijn geen lichaamsmetingen gevonden in het geïmporteerde bereik."
+        }
+      }
+    },
+    "storeButtons": {
+      "googleTitle": "VERKRIJG HET OP",
+      "googleStore": "Google Play",
+      "appleTitle": "DOWNLOAD OP DE",
+      "appleStore": "App Store",
+      "comingSoon": "App Store binnenkort beschikbaar!",
+      "qrButton": "QR-codes weergeven",
+      "qrTitle": "QR-codes",
+      "qrDescription": "Open de installatiepagina voor Android of iOS rechtstreeks op je telefoon.",
+      "qrGoogleLabel": "Android-installatiepagina",
+      "qrAppleLabel": "iOS-installatiepagina",
+      "qrGoogleAlt": "QR-code voor Google Play",
+      "qrAppleAlt": "QR-code voor de App Store",
+      "close": "Sluiten"
+    },
+    "download": {
+      "pageTitle": "Musclog downloaden",
+      "eyebrow": "Begin vandaag met tracken",
+      "title": "Klaar om te focussen?",
+      "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
+      "googleLabel": "Download Musclog via Google Play",
+      "appleLabel": "Download Musclog via de App Store"
+    },
+    "footer": {
+      "privacyPolicy": "Privacybeleid",
+      "terms": "Voorwaarden",
+      "github": "GitHub",
+      "contact": "Contact",
+      "license": "Licentie",
+      "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
+    },
+    "cookieConsent": {
+      "ariaLabel": "Cookietoestemming",
+      "description": "We gebruiken Google Analytics om te begrijpen hoe bezoekers de website gebruiken. Analytische cookies worden alleen geplaatst als u accepteert. Lees ons",
+      "privacyLink": "Privacybeleid",
+      "accept": "Accepteren",
+      "reject": "Weigeren",
+      "cookieSettings": "Cookie-instellingen"
+    },
+    "privacy": {
+      "titleStart": "Privacybeleid",
+      "titleHighlight": "",
+      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
+      "highlights": {
+        "dataProtection": {
+          "title": "Gegevensbescherming",
+          "description": "Uitgebreide technische en organisatorische maatregelen beschermen uw gegevens."
+        },
+        "localFirst": {
+          "title": "Lokale opslag",
+          "description": "Uw gegevens worden primair opgeslagen op uw apparaat, niet op onze servers."
+        },
+        "security": {
+          "title": "Beveiliging voorop",
+          "description": "Geavanceerde versleuteling en toegangscontroles beschermen uw informatie."
+        }
+      },
+      "intro": "Dit Privacybeleid beschrijft Ons beleid en onze procedures met betrekking tot het verzamelen, gebruiken, opslaan en openbaar maken van Uw informatie wanneer U Musclog gebruikt. Het is van toepassing op zowel de Musclog-applicatie als de Musclog-website, hoewel de categorieën gegevens die in elke context worden verwerkt verschillen. Dit Privacybeleid legt ook Uw privacyrechten uit en hoe de wet U beschermt.",
+      "sections": {
+        "scope": {
+          "title": "Reikwijdte van dit Privacybeleid",
+          "content": "Musclog is beschikbaar via zowel een applicatie als een openbare website. Omdat deze twee diensten verschillend functioneren, worden de toepasselijke privacypraktijken hieronder afzonderlijk samengevat en elders in dit Privacybeleid nader toegelicht."
+        },
+        "interpretation": {
+          "title": "Interpretatie en Definities",
+          "content": "Woorden waarvan de beginletter een hoofdletter heeft, hebben betekenissen die zijn gedefinieerd onder de volgende voorwaarden. De volgende definities hebben dezelfde betekenis, ongeacht of ze in enkelvoud of meervoud voorkomen."
+        },
+        "definitions": {
+          "title": "Definities",
+          "items": {
+            "account": {
+              "term": "Account",
+              "def": "betekent een uniek account dat voor u is aangemaakt om toegang te krijgen tot onze Service of delen daarvan."
+            },
+            "application": {
+              "term": "Applicatie",
+              "def": "verwijst naar Musclog, het softwareprogramma dat door Musclog wordt aangeboden."
+            },
+            "company": {
+              "term": "Bedrijf",
+              "def": "(ook aangeduid als \"Musclog\", \"Wij\", \"Ons\" of \"Onze\" in deze Overeenkomst) verwijst naar Musclog."
+            },
+            "device": {
+              "term": "Apparaat",
+              "def": "betekent elk apparaat dat toegang heeft tot de Service, zoals een computer, mobiele telefoon of digitale tablet."
+            },
+            "personalData": {
+              "term": "Persoonsgegevens",
+              "def": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren."
+            },
+            "service": {
+              "term": "Service",
+              "def": "verwijst naar de Musclog-applicatie en de Musclog-website, tenzij in de desbetreffende sectie anders is vermeld."
+            },
+            "serviceProvider": {
+              "term": "Serviceprovider",
+              "def": "betekent elke natuurlijke of rechtspersoon die de gegevens verwerkt namens Musclog."
+            },
+            "usageData": {
+              "term": "Gebruiksgegevens",
+              "def": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service, inclusief apparaatinformatie, IP-adres, browsertype en diagnostische gegevens."
+            },
+            "you": {
+              "term": "U",
+              "def": "betekent de persoon die de Service gebruikt of benadert, of Musclog, of een andere rechtspersoon namens wie die persoon de Service gebruikt of benadert, al naar gelang van toepassing."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Verzamelen en gebruiken van uw Persoonsgegevens",
+          "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken die kan worden gebruikt om u te contacteren of te identificeren.",
+          "typesCollected": {
+            "title": "Soorten verzamelde gegevens",
+            "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
+            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
+          },
+          "googleOAuth": {
+            "title": "Google OAuth-gegevens",
+            "content": "Onze applicatie integreert Google OAuth voor de volgende doeleinden:",
+            "items": [
+              "Om uw naam te verkrijgen ter personalisatie van uw gebruikerservaring.",
+              "Om toegang te krijgen tot Google Generative AI-mogelijkheden ter verbetering van applicatiefuncties.",
+              "Alle gegevens worden offline op uw apparaat opgeslagen en niet geüpload naar onze servers.",
+              "Wij delen uw gegevens niet met derden voor marketing of andere doeleinden.",
+              "Google OAuth is optioneel en kan worden uitgeschakeld in de applicatie-instellingen."
+            ]
+          },
+          "usageData": {
+            "title": "Gebruiksgegevens",
+            "content": "Gebruiksgegevens worden automatisch verzameld bij gebruik van de Service. Gebruiksgegevens kunnen informatie bevatten zoals het IP-adres van uw apparaat, browsertype en -versie, de pagina's van onze Service die u bezoekt, de datum en tijd van uw bezoek, de tijd besteed aan die pagina's, unieke apparaat-ID's en andere diagnostische gegevens. Wanneer u de Service benadert via een mobiel apparaat, kunnen wij automatisch bepaalde informatie verzamelen, waaronder het type mobiel apparaat, de unieke ID van uw mobiele apparaat, het IP-adres van uw mobiele apparaat, uw mobiel besturingssysteem en het type mobiele internetbrowser dat u gebruikt."
+          },
+          "appPermissions": {
+            "title": "Informatie verzameld bij gebruik van de Applicatie",
+            "content": "Bij gebruik van onze Applicatie kunnen wij, om de functies van onze Applicatie te bieden, met uw voorafgaande toestemming verzamelen:",
+            "items": [
+              "Activiteitsherkenningsgegevens om uw trainingen en fitnessactiviteiten bij te houden.",
+              "Lichaamssensorgegevens om hartslag, stappen en andere gezondheidsstatistieken te monitoren.",
+              "Internettoegang om verbinding te maken met onze servers en online functionaliteiten te bieden.",
+              "Kalendergegevens om te integreren met uw agenda en trainingen te plannen.",
+              "Toegang tot externe opslag om trainingsgegevens en andere informatie te lezen en op te slaan.",
+              "Toestemming voor opstartmeldingen om geplande taken na het opnieuw opstarten van uw apparaat te hervatten.",
+              "Toestemming voor systeemwaarschuwingsvenster om belangrijke meldingen boven andere apps weer te geven.",
+              "Trillingstoestemming voor haptische feedback tijdens trainingen en meldingen.",
+              "Wake lock-toestemming om de app actief te houden tijdens trainingen.",
+              "Gezondheidsgegevens zoals verbrande actieve calorieën, lichaamsvet, botmassa, hartslag, lengte, vetvrije massa, voeding, stappen, totale verbrande calorieën en gewicht voor uitgebreide fitnesstracking."
+            ]
+          },
+          "optionalAi": {
+            "title": "Optionele AI-functies en externe LLM-providers",
+            "content1": "De Musclog-applicatie kan volledig offline worden gebruikt, met uitzondering van optionele verzoeken aan externe bronnen voor voedingsgegevens. Standaard verzendt Musclog uw trainings-, voedings-, gezondheids- of profielgegevens niet naar onze servers.",
+            "content2": "Musclog biedt ook optionele AI-functies waarvoor u uw eigen provider moet configureren, zoals OpenAI, Google Gemini, Apple Intelligence op iOS of een lokale/zelfgehoste LLM-endpoint. Deze functies blijven uitgeschakeld tenzij u ze uitdrukkelijk inschakelt.",
+            "content3": "Als u ervoor kiest een AI-functie te gebruiken, worden de gegevens die u besluit te verzenden doorgestuurd naar de provider of endpoint die u configureert. Als u een zelfgehost lokaal model onder uw eigen controle gebruikt, kunnen die gegevens binnen uw eigen omgeving blijven. Als u een door een derde gehoste endpoint gebruikt, waaronder een gehoste lokale-modeldienst, kan die provider de gegevens verwerken in overeenstemming met zijn eigen voorwaarden en privacypraktijken. Musclog heeft geen controle over de manier waarop externe providers de gegevens verwerken die u naar hen verzendt.",
+            "content4": "Musclog kan ook een gratis Musclog-LLM-optie aanbieden. Wanneer u die optie gebruikt, wordt uw verzoek doorgestuurd via Cloudflare AI Gateway en vervolgens verzonden met een door Musclog beheerde gratis OpenAI- of Google Gemini-API-sleutel. Als u ervoor kiest deze functie te gebruiken, dient u te begrijpen dat uw verzoek via Cloudflare en door de downstream modelprovider die Musclog voor dat verzoek selecteert kan worden verwerkt.",
+            "content5": "Momenteel ondersteunt Musclog OpenAI, Google Gemini, Apple Intelligence op iOS, compatibele lokale of zelfgehoste LLM-endpoints en de gratis Musclog-LLM-route. U dient de toepasselijke privacybeleidsregels te raadplegen voordat u externe providers inschakelt of de gratis optie accepteert, waaronder:",
+            "cloudflarePrivacyPolicy": "Privacybeleid van Cloudflare",
+            "openaiPrivacyPolicy": "Privacybeleid van OpenAI",
+            "googlePrivacyPolicy": "Privacybeleid van Google",
+            "applePrivacyPolicy": "Privacybeleid van Apple",
+            "and": "en"
+          }
+        },
+        "useOfData": {
+          "title": "Gebruik van uw Persoonsgegevens",
+          "items": [
+            "Om onze Service te leveren en te onderhouden, inclusief het monitoren van het gebruik.",
+            "Om optionele AI-functies aan te bieden, uitsluitend wanneer u deze uitdrukkelijk inschakelt en uw eigen provider of endpoint configureert.",
+            "Om uw Account te beheren: om uw registratie als gebruiker van de Service te beheren.",
+            "Voor de uitvoering van een contract: de ontwikkeling, naleving en uitvoering van het aankoopcontract voor de producten of diensten die u hebt aangeschaft.",
+            "Om contact met u op te nemen via e-mail, telefoongesprekken, sms of andere gelijkwaardige vormen van elektronische communicatie.",
+            "Om u nieuws, speciale aanbiedingen en algemene informatie te bieden over andere goederen, diensten en evenementen.",
+            "Om uw verzoeken te beheren: om uw verzoeken aan ons te behandelen en te beheren.",
+            "Voor bedrijfsoverdrachten: wij kunnen uw informatie gebruiken om een fusie, afsplitsing, herstructurering, reorganisatie, ontbinding of andere verkoop of overdracht van onze activa te evalueren of uit te voeren.",
+            "Voor andere doeleinden: wij kunnen uw informatie gebruiken voor gegevensanalyse, het identificeren van gebruikstrends, het bepalen van de effectiviteit van onze promotiecampagnes en het evalueren en verbeteren van onze Service."
+          ]
+        },
+        "sharing": {
+          "title": "Delen van uw Persoonsgegevens",
+          "items": [
+            "Met Serviceproviders: wij kunnen uw persoonlijke informatie delen met Serviceproviders om het gebruik van onze Service te monitoren en te analyseren.",
+            "Voor bedrijfsoverdrachten: wij kunnen uw persoonlijke informatie delen of overdragen in verband met een fusie, verkoop van bedrijfsactiva, financiering of overname.",
+            "Met Gelieerde ondernemingen: wij kunnen uw informatie delen met onze gelieerde ondernemingen, waarbij wij eisen dat deze gelieerde ondernemingen dit Privacybeleid naleven.",
+            "Met zakelijke partners: wij kunnen uw informatie delen met onze zakelijke partners om u bepaalde producten, diensten of promoties aan te bieden.",
+            "Met andere gebruikers: wanneer u persoonlijke informatie deelt of anderszins interageert in de openbare gebieden met andere gebruikers, kan deze informatie door alle gebruikers worden bekeken.",
+            "Met uw toestemming: wij kunnen uw persoonlijke informatie voor elk ander doel openbaar maken met uw toestemming."
+          ]
+        },
+        "retention": {
+          "title": "Bewaring van uw Persoonsgegevens",
+          "content": "Musclog bewaart uw Persoonsgegevens alleen zolang als noodzakelijk is voor de doeleinden zoals uiteengezet in dit Privacybeleid. Wij bewaren en gebruiken uw Persoonsgegevens voor zover noodzakelijk om te voldoen aan onze wettelijke verplichtingen, geschillen op te lossen en onze wettelijke overeenkomsten en beleidsregels af te dwingen. Musclog bewaart ook Gebruiksgegevens voor interne analysedoeleinden. Gebruiksgegevens worden doorgaans gedurende een kortere periode bewaard, tenzij deze gegevens worden gebruikt om de beveiliging te versterken of de functionaliteit van onze Service te verbeteren, of wij wettelijk verplicht zijn deze gegevens langer te bewaren."
+        },
+        "transfer": {
+          "title": "Overdracht van uw Persoonsgegevens",
+          "content": "Uw informatie, inclusief Persoonsgegevens, wordt verwerkt op de kantoren van Musclog en op elk andere locatie waar de bij de verwerking betrokken partijen zich bevinden. Dit betekent dat deze informatie kan worden overgedragen naar en opgeslagen op computers buiten uw staat, provincie, land of andere overheidsinstantie, waar de wetgeving inzake gegevensbescherming kan verschillen van die in uw jurisdictie. Uw instemming met dit Privacybeleid, gevolgd door uw indiening van dergelijke informatie, vertegenwoordigt uw akkoord met die overdracht. Musclog neemt alle redelijkerwijs noodzakelijke stappen om ervoor te zorgen dat uw gegevens veilig en in overeenstemming met dit Privacybeleid worden behandeld."
+        },
+        "deletion": {
+          "title": "Uw Persoonsgegevens verwijderen",
+          "content": "U heeft het recht om de Persoonsgegevens die wij over u hebben verzameld te verwijderen of te verzoeken dat wij helpen bij het verwijderen daarvan. Onze Service kan u de mogelijkheid bieden om bepaalde informatie over u vanuit de Service te verwijderen. U kunt uw informatie op elk moment bijwerken, wijzigen of verwijderen door in te loggen op uw Account en de accountinstellingen te bezoeken. U kunt ook contact met ons opnemen om toegang te vragen tot, correctie of verwijdering van persoonlijke informatie die u ons hebt verstrekt. Houd er echter rekening mee dat wij bepaalde informatie mogelijk moeten bewaren wanneer wij een wettelijke verplichting of juridische grondslag hebben om dit te doen."
+        },
+        "disclosure": {
+          "title": "Openbaarmaking van uw Persoonsgegevens",
+          "content": "Musclog kan uw Persoonsgegevens te goeder trouw openbaar maken wanneer een dergelijke actie noodzakelijk is om:",
+          "items": [
+            "Te voldoen aan een wettelijke verplichting",
+            "De rechten of eigendommen van Musclog te beschermen en te verdedigen",
+            "Mogelijke misstanden in verband met de Service te voorkomen of te onderzoeken",
+            "De persoonlijke veiligheid van gebruikers van de Service of het publiek te beschermen",
+            "Te beschermen tegen wettelijke aansprakelijkheid"
+          ]
+        },
+        "security": {
+          "title": "Beveiliging van uw Persoonsgegevens",
+          "content": "De beveiliging van uw Persoonsgegevens is belangrijk voor ons, maar onthoud dat geen enkele methode van overdracht via internet of elektronische opslag 100% veilig is. Wij passen uitgebreide technische en organisatorische maatregelen toe om uw persoonsgegevens te beschermen tegen ongeautoriseerde of onrechtmatige verwerking, evenals tegen onopzettelijk verlies, vernietiging of beschadiging. Deze maatregelen omvatten geavanceerde versleutelingsprotocollen voor gegevens tijdens overdracht en in rust, strikte toegangscontroles en regelmatige beveiligingsbeoordelingen."
+        },
+        "childrenPrivacy": {
+          "title": "Privacy van kinderen",
+          "content": "Onze Service richt zich niet op personen jonger dan 13 jaar. Wij verzamelen niet bewust persoonlijk identificeerbare informatie van personen jonger dan 13 jaar. Als u een ouder of voogd bent en weet dat uw kind ons Persoonsgegevens heeft verstrekt, neem dan contact met ons op. Als wij ons ervan bewust worden dat wij Persoonsgegevens hebben verzameld van iemand jonger dan 13 jaar zonder verificatie van ouderlijke toestemming, nemen wij maatregelen om die informatie van onze servers te verwijderen."
+        },
+        "links": {
+          "title": "Links naar andere websites",
+          "content": "Onze Service kan links bevatten naar andere websites die niet door ons worden beheerd. Als u op een link van een derde partij klikt, wordt u doorgestuurd naar de site van die derde partij. Wij raden u sterk aan het Privacybeleid van elke site die u bezoekt te bekijken. Wij hebben geen controle over en aanvaarden geen verantwoordelijkheid voor de inhoud, het privacybeleid of de praktijken van sites of diensten van derden."
+        },
+        "changes": {
+          "title": "Wijzigingen in dit Privacybeleid",
+          "content": "Wij kunnen ons Privacybeleid van tijd tot tijd bijwerken. Wij stellen u op de hoogte van eventuele wijzigingen door het nieuwe Privacybeleid op deze pagina te plaatsen. Wij zullen u informeren via e-mail en/of een prominente kennisgeving op onze Service voordat de wijziging van kracht wordt en de datum \"Laatste update\" bovenaan dit Privacybeleid bijwerken. U wordt geadviseerd dit Privacybeleid periodiek te bekijken op eventuele wijzigingen."
+        },
+        "googlePlay": {
+          "title": "Gegevensveiligheidslabels van Google Play Store",
+          "content": "Onze gegevensveiligheidslabels in de Google Play Store zijn nauwkeurig afgestemd op de informatie in dit privacybeleid. Wij zijn toegewijd aan het handhaven van een hoge standaard van transparantie en het waarborgen van volledige naleving van alle vereisten en richtlijnen van de Google Play Store. De verzamelde gegevens worden uitsluitend gebruikt om de functionaliteit en functies van uw applicatie te bieden of te verbeteren, en worden onder geen enkele omstandigheid gebruikt voor doeleinden buiten dit kader, zoals marketing of verkoop aan derden. Toegang tot gebruikersgegevens is strikt gereguleerd en kan alleen plaatsvinden na het verkrijgen van expliciete toestemming van de gebruiker."
+        },
+        "analytics": {
+          "title": "Website-analyse",
+          "content1": "Deze website maakt gebruik van Vercel Web Analytics, een cookieloze en privacy-gerichte analyseservice. Het verzamelt geen persoonlijke identificatoren en gebruikt geen cookies — bezoekers worden alleen geïdentificeerd door een anonieme hash die elke 24 uur wordt gereset. Er is geen toestemming vereist voor deze tool onder de ePrivacy-richtlijn.",
+          "content2": "Deze website maakt ook gebruik van Google Analytics 4 (GA4), een dienst van Google LLC, om geanonimiseerde gegevens te verzamelen over hoe bezoekers de site gebruiken. Analysecookies worden alleen ingesteld nadat u expliciet toestemming geeft door op \"Accepteren\" in de cookiebanner te klikken.",
+          "content3": "Wanneer u toestemming geeft voor GA4, kan Google Analytics verzamelen:",
+          "items": [
+            "Bezochte pagina's en tijd besteed aan elke pagina",
+            "Algemene geografische locatie (op land- of stadsniveau, niet precieze locatie)",
+            "Browsertype, apparaattype en besturingssysteem",
+            "Verwijzende website of zoekmachine",
+            "Anonieme interactiegebeurtenissen (bijv. linkklikken)"
+          ],
+          "content4": "Rechtsgrondslag voor GA4: Toestemming (AVG Art. 6(1)(a)). U kunt uw toestemming op elk moment intrekken door op \"Cookie-instellingen\" in de paginavoettekst te klikken. Intrekking van toestemming voorkomt verdere verzameling en heeft geen invloed op de rechtmatigheid van de verwerking vóór de intrekking.",
+          "content5": "GA4-gegevens worden standaard 14 maanden bewaard in Google Analytics. Google treedt op als gegevensverwerker onder een Gegevensverwerkingsovereenkomst. Voor meer informatie over hoe Google gegevens verwerkt, zie het",
+          "googlePrivacyPolicy": "Privacybeleid van Google",
+          "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden."
+        }
+      },
+      "appVsWebsite": {
+        "app": {
+          "title": "Binnen de Musclog-applicatie",
+          "summary": "De Musclog-applicatie is in de eerste plaats ontworpen als een local-first product. De meeste gebruikersgegevens blijven op uw apparaat opgeslagen en worden niet naar onze servers verzonden.",
+          "items": [
+            "Alle gegevens die u in de applicatie invoert, worden lokaal op uw apparaat opgeslagen.",
+            "De applicatie vereist geen account en biedt geen cloudsynchronisatie.",
+            "Wij hebben geen toegang tot de gezondheids- of fitnessgegevens die in de applicatie zijn opgeslagen.",
+            "Gevoelige gegevens die door de applicatie worden opgeslagen, worden versleuteld in rust met AES."
+          ]
+        },
+        "website": {
+          "title": "Op deze website",
+          "summary": "De website verwerkt een beperktere set gegevens, hoofdzakelijk met betrekking tot websitefunctionaliteit, taalvoorkeur, analyse en het beheer van cookie-toestemming.",
+          "items": [
+            "Deze website gebruikt Vercel Analytics om anonieme, cookieloze verkeersgegevens te meten zonder toestemming te vereisen.",
+            "Deze website gebruikt Google Analytics 4 uitsluitend nadat u via de cookiebanner expliciet toestemming hebt gegeven.",
+            "Uw taalvoorkeur wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden.",
+            "Uw cookie-toestemmingskeuze wordt lokaal in uw browser opgeslagen en wordt niet naar onze servers verzonden."
+          ]
+        }
+      },
+      "contact": {
+        "title": "Neem contact op",
+        "content": "Als u vragen heeft over dit Privacybeleid, kunt u contact met ons opnemen via e-mail:"
+      },
+      "pageTitle": "Privacybeleid | Musclog"
+    },
+    "terms": {
+      "titleStart": "Algemene",
+      "conditions": "Voorwaarden",
+      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
+      "highlights": {
+        "agreement": {
+          "title": "Gebruikersovereenkomst",
+          "description": "Door deze app te gebruiken, ga je akkoord met deze voorwaarden."
+        },
+        "liability": {
+          "title": "Beperkte aansprakelijkheid",
+          "description": "Wij zijn niet aansprakelijk voor gezondheidsbeslissingen op basis van deze app."
+        },
+        "warranty": {
+          "title": "Geen garantie",
+          "description": "De app wordt aangeboden zoals hij is, zonder enige garantie."
+        }
+      },
+      "intro": "Lees deze Algemene Voorwaarden zorgvuldig door voordat je de Musclog-applicatie gebruikt. Door onze service te openen of te gebruiken, ga je akkoord met deze voorwaarden.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretatie en Definities",
+          "content1": "Woorden waarvan de beginletter een hoofdletter is, hebben betekenissen die zijn gedefinieerd onder de volgende voorwaarden. De volgende definities hebben dezelfde betekenis, ongeacht of ze in enkelvoud of meervoud voorkomen.",
+          "content2": "Voor de doeleinden van deze Algemene Voorwaarden:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Applicatie",
+            "def": "betekent het softwareprogramma dat door Musclog wordt aangeboden, door jou gedownload op een elektronisch apparaat, genaamd Musclog."
+          },
+          "company": {
+            "term": "Bedrijf",
+            "def": "verwijst naar Musclog, de ontwikkelaar en beheerder van deze open-source applicatie."
+          },
+          "device": {
+            "term": "Apparaat",
+            "def": "betekent elk apparaat dat toegang heeft tot de Service, zoals een smartphone of tablet."
+          },
+          "service": {
+            "term": "Service",
+            "def": "verwijst naar de Applicatie."
+          },
+          "you": {
+            "term": "Jij",
+            "def": "betekent de persoon die de Service gebruikt of benadert."
+          }
+        },
+        "acknowledgment": {
+          "title": "Erkenning",
+          "content1": "Dit zijn de Algemene Voorwaarden die het gebruik van deze Service regelen en de overeenkomst die van kracht is tussen jou en het Bedrijf. Door de Service te gebruiken, ga je akkoord met deze Algemene Voorwaarden.",
+          "content2": "Je toegang tot en gebruik van de Service is ook afhankelijk van je aanvaarding van en naleving van het Privacybeleid van het Bedrijf.",
+          "content3": "Musclog is een local-first, open-source fitnesstracker. Er is geen account vereist. Je gegevens blijven op je apparaat en worden nooit naar onze servers verzonden."
+        },
+        "links": {
+          "title": "Links naar andere websites",
+          "content": "Onze Service kan links bevatten naar websites of diensten van derden die niet eigendom zijn van of worden beheerd door het Bedrijf. Wij hebben geen controle over en aanvaarden geen verantwoordelijkheid voor de inhoud, het privacybeleid of de praktijken van websites of diensten van derden."
+        },
+        "termination": {
+          "title": "Beëindiging",
+          "content": "Wij kunnen je toegang onmiddellijk beëindigen of opschorten, zonder voorafgaande kennisgeving of aansprakelijkheid, om welke reden dan ook, inclusief als je deze Algemene Voorwaarden schendt. Na beëindiging eindigt je recht om de Service te gebruiken onmiddellijk."
+        },
+        "liability": {
+          "title": "Beperking van aansprakelijkheid",
+          "content1": "Voor zover maximaal toegestaan door toepasselijk recht, is het Bedrijf in geen geval aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade, inclusief maar niet beperkt tot verlies van winst, gegevens, gebruik, goodwill of andere immateriële verliezen.",
+          "content2": "Deze applicatie is geen medisch hulpmiddel. Raadpleeg altijd een gekwalificeerde zorgverlener voordat je gezondheids- of fitnessbeslissingen neemt op basis van gegevens uit deze app."
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "content1": "De Service wordt aan jou geleverd \"ZOALS ZIJ IS\" en \"ZOALS BESCHIKBAAR\", met alle fouten en gebreken en zonder enige garantie.",
+          "content2": "Zonder het voorgaande te beperken, biedt het Bedrijf geen garantie dat de Service aan je vereisten voldoet, beoogde resultaten bereikt of compatibel is met andere software, applicaties, systemen of diensten."
+        },
+        "governingLaw": {
+          "title": "Toepasselijk recht",
+          "content1": "De wetten van het land, met uitzondering van de conflictregelgeving, zijn van toepassing op deze Voorwaarden en je gebruik van de Service.",
+          "content2": "Lokale consumentenbeschermingswetten kunnen je aanvullende rechten verlenen. Niets in deze Voorwaarden tast rechten aan die je als consument hebt op grond van toepasselijk recht."
+        },
+        "changes": {
+          "title": "Wijzigingen in deze voorwaarden",
+          "content": "Wij behouden ons het recht voor om deze Voorwaarden naar eigen goeddunken op elk moment te wijzigen of te vervangen. Wij zullen proberen minimaal 30 dagen van tevoren kennis te geven voordat nieuwe voorwaarden van kracht worden. Door de Service te blijven gebruiken na de inwerkingtreding van de wijzigingen, ga je akkoord met de herziene voorwaarden."
+        }
+      },
+      "contact": {
+        "title": "Neem contact op",
+        "content": "Als je vragen hebt over deze Algemene Voorwaarden, kun je contact met ons opnemen via"
+      },
+      "pageTitle": "Algemene Voorwaarden | Musclog"
+    },
+    "contact": {
+      "titleStart": "Neem",
+      "titleHighlight": "Contact op",
+      "description": "Heb je een vraag, een bug gevonden of wil je bijdragen? We horen graag van je.",
+      "form": {
+        "fullName": "Volledige naam",
+        "email": "E-mailadres",
+        "subject": "Onderwerp",
+        "message": "Bericht",
+        "submit": "Bericht versturen",
+        "mailto": "Openen in e-mailapp",
+        "startOver": "Nog een bericht sturen",
+        "helpText": "Klik op de knop hierboven om het bericht te openen in je standaard e-mailapp.",
+        "placeholders": {
+          "fullName": "Jan de Vries",
+          "email": "jan@voorbeeld.nl",
+          "subject": "Wat heb je in gedachten?",
+          "message": "Vertel ons hoe we je kunnen helpen…"
+        }
+      },
+      "connect": {
+        "title": "Verbind met ons",
+        "follow": "Volg ons",
+        "github": {
+          "title": "GitHub-repository",
+          "description": "Meld bugs, vraag functies aan of draag direct code bij op GitHub."
+        },
+        "discord": {
+          "title": "Community Discord",
+          "description": "Word lid van onze community om te chatten met andere gebruikers en de beheerders."
+        },
+        "email": {
+          "title": "Support e-mail",
+          "description": "Hulp nodig? Stuur ons een e-mail en we reageren zo snel mogelijk."
+        }
+      },
+      "privacy": {
+        "title": "Privacy eerst",
+        "description": "We slaan niets op van wat je hier verstuurt. Je bericht gaat rechtstreeks naar ons e-mailadres — geen servers, geen logs."
+      },
+      "pageTitle": "Contact | Musclog"
+    },
+    "calculator": {
+      "pageTitle": "TDEE Calculator | Musclog",
+      "titleStart": "TDEE",
+      "titleHighlight": "CALCULATOR",
+      "subtitle": "Precisiedata voor de hoog-presterende atleet. Bereken je biologische basislijn en optimaliseer je traject.",
+      "form": {
+        "title": "FITNESSPROFIEL",
+        "age": "LEEFTIJD",
+        "gender": "GESLACHT",
+        "male": "Man",
+        "female": "Vrouw",
+        "other": "Anders",
+        "weight": "GEWICHT (KG)",
+        "height": "LENGTE (CM)",
+        "bodyFat": "VETPERCENTAGE %",
+        "experience": "ERVARING",
+        "beginner": "Beginner",
+        "intermediate": "Gemiddeld",
+        "advanced": "Gevorderd",
+        "activityLevel": "ACTIVITEITSNIVEAU",
+        "activity1": "Sedentair (weinig of geen beweging)",
+        "activity2": "Licht actief (1–3 dagen/week)",
+        "activity3": "Matig actief (3–5x/week)",
+        "activity4": "Actief (6–7 dagen/week)",
+        "activity5": "Zeer actief (fysiek werk + training)",
+        "weightGoal": "GEWICHTSDOEL",
+        "cut": "Definieren",
+        "maintain": "Handhaven",
+        "bulk": "Spieropbouw",
+        "trainingFocus": "TRAININGSFOCUS",
+        "hypertrophy": "HYPERTROFIE",
+        "hypertrophyDesc": "Spieromvang & definitie opbouwen",
+        "strength": "KRACHT",
+        "strengthDesc": "Zwaarder tillen & kracht opbouwen",
+        "endurance": "UITHOUDINGSVERMOGEN",
+        "enduranceDesc": "Cardiovasculaire conditie verbeteren",
+        "weightLoss": "GEWICHTSVERLIES",
+        "weightLossDesc": "Vet verbranden & tonus verbeteren",
+        "general": "ALGEMENE FITNESS",
+        "generalDesc": "Algehele gezondheid & welzijn",
+        "realtime": "RESULTATEN IN REALTIME"
+      },
+      "results": {
+        "bmr": "BMR",
+        "bmrDesc": "Basaal Metabolisme: energie in rust.",
+        "tdee": "TDEE",
+        "tdeeDesc": "Totaal dagelijks energieverbruik op basis van activiteit.",
+        "target": "DOEL",
+        "bmi": "BMI",
+        "bmiDesc": "Body Mass Index: genormaliseerde hoogte-gewichtsverhouding.",
+        "ffmi": "FFMI",
+        "ffmiDesc": "Vetvrije Massa Index: indicator van spiermassa.",
+        "macroProfile": "MACROPROFIEL",
+        "protein": "EIWIT",
+        "fats": "VETTEN",
+        "carbs": "KOOLHYDRATEN",
+        "kcal": "KCAL",
+        "metabolicVelocity": "METABOLISCHE SNELHEID",
+        "velocityMaintain": "Optimaal prestatieniveau gedetecteerd.",
+        "velocityCut": "Geoptimaliseerd voor vetverbrandingstraject.",
+        "velocityBulk": "Klaar voor magere massa-opbouw.",
+        "dailyTarget": "DAGELIJKS CALORIEDOEL",
+        "maintenance": "ONDERHOUD",
+        "calorieSurplus": "CALORIE-OVERSCHOT",
+        "calorieDeficit": "CALORIETEKORT"
+      }
+    },
+    "faq": {
+      "pageTitle": "FAQ & Wetenschap — Musclog",
+      "badge": "Evidence-Based",
+      "titlePrefix": "FAQ &",
+      "titleHighlight": "De Wetenschap",
+      "description": "Elk getal dat Musclog u laat zien komt uit peer-reviewed onderzoek. Deze pagina legt de modellen, formules en studies achter elke berekening uit — met links naar de originele bronnen.",
+      "sources": "Bronnen",
+      "questionsCount_one": "{{count}} vraag",
+      "questionsCount_other": "{{count}} vragen",
+      "footer": {
+        "text": "Een onnauwkeurigheid gevonden of een nieuwer onderzoek dat een van deze bronnen vervangt?",
+        "linkText": "Laat het ons weten",
+        "suffix": "— de wetenschap evolueert voortdurend en Musclog ook."
+      },
+      "categories": {
+        "general": {
+          "label": "Algemeen",
+          "items": [
+            {
+              "question": "Wat is Musclog?",
+              "answer": "Musclog is een privacy-first fitness-app voor het bijhouden van trainingen, voeding en lichaamssamenstelling. Al uw gegevens worden lokaal op uw apparaat opgeslagen — er wordt niets naar een server verzonden tenzij u optionele AI-functies expliciet inschakelt."
+            },
+            {
+              "question": "Werkt de app zonder internetverbinding?",
+              "answer": "Ja. Alle kernfuncties — trainingen loggen, maaltijden bijhouden, voortgang bekijken en de voedingscalculator gebruiken — werken volledig offline. Een internetverbinding is alleen nodig voor optionele AI-functies (maaltijdherkenning, AI-coach), voedingsdatabase-zoekopdrachten van externe bronnen, en Health Connect / HealthKit-synchronisatie."
+            },
+            {
+              "question": "Hoe nauwkeurig zijn de voedingsberekeningen?",
+              "answer": "De calculator gebruikt goed gevalideerde populatievergelijkingen (Katch-McArdle / Mifflin-St Jeor voor BMR, Hall 2008 lichaamssamenstelling model voor projecties). Geen enkele vergelijking is voor ieder individu perfect nauwkeurig — de typische fout voor BMR-vergelijkingen is ±10 %. De beste resultaten komen door de app 2–4 weken echte trackinggegevens te geven zodat het uw empirische TDEE direct kan berekenen uit calorieën in versus gewichtsverandering."
+            },
+            {
+              "question": "Welke eenheden ondersteunt de app?",
+              "answer": "De database slaat altijd metrische waarden op (kg, cm, g, kcal). U kunt op elk moment overschakelen naar imperiaal (lbs, inches, oz) in de instellingen — de app converteert alle weergegeven waarden automatisch. Lichaamsvetpercentage, BMI en FFMI zijn dimensieloos en worden nooit geconverteerd."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Voedingswetenschap",
+          "items": [
+            {
+              "question": "Hoe wordt mijn Basaal Metabolisme (BMR) berekend?",
+              "answer": "Musclog gebruikt twee vergelijkingen afhankelijk van of u een lichaamsvetpercentage heeft opgegeven.",
+              "bullets": [
+                "Katch-McArdle (voorkeur wanneer BV% beschikbaar is): BMR = 370 + 21,6 × Vetvrije Massa (kg). Omdat het vetmassa negeert — die zeer lage metabolische activiteit heeft — is deze vergelijking nauwkeuriger voor atleten en mensen met een niet-gemiddelde lichaamssamenstelling.",
+                "Mifflin-St Jeor (standaard, geen BV% nodig): BMR = 10 × gewicht + 6,25 × lengte − 5 × leeftijd ± geslachtsconstante (+5 man, −161 vrouw). Gevalideerd als de meest nauwkeurige algemene bevolking BMR-vergelijking in meerdere meta-analyses."
+              ],
+              "citations": [
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al. meta-analysis (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe wordt mijn Totaal Dagelijks Energieverbruik (TDEE) geschat?",
+              "answer": "Musclog gebruikt twee modi en kiest automatisch de beste voor uw gegevens.",
+              "bullets": [
+                "Statistisch (nieuwe gebruikers): TDEE = BMR × Activiteitsmultiplicator. Multiplicatoren variëren van 1,2 (sedentair) tot 1,9 (zeer actief + fysiek werk), gebaseerd op de Harris-Benedict / Mifflin-St Jeor schaal.",
+                "Empirische / Waargenomen TDEE (voorkeur, vereist ≥2 weken voedsel + gewichtsgegevens): Past de Eerste Wet van de Thermodynamica direct toe. TDEE = (Calorieën in − Energie opgeslagen in weefsel) / Dagen. Vetweefsel slaat 7.730 kcal/kg op bij katabolisme en kost 8.840 kcal/kg om op te bouwen; spier slaat 1.250 kcal/kg op en kost 3.900 kcal/kg. Deze asymmetrische waarden houden rekening met thermodynamische syntheseëfficiëntie.",
+                "TDEE Driftcorrectie: De empirische TDEE vertegenwoordigt het gemiddelde van de middenperiode. Om het naar de huidige lichamelijke toestand te projecteren, worden drie gestapelde aanpassingen toegepast: (1) Rustend weefselverval — mager weefsel verbrandt ~13 kcal/kg/dag en vet ~4,5 kcal/kg/dag (Elia 1992); (2) Activiteitsgeschaalde val — mechanische bewegingskosten schalen met lichaamsmassa; (3) Adaptieve thermogenese straf van 20 kcal/dag per kg verloren lichaamsmassa, wat NEAT-suppressie en hormonale aanpassing (leptine, schildklier) weerspiegelt."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energy deficit per unit weight loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — RMR tissue coefficients",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller et al. (2022) — Adaptive thermogenesis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe verbetert het opgeven van lichaamsvetpercentage de berekening?",
+              "answer": "Wanneer een geldig lichaamsvetpercentage (5–60 %) wordt ingevoerd, veranderen drie dingen:",
+              "bullets": [
+                "BMR schakelt over naar Katch-McArdle, dat lichaamssamenstelling-bewust is en metabolisch inert vetmassa negeert.",
+                "De vet/mager-verdeling van gewichtsveranderingen wordt berekend uit de Forbes-curve (Hall 2007), analytisch opgelost via de Lambert W-functie. Het kernpunt: slankere individuen verliezen een hoger aandeel vetvrije massa per kg omdat het lichaam vetreserves agressiever verdedigt. Een persoon met 12% BV verliest weefsel bij ongeveer 5.800–6.200 kcal/kg, ver onder de klassieke '7.700 kcal/kg' regel die puur vetverlies aanneemt.",
+                "Een ±4 % onzekerheidsmarge (typische BIA/huidplooi-fout) genereert een realistisch min/max caloriebereik in plaats van één getal, waarmee de inherente onnauwkeurigheid van lichaamsvetmeting wordt gecommuniceerd."
+              ],
+              "formula": "effectieve_kcal/kg = 9.440 × vetfractie + 1.820 × magere_fractie",
+              "formulaCaption": "Hall (2008) gemengde energiedichtheid — vetfractie bepaald door Forbes-curve / Lambert W",
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
+              ]
+            },
+            {
+              "question": "Hoe wordt mijn aanbevolen calorietekort of -overschot bepaald?",
+              "answer": "Musclog schaalt de calorieaanpassing naar uw lichaamsgewicht in plaats van een vast ±500 kcal te gebruiken, en begrenst het tot evidence-based veilige bereiken.",
+              "bullets": [
+                "Cut (gewichtsverlies): De aanbevolen wekelijkse verliessnelheid is standaard 0,5 % van het lichaamsgewicht per week. Wanneer lichaamsvet bekend is, wordt dit verfijnd met behulp van ACE klinische drempelwaarden — slanke individuen (BV < 10 % man / < 20 % vrouw) krijgen een conservatief 0,35 %/week om spieren te beschermen, terwijl mensen met hoger lichaamsvet veilig kunnen verliezen tot 0,65 %/week. Het resulterende dagelijkse tekort wordt begrensd tot 250–750 kcal om ernstige metabolische aanpassing te voorkomen.",
+                "Bulk (gewichtstoename): Een overschot van ongeveer 0,25 % lichaamsgewicht per week wordt nagestreefd, wat vetopeenhoping minimaliseert terwijl het spierproteïnesynthese ondersteunt. Het overschot wordt begrensd tot 150–400 kcal/dag.",
+                "Minimum caloriegrenzen: 1.200 kcal/dag voor vrouwen, 1.500 kcal/dag voor mannen, en nooit onder 80% van BMR — in overeenstemming met IOM / Nationale Academies richtlijnen."
+              ],
+              "citations": [
+                {
+                  "label": "Garthe et al. (2011) — Rate of weight loss and body composition",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Body fat percentage classifications",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe werkt het gewichtsprojectiemodel?",
+              "answer": "De projectie gebruikt twee fasen om gewichtsverandering over 90 dagen nauwkeurig te voorspellen.",
+              "bullets": [
+                "Vroege fase — Glycogeenuitputting: De lichaamsglycogoonpool is ongeveer 15 g/kg lichaamsgewicht (droog), gebonden aan ongeveer 3 g water elk, totaal ongeveer 6% van het lichaamsgewicht als gehydrateerd glycogeen. Alleen het gedeelte van het cumulatieve calorietekort dat past binnen deze glycogeenenergiepool (~4.206 kcal/kg droog) drijft het vroege 'watergewicht'-verlies. Dit voorkomt het sterk overschatten van vroege verliezen bij agressieve tekorten.",
+                "Stabiele fase: Al het resterende tekort drijft vet/mager weefselverlies bij de samenstelling-bewuste energiedichtheid van het Hall/Forbes model. De gerapporteerde 'wekelijkse snelheid' weerspiegelt altijd dit stabiele cijfer — wat gebruikers na de eerste paar dagen ervaren.",
+                "Overschotprojectie: Glycogeenvoorraden worden aangenomen vol te zijn, dus al het overschot gaat naar vet/mager weefselsynthese bij ervaringgewogen kosten (beginner ~5.300 kcal/kg gewonnen; gemiddeld ~6.370 kcal/kg; gevorderd ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energy density of weight loss tissue",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe worden mijn dagelijkse macro's berekend?",
+              "answer": "Macro-verdelingen zijn gebaseerd op fitnessdoel, met behulp van IOM AMDR-bereiken als kader en ISSN/ACSM sportspecifiek onderzoek voor verfijning.",
+              "table": {
+                "head": ["Doel", "Koolhydraten", "Eiwit", "Vet", "Redenering"],
+                "rows": [
+                  [
+                    "Gewichtsverlies",
+                    "40 %",
+                    "30 %",
+                    "30 %",
+                    "Hoog eiwit om spieren te behouden in tekort (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Hypertrofie",
+                    "45 %",
+                    "30 %",
+                    "25 %",
+                    "Eiwit voor MPS; koolhydraten ondersteunen volumetraining"
+                  ],
+                  [
+                    "Kracht",
+                    "50 %",
+                    "30 %",
+                    "20 %",
+                    "Koolhydraten voor glycolytische vraag van zwaar samengesteld werk"
+                  ],
+                  [
+                    "Uithoudingsvermogen",
+                    "55 %",
+                    "20 %",
+                    "25 %",
+                    "Glycogeenprioriteit (ACSM 6–10 g/kg/dag richtlijn)"
+                  ],
+                  [
+                    "Algemeen",
+                    "45 %",
+                    "25 %",
+                    "30 %",
+                    "Gecentreerd binnen IOM AMDR voor algemene fitness"
+                  ]
+                ]
+              },
+              "answer2": "Voor Gewichtsverlies- en Hypertrofiedoelen, wanneer lichaamsvet % bekend is, wordt eiwit bijgewerkt van een percentagedoel naar een absoluut VVM-gebaseerd doel (2,7 g/kg VVM voor gewichtsverlies; 2,0 g/kg VVM voor hypertrofie), met resterende calorieën evenredig verdeeld tussen koolhydraten en vetten.",
+              "citations": [
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe beïnvloedt tilervaring de bulkberekening?",
+              "answer": "Het aandeel gewonnen gewicht dat vetvrije massa versus vet is, hangt sterk af van trainingsgeschiedenis. Ongetrainde individuen hebben een veel groter hypertrofiepotentieel dan gevorderde lifters die al het grootste deel van hun genetisch spierplafond hebben bereikt.",
+              "bullets": [
+                "Beginner: ~60 % mager / 40 % vet per kg gewonnen. Effectieve bouwkosten ≈ 5.304 kcal/kg.",
+                "Gemiddeld: ~50 % mager / 50 % vet. Effectieve bouwkosten ≈ 6.370 kcal/kg.",
+                "Gevorderd: ~40 % mager / 60 % vet. Effectieve bouwkosten ≈ 7.434 kcal/kg.",
+                "Deze verdelingen gebruiken de thermodynamische bouwkosten: 8.840 kcal/kg voor vet en 3.900 kcal/kg voor spier, wat ~87 % syntheseëfficiëntie voor vet en ~32 % voor spier weerspiegelt (de meeste spiersyntheseënergie gaat verloren als warmte)."
+              ],
+              "citations": [
+                {
+                  "label": "Schoenfeld et al. — Resistance training load meta-analysis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Plateau in muscle growth with resistance training",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe wordt RMR aangepast voor obesitas of oudere leeftijd?",
+              "answer": "Twee evidence-based strafmultiplicatoren worden toegepast op de Rustend Metabolisch Tempo weefselcoëfficiënten (mager: 13 kcal/kg/dag; vet: 4,5 kcal/kg/dag):",
+              "bullets": [
+                "BMI > 30 (Obesitas): −2 % verlaging voor zowel mager als vet weefselcoëfficiënten, wat verminderde mitochondriale functie bij obese individuen weerspiegelt (Müller et al. 2013).",
+                "Leeftijd > 50: −3 % verlaging, wat de afname in cellulaire omzetsnelheid weerspiegelt (St-Onge & Gallagher 2010).",
+                "Beide straffen stapelen additief wanneer van toepassing (bijv. obese persoon boven 50 → −5 % totaal)."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Body composition changes with aging",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Trainingswetenschap",
+          "items": [
+            {
+              "question": "Hoe worden eenherhalingsmaximum (1RM) schattingen berekend?",
+              "answer": "Musclog berekent 1RM met een ensemble van zeven gepubliceerde formules en middelt hun uitkomsten. Middelen vermindert de systematische fout van elke afzonderlijke formule, die elk verschillende nauwkeurigheidsprofielen hebben over herhalingsbereiken.",
+              "table": {
+                "head": ["Formule", "Vergelijking", "Beste Voor"],
+                "rows": [
+                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; meest gebruikt"],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Algemeen gebruik; licht conservatief"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Matige herhalingsbereiken"],
+                  ["Lombardi (1989)", "w × r^0,1", "Lage herhalingsbereiken"],
+                  [
+                    "Mayhew et al. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Breed herhalingsbereik; exponentieel model"
+                  ],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Lineair; conservatief"],
+                  [
+                    "Wathen (1994)",
+                    "w / (0,488 + 0,539 × e^{−0,035r})",
+                    "Hogere herhalingsbereiken"
+                  ]
+                ]
+              },
+              "answer2": "Herhalingen in Reserve (RIR) worden opgeteld bij de werkelijke herhalingen voordat een formule wordt toegepast (aangepaste_reps = reps + RIR). Dit mapt submaximale inspanning naar een volledig-inspanning equivalent, dus een set van 8 reps met 2 RIR wordt behandeld als 10 reps tot falen voor 1RM-schattingsdoeleinden.",
+              "citations": [
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
+                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew et al. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor et al. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
+                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+              ]
+            },
+            {
+              "question": "Hoe wordt trainingsvolume berekend?",
+              "answer": "Musclog gebruikt de gemiddelde 1RM-schatting als eenheid van volume voor elke set, in plaats van bruto tonnage (gewicht × herhalingen). Dit produceert een betekenisvollere maatstaf omdat de 1RM normaliseert voor het feit dat sets met meer herhalingen meer totale inspanning vertegenwoordigen dan het ruwe gewicht zou suggereren.",
+              "bullets": [
+                "Voor lichaamsgewichtsoefeningen wordt het huidige lichaamsgewicht van de gebruiker opgeteld bij het staafgewicht voor de 1RM-berekening.",
+                "Totaal sessievolume = som van gemiddelde 1RM-schattingen over alle sets in de sessie.",
+                "Progressieve overbelastingstracking vergelijkt dit getal tussen sessies voor dezelfde oefeningen."
+              ]
+            },
+            {
+              "question": "Hoe worden verbrande calorieën van dagelijkse stappen berekend?",
+              "answer": "Musclog gebruikt de ACSM metabolische loopvergelijkingen om netto (niet bruto) calorieverbruik uit stappentellingen te berekenen. Nettoverbruik gebruiken voorkomt dubbeltelling tegen de al meegerekende BMR/TDEE.",
+              "formula": "Netto Calorieën = (0,1 × afstand_m × gewicht_kg) / 200",
+              "formulaCaption": "Afgeleid van ACSM VO₂ loopvergelijking. Tijd valt weg: snelheid (m/min) × duur (min) = afstand (m). 1 L O₂ ≈ 5 kcal, dus ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "Staplengte wordt geschat uit lengte met geslachtsspecifieke empirische ratio's: 0,415 × lengte (cm) / 100 voor mannen, 0,413 voor vrouwen.",
+                "Afstand = stappen × staplengte.",
+                "De afleiding elimineert de noodzaak om cadans te kennen, waardoor de 'cadansparadox' wordt verwijderd waarbij sneller lopen identiek lijkt aan langzamer lopen bij hetzelfde aantal stappen."
+              ],
+              "citations": [
+                {
+                  "label": "ACSM Metabolic Equations — Walking VO₂",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama et al. (2012) — Stride length estimation",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Meta-Analysis — Stride length and height ratios",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe berekent de app gewicht en herhalingen voor een doel-RIR?",
+              "answer": "Twee inverse 1RM-problemen worden opgelost:",
+              "bullets": [
+                "Gewicht voor doel-RIR: Alle zeven 1RM-formules zijn lineair in gewicht (1RM = gewicht × f(reps, RIR)), dus gewicht = 1RM / f(reps, RIR). De multiplicator f wordt berekend door het ensemble aan te roepen met gewicht = 1.",
+                "Herhalingen voor doelgewicht: Het gemiddelde ensemble heeft geen gesloten-vorm inverse, dus de app gebruikt binair zoeken. Omdat 1RM-schattingen monotoon stijgen in herhalingen, convergeert binair zoeken binnen ~6 iteraties voor elk praktisch herhaalsbereik (1–50). Zie Helms et al. (2016) voor de RIR-gebaseerde autoregulatie onderzoeksbasis."
+              ],
+              "citations": [
+                {
+                  "label": "Helms et al. (2016) — RPE and RIR-based autoregulation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Methodologie",
+          "items": [
+            {
+              "question": "Waarom toont de app een caloriebereik in plaats van één getal?",
+              "answer": "Lichaamsvetpercentagemetingen — of het nu bioelektrische impedantie (BIA), huidplooikaliper of DEXA is — dragen een typische meetfout van ±3–5 %. Musclog past een ±4 % marge (een conservatief middelpunt) toe op uw ingevoerde lichaamsvetpercentage en herberekent BMR, TDEE en doelcalorieën aan beide uitersten.",
+              "bullets": [
+                "Min doelcalorieën = berekening bij BV% + 4 % (meer vet → minder vetvrije massa → lagere BMR).",
+                "Max doelcalorieën = berekening bij BV% − 4 % (minder vet → meer vetvrije massa → hogere BMR).",
+                "Het enkele 'doel' in het midden is het beste-schatting resultaat met uw rechtstreeks ingevoerde BV%.",
+                "Dit bereik communiceert realistische onzekerheid en helpt u begrijpen dat het 'correcte' getal voor u persoonlijk overal binnen de marge kan liggen."
+              ]
+            },
+            {
+              "question": "Wat is de Forbes-curve en waarom is die belangrijk?",
+              "answer": "De Forbes-curve, ontwikkeld door Gilbert Forbes (1987) en verder geformaliseerd door Kevin Hall (2007), beschrijft hoe het lichaam gewichtsveranderingen verdeelt tussen vetmassa en vetvrije massa. Het heeft een kritieke, contra-intuïtieve implicatie:",
+              "bullets": [
+                "Slankere mensen offeren meer vetvrije massa op per kg verloren — het lichaam verdedigt vetreserves agressiever wanneer vetreserves laag zijn.",
+                "Omgekeerd verliezen mensen met veel lichaamsvet een hoger aandeel vet per kg, waardoor hun effectieve energiedichtheid dichter bij de klassieke 7.700 kcal/kg regel ligt.",
+                "De curve wordt geparametriseerd door een constante C (≈13,8 voor mannen, ≈10,4 voor vrouwen), opgelost met de Lambert W-functie (hoofdtak). Musclog implementeert deze oplosser numeriek met de methode van Newton om afhankelijkheden van bibliotheken te vermijden.",
+                "Zonder dit model worden cuts voor slanke individuen systematisch onderschat — de klassieke regel behandelt alle gewichtsverlies als vet en zou overschatten hoeveel vet er daadwerkelijk verloren gaat."
+              ],
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
+              ]
+            },
+            {
+              "question": "Wat is Adaptieve Thermogenese en hoe houdt de app hier rekening mee?",
+              "answer": "Adaptieve thermogenese (AT) is het fenomeen waarbij het energieverbruik van het lichaam meer daalt dan kan worden verklaard door veranderingen in lichaamsmassa alleen, als reactie op aanhoudende calorierestrictie. Het wordt aangedreven door:",
+              "bullets": [
+                "Hormonale suppressie: leptine daalt bij vetverlies, waardoor de sympathische zenuwstelselactiviteit en schildklierhormoonproductie verminderen.",
+                "NEAT-reductie (Non-Exercise Activity Thermogenesis): het lichaam vermindert onbewust friemelen, houdingsveranderingen en spontane beweging.",
+                "Veranderingen in mitochondriale efficiëntie: cellen halen meer ATP uit elke verbrande calorie.",
+                "Musclog modelleert AT als een straf van 20 kcal/dag per kg totaal verloren lichaamsmassa (met het middelpunt van het Hall et al. bereik van 20–30 kcal/dag/kg). Dit wordt toegepast in de TDEE-driftcorrectie bij berekening van empirische trackinggegevens, en in de 90-daagse projectie om een realistisch gewichtsverliestrajectorium te tonen in plaats van een lineair."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2022) — Magnitude of AT in clinical trials",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe wordt de dagelijkse waterinname-aanbeveling berekend?",
+              "answer": "Wateraanbeveling schaalt lineair met TDEE bij een verhouding van 0,75 ml per kcal dagelijks energieverbruik. Dit is afgeleid van twee onafhankelijk convergerende richtlijnen:",
+              "bullets": [
+                "Het U.S. Food and Nutrition Board (1945): '1 ml per kcal energieverbruik' (Musclog gebruikt 0,75 ml om de drankenfractie te vertegenwoordigen, aangezien ~25 % van water uit voedsel komt).",
+                "Dieetonderzoeken tonen dat dranken ongeveer 70–80 % bijdragen aan de totale waterinname bij volwassenen (Gandy et al. 2016)."
+              ],
+              "citations": [
+                {
+                  "label": "PMC7692653 — Water intake from beverages vs food",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Percentage of water intake from beverages",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 import { useSettings } from '@/hooks/useSettings';
 
@@ -34,8 +34,10 @@ export function CoachProvider({ children }: { children: ReactNode }) {
 
   const handleCloseMyMeals = useCallback(() => setIsMyMealsVisible(false), []);
 
+  const contextValue = useMemo(() => ({ openCoach }), [openCoach]);
+
   return (
-    <CoachContext.Provider value={{ openCoach }}>
+    <CoachContext.Provider value={contextValue}>
       {children}
       {isVisible ? (
         <CoachModal
@@ -49,7 +51,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
         onClose={() => setIsNotConfiguredVisible(false)}
         onOpenAISettings={() => {
           setIsNotConfiguredVisible(false);
-          router.navigate('/settings');
+          router.navigate('/app/settings');
         }}
       />
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />

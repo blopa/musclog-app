@@ -52,6 +52,16 @@ export interface MicrosData {
   [key: string]: number | undefined;
 }
 
+export type FoodNutritionBasis = 'per_100g' | 'per_serving';
+
+export interface FoodLabels {
+  organic?: boolean;
+  vegan?: boolean;
+  vegetarian?: boolean;
+  palmOilFree?: boolean;
+  fairTrade?: boolean;
+}
+
 export default class Food extends Model {
   static table = 'foods';
 
@@ -74,6 +84,9 @@ export default class Food extends Model {
   @field('carbs') carbs!: number;
   @field('fat') fat!: number;
   @field('fiber') fiber!: number;
+  @field('nutriscore') nutriscore?: string;
+  @field('ecoscore') ecoscore?: string;
+  @field('nova_group') novaGroup?: number;
 
   // Extended data stored as JSON
   @json('micros_json', (data: any): MicrosData => {
@@ -126,13 +139,30 @@ export default class Food extends Model {
         potassium: typeof data.potassium === 'number' ? data.potassium : undefined,
       };
     }
+
     return {};
   })
   micros?: MicrosData;
 
+  @json('labels_json', (data: any): FoodLabels => {
+    if (typeof data === 'object' && data !== null) {
+      return {
+        organic: typeof data.organic === 'boolean' ? data.organic : undefined,
+        vegan: typeof data.vegan === 'boolean' ? data.vegan : undefined,
+        vegetarian: typeof data.vegetarian === 'boolean' ? data.vegetarian : undefined,
+        palmOilFree: typeof data.palmOilFree === 'boolean' ? data.palmOilFree : undefined,
+        fairTrade: typeof data.fairTrade === 'boolean' ? data.fairTrade : undefined,
+      };
+    }
+
+    return {};
+  })
+  labels?: FoodLabels;
+
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood', 'foundation'
   @field('image_url') imageUrl?: string; // URL to product image
+  @field('nutrition_basis') nutritionBasis?: FoodNutritionBasis;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -173,7 +203,7 @@ export default class Food extends Model {
   async getDefaultPortionAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      const defaultEntry = ffp.find((entry: any) => entry.isDefault);
+      const defaultEntry = ffp.find((entry: any) => entry.isDefault && !entry.deletedAt);
       if (defaultEntry) {
         return defaultEntry.foodPortion;
       }
@@ -189,7 +219,10 @@ export default class Food extends Model {
   async getPortionsAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      return Promise.all(ffp.map((fp: any) => fp.foodPortion));
+      const activeLinks = ffp.filter((fp: any) => !fp.deletedAt);
+      const portions = await Promise.all(activeLinks.map((fp: any) => fp.foodPortion));
+
+      return portions.filter((portion: any) => !portion?.deletedAt);
     } catch (error) {
       console.warn('Error getting portions:', error);
       return [];
@@ -202,6 +235,10 @@ export default class Food extends Model {
   async getBaseGramWeight(): Promise<number> {
     const portion = await this.getDefaultPortionAsync();
     return portion?.gramWeight ?? 100;
+  }
+
+  get resolvedNutritionBasis(): FoodNutritionBasis {
+    return this.nutritionBasis === 'per_serving' ? 'per_serving' : 'per_100g';
   }
 
   getCaloriesPer100g(): number {
@@ -242,16 +279,41 @@ export default class Food extends Model {
     const gramMultiplier = amountInGrams / 100;
 
     return {
-      calories: this.calories * gramMultiplier,
-      protein: this.protein * gramMultiplier,
-      carbs: this.carbs * gramMultiplier,
-      fat: this.fat * gramMultiplier,
-      fiber: this.fiber * gramMultiplier,
+      calories: Math.max(0, this.calories) * gramMultiplier,
+      protein: Math.max(0, this.protein) * gramMultiplier,
+      carbs: Math.max(0, this.carbs) * gramMultiplier,
+      fat: Math.max(0, this.fat) * gramMultiplier,
+      fiber: Math.max(0, this.fiber) * gramMultiplier,
       micros: this.micros
         ? Object.fromEntries(
             Object.entries(this.micros).map(([key, value]) => [
               key,
-              value ? value * gramMultiplier : undefined,
+              value ? Math.max(0, value) * gramMultiplier : undefined,
+            ])
+          )
+        : undefined,
+    };
+  }
+
+  getNutrientsForServingCount(servings: number): {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    micros?: MicrosData;
+  } {
+    return {
+      calories: Math.max(0, this.calories) * servings,
+      protein: Math.max(0, this.protein) * servings,
+      carbs: Math.max(0, this.carbs) * servings,
+      fat: Math.max(0, this.fat) * servings,
+      fiber: Math.max(0, this.fiber) * servings,
+      micros: this.micros
+        ? Object.fromEntries(
+            Object.entries(this.micros).map(([key, value]) => [
+              key,
+              value ? Math.max(0, value) * servings : undefined,
             ])
           )
         : undefined,

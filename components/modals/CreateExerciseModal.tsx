@@ -13,7 +13,7 @@ import { type MuscleGroup } from '@/database/models';
 import { ExerciseService } from '@/database/services';
 import { useTheme } from '@/hooks/useTheme';
 import { saveExerciseImage } from '@/utils/file';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -104,9 +104,9 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       showSnackbar('success', t('exercises.createExercise.createSuccess'));
       onClose();
     } catch (error) {
-      console.error('Error creating exercise:', error);
-      captureException(error, { data: { context: 'CreateExerciseModal.handleSave' } });
-      showSnackbar('error', t('exercises.createExercise.createError'));
+      handleError(error, 'CreateExerciseModal.handleSave', {
+        snackbarMessage: t('exercises.createExercise.createError'),
+      });
     } finally {
       setIsCreating(false);
     }
@@ -132,9 +132,9 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         const permanentUri = await saveExerciseImage(result.assets[0].uri, imageUri);
         setImageUri(permanentUri);
       } catch (err) {
-        console.error('Error saving exercise image:', err);
-        captureException(err, { data: { context: 'CreateExerciseModal.handleUploadImage' } });
-        showSnackbar('error', t('exercises.createExercise.createError'));
+        handleError(err, 'CreateExerciseModal.handleUploadImage', {
+          snackbarMessage: t('exercises.createExercise.createError'),
+        });
       }
     }
   };

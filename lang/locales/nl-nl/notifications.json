@@ -1,0 +1,73 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Meldingen",
+      "clearAll": "ALLES WISSEN"
+    },
+    "sections": {
+      "today": "VANDAAG",
+      "yesterday": "GISTEREN",
+      "earlier": "EERDER"
+    },
+    "channels": {
+      "default": "Standaard",
+      "activeWorkout": "Actieve Workout"
+    },
+    "startNow": "Nu starten",
+    "types": {
+      "aiInsight": {
+        "title": "AI-inzicht",
+        "description": "Op basis van je recente trainingen, probeer vandaag je eiwitinname met 15g te verhogen voor optimaal herstel."
+      },
+      "workoutReminder": {
+        "title": "Workout-herinnering",
+        "description": "Klaar voor {{workoutName}}? Gepland voor {{time}} vandaag."
+      },
+      "workoutCompleted": {
+        "title": "Workout voltooid!",
+        "description": "Goed gedaan met het voltooien van {{workoutName}}. Je hebt {{calories}} kcal verbrand."
+      },
+      "kudosReceived": {
+        "title": "Kudo's ontvangen",
+        "description": "{{name}} en {{count}} anderen vonden je recente mijlpaal leuk: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Wekelijks rapport staat klaar",
+        "description": "Je voortgangsrapport van vorige week is beschikbaar. Bekijk je statistieken."
+      },
+      "activeWorkout": {
+        "title": "Workout: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}"
+      },
+      "workoutReminderMorning": {
+        "title": "Workout-herinnering",
+        "body": "Klaar om vandaag je {{workoutName}} workout te knallen??"
+      },
+      "nutritionOverview": {
+        "title": "Dagelijks voedingsoverzicht",
+        "body": "Bekijk hoe je voeding vandaag overeenkwam met je doelen!"
+      },
+      "nutritionCheckin": {
+        "title": "Wekelijkse voortgangscontrole",
+        "body": "Het is tijd voor je wekelijkse voedingscheck! Laten we kijken hoe je het hebt gedaan."
+      },
+      "periodPrediction": {
+        "title": "Menstruatievoorspelling",
+        "body": "Je menstruatie begint naar verwachting over 2 dagen. Wees voorbereid!"
+      },
+      "fertileWindow": {
+        "title": "Vruchtbare periode",
+        "body": "Je vruchtbare periode begint! Handig voor het bijhouden van je energieniveaus."
+      },
+      "restTimerAlert": {
+        "title": "Rust voorbij - weer aan de slag!",
+        "body": "Je rustperiode is voorbij. Tijd voor de volgende set!"
+      },
+      "workoutDurationWarning": {
+        "title": "Nog steeds aan het trainen?",
+        "body": "Je sessie is al 5 uur bezig. Vergeet niet om deze te beëindigen in Musclog!"
+      }
+    }
+  }
+}

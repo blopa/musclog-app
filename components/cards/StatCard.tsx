@@ -26,6 +26,20 @@ export function StatCard({
   iconColor,
 }: StatCardProps) {
   const theme = useTheme();
+  const getChangeColor = () => {
+    if (changeType === 'positive') {
+      return theme.colors.accent.primary;
+    }
+
+    if (changeType === 'negative') {
+      return theme.colors.status.error;
+    }
+
+    return theme.colors.status.warning;
+  };
+
+  const changeColor = getChangeColor();
+
   return (
     <GenericCard variant="default" size="sm">
       <View className="p-4">
@@ -39,27 +53,8 @@ export function StatCard({
         </View>
         {change ? (
           <View className="flex-row items-center gap-1">
-            <TrendingUp
-              size={theme.iconSize.xs}
-              color={
-                changeType === 'positive'
-                  ? theme.colors.accent.primary
-                  : changeType === 'negative'
-                    ? theme.colors.status.error
-                    : theme.colors.status.warning
-              }
-            />
-            <Text
-              className="text-xs font-medium"
-              style={{
-                color:
-                  changeType === 'positive'
-                    ? theme.colors.accent.primary
-                    : changeType === 'negative'
-                      ? theme.colors.status.error
-                      : theme.colors.status.warning,
-              }}
-            >
+            <TrendingUp size={theme.iconSize.xs} color={changeColor} />
+            <Text className="text-xs font-medium" style={{ color: changeColor }}>
               {change}
             </Text>
           </View>

@@ -1,0 +1,15 @@
+{
+  "workoutHistory": {
+    "title": "Historial de Sesiones",
+    "previewTitle": "Vista Previa del Entrenamiento",
+    "workoutInProgress": "ENTRENAMIENTO EN CURSO",
+    "previewSubtitle": "VISTA PREVIA",
+    "duration": "Duración",
+    "volume": "Vol",
+    "setsDone": "Series Hechas",
+    "startThisWorkout": "Iniciar este entrenamiento",
+    "noExercisesYet": "Aún no hay ejercicios",
+    "exercise": "Ejercicio {{number}}",
+    "set": "Serie {{number}}"
+  }
+}

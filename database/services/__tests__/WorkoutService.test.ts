@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
 

@@ -31,10 +31,10 @@
 
 ### app/workout/
 
-| Line                                      | File                  | TODO                                                 | Priority |
-| ----------------------------------------- | --------------------- | ---------------------------------------------------- | -------- |
-| [520](app/workout/workouts.tsx#L520)      | `workouts.tsx`        | Implement share functionality (`onShare` callback)   | Medium   |
-| [97](app/workout/workout-summary.tsx#L97) | `workout-summary.tsx` | Implement share functionality (`handleShareSummary`) | Medium   |
+| Line                                          | File                  | TODO                                                 | Priority |
+| --------------------------------------------- | --------------------- | ---------------------------------------------------- | -------- |
+| [520](app/app/workout/workouts.tsx#L520)      | `workouts.tsx`        | Implement share functionality (`onShare` callback)   | Medium   |
+| [97](app/app/workout/workout-summary.tsx#L97) | `workout-summary.tsx` | Implement share functionality (`handleShareSummary`) | Medium   |
 
 ### components/modals/BodyMetricsHistoryModal.tsx
 

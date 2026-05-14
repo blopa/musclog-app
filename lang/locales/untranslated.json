@@ -1,7 +1,19 @@
 {
   "untranslated": {
-    "en-us": "American English",
-    "pt-br": "Português (Brasil)",
-    "ru-ru": "Русский (Россия)"
+    "en-us": {
+      "name": "American English"
+    },
+    "es-es": {
+      "name": "Español de España"
+    },
+    "nl-nl": {
+      "name": "Nederlands (Nederland)"
+    },
+    "pt-br": {
+      "name": "Português (Brasil)"
+    },
+    "ru-ru": {
+      "name": "Русский (Россия)"
+    }
   }
 }

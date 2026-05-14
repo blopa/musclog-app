@@ -1,0 +1,15 @@
+{
+  "workoutHistory": {
+    "title": "Sessiegeschiedenis",
+    "previewTitle": "Workout-voorbeeld",
+    "workoutInProgress": "WORKOUT IN UITVOERING",
+    "previewSubtitle": "VOORBEELD",
+    "duration": "Duur",
+    "volume": "Vol",
+    "setsDone": "Sets gedaan",
+    "startThisWorkout": "Deze workout starten",
+    "noExercisesYet": "Nog geen oefeningen",
+    "exercise": "Oefening {{number}}",
+    "set": "Set {{number}}"
+  }
+}

@@ -1,5 +1,9 @@
 {
   "workout": {
+    "title": "Treino",
+    "workouts": {
+      "title": "Treinos"
+    },
     "import": {
       "characters": "Caracteres",
       "emptyData": "Por favor, cole ou digite dados de treino.",

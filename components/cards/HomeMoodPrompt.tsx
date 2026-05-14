@@ -19,7 +19,11 @@ import { showSnackbar } from '@/utils/snackbarService';
 
 import { MoodSelectorCard } from './MoodSelectorCard';
 
-export function HomeMoodPrompt() {
+type HomeMoodPromptProps = {
+  onVisibilityChange?: (isVisible: boolean) => void;
+};
+
+export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
   const { t } = useTranslation();
   const { showDailyMoodPrompt } = useSettings();
   const { hasMoodToday, isLoading } = useTodayMood();
@@ -59,6 +63,10 @@ export function HomeMoodPrompt() {
     marginBottom: marginBottom.value,
     overflow: 'hidden',
   }));
+
+  useEffect(() => {
+    onVisibilityChange?.(isActuallyVisible);
+  }, [isActuallyVisible, onVisibilityChange]);
 
   if (!isActuallyVisible && (isLoading || !showDailyMoodPrompt || hasMoodToday)) {
     return null;

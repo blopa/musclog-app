@@ -19,6 +19,21 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
+  const getPhaseColor = (phase: string) => {
+    if (phase === 'menstrual') {
+      return theme.colors.accent.primary;
+    }
+
+    if (phase === 'follicular') {
+      return theme.colors.accent.secondary;
+    }
+
+    if (phase === 'ovulatory') {
+      return theme.colors.accent.tertiary;
+    }
+
+    return theme.colors.text.tertiary;
+  };
 
   if (!data || data.length === 0) {
     return (
@@ -108,14 +123,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
                   style={{
                     width: 20,
                     height: 4,
-                    backgroundColor:
-                      p === 'menstrual'
-                        ? theme.colors.accent.primary
-                        : p === 'follicular'
-                          ? theme.colors.accent.secondary
-                          : p === 'ovulatory'
-                            ? theme.colors.accent.tertiary
-                            : theme.colors.text.tertiary,
+                    backgroundColor: getPhaseColor(p),
                     borderRadius: 2,
                     marginTop: 2,
                   }}

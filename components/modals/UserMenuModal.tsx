@@ -23,7 +23,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Modal } from '@/components/theme/Modal';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
@@ -93,7 +93,6 @@ export function UserMenuModal({
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
 
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
-  const insets = useSafeAreaInsets();
 
   // Track which menu item is currently loading
   const [loadingItem, setLoadingItem] = useState<string | null>(null);
@@ -126,14 +125,14 @@ export function UserMenuModal({
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}
       >
-        <View
+        <SafeAreaView
+          edges={['top']}
           className="flex-1 justify-start"
-          style={[
+          style={
             Platform.OS === 'web'
               ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }
-              : undefined,
-            { paddingTop: insets.top },
-          ]}
+              : undefined
+          }
         >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
@@ -207,7 +206,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'profile'}
                   onPress={() => {
                     navigateAndClose('profile', () => {
-                      onProfilePress ? onProfilePress() : router.navigate('/profile');
+                      onProfilePress ? onProfilePress() : router.navigate('/app/profile');
                     });
                   }}
                 />
@@ -222,7 +221,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'progress'}
                   onPress={() => {
                     navigateAndClose('progress', () => {
-                      onProgressPress ? onProgressPress() : router.navigate('/progress');
+                      onProgressPress ? onProgressPress() : router.navigate('/app/progress');
                     });
                   }}
                 />
@@ -235,7 +234,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'cycle'}
                   onPress={() => {
                     navigateAndClose('cycle', () => {
-                      onCyclePress ? onCyclePress() : router.navigate('/cycle');
+                      onCyclePress ? onCyclePress() : router.navigate('/app/cycle');
                     });
                   }}
                 />
@@ -247,7 +246,7 @@ export function UserMenuModal({
                   label={t('userMenu.workouts')}
                   isLoading={loadingItem === 'workouts'}
                   onPress={() => {
-                    navigateAndClose('workouts', () => router.navigate('/workout/workouts'));
+                    navigateAndClose('workouts', () => router.navigate('/app/workout/workouts'));
                   }}
                 />
               ) : null}
@@ -263,7 +262,7 @@ export function UserMenuModal({
                   label={t('userMenu.food')}
                   isLoading={loadingItem === 'food'}
                   onPress={() => {
-                    navigateAndClose('food', () => router.navigate('/nutrition/food'));
+                    navigateAndClose('food', () => router.navigate('/app/nutrition/food'));
                   }}
                 />
               ) : null}
@@ -279,7 +278,9 @@ export function UserMenuModal({
                   label={t('userMenu.checkin')}
                   isLoading={loadingItem === 'checkin'}
                   onPress={() => {
-                    navigateAndClose('checkin', () => router.navigate('/nutrition/checkin-list'));
+                    navigateAndClose('checkin', () =>
+                      router.navigate('/app/nutrition/checkin-list')
+                    );
                   }}
                 />
               ) : null}
@@ -304,7 +305,7 @@ export function UserMenuModal({
                   isLoading={loadingItem === 'settings'}
                   onPress={() => {
                     navigateAndClose('settings', () => {
-                      onSettingsPress ? onSettingsPress() : router.navigate('/settings');
+                      onSettingsPress ? onSettingsPress() : router.navigate('/app/settings');
                     });
                   }}
                 />
@@ -331,7 +332,7 @@ export function UserMenuModal({
             {/* Top safe area spacing */}
             <View className="h-8" />
           </View>
-        </View>
+        </SafeAreaView>
       </Pressable>
     </Modal>
   );

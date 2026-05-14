@@ -177,101 +177,95 @@ export default function EditWorkoutMetadataModal({
   );
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('workoutDetail.editTimeTitle')}
-        footer={footer}
-      >
-        <ScrollView className="flex-1">
-          <View className="gap-6 p-4">
-            <View
-              className="items-center justify-center rounded-2xl p-6"
-              style={{ backgroundColor: theme.colors.background.white5 }}
-            >
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                {t('workoutDetail.totalTime')}
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('workoutDetail.editTimeTitle')}
+      footer={footer}
+    >
+      <ScrollView className="flex-1">
+        <View className="gap-6 p-4">
+          <View
+            className="items-center justify-center rounded-2xl p-6"
+            style={{ backgroundColor: theme.colors.background.white5 }}
+          >
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              {t('workoutDetail.totalTime')}
+            </Text>
+            <View className="mt-1 flex-row items-baseline gap-1">
+              <Text className="text-4xl font-extrabold text-text-primary">
+                {durationDisplay.value}
               </Text>
-              <View className="mt-1 flex-row items-baseline gap-1">
-                <Text className="text-4xl font-extrabold text-text-primary">
-                  {durationDisplay.value}
+              {durationDisplay.suffix ? (
+                <Text className="text-lg font-bold text-text-secondary">
+                  {durationDisplay.suffix}
                 </Text>
-                {durationDisplay.suffix ? (
-                  <Text className="text-lg font-bold text-text-secondary">
-                    {durationDisplay.suffix}
-                  </Text>
-                ) : null}
-              </View>
+              ) : null}
             </View>
-
-            <View className="gap-6">
-              <View className="flex-row gap-4">
-                <DatePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.startDate')}
-                  selectedDate={startedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'date', target: 'started', visible: true })
-                  }
-                  variant="default"
-                />
-                <TimePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.startTime')}
-                  selectedTime={startedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'time', target: 'started', visible: true })
-                  }
-                  variant="default"
-                />
-              </View>
-
-              <View className="flex-row gap-4">
-                <DatePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.endDate')}
-                  selectedDate={completedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'date', target: 'completed', visible: true })
-                  }
-                  variant="default"
-                />
-                <TimePickerInput
-                  className="flex-1"
-                  label={t('workoutDetail.endTime')}
-                  selectedTime={completedAt}
-                  onPress={() =>
-                    setPickerConfig({ type: 'time', target: 'completed', visible: true })
-                  }
-                  variant="default"
-                />
-              </View>
-            </View>
-
-            {hasExercises && exerciseOptions.length > 0 ? (
-              <>
-                <SectionDivider />
-                <View>
-                  <Text className="mb-4 text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                    {t('workoutDetail.reorderTitle')}
-                  </Text>
-                  <OptionsMultiSelector
-                    title={t('workoutDetail.exercisesCount', { count: exerciseOptions.length })}
-                    options={exerciseOptions}
-                    onChange={() => {}}
-                    onOrderChange={setExerciseOptions}
-                    isEditable={true}
-                    hasGroups={true}
-                    hideCheckboxes={true}
-                    disablePressAnimation={true}
-                  />
-                </View>
-              </>
-            ) : null}
           </View>
-        </ScrollView>
-      </FullScreenModal>
+
+          <View className="gap-6">
+            <View className="flex-row gap-4">
+              <DatePickerInput
+                className="flex-1"
+                label={t('workoutDetail.startDate')}
+                selectedDate={startedAt}
+                onPress={() => setPickerConfig({ type: 'date', target: 'started', visible: true })}
+                variant="default"
+              />
+              <TimePickerInput
+                className="flex-1"
+                label={t('workoutDetail.startTime')}
+                selectedTime={startedAt}
+                onPress={() => setPickerConfig({ type: 'time', target: 'started', visible: true })}
+                variant="default"
+              />
+            </View>
+
+            <View className="flex-row gap-4">
+              <DatePickerInput
+                className="flex-1"
+                label={t('workoutDetail.endDate')}
+                selectedDate={completedAt}
+                onPress={() =>
+                  setPickerConfig({ type: 'date', target: 'completed', visible: true })
+                }
+                variant="default"
+              />
+              <TimePickerInput
+                className="flex-1"
+                label={t('workoutDetail.endTime')}
+                selectedTime={completedAt}
+                onPress={() =>
+                  setPickerConfig({ type: 'time', target: 'completed', visible: true })
+                }
+                variant="default"
+              />
+            </View>
+          </View>
+
+          {hasExercises && exerciseOptions.length > 0 ? (
+            <>
+              <SectionDivider />
+              <View>
+                <Text className="mb-4 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                  {t('workoutDetail.reorderTitle')}
+                </Text>
+                <OptionsMultiSelector
+                  title={t('workoutDetail.exercisesCount', { count: exerciseOptions.length })}
+                  options={exerciseOptions}
+                  onChange={() => {}}
+                  onOrderChange={setExerciseOptions}
+                  isEditable={true}
+                  hasGroups={true}
+                  hideCheckboxes={true}
+                  disablePressAnimation={true}
+                />
+              </View>
+            </>
+          ) : null}
+        </View>
+      </ScrollView>
 
       <DatePickerModal
         visible={pickerConfig.visible ? pickerConfig.type === 'date' : false}
@@ -291,6 +285,6 @@ export default function EditWorkoutMetadataModal({
             : t('workoutDetail.endTime')
         }
       />
-    </>
+    </FullScreenModal>
   );
 }

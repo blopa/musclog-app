@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { useSmartCamera } from '@/context/SmartCameraContext';
 import Food from '@/database/models/Food';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -13,7 +14,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 import { ScannedFoodDetailsModal } from './ScannedFoodDetailsModal';
 
@@ -36,7 +36,15 @@ function FoodResultCard({
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
-  const calories = formatRoundedDecimal((food.calories * amount) / 100, 2);
+  const isPerServing = food.resolvedNutritionBasis === 'per_serving';
+  const calories = formatRoundedDecimal(
+    isPerServing ? food.calories * amount : (food.calories * amount) / 100,
+    2
+  );
+
+  const calorieLabel = intuitiveEatingMode
+    ? `0 ${t('common.kcal')}`
+    : `${isSelected ? calories : formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`;
 
   return (
     <View
@@ -122,11 +130,7 @@ function FoodResultCard({
                   intuitiveEatingMode ? blurFilter(4) : undefined,
                 ]}
               >
-                {intuitiveEatingMode
-                  ? `0 ${t('common.kcal')}`
-                  : isSelected
-                    ? `${calories} ${t('common.kcal')}`
-                    : `${formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`}
+                {calorieLabel}
               </Text>
             </View>
           </View>
@@ -138,7 +142,8 @@ function FoodResultCard({
               marginTop: theme.size.xs,
             }}
           >
-            {food.brand ? `${food.brand} • ` : ''}100g serving
+            {food.brand ? `${food.brand} • ` : ''}
+            {isPerServing ? t('food.foodDetails.perServing') : t('food.portions.100g')}
           </Text>
 
           <View
@@ -162,7 +167,10 @@ function FoodResultCard({
               {t('foodSearch.macroProtein', {
                 value: intuitiveEatingMode
                   ? '0'
-                  : formatRoundedDecimal((food.protein * amount) / 100, 2),
+                  : formatRoundedDecimal(
+                      isPerServing ? food.protein * amount : (food.protein * amount) / 100,
+                      2
+                    ),
               })}
             </Text>
             <Text
@@ -178,7 +186,10 @@ function FoodResultCard({
               {t('foodSearch.macroCarbs', {
                 value: intuitiveEatingMode
                   ? '0'
-                  : formatRoundedDecimal((food.carbs * amount) / 100, 2),
+                  : formatRoundedDecimal(
+                      isPerServing ? food.carbs * amount : (food.carbs * amount) / 100,
+                      2
+                    ),
               })}
             </Text>
             <Text
@@ -194,7 +205,10 @@ function FoodResultCard({
               {t('foodSearch.macroFat', {
                 value: intuitiveEatingMode
                   ? '0'
-                  : formatRoundedDecimal((food.fat * amount) / 100, 2),
+                  : formatRoundedDecimal(
+                      isPerServing ? food.fat * amount : (food.fat * amount) / 100,
+                      2
+                    ),
               })}
             </Text>
           </View>
@@ -214,11 +228,13 @@ function FoodResultCard({
           <StepperInput
             label={t('food.addFoodItemToMeal.amount')}
             value={amount}
-            maxFractionDigits={0}
+            maxFractionDigits={isPerServing ? 2 : 0}
             onChangeValue={onAmountChange}
-            onIncrement={() => onAmountChange(amount + 1)}
-            onDecrement={() => onAmountChange(Math.max(0, amount - 1))}
-            unit="g"
+            onIncrement={() => onAmountChange(amount + (isPerServing ? 0.5 : 1))}
+            onDecrement={() =>
+              onAmountChange(Math.max(isPerServing ? 0.5 : 0, amount - (isPerServing ? 0.5 : 1)))
+            }
+            unit={isPerServing ? t('food.foodDetails.serving') : 'g'}
           />
         </View>
       ) : null}
@@ -239,17 +255,17 @@ export function AddFoodItemToMealModal({
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { openCamera } = useSmartCamera();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: number }>
   >({});
-  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) {
-      setShowBarcodeScanner(false);
       setShowScannedFoodDetails(false);
       setScannedBarcode(null);
     }
@@ -264,12 +280,16 @@ export function AddFoodItemToMealModal({
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
 
-  const toggleItem = (id: string) => {
+  const toggleItem = (food: Food) => {
     setSelectedItems((prev) => {
-      const current = prev[id] || { selected: false, amount: 100 };
+      const current = prev[food.id] || {
+        selected: false,
+        amount: food.resolvedNutritionBasis === 'per_serving' ? 1 : 100,
+      };
+
       return {
         ...prev,
-        [id]: { ...current, selected: !current.selected },
+        [food.id]: { ...current, selected: !current.selected },
       };
     });
   };
@@ -296,15 +316,104 @@ export function AddFoodItemToMealModal({
     onAddFoods?.([foodData]);
   };
 
-  const handleBarcodeScanned = (scannedBarcode: string) => {
-    setScannedBarcode(scannedBarcode);
-    setShowBarcodeScanner(false);
-    setShowScannedFoodDetails(true);
+  const openBarcodeScanner = () => {
+    openCamera({
+      mode: 'barcode-scan',
+      hideCameraModePicker: true,
+      showBarcodeTextSearch: true,
+      onBarcodeScanned: (data) => {
+        setScannedBarcode(data);
+        setShowScannedFoodDetails(true);
+      },
+    });
   };
 
-  const openBarcodeScanner = () => {
-    setShowBarcodeScanner(true);
-  };
+  let resultsContent;
+  if (isLoading) {
+    resultsContent = (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: theme.spacing.padding['4xl'],
+        }}
+      >
+        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        <Text
+          style={{
+            marginTop: theme.spacing.padding.md,
+            fontSize: theme.typography.fontSize.sm,
+            color: theme.colors.text.tertiary,
+          }}
+        >
+          {t('common.loading')}
+        </Text>
+      </View>
+    );
+  } else if (foods.length === 0) {
+    resultsContent = (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: theme.spacing.padding['4xl'],
+        }}
+      >
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.sm,
+            color: theme.colors.text.tertiary,
+            textAlign: 'center',
+          }}
+        >
+          {searchQuery.trim()
+            ? t('food.addFoodItemToMeal.noResults')
+            : t('food.addFoodItemToMeal.noFoods')}
+        </Text>
+      </View>
+    );
+  } else {
+    resultsContent = (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: theme.spacing.gap.md }}
+      >
+        {foods.map((food) => (
+          <FoodResultCard
+            key={food.id}
+            food={food}
+            isSelected={!!selectedItems[food.id]?.selected}
+            amount={
+              selectedItems[food.id]?.amount ??
+              (food.resolvedNutritionBasis === 'per_serving' ? 1 : 100)
+            }
+            onToggle={() => toggleItem(food)}
+            onAmountChange={(val) => updateAmount(food.id, val)}
+          />
+        ))}
+        {hasMore ? (
+          <View className="py-3">
+            <Button
+              label={
+                isLoadingMore
+                  ? t('food.addFoodItemToMeal.loadingMore')
+                  : t('food.addFoodItemToMeal.loadMore')
+              }
+              onPress={loadMore}
+              size="sm"
+              variant="outline"
+              disabled={isLoadingMore}
+              loading={isLoadingMore}
+              width="full"
+            />
+          </View>
+        ) : null}
+        <View style={{ height: theme.size['100'] }} />
+      </ScrollView>
+    );
+  }
 
   return (
     <FullScreenModal
@@ -371,88 +480,8 @@ export function AddFoodItemToMealModal({
         </View>
 
         {/* Results List */}
-        {isLoading ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: theme.spacing.padding['4xl'],
-            }}
-          >
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            <Text
-              style={{
-                marginTop: theme.spacing.padding.md,
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.tertiary,
-              }}
-            >
-              {t('common.loading')}
-            </Text>
-          </View>
-        ) : foods.length === 0 ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: theme.spacing.padding['4xl'],
-            }}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.tertiary,
-                textAlign: 'center',
-              }}
-            >
-              {searchQuery.trim()
-                ? t('food.addFoodItemToMeal.noResults')
-                : t('food.addFoodItemToMeal.noFoods')}
-            </Text>
-          </View>
-        ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ gap: theme.spacing.gap.md }}
-          >
-            {foods.map((food) => (
-              <FoodResultCard
-                key={food.id}
-                food={food}
-                isSelected={!!selectedItems[food.id]?.selected}
-                amount={selectedItems[food.id]?.amount || 100}
-                onToggle={() => toggleItem(food.id)}
-                onAmountChange={(val) => updateAmount(food.id, val)}
-              />
-            ))}
-            {hasMore ? (
-              <View className="py-3">
-                <Button
-                  label={
-                    isLoadingMore
-                      ? t('food.addFoodItemToMeal.loadingMore')
-                      : t('food.addFoodItemToMeal.loadMore')
-                  }
-                  onPress={loadMore}
-                  size="sm"
-                  variant="outline"
-                  disabled={isLoadingMore}
-                  loading={isLoadingMore}
-                  width="full"
-                />
-              </View>
-            ) : null}
-            <View style={{ height: theme.size['100'] }} />
-          </ScrollView>
-        )}
+        {resultsContent}
       </View>
-      <BarcodeCameraModal
-        visible={showBarcodeScanner}
-        onClose={() => setShowBarcodeScanner(false)}
-        onBarcodeScanned={handleBarcodeScanned}
-      />
       <ScannedFoodDetailsModal
         visible={showScannedFoodDetails}
         onClose={() => setShowScannedFoodDetails(false)}

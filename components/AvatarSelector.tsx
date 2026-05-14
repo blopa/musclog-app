@@ -96,7 +96,9 @@ export function AvatarSelector({
       {/* Color Selection */}
       {showColorPicker ? (
         <View className="flex-col gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">{t('chooseColor')}</Text>
+          <Text className="ml-1 text-sm font-medium text-text-secondary">
+            {t('editPersonalInfo.chooseColor')}
+          </Text>
           <View
             className="rounded-2xl border border-white/10 bg-bg-card"
             style={{

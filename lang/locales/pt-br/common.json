@@ -3,6 +3,7 @@
     "clear": "Limpar",
     "value": "Valor",
     "name": "Nome",
+    "next": "Próximo",
     "context": "Context",
     "processing": "processando...",
     "success": "Sucesso",
@@ -13,18 +14,22 @@
     "select": "Selecionar...",
     "today": "Hoje",
     "none": "Nenhum",
+    "amount_kcal": "{{amount}} kcal",
     "duplicateFailed": "Falha ao Duplicar",
     "yesterday": "Ontem",
     "daysAgo": "{{count}} dias atrás",
     "oneWeekAgo": "1 semana atrás",
     "weeksAgo": "{{count}} semanas atrás",
     "monthsAgo": "{{count}} meses atrás",
+    "oneMonthFromNow": "Daqui a 1 mês",
+    "monthsFromNow": "Daqui a {{count}} meses",
     "seeAll": "Ver tudo",
     "kcal": "kcal",
     "min": "min",
     "cancel": "Cancelar",
     "tryAgain": "Tentar Novamente",
     "popular": "Popular",
+    "photo": "Foto",
     "loading": "Carregando...",
     "saving": "Salvando...",
     "save": "Salvar",
@@ -109,6 +114,33 @@
     "errorMessage": "Mensagem de Erro",
     "errorStack": "Pilha de Erro",
     "componentStack": "Pilha de Componentes",
-    "userAgent": "Agente do Usuário"
+    "userAgent": "Agente do Usuário",
+    "app": {
+      "title": "Musclog - Monitor de Fitness e Nutrição"
+    },
+    "nutrition": {
+      "title": "Musclog - Nutrição",
+      "food": {
+        "title": "Musclog - Alimento"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Treino",
+      "workouts": {
+        "title": "Musclog - Treinos"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Progresso"
+    },
+    "profile": {
+      "title": "Musclog - Perfil"
+    },
+    "settings": {
+      "title": "Musclog - Configurações"
+    },
+    "cycle": {
+      "title": "Musclog - Ciclo"
+    }
   }
 }

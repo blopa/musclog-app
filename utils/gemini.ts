@@ -1,13 +1,12 @@
 import {
   Content,
-  GenerateContentRequest,
-  GoogleGenerativeAI,
+  GenerateContentConfig,
+  GenerateContentParameters,
+  GoogleGenAI,
   HarmBlockThreshold,
   HarmCategory,
-  ModelParams,
   Part,
-  StartChatParams,
-} from '@google/generative-ai';
+} from '@google/genai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
 import { GEMINI_MODELS } from '@/constants/ai';
@@ -39,62 +38,80 @@ const safetySettings = [
   },
 ];
 
-const getGenerativeAI = async ({ apiKey }: { apiKey?: string }): Promise<GoogleGenerativeAI> => {
+const getGenerativeAI = async ({
+  apiKey,
+  httpOptions,
+}: {
+  apiKey?: string;
+  httpOptions?: { baseUrl?: string; headers?: Record<string, string> };
+}): Promise<GoogleGenAI> => {
   if (apiKey) {
-    return new GoogleGenerativeAI(apiKey);
+    return new GoogleGenAI({ apiKey, httpOptions });
   }
 
   return {
-    getGenerativeModel: (modelParams: ModelParams) => {
-      return {
-        generateContent: async (request: GenerateContentRequest) => {
-          captureMessage('No API key provided for generative AI');
-          return {
-            response: null,
-            status: 401,
-          };
-        },
-        startChat: async (startChatParams: StartChatParams) => {
-          return {
-            sendMessage: async (request: string) => {
-              captureMessage('No API key provided for generative AI');
-              return {
-                response: {},
-                status: 401,
-              };
-            },
-          };
-        },
-      };
+    models: {
+      generateContent: async (params: GenerateContentParameters) => {
+        captureMessage('No API key provided for generative AI');
+        return {
+          text: '',
+          candidates: [],
+        } as any;
+      },
     },
-  } as unknown as GoogleGenerativeAI;
+    chats: {
+      create: () => {
+        return {
+          sendMessage: async () => {
+            captureMessage('No API key provided for generative AI');
+            return {
+              response: {},
+              status: 401,
+            } as any;
+          },
+        };
+      },
+    },
+  } as unknown as GoogleGenAI;
 };
 
 export const configureBasicGenAI = async (
   {
     apiKey,
+    httpOptions,
     model,
     generationConfig,
+    tools,
   }: {
     apiKey?: string;
+    httpOptions?: { baseUrl?: string; headers?: Record<string, string> };
     model?: string;
     generationConfig?: Record<string, unknown>;
+    tools?: any[];
   },
   systemParts?: Part[]
 ) => {
-  const genAI = await getGenerativeAI({ apiKey });
+  const genAI = await getGenerativeAI({ apiKey, httpOptions });
+  const modelName = model || (await getModel());
 
-  return genAI.getGenerativeModel({
-    model: model || (await getModel()),
-    safetySettings,
-    ...(generationConfig && { generationConfig }),
-    ...(systemParts && {
-      systemInstruction: {
-        parts: systemParts,
-        role: 'system',
-      },
-    }),
-  });
+  return {
+    generateContent: async (params: { contents: Content[] }) => {
+      return genAI.models.generateContent({
+        model: modelName,
+        contents: params.contents,
+        config: {
+          safetySettings,
+          ...(generationConfig as any),
+          systemInstruction: systemParts
+            ? {
+                parts: systemParts,
+              }
+            : undefined,
+          ...(tools && { tools }),
+        },
+      });
+    },
+  };
 };
 
 export const createConversationContent = (messages: ChatCompletionMessageParam[]): Content[] =>

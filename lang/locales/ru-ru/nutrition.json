@@ -1,5 +1,9 @@
 {
   "nutrition": {
+    "title": "Питание",
+    "food": {
+      "title": "Продукт"
+    },
     "analyze": "Анализировать",
     "calories": "Калории",
     "carbs": "Углеводы",

@@ -1,0 +1,12 @@
+{
+  "camera": {
+    "title": "Camera",
+    "processing": {
+      "aiAnalyzingMeal": "AI analyseert je maaltijd...",
+      "aiAnalyzingFood": "AI analyseert je eten...",
+      "processingNutrients": "Voedingsstoffen verwerken",
+      "analyzingImage": "Barcode analyseren...",
+      "processingData": "Gegevens verwerken"
+    }
+  }
+}

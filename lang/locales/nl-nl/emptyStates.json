@@ -1,0 +1,24 @@
+{
+  "emptyStates": {
+    "workouts": {
+      "title": "Nog geen workouts",
+      "description": "Je fitnessreis begint bij je eerste herhaling. Plan je routine en houd je voortgang hier bij.",
+      "buttonLabel": "Maak je eerste workout"
+    },
+    "foods": {
+      "title": "Geen eten gelogd",
+      "description": "Log je maaltijden om op de hoogte te blijven van je voedingsdoelen. Je lichaam zal je dankbaar zijn.",
+      "buttonLabel": "Log je maaltijd"
+    },
+    "workout": {
+      "title": "Nog geen workouts",
+      "description": "Klaar voor je eerste sessie?",
+      "button": "Plan"
+    },
+    "food": {
+      "title": "Niets gelogd vandaag",
+      "description": "Voed je lichaam!",
+      "button": "Log"
+    }
+  }
+}

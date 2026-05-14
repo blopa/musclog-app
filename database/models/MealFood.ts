@@ -1,7 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
-import Food from './Food';
+import { handleError } from '@/utils/handleError';
+
+import Food, { type MicrosData } from './Food';
 import FoodPortion from './FoodPortion';
 import Meal from './Meal';
 
@@ -53,15 +55,80 @@ export default class MealFood extends Model {
 
   // Get the actual gram weight for this meal food entry
   async getGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        return 0;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        return this.amount * (portion.gramWeight ?? 0);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          return this.amount * (portion.gramWeight ?? 0);
+        }
+      } catch (error) {
+        handleError(error, 'MealFood.getGramWeight');
       }
     }
 
     // If no portion, assume amount is in grams
     return this.amount;
+  }
+
+  // Get a gram-equivalent for meal scaling/reference math.
+  async getReferenceGramWeight(): Promise<number> {
+    try {
+      const food = await this.food;
+      if (food?.resolvedNutritionBasis === 'per_serving') {
+        let baseGrams = await food.getBaseGramWeight();
+        if (this.portionId) {
+          try {
+            const portion = await this.portion;
+            baseGrams = portion?.gramWeight ?? baseGrams;
+          } catch {
+            // Fall back to the food default portion grams.
+          }
+        }
+        return this.amount * baseGrams;
+      }
+    } catch {
+      // Fall through to portion/gram logic
+    }
+
+    return this.getGramWeight();
+  }
+
+  async getMicros(): Promise<MicrosData> {
+    try {
+      const food = await this.food;
+      if (!food) {
+        return {};
+      }
+
+      if (food.resolvedNutritionBasis === 'per_serving') {
+        return Object.fromEntries(
+          Object.entries(food.micros ?? {}).map(([key, value]) => [
+            key,
+            value != null ? value * this.amount : undefined,
+          ])
+        ) as MicrosData;
+      }
+
+      const totalGrams = await this.getReferenceGramWeight();
+      const scale = totalGrams / 100;
+      return Object.fromEntries(
+        Object.entries(food.micros ?? {}).map(([key, value]) => [
+          key,
+          value != null ? value * scale : undefined,
+        ])
+      ) as MicrosData;
+    } catch {
+      return {};
+    }
   }
 
   // Get nutrients for this specific meal food entry
@@ -72,9 +139,14 @@ export default class MealFood extends Model {
     fat: number;
     fiber: number;
   }> {
-    const food = await this.food;
+    let food: Food | null = null;
+    try {
+      food = await this.food;
+    } catch (error) {
+      await handleError(error, 'MealFood.getNutrients.loadFood', {
+        showSnackbar: false,
+      });
 
-    if (!food) {
       return {
         calories: 0,
         protein: 0,
@@ -84,13 +156,37 @@ export default class MealFood extends Model {
       };
     }
 
+    if (!food) {
+      await handleError(
+        new Error(`MealFood ${this.id} is missing related food ${this.foodId}`),
+        'MealFood.getNutrients.missingFood',
+        { showSnackbar: false }
+      );
+
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+    }
+
+    if (food.resolvedNutritionBasis === 'per_serving') {
+      return food.getNutrientsForServingCount(this.amount);
+    }
+
     if (this.portionId) {
-      const portion = await this.portion;
-      if (portion) {
-        // Use portion-based calculation
-        // amount = number of portions
-        const totalGrams = this.amount * (portion.gramWeight ?? 0);
-        return food.getNutrientsForAmount(totalGrams);
+      try {
+        const portion = await this.portion;
+        if (portion) {
+          // Use portion-based calculation
+          // amount = number of portions
+          const totalGrams = this.amount * (portion.gramWeight ?? 0);
+          return food.getNutrientsForAmount(totalGrams);
+        }
+      } catch (error) {
+        handleError(error, 'MealFood.getNutrients');
       }
     }
 

@@ -1,5 +1,9 @@
 {
   "nutrition": {
+    "title": "Nutrition",
+    "food": {
+      "title": "Food"
+    },
     "analyze": "Analyze",
     "calories": "Calories",
     "carbs": "Carbs",

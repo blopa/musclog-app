@@ -1,0 +1,22 @@
+{
+  "errors": {
+    "connectionTimeout": {
+      "title": "Tiempo de Conexión Agotado",
+      "description": "No pudimos contactar con los servidores de Musclog. Por favor, comprueba tu conexión a internet.",
+      "tryAgain": "Intentar de nuevo"
+    },
+    "failedToLoadData": "Error al cargar los datos",
+    "somethingWentWrong": "Algo salió mal",
+    "genericDescription": "Ocurrió un error inesperado.",
+    "reload": "Recargar",
+    "aiCreditsError": "Cuota de servicio de IA excedida. Por favor, comprueba tu clave API o inténtalo de nuevo más tarde.",
+    "aiProcessingError": "Lo siento, tuve problemas al procesar esa solicitud. Por favor, inténtalo de nuevo en un momento.",
+    "aiProcessingErrorTitle": "Error al procesar la solicitud",
+    "gatewayDailyLimitError": "Límite diario de IA gratuita alcanzado. Inténtalo de nuevo mañana o añade tu propia clave API en los Ajustes de IA.",
+    "gatewayDailyLimitErrorTitle": "Límite Diario Alcanzado",
+    "databaseError": {
+      "title": "Error de Base de Datos",
+      "description": "Ocurrió un error en la base de datos. Se ha activado el informe de errores para ayudar a resolver este problema."
+    }
+  }
+}

@@ -1,6 +1,8 @@
+import * as ImagePicker from 'expo-image-picker';
 import type { TFunction } from 'i18next';
 import {
   Apple,
+  Camera,
   Check,
   CheckCircle2,
   Coffee,
@@ -12,16 +14,11 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Pressable,
-  Switch,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Pressable, Switch, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
+import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
@@ -32,15 +29,20 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
-import { MealService, NutritionService } from '@/database/services';
-import { type Ingredient, useEditMealIngredients } from '@/hooks/useEditMealIngredients';
+import { FoodPortionService, MealService, NutritionService } from '@/database/services';
+import {
+  createIngredientLocalId,
+  type Ingredient,
+  useEditMealIngredients,
+} from '@/hooks/useEditMealIngredients';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { deleteMealImage, saveMealImage } from '@/utils/file';
+import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
@@ -105,230 +107,62 @@ type CreateMealModalProps = {
   onTracked?: () => void;
   /** Optional initial foods to prefill the modal (create mode). */
   initialFoods?: { food: Food; amount: number }[];
+  /** For quickTrack mode: pre-selected meal type instead of defaulting to 'lunch'. */
+  initialMealType?: MealType;
 };
 
-const MacroCard = ({
-  label,
-  value,
-  progress,
-  color,
-  intuitiveMode = false,
-}: {
-  label: string;
-  value: string;
-  progress: number;
-  color: string;
-  intuitiveMode?: boolean;
-}) => {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.overlay.backdrop,
-        borderRadius: theme.borderRadius.md,
-        padding: theme.spacing.padding['2half'],
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.border.light,
-        alignItems: 'center',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: theme.typography.fontSize.xs,
-          fontWeight: theme.typography.fontWeight.bold,
-          color: theme.colors.text.secondary,
-          textTransform: 'uppercase',
-          letterSpacing: theme.typography.letterSpacing.wider,
-          marginBottom: theme.spacing.padding.xsHalf,
-        }}
-      >
-        {label}
-      </Text>
-      <Text
-        style={[
-          {
-            fontSize: theme.typography.fontSize.sm,
-            fontWeight: theme.typography.fontWeight.bold,
-            color: theme.colors.text.primary,
-          },
-          intuitiveMode ? blurFilter(4) : undefined,
-        ]}
-      >
-        {intuitiveMode ? t('common.weightFormatG', { value: 0 }) : value}
-      </Text>
-      <View
-        style={{
-          width: '100%',
-          height: theme.size.xs,
-          backgroundColor: theme.colors.background.white10,
-          borderRadius: theme.borderRadius.xs / 2,
-          marginTop: theme.spacing.padding.sm,
-          overflow: 'hidden',
-        }}
-      >
-        <View
-          style={{
-            height: '100%',
-            width: intuitiveMode ? '0%' : `${progress}%`,
-            backgroundColor: color,
-            borderRadius: theme.borderRadius.xs / 2,
-          }}
-        />
-      </View>
-    </View>
-  );
-};
+async function buildIngredientFromFood(
+  food: Food,
+  amount: number,
+  t: TFunction
+): Promise<Ingredient> {
+  if (food.resolvedNutritionBasis === 'per_serving') {
+    const nutrients = food.getNutrientsForServingCount(amount);
+    const baseGrams = await food.getBaseGramWeight();
+    return {
+      localId: createIngredientLocalId(food.id),
+      foodId: food.id,
+      name: food.name ?? t('meals.unknownFood'),
+      amount,
+      referenceGrams: amount * baseGrams,
+      isPerServing: true,
+      calories: nutrients.calories,
+      protein: nutrients.protein,
+      carbs: nutrients.carbs,
+      fat: nutrients.fat,
+      fiber: nutrients.fiber,
+      sugar: (food.micros?.sugar ?? 0) * amount,
+      saturatedFat: (food.micros?.saturatedFat ?? 0) * amount,
+      sodium: (food.micros?.sodium ?? 0) * amount,
+      alcohol: (food.micros?.alcohol ?? 0) * amount,
+      potassium: (food.micros?.potassium ?? 0) * amount,
+      magnesium: (food.micros?.magnesium ?? 0) * amount,
+      zinc: (food.micros?.zinc ?? 0) * amount,
+    };
+  }
 
-// Local component for Meal Macros Summary
-const MealMacrosSummary = ({
-  calories,
-  macros,
-  intuitiveMode = false,
-}: {
-  calories: number;
-  macros: { protein: number; carbs: number; fat: number };
-  intuitiveMode?: boolean;
-}) => {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  const { formatRoundedDecimal } = useFormatAppNumber();
-  const { width: windowWidth } = useWindowDimensions();
-
-  // Calculate progress percentages (simple estimation)
-  const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
-  const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
-  const fatProgress = Math.min((macros.fat / 80) * 100, 100);
-
-  return (
-    <View
-      style={{
-        backgroundColor: theme.colors.background.cardElevated,
-        borderRadius: theme.borderRadius.lg,
-        padding: theme.spacing.padding.lg,
-        marginBottom: theme.spacing.margin.xl,
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.border.light,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Background Glows */}
-      <View
-        style={{
-          position: 'absolute',
-          top: theme.offset.glowMedium,
-          right: theme.offset.glowMedium,
-          width: theme.size['160'],
-          height: theme.size['160'],
-          backgroundColor: theme.colors.accent.primary20,
-          borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium,
-        }}
-      />
-      <View
-        style={{
-          position: 'absolute',
-          bottom: theme.offset.glowMedium,
-          left: theme.offset.glowMedium,
-          width: theme.size['160'],
-          height: theme.size['160'],
-          backgroundColor: theme.colors.status.indigo20,
-          borderRadius: theme.size['20'] * 4,
-          opacity: theme.colors.opacity.medium,
-        }}
-      />
-
-      <View style={{ position: 'relative', zIndex: theme.zIndex.dropdown }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: theme.spacing.margin.lg,
-          }}
-        >
-          <View>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.primary,
-              }}
-            >
-              {t('food.createMeal.totalNutrition')}
-            </Text>
-            <Text
-              style={[
-                {
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  color: theme.colors.text.secondary,
-                },
-                intuitiveMode ? blurFilter(4) : undefined,
-              ]}
-            >
-              {intuitiveMode ? '0' : formatRoundedDecimal(calories, 2)} {t('common.kcal')}
-            </Text>
-          </View>
-          <View
-            style={{
-              backgroundColor: theme.colors.background.secondaryDark,
-              paddingHorizontal: theme.spacing.padding['2half'],
-              paddingVertical: theme.spacing.padding.xs,
-              borderRadius: theme.borderRadius.full,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.wider,
-              }}
-            >
-              {t('food.createMeal.estimated')}
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.protein, 2),
-            })}
-            progress={proteinProgress}
-            color={theme.colors.accent.primary}
-            intuitiveMode={intuitiveMode}
-          />
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.carbs, 2),
-            })}
-            progress={carbsProgress}
-            color={theme.colors.status.indigo}
-            intuitiveMode={intuitiveMode}
-          />
-          <MacroCard
-            label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            value={t('common.weightFormatG', {
-              value: formatRoundedDecimal(macros.fat, 2),
-            })}
-            progress={fatProgress}
-            color={theme.colors.status.amber}
-            intuitiveMode={intuitiveMode}
-          />
-        </View>
-      </View>
-    </View>
-  );
-};
+  const multiplier = amount / 100;
+  return {
+    localId: createIngredientLocalId(food.id),
+    foodId: food.id,
+    name: food.name ?? t('meals.unknownFood'),
+    amount,
+    referenceGrams: amount,
+    isPerServing: false,
+    calories: food.calories * multiplier,
+    protein: food.protein * multiplier,
+    carbs: food.carbs * multiplier,
+    fat: food.fat * multiplier,
+    fiber: food.fiber * multiplier,
+    sugar: (food.micros?.sugar ?? 0) * multiplier,
+    saturatedFat: (food.micros?.saturatedFat ?? 0) * multiplier,
+    sodium: (food.micros?.sodium ?? 0) * multiplier,
+    alcohol: (food.micros?.alcohol ?? 0) * multiplier,
+    potassium: (food.micros?.potassium ?? 0) * multiplier,
+    magnesium: (food.micros?.magnesium ?? 0) * multiplier,
+    zinc: (food.micros?.zinc ?? 0) * multiplier,
+  };
+}
 
 export function CreateMealModal({
   visible,
@@ -339,6 +173,7 @@ export function CreateMealModal({
   logDate,
   onTracked,
   initialFoods,
+  initialMealType = 'lunch',
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -350,6 +185,7 @@ export function CreateMealModal({
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [mealDescription, setMealDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
@@ -361,10 +197,16 @@ export function CreateMealModal({
     localCalendarDayDate(logDate ?? new Date())
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType);
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
   const [preparedWeightGrams, setPreparedWeightGrams] = useState<number | undefined>(undefined);
+  const [nutritionBasis, setNutritionBasis] = useState<'per_recipe' | 'per_serving' | 'per_gram'>(
+    'per_recipe'
+  );
+  const [recipeServingsCount, setRecipeServingsCount] = useState(1);
+  const [defaultPortionName, setDefaultPortionName] = useState('');
+  const [servingGrams, setServingGrams] = useState(100);
 
   const isQuickTrack = mode === 'quickTrack';
 
@@ -372,10 +214,38 @@ export function CreateMealModal({
     isQuickTrack ? undefined : meal
   );
 
+  const assertSavedMealIntegrity = async (
+    mealId: string,
+    expectedFoodCount: number,
+    context: string
+  ) => {
+    const savedMeal = await MealService.getMealWithFoods(mealId);
+
+    if (!savedMeal) {
+      throw new Error(`${context}: meal could not be reloaded after save`);
+    }
+
+    const actualFoodCount = savedMeal.foods.length;
+    if (actualFoodCount === 0) {
+      throw new Error(`${context}: saved meal has zero foods after save`);
+    }
+
+    if (actualFoodCount !== expectedFoodCount) {
+      throw new Error(
+        `${context}: expected ${expectedFoodCount} foods after save but found ${actualFoodCount}`
+      );
+    }
+  };
+
   useEffect(() => {
     setMealName(meal?.name ?? '');
     setMealDescription(meal?.description ?? '');
+    setImageUrl(meal?.imageUrl ?? undefined);
     setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
+    setNutritionBasis(meal?.nutritionBasis ?? 'per_recipe');
+    setRecipeServingsCount(meal?.recipeServingsCount ?? 1);
+    setDefaultPortionName(meal?.defaultPortionName ?? '');
+    setServingGrams(meal?.servingGrams ?? 100);
   }, [meal]);
 
   useEffect(() => {
@@ -387,22 +257,33 @@ export function CreateMealModal({
 
   useEffect(() => {
     // When opening the modal in create mode with initialFoods, prefill ingredients.
-    if (visible && initialFoods && initialFoods.length > 0 && !meal) {
-      const newIngredients: Ingredient[] = initialFoods.map(
-        (item: { food: Food; amount: number }) => {
-          const multiplier = item.amount / 100;
-          return {
-            foodId: item.food.id,
-            name: item.food.name ?? t('meals.unknownFood'),
-            amount: item.amount,
-            calories: item.food.calories * multiplier,
-            protein: item.food.protein * multiplier,
-            carbs: item.food.carbs * multiplier,
-            fat: item.food.fat * multiplier,
-          };
-        }
-      );
-      setIngredients(newIngredients);
+    if (visible && !meal) {
+      if (!initialFoods || initialFoods.length === 0) {
+        setIngredients([]);
+        return;
+      }
+
+      let cancelled = false;
+
+      Promise.all(
+        initialFoods.map((item: { food: Food; amount: number }) =>
+          buildIngredientFromFood(item.food, item.amount, t)
+        )
+      )
+        .then((newIngredients) => {
+          if (!cancelled) {
+            setIngredients(newIngredients);
+          }
+        })
+        .catch((error) => {
+          handleError(error, 'CreateMealModal.prefillIngredients', {
+            showSnackbar: false,
+          });
+        });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [visible, initialFoods, meal, setIngredients, t]);
 
@@ -425,9 +306,34 @@ export function CreateMealModal({
     );
   }, [ingredients]);
 
+  const totalAdditionalNutrition = useMemo(() => {
+    return ingredients.reduce(
+      (acc, ingredient) => ({
+        fiber: acc.fiber + ingredient.fiber,
+        sugar: acc.sugar + (ingredient.sugar ?? 0),
+        saturatedFat: acc.saturatedFat + (ingredient.saturatedFat ?? 0),
+        sodium: acc.sodium + (ingredient.sodium ?? 0),
+        alcohol: acc.alcohol + (ingredient.alcohol ?? 0),
+        potassium: acc.potassium + (ingredient.potassium ?? 0),
+        magnesium: acc.magnesium + (ingredient.magnesium ?? 0),
+        zinc: acc.zinc + (ingredient.zinc ?? 0),
+      }),
+      {
+        fiber: 0,
+        sugar: 0,
+        saturatedFat: 0,
+        sodium: 0,
+        alcohol: 0,
+        potassium: 0,
+        magnesium: 0,
+        zinc: 0,
+      }
+    );
+  }, [ingredients]);
+
   // Total meal weight in grams (sum of raw ingredients)
   const totalMealGrams = useMemo(
-    () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
+    () => ingredients.reduce((sum, ing) => sum + ing.referenceGrams, 0),
     [ingredients]
   );
 
@@ -435,13 +341,88 @@ export function CreateMealModal({
   const referenceMealGrams = preparedWeightGrams ?? totalMealGrams;
 
   useEffect(() => {
-    if (isQuickTrack) {
-      setMealAmountGrams(referenceMealGrams);
+    if (!isQuickTrack) {
+      return;
     }
-  }, [isQuickTrack, referenceMealGrams]);
 
-  const handleRemoveIngredient = (foodId: string) => {
-    setIngredientToRemoveId(foodId);
+    if (nutritionBasis === 'per_recipe') {
+      setMealAmountGrams(referenceMealGrams);
+      return;
+    }
+
+    setMealAmountGrams(1);
+  }, [isQuickTrack, nutritionBasis, referenceMealGrams]);
+
+  const quickTrackScale = useMemo(() => {
+    if (!isQuickTrack) {
+      return 1;
+    }
+
+    if (nutritionBasis === 'per_serving') {
+      return Math.max(0.01, mealAmountGrams) / Math.max(1, recipeServingsCount);
+    }
+
+    if (nutritionBasis === 'per_gram') {
+      return referenceMealGrams > 0
+        ? (Math.max(0.01, mealAmountGrams) * Math.max(1, servingGrams)) / referenceMealGrams
+        : 1;
+    }
+
+    return referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
+  }, [
+    isQuickTrack,
+    mealAmountGrams,
+    nutritionBasis,
+    recipeServingsCount,
+    referenceMealGrams,
+    servingGrams,
+  ]);
+
+  const displayedMealTotals = useMemo(() => {
+    if (isQuickTrack) {
+      return {
+        calories: totalMacros.calories * quickTrackScale,
+        protein: totalMacros.protein * quickTrackScale,
+        carbs: totalMacros.carbs * quickTrackScale,
+        fat: totalMacros.fat * quickTrackScale,
+      };
+    }
+
+    return totalMacros;
+  }, [isQuickTrack, quickTrackScale, totalMacros]);
+
+  const displayedAdditionalNutrition = useMemo(() => {
+    if (isQuickTrack) {
+      return {
+        fiber: totalAdditionalNutrition.fiber * quickTrackScale,
+        sugar: totalAdditionalNutrition.sugar * quickTrackScale,
+        saturatedFat: totalAdditionalNutrition.saturatedFat * quickTrackScale,
+        sodium: totalAdditionalNutrition.sodium * quickTrackScale,
+        alcohol: totalAdditionalNutrition.alcohol * quickTrackScale,
+        potassium: totalAdditionalNutrition.potassium * quickTrackScale,
+        magnesium: totalAdditionalNutrition.magnesium * quickTrackScale,
+        zinc: totalAdditionalNutrition.zinc * quickTrackScale,
+      };
+    }
+
+    return totalAdditionalNutrition;
+  }, [isQuickTrack, quickTrackScale, totalAdditionalNutrition]);
+
+  const mealNutritionCardFood = useMemo(
+    () => ({
+      name: mealName.trim() || t('food.createMeal.totalNutrition'),
+      category:
+        mealDescription.trim() || t('food.createMeal.ingredients', { count: ingredients.length }),
+      calories: displayedMealTotals.calories,
+      protein: displayedMealTotals.protein,
+      carbs: displayedMealTotals.carbs,
+      fat: displayedMealTotals.fat,
+    }),
+    [displayedMealTotals, ingredients.length, mealDescription, mealName, t]
+  );
+
+  const handleRemoveIngredient = (ingredientId: string) => {
+    setIngredientToRemoveId(ingredientId);
     setIsConfirmationModalVisible(true);
   };
 
@@ -465,15 +446,56 @@ export function CreateMealModal({
 
     setIsDeletingMeal(true);
     try {
+      if (meal.imageUrl) {
+        await deleteMealImage(meal.imageUrl);
+      }
       await MealService.deleteMeal(meal.id);
       onSave?.();
       onClose();
     } catch (error) {
-      console.error('Error deleting meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleDeleteMeal' } });
-      showSnackbar('error', t('common.deleteFailed'));
+      handleError(error, 'CreateMealModal.handleDeleteMeal', {
+        snackbarMessage: t('common.deleteFailed'),
+      });
     } finally {
       setIsDeletingMeal(false);
+    }
+  };
+
+  const syncMealPortion = async (targetMeal: Meal) => {
+    await FoodPortionService.clearMealPortions(targetMeal.id);
+
+    if (nutritionBasis === 'per_recipe') {
+      return;
+    }
+
+    const trimmedPortionName =
+      defaultPortionName.trim() || mealName.trim() || t('food.foodDetails.serving');
+
+    if (nutritionBasis === 'per_serving') {
+      const portion = await FoodPortionService.createPrivateNamedPortion(
+        trimmedPortionName,
+        'meal',
+        targetMeal.id
+      );
+      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
+      return;
+    }
+
+    if (nutritionBasis === 'per_gram') {
+      const portion = await FoodPortionService.createFoodPortion(
+        trimmedPortionName,
+        Math.max(1, servingGrams),
+        undefined,
+        'custom',
+        {
+          kind: 'mass',
+          scope: 'private',
+          ownerType: 'meal',
+          ownerId: targetMeal.id,
+          dedupe: false,
+        }
+      );
+      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
     }
   };
 
@@ -490,19 +512,29 @@ export function CreateMealModal({
     setIsSaving(true);
     try {
       if (saveToMyMeals) {
-        await MealService.createMealFromFoods(
+        const savedMeal = await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({ foodId: ing.foodId, amount: ing.amount })),
-          mealDescription.trim()
+          mealDescription.trim(),
+          false,
+          undefined,
+          {
+            nutritionBasis,
+            recipeServingsCount,
+            defaultPortionName:
+              nutritionBasis === 'per_recipe' ? undefined : defaultPortionName.trim(),
+            servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : undefined,
+          }
         );
+        await syncMealPortion(savedMeal);
       }
-      const scale = referenceMealGrams > 0 ? mealAmountGrams / referenceMealGrams : 1;
+
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
           selectedDate,
           selectedMealType,
-          ing.amount * scale,
+          ing.amount * quickTrackScale,
           undefined
         );
       }
@@ -510,12 +542,39 @@ export function CreateMealModal({
       onClose();
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
-      console.error('Error tracking quick meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleTrack' } });
-      showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
+      handleError(error, 'CreateMealModal.handleTrack', {
+        snackbarMessage: t('food.quickTrackMeal.errorMessage'),
+      });
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        // Save to permanent storage immediately
+        const permanentUri = await saveMealImage(result.assets[0].uri, imageUrl);
+        setImageUrl(permanentUri);
+      }
+    } catch (error) {
+      handleError(error, 'CreateMealModal.handlePickImage', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (imageUrl) {
+      await deleteMealImage(imageUrl);
+    }
+    setImageUrl(undefined);
   };
 
   const handleSave = async () => {
@@ -538,7 +597,12 @@ export function CreateMealModal({
         await MealService.updateMeal(meal.id, {
           name: mealName.trim(),
           description: mealDescription.trim(),
+          imageUrl: imageUrl || null,
           preparedWeightGrams: preparedWeightGrams || null,
+          nutritionBasis,
+          recipeServingsCount,
+          defaultPortionName: nutritionBasis === 'per_recipe' ? null : defaultPortionName.trim(),
+          servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : null,
         });
         for (const mealFoodId of removedMealFoodIdsRef.current) {
           await MealService.removeFoodFromMeal(mealFoodId);
@@ -547,9 +611,17 @@ export function CreateMealModal({
         for (const ing of newIngredients) {
           await MealService.addFoodToMeal(meal.id, ing.foodId, ing.amount);
         }
+
+        await assertSavedMealIntegrity(
+          meal.id,
+          ingredients.length,
+          'CreateMealModal.handleSave.edit'
+        );
+
+        await syncMealPortion(meal);
       } else {
         // Create mode
-        await MealService.createMealFromFoods(
+        const savedMeal = await MealService.createMealFromFoods(
           mealName.trim(),
           ingredients.map((ing) => ({
             foodId: ing.foodId,
@@ -557,8 +629,18 @@ export function CreateMealModal({
           })),
           mealDescription.trim(),
           false,
-          preparedWeightGrams || undefined
+          preparedWeightGrams || undefined,
+          {
+            imageUrl,
+            nutritionBasis,
+            recipeServingsCount,
+            defaultPortionName:
+              nutritionBasis === 'per_recipe' ? undefined : defaultPortionName.trim(),
+            servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : undefined,
+          }
         );
+
+        await syncMealPortion(savedMeal);
       }
 
       // Callback to refresh meals list
@@ -567,21 +649,22 @@ export function CreateMealModal({
       // Close modal
       onClose();
     } catch (error) {
-      console.error('Error saving meal:', error);
-      captureException(error, { data: { context: 'CreateMealModal.handleSave' } });
-      showSnackbar('error', t('food.createMeal.saveFailed'));
+      handleError(error, 'CreateMealModal.handleSave', {
+        snackbarMessage: t('food.createMeal.saveFailed'),
+      });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const removeIngredient = (foodId: string) => {
+  const removeIngredient = (ingredientId: string) => {
     setIngredients((prev) => {
-      const toRemove = prev.find((item) => item.foodId === foodId);
+      const toRemove = prev.find((item) => item.localId === ingredientId);
       if (toRemove?.mealFoodId) {
         removedMealFoodIdsRef.current.push(toRemove.mealFoodId);
       }
-      return prev.filter((item) => item.foodId !== foodId);
+
+      return prev.filter((item) => item.localId !== ingredientId);
     });
   };
 
@@ -598,38 +681,51 @@ export function CreateMealModal({
     return t('food.createMeal.saveMeal');
   };
 
+  const getTitle = () => {
+    if (isQuickTrack) {
+      return t('food.quickTrackMeal.title');
+    }
+
+    if (meal) {
+      return t('food.meals.manageMealData.editMeal');
+    }
+
+    return t('food.createMeal.title');
+  };
+
+  const getSaveIcon = () => {
+    if (isSaving) {
+      return undefined;
+    }
+
+    if (isQuickTrack) {
+      return Check;
+    }
+
+    return CheckCircle2;
+  };
+
   const mealTypeOptions = useMemo(() => getMealTypeOptions(theme, t), [theme, t]);
 
-  const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
-    const newIngredients: Ingredient[] = selectedFoods.map((item) => {
-      // Calculate nutrients based on amount (per 100g base)
-      const multiplier = item.amount / 100;
-      return {
-        foodId: item.food.id,
-        name: item.food.name ?? t('meals.unknownFood'),
-        amount: item.amount,
-        calories: item.food.calories * multiplier,
-        protein: item.food.protein * multiplier,
-        carbs: item.food.carbs * multiplier,
-        fat: item.food.fat * multiplier,
-      };
-    });
-
-    setIngredients((prev) => [...prev, ...newIngredients]);
-    setIsAddFoodVisible(false);
+  const handleAddFoods = async (selectedFoods: { food: Food; amount: number }[]) => {
+    try {
+      const newIngredients = await Promise.all(
+        selectedFoods.map((item) => buildIngredientFromFood(item.food, item.amount, t))
+      );
+      setIngredients((prev) => [...prev, ...newIngredients]);
+      setIsAddFoodVisible(false);
+    } catch (error) {
+      handleError(error, 'CreateMealModal.handleAddFoods', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    }
   };
 
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={
-        isQuickTrack
-          ? t('food.quickTrackMeal.title')
-          : meal
-            ? t('food.meals.manageMealData.editMeal')
-            : t('food.createMeal.title')
-      }
+      title={getTitle()}
       headerRight={
         !isQuickTrack && meal ? (
           <MenuButton size="md" className="p-2" onPress={() => setMealOptionsMenuVisible(true)} />
@@ -642,10 +738,13 @@ export function CreateMealModal({
             variant="gradientCta"
             size="md"
             width="full"
-            icon={isSaving ? undefined : isQuickTrack ? Check : CheckCircle2}
+            icon={getSaveIcon()}
             onPress={isQuickTrack ? handleTrack : handleSave}
             disabled={
-              isSaving || (isQuickTrack && (ingredients.length === 0 || mealAmountGrams < 1))
+              isSaving ||
+              (isQuickTrack &&
+                (ingredients.length === 0 ||
+                  mealAmountGrams < (nutritionBasis === 'per_recipe' ? 1 : 0.5)))
             }
           />
           {isSaving ? (
@@ -672,6 +771,61 @@ export function CreateMealModal({
               onChangeText={setMealName}
               placeholder={t('food.createMeal.mealNamePlaceholder')}
             />
+
+            {/* Meal Image Picker Section */}
+            <View style={{ marginTop: theme.spacing.margin.lg }}>
+              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+                {t('common.photo')}
+              </Text>
+              {imageUrl ? (
+                <View className="relative h-48 w-full overflow-hidden rounded-2xl">
+                  <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
+                  <View className="absolute bottom-2 right-2 flex-row gap-2">
+                    <Pressable
+                      onPress={handlePickImage}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+                    </Pressable>
+                    <Pressable
+                      onPress={handleRemoveImage}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <Pressable
+                  onPress={handlePickImage}
+                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
+                >
+                  <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                  <Text className="mt-2 text-sm text-text-tertiary">
+                    {t('food.createMeal.addPhoto')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+
             <View style={{ marginTop: theme.spacing.margin.lg }}>
               <TextInput
                 label={t('common.description')}
@@ -686,27 +840,83 @@ export function CreateMealModal({
           </View>
         ) : null}
 
-        {/* Total Nutrition Card */}
-        <MealMacrosSummary
-          calories={
-            isQuickTrack && referenceMealGrams > 0
-              ? totalMacros.calories * (mealAmountGrams / referenceMealGrams)
-              : totalMacros.calories
-          }
-          macros={
-            isQuickTrack && referenceMealGrams > 0
-              ? {
-                  protein: totalMacros.protein * (mealAmountGrams / referenceMealGrams),
-                  carbs: totalMacros.carbs * (mealAmountGrams / referenceMealGrams),
-                  fat: totalMacros.fat * (mealAmountGrams / referenceMealGrams),
-                }
-              : totalMacros
-          }
+        <FoodNutritionSectionCard
+          food={mealNutritionCardFood}
+          canEdit={false}
+          mode="meal"
+          nutritionalData={displayedAdditionalNutrition}
+          servingSize={100}
+          isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
+          showName={false}
         />
 
+        <View className="mb-6 mt-6 gap-4">
+          <Text className="text-sm font-medium text-text-secondary">
+            {t('food.foodDetails.serving')}
+          </Text>
+          <FilterTabs
+            tabs={[
+              {
+                id: 'per_recipe',
+                label: t('food.foodDetails.perRecipe'),
+              },
+              {
+                id: 'per_serving',
+                label: t('food.foodDetails.perServing'),
+              },
+              {
+                id: 'per_gram',
+                label: t('food.foodDetails.byGrams'),
+              },
+            ]}
+            activeTab={nutritionBasis}
+            onTabChange={(id) => setNutritionBasis(id as 'per_recipe' | 'per_serving' | 'per_gram')}
+            showContainer={false}
+          />
+          {nutritionBasis === 'per_serving' || nutritionBasis === 'per_gram' ? (
+            <>
+              <TextInput
+                label={t('food.foodDetails.servingName')}
+                value={defaultPortionName}
+                onChangeText={setDefaultPortionName}
+                placeholder={t('food.foodDetails.servingNamePlaceholder')}
+              />
+              {nutritionBasis === 'per_serving' ? (
+                <StepperInput
+                  label={t('food.foodDetails.recipeServings')}
+                  value={recipeServingsCount}
+                  maxFractionDigits={0}
+                  onIncrement={() => setRecipeServingsCount((prev) => prev + 1)}
+                  onDecrement={() => setRecipeServingsCount((prev) => Math.max(1, prev - 1))}
+                  onChangeValue={(value) => setRecipeServingsCount(Math.max(1, Math.round(value)))}
+                />
+              ) : (
+                <StepperInput
+                  label={t('food.foodDetails.servingWeight', {
+                    unit: massUnit,
+                  })}
+                  value={gramsToDisplay(servingGrams, units)}
+                  onIncrement={() =>
+                    setServingGrams((prev) => Math.max(1, Math.round(prev + stepAmount)))
+                  }
+                  onDecrement={() =>
+                    setServingGrams((prev) => Math.max(1, Math.round(prev - stepAmount)))
+                  }
+                  onChangeValue={(displayVal) =>
+                    setServingGrams(Math.max(1, Math.round(displayToGrams(displayVal, units))))
+                  }
+                  unit={massUnit}
+                  step={stepDisplay}
+                  maxFractionDigits={units === 'imperial' ? 1 : 0}
+                />
+              )}
+            </>
+          ) : null}
+        </View>
+
         {/* Ingredients Section */}
-        <View className="mb-6">
+        <View className="mb-6 mt-6">
           <View className="mb-3 flex-row items-end justify-between px-1">
             <Text
               style={{
@@ -743,7 +953,7 @@ export function CreateMealModal({
             ) : (
               ingredients.map((item) => (
                 <View
-                  key={item.foodId}
+                  key={item.localId}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -793,7 +1003,9 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {formatInteger(Math.round(item.amount))}g
+                        {item.isPerServing
+                          ? `${formatRoundedDecimal(item.amount, 2)} ${t('food.foodDetails.serving')}`
+                          : `${formatInteger(Math.round(item.amount))}g`}
                       </Text>
                       <View
                         style={{
@@ -817,7 +1029,7 @@ export function CreateMealModal({
                       </Text>
                     </View>
                   </View>
-                  <Pressable onPress={() => handleRemoveIngredient(item.foodId)} className="p-2">
+                  <Pressable onPress={() => handleRemoveIngredient(item.localId)} className="p-2">
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>
@@ -881,20 +1093,33 @@ export function CreateMealModal({
         {isQuickTrack ? (
           <>
             <View style={{ marginBottom: theme.spacing.margin.xl }}>
-              <ServingSizeSelector
-                value={mealAmountGrams}
-                onChange={(v) => setMealAmountGrams(Math.round(v))}
-                quickSizes={
-                  referenceMealGrams > 0
-                    ? [
-                        { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
-                        { label: '1×', value: referenceMealGrams },
-                        { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
-                        { label: '2×', value: referenceMealGrams * 2 },
-                      ]
-                    : []
-                }
-              />
+              {nutritionBasis === 'per_serving' || nutritionBasis === 'per_gram' ? (
+                <StepperInput
+                  label={t('food.foodDetails.servings')}
+                  value={mealAmountGrams}
+                  step={0.5}
+                  maxFractionDigits={2}
+                  onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
+                  onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
+                  onChangeValue={setMealAmountGrams}
+                  unit={defaultPortionName.trim() || t('food.foodDetails.serving')}
+                />
+              ) : (
+                <ServingSizeSelector
+                  value={mealAmountGrams}
+                  onChange={(v) => setMealAmountGrams(Math.round(v))}
+                  quickSizes={
+                    referenceMealGrams > 0
+                      ? [
+                          { label: '½×', value: Math.round(referenceMealGrams * 0.5) },
+                          { label: '1×', value: referenceMealGrams },
+                          { label: '1½×', value: Math.round(referenceMealGrams * 1.5) },
+                          { label: '2×', value: referenceMealGrams * 2 },
+                        ]
+                      : []
+                  }
+                />
+              )}
             </View>
             <View className="mb-6">
               <DatePickerInput

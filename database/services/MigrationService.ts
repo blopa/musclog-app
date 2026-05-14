@@ -4,6 +4,12 @@ import convert from 'convert';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
+import {
+  CALORIES_FOR_CARBS,
+  CALORIES_FOR_FAT,
+  CALORIES_FOR_FIBER,
+  CALORIES_FOR_PROTEIN,
+} from '@/constants/nutrition';
 import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import {
@@ -24,8 +30,10 @@ import {
   WorkoutTemplateSet,
 } from '@/database/models';
 import i18n from '@/lang/lang';
+import { isProduction } from '@/utils/app';
 import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
 import { decryptDatabaseValue } from '@/utils/encryption';
+import { handleError } from '@/utils/handleError';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 /** Step keys for progress reporting during migration (for landing screen copy). */
@@ -170,6 +178,7 @@ export class MigrationService {
       return (result[0]?.count ?? 0) > 0;
     } catch (error) {
       console.error('Error accessing old database:', error);
+      handleError(error, 'MigrationService.hasOldDatabaseData');
       return false;
     }
   }
@@ -211,6 +220,7 @@ export class MigrationService {
       return result.length > 0;
     } catch (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
+      handleError(error, 'MigrationService.checkTableExists');
       return false;
     }
   }
@@ -252,6 +262,7 @@ export class MigrationService {
       return date.getTime();
     } catch (error) {
       console.warn('Failed to parse timestamp:', textTimestamp);
+      handleError(error, 'MigrationService.parseTimestamp');
       return Date.now();
     }
   }
@@ -417,6 +428,7 @@ export class MigrationService {
               'Encrypted value:',
               encryptedValue
             );
+            handleError(error, 'MigrationService.migrateUserMetricsEntry');
             // Continue with other metrics instead of failing completely
           }
         }
@@ -620,9 +632,9 @@ export class MigrationService {
         .query(Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      const logCalFromProtein = protein * 4;
-      const logCalFromCarbs = carbs * 4;
-      const logCalFromFat = fat * 9;
+      const logCalFromProtein = protein * CALORIES_FOR_PROTEIN;
+      const logCalFromCarbs = Math.max(0, carbs - 0) * CALORIES_FOR_CARBS; // Fiber unknown here usually
+      const logCalFromFat = fat * CALORIES_FOR_FAT;
       const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
       const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
       const logPctFat = calories > 0 ? logCalFromFat / calories : 0;
@@ -634,9 +646,11 @@ export class MigrationService {
         if (food.calories <= 0) {
           continue;
         }
-        const foodCalFromProtein = food.protein * 4;
-        const foodCalFromCarbs = food.carbs * 4;
-        const foodCalFromFat = food.fat * 9;
+        const foodCalFromProtein = food.protein * CALORIES_FOR_PROTEIN;
+        const foodCalFromCarbs =
+          Math.max(0, food.carbs - food.fiber) * CALORIES_FOR_CARBS +
+          food.fiber * CALORIES_FOR_FIBER;
+        const foodCalFromFat = food.fat * CALORIES_FOR_FAT;
         const foodPctProtein = foodCalFromProtein / food.calories;
         const foodPctCarbs = foodCalFromCarbs / food.calories;
         const foodPctFat = foodCalFromFat / food.calories;
@@ -655,6 +669,7 @@ export class MigrationService {
       return bestMatch?.id || null;
     } catch (error) {
       console.error('Error finding food by nutritional profile:', error);
+      handleError(error, 'MigrationService.findFoodByNutritionalProfile');
       return null;
     }
   }
@@ -850,8 +865,12 @@ export class MigrationService {
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
-        const amountToStore =
-          gramsConsumed > 0 ? gramsConsumed : useUnknownGramsConvention ? 100 : 1;
+        let amountToStore = 1;
+        if (gramsConsumed > 0) {
+          amountToStore = gramsConsumed;
+        } else if (useUnknownGramsConvention) {
+          amountToStore = 100;
+        }
 
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
@@ -879,6 +898,7 @@ export class MigrationService {
         migratedCount++;
       } catch (error) {
         console.error('Error migrating nutrition log:', error, 'Data:', oldLog);
+        handleError(error, 'MigrationService.migrateNutritionLog');
         // Continue with other logs instead of failing completely
       }
       processedRows++;
@@ -1367,7 +1387,7 @@ export class MigrationService {
                     ? Number(oldSet.restTime)
                     : undefined;
                 ts.setOrder = Number(oldSet.setOrder) ?? 0;
-                ts.isDropSet = Boolean(oldSet.isDropSet);
+                ts.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
                 const createdAt = this.convertTimestamp(oldSet.createdAt);
                 ts.createdAt = createdAt;
                 ts.updatedAt = createdAt;
@@ -1483,7 +1503,7 @@ export class MigrationService {
                 ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
                 ls.repsInReserve = 0;
                 ls.difficultyLevel = difficultyLevel;
-                ls.isDropSet = Boolean(oldSet.isDropSet);
+                ls.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
                 ls.setOrder = Number(oldSet.setOrder) ?? 0;
                 const createdAt = this.convertTimestamp(oldSet.createdAt);
                 ls.createdAt = createdAt;
@@ -1854,7 +1874,7 @@ export class MigrationService {
       console.log('Database exists... Starting migration from old database...');
 
       // Debug: List all tables in development mode
-      if (__DEV__) {
+      if (!isProduction()) {
         try {
           const tables = await this.getOldDatabaseTables();
           console.log('🔍 Old database tables:', tables);
@@ -1944,6 +1964,7 @@ export class MigrationService {
       console.log('Migration completed successfully!');
     } catch (error) {
       console.error('Migration failed:', error);
+      handleError(error, 'MigrationService.runMigration');
       result.error = error instanceof Error ? error.message : 'Unknown error';
       result.details.errors.push(result.error);
       result.success = false;
@@ -2079,6 +2100,7 @@ export class MigrationService {
       }
     } catch (error) {
       console.error('Error getting migration summary:', error);
+      handleError(error, 'MigrationService.getMigrationSummary');
     }
 
     return {

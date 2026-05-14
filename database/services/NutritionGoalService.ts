@@ -1,20 +1,29 @@
 import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
-import { Platform } from 'react-native';
 
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
-import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
+import {
+  isDynamicNutritionGoalValid,
+  normalizeNutritionGoalTargetWeight,
+} from '@/utils/nutritionGoalHelpers';
+import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionCheckinService } from './NutritionCheckinService';
 
-async function triggerWidgetUpdate(): Promise<void> {
-  if (Platform.OS !== 'android') {
-    return;
-  }
+function triggerWidgetUpdate(): void {
+  widgetEvents.emitNutritionWidgetUpdate();
+}
 
-  await requestNutritionWidgetUpdate();
+function assertValidDynamicGoal(goal: {
+  isDynamic?: boolean;
+  targetWeight?: number | null;
+  targetDate?: number | null;
+}): void {
+  if (!isDynamicNutritionGoalValid(goal)) {
+    throw new Error('Target weight and target date are required for dynamic goals.');
+  }
 }
 
 export interface NutritionGoalInput {
@@ -24,11 +33,12 @@ export interface NutritionGoalInput {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
-  targetWeight?: number;
-  targetBodyFat?: number;
-  targetBMI?: number;
-  targetFFMI?: number;
+  targetWeight?: number | null;
+  targetBodyFat?: number | null;
+  targetBMI?: number | null;
+  targetFFMI?: number | null;
   targetDate?: number | null;
+  isDynamic?: boolean;
 }
 
 export class NutritionGoalService {
@@ -77,6 +87,13 @@ export class NutritionGoalService {
     data: NutritionGoalInput,
     shouldDeleteCheckins = true
   ): Promise<NutritionGoal> {
+    const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(data.targetWeight);
+    assertValidDynamicGoal({
+      isDynamic: data.isDynamic,
+      targetWeight: normalizedTargetWeight,
+      targetDate: data.targetDate ?? null,
+    });
+
     const now = Date.now();
     const supersededGoalIds: string[] = [];
 
@@ -101,17 +118,18 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetWeight = normalizedTargetWeight ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
+        r.isDynamic = data.isDynamic ?? false;
         r.effectiveUntil = null;
         r.createdAt = now;
         r.updatedAt = now;
       });
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
 
       return goal;
     });
@@ -178,44 +196,69 @@ export class NutritionGoalService {
         throw new Error('Cannot update deleted goal');
       }
 
+      assertValidDynamicGoal({
+        isDynamic: updates.isDynamic ?? goal.isDynamic,
+        targetWeight:
+          updates.targetWeight !== undefined
+            ? normalizeNutritionGoalTargetWeight(updates.targetWeight)
+            : normalizeNutritionGoalTargetWeight(goal.targetWeight),
+        targetDate:
+          updates.targetDate !== undefined ? (updates.targetDate ?? null) : goal.targetDate,
+      });
+
       await goal.update((record) => {
         if (updates.totalCalories !== undefined) {
           record.totalCalories = updates.totalCalories;
         }
+
         if (updates.protein !== undefined) {
           record.protein = updates.protein;
         }
+
         if (updates.carbs !== undefined) {
           record.carbs = updates.carbs;
         }
+
         if (updates.fats !== undefined) {
           record.fats = updates.fats;
         }
+
         if (updates.fiber !== undefined) {
           record.fiber = updates.fiber;
         }
+
         if (updates.eatingPhase !== undefined) {
           record.eatingPhase = updates.eatingPhase;
         }
+
         if (updates.targetWeight !== undefined) {
-          record.targetWeight = updates.targetWeight;
+          record.targetWeight = normalizeNutritionGoalTargetWeight(updates.targetWeight) ?? 0;
         }
+
         if (updates.targetBodyFat !== undefined) {
           record.targetBodyFat = updates.targetBodyFat;
         }
+
         if (updates.targetBMI !== undefined) {
           record.targetBmi = updates.targetBMI;
         }
+
         if (updates.targetFFMI !== undefined) {
           record.targetFfmi = updates.targetFFMI;
         }
+
         if (updates.targetDate !== undefined) {
           record.targetDate = updates.targetDate ?? null;
         }
+
+        if (updates.isDynamic !== undefined) {
+          record.isDynamic = updates.isDynamic;
+        }
+
         record.updatedAt = Date.now();
       });
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
 
       return goal;
     });
@@ -239,6 +282,7 @@ export class NutritionGoalService {
       throw new Error('Cannot regenerate check-ins for a deleted goal');
     }
 
+    // TODO: do not use dynamic import
     const { UserService } = require('./UserService');
     const user = await UserService.getCurrentUser();
 
@@ -286,35 +330,49 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
+      // TODO: do not use dynamic import
       const {
         calculateNutritionPlan,
         eatingPhaseToWeightGoal,
         generateWeeklyCheckins,
       } = require('../../utils/nutritionCalculator');
+      const { storedWeightToKg, storedHeightToCm } = require('../../utils/unitConversion');
+      const { SettingsService } = require('./SettingsService');
 
       const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
       const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
       const bodyFatDecrypted =
         bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
 
+      const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
+      const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
+
+      const [disableMinimumCalories, useBfForCalculations] = await Promise.all([
+        SettingsService.getDisableMinimumCalories(),
+        SettingsService.getUseBfForCalculations(),
+      ]);
+
       const plan = calculateNutritionPlan({
         gender: user.gender,
-        weightKg: weightDecrypted.value,
-        heightCm: heightDecrypted.value,
+        weightKg,
+        heightCm,
         age: user.getAge(),
-        activityLevel: user.activityLevel as any,
+        activityLevel: (user.activityLevel || 2) as any,
         weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
         fitnessGoal: user.fitnessGoal,
         liftingExperience: user.liftingExperience,
-        bodyFatPercent: bodyFatDecrypted?.value,
+        bodyFatPercent: useBfForCalculations ? bodyFatDecrypted?.value : undefined,
+        disableMinimumCalories,
       });
 
       const checkins = generateWeeklyCheckins(
         plan,
         goal.createdAt,
         goal.targetDate ?? localDayKeyPlusCalendarDays(localDayStartFromUtcMs(goal.createdAt), 90),
-        heightDecrypted.value / 100,
-        bodyFatDecrypted?.value ?? null
+        heightCm / 100,
+        useBfForCalculations ? (bodyFatDecrypted?.value ?? null) : null,
+        7,
+        normalizeNutritionGoalTargetWeight(goal.targetWeight)
       );
 
       if (checkins.length > 0) {
@@ -329,6 +387,13 @@ export class NutritionGoalService {
    * and creates the new goal with the correct effectiveUntil.
    */
   static async addGoalAtDate(data: NutritionGoalInput, startDate: number): Promise<NutritionGoal> {
+    const normalizedTargetWeight = normalizeNutritionGoalTargetWeight(data.targetWeight);
+    assertValidDynamicGoal({
+      isDynamic: data.isDynamic,
+      targetWeight: normalizedTargetWeight,
+      targetDate: data.targetDate ?? null,
+    });
+
     return await database.write(async () => {
       const now = Date.now();
 
@@ -362,15 +427,39 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight ?? 0;
-        r.targetBodyFat = data.targetBodyFat ?? 0;
-        r.targetBmi = data.targetBMI ?? 0;
-        r.targetFfmi = data.targetFFMI ?? 0;
+        r.targetWeight = normalizedTargetWeight ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBMI ?? null;
+        r.targetFfmi = data.targetFFMI ?? null;
         r.targetDate = data.targetDate ?? null;
+        r.isDynamic = data.isDynamic ?? false;
         r.effectiveUntil = newEffectiveUntil;
         r.createdAt = startDate;
         r.updatedAt = now;
       });
+    });
+  }
+
+  static async fixNegativeFiber(): Promise<void> {
+    const goals = await database
+      .get<NutritionGoal>('nutrition_goals')
+      .query(Q.where('fiber', Q.lt(0)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (goals.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...goals.map((goal) =>
+          goal.prepareUpdate((r) => {
+            r.fiber = 0;
+            r.updatedAt = now;
+          })
+        )
+      );
     });
   }
 
@@ -405,7 +494,7 @@ export class NutritionGoalService {
 
       await goal.markAsDeleted();
 
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     });
   }
 }

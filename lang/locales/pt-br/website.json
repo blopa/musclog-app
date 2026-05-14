@@ -1,0 +1,1145 @@
+{
+  "website": {
+    "landing": {
+      "title": "Demo Web do Musclog",
+      "cta": "Experimente agora",
+      "f1": "Rastreamento inteligente de treinos",
+      "f2": "Registro de nutrição por foto com IA",
+      "f3": "Gráficos detalhados de progresso",
+      "f4": "100% privado e no dispositivo",
+      "tagline": "Acompanhamento de fitness e nutrição com IA — gratuito e open source.",
+      "qrcode_title": "Baixe o App",
+      "qrcode_text": "Escaneie para baixar o Musclog"
+    },
+    "hero": {
+      "badge1": "★ GRÁTIS E OPEN SOURCE",
+      "badge2": "FOCO NA PRIVACIDADE (SEM LOGIN NECESSÁRIO)",
+      "title1": "Controle Seus",
+      "title2": "Dados de Fitness",
+      "subheading": "Um rastreador de fitness local-first, open-source. Sem contas, sem rastreamento, sem nuvem. Apenas você e seus ganhos.",
+      "github": "Ver no GitHub",
+      "demoEyebrow": "Prévia instantânea",
+      "demoTitle": "Experimente a demo web",
+      "demoDescription": "Abra uma prévia do app no navegador e explore a experiência antes de baixar.",
+      "demoButton": "Abrir demo web"
+    },
+    "features": {
+      "title": "Construído para Performance e Privacidade",
+      "description": "Sem telemetria, sem rastreamento, sem assinatura. Apenas um motor poderoso para sua jornada de fitness.",
+      "strengthTracking": {
+        "title": "Rastreamento de Força Offline",
+        "description": "Registre seus sets e repetições diretamente no seu dispositivo. Sem internet necessária. Seus dados nunca saem do seu bolso.",
+        "link": "VER MAIS"
+      },
+      "privacyFirst": {
+        "title": "Privacidade em Primeiro Lugar",
+        "description": "Sem cadastros, sem logins e sem rastreamento de terceiros. O Musclog respeita sua soberania digital.",
+        "link": "MANIFESTO DE PRIVACIDADE"
+      },
+      "openSource": {
+        "title": "Open Source",
+        "description": "O Musclog é movido pela comunidade. Audite o código, contribua com recursos ou faça um fork para personalizá-lo.",
+        "link": "VER CÓDIGO"
+      }
+    },
+    "featureGrid": {
+      "title": "Tudo o que Você Precisa para Treinar de Forma Mais Inteligente",
+      "description": "Do treinamento com IA até análises detalhadas, o Musclog oferece as ferramentas para você ter controle total da sua jornada de fitness.",
+      "items": {
+        "aiCoach": {
+          "title": "Treinador de IA (Loggy)",
+          "description": "Converse com seu treinador de IA para planos de treino personalizados, conselhos de nutrição e estimativa de refeições por foto."
+        },
+        "barcode": {
+          "title": "Leitor de Código de Barras",
+          "description": "Adicione produtos rapidamente escaneando códigos de barras. Acesse o banco de dados Open Food Facts com milhões de produtos."
+        },
+        "checkins": {
+          "title": "Check-ins Semanais",
+          "description": "Análise automatizada de 7 dias do seu progresso com ajustes dinâmicos de metas para mantê-lo no caminho certo."
+        },
+        "analytics": {
+          "title": "Análises de Progresso",
+          "description": "Gráficos interativos para peso, gordura corporal e progresso de levantamento. Rastreie seu TDEE com dados reais."
+        },
+        "cycle": {
+          "title": "Consciência do Ciclo",
+          "description": "Rastreie as fases menstruais e receba recomendações de treino otimizadas para seu ciclo."
+        },
+        "templates": {
+          "title": "Modelos de Treino",
+          "description": "Crie rotinas personalizadas como PPL ou Superior/Inferior. Acesse uma extensa biblioteca de exercícios com foco muscular."
+        },
+        "healthConnect": {
+          "title": "Health Connect",
+          "description": "Sincronize com o Google Health Connect para compartilhar dados com outros apps de saúde e fitness no Android."
+        },
+        "encryption": {
+          "title": "Armazenamento Criptografado",
+          "description": "Seus dados sensíveis de saúde são criptografados em repouso usando AES. Exporte a qualquer momento como JSON ou Excel."
+        }
+      }
+    },
+    "stats": {
+      "vitamins": {
+        "value": "40+",
+        "label": "Vitaminas e Minerais",
+        "description": "Que você pode rastrear diariamente"
+      },
+      "offline": {
+        "value": "100%",
+        "label": "Pronto para Offline",
+        "description": "Sem internet necessária"
+      },
+      "cloud": {
+        "value": "0",
+        "label": "Uploads para Nuvem",
+        "description": "Dados permanecem locais"
+      },
+      "encryption": {
+        "value": "AES",
+        "label": "Criptografia",
+        "description": "Segurança em repouso"
+      }
+    },
+    "howItWorks": {
+      "title": "Como Funciona",
+      "description": "Comece em minutos. Sem configuração complicada, sem assinaturas, sem coleta de dados.",
+      "steps": {
+        "step1": {
+          "title": "Baixe e Comece",
+          "description": "Instale o Musclog na App Store ou Google Play. Sem conta necessária — apenas abra e comece a rastrear."
+        },
+        "step2": {
+          "title": "Registre Seu Treino",
+          "description": "Registre sets, repetições e pesos. Escaneie códigos de barras ou tire fotos para registrar refeições. Tudo fica no seu dispositivo."
+        },
+        "step3": {
+          "title": "Acompanhe o Progresso",
+          "description": "Revise check-ins semanais, visualize tendências e deixe o treinador de IA ajudá-lo a otimizar sua abordagem."
+        }
+      }
+    },
+    "testimonial": {
+      "quote": "\"O Musclog é o primeiro aplicativo que respeita minha privacidade enquanto oferece uma experiência de treino de classe mundial. Local-first é o futuro.\"",
+      "author": "Laura F.",
+      "role": "Desenvolvedora Ocupada"
+    },
+    "cta": {
+      "title": "Pronto para começar?",
+      "description": "Junte-se a milhares de atletas que usam o Musclog para rastrear seu progresso sem comprometer a privacidade.",
+      "download": "Baixar Agora",
+      "sourceCode": "Ver Código Fonte"
+    },
+    "navigation": {
+      "appName": "Musclog",
+      "appTagline": "Levante, Registre, Repita",
+      "features": "Recursos",
+      "progress": "Progresso",
+      "github": "GitHub",
+      "download": "Baixar Agora",
+      "language": "Idioma"
+    },
+    "progress": {
+      "metaTitle": "Importação de progresso do Musclog",
+      "loading": "Carregando seu banco de dados local de progresso...",
+      "hero": {
+        "eyebrow": "Visualizador de progresso para desktop",
+        "title": "Importe aqui os dados exportados do seu app Musclog",
+        "description": "Envie sua exportação JSON do Musclog para liberar um painel de progresso no navegador com tendências de peso, padrões de nutrição, volume de treino e correlações importantes otimizadas para telas maiores.",
+        "points": {
+          "weight": {
+            "title": "Peso e composição corporal",
+            "description": "Revise tendências de peso, mudanças de gordura corporal, FFMI e medidas corporais em um só lugar."
+          },
+          "nutrition": {
+            "title": "Nutrição e TDEE",
+            "description": "Inspecione ingestão calórica, divisão de macros e médias do seu registro importado."
+          },
+          "training": {
+            "title": "Treino e correlações",
+            "description": "Compare volume de treino, humor e sinais de recuperação em uma experiência web mais ampla."
+          }
+        }
+      },
+      "importCard": {
+        "badge": "Importação local",
+        "title": "Traga a exportação do app para este navegador",
+        "description": "Escolha o arquivo JSON exportado no app móvel do Musclog. A importação roda localmente no armazenamento do navegador e nunca sai do seu dispositivo.",
+        "passphraseLabel": "Frase de descriptografia",
+        "passphrasePlaceholder": "Opcional, apenas se sua exportação estiver criptografada",
+        "cta": "Escolher exportação JSON",
+        "importing": "Importando dados...",
+        "hint": "Formato compatível: exportação JSON do Musclog",
+        "selectedFile": "Arquivo selecionado: {{fileName}}",
+        "genericError": "Não foi possível importar este arquivo. Confirme se é uma exportação válida do Musclog.",
+        "localOnlyTitle": "Privado por padrão",
+        "localOnlyDescription": "Esta página carrega sua exportação apenas no banco de dados web local para que você explore seus dados sem enviá-los a um servidor."
+      },
+      "dashboard": {
+        "eyebrow": "Análises importadas",
+        "title": "Seu progresso no Musclog, redesenhado para a web desktop",
+        "description": "Este painel usa o mesmo banco de dados local e os mesmos cálculos de progresso do app, mas apresenta tudo em um layout de desktop mais amplo para ler tendências e comparar padrões com facilidade.",
+        "replaceData": "Substituir dados importados",
+        "localStorageHint": "Os dados ficam salvos no banco de dados local do Musclog no navegador."
+      },
+      "stats": {
+        "weightHint": "Peso mais recente dentro do intervalo selecionado.",
+        "caloriesHint": "Calorias médias em {{count}} dias com nutrição registrada.",
+        "workoutsHint": "Treinos concluídos no intervalo atual.",
+        "tdeeHint": "Estimativa atual de manutenção com base nos dados disponíveis."
+      },
+      "sections": {
+        "bodyComposition": {
+          "title": "Visão geral da composição corporal",
+          "description": "Suas métricas corporais principais aparecem primeiro para que as maiores mudanças fiquem visíveis rapidamente."
+        },
+        "nutrition": {
+          "title": "Tendências de nutrição",
+          "description": "Totais diários de calorias e o equilíbrio recente de macros ajudam a conectar ingestão com os resultados que você está vendo.",
+          "macroSplit": "Divisão recente de calorias por macros"
+        },
+        "training": {
+          "title": "Saída de treino",
+          "description": "Volume de treino e séries por grupo muscular mostram para onde seu esforço realmente foi."
+        },
+        "correlations": {
+          "title": "Visões de correlação",
+          "description": "Essas visualizações de dispersão no desktop ajudam a inspecionar se ingestão e mudanças de composição corporal caminham juntas."
+        },
+        "mood": {
+          "title": "Resumo de humor",
+          "description": "Os registros de humor continuam visíveis como uma camada leve de prontidão ao lado das grandes tendências corporais e de treino.",
+          "summaryTitle": "Resumo do humor",
+          "totalEntries": "Períodos rastreados",
+          "averageScore": "Pontuação média"
+        },
+        "reminders": {
+          "title": "Aderência aos lembretes",
+          "description": "Os lembretes de água e suplementos também aparecem como tendências de conclusão para você revisar sua consistência junto com outros sinais de recuperação.",
+          "supplementsTitle": "Lembretes de suplementos"
+        },
+        "measurements": {
+          "title": "Medidas",
+          "description": "Quando existem registros de circunferência, eles aparecem aqui como cartões compactos de tendência.",
+          "empty": "Nenhuma medida corporal foi encontrada no intervalo importado."
+        }
+      }
+    },
+    "storeButtons": {
+      "googleTitle": "DISPONÍVEL NO",
+      "googleStore": "Google Play",
+      "appleTitle": "BAIXAR NA",
+      "appleStore": "App Store",
+      "comingSoon": "App Store em breve!",
+      "qrButton": "Mostrar códigos QR",
+      "qrTitle": "Códigos QR",
+      "qrDescription": "Abra a página de instalação para Android ou iOS diretamente no seu celular.",
+      "qrGoogleLabel": "Página de instalação para Android",
+      "qrAppleLabel": "Página de instalação para iOS",
+      "qrGoogleAlt": "Código QR para o Google Play",
+      "qrAppleAlt": "Código QR para a App Store",
+      "close": "Fechar"
+    },
+    "download": {
+      "pageTitle": "Baixar Musclog",
+      "eyebrow": "Comece a acompanhar hoje",
+      "title": "Pronto para focar?",
+      "subtitle": "Baixe o Musclog agora e mantenha treinos, nutrição e progresso em um só lugar privado.",
+      "googleLabel": "Baixar Musclog no Google Play",
+      "appleLabel": "Baixar Musclog na App Store"
+    },
+    "footer": {
+      "privacyPolicy": "Política de Privacidade",
+      "terms": "Termos",
+      "github": "GitHub",
+      "contact": "Contato",
+      "license": "Licença",
+      "copyright": "Software Livre e Open Source. Construído para sua privacidade."
+    },
+    "cookieConsent": {
+      "ariaLabel": "Consentimento de cookies",
+      "description": "Usamos o Google Analytics para entender como os visitantes usam o site. Os cookies analíticos só são definidos se você aceitar. Leia nossa",
+      "privacyLink": "Política de Privacidade",
+      "accept": "Aceitar",
+      "reject": "Recusar",
+      "cookieSettings": "Configurações de cookies"
+    },
+    "privacy": {
+      "titleStart": "Política de",
+      "titleHighlight": "Privacidade",
+      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "highlights": {
+        "dataProtection": {
+          "title": "Proteção de dados",
+          "description": "Medidas técnicas e organizacionais abrangentes protegem seus dados."
+        },
+        "localFirst": {
+          "title": "Armazenamento local",
+          "description": "Seus dados são armazenados principalmente no seu dispositivo, não em nossos servidores."
+        },
+        "security": {
+          "title": "Segurança em primeiro lugar",
+          "description": "Criptografia avançada e controles de acesso protegem suas informações."
+        }
+      },
+      "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos relativos à coleta, ao uso, ao armazenamento e à divulgação de suas informações quando você utiliza o Musclog. Ela se aplica tanto ao aplicativo Musclog quanto ao site Musclog, embora as categorias de dados tratadas em cada contexto sejam diferentes. Esta Política de Privacidade também explica seus direitos de privacidade e como a lei o protege.",
+      "sections": {
+        "scope": {
+          "title": "Escopo desta Política de Privacidade",
+          "content": "O Musclog está disponível tanto por meio de um aplicativo quanto por meio de um site público. Como esses dois serviços funcionam de forma diferente, as práticas de privacidade aplicáveis são resumidas separadamente abaixo e descritas com mais detalhes ao longo desta Política de Privacidade."
+        },
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural."
+        },
+        "definitions": {
+          "title": "Definições",
+          "items": {
+            "account": {
+              "term": "Conta",
+              "def": "significa uma conta única criada para que você acesse nosso Serviço ou partes dele."
+            },
+            "application": {
+              "term": "Aplicativo",
+              "def": "refere-se ao Musclog, o programa de software fornecido pela Musclog."
+            },
+            "company": {
+              "term": "Empresa",
+              "def": "(também referida como \"Musclog\", \"Nós\" ou \"Nossa\" neste Acordo) refere-se à Musclog."
+            },
+            "device": {
+              "term": "Dispositivo",
+              "def": "significa qualquer dispositivo que possa acessar o Serviço, como um computador, celular ou tablet digital."
+            },
+            "personalData": {
+              "term": "Dados Pessoais",
+              "def": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo."
+            },
+            "service": {
+              "term": "Serviço",
+              "def": "refere-se ao aplicativo Musclog e ao site Musclog, salvo indicação em contrário na seção pertinente."
+            },
+            "serviceProvider": {
+              "term": "Provedor de Serviços",
+              "def": "significa qualquer pessoa física ou jurídica que processa os dados em nome da Musclog."
+            },
+            "usageData": {
+              "term": "Dados de Uso",
+              "def": "Os Dados de Uso são coletados automaticamente ao usar o Serviço, incluindo informações do dispositivo, endereço IP, tipo de navegador e dados de diagnóstico."
+            },
+            "you": {
+              "term": "Você",
+              "def": "significa o indivíduo que acessa ou usa o Serviço, ou a Musclog, ou outra entidade legal em nome da qual esse indivíduo acessa ou usa o Serviço, conforme aplicável."
+            }
+          }
+        },
+        "collecting": {
+          "title": "Coleta e uso de seus Dados Pessoais",
+          "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo.",
+          "typesCollected": {
+            "title": "Tipos de dados coletados",
+            "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
+            "items": ["Nome e sobrenome", "Dados de uso"]
+          },
+          "googleOAuth": {
+            "title": "Dados do Google OAuth",
+            "content": "Nosso aplicativo integra o Google OAuth para os seguintes fins:",
+            "items": [
+              "Para obter seu nome e personalizar sua experiência de usuário.",
+              "Para acessar os recursos de Google Generative AI e aprimorar as funcionalidades do aplicativo.",
+              "Todos os dados são armazenados offline no seu dispositivo e não são enviados para nossos servidores.",
+              "Não compartilhamos seus dados com terceiros para fins de marketing ou outros fins.",
+              "O Google OAuth é opcional e pode ser desativado nas configurações do aplicativo."
+            ]
+          },
+          "usageData": {
+            "title": "Dados de uso",
+            "content": "Os Dados de Uso são coletados automaticamente ao usar o Serviço. Os Dados de Uso podem incluir informações como o endereço de Protocolo de Internet do seu dispositivo (p. ex. endereço IP), tipo e versão do navegador, as páginas do nosso Serviço que você visita, a data e hora da sua visita, o tempo gasto nessas páginas, identificadores únicos de dispositivo e outros dados de diagnóstico. Quando você acessa o Serviço por meio de um dispositivo móvel, podemos coletar certas informações automaticamente, incluindo o tipo de dispositivo móvel que você usa, o ID exclusivo do seu dispositivo móvel, o endereço IP do seu dispositivo móvel, seu sistema operacional móvel e o tipo de navegador de Internet móvel que você usa."
+          },
+          "appPermissions": {
+            "title": "Informações coletadas ao usar o Aplicativo",
+            "content": "Ao usar nosso Aplicativo, para fornecer seus recursos, podemos coletar, com sua permissão prévia:",
+            "items": [
+              "Dados de reconhecimento de atividade para rastrear seus treinos e atividades físicas.",
+              "Dados de sensores corporais para monitorar frequência cardíaca, passos e outras métricas de saúde.",
+              "Acesso à Internet para conectar-se aos nossos servidores e fornecer funcionalidades online.",
+              "Dados do calendário para integração com sua agenda e planejamento de treinos.",
+              "Acesso ao armazenamento externo para ler e gravar dados de treino e outras informações.",
+              "Permissão para receber notificações de inicialização concluída para reiniciar tarefas agendadas após a reinicialização do dispositivo.",
+              "Permissão de janela de alerta do sistema para exibir notificações importantes sobre outros aplicativos.",
+              "Permissão de vibração para fornecer feedback háptico durante treinos e notificações.",
+              "Permissão de wake lock para manter o aplicativo em execução durante os treinos.",
+              "Dados de saúde como calorias ativas queimadas, gordura corporal, massa óssea, frequência cardíaca, altura, massa corporal magra, nutrição, passos, calorias totais queimadas e peso para rastreamento abrangente de condicionamento físico."
+            ]
+          },
+          "optionalAi": {
+            "title": "Recursos opcionais de IA e provedores LLM de terceiros",
+            "content1": "O aplicativo Musclog pode ser usado integralmente offline, exceto por solicitações opcionais a fontes externas de dados nutricionais. Por padrão, o Musclog não envia seus dados de treino, nutrição, saúde ou perfil aos nossos servidores.",
+            "content2": "O Musclog também oferece recursos opcionais de IA que exigem que você configure seu próprio provedor, como OpenAI, Google Gemini, Apple Intelligence no iOS ou um endpoint de LLM local/autohospedado. Esses recursos permanecem desativados, a menos que você os habilite expressamente.",
+            "content3": "Se você optar por usar um recurso de IA, os dados que decidir enviar serão enviados ao provedor ou endpoint que você configurar. Se você utilizar um modelo local autohospedado sob seu próprio controle, esses dados poderão permanecer dentro do seu próprio ambiente. Se você utilizar um endpoint hospedado por terceiros, incluindo um serviço hospedado de modelos locais, esse provedor poderá processar os dados de acordo com seus próprios termos e práticas de privacidade. O Musclog não controla a forma como provedores externos processam os dados que você lhes envia.",
+            "content4": "O Musclog também pode oferecer uma opção de LLM gratuito do Musclog. Quando você usa essa opção, sua solicitação é roteada por meio do Cloudflare AI Gateway e depois encaminhada usando uma chave de API gratuita do OpenAI ou do Google Gemini gerenciada pelo Musclog. Se você optar por usar esse recurso, deve entender que sua solicitação poderá ser processada pelo Cloudflare e pelo provedor de modelo downstream selecionado pelo Musclog para essa solicitação.",
+            "content5": "Atualmente, o Musclog oferece suporte a OpenAI, Google Gemini, Apple Intelligence no iOS, endpoints de LLM locais ou autohospedados compatíveis e à rota de LLM gratuito do Musclog. Você deve revisar as políticas de privacidade aplicáveis antes de habilitar provedores de terceiros ou aceitar a opção gratuita, incluindo:",
+            "cloudflarePrivacyPolicy": "Política de Privacidade da Cloudflare",
+            "openaiPrivacyPolicy": "Política de Privacidade da OpenAI",
+            "googlePrivacyPolicy": "Política de Privacidade do Google",
+            "applePrivacyPolicy": "Política de Privacidade da Apple",
+            "and": "e"
+          }
+        },
+        "useOfData": {
+          "title": "Uso de seus Dados Pessoais",
+          "items": [
+            "Para fornecer e manter nosso Serviço, incluindo o monitoramento do uso do nosso Serviço.",
+            "Para fornecer recursos opcionais com tecnologia de IA apenas quando você os habilitar expressamente e configurar seu próprio provedor ou endpoint.",
+            "Para gerenciar sua Conta: para gerenciar seu registro como usuário do Serviço.",
+            "Para a execução de um contrato: o desenvolvimento, cumprimento e execução do contrato de compra dos produtos ou serviços que você adquiriu.",
+            "Para entrar em contato com você por e-mail, chamadas telefônicas, SMS ou outras formas equivalentes de comunicação eletrônica.",
+            "Para fornecer notícias, ofertas especiais e informações gerais sobre outros bens, serviços e eventos.",
+            "Para gerenciar suas solicitações: para atender e gerenciar suas solicitações a nós.",
+            "Para transferências comerciais: podemos usar suas informações para avaliar ou realizar uma fusão, alienação, reestruturação, reorganização, dissolução ou outra venda ou transferência de alguns ou todos os nossos ativos.",
+            "Para outros fins: podemos usar suas informações para análise de dados, identificação de tendências de uso, determinação da eficácia de nossas campanhas promocionais e avaliação e melhoria do nosso Serviço."
+          ]
+        },
+        "sharing": {
+          "title": "Compartilhamento de seus Dados Pessoais",
+          "items": [
+            "Com Provedores de Serviços: podemos compartilhar suas informações pessoais com Provedores de Serviços para monitorar e analisar o uso do nosso Serviço.",
+            "Para transferências comerciais: podemos compartilhar ou transferir suas informações pessoais em conexão com qualquer fusão, venda de ativos da Empresa, financiamento ou aquisição.",
+            "Com Afiliadas: podemos compartilhar suas informações com nossas afiliadas, exigindo que essas afiliadas cumpram esta Política de Privacidade.",
+            "Com parceiros comerciais: podemos compartilhar suas informações com nossos parceiros comerciais para oferecer determinados produtos, serviços ou promoções.",
+            "Com outros usuários: quando você compartilha informações pessoais ou interage nas áreas públicas com outros usuários, essas informações podem ser vistas por todos os usuários.",
+            "Com seu consentimento: podemos divulgar suas informações pessoais para qualquer outra finalidade com seu consentimento."
+          ]
+        },
+        "retention": {
+          "title": "Retenção de seus Dados Pessoais",
+          "content": "A Musclog reterá seus Dados Pessoais apenas pelo tempo necessário para os fins estabelecidos nesta Política de Privacidade. Reteremos e usaremos seus Dados Pessoais na medida necessária para cumprir nossas obrigações legais, resolver disputas e fazer cumprir nossos acordos e políticas legais. A Musclog também reterá os Dados de Uso para fins de análise interna. Os Dados de Uso geralmente são retidos por um período mais curto, exceto quando esses dados são usados para fortalecer a segurança ou melhorar a funcionalidade do Serviço, ou quando somos legalmente obrigados a retê-los por períodos mais longos."
+        },
+        "transfer": {
+          "title": "Transferência de seus Dados Pessoais",
+          "content": "Suas informações, incluindo Dados Pessoais, são processadas nos escritórios operacionais da Musclog e em quaisquer outros locais onde as partes envolvidas no processamento estejam localizadas. Isso significa que essas informações podem ser transferidas e mantidas em computadores localizados fora do seu estado, província, país ou outra jurisdição governamental, onde as leis de proteção de dados podem ser diferentes das da sua jurisdição. Seu consentimento a esta Política de Privacidade, seguido do envio de tais informações, representa sua concordância com essa transferência. A Musclog tomará todas as medidas razoavelmente necessárias para garantir que seus dados sejam tratados com segurança e de acordo com esta Política de Privacidade."
+        },
+        "deletion": {
+          "title": "Excluir seus Dados Pessoais",
+          "content": "Você tem o direito de excluir ou solicitar que auxiliemos na exclusão dos Dados Pessoais que coletamos sobre você. Nosso Serviço pode oferecer a você a capacidade de excluir certas informações sobre você dentro do Serviço. Você pode atualizar, corrigir ou excluir suas informações a qualquer momento fazendo login em sua Conta, se tiver uma, e visitando a seção de configurações da conta. Você também pode nos contatar para solicitar acesso, correção ou exclusão de qualquer informação pessoal que nos forneceu. Observe, no entanto, que podemos precisar reter certas informações quando tivermos uma obrigação legal ou base legal para fazê-lo."
+        },
+        "disclosure": {
+          "title": "Divulgação de seus Dados Pessoais",
+          "content": "A Musclog pode divulgar seus Dados Pessoais de boa fé quando tal ação for necessária para:",
+          "items": [
+            "Cumprir uma obrigação legal",
+            "Proteger e defender os direitos ou propriedade da Musclog",
+            "Prevenir ou investigar possíveis irregularidades em conexão com o Serviço",
+            "Proteger a segurança pessoal dos Usuários do Serviço ou do público",
+            "Proteger contra responsabilidade legal"
+          ]
+        },
+        "security": {
+          "title": "Segurança de seus Dados Pessoais",
+          "content": "A segurança de seus Dados Pessoais é importante para nós, mas lembre-se que nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro. Empregamos medidas técnicas e organizacionais abrangentes para proteger seus dados pessoais contra processamento não autorizado ou ilegal, bem como contra perda, destruição ou dano acidental. Essas medidas incluem protocolos de criptografia avançados para dados em trânsito e em repouso, controles de acesso rigorosos e avaliações regulares de segurança."
+        },
+        "childrenPrivacy": {
+          "title": "Privacidade de crianças",
+          "content": "Nosso Serviço não se dirige a menores de 13 anos. Não coletamos intencionalmente informações pessoalmente identificáveis de menores de 13 anos. Se você for pai ou responsável e souber que seu filho nos forneceu Dados Pessoais, entre em contato conosco. Se soubermos que coletamos Dados Pessoais de alguém com menos de 13 anos sem verificação do consentimento dos pais, tomamos medidas para remover essas informações de nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para outros sites que não são operados por nós. Se você clicar em um link de terceiros, será direcionado para o site desse terceiro. Recomendamos enfaticamente que você revise a Política de Privacidade de cada site que visitar. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "changes": {
+          "title": "Alterações a esta Política de Privacidade",
+          "content": "Podemos atualizar nossa Política de Privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova Política de Privacidade nesta página. Informaremos você por e-mail e/ou por um aviso destacado em nosso Serviço antes que a alteração entre em vigor e atualizaremos a data de \"Última atualização\" no topo desta Política de Privacidade. Aconselhamos que você revise esta Política de Privacidade periodicamente para verificar alterações."
+        },
+        "googlePlay": {
+          "title": "Rótulos de segurança de dados da Google Play Store",
+          "content": "Nossos rótulos de segurança de dados na Google Play Store estão meticulosamente alinhados com as divulgações fornecidas nesta política de privacidade. Estamos comprometidos em manter um alto padrão de transparência e garantir total conformidade com todos os requisitos e diretrizes da Google Play Store. Os dados coletados são utilizados estritamente para fornecer ou aprimorar a funcionalidade e os recursos do seu aplicativo, e em nenhuma circunstância são usados para fins fora deste escopo, como marketing ou venda a terceiros. O acesso a quaisquer dados do usuário é estritamente regulado e só pode ocorrer após a obtenção do consentimento explícito do usuário."
+        },
+        "analytics": {
+          "title": "Análise do site",
+          "content1": "Este site usa o Vercel Web Analytics, um serviço de análise sem cookies e com foco em privacidade. Ele não coleta identificadores pessoais e não usa cookies — os visitantes são identificados apenas por um hash anônimo que é redefinido a cada 24 horas. Não é necessário consentimento para esta ferramenta sob a Diretiva ePrivacy.",
+          "content2": "Este site também usa o Google Analytics 4 (GA4), um serviço fornecido pela Google LLC, para coletar dados anonimizados sobre como os visitantes interagem com o site. Os cookies de análise só são definidos após você consentir explicitamente clicando em \"Aceitar\" no banner de cookies.",
+          "content3": "Quando você consente com o GA4, o Google Analytics pode coletar:",
+          "items": [
+            "Páginas visitadas e tempo gasto em cada página",
+            "Localização geográfica geral (em nível de país ou cidade, não localização precisa)",
+            "Tipo de navegador, tipo de dispositivo e sistema operacional",
+            "Site ou mecanismo de pesquisa de referência",
+            "Eventos de interação anônimos (p. ex. cliques em links)"
+          ],
+          "content4": "Base legal para o GA4: Consentimento (RGPD Art. 6(1)(a)). Você pode retirar seu consentimento a qualquer momento clicando em \"Configurações de cookies\" no rodapé da página. A retirada do consentimento impedirá qualquer coleta adicional e não afetará a legalidade do processamento realizado antes da retirada.",
+          "content5": "Os dados do GA4 são retidos no Google Analytics por 14 meses por padrão. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
+          "googlePrivacyPolicy": "Política de Privacidade do Google",
+          "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas."
+        }
+      },
+      "appVsWebsite": {
+        "app": {
+          "title": "No aplicativo Musclog",
+          "summary": "O aplicativo Musclog foi projetado principalmente como um produto local-first. A maior parte dos dados do usuário permanece armazenada no seu dispositivo e não é transmitida aos nossos servidores.",
+          "items": [
+            "Todos os dados inseridos no aplicativo são armazenados localmente no seu dispositivo.",
+            "O aplicativo não exige conta e não oferece sincronização em nuvem.",
+            "Não temos acesso aos seus dados de saúde ou condicionamento físico armazenados no aplicativo.",
+            "Os dados sensíveis armazenados pelo aplicativo são criptografados em repouso com AES."
+          ]
+        },
+        "website": {
+          "title": "Neste site",
+          "summary": "O site trata um conjunto mais limitado de dados, principalmente relacionados à operação do site, à preferência de idioma, à análise e ao gerenciamento do consentimento de cookies.",
+          "items": [
+            "Este site utiliza o Vercel Analytics para medir dados de tráfego anônimos e sem cookies, sem exigir consentimento.",
+            "Este site utiliza o Google Analytics 4 somente após você fornecer consentimento explícito por meio do banner de cookies.",
+            "Sua preferência de idioma é armazenada localmente no seu navegador e não é transmitida aos nossos servidores.",
+            "Sua escolha de consentimento de cookies é armazenada localmente no seu navegador e não é transmitida aos nossos servidores."
+          ]
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre esta Política de Privacidade, pode entrar em contato conosco pelo e-mail:"
+      },
+      "pageTitle": "Política de Privacidade | Musclog"
+    },
+    "terms": {
+      "titleStart": "Termos e",
+      "conditions": "Condições",
+      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "highlights": {
+        "agreement": {
+          "title": "Acordo de uso",
+          "description": "Ao usar este aplicativo, você concorda com estes termos."
+        },
+        "liability": {
+          "title": "Responsabilidade limitada",
+          "description": "Não somos responsáveis por decisões de saúde tomadas com este app."
+        },
+        "warranty": {
+          "title": "Sem garantia",
+          "description": "O aplicativo é fornecido como está, sem garantias."
+        }
+      },
+      "intro": "Por favor, leia estes Termos e Condições com atenção antes de usar o aplicativo Musclog. Ao acessar ou usar nosso serviço, você concorda em estar vinculado a estes termos.",
+      "sections": {
+        "interpretation": {
+          "title": "Interpretação e Definições",
+          "content1": "As palavras cuja letra inicial é maiúscula têm significados definidos nas seguintes condições. As definições a seguir terão o mesmo significado, independentemente de aparecerem no singular ou no plural.",
+          "content2": "Para os fins destes Termos e Condições:"
+        },
+        "definitions": {
+          "application": {
+            "term": "Aplicativo",
+            "def": "significa o programa de software fornecido pela Musclog, baixado por você em qualquer dispositivo eletrônico, chamado Musclog."
+          },
+          "company": {
+            "term": "Empresa",
+            "def": "refere-se à Musclog, a desenvolvedora e mantenedora deste aplicativo de código aberto."
+          },
+          "device": {
+            "term": "Dispositivo",
+            "def": "significa qualquer dispositivo que possa acessar o Serviço, como um smartphone ou tablet."
+          },
+          "service": {
+            "term": "Serviço",
+            "def": "refere-se ao Aplicativo."
+          },
+          "you": {
+            "term": "Você",
+            "def": "significa o indivíduo que acessa ou usa o Serviço."
+          }
+        },
+        "acknowledgment": {
+          "title": "Reconhecimento",
+          "content1": "Estes são os Termos e Condições que regem o uso deste Serviço e o acordo que opera entre você e a Empresa. Ao acessar ou usar o Serviço, você concorda em estar vinculado a estes Termos e Condições.",
+          "content2": "Seu acesso e uso do Serviço também estão condicionados à sua aceitação e conformidade com a Política de Privacidade da Empresa.",
+          "content3": "O Musclog é um rastreador de fitness local-first e de código aberto. Nenhuma conta é necessária. Seus dados permanecem no seu dispositivo e nunca são enviados aos nossos servidores."
+        },
+        "links": {
+          "title": "Links para outros sites",
+          "content": "Nosso Serviço pode conter links para sites ou serviços de terceiros que não são de propriedade nem controlados pela Empresa. Não temos controle e não assumimos responsabilidade pelo conteúdo, políticas de privacidade ou práticas de sites ou serviços de terceiros."
+        },
+        "termination": {
+          "title": "Rescisão",
+          "content": "Podemos encerrar ou suspender seu acesso imediatamente, sem aviso prévio ou responsabilidade, por qualquer motivo, incluindo se você violar estes Termos e Condições. Após o encerramento, seu direito de usar o Serviço cessará imediatamente."
+        },
+        "liability": {
+          "title": "Limitação de responsabilidade",
+          "content1": "Na máxima extensão permitida pela lei aplicável, a Empresa não será responsável por danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo sem limitação, perda de lucros, dados, uso, fundo de comércio ou outras perdas intangíveis.",
+          "content2": "Este aplicativo não é um dispositivo médico. Sempre consulte um profissional de saúde qualificado antes de tomar decisões de saúde ou fitness com base nos dados deste aplicativo."
+        },
+        "disclaimer": {
+          "title": "Isenção de responsabilidade",
+          "content1": "O Serviço é fornecido a você \"COMO ESTÁ\" e \"CONFORME DISPONÍVEL\", com todas as falhas e defeitos e sem garantia de qualquer tipo.",
+          "content2": "Sem limitar o exposto acima, a Empresa não oferece garantia de que o Serviço atenderá aos seus requisitos, alcançará os resultados pretendidos ou será compatível com outros softwares, aplicativos, sistemas ou serviços."
+        },
+        "governingLaw": {
+          "title": "Lei aplicável",
+          "content1": "As leis do país, excluindo suas regras de conflito de leis, regerão estes Termos e o uso do Serviço.",
+          "content2": "As leis locais de proteção ao consumidor podem lhe conceder direitos adicionais. Nada nestes Termos afeta quaisquer direitos que você possa ter como consumidor sob a lei aplicável."
+        },
+        "changes": {
+          "title": "Alterações nestes termos",
+          "content": "Reservamo-nos o direito, a nosso exclusivo critério, de modificar ou substituir estes Termos a qualquer momento. Tentaremos fornecer pelo menos 30 dias de aviso antes que os novos termos entrem em vigor. Ao continuar a acessar ou usar nosso Serviço após as revisões se tornarem efetivas, você concorda em estar vinculado aos termos revisados."
+        }
+      },
+      "contact": {
+        "title": "Fale conosco",
+        "content": "Se você tiver alguma dúvida sobre estes Termos e Condições, pode entrar em contato conosco pelo"
+      },
+      "pageTitle": "Termos e Condições | Musclog"
+    },
+    "contact": {
+      "titleStart": "Entre em",
+      "titleHighlight": "Contato",
+      "description": "Tem uma pergunta, encontrou um bug ou quer contribuir? Adoraríamos ouvir de você.",
+      "form": {
+        "fullName": "Nome completo",
+        "email": "Endereço de e-mail",
+        "subject": "Assunto",
+        "message": "Mensagem",
+        "submit": "Enviar mensagem",
+        "mailto": "Abrir no app de e-mail",
+        "startOver": "Enviar outra mensagem",
+        "helpText": "Clique no botão acima para abrir a mensagem no seu app de e-mail padrão.",
+        "placeholders": {
+          "fullName": "João Silva",
+          "email": "joao@exemplo.com.br",
+          "subject": "O que você tem em mente?",
+          "message": "Conta como podemos ajudar…"
+        }
+      },
+      "connect": {
+        "title": "Conecte-se conosco",
+        "follow": "Siga-nos",
+        "github": {
+          "title": "Repositório no GitHub",
+          "description": "Reporte bugs, solicite funcionalidades ou contribua com código diretamente no GitHub."
+        },
+        "discord": {
+          "title": "Discord da comunidade",
+          "description": "Junte-se à nossa comunidade para conversar com outros usuários e os mantenedores."
+        },
+        "email": {
+          "title": "E-mail de suporte",
+          "description": "Precisa de ajuda? Envie-nos um e-mail e responderemos o mais rápido possível."
+        }
+      },
+      "privacy": {
+        "title": "Privacidade em primeiro lugar",
+        "description": "Não armazenamos nada do que você enviar aqui. Sua mensagem vai diretamente para nosso e-mail — sem servidores, sem logs."
+      },
+      "pageTitle": "Contato | Musclog"
+    },
+    "calculator": {
+      "pageTitle": "Calculadora TDEE | Musclog",
+      "titleStart": "TDEE",
+      "titleHighlight": "CALCULADORA",
+      "subtitle": "Dados de precisão para o atleta de alto desempenho. Calcule sua linha de base biológica e otimize sua trajetória.",
+      "form": {
+        "title": "PERFIL FITNESS",
+        "age": "IDADE",
+        "gender": "GÊNERO",
+        "male": "Masculino",
+        "female": "Feminino",
+        "other": "Outro",
+        "weight": "PESO (KG)",
+        "height": "ALTURA (CM)",
+        "bodyFat": "GORDURA CORPORAL %",
+        "experience": "EXPERIÊNCIA",
+        "beginner": "Iniciante",
+        "intermediate": "Intermediário",
+        "advanced": "Avançado",
+        "activityLevel": "NÍVEL DE ATIVIDADE",
+        "activity1": "Sedentário (pouco ou nenhum exercício)",
+        "activity2": "Leve (1–3 dias/semana)",
+        "activity3": "Moderado (3–5x/semana)",
+        "activity4": "Ativo (6–7 dias/semana)",
+        "activity5": "Muito ativo (trabalho físico + treino)",
+        "weightGoal": "OBJETIVO DE PESO",
+        "cut": "Cutting",
+        "maintain": "Manter",
+        "bulk": "Bulking",
+        "trainingFocus": "FOCO DE TREINO",
+        "hypertrophy": "HIPERTROFIA",
+        "hypertrophyDesc": "Desenvolver tamanho e definição muscular",
+        "strength": "FORÇA",
+        "strengthDesc": "Levantar mais e desenvolver potência",
+        "endurance": "RESISTÊNCIA",
+        "enduranceDesc": "Melhorar a condição cardiovascular",
+        "weightLoss": "PERDA DE PESO",
+        "weightLossDesc": "Queimar gordura e melhorar o tônus",
+        "general": "FITNESS GERAL",
+        "generalDesc": "Saúde e bem-estar geral",
+        "realtime": "RESULTADOS EM TEMPO REAL"
+      },
+      "results": {
+        "bmr": "TMB",
+        "bmrDesc": "Taxa Metabólica Basal: energia gasta em repouso.",
+        "tdee": "TDEE",
+        "tdeeDesc": "Gasto Energético Diário Total baseado na atividade.",
+        "target": "ALVO",
+        "bmi": "IMC",
+        "bmiDesc": "Índice de Massa Corporal: relação altura-peso normalizada.",
+        "ffmi": "FFMI",
+        "ffmiDesc": "Índice de Massa Livre de Gordura: indicador de massa muscular.",
+        "macroProfile": "PERFIL MACRO",
+        "protein": "PROTEÍNA",
+        "fats": "GORDURAS",
+        "carbs": "CARBOIDRATOS",
+        "kcal": "KCAL",
+        "metabolicVelocity": "VELOCIDADE METABÓLICA",
+        "velocityMaintain": "Faixa de desempenho ideal detectada.",
+        "velocityCut": "Otimizado para trajetória de perda de gordura.",
+        "velocityBulk": "Preparado para acumulação de massa magra.",
+        "dailyTarget": "ALVO CALÓRICO DIÁRIO",
+        "maintenance": "MANUTENÇÃO",
+        "calorieSurplus": "SUPERÁVIT CALÓRICO",
+        "calorieDeficit": "DÉFICIT CALÓRICO"
+      }
+    },
+    "faq": {
+      "pageTitle": "FAQ & Ciência — Musclog",
+      "badge": "Baseado em Evidências",
+      "titlePrefix": "FAQ &",
+      "titleHighlight": "A Ciência",
+      "description": "Cada número que o Musclog mostra vem de pesquisas revisadas por pares. Esta página explica os modelos, fórmulas e estudos por trás de cada cálculo — com links para as fontes originais.",
+      "sources": "Fontes",
+      "questionsCount_one": "{{count}} pergunta",
+      "questionsCount_other": "{{count}} perguntas",
+      "footer": {
+        "text": "Encontrou uma imprecisão ou um estudo mais recente que supera uma dessas fontes?",
+        "linkText": "Nos conte",
+        "suffix": "— a ciência está sempre evoluindo e o Musclog também."
+      },
+      "categories": {
+        "general": {
+          "label": "Geral",
+          "items": [
+            {
+              "question": "O que é o Musclog?",
+              "answer": "O Musclog é um app de fitness com foco em privacidade para rastrear treinos, nutrição e composição corporal. Todos os seus dados são armazenados localmente no dispositivo — nada é enviado a nenhum servidor, a menos que você habilite explicitamente recursos opcionais de IA."
+            },
+            {
+              "question": "O app funciona sem conexão com a Internet?",
+              "answer": "Sim. Todos os recursos principais — registrar treinos, rastrear refeições, visualizar o progresso e usar a calculadora de nutrição — funcionam totalmente offline. Uma conexão com a Internet só é necessária para recursos opcionais de IA (reconhecimento de refeições, coach de IA), pesquisas em bancos de dados de alimentos de fontes externas e sincronização com o Health Connect / HealthKit."
+            },
+            {
+              "question": "Quão precisos são os cálculos de nutrição?",
+              "answer": "A calculadora usa equações populacionais bem validadas (Katch-McArdle / Mifflin-St Jeor para TMB, modelo de composição corporal Hall 2008 para projeções). Nenhuma equação é perfeitamente precisa para todos os indivíduos — o erro típico das equações de TMB é ±10 %. Os melhores resultados vêm de fornecer ao app dados de rastreamento reais por 2–4 semanas para que ele possa calcular seu TDEE empírico diretamente a partir das calorias ingeridas versus a variação de peso."
+            },
+            {
+              "question": "Quais unidades o app suporta?",
+              "answer": "O banco de dados sempre armazena valores métricos (kg, cm, g, kcal). Você pode alternar para o sistema imperial (lbs, polegadas, oz) nas configurações a qualquer momento — o app converte automaticamente todos os valores exibidos. Percentual de gordura corporal, IMC e FFMI são adimensionais e nunca são convertidos."
+            }
+          ]
+        },
+        "nutrition": {
+          "label": "Ciência da Nutrição",
+          "items": [
+            {
+              "question": "Como minha Taxa Metabólica Basal (TMB) é calculada?",
+              "answer": "O Musclog usa duas equações dependendo se você forneceu um percentual de gordura corporal.",
+              "bullets": [
+                "Katch-McArdle (preferida quando % GC está disponível): TMB = 370 + 21,6 × Massa Corporal Magra (kg). Por ignorar a massa gorda — que tem atividade metabólica muito baixa — esta equação é mais precisa para atletas e pessoas com composições corporais não-médias.",
+                "Mifflin-St Jeor (padrão, sem necessidade de % GC): TMB = 10 × peso + 6,25 × altura − 5 × idade ± constante de gênero (+5 homem, −161 mulher). Validada como a equação de TMB mais precisa para a população geral em várias meta-análises."
+              ],
+              "citations": [
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al. meta-analysis (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
+              ]
+            },
+            {
+              "question": "Como meu Gasto Energético Diário Total (TDEE) é estimado?",
+              "answer": "O Musclog usa dois modos, escolhendo automaticamente o melhor para seus dados.",
+              "bullets": [
+                "Estatístico (novos usuários): TDEE = TMB × Multiplicador de Atividade. Os multiplicadores variam de 1,2 (sedentário) a 1,9 (muito ativo + trabalho físico), baseados na escala Harris-Benedict / Mifflin-St Jeor.",
+                "TDEE Empírico / Observado (preferido, requer ≥2 semanas de dados de alimentos + peso): Aplica diretamente a Primeira Lei da Termodinâmica. TDEE = (Calorias ingeridas − Energia armazenada no tecido) / Dias. O tecido gorduroso armazena 7.730 kcal/kg ao ser catabolizado e custa 8.840 kcal/kg para ser construído; o músculo armazena 1.250 kcal/kg e custa 3.900 kcal/kg. Esses valores assimétricos levam em conta a eficiência termodinâmica da síntese.",
+                "Correção de deriva do TDEE: O TDEE empírico representa a média do período intermediário. Para projetá-lo para o estado corporal atual, três ajustes em camadas são aplicados: (1) Queda do tecido em repouso — o tecido magro queima ~13 kcal/kg/dia e a gordura ~4,5 kcal/kg/dia (Elia 1992); (2) Queda escalada por atividade — o custo mecânico do movimento escala com a massa corporal; (3) Penalidade de termogênese adaptativa de 20 kcal/dia por kg de massa corporal perdida, refletindo a supressão do NEAT e adaptação hormonal (leptina, tireoide)."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energy deficit per unit weight loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — RMR tissue coefficients",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller et al. (2022) — Adaptive thermogenesis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Como fornecer o percentual de gordura corporal melhora o cálculo?",
+              "answer": "Quando um percentual de gordura corporal válido (5–60 %) é inserido, três coisas mudam:",
+              "bullets": [
+                "A TMB muda para Katch-McArdle, que é consciente da composição corporal e ignora a massa gorda metabolicamente inerte.",
+                "A divisão gordura/magra das variações de peso é calculada a partir da Curva de Forbes (Hall 2007), resolvida analiticamente pela função W de Lambert. O ponto-chave: indivíduos mais magros perdem uma fração maior de massa magra por kg porque o organismo defende as reservas de gordura mais agressivamente. Uma pessoa com 12 % GC perde tecido a aproximadamente 5.800–6.200 kcal/kg, bem abaixo da regra clássica de '7.700 kcal/kg' que assume perda de gordura pura.",
+                "Uma faixa de incerteza de ±4 % (erro típico de BIA/dobras cutâneas) gera um intervalo realista de calorias mínimas/máximas em vez de um único número, comunicando a imprecisão inerente à medição de gordura corporal."
+              ],
+              "formula": "kcal/kg_efetivas = 9.440 × fração_gordura + 1.820 × fração_magra",
+              "formulaCaption": "Densidade energética combinada de Hall (2008) — fração de gordura determinada pela curva de Forbes / Lambert W",
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
+              ]
+            },
+            {
+              "question": "Como meu déficit ou superávit calórico recomendado é definido?",
+              "answer": "O Musclog escala o ajuste calórico ao seu peso corporal em vez de usar um ±500 kcal fixo, e o limita a faixas seguras baseadas em evidências.",
+              "bullets": [
+                "Cutting (perda de peso): A taxa de perda semanal recomendada é 0,5 % do peso corporal por semana por padrão. Quando a gordura corporal é conhecida, isso é refinado usando os limites clínicos da ACE — indivíduos magros (GC < 10 % homem / < 20 % mulher) recebem um conservador 0,35 %/semana para proteger o músculo, enquanto pessoas com maior GC podem perder com segurança até 0,65 %/semana. O déficit diário resultante é limitado a 250–750 kcal para prevenir adaptação metabólica severa.",
+                "Bulking (ganho de peso): Um superávit de aproximadamente 0,25 % do peso corporal por semana é almejado, o que minimiza o acúmulo de gordura enquanto apoia a síntese proteica muscular. O superávit é limitado a 150–400 kcal/dia.",
+                "Pisos mínimos de calorias: 1.200 kcal/dia para mulheres, 1.500 kcal/dia para homens, e nunca abaixo de 80 % da TMB — consistente com as diretrizes do IOM / Academias Nacionais."
+              ],
+              "citations": [
+                {
+                  "label": "Garthe et al. (2011) — Rate of weight loss and body composition",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Body fat percentage classifications",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
+              ]
+            },
+            {
+              "question": "Como o modelo de projeção de peso funciona?",
+              "answer": "A projeção usa duas fases para prever com precisão a variação de peso em 90 dias.",
+              "bullets": [
+                "Fase inicial — Depleção de glicogênio: O estoque total de glicogênio corporal é aproximadamente 15 g/kg de peso corporal (seco), ligado a cerca de 3 g de água cada, totalizando aproximadamente 6 % do peso corporal como glicogênio hidratado. Apenas a parcela do déficit calórico acumulado que cabe dentro desse estoque de energia de glicogênio (~4.206 kcal/kg seco) impulsiona a perda inicial de 'peso em água'. Isso evita superestimar as perdas iniciais para déficits agressivos.",
+                "Fase estável: Todo o déficit restante impulsiona a perda de tecido gorduroso/magro à densidade energética consciente da composição do modelo Hall/Forbes. A 'taxa semanal' reportada sempre reflete essa cifra estável — o que os usuários experimentam após os primeiros dias.",
+                "Projeção de superávit: Os estoques de glicogênio são assumidos como cheios, portanto todo o superávit vai para síntese de gordura/tecido magro a custos ponderados pela experiência (iniciante ~5.300 kcal/kg ganho; intermediário ~6.370 kcal/kg; avançado ~7.430 kcal/kg)."
+              ],
+              "citations": [
+                {
+                  "label": "Hall (2008) — Energy density of weight loss tissue",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
+              ]
+            },
+            {
+              "question": "Como meus macros diários são calculados?",
+              "answer": "As divisões de macros são baseadas no objetivo de fitness, usando as faixas AMDR do IOM como estrutura e pesquisas específicas de esportes do ISSN/ACSM para refinamento.",
+              "table": {
+                "head": ["Objetivo", "Carboidratos", "Proteína", "Gordura", "Justificativa"],
+                "rows": [
+                  [
+                    "Perda de Peso",
+                    "40 %",
+                    "30 %",
+                    "30 %",
+                    "Alta proteína para preservar músculo em déficit (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Hipertrofia",
+                    "45 %",
+                    "30 %",
+                    "25 %",
+                    "Proteína para MPS; carboidratos apoiam treino de volume"
+                  ],
+                  [
+                    "Força",
+                    "50 %",
+                    "30 %",
+                    "20 %",
+                    "Carboidratos para demanda glicolítica do trabalho composto pesado"
+                  ],
+                  [
+                    "Resistência",
+                    "55 %",
+                    "20 %",
+                    "25 %",
+                    "Prioridade ao glicogênio (diretriz ACSM 6–10 g/kg/dia)"
+                  ],
+                  [
+                    "Geral",
+                    "45 %",
+                    "25 %",
+                    "30 %",
+                    "Centralizado dentro do AMDR do IOM para fitness geral"
+                  ]
+                ]
+              },
+              "answer2": "Para os objetivos de Perda de Peso e Hipertrofia, quando o % de gordura corporal é conhecido, a proteína é atualizada de uma meta percentual para uma meta absoluta baseada na MCM (2,7 g/kg MCM para perda de peso; 2,0 g/kg MCM para hipertrofia), com as calorias restantes divididas proporcionalmente entre carboidratos e gorduras.",
+              "citations": [
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
+              ]
+            },
+            {
+              "question": "Como a experiência em musculação afeta o cálculo de bulking?",
+              "answer": "A fração do peso ganho que é massa magra versus gordura depende muito do histórico de treinamento. Indivíduos sem treino têm muito maior potencial de hipertrofia do que praticantes avançados que já capturaram a maior parte do seu teto genético muscular.",
+              "bullets": [
+                "Iniciante: ~60 % magro / 40 % gordura por kg ganho. Custo efetivo de construção ≈ 5.304 kcal/kg.",
+                "Intermediário: ~50 % magro / 50 % gordura. Custo efetivo de construção ≈ 6.370 kcal/kg.",
+                "Avançado: ~40 % magro / 60 % gordura. Custo efetivo de construção ≈ 7.434 kcal/kg.",
+                "Essas divisões usam os custos termodinâmicos de construção: 8.840 kcal/kg para gordura e 3.900 kcal/kg para músculo, refletindo ~87 % de eficiência de síntese para gordura e ~32 % para músculo (a maior parte da energia de síntese muscular é perdida como calor)."
+              ],
+              "citations": [
+                {
+                  "label": "Schoenfeld et al. — Resistance training load meta-analysis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Plateau in muscle growth with resistance training",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
+              ]
+            },
+            {
+              "question": "Como a TMR é ajustada para obesidade ou idade avançada?",
+              "answer": "Dois multiplicadores de penalidade baseados em evidências são aplicados aos coeficientes de tecido da Taxa Metabólica em Repouso (magro: 13 kcal/kg/dia; gordura: 4,5 kcal/kg/dia):",
+              "bullets": [
+                "IMC > 30 (Obesidade): redução de −2 % em ambos os coeficientes de tecido magro e gorduroso, refletindo a função mitocondrial prejudicada em indivíduos obesos (Müller et al. 2013).",
+                "Idade > 50: redução de −3 %, refletindo o declínio na taxa de renovação celular (St-Onge & Gallagher 2010).",
+                "Ambas as penalidades se acumulam de forma aditiva quando aplicáveis (ex.: pessoa obesa com mais de 50 → −5 % total)."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Body composition changes with aging",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
+              ]
+            }
+          ]
+        },
+        "workout": {
+          "label": "Ciência do Treino",
+          "items": [
+            {
+              "question": "Como as estimativas de uma repetição máxima (1RM) são calculadas?",
+              "answer": "O Musclog calcula o 1RM usando um conjunto de sete fórmulas publicadas e faz a média dos resultados. A média reduz o erro sistemático de qualquer fórmula individual, que têm perfis de precisão diferentes em diferentes faixas de repetições.",
+              "table": {
+                "head": ["Fórmula", "Equação", "Melhor Para"],
+                "rows": [
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 reps; a mais amplamente usada"
+                  ],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Uso geral; ligeiramente conservadora"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Faixas de repetições moderadas"],
+                  ["Lombardi (1989)", "w × r^0,1", "Faixas de poucas repetições"],
+                  [
+                    "Mayhew et al. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Ampla faixa de reps; modelo exponencial"
+                  ],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Linear; conservadora"],
+                  [
+                    "Wathen (1994)",
+                    "w / (0,488 + 0,539 × e^{−0,035r})",
+                    "Faixas de mais repetições"
+                  ]
+                ]
+              },
+              "answer2": "As Repetições em Reserva (RIR) são adicionadas às repetições reais antes de aplicar qualquer fórmula (reps_ajustadas = reps + RIR). Isso mapeia o esforço submáximo para um equivalente de esforço máximo, portanto uma série de 8 reps com 2 RIR é tratada como 10 reps até a falha para fins de estimativa do 1RM.",
+              "citations": [
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
+                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew et al. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor et al. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
+                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+              ]
+            },
+            {
+              "question": "Como o volume de treino é calculado?",
+              "answer": "O Musclog usa a estimativa média de 1RM como unidade de volume para cada série, em vez do tonelagem bruta (peso × repetições). Isso produz uma medida mais significativa porque o 1RM normaliza o fato de que séries com mais repetições representam mais esforço total do que o peso bruto sugeriria.",
+              "bullets": [
+                "Para exercícios com peso corporal, o peso corporal atual do usuário é adicionado ao peso da barra antes do cálculo do 1RM.",
+                "Volume total da sessão = soma das estimativas médias de 1RM em todas as séries da sessão.",
+                "O rastreamento de sobrecarga progressiva compara esse número entre sessões para os mesmos exercícios."
+              ]
+            },
+            {
+              "question": "Como as calorias queimadas com os passos diários são calculadas?",
+              "answer": "O Musclog usa as equações metabólicas de caminhada do ACSM para calcular o gasto calórico líquido (não bruto) a partir da contagem de passos. Usar o gasto líquido evita a dupla contagem em relação à TMB/TDEE já considerados.",
+              "formula": "Calorias Líquidas = (0,1 × distância_m × peso_kg) / 200",
+              "formulaCaption": "Derivado da equação VO₂ de caminhada do ACSM. O tempo se cancela: velocidade (m/min) × duração (min) = distância (m). 1 L O₂ ≈ 5 kcal, portanto ÷1000 × 5 = ÷200.",
+              "bullets": [
+                "O comprimento da passada é estimado a partir da altura usando proporções empíricas específicas por gênero: 0,415 × altura (cm) / 100 para homens, 0,413 para mulheres.",
+                "Distância = passos × comprimento da passada.",
+                "A derivação elimina a necessidade de conhecer a cadência, removendo o 'paradoxo da cadência' onde caminhar mais rápido parece idêntico a caminhar mais devagar com a mesma contagem de passos."
+              ],
+              "citations": [
+                {
+                  "label": "ACSM Metabolic Equations — Walking VO₂",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama et al. (2012) — Stride length estimation",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Meta-Analysis — Stride length and height ratios",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
+              ]
+            },
+            {
+              "question": "Como o app calcula peso e repetições para um RIR-alvo?",
+              "answer": "Dois problemas inversos de 1RM são resolvidos:",
+              "bullets": [
+                "Peso para RIR-alvo: Todas as sete fórmulas de 1RM são lineares em relação ao peso (1RM = peso × f(reps, RIR)), portanto peso = 1RM / f(reps, RIR). O multiplicador f é calculado chamando o conjunto com peso = 1.",
+                "Repetições para peso-alvo: O conjunto médio não tem inversa de forma fechada, então o app usa busca binária. Como as estimativas de 1RM são monotonamente crescentes em relação às repetições, a busca binária converge em ~6 iterações para qualquer faixa prática de repetições (1–50). Veja Helms et al. (2016) para a base de pesquisa de autorregulação baseada em RIR."
+              ],
+              "citations": [
+                {
+                  "label": "Helms et al. (2016) — RPE and RIR-based autoregulation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
+              ]
+            }
+          ]
+        },
+        "methodology": {
+          "label": "Metodologia",
+          "items": [
+            {
+              "question": "Por que o app mostra uma faixa de calorias em vez de um único número?",
+              "answer": "As medições de percentual de gordura corporal — seja por impedância bioelétrica (BIA), dobras cutâneas ou DEXA — carregam um erro de medição típico de ±3–5 %. O Musclog aplica uma faixa de ±4 % (um ponto médio conservador) ao seu percentual de gordura corporal inserido e recalcula a TMB, o TDEE e as calorias-alvo em ambos os extremos.",
+              "bullets": [
+                "Calorias-alvo mínimas = cálculo com % GC + 4 % (mais gordura → menos massa magra → TMB menor).",
+                "Calorias-alvo máximas = cálculo com % GC − 4 % (menos gordura → mais massa magra → TMB maior).",
+                "O único 'alvo' no meio é o resultado da melhor estimativa usando seu % GC inserido diretamente.",
+                "Essa faixa comunica a incerteza realista e ajuda a entender que o número 'correto' para você pessoalmente pode estar em qualquer lugar dentro da faixa."
+              ]
+            },
+            {
+              "question": "O que é a Curva de Forbes e por que ela importa?",
+              "answer": "A Curva de Forbes, desenvolvida por Gilbert Forbes (1987) e posteriormente formalizada por Kevin Hall (2007), descreve como o corpo distribui as variações de peso entre massa gorda e massa magra. Ela tem uma implicação crítica e contraintuitiva:",
+              "bullets": [
+                "Pessoas mais magras sacrificam mais massa magra por kg perdido — o corpo defende as reservas de gordura mais agressivamente quando as reservas de gordura são baixas.",
+                "Por outro lado, pessoas com alta gordura corporal perdem uma proporção maior de gordura por kg, aproximando sua densidade energética efetiva da regra clássica de 7.700 kcal/kg.",
+                "A curva é parametrizada por uma constante C (≈13,8 para homens, ≈10,4 para mulheres), resolvida usando a função W de Lambert (ramo principal). O Musclog implementa esse solver numericamente com o método de Newton para evitar qualquer dependência de biblioteca.",
+                "Sem esse modelo, os períodos de cutting para indivíduos magros são sistematicamente subestimados — a regra clássica trata toda a perda de peso como gordura e superestimaria quanto de gordura é realmente perdida."
+              ],
+              "citations": [
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
+              ]
+            },
+            {
+              "question": "O que é Termogênese Adaptativa e como o app a considera?",
+              "answer": "A termogênese adaptativa (TA) é o fenômeno em que o gasto energético do corpo cai mais do que pode ser explicado pelas mudanças na massa corporal sozinhas, em resposta à restrição calórica sustentada. É impulsionada por:",
+              "bullets": [
+                "Supressão hormonal: a leptina cai com a perda de gordura, reduzindo a atividade do sistema nervoso simpático e a produção de hormônio tireoidiano.",
+                "Redução do NEAT (Termogênese de Atividade Não-Exercício): o corpo reduz inconscientemente o nervosismo, mudanças de postura e movimento espontâneo.",
+                "Mudanças na eficiência mitocondrial: as células extraem mais ATP por caloria queimada.",
+                "O Musclog modela a TA como uma penalidade de 20 kcal/dia por kg de massa corporal total perdida (usando o ponto médio da faixa de Hall et al. de 20–30 kcal/dia/kg). Isso é aplicado na correção de deriva do TDEE ao calcular a partir de dados de rastreamento empírico, e na projeção de 90 dias para mostrar uma trajetória realista de perda de peso em vez de uma linear."
+              ],
+              "citations": [
+                {
+                  "label": "Müller et al. (2022) — Magnitude of AT in clinical trials",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Como a recomendação diária de ingestão de água é calculada?",
+              "answer": "A recomendação de água escala linearmente com o TDEE a uma taxa de 0,75 ml por kcal de gasto energético diário. Isso é derivado de duas diretrizes que convergem de forma independente:",
+              "bullets": [
+                "O U.S. Food and Nutrition Board (1945): '1 ml por kcal de energia gasta' (o Musclog usa 0,75 ml para representar a fração de bebidas, pois ~25 % da água vem dos alimentos).",
+                "Pesquisas dietéticas mostram que as bebidas contribuem com aproximadamente 70–80 % da ingestão total de água em adultos (Gandy et al. 2016)."
+              ],
+              "citations": [
+                {
+                  "label": "PMC7692653 — Water intake from beverages vs food",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Percentage of water intake from beverages",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

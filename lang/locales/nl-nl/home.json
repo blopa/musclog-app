@@ -1,0 +1,34 @@
+{
+  "home": {
+    "greeting": {
+      "goodMorning": "Goedemorgen",
+      "goodAfternoon": "Goedemiddag",
+      "goodEvening": "Goedenavond"
+    },
+    "actions": {
+      "startWorkout": "Start\nWorkout",
+      "trackFood": "Eten\nloggen"
+    },
+    "sections": {
+      "recentWorkouts": "Recente workouts",
+      "recentFoods": "Recent gegeten",
+      "dailySummary": "Dagsamenvatting"
+    },
+    "activityRings": {
+      "move": "Bewegen",
+      "steps": "Stappen",
+      "rest": "Rust",
+      "score": "Score"
+    },
+    "navigation": {
+      "home": "Home",
+      "profile": "Profiel",
+      "workouts": "Workouts",
+      "food": "Voeding",
+      "coach": "Chat",
+      "focus": "Focus",
+      "cycle": "Cyclus",
+      "checkin": "Controles"
+    }
+  }
+}

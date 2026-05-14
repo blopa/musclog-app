@@ -116,41 +116,39 @@ export function MealEstimationModal({
   };
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('nutrition.mealEstimation.title')}
-        headerRight={
-          <TouchableOpacity
-            onPress={handleRetake}
-            className="flex-row items-center gap-2 rounded-lg px-3 py-2"
-            style={{
-              backgroundColor: theme.colors.background.white10,
-            }}
-          >
-            <Camera size={16} color="white" />
-            <Text className="text-sm font-medium text-white">
-              {t('nutrition.mealEstimation.retake')}
-            </Text>
-          </TouchableOpacity>
-        }
-        scrollable={false}
-      >
-        <MealEstimationScreen
-          mealImage={mealImage}
-          totalCalories={estimationData.totalCalories}
-          protein={estimationData.protein}
-          carbs={estimationData.carbs}
-          fat={estimationData.fat}
-          identifiedItems={identifiedItems}
-          onRetake={handleRetake}
-          onAddItem={handleAddItem}
-          onEditItem={handleEditItem}
-          onDeleteItem={handleDeleteItem}
-          onConfirmAndLog={handleConfirmAndLog}
-        />
-      </FullScreenModal>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('nutrition.mealEstimation.title')}
+      headerRight={
+        <TouchableOpacity
+          onPress={handleRetake}
+          className="flex-row items-center gap-2 rounded-lg px-3 py-2"
+          style={{
+            backgroundColor: theme.colors.background.white10,
+          }}
+        >
+          <Camera size={16} color="white" />
+          <Text className="text-sm font-medium text-white">
+            {t('nutrition.mealEstimation.retake')}
+          </Text>
+        </TouchableOpacity>
+      }
+      scrollable={false}
+    >
+      <MealEstimationScreen
+        mealImage={mealImage}
+        totalCalories={estimationData.totalCalories}
+        protein={estimationData.protein}
+        carbs={estimationData.carbs}
+        fat={estimationData.fat}
+        identifiedItems={identifiedItems}
+        onRetake={handleRetake}
+        onAddItem={handleAddItem}
+        onEditItem={handleEditItem}
+        onDeleteItem={handleDeleteItem}
+        onConfirmAndLog={handleConfirmAndLog}
+      />
       <ConfirmationModal
         visible={!!itemToDeleteId}
         onClose={() => setItemToDeleteId(null)}
@@ -161,6 +159,6 @@ export function MealEstimationModal({
         cancelLabel={t('meals.deleteItem.cancel')}
         variant="destructive"
       />
-    </>
+    </FullScreenModal>
   );
 }

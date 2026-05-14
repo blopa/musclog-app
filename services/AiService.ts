@@ -1,16 +1,54 @@
+import { Platform } from 'react-native';
+
 import { GEMINI_MODELS } from '@/constants/ai';
 import { SettingsService } from '@/database/services';
+import { GatewayService } from '@/services/GatewayService';
+import { isProduction } from '@/utils/app';
 import type { CoachAIConfig } from '@/utils/coachAI';
+import { handleError } from '@/utils/handleError';
+import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
 
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings.
    * Priority:
-   * 1. Manual Gemini API Key
-   * 2. OpenAI API Key
+   * 0. Musclog Free Tier Gateway (overrides all other providers when enabled)
+   * 1. On-device AI (when enabled and available)
+   * 2. Local LLM
+   * 3. Gemini API Key
+   * 4. OpenAI API Key
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
+      // On web production builds, CORS blocks browser→Cloudflare direct calls.
+      // In development the client uses a CORS proxy (see buildOpenAIClient).
+      const useGateway = await SettingsService.getUseMusclogFreeTier();
+      if (useGateway && (Platform.OS !== 'web' || !isProduction())) {
+        const language = await SettingsService.getLanguage();
+        return GatewayService.buildGatewayConfig(language);
+      }
+
+      const useOnDeviceAi = await SettingsService.getUseOnDeviceAi();
+      if (useOnDeviceAi && (await isOnDeviceAiAvailable())) {
+        return {
+          provider: 'on-device',
+          model: 'on-device',
+          language: await SettingsService.getLanguage(),
+        };
+      }
+
+      const enableLocalLlm = await SettingsService.getEnableLocalLlm();
+      const localLlmBaseUrl = (await SettingsService.getLocalLlmBaseUrl()).trim();
+      if (enableLocalLlm && localLlmBaseUrl) {
+        return {
+          provider: 'local',
+          apiKey: (await SettingsService.getLocalLlmApiKey()).trim() || 'ollama',
+          model: (await SettingsService.getLocalLlmModel()) || 'llama3',
+          baseUrl: localLlmBaseUrl,
+          language: await SettingsService.getLanguage(),
+        };
+      }
+
       const enableGemini = await SettingsService.getEnableGoogleGemini();
       const geminiKey = (await SettingsService.getGoogleGeminiApiKey()).trim();
       if (enableGemini && geminiKey) {
@@ -34,6 +72,7 @@ export class AiService {
         };
       }
     } catch (error) {
+      handleError(error, 'AiService.getAiConfig');
       console.error('[AiService] Error resolving AI config:', error);
     }
 

@@ -1,161 +1,130 @@
-import { format } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { Plus } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { CurrentGoalsCard } from '@/components/cards/CurrentGoalsCard';
-import { GoalHistoryCard } from '@/components/cards/GoalHistoryCard';
 import { Button } from '@/components/theme/Button';
-import { type EatingPhase } from '@/database/models';
 import NutritionGoal from '@/database/models/NutritionGoal';
-import { NutritionGoalService } from '@/database/services';
+import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
-import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
-import { useTheme } from '@/hooks/useTheme';
-import { convertEatingPhaseToUI, type EatingPhaseUI } from '@/types/EatingPhaseUI';
+import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
+import { useSettings } from '@/hooks/useSettings';
 import { localDayStartMs } from '@/utils/calendarDate';
+import {
+  resolveDynamicGoalPreview,
+  resolveGoalTrajectoryCalories,
+} from '@/utils/dynamicNutritionTarget';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
+import { calculateMacros, fiberFromCalories } from '@/utils/nutritionCalculator';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { ConfirmationModal } from './ConfirmationModal';
+import ExerciseGoalCreationModal from './ExerciseGoalCreationModal';
+import { FitnessGoalsTabContent } from './FitnessGoalsTabContent';
 import { FullScreenModal } from './FullScreenModal';
-import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
+import { GoalCreationMethodModal } from './GoalCreationMethodModal';
+import { GoalWizardModal } from './GoalWizardModal';
+import {
+  NutritionGoals,
+  NutritionGoalsInitialValues,
+  NutritionGoalsModal,
+} from './NutritionGoalsModal';
+import { NutritionGoalsTabContent } from './NutritionGoalsTabContent';
 
-interface GoalHistoryItem {
-  id: number;
-  dateRange: string;
-  phase: EatingPhaseUI;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  weight: number;
-  bodyFat: number;
-}
-
-interface CurrentGoal {
-  phase: EatingPhaseUI;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  targetWeight?: number;
-  bodyFat?: number;
-  ffmi?: number;
-  bmi?: number;
-  goalDate?: string;
-}
-
-type GoalsManagementModalProps = {
+interface GoalsManagementModalProps {
   visible: boolean;
   onClose: () => void;
-};
-
-function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
-  return {
-    totalCalories: goal.totalCalories,
-    protein: goal.protein,
-    carbs: goal.carbs,
-    fats: goal.fats,
-    fiber: goal.fiber,
-    eatingPhase: goal.eatingPhase as EatingPhase,
-    targetWeight: goal.targetWeight,
-    targetBodyFat: goal.targetBodyFat,
-    targetBMI: goal.targetBmi,
-    targetFFMI: goal.targetFfmi,
-    targetDate: goal.targetDate ?? null,
-  };
+  tab: 'nutrition' | 'fitness';
 }
 
-export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
-  const theme = useTheme();
+export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
   const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
+  const { disableMinimumCalories, useBfForCalculations } = useSettings();
+  const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
+  const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
+  const [wizardModalVisible, setWizardModalVisible] = useState(false);
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
+  const [exerciseGoalCreationModalVisible, setExerciseGoalCreationModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
   const [isDeletingGoal, setIsDeletingGoal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [pendingWizardPrefill, setPendingWizardPrefill] = useState<Partial<NutritionGoals> | null>(
+    null
+  );
+
+  const refreshNutritionRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   useEffect(() => {
-    if (!visible) {
+    if (visible) {
+      setActiveTab(tab);
+    } else {
+      setCreationMethodModalVisible(false);
+      setWizardModalVisible(false);
       setNutritionGoalsModalVisible(false);
+      setExerciseGoalCreationModalVisible(false);
       setConfirmDeleteVisible(false);
       setSelectedGoal(null);
     }
-  }, [visible]);
+  }, [visible, tab]);
 
-  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
+  const nutritionGoalResult = useCurrentNutritionGoal({
     mode: 'history',
     visible,
   });
 
-  const currentGoal = useMemo<CurrentGoal | null>(() => {
-    if (!current) {
-      return null;
-    }
+  const currentNutritionGoal =
+    'current' in nutritionGoalResult ? nutritionGoalResult.current : null;
 
-    return {
-      phase: convertEatingPhaseToUI(current.eatingPhase),
-      calories: current.totalCalories,
-      protein: current.protein,
-      carbs: current.carbs,
-      fat: current.fats,
-      targetWeight: current.targetWeight,
-      bodyFat: current.targetBodyFat,
-      bmi: current.targetBmi,
-      ffmi: current.targetFfmi,
-      goalDate: current.targetDate
-        ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
-        : undefined,
-    };
-  }, [current, dateFnsLocale]);
-
-  const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
-    if (!current) {
+  const currentGoalsData = useMemo<NutritionGoalsInitialValues | undefined>(() => {
+    if (!currentNutritionGoal) {
       return undefined;
     }
-    return goalToFormData(current);
-  }, [current]);
+    return nutritionGoalToInitialValues(currentNutritionGoal);
+  }, [currentNutritionGoal]);
 
-  // Keep raw NutritionGoal alongside display data to enable edit/delete
-  const historyWithRaw = useMemo(
-    () =>
-      goals
-        .filter((goal) => goal.effectiveUntil !== null)
-        .map((goal, index) => {
-          const startDate = new Date(goal.createdAt);
-          const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
-          const dateRange =
-            format(startDate, 'MMM d', { locale: dateFnsLocale }) ===
-            format(endDate, 'MMM d', { locale: dateFnsLocale })
-              ? format(startDate, 'MMM d, yyyy', { locale: dateFnsLocale })
-              : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
-
-          const display: GoalHistoryItem = {
-            id: parseInt(goal.id, 10) || index,
-            dateRange,
-            phase: convertEatingPhaseToUI(goal.eatingPhase),
-            calories: goal.totalCalories,
-            protein: goal.protein,
-            carbs: goal.carbs,
-            fat: goal.fats,
-            weight: goal.targetWeight,
-            bodyFat: goal.targetBodyFat,
-          };
-
-          return { display, raw: goal };
-        }),
-    [goals, dateFnsLocale]
-  );
+  const defaultEatingPhase =
+    pendingWizardPrefill?.eatingPhase ?? currentGoalsData?.eatingPhase ?? 'maintain';
+  const { defaults: computedDefaults, planData } = useDefaultNutritionGoals(defaultEatingPhase);
 
   const handleNewGoal = () => {
+    if (activeTab === 'nutrition') {
+      setSelectedGoal(null);
+      setIsEditing(false);
+      setCreationMethodModalVisible(true);
+    } else {
+      setExerciseGoalCreationModalVisible(true);
+    }
+  };
+
+  const handleSelectManualCreation = () => {
+    setCreationMethodModalVisible(false);
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleSelectAutoCalculate = () => {
+    setCreationMethodModalVisible(false);
     setSelectedGoal(null);
     setIsEditing(false);
+    setPendingWizardPrefill(computedDefaults);
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleSelectGuidedCreation = () => {
+    setCreationMethodModalVisible(false);
+    setWizardModalVisible(true);
+  };
+
+  const handleWizardComplete = (prefill: Partial<NutritionGoals>) => {
+    setWizardModalVisible(false);
+    setSelectedGoal(null);
+    setIsEditing(false);
+    setPendingWizardPrefill(prefill);
     setNutritionGoalsModalVisible(true);
   };
 
@@ -172,17 +141,13 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleRegenerateCheckins = async (goal: NutritionGoal) => {
     setIsRegenerating(true);
-    // Use setTimeout to ensure the UI has time to update the loading state
-    // and show the loading indicator before starting the heavy DB operations
     setTimeout(async () => {
       try {
         await NutritionGoalService.regenerateCheckins(goal.id);
       } catch (error) {
-        console.error('Error regenerating check-ins:', error);
-        captureException(error, {
-          data: { context: 'GoalsManagementModal.handleRegenerateCheckins' },
+        handleError(error, 'GoalsManagementModal.handleRegenerateCheckins', {
+          snackbarMessage: t('errors.somethingWentWrong'),
         });
-        showSnackbar('error', t('errors.somethingWentWrong'));
       } finally {
         setIsRegenerating(false);
       }
@@ -198,11 +163,13 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     await flushLoadingPaint();
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
-      await refresh();
+      if (refreshNutritionRef.current) {
+        await refreshNutritionRef.current();
+      }
     } catch (error) {
-      console.error('Error deleting nutrition goal:', error);
-      captureException(error, { data: { context: 'GoalsManagementModal.handleConfirmDelete' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'GoalsManagementModal.handleConfirmDelete', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsDeletingGoal(false);
       setGoalToDelete(null);
@@ -211,163 +178,206 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleCloseNutritionGoalsModal = () => {
     setNutritionGoalsModalVisible(false);
+    setPendingWizardPrefill(null);
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
-    const input = {
-      totalCalories: nutritionGoals.totalCalories,
-      protein: nutritionGoals.protein,
-      carbs: nutritionGoals.carbs,
-      fats: nutritionGoals.fats,
-      fiber: nutritionGoals.fiber,
-      eatingPhase: nutritionGoals.eatingPhase,
-      targetWeight: nutritionGoals.targetWeight ?? undefined,
-      targetBodyFat: nutritionGoals.targetBodyFat ?? undefined,
-      targetBMI: nutritionGoals.targetBMI ?? undefined,
-      targetFFMI: nutritionGoals.targetFFMI ?? undefined,
-      targetDate: nutritionGoals.targetDate ?? null,
-    };
+    let input = nutritionGoalsToInput(nutritionGoals);
 
     try {
+      if (input.isDynamic && input.targetWeight != null && input.targetDate != null) {
+        const resolved = await resolveDynamicGoalPreview(
+          {
+            eatingPhase: input.eatingPhase,
+            targetWeight: input.targetWeight,
+            targetDate: input.targetDate,
+          },
+          new Date()
+        );
+
+        if (resolved) {
+          input = {
+            ...input,
+            totalCalories: resolved.totalCalories,
+            protein: resolved.protein,
+            carbs: resolved.carbs,
+            fats: resolved.fats,
+            fiber: resolved.fiber,
+          };
+        }
+      }
+
       if (isEditing && selectedGoal) {
-        await NutritionGoalService.updateGoal(selectedGoal.id, input);
+        await NutritionGoalService.updateGoal(selectedGoal.id, input, true);
       } else {
         const startDate = nutritionGoals.goalStartDate;
         const todayStartMs = localDayStartMs(new Date());
+
+        let savedGoalId: string;
         if (startDate != null && startDate < todayStartMs) {
-          await NutritionGoalService.addGoalAtDate(input, startDate);
+          savedGoalId = (await NutritionGoalService.addGoalAtDate(input, startDate)).id;
         } else {
-          await NutritionGoalService.saveGoals(input);
+          savedGoalId = (await NutritionGoalService.saveGoals(input)).id;
         }
+
+        await NutritionGoalService.regenerateCheckins(savedGoalId);
       }
-      await refresh();
+
+      if (refreshNutritionRef.current) {
+        await refreshNutritionRef.current();
+      }
+
       setNutritionGoalsModalVisible(false);
+      setPendingWizardPrefill(null);
     } catch (error) {
-      console.error('Error saving nutrition goals:', error);
-      captureException(error, {
-        data: { context: 'GoalsManagementModal.handleSaveNutritionGoals' },
+      handleError(error, 'GoalsManagementModal.handleSaveNutritionGoals', {
+        snackbarMessage: t('errors.somethingWentWrong'),
       });
+    }
+  };
+
+  const handleSaveExerciseGoal = async (data: any) => {
+    try {
+      await ExerciseGoalService.saveGoal(data);
+      setExerciseGoalCreationModalVisible(false);
+    } catch (error) {
+      console.error('Error saving exercise goal:', error);
       showSnackbar('error', t('errors.somethingWentWrong'));
     }
   };
 
-  const editModalInitialGoals =
-    isEditing && selectedGoal ? goalToFormData(selectedGoal) : currentGoalsData;
+  const editModalInitialGoals = useMemo(() => {
+    if (isEditing && selectedGoal) {
+      return nutritionGoalToInitialValues(selectedGoal);
+    }
+
+    if (pendingWizardPrefill) {
+      const base = { ...computedDefaults, ...pendingWizardPrefill };
+      const { targetWeight, targetDate, eatingPhase } = pendingWizardPrefill;
+      if (
+        targetWeight != null &&
+        targetDate != null &&
+        eatingPhase != null &&
+        eatingPhase !== 'maintain' &&
+        planData != null &&
+        planData.tdee > 0
+      ) {
+        const daysToGoal = differenceInCalendarDays(new Date(targetDate), new Date());
+        const weightDeltaKg = targetWeight - planData.currentWeightKg;
+
+        if (daysToGoal > 0 && Math.abs(weightDeltaKg) >= 0.1) {
+          const dateAwareCalories = resolveGoalTrajectoryCalories({
+            tdee: planData.tdee,
+            bmr: planData.bmr,
+            eatingPhase,
+            currentWeightKg: planData.currentWeightKg,
+            targetWeightKg: targetWeight,
+            remainingDays: daysToGoal,
+            gender: planData.gender,
+            liftingExperience: planData.liftingExperience,
+            bodyFatPercent: useBfForCalculations ? planData.bodyFatPercent : undefined,
+            disableMinimumCalories,
+          });
+
+          const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal, {
+            weightKg: planData.currentWeightKg,
+            bodyFatPercent: useBfForCalculations ? planData.bodyFatPercent : undefined,
+          });
+          return {
+            ...base,
+            totalCalories: dateAwareCalories,
+            protein: macros.protein,
+            carbs: macros.carbs,
+            fats: macros.fats,
+            fiber: fiberFromCalories(dateAwareCalories),
+          } as NutritionGoalsInitialValues;
+        }
+      }
+
+      return base;
+    }
+
+    return currentGoalsData ?? computedDefaults;
+  }, [
+    disableMinimumCalories,
+    useBfForCalculations,
+    isEditing,
+    selectedGoal,
+    pendingWizardPrefill,
+    currentGoalsData,
+    computedDefaults,
+    planData,
+  ]);
 
   return (
-    <>
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('goalsManagement.title')}
-        headerRight={
-          <Button
-            label={t('goalsManagement.newGoal')}
-            icon={Plus}
-            iconPosition="left"
-            variant="gradientCta"
-            size="sm"
-            onPress={handleNewGoal}
-          />
-        }
-        scrollable={false}
-      >
-        {isLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-          </View>
-        ) : (
-          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="shrink-0 px-4 pb-6" />
-            {/* Scrollable content */}
-            <View className="flex-1 px-4 pb-32">
-              {/* Current Goals Section */}
-              {currentGoal ? (
-                <View className="mb-8">
-                  <View className="mb-3 flex-row items-center justify-between">
-                    <Text
-                      className="font-bold uppercase tracking-widest text-text-secondary"
-                      style={{ fontSize: theme.typography.fontSize.xs }}
-                    >
-                      {t('goalsManagement.currentGoals')}
-                    </Text>
-                    <View
-                      className="rounded-full border px-2"
-                      style={{
-                        backgroundColor: theme.colors.accent.primary10,
-                        borderColor: theme.colors.accent.primary20,
-                        paddingVertical: theme.spacing.padding.xsHalf,
-                      }}
-                    >
-                      <Text
-                        className="font-bold text-accent-primary"
-                        style={{ fontSize: theme.typography.fontSize.xs }}
-                      >
-                        {t('goalsManagement.active')}
-                      </Text>
-                    </View>
-                  </View>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('goalsManagement.title')}
+      headerRight={
+        <Button
+          label={t('goalsManagement.newGoal')}
+          icon={Plus}
+          iconPosition="left"
+          variant="gradientCta"
+          size="sm"
+          onPress={handleNewGoal}
+        />
+      }
+      scrollable={false}
+    >
+      <View className="flex-row border-b border-border-light px-4">
+        <Pressable
+          onPress={() => setActiveTab('nutrition')}
+          className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+        >
+          <Text
+            className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}
+          >
+            {t('goalsManagement.nutritionAndBodyTab')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveTab('fitness')}
+          className={`py-4 ${activeTab === 'fitness' ? 'border-b-2 border-accent-primary' : ''}`}
+        >
+          <Text
+            className={`text-sm font-semibold ${activeTab === 'fitness' ? 'text-accent-primary' : 'text-text-tertiary'}`}
+          >
+            {t('goalsManagement.fitnessAndExerciseTab')}
+          </Text>
+        </Pressable>
+      </View>
 
-                  {/* Current Goal Card */}
-                  <CurrentGoalsCard
-                    goal={currentGoal}
-                    onEdit={current ? () => handleEditGoal(current) : undefined}
-                    onRegenerateCheckins={
-                      current ? () => handleRegenerateCheckins(current) : undefined
-                    }
-                    onDelete={current ? () => handleDeleteGoal(current) : undefined}
-                    isRegenerating={isRegenerating}
-                  />
-                </View>
-              ) : null}
+      {activeTab === 'nutrition' ? (
+        <NutritionGoalsTabContent
+          visible={visible ? activeTab === 'nutrition' : false}
+          onEditGoal={handleEditGoal}
+          onDeleteGoal={handleDeleteGoal}
+          onRegenerateCheckins={handleRegenerateCheckins}
+          isRegenerating={isRegenerating}
+          refreshRef={refreshNutritionRef}
+        />
+      ) : (
+        <FitnessGoalsTabContent
+          visible={visible ? activeTab === 'fitness' : false}
+          onNewGoal={() => setExerciseGoalCreationModalVisible(true)}
+        />
+      )}
 
-              {/* Goals History Section */}
-              {historyWithRaw.length > 0 ? (
-                <View className="mb-6">
-                  <Text
-                    className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
-                    style={{ fontSize: theme.typography.fontSize.xs }}
-                  >
-                    {t('goalsManagement.history')}
-                  </Text>
+      <GoalCreationMethodModal
+        visible={creationMethodModalVisible}
+        onClose={() => setCreationMethodModalVisible(false)}
+        onSelectManual={handleSelectManualCreation}
+        onSelectGuided={handleSelectGuidedCreation}
+        onSelectAutoCalculate={handleSelectAutoCalculate}
+      />
 
-                  <View>
-                    {historyWithRaw.map(({ display, raw }, index) => {
-                      const isLast = index === historyWithRaw.length - 1;
-                      return (
-                        <GoalHistoryCard
-                          key={display.id}
-                          goal={display}
-                          isLast={isLast}
-                          onEdit={() => handleEditGoal(raw)}
-                          onRegenerateCheckins={() => handleRegenerateCheckins(raw)}
-                          onDelete={() => handleDeleteGoal(raw)}
-                          isRegenerating={isRegenerating}
-                        />
-                      );
-                    })}
-                  </View>
-                </View>
-              ) : null}
-
-              {/* Empty state */}
-              {!currentGoal && historyWithRaw.length === 0 ? (
-                <View className="flex-1 items-center justify-center py-16">
-                  <Text className="text-center text-text-secondary">
-                    {t('goalsManagement.subtitle')}
-                  </Text>
-                  <Text className="mt-2 text-center text-xs text-text-tertiary">
-                    {t('goalsManagement.emptyStateMessage')}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-
-            {/* Bottom spacing for navigation */}
-            <View style={{ height: theme.size['24'] }} />
-          </ScrollView>
-        )}
-      </FullScreenModal>
+      <GoalWizardModal
+        visible={wizardModalVisible}
+        onClose={() => setWizardModalVisible(false)}
+        onComplete={handleWizardComplete}
+      />
 
       <NutritionGoalsModal
         visible={nutritionGoalsModalVisible}
@@ -375,6 +385,13 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         onSave={handleSaveNutritionGoals}
         initialGoals={editModalInitialGoals}
         isEditing={isEditing}
+        hideEatingPhase={!!pendingWizardPrefill}
+      />
+
+      <ExerciseGoalCreationModal
+        visible={exerciseGoalCreationModalVisible}
+        onClose={() => setExerciseGoalCreationModalVisible(false)}
+        onSave={handleSaveExerciseGoal}
       />
 
       <ConfirmationModal
@@ -390,6 +407,6 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         variant="destructive"
         isLoading={isDeletingGoal}
       />
-    </>
+    </FullScreenModal>
   );
 }

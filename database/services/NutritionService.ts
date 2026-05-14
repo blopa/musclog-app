@@ -3,24 +3,27 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { database } from '@/database';
-import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
+import {
+  decryptNumber,
+  encryptNumber,
+  encryptNutritionLogSnapshot,
+} from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { MealService } from '@/database/services/MealService';
+import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { requestNutritionWidgetUpdate } from '@/widgets/widget-update-helpers';
+import { widgetEvents } from '@/utils/widgetEvents';
 
-async function triggerWidgetUpdate(): Promise<void> {
-  if (Platform.OS !== 'android') {
-    return;
-  }
-
-  await requestNutritionWidgetUpdate();
+function triggerWidgetUpdate(): void {
+  widgetEvents.emitNutritionWidgetUpdate();
 }
 
 /**
@@ -111,7 +114,7 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  await triggerWidgetUpdate();
+  triggerWidgetUpdate();
 }
 
 export class NutritionService {
@@ -133,6 +136,11 @@ export class NutritionService {
     const log = await database.write(async () => {
       const food = await database.get<Food>('foods').find(foodId);
       const now = Date.now();
+      let resolvedPortionId = portionId;
+      if (!resolvedPortionId && food.resolvedNutritionBasis === 'per_serving') {
+        const defaultPortion = await food.getDefaultPortionAsync();
+        resolvedPortionId = defaultPortion?.id;
+      }
       const encrypted = await encryptNutritionLogSnapshot({
         loggedFoodName: food.name ?? undefined,
         loggedCalories: food.calories ?? 0,
@@ -149,7 +157,7 @@ export class NutritionService {
         record.date = dateTimestamp;
         record.type = mealType;
         record.amount = amount;
-        record.portionId = portionId;
+        record.portionId = resolvedPortionId;
         record.loggedFoodNameRaw = encrypted.loggedFoodName;
         record.loggedCaloriesRaw = encrypted.loggedCalories;
         record.loggedProteinRaw = encrypted.loggedProtein;
@@ -157,6 +165,10 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.loggedNutriscore = food.nutriscore ?? undefined;
+        record.loggedEcoscore = food.ecoscore ?? undefined;
+        record.loggedNovaGroup = food.novaGroup ?? undefined;
+        record.snapshotBasis = food.resolvedNutritionBasis;
         record.groupId = groupId;
         record.loggedMealName = loggedMealName;
         record.createdAt = now;
@@ -165,7 +177,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     // Health Connect / Apple Health (user-entered only — health-sourced records
@@ -186,7 +198,9 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        handleError(err, 'NutritionService.addNutritionLog.healthConnect');
+      });
 
       if (hcId) {
         await database.write(async () => {
@@ -289,9 +303,17 @@ export class NutritionService {
     carbs: number;
     fat: number;
     fiber: number;
+    alcohol: number;
     byMealType: Record<
       MealType,
-      { calories: number; protein: number; carbs: number; fat: number; fiber: number }
+      {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      }
     >;
   }> {
     try {
@@ -303,12 +325,13 @@ export class NutritionService {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        alcohol: 0,
         byMealType: {
-          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
         },
       };
 
@@ -322,15 +345,18 @@ export class NutritionService {
           totals.carbs += nutrients.carbs;
           totals.fat += nutrients.fat;
           totals.fiber += nutrients.fiber;
+          totals.alcohol += nutrients.alcohol;
 
           totals.byMealType[mealType].calories += nutrients.calories;
           totals.byMealType[mealType].protein += nutrients.protein;
           totals.byMealType[mealType].carbs += nutrients.carbs;
           totals.byMealType[mealType].fat += nutrients.fat;
           totals.byMealType[mealType].fiber += nutrients.fiber;
+          totals.byMealType[mealType].alcohol += nutrients.alcohol;
         } catch (error) {
           // Skip individual log errors to prevent total failure
           console.error('Error calculating nutrients for log:', error);
+          handleError(error, 'NutritionService.getDailyNutrients.logLoop');
           continue;
         }
       }
@@ -338,6 +364,7 @@ export class NutritionService {
       return totals;
     } catch (error) {
       console.error('Error getting daily nutrients:', error);
+      handleError(error, 'NutritionService.getDailyNutrients');
       // Return default values on error
       return {
         calories: 0,
@@ -345,12 +372,13 @@ export class NutritionService {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        alcohol: 0,
         byMealType: {
-          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+          other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
         },
       };
     }
@@ -439,7 +467,7 @@ export class NutritionService {
       return log;
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
 
     return updatedLog;
   }
@@ -452,7 +480,7 @@ export class NutritionService {
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -493,7 +521,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -512,7 +540,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -543,6 +571,10 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.loggedNutriscore = log.loggedNutriscore;
+            record.loggedEcoscore = log.loggedEcoscore;
+            record.loggedNovaGroup = log.loggedNovaGroup;
+            record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
@@ -552,7 +584,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -578,7 +610,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -614,6 +646,10 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.loggedNutriscore = log.loggedNutriscore;
+            record.loggedEcoscore = log.loggedEcoscore;
+            record.loggedNovaGroup = log.loggedNovaGroup;
+            record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
@@ -630,7 +666,7 @@ export class NutritionService {
       );
     });
 
-    await triggerWidgetUpdate();
+    triggerWidgetUpdate();
   }
 
   /**
@@ -702,7 +738,14 @@ export class NutritionService {
     {
       log: NutritionLog;
       food: Food | null;
-      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      nutrients: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      };
       gramWeight: number;
       displayName: string;
     }[]
@@ -916,6 +959,10 @@ export class NutritionService {
         log.loggedFatRaw = originalLog.loggedFatRaw ?? '';
         log.loggedFiberRaw = originalLog.loggedFiberRaw ?? '';
         log.loggedMicrosRaw = originalLog.loggedMicrosRaw;
+        log.loggedNutriscore = originalLog.loggedNutriscore;
+        log.loggedEcoscore = originalLog.loggedEcoscore;
+        log.loggedNovaGroup = originalLog.loggedNovaGroup;
+        log.snapshotBasis = originalLog.snapshotBasis;
         log.createdAt = now;
         log.updatedAt = now;
       });
@@ -934,6 +981,7 @@ export class NutritionService {
       fat: number;
       fiber?: number;
       foodId?: string;
+      imageUrl?: string;
     },
     date: Date,
     mealType: MealType,
@@ -960,11 +1008,11 @@ export class NutritionService {
       const now = Date.now();
 
       // Normalize macros to 100g (convention for both Food model and snapshot)
-      const normalizedCalories = (mealData.calories / amount) * 100;
-      const normalizedProtein = (mealData.protein / amount) * 100;
-      const normalizedCarbs = (mealData.carbs / amount) * 100;
-      const normalizedFat = (mealData.fat / amount) * 100;
-      const normalizedFiber = ((mealData.fiber ?? 0) / amount) * 100;
+      const normalizedCalories = Math.max(0, (mealData.calories / amount) * 100);
+      const normalizedProtein = Math.max(0, (mealData.protein / amount) * 100);
+      const normalizedCarbs = Math.max(0, (mealData.carbs / amount) * 100);
+      const normalizedFat = Math.max(0, (mealData.fat / amount) * 100);
+      const normalizedFiber = Math.max(0, ((mealData.fiber ?? 0) / amount) * 100);
 
       // Create a temporary food entry for the AI-generated meal
       const tempFood = await database.get<Food>('foods').create((food) => {
@@ -982,6 +1030,7 @@ export class NutritionService {
           sodium: 0,
         };
         food.isFavorite = false;
+        food.imageUrl = mealData.imageUrl;
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -1009,6 +1058,7 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.snapshotBasis = 'per_100g';
         record.groupId = options?.groupId;
         record.loggedMealName = options?.loggedMealName;
         record.createdAt = now;
@@ -1017,7 +1067,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -1036,7 +1086,9 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        handleError(err, 'NutritionService.updateNutritionLog.healthConnect');
+      });
     }
 
     return log;
@@ -1074,9 +1126,12 @@ export class NutritionService {
             fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
             fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
-        } catch {
-          // Food not found — fall back to LLM values
-          return ingredient;
+        } catch (error) {
+          handleError(error, 'NutritionService.normalizeAiMealIngredients');
+          // Food not found — fall back to LLM values and strip the invalid foodId
+          // so callers create a custom food instead of linking a missing record.
+          const { foodId: _, ...rest } = ingredient;
+          return rest as T;
         }
       })
     );
@@ -1098,7 +1153,7 @@ export class NutritionService {
     }[],
     date: Date,
     mealType: MealType,
-    options?: { groupId?: string; loggedMealName?: string }
+    options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
     const now = Date.now();
@@ -1133,6 +1188,7 @@ export class NutritionService {
               record.loggedFatRaw = encrypted.loggedFat;
               record.loggedFiberRaw = encrypted.loggedFiber;
               record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+              record.snapshotBasis = food.resolvedNutritionBasis;
               record.groupId = options?.groupId;
               record.loggedMealName = options?.loggedMealName;
               record.createdAt = now;
@@ -1153,15 +1209,16 @@ export class NutritionService {
           food.name = ingredient.name;
           food.brand = undefined;
           food.barcode = undefined;
-          food.calories = (ingredient.calories / ingredient.grams) * 100; // Normalize to 100g
-          food.protein = (ingredient.protein / ingredient.grams) * 100;
-          food.carbs = (ingredient.carbs / ingredient.grams) * 100;
-          food.fat = (ingredient.fat / ingredient.grams) * 100;
-          food.fiber = ((ingredient.fiber ?? 0) / ingredient.grams) * 100;
+          food.calories = Math.max(0, (ingredient.calories / ingredient.grams) * 100); // Normalize to 100g
+          food.protein = Math.max(0, (ingredient.protein / ingredient.grams) * 100);
+          food.carbs = Math.max(0, (ingredient.carbs / ingredient.grams) * 100);
+          food.fat = Math.max(0, (ingredient.fat / ingredient.grams) * 100);
+          food.fiber = Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100);
           food.micros = {
             sugar: 0,
             sodium: 0,
           };
+          food.imageUrl = options?.imageUrl;
           food.isFavorite = false;
           food.createdAt = now;
           food.updatedAt = now;
@@ -1170,11 +1227,11 @@ export class NutritionService {
         // Create encrypted snapshot for the nutrition log (convention is per 100g)
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: ingredient.name,
-          loggedCalories: (ingredient.calories / ingredient.grams) * 100,
-          loggedProtein: (ingredient.protein / ingredient.grams) * 100,
-          loggedCarbs: (ingredient.carbs / ingredient.grams) * 100,
-          loggedFat: (ingredient.fat / ingredient.grams) * 100,
-          loggedFiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
+          loggedCalories: Math.max(0, (ingredient.calories / ingredient.grams) * 100),
+          loggedProtein: Math.max(0, (ingredient.protein / ingredient.grams) * 100),
+          loggedCarbs: Math.max(0, (ingredient.carbs / ingredient.grams) * 100),
+          loggedFat: Math.max(0, (ingredient.fat / ingredient.grams) * 100),
+          loggedFiber: Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100),
           loggedMicros: {},
         });
 
@@ -1190,6 +1247,7 @@ export class NutritionService {
           record.loggedFatRaw = encrypted.loggedFat;
           record.loggedFiberRaw = encrypted.loggedFiber;
           record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          record.snapshotBasis = 'per_100g';
           record.groupId = options?.groupId;
           record.loggedMealName = options?.loggedMealName;
           record.createdAt = now;
@@ -1202,8 +1260,22 @@ export class NutritionService {
       return createdLogs;
     });
 
+    if (options?.imageUrl && logs.length > 0) {
+      const foodItems = logs.map((log) => ({ foodId: log.foodId, amount: log.amount }));
+      await MealService.createMealFromFoods(
+        options.loggedMealName ?? i18n.t('food.generic'),
+        foodItems,
+        undefined,
+        true,
+        undefined,
+        { imageUrl: options.imageUrl }
+      ).catch((err) => {
+        handleError(err, 'NutritionService.logCustomMealsBatch.createMeal');
+      });
+    }
+
     if (Platform.OS === 'android') {
-      await triggerWidgetUpdate();
+      triggerWidgetUpdate();
     }
 
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -1224,13 +1296,49 @@ export class NutritionService {
             carbs: nutrients.carbs,
             fat: nutrients.fat,
             fiber: nutrients.fiber,
-          }).catch(() => undefined);
+          }).catch((err) => {
+            handleError(err, 'NutritionService.syncLogToHealthPlatform.healthConnect');
+          });
         } catch (error) {
           console.error('Error syncing log to health platform:', error);
+          handleError(error, 'NutritionService.syncLogToHealthPlatform');
         }
       }
     }
 
     return logs;
+  }
+
+  static async fixNegativeFiber(): Promise<void> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const negativeFiberLogs = (
+      await Promise.all(
+        logs.map(async (log) => {
+          const fiber = await decryptNumber(log.loggedFiberRaw);
+          return fiber < 0 ? log : null;
+        })
+      )
+    ).filter((log): log is NutritionLog => log !== null);
+
+    if (negativeFiberLogs.length === 0) {
+      return;
+    }
+
+    const zeroFiber = await encryptNumber(0);
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...negativeFiberLogs.map((log) =>
+          log.prepareUpdate((r) => {
+            r.loggedFiberRaw = zeroFiber;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
   }
 }

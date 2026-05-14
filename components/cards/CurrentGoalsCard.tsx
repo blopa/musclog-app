@@ -31,10 +31,11 @@ interface CurrentGoal {
   carbs: number;
   fat: number;
   targetWeight?: number;
-  bodyFat?: number;
-  ffmi?: number;
-  bmi?: number;
+  bodyFat?: number | null;
+  ffmi?: number | null;
+  bmi?: number | null;
   goalDate?: string;
+  isDynamic?: boolean;
 }
 
 interface CurrentGoalsCardProps {
@@ -134,6 +135,17 @@ export function CurrentGoalsCard({
               {t('currentGoalsCard.kcal')}
             </Text>
           </View>
+          {goal.isDynamic ? (
+            <Text
+              className="mt-1"
+              style={{
+                color: theme.colors.status.emeraldLight,
+                fontSize: theme.typography.fontSize.xs,
+              }}
+            >
+              {t('currentGoalsCard.dynamicNote')}
+            </Text>
+          ) : null}
         </View>
 
         {/* Macros Grid */}
@@ -204,15 +216,15 @@ export function CurrentGoalsCard({
         ) : null}
 
         {/* Target Metrics */}
-        {goal.targetWeight !== undefined ||
-        goal.bodyFat !== undefined ||
-        goal.ffmi !== undefined ||
-        goal.bmi !== undefined ? (
+        {goal.targetWeight != null ||
+        goal.bodyFat != null ||
+        goal.ffmi != null ||
+        goal.bmi != null ? (
           <View
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
             style={{ backgroundColor: theme.colors.background.darkGreen50 }}
           >
-            {targetWeightDisplay !== undefined ? (
+            {targetWeightDisplay != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -234,7 +246,7 @@ export function CurrentGoalsCard({
                 </View>
               </View>
             ) : null}
-            {goal.bodyFat !== undefined ? (
+            {goal.bodyFat != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -245,7 +257,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {formatRoundedDecimal(goal.bodyFat, 1)}{' '}
+                    {formatRoundedDecimal(goal.bodyFat!, 1)}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -256,7 +268,7 @@ export function CurrentGoalsCard({
                 </View>
               </View>
             ) : null}
-            {goal.ffmi !== undefined ? (
+            {goal.ffmi != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -267,12 +279,12 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.ffmi')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {formatRoundedDecimal(goal.ffmi, 1)}
+                    {formatRoundedDecimal(goal.ffmi!, 1)}
                   </Text>
                 </View>
               </View>
             ) : null}
-            {goal.bmi !== undefined ? (
+            {goal.bmi != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -283,7 +295,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.bmi')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {formatRoundedDecimal(goal.bmi, 1)}
+                    {formatRoundedDecimal(goal.bmi!, 1)}
                   </Text>
                 </View>
               </View>
@@ -291,8 +303,28 @@ export function CurrentGoalsCard({
           </View>
         ) : null}
 
-        {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
+        {/* Top-right: Dynamic badge + Eating Phase Badge + Menu Button — rendered last to win touch priority */}
         <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
+          {goal.isDynamic ? (
+            <View
+              className="rounded-full border px-2"
+              style={{
+                borderColor: theme.colors.status.emerald,
+                backgroundColor: theme.colors.status.emerald10,
+                paddingVertical: 2,
+              }}
+            >
+              <Text
+                className="font-bold uppercase"
+                style={{
+                  color: theme.colors.status.emeraldLight,
+                  fontSize: theme.typography.fontSize.xxs,
+                }}
+              >
+                {t('currentGoalsCard.dynamic')}
+              </Text>
+            </View>
+          ) : null}
           <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
           {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
         </View>

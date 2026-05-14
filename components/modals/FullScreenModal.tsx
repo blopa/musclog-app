@@ -2,9 +2,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useRef } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -41,7 +42,6 @@ export function FullScreenModal({
   scrollViewRef,
 }: FullScreenModalProps) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   // Force remount of Modal when visibility changes to prevent "ghost" native window
@@ -73,85 +73,90 @@ export function FullScreenModal({
       onShow={onShow}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
-      <View
+      <SafeAreaView
+        edges={Platform.OS !== 'web' ? ['top', 'bottom'] : []}
         className="flex-1 bg-bg-primary"
-        pointerEvents="auto"
-        style={[
-          webModalStyle,
-          {
-            paddingTop: Platform.OS !== 'web' ? insets.top : 0,
-            paddingBottom: insets.bottom,
-          },
-        ]}
+        style={webModalStyle}
       >
-        {/* Header */}
-        {showHeader ? (
-          <View className="border-b border-border-light bg-bg-primary">
-            <LinearGradient
-              colors={
-                withGradient
-                  ? [theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']
-                  : ['transparent', 'transparent']
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 16,
-                paddingHorizontal: 16,
-                paddingVertical: 16,
-              }}
-            >
-              {closable ? (
-                <Pressable
-                  style={{ marginLeft: -8, padding: 8, borderRadius: 9999 }}
-                  onPress={onClose}
-                  hitSlop={10}
-                >
-                  <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-                </Pressable>
-              ) : null}
-              <View style={{ flex: 1 }}>
-                <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
-                {subtitle ? (
-                  <Text className="mt-0.5 text-sm font-normal text-text-secondary">{subtitle}</Text>
+        <SwipeToReturnWrapper
+          onClose={onClose}
+          enabled={closable}
+          className="flex-1"
+          pointerEvents="auto"
+        >
+          {/* Header */}
+          {showHeader ? (
+            <View className="border-b border-border-light bg-bg-primary">
+              <LinearGradient
+                colors={
+                  withGradient
+                    ? [theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']
+                    : ['transparent', 'transparent']
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 16,
+                  paddingHorizontal: 16,
+                  paddingVertical: 16,
+                }}
+              >
+                {closable ? (
+                  <Pressable
+                    style={{ padding: 12, borderRadius: 9999 }}
+                    onPress={onClose}
+                    hitSlop={12}
+                  >
+                    <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
+                  </Pressable>
                 ) : null}
-              </View>
-              {headerRight ? <View style={{ marginRight: -8 }}>{headerRight}</View> : null}
-            </LinearGradient>
-          </View>
-        ) : null}
-
-        {/* Content area */}
-        <View className="flex-1" pointerEvents="box-none">
-          {scrollable ? (
-            <ScrollView
-              ref={scrollViewRef}
-              className="flex-1"
-              showsVerticalScrollIndicator={false}
-              style={webScrollViewStyle}
-              contentContainerStyle={{
-                paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
-              }}
-            >
-              {children}
-            </ScrollView>
-          ) : (
-            <View className="flex-1" pointerEvents="auto">
-              {children}
+                <View style={{ flex: 1 }}>
+                  <Text className="text-xl font-bold tracking-tight text-text-primary">
+                    {title}
+                  </Text>
+                  {subtitle ? (
+                    <Text className="mt-0.5 text-sm font-normal text-text-secondary">
+                      {subtitle}
+                    </Text>
+                  ) : null}
+                </View>
+                {headerRight ? <View>{headerRight}</View> : null}
+              </LinearGradient>
             </View>
-          )}
-
-          {/* optional footer */}
-          {footer ? (
-            <BottomButtonWrapper>
-              {footer}
-              <View style={{ height: theme.spacing.margin.base }} />
-            </BottomButtonWrapper>
           ) : null}
-        </View>
-      </View>
+
+          {/* Content area */}
+          <View className="flex-1" pointerEvents="box-none">
+            {scrollable ? (
+              <ScrollView
+                ref={scrollViewRef}
+                className="flex-1"
+                showsVerticalScrollIndicator={false}
+                style={webScrollViewStyle}
+                contentContainerStyle={{
+                  paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
+                }}
+              >
+                {children}
+              </ScrollView>
+            ) : (
+              <View className="flex-1" pointerEvents="auto">
+                {children}
+              </View>
+            )}
+
+            {/* optional footer */}
+            {footer ? (
+              <BottomButtonWrapper>
+                {footer}
+                <View style={{ height: theme.spacing.margin.base }} />
+              </BottomButtonWrapper>
+            ) : null}
+          </View>
+        </SwipeToReturnWrapper>
+      </SafeAreaView>
     </Modal>
   );
 }

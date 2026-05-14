@@ -1,6 +1,8 @@
 {
   "home": {
     "greeting": {
+      "goodMorning": "Good Morning",
+      "goodAfternoon": "Good Afternoon",
       "goodEvening": "Good Evening"
     },
     "actions": {

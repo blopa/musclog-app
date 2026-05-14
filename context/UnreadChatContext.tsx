@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -63,11 +64,12 @@ export function UnreadChatProvider({ children }: { children: ReactNode }) {
 
   const clearUnreadCount = useCallback(() => setUnreadCount(0), [setUnreadCount]);
 
-  return (
-    <UnreadChatContext.Provider value={{ unreadCount, setUnreadCount, clearUnreadCount }}>
-      {children}
-    </UnreadChatContext.Provider>
+  const value = useMemo(
+    () => ({ unreadCount, setUnreadCount, clearUnreadCount }),
+    [unreadCount, setUnreadCount, clearUnreadCount]
   );
+
+  return <UnreadChatContext.Provider value={value}>{children}</UnreadChatContext.Provider>;
 }
 
 export function useUnreadChat(): UnreadChatContextType {

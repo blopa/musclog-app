@@ -3,6 +3,7 @@
     "clear": "Очистить",
     "value": "Значение",
     "name": "Имя",
+    "next": "Далее",
     "context": "Контекст",
     "processing": "обработка...",
     "success": "Успешно",
@@ -13,18 +14,22 @@
     "select": "Выбрать...",
     "today": "Сегодня",
     "none": "Нет",
+    "amount_kcal": "{{amount}} ккал",
     "duplicateFailed": "Не удалось дублировать",
     "yesterday": "Вчера",
     "daysAgo": "{{count}} дней назад",
     "oneWeekAgo": "1 неделю назад",
     "weeksAgo": "{{count}} недель назад",
     "monthsAgo": "{{count}} месяцев назад",
+    "oneMonthFromNow": "Через 1 месяц",
+    "monthsFromNow": "Через {{count}} месяцев",
     "seeAll": "Смотреть все",
     "kcal": "ккал",
     "min": "мин",
     "cancel": "Отмена",
     "tryAgain": "Попробовать снова",
     "popular": "Популярное",
+    "photo": "Фото",
     "loading": "Загрузка...",
     "saving": "Сохранение...",
     "save": "Сохранить",
@@ -109,6 +114,33 @@
     "errorMessage": "Сообщение об Ошибке",
     "errorStack": "Стек Ошибки",
     "componentStack": "Стек Компонента",
-    "userAgent": "Пользовательский Агент"
+    "userAgent": "Пользовательский Агент",
+    "app": {
+      "title": "Musclog - Трекер фитнеса и питания"
+    },
+    "nutrition": {
+      "title": "Musclog - Питание",
+      "food": {
+        "title": "Musclog - Питание"
+      }
+    },
+    "workout": {
+      "title": "Musclog - Тренировка",
+      "workouts": {
+        "title": "Musclog - Тренировки"
+      }
+    },
+    "progress": {
+      "title": "Musclog - Прогресс"
+    },
+    "profile": {
+      "title": "Musclog - Профиль"
+    },
+    "settings": {
+      "title": "Musclog - Настройки"
+    },
+    "cycle": {
+      "title": "Musclog - Цикл"
+    }
   }
 }

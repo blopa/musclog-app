@@ -67,7 +67,7 @@ function portionToDisplayItem(
     icon,
     iconColor: colors.color,
     iconBgColor: colors.bg,
-    portionGramWeight: portion.gramWeight,
+    portionGramWeight: portion.gramWeight ?? 0,
   };
 }
 

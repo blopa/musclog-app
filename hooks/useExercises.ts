@@ -5,6 +5,7 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { ExerciseService } from '@/database/services';
+import { handleError } from '@/utils/handleError';
 
 // Hook parameters
 export interface UseExercisesParams {
@@ -165,10 +166,26 @@ export function useExercises({
           }
 
           if (sortOrder === 'asc') {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-          } else {
-            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+            if (aValue > bValue) {
+              return 1;
+            }
+
+            if (aValue < bValue) {
+              return -1;
+            }
+
+            return 0;
           }
+
+          if (aValue < bValue) {
+            return 1;
+          }
+
+          if (aValue > bValue) {
+            return -1;
+          }
+
+          return 0;
         });
       }
 
@@ -190,6 +207,7 @@ export function useExercises({
         setEquipmentTypes(equipmentTypesList);
       }
     } catch (err) {
+      handleError(err, 'useExercises.loadExercises');
       console.error('Error loading exercises:', err);
       setExercises([]);
       setHasMore(false);
@@ -270,9 +288,26 @@ export function useExercises({
             bValue = (bValue as string).toLowerCase();
           }
           if (sortOrder === 'asc') {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+            if (aValue > bValue) {
+              return 1;
+            }
+
+            if (aValue < bValue) {
+              return -1;
+            }
+
+            return 0;
           }
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+
+          if (aValue < bValue) {
+            return 1;
+          }
+
+          if (aValue > bValue) {
+            return -1;
+          }
+
+          return 0;
         });
         setExercises((prev) => [...prev, ...moreExercises]);
         const newOffset = currentOffset + moreExercises.length;
@@ -280,6 +315,7 @@ export function useExercises({
         setHasMore(newOffset < allExercises.length);
       }
     } catch (err) {
+      handleError(err, 'useExercises.loadMoreExercises');
       console.error('Error loading more exercises:', err);
       setHasMore(false);
     } finally {

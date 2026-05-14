@@ -1,4 +1,5 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import type { TFunction } from 'i18next';
 import {
   AlertTriangle,
   Apple,
@@ -54,11 +55,13 @@ import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnified
 import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
-import { captureException } from '@/utils/sentry';
+import { gramsToDisplay } from '@/utils/unitConversion';
+import { getMassUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
-import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
 
@@ -103,6 +106,7 @@ type FoodSearchModalProps = {
   mealType?: MealType; // e.g., "Breakfast", "Lunch", etc. If not provided, inferred from current hour
   /** Date to use when logging food (e.g. the date currently selected on the food screen). */
   logDate?: Date;
+  initialTab?: 'all' | 'myFoods' | 'openfood' | 'usda' | 'meals';
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
@@ -122,7 +126,7 @@ function getMealsTabLabel(options: {
   searchQuery: string;
   filteredCount: number;
   totalCount?: number;
-  t: (key: string) => string;
+  t: TFunction;
 }): string {
   const { searchQuery, filteredCount, totalCount, t } = options;
   const base = t('foodSearch.filters.meals');
@@ -198,7 +202,7 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
         </Text>
       </View>
       {rightAction ? (
-        <Pressable onPress={rightAction.onPress} className="-m-2 p-2">
+        <Pressable onPress={rightAction.onPress} className="p-3">
           <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}
@@ -294,7 +298,7 @@ function getSectionHeaderTitle(
   hasLocalResults: boolean,
   hasApiResults: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isInitialLoad) {
     return t('foodSearch.searching');
@@ -310,7 +314,7 @@ function getSectionHeaderTitle(
 function getSearchingStatusText(
   isLoadingLocal: boolean,
   isLoadingAPI: boolean,
-  t: (key: string) => string
+  t: TFunction
 ): string {
   if (isLoadingLocal && isLoadingAPI) {
     return t('foodSearch.searchingLocalAndAPI');
@@ -328,6 +332,7 @@ export function FoodSearchModal({
   onClose,
   mealType,
   logDate,
+  initialTab = 'all',
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
@@ -338,7 +343,7 @@ export function FoodSearchModal({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
-  const { foodSearchSource, intuitiveEatingMode } = useSettings();
+  const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -413,7 +418,7 @@ export function FoodSearchModal({
       return {
         id: food.id,
         name: food.name ?? '',
-        description: t('foodSearch.foodDescriptionPer100g', {
+        description: t('food.descriptionFormat', {
           brand: food.brand || t('foodSearch.customFoodLabel'),
           calories: formatInteger(
             resolveRoundedPer100gCaloriesForDisplay({
@@ -424,6 +429,8 @@ export function FoodSearchModal({
               fiber: food.fiber,
             })
           ),
+          amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+          unit: t(getMassUnitI18nKey(units)),
         }),
         brand: food.brand,
         serving_size: portion100gName,
@@ -445,6 +452,7 @@ export function FoodSearchModal({
     recentFoodsRaw,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -455,6 +463,7 @@ export function FoodSearchModal({
     if (foodSearchSource === 'both') {
       return { apiLimit: 10, usdaLimit: 10 }; // 10 from each source
     }
+
     return { apiLimit: 20, usdaLimit: 20 }; // 20 from single source
   }, [foodSearchSource]);
 
@@ -634,8 +643,8 @@ export function FoodSearchModal({
           (f) =>
             ({
               id: f.id,
-              name: f.name ?? '',
-              description: t('foodSearch.foodDescriptionFormat', {
+              name: f.name ?? t('food.generic'),
+              description: t('food.descriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
                 calories: formatInteger(
                   resolveRoundedPer100gCaloriesForDisplay({
@@ -646,6 +655,8 @@ export function FoodSearchModal({
                     fiber: f.fiber,
                   })
                 ),
+                amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+                unit: t(getMassUnitI18nKey(units)),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -689,6 +700,7 @@ export function FoodSearchModal({
     mealType,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -700,8 +712,8 @@ export function FoodSearchModal({
       (f) =>
         ({
           id: f.id,
-          name: f.name ?? '',
-          description: t('foodSearch.foodDescriptionFormat', {
+          name: f.name ?? t('food.generic'),
+          description: t('food.descriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
             calories: formatInteger(
               resolveRoundedPer100gCaloriesForDisplay({
@@ -712,6 +724,8 @@ export function FoodSearchModal({
                 fiber: f.fiber,
               })
             ),
+            amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+            unit: t(getMassUnitI18nKey(units)),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -732,6 +746,7 @@ export function FoodSearchModal({
     favoriteFoodsRaw,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
@@ -855,6 +870,14 @@ export function FoodSearchModal({
     mealsTotalCount,
   ]);
 
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    setActiveFilter(initialTab);
+  }, [initialTab, visible]);
+
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
     if (activeFilter === 'openfood' && resultsBySource.api.length === 0) {
@@ -909,9 +932,9 @@ export function FoodSearchModal({
       onClose();
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
-      console.error('Error logging same as yesterday:', err);
-      captureException(err, { data: { context: 'FoodSearchModal.handleSameAsYesterday' } });
-      showSnackbar('error', t('foodSearch.sameAsYesterdayError'));
+      handleError(err, 'FoodSearchModal.handleSameAsYesterday', {
+        snackbarMessage: t('foodSearch.sameAsYesterdayError'),
+      });
     } finally {
       setIsAddingSameAsYesterday(false);
     }
@@ -971,7 +994,7 @@ export function FoodSearchModal({
               <Pressable
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
-                hitSlop={8}
+                hitSlop={12}
               >
                 <View className="rounded-lg p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
@@ -1542,7 +1565,7 @@ export function FoodSearchModal({
 
         {/* Food Details Modal */}
         {selectedFood ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isFoodDetailsVisible}
             onClose={() => {
               setIsFoodDetailsVisible(false);
@@ -1586,7 +1609,7 @@ export function FoodSearchModal({
 
         {/* Meal Details Modal */}
         {selectedMeal ? (
-          <FoodMealDetailsModal
+          <FoodMealTrackingDetailsModal
             visible={isMealDetailsVisible}
             onClose={() => {
               setIsMealDetailsVisible(false);

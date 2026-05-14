@@ -11,7 +11,20 @@ import { schema as watermelonSchema } from './schema';
 const typeMapping: Record<string, () => z.ZodTypeAny> = {
   string: () => z.string(),
   number: () => z.number(),
-  boolean: () => z.boolean(),
+  // SQLite has no native boolean type — WatermelonDB stores booleans as 0/1 integers on native.
+  // Coerce 0→false and 1→true so exports from mobile validate and import correctly on web.
+  boolean: () =>
+    z.preprocess((v) => {
+      if (v === 0) {
+        return false;
+      }
+
+      if (v === 1) {
+        return true;
+      }
+
+      return v;
+    }, z.boolean()),
 };
 
 /**

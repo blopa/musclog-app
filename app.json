@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.6.2",
+    "version": "2.7.9",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -12,12 +12,17 @@
     },
     "experiments": {
       "tsconfigPaths": true,
-      "baseUrl": "/musclog-app"
+      "baseUrl": "/"
     },
     "plugins": [
+      [
+        "./plugins/withGradleVersion",
+        {
+          "version": "8.13"
+        }
+      ],
+      "expo-system-ui",
       "react-native-edge-to-edge",
-      "./plugins/withAndroidBarcodeScannerFix",
-      "./plugins/withIosSimulatorBuildFix",
       "expo-localization",
       "expo-router",
       "expo-health-connect",
@@ -56,7 +61,17 @@
             "buildArchs": ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
           },
           "ios": {
-            "deploymentTarget": "16.0"
+            "deploymentTarget": "16.0",
+            "extraPods": [
+              {
+                "name": "GoogleMLKit/MLKitCore",
+                "version": "8.0.0"
+              },
+              {
+                "name": "GoogleMLKit/BarcodeScanning",
+                "version": "8.0.0"
+              }
+            ]
           },
           "gradleProperties": {
             "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=1g -Dkotlin.daemon.jvm.options=-Xmx2g"
@@ -65,6 +80,12 @@
       ],
       "expo-background-task",
       "expo-web-browser",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
       [
         "react-native-android-widget",
         {
@@ -98,8 +119,8 @@
           "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
         }
       ],
-      "rn-mlkit-ocr",
-      "expo-secure-store"
+      "expo-secure-store",
+      "@sentry/react-native"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -110,18 +131,20 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "216",
+      "buildNumber": "237",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 216,
+      "versionCode": 237,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"

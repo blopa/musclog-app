@@ -7,9 +7,12 @@ import { MealType } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
+import { gramsToDisplay } from '@/utils/unitConversion';
+import { getMassUnitI18nKey } from '@/utils/units';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -44,6 +47,7 @@ export function RecentNutritionHistoryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+  const { units } = useSettings();
   const { recentFoods: recentFoodsRaw, isLoading } = useNutritionLogs({
     mode: 'recent',
     mealType,
@@ -59,7 +63,7 @@ export function RecentNutritionHistoryModal({
       return {
         id: food.id,
         name: food.name ?? '',
-        description: t('foodSearch.foodDescriptionPer100g', {
+        description: t('food.descriptionFormat', {
           brand: food.brand || t('foodSearch.customFoodLabel'),
           calories: formatInteger(
             resolveRoundedPer100gCaloriesForDisplay({
@@ -70,6 +74,8 @@ export function RecentNutritionHistoryModal({
               fiber: food.fiber,
             })
           ),
+          amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+          unit: t(getMassUnitI18nKey(units)),
         }),
         brand: food.brand,
         serving_size: portion100gName,
@@ -91,6 +97,7 @@ export function RecentNutritionHistoryModal({
     recentFoodsRaw,
     t,
     formatInteger,
+    units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,

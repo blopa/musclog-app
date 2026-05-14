@@ -6,7 +6,7 @@ import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { XAxisLabel } from '@/utils/chartUtils';
+import { getXAxisLabelEdgeMargin, XAxisLabel } from '@/utils/chartUtils';
 
 export type LineChartDataPoint = {
   x: number;
@@ -365,8 +365,7 @@ export function LineChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft:
-                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
+                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 20),
                 }}
                 numberOfLines={1}
               >

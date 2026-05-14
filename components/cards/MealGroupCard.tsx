@@ -11,7 +11,7 @@ import {
 } from 'lucide-react-native';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
 import { type MealType } from '@/database/models';
@@ -28,6 +28,8 @@ type MealGroupCardProps = {
   carbs: number;
   fat: number;
   mealType: MealType;
+  imageUrl?: string;
+  onPress?: () => void;
   onMorePress?: () => void;
   intuitiveMode?: boolean;
 };
@@ -126,6 +128,8 @@ export const MealGroupCard = memo(function MealGroupCard({
   carbs,
   fat,
   mealType,
+  imageUrl,
+  onPress,
   onMorePress,
   intuitiveMode = false,
 }: MealGroupCardProps) {
@@ -135,14 +139,18 @@ export const MealGroupCard = memo(function MealGroupCard({
   const { Icon, bgColor, iconColor } = getMealIconAndColor(mealType, theme);
 
   return (
-    <GenericCard variant="default">
+    <GenericCard variant="default" isPressable={!!onPress} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
-        {/* Meal icon with colour-coded background */}
+        {/* Meal icon or photo */}
         <View
           className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl"
-          style={{ backgroundColor: bgColor }}
+          style={{ backgroundColor: imageUrl ? undefined : bgColor }}
         >
-          <Icon size={theme.iconSize.lg} color={iconColor} />
+          {imageUrl ? (
+            <Image source={{ uri: imageUrl }} className="h-16 w-16" resizeMode="cover" />
+          ) : (
+            <Icon size={theme.iconSize.lg} color={iconColor} />
+          )}
         </View>
 
         <View className="min-w-0 flex-1">

@@ -143,9 +143,11 @@ export class GoogleCloudOCRService {
   }
 }
 
+import { isProduction } from '../utils/app';
+
 // Environment setup
 const googleApiKey = process.env.GOOGLE_CLOUD_VISION_API_KEY;
-if (!googleApiKey && !__DEV__) {
+if (!googleApiKey && isProduction()) {
   throw new Error('GOOGLE_CLOUD_VISION_API_KEY not set in production');
 }
 
@@ -575,7 +577,7 @@ export class HybridOCRService {
 
 // Create hybrid service instance
 export const hybridOCR = new HybridOCRService({
-  iosPrimary: __DEV__ ? 'cloud' : 'vision',
+  iosPrimary: isProduction() ? 'vision' : 'cloud',
   iosUseFallback: true,
   androidPrimary: 'guten',
   offlineMode: false,

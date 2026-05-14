@@ -42,6 +42,8 @@ export type WorkoutPlanPayload = {
 export type TrackMealPayload = {
   type: 'trackMeal';
   meals: (TrackedMeal & { was_tracked?: boolean })[]; // Array of meals analyzed (can be multiple meals from one message)
+  /** Local file URI of the photo used for AI analysis. Set as imageUrl on the created Food (1 ingredient) or Meal (multiple ingredients). */
+  mealImageUri?: string;
 };
 
 // Meal plan payload - when AI generates a meal plan

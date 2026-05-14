@@ -136,6 +136,7 @@ test.describe('App Store Screenshots', () => {
       'Open Smart Camera Modal',
       'Open Visual Settings Modal',
       'Open Add Exercise To Session Modal',
+      'Open Saved For Later Modal',
     ];
 
     console.log(`[${projectName}] Capturing ${modalButtonTexts.length} modals.`);

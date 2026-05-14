@@ -8,8 +8,8 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
+import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
-import { database } from '@/database/index';
 import ChatMessage from '@/database/models/ChatMessage';
 import Exercise, {
   type EquipmentType,
@@ -475,7 +475,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
                 logSet.weight = set.weight;
                 logSet.restTimeAfter = 60; // 60 seconds rest
                 logSet.difficultyLevel = 7; // RPE 7
-                logSet.isDropSet = false;
+                logSet.setType = 'normal';
                 logSet.setOrder = setOrder;
                 logSet.createdAt = now;
                 logSet.updatedAt = now;
@@ -802,7 +802,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               logSet.weight = set.weight;
               logSet.restTimeAfter = 60;
               logSet.difficultyLevel = 7;
-              logSet.isDropSet = false;
+              logSet.setType = 'normal';
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;
@@ -931,7 +931,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
               logSet.weight = set.weight;
               logSet.restTimeAfter = 60; // 60 seconds rest
               logSet.difficultyLevel = 7; // RPE 7
-              logSet.isDropSet = false;
+              logSet.setType = 'normal';
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;
@@ -1460,7 +1460,13 @@ async function seedFoods(): Promise<{ created: number }> {
       return { created: 0 };
     }
 
-    const shared100gPortion = await FoodPortionService.createFoodPortion('100g', 100);
+    const shared100gPortion = await FoodPortionService.createFoodPortion(
+      '100g',
+      100,
+      'scale',
+      'basic',
+      { kind: 'mass', scope: 'global' }
+    );
 
     await database.write(async () => {
       // Simple foods for easy testing
@@ -1649,7 +1655,10 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       { name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
     ];
 
-    const portion100g = await FoodPortionService.createFoodPortion('100g', 100);
+    const portion100g = await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+      kind: 'mass',
+      scope: 'global',
+    });
 
     const devFoods = new Map<string, Food>();
 
@@ -2319,6 +2328,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   // Seed Gemini AI settings
   await SettingsService.setEnableGoogleGemini(true);
   await SettingsService.setGoogleGeminiApiKey('dev-gemini-api-key-12345');
+  await SettingsService.setDumpLlmRequests(true);
   console.log('Seeded Gemini AI settings: enabled=true, apiKey=dev-gemini-api-key-12345');
 
   console.log(

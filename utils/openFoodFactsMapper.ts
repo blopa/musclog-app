@@ -1,9 +1,13 @@
+import { Units } from '@/constants/settings';
+import { type FoodLabels } from '@/database/models/Food';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
 
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
+import { gramsToDisplay } from './unitConversion';
+import { getMassUnitI18nKey } from './units';
 
 export type { ProductNameResult } from './productName';
 
@@ -288,12 +292,14 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   const valueField = nutriments[`${baseName}_value`];
 
   const raw = value100g ?? valueServing ?? baseValue ?? valueField;
-  const num =
-    typeof raw === 'number'
-      ? raw
-      : typeof raw === 'string'
-        ? Number.parseFloat(raw.replace(',', '.'))
-        : Number.NaN;
+  let num: number;
+  if (typeof raw === 'number') {
+    num = raw;
+  } else if (typeof raw === 'string') {
+    num = Number.parseFloat(raw.replace(',', '.'));
+  } else {
+    num = Number.NaN;
+  }
 
   return Number.isFinite(num) ? num : undefined;
 }
@@ -317,7 +323,82 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 }
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
-export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFoodResult {
+/**
+ * Extract FoodLabels from an OFF product's labels_tags and ingredients_analysis_tags.
+ * Used for both barcode (V3) and text-search (V2) paths.
+ *
+ * vegan/vegetarian/palmOilFree are three-state:
+ *   true  = confirmed (e.g. en:vegan)
+ *   false = confirmed NOT (e.g. en:non-vegan)
+ *   undefined = unknown / maybe
+ *
+ * organic / fairTrade are true-or-undefined (absence of label ≠ not organic).
+ */
+export function extractLabelsFromOFFProduct(product: {
+  labels_tags?: string[];
+  ingredients_analysis_tags?: string[];
+}): FoodLabels | undefined {
+  const lt = product.labels_tags ?? [];
+  const at = product.ingredients_analysis_tags ?? [];
+
+  if (lt.length === 0 && at.length === 0) {
+    return undefined;
+  }
+
+  const organic = lt.some((t) => t === 'en:organic' || t === 'en:eu-organic') ? true : undefined;
+  const fairTrade = lt.some((t) => t === 'en:fair-trade' || t === 'en:fairtrade')
+    ? true
+    : undefined;
+
+  let vegan: boolean | undefined;
+  if (at.includes('en:vegan')) {
+    vegan = true;
+  } else if (at.includes('en:non-vegan')) {
+    vegan = false;
+  }
+
+  let vegetarian: boolean | undefined;
+  if (at.includes('en:vegetarian')) {
+    vegetarian = true;
+  } else if (at.includes('en:non-vegetarian')) {
+    vegetarian = false;
+  }
+
+  let palmOilFree: boolean | undefined;
+  if (at.includes('en:palm-oil-free')) {
+    palmOilFree = true;
+  } else if (at.includes('en:palm-oil')) {
+    palmOilFree = false;
+  }
+
+  const result: FoodLabels = {};
+  if (organic !== undefined) {
+    result.organic = organic;
+  }
+
+  if (fairTrade !== undefined) {
+    result.fairTrade = fairTrade;
+  }
+
+  if (vegan !== undefined) {
+    result.vegan = vegan;
+  }
+
+  if (vegetarian !== undefined) {
+    result.vegetarian = vegetarian;
+  }
+
+  if (palmOilFree !== undefined) {
+    result.palmOilFree = palmOilFree;
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+export function mapOpenFoodFactsProduct(
+  product: SearchResultProduct,
+  units: Units = 'metric'
+): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const kcal = nutriments?.['energy-kcal'];
 
@@ -325,17 +406,21 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const allNutriments = mapAllNutriments(nutriments);
 
   // Extract key macronutrients with proper fallback
-  const protein = getNutrimentValue(nutriments, 'proteins');
-  const carbs = getNutrimentValue(nutriments, 'carbohydrates');
-  const fat = getNutrimentValue(nutriments, 'fat');
+  const rawProtein = getNutrimentValue(nutriments, 'proteins');
+  const rawCarbs = getNutrimentValue(nutriments, 'carbohydrates');
+  const rawFat = getNutrimentValue(nutriments, 'fat');
+
+  const protein = rawProtein !== undefined ? Math.max(0, rawProtein) : undefined;
+  const carbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
+  const fat = rawFat !== undefined ? Math.max(0, rawFat) : undefined;
 
   // Improved fiber extraction with fallback calculation and negative value protection
   const directFiber = getNutrimentValue(nutriments, 'fiber');
   let fiber = 0;
 
-  if (directFiber !== undefined && directFiber >= 0) {
-    // Use direct fiber value when available and non-negative
-    fiber = directFiber;
+  if (directFiber !== undefined) {
+    // Use direct fiber value when available and clamp to non-negative
+    fiber = Math.max(0, directFiber);
   } else {
     // Fallback: calculate from carbohydrates-total - carbohydrates
     // Only use this if result is positive (some OFF products have inconsistent data)
@@ -399,6 +484,18 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   // Extract environmental data
   const carbonFootprint = getNutrimentValue(nutriments, 'carbon-footprint-from-known-ingredients');
 
+  // Extract product scores
+  const nutriscoreGrade =
+    typeof product.nutriscore_grade === 'string' && product.nutriscore_grade
+      ? product.nutriscore_grade.toLowerCase()
+      : undefined;
+  const ecoscoreGrade =
+    typeof product.ecoscore_grade === 'string' && product.ecoscore_grade
+      ? product.ecoscore_grade.toLowerCase()
+      : undefined;
+  const novaGroup = typeof product.nova_group === 'number' ? product.nova_group : undefined;
+  const labels = extractLabelsFromOFFProduct(product);
+
   return {
     id: product.code || String(Math.random()),
     name: getProductName(product),
@@ -406,8 +503,8 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       ? i18n.t('food.descriptionFormat', {
           brand: product.brands || product.generic_name || i18n.t('food.generic'),
           calories,
-          amount: product.serving_size || '100',
-          unit: 'g',
+          amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
+          unit: i18n.t(getMassUnitI18nKey(units)),
         })
       : `${product.brands || product.generic_name || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`,
     brand: product.brands,
@@ -466,6 +563,10 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       },
     },
     source: 'openfood' as const,
+    nutriscore: nutriscoreGrade,
+    ecoscore: ecoscoreGrade,
+    novaGroup,
+    labels,
     _raw: product,
   };
 }

@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -69,12 +69,12 @@ const getNormalizedTemplates = (t: TFunction) => {
       const difficulty = (item.difficulty as any) || 'Beginner';
 
       // Duration: number (minutes) -> "NN min", otherwise keep string
-      const duration =
-        typeof item.duration === 'number'
-          ? `${item.duration} ${t('common.min')}`
-          : typeof item.duration === 'string'
-            ? item.duration
-            : '';
+      let duration = '';
+      if (typeof item.duration === 'number') {
+        duration = `${item.duration} ${t('common.min')}`;
+      } else if (typeof item.duration === 'string') {
+        duration = item.duration;
+      }
 
       // Exercises: if array -> use translation with count, if number -> use translation with count, otherwise string
       let exercisesText = '';
@@ -127,12 +127,14 @@ type BrowseTemplatesModalProps = {
   visible: boolean;
   onClose: () => void;
   onTemplateSelect?: (template: WorkoutTemplate) => void;
+  children?: ReactNode;
 };
 
 export function BrowseTemplatesModal({
   visible,
   onClose,
   onTemplateSelect,
+  children,
 }: BrowseTemplatesModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -315,6 +317,8 @@ export function BrowseTemplatesModal({
         {/* Template List */}
         <View className="gap-2 px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
       </ScrollView>
+
+      {children}
     </FullScreenModal>
   );
 }

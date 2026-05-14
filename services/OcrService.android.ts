@@ -11,17 +11,17 @@ import {
   recognizeText as mlkitRecognizeText,
 } from 'rn-mlkit-ocr';
 
+import { handleError } from '@/utils/handleError';
+
 import type { OcrResult } from './OcrService';
 
-export async function initializeOcr(_language: string = 'eng'): Promise<void> {
+export async function initializeOcr(_language?: string): Promise<void> {
   // rn-mlkit-ocr initializes on first use.
 }
 
-export async function recognizeText(
-  imageUri: string,
-  _language: string = 'eng'
-): Promise<OcrResult> {
+export async function recognizeText(imageUri: string, _language?: string): Promise<OcrResult> {
   const startTime = Date.now();
+
   try {
     const result = await mlkitRecognizeText(imageUri);
     return {
@@ -34,6 +34,7 @@ export async function recognizeText(
       processingTimeMs: Date.now() - startTime,
     };
   } catch (error) {
+    handleError(error, 'OcrService.android.recognizeTextAndroid');
     console.error('[OCR] rn-mlkit-ocr recognition failed:', error);
     return { text: '', blocks: [], processingTimeMs: Date.now() - startTime };
   }

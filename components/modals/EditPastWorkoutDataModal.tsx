@@ -9,7 +9,7 @@ import DashedButton from '@/components/theme/DashedButton';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -278,9 +278,9 @@ export default function EditPastWorkoutDataModal({
       setIsSaving(false);
     } catch (err) {
       setIsSaving(false);
-      console.error('Failed to save sets:', err);
-      captureException(err, { data: { context: 'EditPastWorkoutDataModal.handleSave' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(err, 'EditPastWorkoutDataModal.handleSave', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
 

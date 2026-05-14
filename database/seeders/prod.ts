@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
+import { Platform } from 'react-native';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
 import { database } from '@/database/database-instance';
+import { markDbReady } from '@/database/dbReady';
 import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import Setting from '@/database/models/Setting';
@@ -15,6 +17,7 @@ import {
   type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
+  MuscleService,
   SettingsService,
 } from '@/database/services';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
@@ -81,7 +84,8 @@ async function seedUSDAFoundationFoods(): Promise<void> {
         i18n.t('food.portions.100g'),
         100,
         'scale',
-        'app'
+        'basic',
+        { kind: 'mass', scope: 'global' }
       );
     }
 
@@ -218,6 +222,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       // Repair any exercises that were seeded without an image due to a prior bug
       await ExerciseService.repairMissingExerciseImages();
       console.log('Production data seeding already completed, skipping');
+      // Signal that the DB is ready for queries (fast-path: no reset was needed).
+      markDbReady();
       return true;
     }
 
@@ -277,17 +283,25 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Seeded ${createdPortions.length} common food portions`);
     }
 
-    // 2. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
+    // 2. Seed muscles catalogue
+    const muscleNameToId = await MuscleService.seedMuscles();
+    console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
+
+    // 3. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
     const existingExercises = await ExerciseService.getAllExercises();
 
     if (existingExercises.length > 0) {
       console.log(`Skipping exercise seeding: ${existingExercises.length} exercises already exist`);
     } else {
-      const createdExercises = await ExerciseService.createCommonExercises();
+      const createdExercises = await ExerciseService.createCommonExercises(muscleNameToId);
       console.log(`Seeded ${createdExercises.length} common exercises`);
     }
 
-    // 3. Seed initial chat messages with welcome messages for each context using i18n
+    // 4. Link exercises to muscles (pass the already-fetched map to skip a redundant seedMuscles call)
+    await MuscleService.backfillExerciseMuscles(muscleNameToId);
+    console.log('Exercise-muscle links ready');
+
+    // 5. Seed initial chat messages with welcome messages for each context using i18n
     const existingMessages = await ChatService.getAllMessages(1, 0);
 
     if (existingMessages.length === 0) {
@@ -311,7 +325,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
     }
 
-    // 4. Migrate data from the old database if it exists (e.g. app upgrade)
+    // 6. Migrate data from the old database if it exists (e.g. app upgrade)
     const migrationService = new MigrationService();
     if (await migrationService.checkOldDatabaseExists()) {
       const result = await migrationService.migrateAll({
@@ -344,7 +358,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
 
-    // 5. Seed USDA foundation foods from CSV
+    // 7. Seed USDA foundation foods from CSV
     await seedUSDAFoundationFoods();
 
     // Set the anonymousBugReport setting to true by default
@@ -380,14 +394,30 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setMaxAiMemories(50);
     console.log('Set default max AI memories to 50');
 
+    await SettingsService.setUseThinkingMode(false);
+    console.log('Set default AI thinking mode to false');
+
     await SettingsService.setEnableGoogleGemini(false);
     await SettingsService.setEnableOpenAi(false);
     console.log('Set default Gemini and OpenAI enabled to false');
+
+    await SettingsService.setUseMusclogFreeTier(false);
+    console.log('Set default Musclog free tier to false');
+
+    if (Platform.OS === 'ios') {
+      await SettingsService.setUseOnDeviceAi(true);
+      console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
+    }
+
+    // uncomment this when debugging Apple Intelligence
+    // await SettingsService.setDumpLlmRequests(true);
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');
 
+    // Signal that the DB is ready for queries (full reset+seed path).
+    markDbReady();
     return true;
   } catch (error) {
     console.error('Error seeding production data:', error);

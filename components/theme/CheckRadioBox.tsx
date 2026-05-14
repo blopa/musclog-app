@@ -12,6 +12,23 @@ type TestToggleProps = {
 
 export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }: TestToggleProps) {
   const theme = useTheme();
+  const renderIndicator = () => {
+    if (!value) {
+      return null;
+    }
+
+    if (type === 'checkbox') {
+      return <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />;
+    }
+
+    return (
+      <View
+        className="h-3 w-3 rounded-full"
+        style={{ backgroundColor: theme.colors.accent.primary }}
+      />
+    );
+  };
+
   return (
     <Pressable
       className="flex-row items-center gap-3 active:opacity-90"
@@ -22,16 +39,7 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
           type === 'radio' ? 'rounded-full' : 'rounded'
         }`}
       >
-        {value ? (
-          type === 'checkbox' ? (
-            <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-          ) : (
-            <View
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: theme.colors.accent.primary }}
-            />
-          )
-        ) : null}
+        {renderIndicator()}
       </View>
       <Text className="text-sm font-medium text-text-primary">{label}</Text>
     </Pressable>

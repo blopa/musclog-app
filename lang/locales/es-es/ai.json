@@ -1,0 +1,31 @@
+{
+  "ai": {
+    "settings": {
+      "notConfigured": "La IA no está configurada. Por favor, añade una clave API en los Ajustes de IA."
+    },
+    "notConfiguredModal": {
+      "title": "La IA aún no está configurada",
+      "subtitle": "Añade una clave API antes de poder chatear con el entrenador.",
+      "tipApiKey": "Usa claves API de OpenAI o Google Gemini en los ajustes de IA.",
+      "tipFeatures": "Una vez configurado, tus mensajes se envían al modelo que elijas.",
+      "openSettings": "Abrir ajustes de IA",
+      "notNow": "Ahora no"
+    },
+    "providers": {
+      "openAIGemini": "OpenAI o Google Gemini"
+    },
+    "icons": {
+      "Dumbbell": "Mancuerna",
+      "Target": "Objetivo",
+      "Zap": "Rayo",
+      "Trophy": "Trofeo",
+      "Activity": "Actividad",
+      "Heart": "Corazón",
+      "Flame": "Llama"
+    },
+    "chat": {
+      "message": "Mensaje",
+      "typeYourMessage": "Escribe tu mensaje..."
+    }
+  }
+}

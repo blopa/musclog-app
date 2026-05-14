@@ -17,7 +17,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -258,9 +258,9 @@ export default function AddUserMetricEntryModal({
 
       onClose();
     } catch (error) {
-      console.error('Error saving user metrics:', error);
-      captureException(error, { data: { context: 'AddUserMetricEntryModal.handleSave' } });
-      showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
+      handleError(error, 'AddUserMetricEntryModal.handleSave', {
+        snackbarMessage: t('bodyMetrics.addEntry.errorSaving'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -269,7 +269,12 @@ export default function AddUserMetricEntryModal({
   // Render full metric entry card content for a specific metric type
   const renderMetricEntry = (metric: MetricType) => {
     const config = metricConfigs[metric];
-    const value = metric === 'weight' ? weight : metric === 'body_fat' ? bodyFat : height;
+    let value = height;
+    if (metric === 'weight') {
+      value = weight;
+    } else if (metric === 'body_fat') {
+      value = bodyFat;
+    }
 
     const handleIncrement = (amount: number) => {
       if (metric === 'weight') {

@@ -1,5 +1,5 @@
 import { format, isSameMinute } from 'date-fns';
-import { Clock, Edit } from 'lucide-react-native';
+import { Clock, Edit, SquarePen } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -9,6 +9,8 @@ import { useTheme } from '@/hooks/useTheme';
 export type TimePickerInputProps = {
   selectedTime: Date;
   onPress: () => void;
+  onClear?: () => void;
+  clearLabel?: string;
   /** When omitted, the label uses `food.foodDetails.time`. Ignored if `hideLabel` is true. */
   label?: string;
   hideLabel?: boolean;
@@ -29,11 +31,14 @@ export type TimePickerInputProps = {
    * (e.g. nutrition goals row).
    */
   embedded?: boolean;
+  showClearButton?: boolean;
 };
 
 export function TimePickerInput({
   selectedTime,
   onPress,
+  onClear,
+  clearLabel,
   label,
   hideLabel = false,
   variant = 'compact',
@@ -42,6 +47,7 @@ export function TimePickerInput({
   disabled = false,
   className,
   embedded = false,
+  showClearButton = false,
 }: TimePickerInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -68,13 +74,14 @@ export function TimePickerInput({
   }
 
   const showUnsetPlaceholder = Boolean(unset && unsetPlaceholder);
+  const showClearCta = Boolean(showClearButton && !unset && onClear);
   const pressableSurfaceClasses = embedded
     ? 'rounded-lg bg-transparent'
     : `rounded-lg border border-white/10 bg-bg-cardDark`;
 
   const rowClasses = embedded
-    ? 'flex-row items-center justify-between p-0'
-    : `flex-row items-center justify-between ${isCompact ? 'p-3' : 'p-4'}`;
+    ? 'min-w-0 w-full flex-row items-center overflow-hidden p-0'
+    : `w-full flex-row items-center ${isCompact ? 'p-3' : 'p-4'}`;
 
   const TrailingIcon = (
     <Edit
@@ -90,49 +97,65 @@ export function TimePickerInput({
           {label ?? t('food.foodDetails.time')}
         </Text>
       ) : null}
-      <Pressable
-        accessibilityRole="button"
-        className={pressableSurfaceClasses}
-        onPress={onPress}
-        disabled={disabled}
-      >
+      <View className={`${pressableSurfaceClasses} flex-row items-center`}>
         <View className={rowClasses}>
-          <View className={`min-w-0 flex-1 flex-row items-center ${isCompact ? 'gap-2' : 'gap-3'}`}>
-            <View
-              className={`items-center justify-center rounded-full ${isCompact ? 'h-8 w-8' : 'h-10 w-10'}`}
-              style={{
-                backgroundColor: theme.colors.status.indigo20,
-              }}
+          <Pressable
+            accessibilityRole="button"
+            className="min-w-0 flex-1"
+            onPress={onPress}
+            disabled={disabled}
+          >
+            <View className={`min-w-0 flex-row items-center ${isCompact ? 'gap-2' : 'gap-3'}`}>
+              <View
+                className={`items-center justify-center rounded-full ${isCompact ? 'h-8 w-8' : 'h-10 w-10'}`}
+                style={{
+                  backgroundColor: theme.colors.status.indigo20,
+                }}
+              >
+                <Clock
+                  size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
+                  color={theme.colors.accent.primary}
+                />
+              </View>
+              <View className="min-w-0 flex-1">
+                {showUnsetPlaceholder ? (
+                  <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
+                ) : (
+                  <>
+                    <Text className="font-medium text-text-primary">
+                      {matchesNow
+                        ? t('timePicker.now')
+                        : format(selectedTime, 'p', { locale: dateFnsLocale })}
+                    </Text>
+                    <Text className="text-xs text-text-secondary">
+                      {matchesNow
+                        ? format(selectedTime, 'p', { locale: dateFnsLocale })
+                        : format(selectedTime, 'zzzz', { locale: dateFnsLocale })}
+                    </Text>
+                  </>
+                )}
+              </View>
+            </View>
+          </Pressable>
+          {showClearCta ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('timePicker.clearTime')}
+              className="ml-auto shrink-0 flex-row items-center gap-1 pl-2"
+              onPress={onClear}
+              disabled={disabled}
+              hitSlop={8}
             >
-              <Clock
-                size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
-                color={theme.colors.accent.primary}
-              />
-            </View>
-            <View className="min-w-0 flex-1">
-              {showUnsetPlaceholder ? (
-                <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
-              ) : (
-                <>
-                  <Text className="font-medium text-text-primary">
-                    {matchesNow
-                      ? t('timePicker.now')
-                      : format(selectedTime, 'p', { locale: dateFnsLocale })}
-                  </Text>
-                  <Text className="text-xs text-text-secondary">
-                    {matchesNow
-                      ? format(selectedTime, 'p', { locale: dateFnsLocale })
-                      : format(selectedTime, 'zzzz', { locale: dateFnsLocale })}
-                  </Text>
-                </>
-              )}
-            </View>
-          </View>
-          {TrailingIcon ? (
+              <SquarePen size={theme.iconSize.xs} color={theme.colors.accent.secondary} />
+              <Text className="text-sm font-medium text-accent-secondary">
+                {clearLabel ?? t('timePicker.clearTime')}
+              </Text>
+            </Pressable>
+          ) : TrailingIcon ? (
             <View className="shrink-0 justify-center pl-2">{TrailingIcon}</View>
           ) : null}
         </View>
-      </Pressable>
+      </View>
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
-import convert from 'convert';
+import convert, { type Unit } from 'convert';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -14,6 +14,7 @@ import {
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
 } from '@/utils/activeWorkoutStorage';
+import { handleError } from '@/utils/handleError';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
@@ -29,6 +30,7 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
+  isAutoAdjusted?: boolean;
 };
 
 export class WorkoutService {
@@ -259,7 +261,8 @@ export class WorkoutService {
       }
 
       // Complete the workout (this calculates volume)
-      await workoutLog.completeWorkout();
+      const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+      await workoutLog.completeWorkout(bodyWeightKg);
 
       // Clear active workout from AsyncStorage
       const activeWorkoutLogId = await getActiveWorkoutLogId();
@@ -288,7 +291,7 @@ export class WorkoutService {
             const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
             heightCm =
               heightUnit === 'in' || heightUnit === 'ft'
-                ? (convert(rawHeight, heightUnit as any).to('cm') as number)
+                ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
                 : rawHeight;
           }
 
@@ -342,6 +345,7 @@ export class WorkoutService {
         }
       } catch (err) {
         console.warn('MWEM calorie calculation failed:', err);
+        handleError(err, 'WorkoutService.calculateMwemCalories');
       }
 
       // Detect personal records
@@ -394,6 +398,7 @@ export class WorkoutService {
         }
       } catch (err) {
         console.warn('Health Connect workout write failed:', err);
+        handleError(err, 'WorkoutService.writeWorkoutToHealthConnect');
       }
 
       return {
@@ -485,7 +490,7 @@ export class WorkoutService {
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
         isSkipped: (r.is_skipped as boolean | undefined) ?? (set as WorkoutLogSet).isSkipped,
         difficultyLevel: (r.difficulty_level as number) ?? 0,
-        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
         updatedAt: (r.updated_at as number) ?? 0,
@@ -579,7 +584,7 @@ export class WorkoutService {
       repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
-      isDropSet?: boolean;
+      setType?: string;
       groupId?: string;
       isNew?: boolean; // Flag to indicate if this is a new set
       setOrder?: number; // Optional: explicit ordering for the set
@@ -607,6 +612,7 @@ export class WorkoutService {
               await setToDelete.markAsDeleted();
             } catch (err) {
               console.warn(`Failed to delete set ${deletedId}:`, err);
+              handleError(err, 'WorkoutService.updateWorkoutLogExercises.deleteSet');
             }
           }
         }
@@ -668,7 +674,7 @@ export class WorkoutService {
                 logSet.repsInReserve = update.repsInReserve ?? 0;
                 logSet.difficultyLevel = update.difficultyLevel ?? 0;
                 logSet.isSkipped = update.isSkipped ?? false;
-                logSet.isDropSet = update.isDropSet ?? false;
+                logSet.setType = update.setType ?? 'normal';
                 logSet.setOrder = update.setOrder ?? 0;
                 logSet.createdAt = Date.now();
                 logSet.updatedAt = Date.now();
@@ -680,18 +686,23 @@ export class WorkoutService {
                 if (update.reps !== undefined) {
                   s.reps = update.reps;
                 }
+
                 if (update.weight !== undefined) {
                   s.weight = update.weight;
                 }
+
                 if (update.partials !== undefined) {
                   s.partials = update.partials;
                 }
+
                 if (update.restTimeAfter !== undefined) {
                   s.restTimeAfter = update.restTimeAfter;
                 }
+
                 if (update.repsInReserve !== undefined) {
                   s.repsInReserve = update.repsInReserve;
                 }
+
                 if (update.difficultyLevel !== undefined) {
                   const isActuallySkipped = update.isSkipped ?? s.isSkipped;
                   if (update.difficultyLevel === 0 && isActuallySkipped) {
@@ -701,30 +712,37 @@ export class WorkoutService {
                   }
                   s.difficultyLevel = update.difficultyLevel;
                 }
+
                 if (update.isSkipped !== undefined) {
                   s.isSkipped = update.isSkipped;
                 }
-                if (update.isDropSet !== undefined) {
-                  s.isDropSet = update.isDropSet;
+
+                if (update.setType !== undefined) {
+                  s.setType = update.setType;
                 }
+
                 if (update.setOrder !== undefined) {
                   s.setOrder = update.setOrder;
                 }
+
                 s.updatedAt = Date.now();
               });
             }
           } catch (err) {
             console.warn(`Failed to update set ${update.setId}:`, err);
+            handleError(err, 'WorkoutService.updateWorkoutLogExercises.updateSet');
           }
         }
       });
 
-      const finalTotal = await workoutLog.calculateVolume();
+      const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+      const finalTotal = await workoutLog.calculateVolume(bodyWeightKg);
       return { workoutLogId, totalVolume: finalTotal };
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to update workout sets: ${error.message}`);
       }
+
       throw new Error('Failed to update workout sets: Unknown error');
     }
   }
@@ -1029,7 +1047,7 @@ export class WorkoutService {
             set.repsInReserve = 0;
             set.difficultyLevel = 0; // Unlogged
             set.isSkipped = false;
-            set.isDropSet = originalSet.isDropSet;
+            set.setType = originalSet.setType ?? 'normal';
             set.createdAt = now;
             set.updatedAt = now;
           });
@@ -1059,8 +1077,9 @@ export class WorkoutService {
       return;
     }
 
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
     const entries = await Promise.all(
-      logs.map(async (log) => ({ log, volume: await log.calculateVolume() }))
+      logs.map(async (log) => ({ log, volume: await log.calculateVolume(bodyWeightKg) }))
     );
 
     const now = Date.now();

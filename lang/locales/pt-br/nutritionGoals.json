@@ -4,6 +4,12 @@
     "subtitle": "Defina seus objetivos para nutrição e composição corporal.",
     "dailyMacroTargets": "Metas Diárias de Macros",
     "totalDailyCalories": "Calorias Diárias Totais",
+    "tdeeHint": "TDEE: {{kcal}} kcal",
+    "kcalPerKgTissueHint": "Baseado em {{kcal}} kcal por 1 kg de tecido (Hall 2008 + Forbes 2007)",
+    "kcalPerLbTissueHint": "Baseado em {{kcal}} kcal por 1 lb de tecido (Hall 2008 + Forbes 2007)",
+    "calorieDeficit": "−{{kcal}} kcal déficit",
+    "calorieSurplus": "+{{kcal}} kcal superávit",
+    "atMaintenance": "Em manutenção",
     "targetBodyMetrics": "Métricas Corporais Alvo",
     "macrosDistribution": "Distribuição de Macros",
     "balance": "Equilíbrio",
@@ -121,6 +127,12 @@
         "title": "Personalizado",
         "subtitle": "Seu Plano"
       }
-    }
+    },
+    "goalMode": "Modo de meta",
+    "manual": "Manual",
+    "dynamic": "Dinâmico",
+    "dynamicInfo": "As metas diárias são calculadas automaticamente a cada dia com base nos seus dados atuais e no prazo da sua meta. Sua meta atual de calorias é {{kcal}} kcal.",
+    "dynamicBadge": "Dinâmico",
+    "dynamicRequiredFields": "O peso alvo e a data alvo são obrigatórios para metas dinâmicas."
   }
 }

@@ -13,6 +13,7 @@ import type {
   ObjectTypeIdentifier,
   SampleTypeIdentifierWriteable,
 } from '@kingstinct/react-native-healthkit/types';
+import * as Device from 'expo-device';
 import { Linking, Platform } from 'react-native';
 
 import {
@@ -48,13 +49,18 @@ export type HealthRecordType =
   | 'ActiveCaloriesBurned'
   | 'BasalMetabolicRate'
   | 'ExerciseSession'
-  | 'LeanBodyMass';
+  | 'LeanBodyMass'
+  | 'Steps';
 
 export type HealthPermission = { accessType: 'read' | 'write'; recordType: HealthRecordType };
 
 export const REQUIRED_PERMISSIONS: HealthPermission[] = [
   ...REQUIRED_HEALTH_PERMISSIONS,
 ] as HealthPermission[];
+
+const REQUIRED_READ_PERMISSIONS = REQUIRED_PERMISSIONS.filter(
+  (permission) => permission.accessType === 'read'
+);
 
 function hkReadTypesForRecord(recordType: string): ObjectTypeIdentifier[] {
   switch (recordType) {
@@ -79,6 +85,8 @@ function hkReadTypesForRecord(recordType: string): ObjectTypeIdentifier[] {
       ];
     case 'ExerciseSession':
       return [WorkoutTypeIdentifier as unknown as ObjectTypeIdentifier];
+    case 'Steps':
+      return ['HKQuantityTypeIdentifierStepCount'];
     default:
       return [];
   }
@@ -130,13 +138,21 @@ function allAuthTypesForRequest(): {
   };
 }
 
-function isAuthorized(id: ObjectTypeIdentifier): boolean {
-  return authorizationStatusFor(id) === AuthorizationStatus.sharingAuthorized;
+function hasWriteAuthorization(ids: SampleTypeIdentifierWriteable[]): boolean {
+  if (ids.length === 0) {
+    return false;
+  }
+
+  return ids.every(
+    (id) =>
+      authorizationStatusFor(id as ObjectTypeIdentifier) === AuthorizationStatus.sharingAuthorized
+  );
 }
 
 class HealthKitBridgeService {
   private status: HealthConnectStatus = HealthConnectStatus.NOT_INITIALIZED;
   private initializationPromise: Promise<void> | null = null;
+  private requestedReadTypeIds = new Set<ObjectTypeIdentifier>();
 
   getStatus(): HealthConnectStatus {
     return this.status;
@@ -196,40 +212,27 @@ class HealthKitBridgeService {
     await this.ensureInitialized();
 
     const toRead = new Set<ObjectTypeIdentifier>();
-    const toShare = new Set<SampleTypeIdentifierWriteable>();
+    const requestedReadPermissions = permissions.filter((p) => p.accessType === 'read');
 
-    for (const p of permissions) {
-      if (p.accessType === 'read') {
-        hkReadTypesForRecord(p.recordType).forEach((id) => toRead.add(id));
-      } else {
-        hkWriteTypesForRecord(p.recordType).forEach((id) => toShare.add(id));
-        if (p.recordType === 'Nutrition') {
-          toShare.add('HKQuantityTypeIdentifierDietaryEnergyConsumed');
-          toShare.add('HKQuantityTypeIdentifierDietaryProtein');
-          toShare.add('HKQuantityTypeIdentifierDietaryCarbohydrates');
-          toShare.add('HKQuantityTypeIdentifierDietaryFatTotal');
-          toShare.add('HKQuantityTypeIdentifierDietaryFiber');
-        }
-      }
+    for (const p of requestedReadPermissions) {
+      hkReadTypesForRecord(p.recordType).forEach((id) => toRead.add(id));
     }
 
-    await requestAuthorization({
-      toRead: Array.from(toRead),
-      toShare: Array.from(toShare),
-    });
+    const authorizationRequested = Device.isDevice
+      ? await requestAuthorization({ toRead: Array.from(toRead) })
+      : true;
+
+    if (authorizationRequested) {
+      for (const id of toRead) {
+        this.requestedReadTypeIds.add(id);
+      }
+    }
 
     const granted: HealthPermission[] = [];
     const denied: HealthPermission[] = [];
 
-    for (const p of permissions) {
-      const ok =
-        p.accessType === 'read'
-          ? hkReadTypesForRecord(p.recordType).every((id) => isAuthorized(id))
-          : hkWriteTypesForRecord(p.recordType).every(
-              (id) =>
-                authorizationStatusFor(id as ObjectTypeIdentifier) ===
-                AuthorizationStatus.sharingAuthorized
-            );
+    for (const p of requestedReadPermissions) {
+      const ok = authorizationRequested && hkReadTypesForRecord(p.recordType).length > 0;
       if (ok) {
         granted.push(p);
       } else {
@@ -242,34 +245,33 @@ class HealthKitBridgeService {
 
   async requestFullAuthorization(): Promise<boolean> {
     await this.ensureInitialized();
-    const { toRead, toShare } = allAuthTypesForRequest();
-    return requestAuthorization({ toRead, toShare });
+    const { toRead } = allAuthTypesForRequest();
+    if (!Device.isDevice) {
+      return true;
+    }
+
+    return requestAuthorization({ toRead });
   }
 
   async getGrantedPermissions(): Promise<HealthPermission[]> {
     await this.ensureInitialized();
     const granted: HealthPermission[] = [];
-    for (const p of REQUIRED_HEALTH_PERMISSIONS) {
-      const ids =
-        p.accessType === 'read'
-          ? hkReadTypesForRecord(p.recordType)
-          : hkWriteTypesForRecord(p.recordType);
-      const ok = ids.every((id) =>
-        p.accessType === 'read'
-          ? isAuthorized(id)
-          : authorizationStatusFor(id as ObjectTypeIdentifier) ===
-            AuthorizationStatus.sharingAuthorized
+    for (const p of REQUIRED_READ_PERMISSIONS) {
+      const ok = hkReadTypesForRecord(p.recordType).every((id) =>
+        this.requestedReadTypeIds.has(id)
       );
+
       if (ok) {
         granted.push(p as HealthPermission);
       }
     }
+
     return granted;
   }
 
   async hasAllRequiredPermissions(): Promise<boolean> {
     const granted = await this.getGrantedPermissions();
-    return REQUIRED_HEALTH_PERMISSIONS.every((req) =>
+    return REQUIRED_READ_PERMISSIONS.every((req) =>
       granted.some((g) => g.recordType === req.recordType && g.accessType === req.accessType)
     );
   }
@@ -289,12 +291,10 @@ class HealthKitBridgeService {
     if (ids.length === 0) {
       return false;
     }
-    return ids.every((id) =>
-      accessType === 'read'
-        ? isAuthorized(id)
-        : authorizationStatusFor(id as ObjectTypeIdentifier) ===
-          AuthorizationStatus.sharingAuthorized
-    );
+
+    return accessType === 'read'
+      ? (ids as ObjectTypeIdentifier[]).every((id) => this.requestedReadTypeIds.has(id))
+      : hasWriteAuthorization(ids as SampleTypeIdentifierWriteable[]);
   }
 
   async getGrantedPermissionsByType(): Promise<
@@ -302,14 +302,15 @@ class HealthKitBridgeService {
   > {
     const permMap = new Map<HealthRecordType, { read: boolean; write: boolean }>();
     const types = Array.from(
-      new Set(REQUIRED_HEALTH_PERMISSIONS.map((p) => p.recordType))
+      new Set(REQUIRED_READ_PERMISSIONS.map((p) => p.recordType))
     ) as HealthRecordType[];
     for (const recordType of types) {
       permMap.set(recordType, {
         read: await this.hasPermissionForRecordType(recordType, 'read'),
-        write: await this.hasPermissionForRecordType(recordType, 'write'),
+        write: false,
       });
     }
+
     return permMap;
   }
 
@@ -321,12 +322,13 @@ class HealthKitBridgeService {
   }> {
     const permMap = await this.getGrantedPermissionsByType();
     const types = Array.from(
-      new Set(REQUIRED_HEALTH_PERMISSIONS.map((p) => p.recordType))
+      new Set(REQUIRED_READ_PERMISSIONS.map((p) => p.recordType))
     ) as HealthRecordType[];
     const permissions = types.map((recordType) => ({
       recordType,
       ...(permMap.get(recordType) || { read: false, write: false }),
     }));
+
     const grantedCount = permissions.filter((p) => p.read || p.write).length;
     return {
       total: permissions.length,
@@ -354,6 +356,7 @@ class HealthKitBridgeService {
     if (this.status === HealthConnectStatus.AVAILABLE) {
       return;
     }
+
     await this.initializeHealthConnect();
   }
 }

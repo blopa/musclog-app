@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { WorkoutService } from '@/database/services';
+import { handleError } from '@/utils/handleError';
 
 export function useEditWorkoutSets() {
   const [isSaving, setIsSaving] = useState(false);
@@ -17,7 +18,7 @@ export function useEditWorkoutSets() {
       repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
-      isDropSet?: boolean;
+      setType?: string;
     }[],
     deletedSetIds?: string[]
   ) => {
@@ -28,6 +29,7 @@ export function useEditWorkoutSets() {
       setIsSaving(false);
       return res;
     } catch (err) {
+      handleError(err, 'useEditWorkoutSets.saveSets');
       const e = err instanceof Error ? err : new Error(String(err));
       setError(e);
       setIsSaving(false);

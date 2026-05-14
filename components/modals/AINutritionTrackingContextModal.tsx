@@ -15,6 +15,9 @@ type AINutritionTrackingContextModalProps = {
   describeLabel?: string;
   placeholder?: string;
   applyLabel?: string;
+  initialDescription?: string;
+  initialTags?: string[];
+  onDraftChange?: (context: { description: string; tags: string[] }) => void;
 };
 
 export function AINutritionTrackingContextModal({
@@ -25,11 +28,14 @@ export function AINutritionTrackingContextModal({
   describeLabel,
   placeholder,
   applyLabel,
+  initialDescription = '',
+  initialTags = [],
+  onDraftChange,
 }: AINutritionTrackingContextModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [mealDescription, setMealDescription] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [mealDescription, setMealDescription] = useState(initialDescription);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
 
   const quickTags = [
     t('food.aiNutritionContext.quickTagHighProtein'),
@@ -40,25 +46,19 @@ export function AINutritionTrackingContextModal({
   ];
 
   const handleToggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    const newTags = selectedTags.includes(tag)
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
+    setSelectedTags(newTags);
+    onDraftChange?.({ description: mealDescription, tags: newTags });
   };
 
   const handleApply = () => {
-    if (onApply) {
-      onApply({ description: mealDescription, tags: selectedTags });
-    }
-    // Reset state
-    setMealDescription('');
-    setSelectedTags([]);
+    onApply?.({ description: mealDescription, tags: selectedTags });
     onClose();
   };
 
   const handleCancel = () => {
-    // Reset state
-    setMealDescription('');
-    setSelectedTags([]);
     onClose();
   };
 
@@ -118,7 +118,10 @@ export function AINutritionTrackingContextModal({
               placeholder={placeholder ?? t('food.aiNutritionContext.placeholder')}
               placeholderTextColor={theme.colors.background.white20}
               value={mealDescription}
-              onChangeText={setMealDescription}
+              onChangeText={(text) => {
+                setMealDescription(text);
+                onDraftChange?.({ description: text, tags: selectedTags });
+              }}
               multiline
               numberOfLines={4}
             />

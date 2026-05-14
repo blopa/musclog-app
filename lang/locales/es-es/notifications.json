@@ -1,0 +1,73 @@
+{
+  "notifications": {
+    "header": {
+      "title": "Notificaciones",
+      "clearAll": "BORRAR TODO"
+    },
+    "sections": {
+      "today": "HOY",
+      "yesterday": "AYER",
+      "earlier": "ANTERIORES"
+    },
+    "channels": {
+      "default": "Por defecto",
+      "activeWorkout": "Entrenamiento Activo"
+    },
+    "startNow": "Iniciar Ahora",
+    "types": {
+      "aiInsight": {
+        "title": "Información de IA",
+        "description": "Según tus levantamientos recientes, intenta aumentar tu ingesta de proteínas en 15g hoy para una recuperación óptima."
+      },
+      "workoutReminder": {
+        "title": "Recordatorio de Entrenamiento",
+        "description": "¿Listo para {{workoutName}}? Programado para hoy a las {{time}}."
+      },
+      "workoutCompleted": {
+        "title": "¡Entrenamiento Completado!",
+        "description": "Buen trabajo terminando {{workoutName}}. Quemaste {{calories}} kcal."
+      },
+      "kudosReceived": {
+        "title": "Kudos Recibidos",
+        "description": "A {{name}} y a otros {{count}} les gustó tu hito reciente: \"{{milestone}}\""
+      },
+      "weeklyReport": {
+        "title": "Informe Semanal Listo",
+        "description": "Tu informe de progreso de la semana pasada ya está disponible. Consulta tus estadísticas."
+      },
+      "activeWorkout": {
+        "title": "Entrenamiento: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}"
+      },
+      "workoutReminderMorning": {
+        "title": "Recordatorio de Entrenamiento",
+        "body": "¿Lista para darle con todo a tu entrenamiento de {{workoutName}} hoy?"
+      },
+      "nutritionOverview": {
+        "title": "Resumen Diario de Nutrición",
+        "body": "¡Mira cómo se alineó tu nutrición con tus objetivos hoy!"
+      },
+      "nutritionCheckin": {
+        "title": "Revisión de Progreso Semanal",
+        "body": "¡Es hora de tu revisión de nutrición semanal! Veamos cómo te ha ido."
+      },
+      "periodPrediction": {
+        "title": "Predicción del Periodo",
+        "body": "Se predice que tu periodo comenzará en 2 días. ¡Prepárate!"
+      },
+      "fertileWindow": {
+        "title": "Ventana Fértil",
+        "body": "¡Tu ventana fértil está comenzando! Útil para rastrear tus niveles de energía."
+      },
+      "restTimerAlert": {
+        "title": "Descanso Terminado - ¡A trabajar!",
+        "body": "Tu tiempo de descanso ha terminado. ¡Hora de ir a por la siguiente serie!"
+      },
+      "workoutDurationWarning": {
+        "title": "¿Sigues entrenando?",
+        "body": "Tu sesión lleva 5 horas en curso. ¡No olvides terminarla en Musclog!"
+      }
+    }
+  }
+}

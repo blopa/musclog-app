@@ -1,8 +1,20 @@
-import {
-  addColumns,
-  schemaMigrations,
-  unsafeExecuteSql,
-} from '@nozbe/watermelondb/Schema/migrations';
+import { schemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
+
+import migrationV2 from '@/database/migrations/2026/04/migration-v2';
+import migrationV3 from '@/database/migrations/2026/04/migration-v3';
+import migrationV4 from '@/database/migrations/2026/04/migration-v4';
+import migrationV5 from '@/database/migrations/2026/04/migration-v5';
+import migrationV6 from '@/database/migrations/2026/04/migration-v6';
+import migrationV7 from '@/database/migrations/2026/04/migration-v7';
+import migrationV8 from '@/database/migrations/2026/04/migration-v8';
+import migrationV9 from '@/database/migrations/2026/04/migration-v9';
+import migrationV10 from '@/database/migrations/2026/04/migration-v10';
+import migrationV11 from '@/database/migrations/2026/04/migration-v11';
+import migrationV12 from '@/database/migrations/2026/04/migration-v12';
+import migrationV13 from '@/database/migrations/2026/04/migration-v13';
+import migrationV14 from '@/database/migrations/2026/04/migration-v14';
+import migrationV15 from '@/database/migrations/2026/04/migration-v15';
+import migrationV16 from '@/database/migrations/2026/04/migration-v16';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -12,24 +24,7 @@ export const migrations = schemaMigrations({
     // Version 2: Add source column to exercises and backfill existing rows.
     // unsafeExecuteSql is ignored by the LokiJS adapter (web) — the JS fallback
     // in app/_layout.tsx covers that platform.
-    {
-      toVersion: 2,
-      steps: [
-        addColumns({
-          table: 'exercises',
-          columns: [{ name: 'source', type: 'string', isOptional: true }],
-        }),
-        // Default all existing exercises to 'user' first, then promote the
-        // first 105 (oldest by created_at) to 'app' — those are the exercises
-        // seeded from the bundled JSON during production seeding.
-        unsafeExecuteSql(
-          "UPDATE exercises SET source = 'user' WHERE source IS NULL OR source = '';"
-        ),
-        unsafeExecuteSql(
-          "UPDATE exercises SET source = 'app' WHERE rowid IN (SELECT rowid FROM exercises ORDER BY created_at ASC LIMIT 105);"
-        ),
-      ],
-    },
+    migrationV2,
 
     // Version 3: Reset totalVolume for all existing workout logs.
     // The volume formula changed from simple reps×weight to average-1RM across
@@ -38,92 +33,48 @@ export const migrations = schemaMigrations({
     // false trends in the volume chart. Resetting to NULL is safer: the trend
     // chart already filters out null-volume workouts, so old sessions simply
     // drop out of the chart rather than distorting it.
-    {
-      toVersion: 3,
-      steps: [
-        unsafeExecuteSql('UPDATE workout_logs SET total_volume = NULL;'),
-        // Add source column to food_portions and backfill existing rows.
-        // unsafeExecuteSql is ignored by the LokiJS adapter (web) — the JS fallback
-        // in app/_layout.tsx covers that platform.
-        addColumns({
-          table: 'food_portions',
-          columns: [{ name: 'source', type: 'string', isOptional: true }],
-        }),
-        unsafeExecuteSql(
-          "UPDATE food_portions SET source = 'user' WHERE source IS NULL OR source = '';"
-        ),
-        // The first 9 portions (oldest by created_at) are always the common app-seeded portions
-        // from createCommonPortions() in prod.ts (10 entries but 50g is deduplicated → 9 unique rows).
-        unsafeExecuteSql(
-          "UPDATE food_portions SET source = 'app' WHERE rowid IN (SELECT rowid FROM food_portions ORDER BY created_at ASC LIMIT 9);"
-        ),
-      ],
-    },
+    migrationV3,
 
     // Version 4: Replace volume_calculation_type with workout_insights_type (per-template insights mode).
     // Also drop deprecated `food_portions.is_default` (unused; catalog vs user rows use `source`).
-    {
-      toVersion: 4,
-      steps: [
-        unsafeExecuteSql('ALTER TABLE food_portions DROP COLUMN is_default;'),
-        unsafeExecuteSql('ALTER TABLE workout_templates DROP COLUMN volume_calculation_type;'),
-        addColumns({
-          table: 'workout_templates',
-          columns: [{ name: 'workout_insights_type', type: 'string', isOptional: true }],
-        }),
-      ],
-    },
+    migrationV4,
 
     // Version 5: Add prepared_weight_grams to meals.
     // Lets users record the cooked/finished weight of a recipe (e.g. 500g after
     // cooking 800g of raw ingredients). Used as the reference for portion scaling
     // (½×, 1×, …) instead of the raw ingredient sum when set.
-    {
-      toVersion: 5,
-      steps: [
-        addColumns({
-          table: 'meals',
-          columns: [{ name: 'prepared_weight_grams', type: 'number', isOptional: true }],
-        }),
-      ],
-    },
+    migrationV5,
 
     // Version 6: Add group_id and logged_meal_name to nutrition_logs.
     // Allows multiple nutrition log rows (e.g. AI meal ingredients or saved meal foods)
     // to be grouped and displayed as a single meal entry in the food diary.
-    {
-      toVersion: 6,
-      steps: [
-        addColumns({
-          table: 'nutrition_logs',
-          columns: [
-            { name: 'group_id', type: 'string', isOptional: true },
-            { name: 'logged_meal_name', type: 'string', isOptional: true },
-          ],
-        }),
-      ],
-    },
+    migrationV6,
 
     // Version 7: Replace locally-copied exercise image file:// URIs with GitHub
     // Also add order_index column to preserve JSON file ordering for app exercises
-    {
-      toVersion: 7,
-      steps: [
-        // Add order_index column to exercises table
-        addColumns({
-          table: 'exercises',
-          columns: [{ name: 'order_index', type: 'number', isOptional: true }],
-        }),
-        // Old DB stores filenames as bare numbers: "1.png", "2.png", etc.
-        // New URL format: .../refs/tags/2.5.15/assets/exercises/exercise1.png
-        // SUBSTR(..., INSTR(..., '/exercises/') + 11) extracts "1.png"; prepend "exercise".
-        unsafeExecuteSql(
-          "UPDATE exercises SET image_url = 'https://raw.githubusercontent.com/blopa/musclog-app/refs/tags/2.5.15/assets/exercises/exercise' || SUBSTR(image_url, INSTR(image_url, '/exercises/') + 11) WHERE source = 'app' AND image_url LIKE 'file://%/exercises/%.png' AND image_url NOT LIKE '%/exercises/fallback.png';"
-        ),
-        unsafeExecuteSql(
-          "UPDATE exercises SET image_url = NULL WHERE source = 'app' AND image_url LIKE '%/exercises/fallback.png';"
-        ),
-      ],
-    },
+    migrationV7,
+
+    // Version 8: Make target body-composition columns nullable and backfill
+    // existing sentinel 0 values to NULL. Body fat, BMI, and FFMI can all be
+    // unset, but the schema was missing isOptional so WatermelonDB sanitized
+    // missing values to 0 on read/write.
+    migrationV8,
+    // Version 9: Clean up orphan meal_foods and food_food_portions that reference
+    // deleted or missing foods/food_portions. Prevents WatermelonDB relation errors.
+    migrationV9,
+    // Version 10: Add saved_for_later_groups and saved_for_later_items tables
+    migrationV10,
+    // Version 11: Add muscles catalogue and exercise_muscles junction table
+    migrationV11,
+    // Version 12: Add debug_dump table for sanitized LLM request/response logs
+    migrationV12,
+    // Version 13: Add supplement reminders and supplement_id on user_metrics
+    migrationV13,
+    // Version 14: Add is_dynamic column to nutrition_goals
+    migrationV14,
+    // Version 15: Add private/custom named servings for foods and meals add optional notes to saved-for-later meals
+    migrationV15,
+    // Version 16: Replace is_drop_set boolean with set_type string on log/template sets; add nutriscore/ecoscore/nova_group/labels_json to foods
+    migrationV16,
   ],
 });

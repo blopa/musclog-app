@@ -11,6 +11,8 @@
     "male": "Masculino",
     "female": "Feminino",
     "other": "Outro",
+    "chooseAvatar": "Escolher Avatar",
+    "chooseColor": "Escolher Cor",
     "saveChanges": "Salvar Alterações"
   }
 }

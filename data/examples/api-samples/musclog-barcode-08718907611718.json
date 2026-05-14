@@ -1,0 +1,27 @@
+{
+  "barcode": "08718907611718",
+  "description": "volkoren tarwemeel, water, tarwegluten, bakkersgist, rijstmeel, gejodeerd zout, volkoren moutmeel (gerst, tarwe), emulgator (mono- en diglyceriden van vetzuren, veresterd met monoacetyl- en diacetylwijnsteenzuur [E472e], natriumstearoyl-2-lactylaat [E481], mono- en diglyceriden van vetzuren [E471]), conserveermiddel (sorbinezuur [E200]), dextrose, koolzaadolie, aroma's (tarwe), meelverbeteraar (ascorbinezuur [E300]), zout.\nWaarvan toegevoegde suikers 0.1g per 100 gram en waarvan toegevoegd zout 0.87g per 100 gram",
+  "external_id": "523365",
+  "name": "AH Extra lang lekker tijger volkoren heel",
+  "productImage": "https://static.ah.nl/dam/product/AHI_4354523130323037383237?revLabel=1&rendition=800x800_JPG_Q90&fileType=binary",
+  "mainCategory": "Bakkerij",
+  "subCategory": "Extra lang lekker en waldkorn volkoren",
+  "supermarket": "ah",
+  "brand": "AH",
+  "price": 1.23,
+  "kcal": "226",
+  "protein": "11",
+  "carbs": "38",
+  "fat": "1.8",
+  "fiber": "6.7",
+  "other_nutrients": {
+    "saturated_fat": "0.5",
+    "unsaturated_fat": "0.9",
+    "sodium": "353.7",
+    "magnesium": "0",
+    "vitamin_c": "0",
+    "vitamin_d": "0",
+    "kj": "953",
+    "sugar": "3.5"
+  }
+}

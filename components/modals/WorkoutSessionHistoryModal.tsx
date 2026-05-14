@@ -10,6 +10,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import type { EnrichedWorkoutLogSet } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
@@ -20,7 +21,6 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
-  getUserBodyWeightKgForVolume,
 } from '@/utils/workoutCalculator';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -64,7 +64,7 @@ export function WorkoutSessionHistoryModal({
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   useEffect(() => {
-    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+    void UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
   }, []);
 
   const sessionTime = useSessionTotalTime({ startTime: workoutLog?.startedAt });

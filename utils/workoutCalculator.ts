@@ -1,9 +1,6 @@
-import convert from 'convert';
-
 import { EXERCISE_TYPES } from '@/constants/exercises';
-import type { EquipmentType } from '@/database/models';
+import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { UserMetricService } from '@/database/services';
 
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -25,24 +22,6 @@ export type ExerciseVolumeData = {
 export interface ExerciseWithSets {
   exercise: ExerciseVolumeData;
   sets: WorkoutSetInput[];
-}
-
-/**
- * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
- */
-export async function getUserBodyWeightKgForVolume(): Promise<number> {
-  const weightMetric = await UserMetricService.getLatest('weight');
-  if (!weightMetric) {
-    return 0;
-  }
-
-  const decrypted = await weightMetric.getDecrypted();
-  let kg = decrypted.value;
-  if (decrypted.unit === 'lbs') {
-    kg = convert(decrypted.value, 'lb').to('kg') as number;
-  }
-
-  return kg;
 }
 
 /**
@@ -193,7 +172,7 @@ export type FormulaType =
   | 'Lombardi'
   | 'Mayhew'
   | 'OConner'
-  | 'Wathan';
+  | 'Wathen';
 
 /**
  * Calculates the average one-rep max (1RM) across multiple validated formulas.
@@ -212,7 +191,7 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
     'Lombardi',
     'Mayhew',
     'OConner',
-    'Wathan',
+    'Wathen',
   ];
 
   let total1RM = 0;
@@ -239,7 +218,7 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
  * - Lombardi (1989): Uses power function, works well for low reps
  * - Mayhew et al. (1992): Exponential model, accurate across wide rep range
  * - O'Connor et al. (1989): Linear model, conservative estimates
- * - Wathan (1994): Exponential model, good for higher rep ranges
+ * - Wathen (1994): Exponential model, good for higher rep ranges
  *
  * @param weight - The weight lifted in the set
  * @param reps - Number of repetitions performed
@@ -281,8 +260,8 @@ export function calculate1RM(
         // O'Connor formula: 1RM = weight × (1 + 0.025 × reps)
         return weight * (1 + 0.025 * adjustedReps);
       }
-      case 'Wathan': {
-        // Wathan formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
+      case 'Wathen': {
+        // Wathen formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
         return weight / (0.488 + 0.539 * Math.exp(-0.035 * adjustedReps));
       }
       default: {
@@ -306,4 +285,107 @@ export function calculateEstimated1RMForSet(
 ): number {
   const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
   return calculateAverage1RM(weight + added, reps, repsInReserve ?? 0);
+}
+
+/**
+ * Calculates adjusted weight or reps for a target RIR based on 1RM.
+ */
+export function calculateWeightForTargetRIR(
+  oneRM: number,
+  targetReps: number,
+  targetRIR: number
+): number {
+  // All supported 1RM formulas are linear: 1RM = Weight * Multiplier(Reps, RIR)
+  // Therefore: Weight = 1RM / Multiplier(Reps, RIR)
+  // We can get the multiplier by calling calculateAverage1RM with Weight = 1.
+  const multiplier = calculateAverage1RM(1, targetReps, targetRIR);
+  if (multiplier === 0) {
+    return 0;
+  }
+  return oneRM / multiplier;
+}
+
+/**
+ * Given a known 1RM and a target weight, calculates the number of reps that
+ * would match the 1RM at the given RIR. Inverse of calculateWeightForTargetRIR.
+ * Uses binary search because the averaged 1RM formulas have no closed-form inverse.
+ * https://pubmed.ncbi.nlm.nih.gov/26049792/
+ */
+export function calculateRepsForTargetRIR(
+  oneRM: number,
+  targetWeight: number,
+  targetRIR: number
+): number {
+  if (targetWeight <= 0 || oneRM <= 0 || targetWeight >= oneRM) {
+    return 1;
+  }
+
+  // Find the smallest adjustedReps (= reps + RIR) where the implied 1RM >= oneRM.
+  // calculateAverage1RM is monotonically increasing in adjustedReps.
+  let lo = 1;
+  let hi = 50;
+
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (calculateAverage1RM(targetWeight, mid, 0) < oneRM) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  return Math.max(1, lo - targetRIR);
+}
+
+/**
+ * Estimates NET calories burned from daily steps.
+ *
+ * Updates from previous version:
+ * 1. Converts to Net Energy Expenditure (NEE) instead of Gross Energy (GEE)
+ *    to prevent double-counting calories if the user also tracks Basal Metabolic Rate (BMR).
+ * 2. Eliminates the "Cadence Paradox": By isolating the horizontal work component of the
+ *    ACSM equation (0.1 * speed), the 'duration' mathematically cancels out.
+ *    Net Calories = (0.1 * distance * weight) / 200. This removes the need to guess cadence.
+ *
+ * Key Sources:
+ * - Stride Length Estimation (0.415 / 0.413 ratios):
+ *   Pratama et al. (2012) & Hoover et al. (2017)
+ *   https://www.mdpi.com/2072-4292/11/1/55
+ *   https://pmc.ncbi.nlm.nih.gov/articles/PMC9646807/
+ * - ACSM Metabolic Equations (Net Energy calculation):
+ *   American College of Sports Medicine Guidelines
+ *   https://www.scribd.com/document/811373428/ecuaciones-acsm
+ */
+export function calculateCaloriesBurnedBySteps(
+  steps: number,
+  gender: Gender,
+  weightKg: number,
+  heightCm: number
+): number {
+  if (steps <= 0 || weightKg <= 0 || heightCm <= 0) {
+    return 0;
+  }
+
+  // 1. Estimate Stride Length and Distance
+  let strideFactor = 0.414;
+  if (gender === 'male') {
+    strideFactor = 0.415;
+  } else if (gender === 'female') {
+    strideFactor = 0.413;
+  }
+
+  const strideLengthMeters = (heightCm * strideFactor) / 100;
+  const distanceMeters = steps * strideLengthMeters;
+
+  // 2. Calculate Net Energy Expenditure (NEE)
+  // ACSM Net horizontal walking estimate: VO2 (ml/kg/min) = 0.1 * speed (m/min)
+  // Total VO2 (ml) for the bout = VO2_rate * weight * duration
+  // Since speed (m/min) * duration (min) = distance (m), the time factor cancels out perfectly.
+  // Total Net VO2 (ml) = 0.1 * distanceMeters * weightKg
+
+  // 3. Convert to Kilocalories
+  // 1 Liter of O2 = ~5 kcals. Therefore, divide ml by 1000 and multiply by 5 (which is mathematically equivalent to dividing by 200).
+  const netCalories = (0.1 * distanceMeters * weightKg) / 200;
+
+  return roundToDecimalPlaces(netCalories);
 }

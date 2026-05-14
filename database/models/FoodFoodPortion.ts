@@ -12,8 +12,8 @@ export default class FoodFoodPortion extends Model {
   static table = 'food_food_portions';
 
   static associations = {
-    food: { type: 'belongs_to' as const, key: 'food_id' },
-    food_portion: { type: 'belongs_to' as const, key: 'food_portion_id' },
+    foods: { type: 'belongs_to' as const, key: 'food_id' },
+    food_portions: { type: 'belongs_to' as const, key: 'food_portion_id' },
   };
 
   @field('food_id') foodId!: string;
@@ -25,8 +25,8 @@ export default class FoodFoodPortion extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('food', 'food_id') food!: Food;
-  @relation('food_portion', 'food_portion_id') foodPortion!: FoodPortion;
+  @relation('foods', 'food_id') food!: Food;
+  @relation('food_portions', 'food_portion_id') foodPortion!: FoodPortion;
 
   @writer
   async markAsDeleted(): Promise<void> {

@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
@@ -12,9 +12,9 @@ import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/cal
 export interface NutritionCheckinInput {
   checkinDate: number;
   targetWeight: number;
-  targetBodyFat: number;
-  targetBmi: number;
-  targetFfmi: number;
+  targetBodyFat?: number | null;
+  targetBmi?: number | null;
+  targetFfmi?: number | null;
   status?: CheckinStatus;
 }
 
@@ -242,9 +242,9 @@ export class NutritionCheckinService {
         r.nutritionGoalId = nutritionGoalId;
         r.checkinDate = data.checkinDate;
         r.targetWeight = data.targetWeight;
-        r.targetBodyFat = data.targetBodyFat;
-        r.targetBmi = data.targetBmi;
-        r.targetFfmi = data.targetFfmi;
+        r.targetBodyFat = data.targetBodyFat ?? null;
+        r.targetBmi = data.targetBmi ?? null;
+        r.targetFfmi = data.targetFfmi ?? null;
         r.status = data.status ?? 'pending';
         r.createdAt = now;
         r.updatedAt = now;
@@ -272,9 +272,9 @@ export class NutritionCheckinService {
           r.nutritionGoalId = nutritionGoalId;
           r.checkinDate = data.checkinDate;
           r.targetWeight = data.targetWeight;
-          r.targetBodyFat = data.targetBodyFat;
-          r.targetBmi = data.targetBmi;
-          r.targetFfmi = data.targetFfmi;
+          r.targetBodyFat = data.targetBodyFat ?? null;
+          r.targetBmi = data.targetBmi ?? null;
+          r.targetFfmi = data.targetFfmi ?? null;
           r.status = data.status ?? 'pending';
           r.createdAt = now;
           r.updatedAt = now;

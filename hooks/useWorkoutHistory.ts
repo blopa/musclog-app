@@ -12,6 +12,7 @@ import { WorkoutAnalytics, WorkoutService } from '@/database/services';
 import i18n from '@/lang/lang';
 import { type Theme } from '@/theme';
 import { formatAppInteger } from '@/utils/formatAppNumber';
+import { handleError } from '@/utils/handleError';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -257,6 +258,7 @@ export function useWorkoutHistory({
         setHasMore(nextBatch.length > 0);
       }
     } catch (err) {
+      handleError(err, 'useWorkoutHistory.loadHistory');
       console.error('Error loading workout history:', err);
       if (groupByMonth) {
         setSections([]);
@@ -340,6 +342,7 @@ export function useWorkoutHistory({
         setHasMore(nextBatch.length > 0);
       }
     } catch (err) {
+      handleError(err, 'useWorkoutHistory.loadMoreWorkouts');
       console.error('Error loading more workouts:', err);
       setHasMore(false);
     } finally {

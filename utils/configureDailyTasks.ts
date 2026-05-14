@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
+import { waitForDbReady } from '@/database/dbReady';
 import {
   ChatService,
   NutritionService,
@@ -65,6 +66,14 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
       console.log('[configureDailyTasks] Skipping on web platform');
       return;
     }
+
+    // Wait for the DB to be fully ready before any query.
+    // seedProductionData() calls unsafeResetDatabase() on first install, which
+    // temporarily replaces the real adapter with an ErrorAdapter that throws on
+    // any access. This fires at mount alongside the seeding flow, so we must
+    // wait for seedProductionData() to resolve before touching the DB.
+    // See: database/dbReady.ts
+    await waitForDbReady();
 
     // Check if we've already run today
     const runToday = await shouldRunToday();

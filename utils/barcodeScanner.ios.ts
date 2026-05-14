@@ -1,29 +1,35 @@
-/**
- * iOS Barcode Scanner Implementation
- *
- * This is a stub/fallback implementation for iOS.
- * The original react-native-barcodes-detector package depends on Google ML Kit
- * which doesn't support the arm64 architecture required for iOS simulators on Apple Silicon Macs.
- *
- * For barcode scanning on iOS, the app uses expo-camera's built-in barcode scanning
- * capabilities which work directly in the CameraView component.
- *
- * This file provides a stub for image-based barcode detection. For real-time
- * scanning, use the CameraView component with barcodeScannerSettings.
- */
+import BarcodeScanning, {
+  type Barcode,
+  BarcodeFormat,
+} from '@react-native-ml-kit/barcode-scanning';
+
+const SUPPORTED_PRODUCT_BARCODE_FORMATS = new Set<BarcodeFormat>([
+  BarcodeFormat.EAN_13,
+  BarcodeFormat.EAN_8,
+  BarcodeFormat.UPC_A,
+  BarcodeFormat.UPC_E,
+]);
+
+function getFirstSupportedBarcodeValue(barcodes: Barcode[]): string | null {
+  const matchedBarcode = barcodes.find(
+    (barcode) =>
+      SUPPORTED_PRODUCT_BARCODE_FORMATS.has(barcode.format) && barcode.value.trim().length > 0
+  );
+
+  return matchedBarcode?.value ?? null;
+}
 
 /**
- * Stub implementation of detectBarcodes for iOS.
- * Returns null as image-based barcode detection is not available through react-native-barcodes-detector.
+ * Detect barcodes in an image on iOS.
  *
- * For barcode scanning on iOS, use the BarcodeCameraModal component which uses
- * expo-camera's built-in barcode scanning functionality.
+ * This implementation uses Google ML Kit via @react-native-ml-kit/barcode-scanning
+ * to scan a local image URI for common product barcode formats.
+ *
+ * @param imageUri - URI of the image to scan for barcodes
+ * @returns The first detected barcode value, or null if none found
  */
 export async function detectBarcodes(imageUri: string): Promise<string | null> {
-  console.warn(
-    '[barcodeScanner.ios.ts] detectBarcodes is not implemented for iOS. ' +
-      'The react-native-barcodes-detector package has been removed due to architecture incompatibility. ' +
-      'Use the CameraView component with barcodeScannerSettings for real-time barcode scanning instead.'
-  );
-  return null;
+  const barcodes = await BarcodeScanning.scan(imageUri);
+
+  return getFirstSupportedBarcodeValue(barcodes);
 }

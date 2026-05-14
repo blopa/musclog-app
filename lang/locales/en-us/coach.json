@@ -41,9 +41,13 @@
       "progressInsightFailed": "Could not analyze progress. Try again later.",
       "nutritionInsightFailed": "Could not check nutrition. Try again later.",
       "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
+      "featureRequiresCloudAi": "This feature is not available with Apple Intelligence. Please switch to OpenAI or Gemini in Settings.",
       "filePickFailed": "Failed to pick file. Please try again.",
       "creditsExhausted": "It looks like your AI credits have run out. Please check your API key or billing in Settings.",
-      "rateLimited": "Please wait a moment before sending another message."
+      "rateLimited": "Please wait a moment before sending another message.",
+      "toolRequestFailed": "I could not process that request. Please try again.",
+      "conversationFallback": "I can help you with fitness and nutrition questions. What would you like to know?",
+      "requestProcessingFailed": "I had trouble processing your request. Could you try rephrasing that?"
     },
     "goToSettings": "Go to Settings",
     "success": {

@@ -14,7 +14,7 @@ const WORKOUT_TEMPLATE_SET_COLUMNS = [
   'target_weight',
   'rest_time_after',
   'set_order',
-  'is_drop_set',
+  'set_type',
   'deleted_at',
 ] as const;
 
@@ -40,7 +40,7 @@ function buildEnrichedTemplateSets(
       targetWeight: set.targetWeight,
       restTimeAfter: set.restTimeAfter,
       setOrder: set.setOrder,
-      isDropSet: set.isDropSet,
+      setType: set.setType,
       createdAt: set.createdAt,
       updatedAt: set.updatedAt,
       deletedAt: set.deletedAt,

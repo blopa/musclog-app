@@ -24,7 +24,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
-const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.png');
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercise-fallback.png');
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 
@@ -127,17 +127,31 @@ function ExerciseCard({
   const isCompleted = status === 'completed';
   const isSkipped = status === 'skipped';
   const isInProgress = status === 'in-progress';
+  const getSetIndicatorClassName = (index: number) => {
+    if (isSkipped) {
+      return 'border border-border-light';
+    }
+
+    if (index < setsCompleted) {
+      return 'bg-accent-primary';
+    }
+
+    return 'bg-bg-secondary';
+  };
 
   const titleClassName = useMemo(() => {
     if (isCompleted) {
       return 'text-text-primary';
     }
+
     if (isInProgress) {
       return 'text-text-primary';
     }
+
     if (isSkipped) {
       return 'text-text-muted';
     }
+
     return 'text-text-secondary';
   }, [isCompleted, isInProgress, isSkipped]);
 
@@ -174,13 +188,7 @@ function ExerciseCard({
                 {Array.from({ length: totalSets }).map((_, i) => (
                   <View
                     key={i}
-                    className={`h-1.5 w-6 rounded-full ${
-                      isSkipped
-                        ? 'border border-border-light'
-                        : i < setsCompleted
-                          ? 'bg-accent-primary'
-                          : 'bg-bg-secondary'
-                    }`}
+                    className={`h-1.5 w-6 rounded-full ${getSetIndicatorClassName(i)}`}
                   />
                 ))}
               </View>

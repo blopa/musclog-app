@@ -8,13 +8,14 @@ import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { type Theme } from '@/theme';
 
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
-import { calculateSetVolume, getUserBodyWeightKgForVolume } from './workoutCalculator';
+import { calculateSetVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
 
 /**
@@ -33,6 +34,7 @@ export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
  * Extends Exercise model fields with UI-specific properties.
  */
 export type WorkoutExercise = Pick<Exercise, 'id' | 'name'> & {
+  muscleGroup?: string | null;
   timeSpent: number;
   iconColor: string;
   iconBgColor: string;
@@ -195,7 +197,7 @@ export async function transformWorkoutToDetailData(
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-  const bodyWeightKg = await getUserBodyWeightKgForVolume();
+  const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
 
   const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
   sets.forEach((set) => {
@@ -259,6 +261,7 @@ export async function transformWorkoutToDetailData(
       return {
         id: exerciseId,
         name: exercise.name ?? '',
+        muscleGroup: exercise.muscleGroup ?? null,
         timeSpent,
         iconColor: iconData.iconBgColor,
         iconBgColor: iconData.iconBgOpacity,

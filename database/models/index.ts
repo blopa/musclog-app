@@ -1,18 +1,26 @@
 // Export all models
 export { default as AiCustomPrompt } from './AiCustomPrompt';
 export { default as ChatMessage } from './ChatMessage';
+export { default as DebugDump } from './DebugDump';
 export { default as Exercise } from './Exercise';
+export { default as ExerciseGoal } from './ExerciseGoal';
+export { default as ExerciseMuscle } from './ExerciseMuscle';
 export { default as Food } from './Food';
 export { default as FoodFoodPortion } from './FoodFoodPortion';
 export { default as FoodPortion } from './FoodPortion';
 export { default as Meal } from './Meal';
 export { default as MealFood } from './MealFood';
+export { default as MealFoodPortion } from './MealFoodPortion';
 export { default as MenstrualCycle } from './MenstrualCycle';
+export { default as Muscle } from './Muscle';
 export { default as NutritionCheckin } from './NutritionCheckin';
 export { default as NutritionGoal } from './NutritionGoal';
 export { default as NutritionLog } from './NutritionLog';
+export { default as SavedForLaterGroup } from './SavedForLaterGroup';
+export { default as SavedForLaterItem } from './SavedForLaterItem';
 export { default as Schedule } from './Schedule';
 export { default as Setting } from './Setting';
+export { default as Supplement } from './Supplement';
 export { default as User } from './User';
 export { default as UserMetric } from './UserMetric';
 export { default as UserMetricsNote } from './UserMetricsNote';
@@ -25,8 +33,10 @@ export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
 export type { ChatMessageType, ChatSender } from './ChatMessage';
+export type { DebugDumpDirection } from './DebugDump';
 export type { EquipmentType, ExerciseSource, MechanicType, MuscleGroup } from './Exercise';
-export type { MicrosData } from './Food';
+export type { ExerciseGoalType } from './ExerciseGoal';
+export type { FoodNutritionBasis, MicrosData } from './Food';
 export type { BirthControlType, MenstrualCycleUpdate } from './MenstrualCycle';
 export type { EatingPhase } from './NutritionGoal';
 export type { DecryptedNutritionLogSnapshot, MealType } from './NutritionLog';

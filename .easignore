@@ -52,6 +52,11 @@ expo-env.d.ts
 #android/
 #ios/
 
+# iOS build artifacts — EAS runs pod install on its servers
+ios/Pods/
+ios/build/
+ios/DerivedData/
+
 musclog-316d75352408.json
 .last-run.json
 test-results/
@@ -92,7 +97,13 @@ devenv.local.yaml
 screenshots/
 docs/
 examples/
+data/examples/
+data/dev/
 data/usda/
+assets/exercises
+assets/workouts
+.git/
+.git/**
 
 # Exercise images are fetched from GitHub raw content (see utils/exerciseImage.ts)
 # except for the fallback image which is required by the app.

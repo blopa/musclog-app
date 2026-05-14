@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { ThemeOption } from '@/constants/settings';
+import type { ProgressionMode, ThemeOption } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 
 import { useSettings } from './useSettings';
@@ -52,6 +52,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'anonymousBugReport',
       'enableGoogleGemini',
       'enableOpenAi',
+      'enableLocalLlm',
       'dailyNutritionInsights',
       'workoutInsights',
       'notifications',
@@ -62,7 +63,10 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsRestTimer',
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
+      'useOnDeviceAi',
+      'useMusclogFreeTier',
       'sendFoundationFoodsToLlm',
+      'useThinkingMode',
       'units',
       'foodSearchSource',
       'conversationContext',
@@ -70,10 +74,16 @@ export function useDebouncedSettings(debounceMs = 200) {
       'language',
       'maxAiMemories',
       'showDailyMoodPrompt',
+      'showDailyWaterPrompt',
+      'showDailySupplementPrompt',
       'alwaysAllowFoodEditing',
       'showWeightPrediction',
       'requireExportEncryption',
+      'disableMinimumCalories',
+      'useBfForCalculations',
       'intuitiveEatingMode',
+      'progressionMode',
+      'advancedDataManagement',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -170,6 +180,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'enableOpenAi',
     SettingsService.setEnableOpenAi
   );
+  const handleEnableLocalLlmChange = createSettingHandler(
+    'enableLocalLlm',
+    SettingsService.setEnableLocalLlm
+  );
   const handleDailyNutritionInsightsChange = createSettingHandler(
     'dailyNutritionInsights',
     SettingsService.setDailyNutritionInsights
@@ -214,9 +228,54 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
+  const handleUseOnDeviceAiChange = useCallback(
+    (newValue: boolean) => {
+      setLocalSettings((prev) => ({
+        ...prev,
+        useOnDeviceAi: newValue,
+        ...(newValue ? { useOcrBeforeAi: true } : {}),
+      }));
+
+      pendingKeysRef.current.add('useOnDeviceAi');
+      pendingValuesRef.current['useOnDeviceAi'] = newValue;
+
+      if (newValue) {
+        pendingKeysRef.current.add('useOcrBeforeAi');
+        pendingValuesRef.current['useOcrBeforeAi'] = true;
+      }
+
+      const schedule = (key: string, save: () => Promise<void>) => {
+        if (timeoutRefs.current[key]) {
+          clearTimeout(timeoutRefs.current[key]);
+        }
+
+        timeoutRefs.current[key] = setTimeout(() => {
+          delete timeoutRefs.current[key];
+          delete pendingValuesRef.current[key];
+          save()
+            .catch((e) => console.error(`[useDebouncedSettings] Error saving ${key}:`, e))
+            .finally(() => pendingKeysRef.current.delete(key));
+        }, debounceMs);
+      };
+
+      schedule('useOnDeviceAi', () => SettingsService.setUseOnDeviceAi(newValue));
+      if (newValue) {
+        schedule('useOcrBeforeAi', () => SettingsService.setUseOcrBeforeAi(true));
+      }
+    },
+    [debounceMs]
+  );
+  const handleUseMusclogFreeTierChange = createSettingHandler(
+    'useMusclogFreeTier',
+    SettingsService.setUseMusclogFreeTier
+  );
   const handleSendFoundationFoodsToLlmChange = createSettingHandler(
     'sendFoundationFoodsToLlm',
     SettingsService.setSendFoundationFoodsToLlm
+  );
+  const handleUseThinkingModeChange = createSettingHandler(
+    'useThinkingMode',
+    SettingsService.setUseThinkingMode
   );
   const handleFoodSearchSourceChange = createSettingHandler(
     'foodSearchSource',
@@ -241,6 +300,14 @@ export function useDebouncedSettings(debounceMs = 200) {
     'showDailyMoodPrompt',
     SettingsService.setShowDailyMoodPrompt
   );
+  const handleShowDailyWaterPromptChange = createSettingHandler<boolean>(
+    'showDailyWaterPrompt',
+    SettingsService.setShowDailyWaterPrompt
+  );
+  const handleShowDailySupplementPromptChange = createSettingHandler<boolean>(
+    'showDailySupplementPrompt',
+    SettingsService.setShowDailySupplementPrompt
+  );
   const handleAlwaysAllowFoodEditingChange = createSettingHandler<boolean>(
     'alwaysAllowFoodEditing',
     SettingsService.setAlwaysAllowFoodEditing
@@ -253,9 +320,25 @@ export function useDebouncedSettings(debounceMs = 200) {
     'requireExportEncryption',
     SettingsService.setRequireExportEncryption
   );
+  const handleDisableMinimumCaloriesChange = createSettingHandler<boolean>(
+    'disableMinimumCalories',
+    SettingsService.setDisableMinimumCalories
+  );
+  const handleUseBfForCalculationsChange = createSettingHandler<boolean>(
+    'useBfForCalculations',
+    SettingsService.setUseBfForCalculations
+  );
   const handleIntuitiveEatingModeChange = createSettingHandler<boolean>(
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
+  );
+  const handleProgressionModeChange = createSettingHandler<ProgressionMode>(
+    'progressionMode',
+    SettingsService.setProgressionMode
+  );
+  const handleAdvancedDataManagementChange = createSettingHandler<boolean>(
+    'advancedDataManagement',
+    SettingsService.setAdvancedDataManagement
   );
 
   // --- Flush (for when the modal closes before the timer fires) ---
@@ -291,6 +374,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'enableOpenAi':
             await SettingsService.setEnableOpenAi(value as boolean);
             break;
+          case 'enableLocalLlm':
+            await SettingsService.setEnableLocalLlm(value as boolean);
+            break;
           case 'dailyNutritionInsights':
             await SettingsService.setDailyNutritionInsights(value as boolean);
             break;
@@ -324,8 +410,17 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'useOcrBeforeAi':
             await SettingsService.setUseOcrBeforeAi(value as boolean);
             break;
+          case 'useOnDeviceAi':
+            await SettingsService.setUseOnDeviceAi(value as boolean);
+            break;
+          case 'useMusclogFreeTier':
+            await SettingsService.setUseMusclogFreeTier(value as boolean);
+            break;
           case 'sendFoundationFoodsToLlm':
             await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
+            break;
+          case 'useThinkingMode':
+            await SettingsService.setUseThinkingMode(value as boolean);
             break;
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
@@ -347,6 +442,12 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'showDailyMoodPrompt':
             await SettingsService.setShowDailyMoodPrompt(value as boolean);
             break;
+          case 'showDailyWaterPrompt':
+            await SettingsService.setShowDailyWaterPrompt(value as boolean);
+            break;
+          case 'showDailySupplementPrompt':
+            await SettingsService.setShowDailySupplementPrompt(value as boolean);
+            break;
           case 'alwaysAllowFoodEditing':
             await SettingsService.setAlwaysAllowFoodEditing(value as boolean);
             break;
@@ -356,8 +457,20 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'requireExportEncryption':
             await SettingsService.setRequireExportEncryption(value as boolean);
             break;
+          case 'disableMinimumCalories':
+            await SettingsService.setDisableMinimumCalories(value as boolean);
+            break;
+          case 'useBfForCalculations':
+            await SettingsService.setUseBfForCalculations(value as boolean);
+            break;
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
+            break;
+          case 'progressionMode':
+            await SettingsService.setProgressionMode(value as ProgressionMode);
+            break;
+          case 'advancedDataManagement':
+            await SettingsService.setAdvancedDataManagement(value as boolean);
             break;
         }
       } catch (error) {
@@ -387,6 +500,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     enableGoogleGemini:
       (localSettings.enableGoogleGemini as boolean) ?? actualSettings.enableGoogleGemini,
     enableOpenAi: (localSettings.enableOpenAi as boolean) ?? actualSettings.enableOpenAi,
+    enableLocalLlm: (localSettings.enableLocalLlm as boolean) ?? actualSettings.enableLocalLlm,
     dailyNutritionInsights:
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
@@ -409,9 +523,13 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.notificationsWorkoutDuration as boolean) ??
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
+    useOnDeviceAi: (localSettings.useOnDeviceAi as boolean) ?? actualSettings.useOnDeviceAi,
+    useMusclogFreeTier:
+      (localSettings.useMusclogFreeTier as boolean) ?? actualSettings.useMusclogFreeTier,
     sendFoundationFoodsToLlm:
       (localSettings.sendFoundationFoodsToLlm as boolean) ??
       actualSettings.sendFoundationFoodsToLlm,
+    useThinkingMode: (localSettings.useThinkingMode as boolean) ?? actualSettings.useThinkingMode,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     language: (localSettings.language as string) ?? actualSettings.language,
@@ -424,14 +542,27 @@ export function useDebouncedSettings(debounceMs = 200) {
     maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
     showDailyMoodPrompt:
       (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
+    showDailyWaterPrompt:
+      (localSettings.showDailyWaterPrompt as boolean) ?? actualSettings.showDailyWaterPrompt,
+    showDailySupplementPrompt:
+      (localSettings.showDailySupplementPrompt as boolean) ??
+      actualSettings.showDailySupplementPrompt,
     alwaysAllowFoodEditing:
       (localSettings.alwaysAllowFoodEditing as boolean) ?? actualSettings.alwaysAllowFoodEditing,
     showWeightPrediction:
       (localSettings.showWeightPrediction as boolean) ?? actualSettings.showWeightPrediction,
     requireExportEncryption:
       (localSettings.requireExportEncryption as boolean) ?? actualSettings.requireExportEncryption,
+    disableMinimumCalories:
+      (localSettings.disableMinimumCalories as boolean) ?? actualSettings.disableMinimumCalories,
+    useBfForCalculations:
+      (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
+    progressionMode:
+      (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
+    advancedDataManagement:
+      (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -447,6 +578,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleAnonymousBugReportChange,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleNotificationsChange,
@@ -458,17 +590,26 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
+    handleUseOnDeviceAiChange,
+    handleUseMusclogFreeTierChange,
     handleSendFoundationFoodsToLlmChange,
+    handleUseThinkingModeChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,
     handleLanguageChange,
     handleMaxAiMemoriesChange,
     handleShowDailyMoodPromptChange,
+    handleShowDailyWaterPromptChange,
+    handleShowDailySupplementPromptChange,
     handleAlwaysAllowFoodEditingChange,
     handleShowWeightPredictionChange,
     handleRequireExportEncryptionChange,
+    handleDisableMinimumCaloriesChange,
+    handleUseBfForCalculationsChange,
     handleIntuitiveEatingModeChange,
+    handleProgressionModeChange,
+    handleAdvancedDataManagementChange,
 
     // Utilities
     flushAllPendingChanges,

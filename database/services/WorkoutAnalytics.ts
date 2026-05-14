@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -9,13 +9,10 @@ import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
 } from '@/utils/calendarDate';
-import {
-  calculateEstimated1RMForSet,
-  calculateSetVolume,
-  getUserBodyWeightKgForVolume,
-} from '@/utils/workoutCalculator';
+import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
 
 import { SettingsService } from './SettingsService';
+import { UserMetricService } from './UserMetricService';
 
 type EnrichedSet = WorkoutLogSet & {
   exerciseId: string;
@@ -90,7 +87,7 @@ export class WorkoutAnalytics {
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
         isSkipped: r.is_skipped as boolean | undefined,
         difficultyLevel: (r.difficulty_level as number) ?? 0,
-        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
         updatedAt: (r.updated_at as number) ?? 0,
@@ -146,7 +143,7 @@ export class WorkoutAnalytics {
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
         isSkipped: r.is_skipped as boolean | undefined,
         difficultyLevel: (r.difficulty_level as number) ?? 0,
-        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
         updatedAt: (r.updated_at as number) ?? 0,
@@ -165,7 +162,7 @@ export class WorkoutAnalytics {
     bodyWeightKg?: number
   ): Promise<PersonalRecord[]> {
     const records: PersonalRecord[] = [];
-    const bwKg = bodyWeightKg ?? (await getUserBodyWeightKgForVolume());
+    const bwKg = bodyWeightKg ?? (await UserMetricService.getUserBodyWeightKgForVolume());
     const sets = await this.getEnrichedSetsForWorkout(workoutLog);
 
     const exerciseSets = new Map<string, EnrichedSet[]>();
@@ -344,7 +341,7 @@ export class WorkoutAnalytics {
       return [];
     }
 
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
 
     // Get all sets for these log exercises
     const logExerciseIds = logExercises.map((le) => le.id);
@@ -372,7 +369,7 @@ export class WorkoutAnalytics {
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
         isSkipped: r.is_skipped as boolean | undefined,
         difficultyLevel: (r.difficulty_level as number) ?? 0,
-        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
         updatedAt: (r.updated_at as number) ?? 0,
@@ -460,6 +457,172 @@ export class WorkoutAnalytics {
   }
 
   /**
+   * Get the date (started_at) of the first workout where the user logged an actual
+   * 1RM set at or above targetWeight for a given exercise since a specific date.
+   * Returns null if no such workout exists.
+   */
+  static async getPerformed1RMDate(
+    exerciseId: string,
+    targetWeight: number,
+    sinceDate: number
+  ): Promise<number | null> {
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return null;
+    }
+
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const logExerciseMap = new Map(logExercises.map((le) => [le.id, le.workoutLogId]));
+
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('reps', 1),
+        Q.where('weight', Q.gte(targetWeight)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (sets.length === 0) {
+      return null;
+    }
+
+    const workoutLogIds = Array.from(
+      new Set(sets.map((s) => logExerciseMap.get(s.logExerciseId) ?? '').filter(Boolean))
+    );
+
+    const workouts = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('id', Q.oneOf(workoutLogIds)),
+        Q.where('started_at', Q.gte(sinceDate)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.sortBy('started_at', Q.asc),
+        Q.take(1)
+      )
+      .fetch();
+
+    return workouts[0]?.startedAt ?? null;
+  }
+
+  /**
+   * Get the average estimated 1RM from the first set of a given exercise
+   * across completed workouts in the last N weeks.
+   * This smooths out daily variance and fatigue by averaging first-set
+   * performance rather than relying on a single latest workout.
+   */
+  static async getRecentFirstSetAverage1RM(
+    exerciseId: string,
+    weeks: number = 2
+  ): Promise<{ average1RM: number; setCount: number } | null> {
+    const cutoffMs = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000;
+
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return null;
+    }
+
+    const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
+    const workouts = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('id', Q.oneOf(workoutLogIds)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('started_at', Q.gte(cutoffMs))
+      )
+      .fetch();
+
+    const validWorkoutIds = new Set(workouts.map((w) => w.id));
+    const validLogExercises = logExercises.filter((le) => validWorkoutIds.has(le.workoutLogId));
+
+    if (validLogExercises.length === 0) {
+      return null;
+    }
+
+    let exercise: Exercise;
+    try {
+      exercise = await database.get<Exercise>('exercises').find(exerciseId);
+    } catch {
+      return null;
+    }
+
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+    const logExerciseIds = validLogExercises.map((le) => le.id);
+
+    const rawSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const logExerciseMap = new Map(validLogExercises.map((le) => [le.id, le.workoutLogId]));
+
+    // Build plain objects from _raw so we always read actual DB values
+    const sets = rawSets.map((set) => {
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        weight: (r.weight as number) ?? 0,
+        reps: (r.reps as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+      };
+    });
+
+    // Group by workout and pick the true first set (lowest set_order, then earliest created_at)
+    const setsByWorkout = new Map<string, typeof sets>();
+    for (const set of sets) {
+      const workoutId = logExerciseMap.get(set.logExerciseId) ?? '';
+      if (!workoutId) {
+        continue;
+      }
+      if (!setsByWorkout.has(workoutId)) {
+        setsByWorkout.set(workoutId, []);
+      }
+      setsByWorkout.get(workoutId)!.push(set);
+    }
+
+    const firstSet1RMs: number[] = [];
+    for (const workoutSets of setsByWorkout.values()) {
+      const firstSet = workoutSets.reduce((earliest, current) => {
+        if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) {
+          return current;
+        }
+        if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) {
+          return earliest;
+        }
+        return (current.createdAt ?? 0) < (earliest.createdAt ?? 0) ? current : earliest;
+      });
+
+      firstSet1RMs.push(
+        calculateEstimated1RMForSet(
+          firstSet.weight,
+          firstSet.reps,
+          firstSet.repsInReserve,
+          exercise.equipmentType,
+          bodyWeightKg
+        )
+      );
+    }
+
+    if (firstSet1RMs.length === 0) {
+      return null;
+    }
+
+    const average1RM = firstSet1RMs.reduce((sum, v) => sum + v, 0) / firstSet1RMs.length;
+    return { average1RM, setCount: firstSet1RMs.length };
+  }
+
+  /**
    * Calculate total volume per muscle group for a set of workouts
    */
   static async calculateMuscleGroupVolume(
@@ -477,7 +640,7 @@ export class WorkoutAnalytics {
       );
     }
 
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
     // Process each workout
     for (const workout of validWorkouts) {
       const sets = await this.getEnrichedSetsForWorkout(workout);

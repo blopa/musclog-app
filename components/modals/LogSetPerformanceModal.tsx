@@ -21,7 +21,13 @@ type LogSetPerformanceModalProps = {
   partials?: string | number;
   repsInReserve?: number;
   initialRpe?: number;
-  onConfirm?: (data: { rpe: number }) => void;
+  onConfirm?: (data: {
+    rpe: number;
+    weight: number;
+    reps: number;
+    partials: number;
+    repsInReserve: number;
+  }) => void;
   /** True while the confirm action is in progress (disables buttons, shows loading on log set). */
   isSaving?: boolean;
   onEditSetDetails?: (data: {
@@ -97,7 +103,7 @@ export function LogSetPerformanceModal({
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, initialRpe]);
 
   const handleConfirm = () => {
-    onConfirm?.({ rpe });
+    onConfirm?.({ rpe, weight, reps, partials, repsInReserve });
     // Don't call onClose — parent navigates or shows next screen; closing first would cause a flash
   };
 

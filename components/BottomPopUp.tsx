@@ -67,6 +67,39 @@ export function BottomPopUp({
       ? theme.spacing.padding.xl
       : Math.max(insets.bottom, theme.spacing.padding.xl);
 
+  const renderContent = () => {
+    if (!children) {
+      return null;
+    }
+
+    if (scrollable) {
+      return (
+        <ScrollView
+          className="p-6"
+          style={!footer ? { paddingBottom: contentBottomPadding } : undefined}
+          scrollEnabled={true}
+          nestedScrollEnabled={true}
+          keyboardShouldPersistTaps="handled"
+        >
+          {children}
+        </ScrollView>
+      );
+    }
+
+    return (
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: theme.spacing.padding.xl,
+          paddingTop: theme.spacing.padding.xl,
+          paddingBottom: contentBottomPadding,
+        }}
+      >
+        {children}
+      </View>
+    );
+  };
+
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
   /** Lifts the sheet when the keyboard opens so focused inputs stay visible (half keyboard height). */
   const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
@@ -201,30 +234,7 @@ export function BottomPopUp({
             </LinearGradient>
 
             {/* Content */}
-            {children ? (
-              scrollable ? (
-                <ScrollView
-                  className="p-6"
-                  style={!footer ? { paddingBottom: contentBottomPadding } : undefined}
-                  scrollEnabled={true}
-                  nestedScrollEnabled={true}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {children}
-                </ScrollView>
-              ) : (
-                <View
-                  style={{
-                    flex: 1,
-                    paddingHorizontal: theme.spacing.padding.xl,
-                    paddingTop: theme.spacing.padding.xl,
-                    paddingBottom: contentBottomPadding,
-                  }}
-                >
-                  {children}
-                </View>
-              )
-            ) : null}
+            {renderContent()}
 
             {/* Footer */}
             {footer ? (

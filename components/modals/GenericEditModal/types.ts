@@ -22,6 +22,9 @@ export type NumberFieldConfig = BaseFieldConfig & {
   unit?: string;
   /** Override inferred fraction digits from `step` (e.g. 2 for hundredths). */
   maxFractionDigits?: number;
+  clearable?: boolean;
+  clearLabel?: string;
+  unsetPlaceholder?: string;
 };
 
 // Boolean field config
@@ -42,6 +45,9 @@ export type SelectFieldConfig = BaseFieldConfig & {
 // Date field config
 export type DateFieldConfig = BaseFieldConfig & {
   type: 'date';
+  clearable?: boolean;
+  clearLabel?: string;
+  unsetPlaceholder?: string;
 };
 
 // Icon field config

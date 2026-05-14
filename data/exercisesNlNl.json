@@ -1,0 +1,917 @@
+[
+  {
+    "name": "Bankdrukken",
+    "description": "Een borstoefening waarbij je een halterstang omhoog drukt terwijl je op een bankje ligt.",
+    "exerciseIndex": 1
+  },
+  {
+    "name": "Incline Bankdrukken",
+    "description": "Een variatie op het bankdrukken uitgevoerd op een schuin bankje om de bovenkant van de borst te trainen.",
+    "exerciseIndex": 2
+  },
+  {
+    "name": "Decline Bankdrukken",
+    "description": "Een variatie op het bankdrukken uitgevoerd op een achteroverhellend bankje om de onderkant van de borst te trainen.",
+    "exerciseIndex": 3
+  },
+  {
+    "name": "Overhead Press",
+    "description": "Een schouderoefening waarbij je een gewicht boven je hoofd drukt, zowel staand als zittend.",
+    "exerciseIndex": 4
+  },
+  {
+    "name": "Deadlift",
+    "description": "Een oefening voor het hele lichaam waarbij je een halterstang van de grond tilt tot je rechtop staat.",
+    "exerciseIndex": 5
+  },
+  {
+    "name": "Pec Fly Machine",
+    "description": "Een machine-oefening die de borstspieren isoleert door de beweging van een fly na te bootsen.",
+    "exerciseIndex": 6
+  },
+  {
+    "name": "Leg Extension Machine",
+    "description": "Een machine-oefening die de quadriceps traint door de benen te strekken vanuit een zittende positie.",
+    "exerciseIndex": 7
+  },
+  {
+    "name": "Squat",
+    "description": "Een oefening voor het onderlichaam waarbij je door je knieën en heupen buigt om je lichaam te laten zakken en daarna weer opstaat.",
+    "exerciseIndex": 8
+  },
+  {
+    "name": "Barbell Back Squat",
+    "description": "Een oefening voor het onderlichaam waarbij je door je knieën en heupen buigt, met een halterstang op je bovenrug, en daarna weer opstaat.",
+    "exerciseIndex": 9
+  },
+  {
+    "name": "Leg Press",
+    "description": "Een machine-oefening waarbij je een gewicht van je af duwt met je benen.",
+    "exerciseIndex": 10
+  },
+  {
+    "name": "Lat Pulldown",
+    "description": "Een machine-oefening voor de bovenrug waarbij je een stang naar je borst toe trekt.",
+    "exerciseIndex": 11
+  },
+  {
+    "name": "Pull-Up",
+    "description": "Een oefening voor het bovenlichaam waarbij je jezelf optrekt aan een stang met behulp van je rug- en armspieren.",
+    "exerciseIndex": 12
+  },
+  {
+    "name": "Seated Row",
+    "description": "Een machine-oefening voor de rugspieren waarbij je zittend een handgreep naar je romp toe trekt.",
+    "exerciseIndex": 13
+  },
+  {
+    "name": "Bicep Curl",
+    "description": "Een armoefening voor the biceps waarbij je een gewicht naar je schouder toe tilt.",
+    "exerciseIndex": 14
+  },
+  {
+    "name": "Tricep Overhead Extension",
+    "description": "Een armoefening voor de triceps waarbij je de arm strekt vanuit de elleboog.",
+    "exerciseIndex": 15
+  },
+  {
+    "name": "Leg Curl Machine",
+    "description": "Een machine-oefening voor de hamstrings waarbij je de benen naar de billen toe krult.",
+    "exerciseIndex": 16
+  },
+  {
+    "name": "Lateral Raise",
+    "description": "Een schouderoefening waarbij je gewichten zijwaarts omhoog tilt.",
+    "exerciseIndex": 17
+  },
+  {
+    "name": "Front Raise",
+    "description": "Een schouderoefening waarbij je gewichten voorwaarts omhoog tilt.",
+    "exerciseIndex": 18
+  },
+  {
+    "name": "Kuitheffen",
+    "description": "Een oefening voor het onderlichaam waarbij de kuitspieren worden getraind door de hielen van de grond te tillen.",
+    "exerciseIndex": 19
+  },
+  {
+    "name": "Hammer Curl",
+    "description": "Een armoefening vergelijkbaar met de bicep curl, maar met een neutrale grip.",
+    "exerciseIndex": 20
+  },
+  {
+    "name": "Preacher Curl",
+    "description": "Een variatie op de bicep curl uitgevoerd op een preacher bench om de biceps te isoleren.",
+    "exerciseIndex": 21
+  },
+  {
+    "name": "Cable Tricep Pushdown",
+    "description": "Een armoefening voor de triceps waarbij je een kabel naar beneden duwt.",
+    "exerciseIndex": 22
+  },
+  {
+    "name": "Chest Press Machine",
+    "description": "Een machine-oefening die het bankdrukken nabootst.",
+    "exerciseIndex": 23
+  },
+  {
+    "name": "Smith Machine Squat",
+    "description": "Een variatie op de squat uitgevoerd op een Smith-machine voor extra stabiliteit.",
+    "exerciseIndex": 24
+  },
+  {
+    "name": "T-Bar Row",
+    "description": "Een rugoefening waarbij je een T-bar naar je romp toe trekt.",
+    "exerciseIndex": 25
+  },
+  {
+    "name": "Bent Over Row",
+    "description": "Een rugoefening waarbij je vooroverbuigt vanuit je middel en een gewicht naar je romp toe trekt.",
+    "exerciseIndex": 26
+  },
+  {
+    "name": "Upright Row",
+    "description": "Een schouderoefening waarbij je een gewicht langs de voorkant van je lichaam omhoog trekt.",
+    "exerciseIndex": 27
+  },
+  {
+    "name": "Dumbbell Fly",
+    "description": "Een borstoefening waarbij je dumbbells zijwaarts laat zakken en weer optilt terwijl je op een bankje ligt.",
+    "exerciseIndex": 28
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "description": "Een borstoefening vergelijkbaar met de incline bench press, maar dan met dumbbells.",
+    "exerciseIndex": 29
+  },
+  {
+    "name": "Machine Shoulder Press",
+    "description": "Een schouderoefening op een machine die de overhead press nabootst.",
+    "exerciseIndex": 30
+  },
+  {
+    "name": "Reverse Pec Deck Fly",
+    "description": "Een machine-oefening voor de achterkant van de schouders die de beweging van een reverse fly nabootst.",
+    "exerciseIndex": 31
+  },
+  {
+    "name": "Cable Crossover",
+    "description": "Een borstoefening voor de binnenkant van de borst waarbij je kabels voor je lichaam langs trekt.",
+    "exerciseIndex": 32
+  },
+  {
+    "name": "Zittend Kuitheffen",
+    "description": "Een kuitoefening die zittend wordt uitgevoerd, gericht op de scholspier (soleus).",
+    "exerciseIndex": 33
+  },
+  {
+    "name": "Staand Kuitheffen",
+    "description": "Een kuitoefening die staand wordt uitgevoerd, gericht op de oppervlakkige kuitspier (gastrocnemius).",
+    "exerciseIndex": 34
+  },
+  {
+    "name": "Romanian Deadlift",
+    "description": "Een variatie op de deadlift die de hamstrings en billen traint.",
+    "exerciseIndex": 35
+  },
+  {
+    "name": "Glute Bridge",
+    "description": "Een oefening voor het onderlichaam die de billen traint door de heupen van de grond te tillen terwijl je op je rug ligt.",
+    "exerciseIndex": 36
+  },
+  {
+    "name": "Hip Thrust",
+    "description": "Een oefening voor het onderlichaam die de billen traint door de heupen van de grond te tillen terwijl je schouders op een bankje rusten.",
+    "exerciseIndex": 37
+  },
+  {
+    "name": "Cable Bicep Curl",
+    "description": "Een armoefening voor de biceps waarbij je een kabel omhoog krult.",
+    "exerciseIndex": 38
+  },
+  {
+    "name": "Dumbbell Shoulder Press",
+    "description": "Een schouderoefening waarbij je dumbbells boven je hoofd drukt.",
+    "exerciseIndex": 39
+  },
+  {
+    "name": "Smith Machine Bench Press",
+    "description": "Een variatie op het bankdrukken uitgevoerd op een Smith-machine voor extra stabiliteit.",
+    "exerciseIndex": 40
+  },
+  {
+    "name": "Hack Squat",
+    "description": "Een variatie op de squat uitgevoerd op een hack squat-machine om de quadriceps te trainen.",
+    "exerciseIndex": 41
+  },
+  {
+    "name": "Reverse Lunge",
+    "description": "Een oefening voor het onderlichaam waarbij je achteruit stapt in een lunge-positie.",
+    "exerciseIndex": 42
+  },
+  {
+    "name": "Step-Up",
+    "description": "Een oefening voor het onderlichaam waarbij je op een verhoogd platform stapt.",
+    "exerciseIndex": 43
+  },
+  {
+    "name": "Kettlebell Swing",
+    "description": "Een oefening voor het hele lichaam waarbij je een kettlebell tussen je benen en tot schouderhoogte zwaait.",
+    "exerciseIndex": 44
+  },
+  {
+    "name": "Goblet Squat",
+    "description": "Een variatie op de squat waarbij je een gewicht voor je borst vasthoudt.",
+    "exerciseIndex": 45
+  },
+  {
+    "name": "Sumo Deadlift",
+    "description": "Een variatie op de deadlift met een brede stand die de binnenkant van de dijen en de billen traint.",
+    "exerciseIndex": 46
+  },
+  {
+    "name": "Heup Abductie Machine",
+    "description": "Een machine-oefening voor de buitenkant van de dijen door de benen naar buiten te duwen.",
+    "exerciseIndex": 47
+  },
+  {
+    "name": "Heup Adductie Machine",
+    "description": "Een machine-oefening voor de binnenkant van de dijen door de benen naar elkaar toe te duwen.",
+    "exerciseIndex": 48
+  },
+  {
+    "name": "Cable Face Pull",
+    "description": "Een schouderoefening voor de achterkant van de schouders waarbij je een kabel naar je gezicht toe trekt.",
+    "exerciseIndex": 49
+  },
+  {
+    "name": "Incline Dumbbell Fly",
+    "description": "Een borstoefening op een schuin bankje om de bovenkant van de borst te trainen.",
+    "exerciseIndex": 50
+  },
+  {
+    "name": "Dips",
+    "description": "Een oefening voor de borst en triceps waarbij je je lichaam laat zakken en weer opduwt tussen parallelle stangen.",
+    "exerciseIndex": 51
+  },
+  {
+    "name": "Push-Up",
+    "description": "Een oefening voor de borst, schouders en triceps waarbij je je lichaam van de grond omhoog duwt.",
+    "exerciseIndex": 52
+  },
+  {
+    "name": "Plank",
+    "description": "Een oefening voor de core waarbij je een opdrukpositie een bepaalde tijd vasthoudt.",
+    "exerciseIndex": 53
+  },
+  {
+    "name": "Russian Twist",
+    "description": "Een oefening voor de schuine buikspieren waarbij je je romp van links naar rechts draait terwijl je een gewicht vasthoudt.",
+    "exerciseIndex": 54
+  },
+  {
+    "name": "Hanging Leg Raise",
+    "description": "Een buikspieroefening waarbij je je benen optilt terwijl je aan een stang hangt.",
+    "exerciseIndex": 55
+  },
+  {
+    "name": "Mountain Climbers",
+    "description": "Een oefening voor het hele lichaam waarbij je een loopbeweging maakt vanuit een plankpositie.",
+    "exerciseIndex": 56
+  },
+  {
+    "name": "Burpees",
+    "description": "Een oefening voor het hele lichaam bestaande uit een squat, een sprong en een push-up.",
+    "exerciseIndex": 57
+  },
+  {
+    "name": "Box Jump",
+    "description": "Een plyometrische oefening voor het onderlichaam waarbij je op een verhoogd platform springt.",
+    "exerciseIndex": 58
+  },
+  {
+    "name": "Turkish Get-Up",
+    "description": "Een oefening voor het hele lichaam waarbij je vanuit een liggende positie gaat staan terwijl je een gewicht boven je hoofd houdt.",
+    "exerciseIndex": 59
+  },
+  {
+    "name": "Farmer's Walk",
+    "description": "Een oefening waarbij je loopt met zware gewichten in beide handen.",
+    "exerciseIndex": 60
+  },
+  {
+    "name": "Snatch",
+    "description": "Een olympische oefening waarbij je een halterstang in één beweging van de grond tot boven je hoofd tilt.",
+    "exerciseIndex": 61
+  },
+  {
+    "name": "Clean and Jerk",
+    "description": "Een olympische oefening waarbij je een halterstang van de grond naar de schouders brengt en daarna boven je hoofd stoot.",
+    "exerciseIndex": 62
+  },
+  {
+    "name": "Battle Ropes",
+    "description": "Een oefening waarbij je golven maakt met zware touwen om kracht en uithoudingsvermogen op te bouwen.",
+    "exerciseIndex": 63
+  },
+  {
+    "name": "Crunch Machine",
+    "description": "Een machine-oefening voor de buikspieren die de beweging van een crunch nabootst.",
+    "exerciseIndex": 64
+  },
+  {
+    "name": "Chest Supported Row Machine",
+    "description": "Een rugoefening op een machine waarbij je roeit met je borst tegen een kussen, gericht op de boven- en middenrug.",
+    "exerciseIndex": 65
+  },
+  {
+    "name": "Barbell Row",
+    "description": "Een rugoefening waarbij je een halterstang naar je romp trekt terwijl je voorovergebogen staat.",
+    "exerciseIndex": 66
+  },
+  {
+    "name": "Skull Crusher",
+    "description": "Een tricepsoefening waarbij je een halterstang naar je voorhoofd laat zakken en weer omhoog strekt.",
+    "exerciseIndex": 67
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "description": "Een oefening voor het onderlichaam waarbij je een split-squat uitvoert met je achterste voet op een bankje.",
+    "exerciseIndex": 68
+  },
+  {
+    "name": "Pallof Press",
+    "description": "Een core-oefening waarbij je een kabel of weerstandsband van je lichaam af duwt om rotatie te weerstaan.",
+    "exerciseIndex": 69
+  },
+  {
+    "name": "Hanging Knee Raise",
+    "description": "Een buikspieroefening waarbij je je knieën naar je borst tilt terwijl je aan een stang hangt.",
+    "exerciseIndex": 70
+  },
+  {
+    "name": "Landmine Press",
+    "description": "Een schouderoefening waarbij je een halterstang omhoog duwt die aan één kant in een landmine-steun staat.",
+    "exerciseIndex": 71
+  },
+  {
+    "name": "Landmine Row",
+    "description": "Een rugoefening waarbij je een halterstang naar je romp trekt die aan één kant in een landmine-steun staat.",
+    "exerciseIndex": 72
+  },
+  {
+    "name": "Donkey Calf Raise",
+    "description": "Een kuitoefening waarbij je je hielen tilt terwijl je voorovergebogen staat met gewicht op je onderrug.",
+    "exerciseIndex": 73
+  },
+  {
+    "name": "Touwtjespringen",
+    "description": "Een cardiovasculaire oefening waarbij je over een touw springt terwijl het onder je voeten en over je hoofd draait.",
+    "exerciseIndex": 74
+  },
+  {
+    "name": "Hardlopen",
+    "description": "Een cardiovasculaire oefening waarbij je jogt of sprint over een bepaalde afstand.",
+    "exerciseIndex": 75
+  },
+  {
+    "name": "Fietsen",
+    "description": "Een cardiovasculaire oefening waarbij je fietst, zowel op een hometrainer als buiten.",
+    "exerciseIndex": 76
+  },
+  {
+    "name": "Roeimachine",
+    "description": "Een cardiovasculaire oefening op een machine die het roeien in een boot nabootst.",
+    "exerciseIndex": 77
+  },
+  {
+    "name": "Crosstrainer",
+    "description": "Een cardiovasculaire oefening op een machine die wandelen of hardlopen nabootst zonder de gewrichten te zwaar te belasten.",
+    "exerciseIndex": 78
+  },
+  {
+    "name": "High-Intensity Interval Training (HIIT)",
+    "description": "Een vorm van cardiotraining die korte periodes van intensieve anaerobe oefening afwisselt met minder intensieve herstelperiodes.",
+    "exerciseIndex": 79
+  },
+  {
+    "name": "Trappenloper",
+    "description": "Een cardiovasculaire oefening op een machine die de beweging van traplopen nabootst.",
+    "exerciseIndex": 80
+  },
+  {
+    "name": "Aerobics",
+    "description": "Een vorm van cardiotraining met ritmische activiteiten, vaak uitgevoerd op muziek.",
+    "exerciseIndex": 81
+  },
+  {
+    "name": "Dans Cardio",
+    "description": "Een cardiovasculaire oefening met verschillende dansbewegingen om de hartslag te verhogen.",
+    "exerciseIndex": 82
+  },
+  {
+    "name": "Schaduwboksen",
+    "description": "Een cardiovasculaire oefening waarbij je in de lucht bokst om je hartslag te verhogen en je conditie te verbeteren.",
+    "exerciseIndex": 83
+  },
+  {
+    "name": "Narrow Grip Lat Pulldown",
+    "description": "Een variatie op de lat pulldown met een smalle grip om de binnenkant van de rugspieren te trainen.",
+    "exerciseIndex": 84
+  },
+  {
+    "name": "Supinated Lat Pulldown",
+    "description": "Een variatie op de lat pulldown met een onderhandse grip om de biceps en bovenrug te trainen.",
+    "exerciseIndex": 85
+  },
+  {
+    "name": "Cable Pullover",
+    "description": "Een rugoefening waarbij je een kabelstang van boven je hoofd naar je heupen trekt, gericht op de lats.",
+    "exerciseIndex": 86
+  },
+  {
+    "name": "Dumbbell Pullover",
+    "description": "Een veelzijdige oefening voor de borst en lats waarbij je een dumbbell boven je hoofd laat zakken en weer optilt terwijl je op een bankje ligt.",
+    "exerciseIndex": 87
+  },
+  {
+    "name": "Reverse Grip Bench Press",
+    "description": "Een variatie op het bankdrukken met een onderhandse grip om de bovenkant van de borst en de triceps te benadrukken.",
+    "exerciseIndex": 88
+  },
+  {
+    "name": "Cable Chest Press",
+    "description": "Een borstoefening waarbij je een kabel naar voren duwt, vergelijkbaar met bankdrukken, maar met constante spanning.",
+    "exerciseIndex": 89
+  },
+  {
+    "name": "Cable Front Raise",
+    "description": "Een schouderoefening waarbij je een kabel voorwaarts omhoog tilt, gericht op de voorkant van de schouders.",
+    "exerciseIndex": 90
+  },
+  {
+    "name": "Cable Lateral Raise",
+    "description": "Een schouderoefening waarbij je een kabel zijwaarts omhoog tilt, gericht op de zijkant van de schouders.",
+    "exerciseIndex": 91
+  },
+  {
+    "name": "Single-Arm Dumbbell Row",
+    "description": "Een rugoefening waarbij je een dumbbell naar je romp roeit terwijl je voorovergebogen staat, waarbij je elke kant apart traint.",
+    "exerciseIndex": 92
+  },
+  {
+    "name": "Dumbbell Shrug",
+    "description": "Een schouderoefening voor de trapezius waarbij je je schouders ophaalt terwijl je dumbbells vasthoudt.",
+    "exerciseIndex": 93
+  },
+  {
+    "name": "Lying Leg Curl",
+    "description": "Een machine-oefening voor de hamstrings waarbij je liggend op je buik de benen naar je billen krult.",
+    "exerciseIndex": 94
+  },
+  {
+    "name": "Good Morning",
+    "description": "Een oefening voor het onderlichaam waarbij je vanuit de heupen buigt om je romp te laten zakken, gericht op de hamstrings en billen.",
+    "exerciseIndex": 95
+  },
+  {
+    "name": "Zercher Squat",
+    "description": "Een variatie op de squat waarbij je de halterstang in de holte van je ellebogen houdt, met de nadruk op de quads en core.",
+    "exerciseIndex": 96
+  },
+  {
+    "name": "Sissy Squat",
+    "description": "Een op de quads gerichte squat-variatie uitgevoerd op een sissy squat-bankje of door achterover te leunen op de bal van je voet.",
+    "exerciseIndex": 97
+  },
+  {
+    "name": "Jefferson Deadlift",
+    "description": "Een variatie op de deadlift waarbij je wijdbeens over de halterstang staat, gericht op de quads, billen en core.",
+    "exerciseIndex": 98
+  },
+  {
+    "name": "Cossack Squat",
+    "description": "Een oefening voor het onderlichaam waarbij je een diepe zijwaartse lunge uitvoert, gericht op de binnenkant van de dijen en de billen.",
+    "exerciseIndex": 99
+  },
+  {
+    "name": "Dragon Flag",
+    "description": "Een geavanceerde core-oefening waarbij je je lichaam in een rechte lijn laat zakken en weer optilt terwijl je op een bankje ligt.",
+    "exerciseIndex": 100
+  },
+  {
+    "name": "Hollow Body Hold",
+    "description": "Een core-oefening waarbij je een 'hollow' positie vasthoudt, met je onderrug tegen de vloer gedrukt en je armen en benen gestrekt.",
+    "exerciseIndex": 101
+  },
+  {
+    "name": "Reverse Crunch",
+    "description": "Een buikspieroefening waarbij je je heupen naar je borst krult, gericht op de onderste buikspieren.",
+    "exerciseIndex": 102
+  },
+  {
+    "name": "Ab Wheel Rollout",
+    "description": "Een core-oefening waarbij je een buikspierwiel van je lichaam af rolt terwijl je je romp stabiel houdt.",
+    "exerciseIndex": 103
+  },
+  {
+    "name": "Pike Push-Up",
+    "description": "Een schouderoefening waarbij je een push-up uitvoert in een 'pike' positie (met je heupen omhoog).",
+    "exerciseIndex": 104
+  },
+  {
+    "name": "Cable Crunch",
+    "description": "Een buikspieroefening waarbij je een crunch-beweging maakt met een kabel voor extra weerstand.",
+    "exerciseIndex": 105
+  },
+  {
+    "name": "Dumbbell Triceps Kickback",
+    "description": "Een isolatie-oefening voor de triceps waarbij je vooroverbuigt, je bovenarm stilhoudt en je elleboog strekt om de dumbbell naar achteren te bewegen.",
+    "exerciseIndex": 106
+  },
+  {
+    "name": "Two-Arm Dumbbell Triceps Kickback",
+    "description": "Een variatie op de triceps kickback met een dumbbell in elke arm met hetzelfde voorovergebogen bewegingspatroon.",
+    "exerciseIndex": 107
+  },
+  {
+    "name": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "description": "Een triceps kickback die zittend wordt uitgevoerd terwijl je vooroverleunt om de romp te ondersteunen en de elleboogstrekking te isoleren.",
+    "exerciseIndex": 108
+  },
+  {
+    "name": "Incline Bench Dumbbell Triceps Kickback",
+    "description": "Een triceps kickback die met de borst op een schuin bankje wordt uitgevoerd om het lichaam te stabiliseren en vaart te verminderen.",
+    "exerciseIndex": 109
+  },
+  {
+    "name": "Cable Triceps Kickback",
+    "description": "Een triceps kickback met een lage kabel, waarbij je de bovenarm parallel aan de vloer houdt terwijl je strekt tegen de weerstand in.",
+    "exerciseIndex": 110
+  },
+  {
+    "name": "Cable Triceps Kickback from High Pulley",
+    "description": "Een triceps kickback waarbij de kabel hoger is ingesteld, zodat de trekhoek de lange kop van de triceps anders traint.",
+    "exerciseIndex": 111
+  },
+  {
+    "name": "Cable Glute Kickback",
+    "description": "Een heupextensie-oefening waarbij je het werkende been naar achteren beweegt tegen de weerstand van een lage kabel aan je enkel.",
+    "exerciseIndex": 112
+  },
+  {
+    "name": "Glute Kickback Machine",
+    "description": "Een machine-gestuurde heup-kickback die de bilspieren traint via een kussen of platform.",
+    "exerciseIndex": 113
+  },
+  {
+    "name": "Banded Glute Kickback",
+    "description": "Een glute kickback uitgevoerd met een weerstandsband die laag is verankerd of om de voeten is gelust.",
+    "exerciseIndex": 114
+  },
+  {
+    "name": "Bodyweight Quadruped Glute Kickback",
+    "description": "Een kickback met eigen lichaamsgewicht op handen en knieën, waarbij je één heup recht naar achteren strekt.",
+    "exerciseIndex": 115
+  },
+  {
+    "name": "Standing Bodyweight Glute Kickback",
+    "description": "Een staande heup-kickback waarbij je het been zonder apparatuur naar achteren strekt, vaak met een lichte voorwaartse buiging voor balans.",
+    "exerciseIndex": 116
+  },
+  {
+    "name": "Concentration Biceps",
+    "description": "Een bicep curl die zittend wordt uitgevoerd met de elleboog tegen de binnenkant van de dij, waarbij de dumbbell in een gecontroleerde boog naar de schouder wordt gekruld.",
+    "exerciseIndex": 117
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "description": "Een horizontale druk-oefening op een bankje met dumbbells, wat onafhankelijke bewegingsbanen van de armen en een diepe rek mogelijk maakt.",
+    "exerciseIndex": 118
+  },
+  {
+    "name": "Decline Dumbbell Bench Press",
+    "description": "Een dumbbell borstdruk-oefening op een achteroverhellend bankje om de onderkant van de borst te benadrukken.",
+    "exerciseIndex": 119
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "description": "Een bankdruk-variant met een smallere grip om meer belasting naar de triceps te verschuiven.",
+    "exerciseIndex": 120
+  },
+  {
+    "name": "Arnold Press",
+    "description": "Een zittende of staande dumbbell press waarbij de handen draaien van de handpalmen naar binnen tot naar voren boven het hoofd.",
+    "exerciseIndex": 121
+  },
+  {
+    "name": "Push Press",
+    "description": "Een overhead press waarbij je een kleine kniebuiging en beenkracht gebruikt om de stang te versnellen.",
+    "exerciseIndex": 122
+  },
+  {
+    "name": "Chin-Up",
+    "description": "Een optrek-variant met een onderhandse grip die de betrokkenheid van de biceps vergroot.",
+    "exerciseIndex": 123
+  },
+  {
+    "name": "Straight-Arm Pulldown",
+    "description": "Een kabeloefening met bijna gestrekte ellebogen, waarbij je de stang naar de dijen trekt om de lats te isoleren.",
+    "exerciseIndex": 124
+  },
+  {
+    "name": "Dumbbell Romanian Deadlift",
+    "description": "Een deadlift-patroon met dumbbells gericht op de hamstrings en billen, met minder belasting op de onderrug dan de barbell-versie.",
+    "exerciseIndex": 125
+  },
+  {
+    "name": "Trap Bar Deadlift",
+    "description": "Een deadlift met een trap-bar (hex-bar) met een neutrale grip, wat vaak een rechtere rug toelaat.",
+    "exerciseIndex": 126
+  },
+  {
+    "name": "Rack Pull",
+    "description": "Een gedeeltelijke deadlift vanaf steunen onder de knie, gericht op de bovenrug en trapezius.",
+    "exerciseIndex": 127
+  },
+  {
+    "name": "Front Squat",
+    "description": "Een squat met de halterstang op de voorkant van de schouders, met nadruk op de quads en core.",
+    "exerciseIndex": 128
+  },
+  {
+    "name": "Walking Lunge",
+    "description": "Een dynamische lunge waarbij je afwisselend naar voren stapt, gericht op balans en stabiliteit.",
+    "exerciseIndex": 129
+  },
+  {
+    "name": "Forward Lunge",
+    "description": "Een lunge-variant waarbij je naar voren stapt in een diepe lunge en weer terugkeert naar de startpositie.",
+    "exerciseIndex": 130
+  },
+  {
+    "name": "Wall Sit",
+    "description": "Een statische oefening met de rug tegen de muur en de dijen parallel aan de vloer om uithoudingsvermogen op te bouwen.",
+    "exerciseIndex": 131
+  },
+  {
+    "name": "Pistol Squat",
+    "description": "Een squat op één been tot volledige diepte, wat veel mobiliteit en balans vereist.",
+    "exerciseIndex": 132
+  },
+  {
+    "name": "Nordic Hamstring Curl",
+    "description": "Een hamstringoefening waarbij je het lichaam vanuit knielende positie naar voren laat zakken.",
+    "exerciseIndex": 133
+  },
+  {
+    "name": "Glute-Ham Raise",
+    "description": "Een beweging die heupextensie en knieflexie combineert om de hamstrings en billen zwaar te belasten.",
+    "exerciseIndex": 134
+  },
+  {
+    "name": "Pendlay Row",
+    "description": "Een voorovergebogen barbell row waarbij elke herhaling vanaf de grond begint.",
+    "exerciseIndex": 135
+  },
+  {
+    "name": "Inverted Row",
+    "description": "Een horizontale trekbeweging onder een stang of ringen met een recht lichaam.",
+    "exerciseIndex": 136
+  },
+  {
+    "name": "Barbell Curl",
+    "description": "Een staande curl met een onderhandse grip op een halterstang op schouderbreedte.",
+    "exerciseIndex": 137
+  },
+  {
+    "name": "EZ Bar Curl",
+    "description": "Een bicep curl met een EZ-stang om de polsen te ontlasten.",
+    "exerciseIndex": 138
+  },
+  {
+    "name": "Incline Dumbbell Curl",
+    "description": "Een curl op een schuin bankje waarbij de armen naar achteren hangen.",
+    "exerciseIndex": 139
+  },
+  {
+    "name": "Zottman Curl",
+    "description": "Een dumbbell curl waarbij je de handen draait voor een langzame neerwaartse fase.",
+    "exerciseIndex": 140
+  },
+  {
+    "name": "Cable Overhead Tricep Extension",
+    "description": "Een tricepsoefening waarbij de kabel van boven komt en je de onderarmen naar voren strekt.",
+    "exerciseIndex": 141
+  },
+  {
+    "name": "Diamond Push-Up",
+    "description": "Een push-up met de handen dicht bij elkaar in een diamantvorm voor meer nadruk op de triceps.",
+    "exerciseIndex": 142
+  },
+  {
+    "name": "Bench Dip",
+    "description": "Een triceps-dip waarbij je met je handen op een bankje achter je steunt.",
+    "exerciseIndex": 143
+  },
+  {
+    "name": "Lying Leg Raise",
+    "description": "Een buikspieroefening waarbij je liggend je benen naar het plafond tilt.",
+    "exerciseIndex": 144
+  },
+  {
+    "name": "Dead Bug",
+    "description": "Een core-oefening waarbij je liggend op je rug afwisselend de tegenovergestelde arm en been uitstrekt.",
+    "exerciseIndex": 145
+  },
+  {
+    "name": "Side Plank",
+    "description": "Een zijwaartse statische oefening waarbij je op één onderarm steunt.",
+    "exerciseIndex": 146
+  },
+  {
+    "name": "Cable Woodchopper",
+    "description": "Een diagonale kabelbeweging dwars over het lichaam om rotatiekracht te trainen.",
+    "exerciseIndex": 147
+  },
+  {
+    "name": "Bent-Over Dumbbell Rear Delt Fly",
+    "description": "Een fly-beweging voor de achterkant van de schouders in een voorovergebogen positie.",
+    "exerciseIndex": 148
+  },
+  {
+    "name": "Barbell Shrug",
+    "description": "Een zware oefening voor de bovenkant van de trapezius waarbij je de schouders ophaalt.",
+    "exerciseIndex": 149
+  },
+  {
+    "name": "Power Clean",
+    "description": "Een explosieve olympische oefening waarbij je de stang van de grond naar de schouders brengt.",
+    "exerciseIndex": 150
+  },
+  {
+    "name": "Clean and Press",
+    "description": "Een oefening die de power clean combineert met een overhead press.",
+    "exerciseIndex": 151
+  },
+  {
+    "name": "Hang Clean",
+    "description": "Een olympische oefening waarbij je begint met de stang op heuphoogte.",
+    "exerciseIndex": 152
+  },
+  {
+    "name": "Power Snatch",
+    "description": "Een explosieve olympische oefening waarbij je de stang in één beweging van de grond tot boven je hoofd brengt.",
+    "exerciseIndex": 153
+  },
+  {
+    "name": "Hang Snatch",
+    "description": "Een olympische oefening die begint met de stang op heuphoogte.",
+    "exerciseIndex": 154
+  },
+  {
+    "name": "Squat Clean",
+    "description": "Een volledige olympische clean waarbij de lifter in een diepe squat zakt om de stang op te vangen.",
+    "exerciseIndex": 155
+  },
+  {
+    "name": "Squat Snatch",
+    "description": "Een volledige olympische snatch waarbij de lifter in een diepe squat zakt om de stang boven het hoofd op te vangen.",
+    "exerciseIndex": 156
+  },
+  {
+    "name": "Push Jerk",
+    "description": "Een explosieve oefening boven het hoofd waarbij je door de knieën gaat en daarna snel onder de stang zakt.",
+    "exerciseIndex": 157
+  },
+  {
+    "name": "Split Jerk",
+    "description": "De olympische stoot-oefening waarbij de lifter in een uitvalspas zakt om de stang op te vangen.",
+    "exerciseIndex": 158
+  },
+  {
+    "name": "Thruster",
+    "description": "Een beweging die een front squat combineert met een overhead press in één vloeiende beweging.",
+    "exerciseIndex": 159
+  },
+  {
+    "name": "Overhead Squat",
+    "description": "Een squat die wordt uitgevoerd met de stang boven het hoofd.",
+    "exerciseIndex": 160
+  },
+  {
+    "name": "Snatch Balance",
+    "description": "Een olympische oefening waarbij je in een squat zakt terwijl je de stang boven je hoofd drukt.",
+    "exerciseIndex": 161
+  },
+  {
+    "name": "Muscle Snatch",
+    "description": "Een snatch-variant waarbij de stang boven het hoofd wordt gebracht zonder in een squat te zakken.",
+    "exerciseIndex": 162
+  },
+  {
+    "name": "Clean Pull",
+    "description": "Het trekken van de stang zoals bij een clean, maar zonder deze op te vangen.",
+    "exerciseIndex": 163
+  },
+  {
+    "name": "Snatch Pull",
+    "description": "Het trekken van de stang zoals bij een snatch, maar zonder deze op te vangen.",
+    "exerciseIndex": 164
+  },
+  {
+    "name": "High Pull",
+    "description": "Een explosieve trekbeweging waarbij de stang tot borsthoogte komt met de ellebogen hoog.",
+    "exerciseIndex": 165
+  },
+  {
+    "name": "Pause Squat",
+    "description": "Een back squat met een bewuste pauze op het laagste punt.",
+    "exerciseIndex": 166
+  },
+  {
+    "name": "Pin Squat",
+    "description": "Een squat die begint vanaf steunen, waardoor de neerwaartse fase wegvalt.",
+    "exerciseIndex": 167
+  },
+  {
+    "name": "Box Squat",
+    "description": "Een squat waarbij je op een box of bankje gaat zitten.",
+    "exerciseIndex": 168
+  },
+  {
+    "name": "Safety Bar Squat",
+    "description": "Een squat uitgevoerd met een 'safety squat bar' om de schouders te ontlasten.",
+    "exerciseIndex": 169
+  },
+  {
+    "name": "Pause Bench Press",
+    "description": "Bankdrukken met een pauze op de borst.",
+    "exerciseIndex": 170
+  },
+  {
+    "name": "Floor Press",
+    "description": "Bankdrukken terwijl je op de vloer ligt.",
+    "exerciseIndex": 171
+  },
+  {
+    "name": "Deficit Deadlift",
+    "description": "Een deadlift waarbij je op een verhoging staat om de bewegingsuitslag te vergroten.",
+    "exerciseIndex": 172
+  },
+  {
+    "name": "Block Pull",
+    "description": "Een deadlift vanaf blokken of steunen om de laatste fase van de beweging te trainen.",
+    "exerciseIndex": 173
+  },
+  {
+    "name": "One Arm Kettlebell Snatch",
+    "description": "Een explosieve zwaaibeweging met één arm van een kettlebell van tussen de benen tot boven het hoofd.",
+    "exerciseIndex": 174
+  },
+  {
+    "name": "Kettlebell Clean and Press",
+    "description": "Een combinatie van een kettlebell clean en een overhead press.",
+    "exerciseIndex": 175
+  },
+  {
+    "name": "Dumbbell Snatch",
+    "description": "Een explosieve beweging waarbij je een dumbbell van de grond tot boven het hoofd tilt.",
+    "exerciseIndex": 176
+  },
+  {
+    "name": "Single Arm Dumbbell Press",
+    "description": "Een overhead press met één dumbbell om de core extra te belasten voor stabiliteit.",
+    "exerciseIndex": 177
+  },
+  {
+    "name": "Dumbbell Step-Up",
+    "description": "Op een verhoging stappen terwijl je dumbbells vasthoudt.",
+    "exerciseIndex": 178
+  },
+  {
+    "name": "Single Leg Romanian Deadlift",
+    "description": "Een Roemeense deadlift op één been met dumbbells.",
+    "exerciseIndex": 179
+  },
+  {
+    "name": "Renegade Row",
+    "description": "Roeien vanuit een plankpositie met dumbbells.",
+    "exerciseIndex": 180
+  },
+  {
+    "name": "Dumbbell Thruster",
+    "description": "Een combinatie van een dumbbell front squat en een overhead press.",
+    "exerciseIndex": 181
+  },
+  {
+    "name": "Waiter's Carry",
+    "description": "Lopen met één gewicht boven het hoofd om de core-stabiliteit te trainen.",
+    "exerciseIndex": 182
+  },
+  {
+    "name": "Suitcase Carry",
+    "description": "Lopen met één gewicht aan je zijde om zijwaartse buiging te weerstaan.",
+    "exerciseIndex": 183
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "addMeal": {
+    "createMeal": "Maaltijd maken",
+    "createMealDesc": "Voeg een nieuwe maaltijd toe aan je dagboek",
+    "dynamicCreator": "Dynamische Maaltijdmaker",
+    "dynamicCreatorDesc": "Stel stap voor stap een maaltijd samen door voedingsmiddelen te scannen of te zoeken",
+    "generateMealAI": "Maaltijd genereren met AI",
+    "generateMealAIDesc": "Laat AI een maaltijd voorstellen op basis van je voorkeuren",
+    "manageCategories": "Categorieën beheren",
+    "manageCategoriesDesc": "Organiseer je maaltijdcategorieën (ontbijt, lunch, enz.)",
+    "title": "Maaltijd toevoegen"
+  }
+}

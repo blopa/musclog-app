@@ -25,6 +25,46 @@ export const schema = appSchema({
       ],
     }),
 
+    // Exercise goals: snapshot per row; current = effective_until IS NULL
+    tableSchema({
+      name: 'exercise_goals',
+      columns: [
+        // Exercise reference (for 1rm goals)
+        { name: 'exercise_id', type: 'string', isOptional: true, isIndexed: true },
+        // Denormalised name — survives exercise rename/soft-delete
+        { name: 'exercise_name_snapshot', type: 'string', isOptional: true },
+
+        // Goal classification
+        { name: 'goal_type', type: 'string', isIndexed: true },
+        // '1rm' | 'consistency' | 'steps_per_day' | 'distance_per_session' | 'pace' | 'duration'
+
+        // --- 1RM / Strength fields ---
+        { name: 'target_weight', type: 'number', isOptional: true }, // kg (metric always)
+        // Baseline 1RM at goal creation — used for progress % and regression anchor
+        { name: 'baseline_1rm', type: 'number', isOptional: true }, // kg
+
+        // --- Consistency fields ---
+        { name: 'target_sessions_per_week', type: 'number', isOptional: true },
+
+        // --- Future cardio fields (TBA) ---
+        { name: 'target_steps_per_day', type: 'number', isOptional: true },
+        { name: 'target_distance_m', type: 'number', isOptional: true }, // metres
+        { name: 'target_duration_s', type: 'number', isOptional: true }, // seconds
+        { name: 'target_pace_ms_per_m', type: 'number', isOptional: true }, // ms per metre
+
+        // Shared
+        { name: 'target_date', type: 'string', isOptional: true }, // ISO date string, user-overridable
+        { name: 'notes', type: 'string', isOptional: true },
+
+        // Snapshot-based history (same pattern as nutrition_goals)
+        { name: 'effective_until', type: 'number', isOptional: true }, // null = currently active
+
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // THE BLUEPRINT: What the user "plans" to do
     tableSchema({
       name: 'workout_templates',
@@ -81,7 +121,7 @@ export const schema = appSchema({
         { name: 'target_weight', type: 'number' },
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -137,7 +177,7 @@ export const schema = appSchema({
         { name: 'reps_in_reserve', type: 'number' },
         { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -163,13 +203,22 @@ export const schema = appSchema({
         { name: 'fiber', type: 'number' },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. USDA, Open Food Facts)
 
+        // External food scoring and processing metadata
+        { name: 'nutriscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'ecoscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'nova_group', type: 'number', isOptional: true, isIndexed: true }, // 1 (unprocessed) to 4 (ultra-processed)
+
         // Extended data (Fiber, Sugar, Sodium, Vitamins, Alcohol, etc.) stored as JSON
         // Usage: @json decorator in the Model
         { name: 'micros_json', type: 'string', isOptional: true },
 
+        // Label and ingredient analysis data from Open Food Facts (organic, vegan, etc.)
+        { name: 'labels_json', type: 'string', isOptional: true },
+
         { name: 'is_favorite', type: 'boolean' }, // Quick access
         { name: 'source', type: 'string', isOptional: true }, // 'user', 'usda', 'ai', 'openfood', 'foundation'
         { name: 'image_url', type: 'string', isOptional: true }, // URL to product image
+        { name: 'nutrition_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -183,9 +232,13 @@ export const schema = appSchema({
       name: 'food_portions',
       columns: [
         { name: 'name', type: 'string' }, // e.g., "1 Cup", "1 Slice", "3 oz", "100g"
-        { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
+        { name: 'gram_weight', type: 'number', isOptional: true }, // How many grams is this portion?
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
-        { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
+        { name: 'source', type: 'string', isOptional: true }, // 'basic' or 'custom'
+        { name: 'kind', type: 'string', isOptional: true }, // 'mass' or 'named'
+        { name: 'scope', type: 'string', isOptional: true }, // 'global' or 'private'
+        { name: 'owner_type', type: 'string', isOptional: true }, // 'food' | 'meal'
+        { name: 'owner_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -218,6 +271,22 @@ export const schema = appSchema({
         { name: 'image_url', type: 'string', isOptional: true }, // URL to meal image
         { name: 'is_favorite', type: 'boolean' },
         { name: 'prepared_weight_grams', type: 'number', isOptional: true },
+        { name: 'nutrition_basis', type: 'string', isOptional: true }, // 'per_recipe' | 'per_serving' | 'per_gram'
+        { name: 'recipe_servings_count', type: 'number', isOptional: true },
+        { name: 'default_portion_name', type: 'string', isOptional: true },
+        { name: 'serving_grams', type: 'number', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    tableSchema({
+      name: 'meal_food_portions',
+      columns: [
+        { name: 'meal_id', type: 'string', isIndexed: true },
+        { name: 'food_portion_id', type: 'string', isIndexed: true },
+        { name: 'is_default', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -263,9 +332,13 @@ export const schema = appSchema({
         { name: 'logged_carbs', type: 'string' }, // isEncrypted: true
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
+        { name: 'logged_nutriscore', type: 'string', isOptional: true }, // Snapshot of the food's nutriscore at log time
+        { name: 'logged_ecoscore', type: 'string', isOptional: true }, // Snapshot of the food's ecoscore at log time
+        { name: 'logged_nova_group', type: 'number', isOptional: true }, // Snapshot of the food's nova group at log time
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
+        { name: 'snapshot_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
-        { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal)
+        { name: 'group_id', type: 'string', isOptional: true }, // Groups related logs into a single meal (e.g. AI meal, saved meal) - can also be the meal.id
         { name: 'logged_meal_name', type: 'string', isOptional: true }, // Display name for the meal group
 
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
@@ -282,11 +355,24 @@ export const schema = appSchema({
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. Health Connect) for sync deduplication
+        { name: 'supplement_id', type: 'string', isOptional: true, isIndexed: true },
         // Encrypted at rest (utils/encryption.ts)
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Supplements
+    tableSchema({
+      name: 'supplements',
+      columns: [
+        { name: 'name', type: 'string', isIndexed: true },
+        { name: 'has_reminder', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -333,6 +419,20 @@ export const schema = appSchema({
       ],
     }),
 
+    // Hidden development/debug table for sanitized LLM JSON traffic
+    tableSchema({
+      name: 'debug_dump',
+      columns: [
+        { name: 'provider', type: 'string', isIndexed: true },
+        { name: 'direction', type: 'string', isIndexed: true }, // 'request' | 'response'
+        { name: 'operation', type: 'string', isIndexed: true },
+        { name: 'payload_json', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // User Profile
     tableSchema({
       name: 'users',
@@ -367,11 +467,12 @@ export const schema = appSchema({
         { name: 'fiber', type: 'number' },
         { name: 'eating_phase', type: 'string' }, // 'cut', 'maintain', 'bulk'
         { name: 'target_weight', type: 'number' },
-        { name: 'target_body_fat', type: 'number' },
-        { name: 'target_bmi', type: 'number' },
-        { name: 'target_ffmi', type: 'number' },
+        { name: 'target_body_fat', type: 'number', isOptional: true },
+        { name: 'target_bmi', type: 'number', isOptional: true },
+        { name: 'target_ffmi', type: 'number', isOptional: true },
         { name: 'target_date', type: 'number', isOptional: true },
         { name: 'effective_until', type: 'number', isOptional: true },
+        { name: 'is_dynamic', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -385,9 +486,9 @@ export const schema = appSchema({
         { name: 'nutrition_goal_id', type: 'string', isIndexed: true },
         { name: 'checkin_date', type: 'number', isIndexed: true },
         { name: 'target_weight', type: 'number' },
-        { name: 'target_body_fat', type: 'number' },
-        { name: 'target_bmi', type: 'number' },
-        { name: 'target_ffmi', type: 'number' },
+        { name: 'target_body_fat', type: 'number', isOptional: true },
+        { name: 'target_bmi', type: 'number', isOptional: true },
+        { name: 'target_ffmi', type: 'number', isOptional: true },
         { name: 'status', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -411,6 +512,44 @@ export const schema = appSchema({
       ],
     }),
 
+    // Saved For Later Groups
+    tableSchema({
+      name: 'saved_for_later_groups',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'note', type: 'string', isOptional: true },
+        { name: 'original_meal_type', type: 'string' },
+        { name: 'original_date', type: 'number' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Saved For Later Items
+    tableSchema({
+      name: 'saved_for_later_items',
+      columns: [
+        { name: 'group_id', type: 'string', isIndexed: true },
+        { name: 'food_id', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'amount', type: 'number' },
+        { name: 'portion_id', type: 'string', isOptional: true },
+        // Snapshotted macros (encrypted)
+        { name: 'logged_food_name', type: 'string', isOptional: true },
+        { name: 'logged_calories', type: 'string' },
+        { name: 'logged_protein', type: 'string' },
+        { name: 'logged_carbs', type: 'string' },
+        { name: 'logged_fat', type: 'string' },
+        { name: 'logged_fiber', type: 'string' },
+        { name: 'logged_micros_json', type: 'string', isOptional: true },
+        { name: 'logged_meal_name', type: 'string', isOptional: true },
+        { name: 'original_group_id', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // AI Custom Prompts
     tableSchema({
       name: 'ai_custom_prompts',
@@ -420,6 +559,33 @@ export const schema = appSchema({
         { name: 'context', type: 'string' }, // 'nutrition' | 'exercise' | 'general'
         { name: 'type', type: 'string' }, // 'system' | 'memory'
         { name: 'is_active', type: 'boolean' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Canonical muscle catalogue (seeded from bundled data)
+    tableSchema({
+      name: 'muscles',
+      columns: [
+        { name: 'name', type: 'string', isIndexed: true }, // snake_case key, e.g. 'triceps'
+        { name: 'muscle_group', type: 'string', isIndexed: true }, // e.g. 'arms', 'chest'
+        { name: 'display_name', type: 'string' }, // Human-readable, e.g. 'Triceps'
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Junction: which muscles an exercise targets
+    tableSchema({
+      name: 'exercise_muscles',
+      columns: [
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'muscle_id', type: 'string', isIndexed: true },
+        // 'primary' | 'secondary' — defaults to 'primary' until the JSON distinguishes them
+        { name: 'role', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

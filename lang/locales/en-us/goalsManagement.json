@@ -1,6 +1,8 @@
 {
   "goalsManagement": {
     "title": "Goals Management",
+    "nutritionAndBodyTab": "Nutrition & Body",
+    "fitnessAndExerciseTab": "Fitness & Exercise",
     "subtitle": "Track your progress and history.",
     "currentGoals": "CURRENT GOALS",
     "active": "Active",
@@ -35,6 +37,53 @@
       "phaseMaintain": "Maintain",
       "phaseBulk": "Bulk"
     },
+    "goalCreationMethod": {
+      "title": "New Goal",
+      "subtitle": "How would you like to set up your new goal?",
+      "guidedTitle": "Answer a Few Questions",
+      "guidedDescription": "We'll guide you step-by-step to the right calorie and macro targets.",
+      "recommended": "Recommended",
+      "manualTitle": "Set Manually",
+      "manualDescription": "Enter your calories, macros, and targets directly.",
+      "autoCalculateTitle": "Calculate it for me",
+      "autoCalculateDescription": "We calculate your targets using the Mifflin-St Jeor formula based on your profile."
+    },
+    "goalWizard": {
+      "title": "Set Up Your Goal",
+      "step": "Step {{current}} of {{total}}",
+      "next": "Next",
+      "back": "Back",
+      "createGoal": "Create Goal",
+      "goalType": {
+        "title": "What's your main goal?",
+        "subtitle": "This helps us recommend the right calorie and macro targets for you.",
+        "lose": "Lose Weight",
+        "loseDescription": "Reduce body fat through a calorie deficit.",
+        "maintain": "Maintain Weight",
+        "maintainDescription": "Keep your current weight and body composition.",
+        "gain": "Gain Weight",
+        "gainDescription": "Build muscle and strength with a calorie surplus."
+      },
+      "goalWeight": {
+        "titleMain": "What is your",
+        "titleAccent": "goal weight?",
+        "subtitle": "Set the weight you want to reach. Your current weight is shown for reference.",
+        "label": "Goal Weight",
+        "currentWeightLabel": "Your current weight",
+        "tipLoseBF": "Aiming for 0.5–1% of your body weight per week is a sustainable rate that helps preserve muscle mass during a cut.",
+        "tipGain": "Gaining 0.25–0.5 kg per week keeps fat gain minimal while still allowing steady muscle growth.",
+        "tipGainImperial": "Gaining 0.55–1.1 lbs per week keeps fat gain minimal while still allowing steady muscle growth."
+      },
+      "targetDate": {
+        "title": "When do you want to reach your goal?",
+        "subtitle": "Setting a deadline helps you track your progress over time.",
+        "label": "Target Date",
+        "notSet": "No specific date",
+        "clear": "Clear date",
+        "warningLabel": "Aggressive Timeline",
+        "warningMessage": "Requested pace: about {{weeklyLoss}} {{unit}} per week. Suggested upper range for your current body weight: about {{suggestedMaxWeeklyLoss}} {{unit}} per week. We'll still calculate calories for it, but a more realistic target date would be around {{estimatedDate}}."
+      }
+    },
     "manageCheckinData": {
       "title": "Nutrition Check-ins",
       "searchPlaceholder": "Search check-ins...",
@@ -48,6 +97,9 @@
       "deleteCheckinDesc": "Permanently remove this check-in",
       "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
       "checkinDate": "Check-in Date"
-    }
+    },
+    "exerciseGoals": "EXERCISE GOALS",
+    "exerciseGoalsTitle": "Strength & Consistency",
+    "exerciseGoalsSubtitle": "Track 1RM targets and workout frequency"
   }
 }

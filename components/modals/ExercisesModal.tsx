@@ -16,12 +16,13 @@ import { FullScreenModal } from './FullScreenModal';
 import ViewExerciseModal from './ViewExerciseModal';
 
 // Type for exercise data used in the component
-type ExerciseData = {
+export type ExerciseData = {
   id: string;
   name: string;
   type: string;
   muscleGroup: string;
   imageUrl?: string;
+  loadMultiplier?: number;
 };
 
 // Map equipment type from database to display type
@@ -101,9 +102,14 @@ function ExerciseListItem({
 type ExercisesModalProps = {
   visible: boolean;
   onClose: () => void;
+  onSelectExercise?: (exercise: ExerciseData) => void;
 };
 
-export default function ExercisesModal({ visible, onClose }: ExercisesModalProps) {
+export default function ExercisesModal({
+  visible,
+  onClose,
+  onSelectExercise,
+}: ExercisesModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -192,6 +198,10 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   };
 
   const handleExercisePress = (exercise: ExerciseData) => {
+    if (onSelectExercise) {
+      onSelectExercise(exercise);
+      return;
+    }
     setViewExerciseId(exercise.id);
   };
 
@@ -234,6 +244,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
         type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
         muscleGroup: exercise.muscleGroup ?? '',
         imageUrl: exercise.imageUrl || undefined,
+        loadMultiplier: exercise.loadMultiplier,
       }));
       setExercises(exercisesData);
     } catch (error) {

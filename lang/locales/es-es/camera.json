@@ -1,0 +1,12 @@
+{
+  "camera": {
+    "title": "Cámara",
+    "processing": {
+      "aiAnalyzingMeal": "La IA está analizando tu comida...",
+      "aiAnalyzingFood": "La IA está analizando tu alimento...",
+      "processingNutrients": "Procesando nutrientes",
+      "analyzingImage": "Analizando código de barras...",
+      "processingData": "Procesando datos"
+    }
+  }
+}

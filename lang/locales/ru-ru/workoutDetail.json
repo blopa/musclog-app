@@ -1,5 +1,6 @@
 {
   "workoutDetail": {
+    "secondaryFocus": "Второстепенный фокус",
     "totalTime": "Общее время",
     "volume": "Объём",
     "calories": "Калории",
@@ -30,6 +31,18 @@
       "weightKg": "Вес (кг)",
       "weightLbs": "Вес (фунты)",
       "restSec": "Отдых (сек)"
-    }
+    },
+    "musclesWorked": "Задействованные мышцы",
+    "frontMuscles": "Передние",
+    "backMuscles": "Задние",
+    "noMuscleData": "Нет данных о мышцах",
+    "muscleBalance": "Баланс мышц",
+    "musclesTargeted": "{{count}} мышц задействовано",
+    "region_chest": "Грудь",
+    "region_back": "Спина",
+    "region_shoulders": "Плечи",
+    "region_arms": "Руки",
+    "region_core": "Корпус",
+    "region_legs": "Ноги"
   }
 }

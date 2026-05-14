@@ -1,17 +1,70 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
+import { handleError } from '@/utils/handleError';
 
 export class MealService {
+  private static validateMealFoodItems(
+    foodItems: {
+      foodId: string;
+      amount: number;
+      portionId?: string;
+    }[]
+  ): void {
+    if (foodItems.length === 0) {
+      throw new Error('Cannot save meal without any food items');
+    }
+
+    const invalidFoodItem = foodItems.find(
+      (item) => !item.foodId || !Number.isFinite(item.amount) || item.amount <= 0
+    );
+
+    if (invalidFoodItem) {
+      throw new Error(
+        `Cannot save meal with invalid food item: foodId="${invalidFoodItem.foodId}", amount=${invalidFoodItem.amount}`
+      );
+    }
+  }
+
+  private static async assertMealHasExpectedFoods(
+    mealId: string,
+    expectedFoodCount: number,
+    context: string
+  ): Promise<void> {
+    const savedMeal = await this.getMealWithFoods(mealId);
+
+    if (!savedMeal) {
+      throw new Error(`${context}: meal could not be reloaded after save`);
+    }
+
+    const actualFoodCount = savedMeal.foods.length;
+    if (actualFoodCount === 0) {
+      throw new Error(`${context}: meal was saved without any meal_food rows`);
+    }
+
+    if (actualFoodCount !== expectedFoodCount) {
+      throw new Error(
+        `${context}: expected ${expectedFoodCount} meal_food rows but found ${actualFoodCount}`
+      );
+    }
+  }
+
   /**
    * Create a new meal
    */
   static async createMeal(
     name: string,
     description?: string,
-    preparedWeightGrams?: number
+    preparedWeightGrams?: number,
+    options?: {
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number;
+      defaultPortionName?: string;
+      servingGrams?: number;
+      imageUrl?: string;
+    }
   ): Promise<Meal> {
     return await database.write(async () => {
       const now = Date.now();
@@ -20,8 +73,13 @@ export class MealService {
         meal.isAiGenerated = false;
         meal.name = name;
         meal.description = description ?? '';
+        meal.imageUrl = options?.imageUrl;
         meal.isFavorite = false;
         meal.preparedWeightGrams = preparedWeightGrams;
+        meal.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
+        meal.recipeServingsCount = options?.recipeServingsCount ?? 1;
+        meal.defaultPortionName = options?.defaultPortionName;
+        meal.servingGrams = options?.servingGrams;
         meal.createdAt = now;
         meal.updatedAt = now;
       });
@@ -104,6 +162,19 @@ export class MealService {
   /**
    * Get meal by ID with foods
    */
+  static async getMealImageUrl(mealId: string): Promise<string | undefined> {
+    try {
+      const meal = await database.get<Meal>('meals').find(mealId);
+      if (meal.deletedAt) {
+        return undefined;
+      }
+
+      return meal.imageUrl ?? undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   static async getMealWithFoods(mealId: string): Promise<{ meal: Meal; foods: MealFood[] } | null> {
     try {
       const meal = await database.get<Meal>('meals').find(mealId);
@@ -117,6 +188,10 @@ export class MealService {
 
       return { meal, foods };
     } catch (error) {
+      await handleError(error, 'MealService.getMealWithFoods', {
+        showSnackbar: false,
+      });
+
       return null;
     }
   }
@@ -130,6 +205,11 @@ export class MealService {
       name?: string;
       description?: string;
       preparedWeightGrams?: number | null;
+      imageUrl?: string | null;
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number | null;
+      defaultPortionName?: string | null;
+      servingGrams?: number | null;
     }
   ): Promise<Meal> {
     return await database.write(async () => {
@@ -148,8 +228,28 @@ export class MealService {
           record.description = updates.description;
         }
 
+        if ('imageUrl' in updates) {
+          record.imageUrl = updates.imageUrl ?? undefined;
+        }
+
         if ('preparedWeightGrams' in updates) {
           record.preparedWeightGrams = updates.preparedWeightGrams ?? undefined;
+        }
+
+        if ('nutritionBasis' in updates && updates.nutritionBasis !== undefined) {
+          record.nutritionBasis = updates.nutritionBasis;
+        }
+
+        if ('recipeServingsCount' in updates) {
+          record.recipeServingsCount = updates.recipeServingsCount ?? undefined;
+        }
+
+        if ('defaultPortionName' in updates) {
+          record.defaultPortionName = updates.defaultPortionName ?? undefined;
+        }
+
+        if ('servingGrams' in updates) {
+          record.servingGrams = updates.servingGrams ?? undefined;
         }
 
         record.updatedAt = Date.now();
@@ -224,6 +324,10 @@ export class MealService {
       meal.description = originalMeal.description;
       meal.isFavorite = false;
       meal.preparedWeightGrams = originalMeal.preparedWeightGrams;
+      meal.nutritionBasis = originalMeal.nutritionBasis;
+      meal.recipeServingsCount = originalMeal.recipeServingsCount;
+      meal.defaultPortionName = originalMeal.defaultPortionName;
+      meal.servingGrams = originalMeal.servingGrams;
       meal.createdAt = now;
       meal.updatedAt = now;
     });
@@ -259,8 +363,17 @@ export class MealService {
     }[],
     description?: string,
     isAiGenerated = false,
-    preparedWeightGrams?: number
+    preparedWeightGrams?: number,
+    options?: {
+      nutritionBasis?: 'per_recipe' | 'per_serving' | 'per_gram';
+      recipeServingsCount?: number;
+      defaultPortionName?: string;
+      servingGrams?: number;
+      imageUrl?: string;
+    }
   ): Promise<Meal> {
+    this.validateMealFoodItems(foodItems);
+
     const now = Date.now();
     const mealCollection = database.get<Meal>('meals');
     const mealFoodCollection = database.get<MealFood>('meal_foods');
@@ -269,8 +382,13 @@ export class MealService {
       mealRecord.isAiGenerated = isAiGenerated;
       mealRecord.name = name;
       mealRecord.description = description ?? '';
+      mealRecord.imageUrl = options?.imageUrl;
       mealRecord.isFavorite = false;
       mealRecord.preparedWeightGrams = preparedWeightGrams;
+      mealRecord.nutritionBasis = options?.nutritionBasis ?? 'per_recipe';
+      mealRecord.recipeServingsCount = options?.recipeServingsCount ?? 1;
+      mealRecord.defaultPortionName = options?.defaultPortionName;
+      mealRecord.servingGrams = options?.servingGrams;
       mealRecord.createdAt = now;
       mealRecord.updatedAt = now;
     });
@@ -289,6 +407,13 @@ export class MealService {
     await database.write(async () => {
       await database.batch(meal, ...mealFoods);
     });
+
+    await this.assertMealHasExpectedFoods(
+      meal.id,
+      foodItems.length,
+      'MealService.createMealFromFoods'
+    );
+
     return meal;
   }
 

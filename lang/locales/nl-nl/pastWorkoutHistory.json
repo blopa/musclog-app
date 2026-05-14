@@ -1,0 +1,55 @@
+{
+  "pastWorkoutHistory": {
+    "title": "Workout-geschiedenis",
+    "searchPlaceholder": "Sessies zoeken...",
+    "noWorkoutsFound": "Geen workouts gevonden die overeenkomen met je zoekopdracht.",
+    "noWorkoutHistory": "Nog geen workout-geschiedenis.",
+    "loadMore": "Meer laden",
+    "loadingMore": "Laden...",
+    "stats": {
+      "duration": "Duur",
+      "volume": "Volume",
+      "calories": "Calorieën"
+    },
+    "prBadge": {
+      "singular": "{{count}} PR",
+      "plural": "{{count}} PR's"
+    },
+    "filters": {
+      "title": "Workouts filteren",
+      "workoutType": "WORKOUTTYPE",
+      "minDuration": "MIN. DUUR",
+      "reset": "Reset",
+      "applyFilters": "Filters toepassen",
+      "durationFormats": {
+        "zero": "0m",
+        "minutes": "{{minutes}}m",
+        "minutesPlus": "{{minutes}}+ min",
+        "max": "120m+"
+      },
+      "workoutTypes": {
+        "all": "Alle types",
+        "strength": "Kracht",
+        "cardio": "Cardio",
+        "hiit": "HIIT",
+        "yoga": "Yoga"
+      },
+      "dateRange": {
+        "title": "DATUMBEREIK",
+        "30days": "Laatste 30 dagen",
+        "90days": "Laatste 90 dagen",
+        "custom": "Aangepast"
+      },
+      "muscleGroups": {
+        "title": "SPIERGROEP (MEERVOUDIGE SELECTIE)",
+        "chest": "Borst",
+        "back": "Rug",
+        "legs": "Benen",
+        "shoulders": "Schouders",
+        "arms": "Armen",
+        "core": "Core",
+        "fullBody": "Hele lichaam"
+      }
+    }
+  }
+}

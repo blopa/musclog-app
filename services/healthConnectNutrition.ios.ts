@@ -28,6 +28,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { localDayStartMs } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 
@@ -172,6 +173,7 @@ export async function writeNutritionLogToHealthConnect(
     );
     return correlation?.uuid;
   } catch (err) {
+    handleError(err, 'healthConnectNutrition.ios.writeNutritionLogToHealthConnect');
     console.warn('[healthConnectNutrition.iOS] writeNutritionLogToHealthConnect failed:', err);
     return undefined;
   }
@@ -222,7 +224,10 @@ async function getOrCreateSentinelFood(): Promise<Food> {
 
   const portion =
     (await FoodPortionService.get100gPortion()) ??
-    (await FoodPortionService.getOrCreatePortion('100g', 100, 'scale', 'user'));
+    (await FoodPortionService.getOrCreatePortion('100g', 100, 'scale', 'basic', {
+      kind: 'mass',
+      scope: 'global',
+    }));
 
   const food = await database.get<Food>('foods').create((f) => {
     f.name = HC_SENTINEL_FOOD_NAME;
@@ -336,11 +341,11 @@ async function syncNutritionOnce(timeRange: {
       date: localDayStartMs(new Date(corr.startDate)),
       mealType: mapMealType(mealRaw),
       foodName: nameRaw ?? HC_SENTINEL_FOOD_NAME,
-      calories,
-      protein,
-      carbs,
-      fat,
-      fiber,
+      calories: Math.max(0, calories),
+      protein: Math.max(0, protein),
+      carbs: Math.max(0, carbs),
+      fat: Math.max(0, fat),
+      fiber: Math.max(0, fiber),
     });
   }
 

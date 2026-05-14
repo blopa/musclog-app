@@ -1,0 +1,41 @@
+{
+  "createWorkout": {
+    "title": "Crear Nuevo Entrenamiento",
+    "save": "Guardar",
+    "workoutIcon": "Icono de Entrenamiento",
+    "essentials": "Esenciales",
+    "workoutTitle": "Título del Entrenamiento",
+    "workoutTitlePlaceholder": "ej., Destrucción de Piernas",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Enfoque en cuádriceps y gemelos...",
+    "workoutType": "Tipo de entrenamiento",
+    "types": {
+      "strength": "Fuerza",
+      "cardio": "Cardio",
+      "flexibility": "Flexibilidad",
+      "calisthenics": "Calistenia",
+      "other": "Otro"
+    },
+    "intelligence": "Inteligencia",
+    "workoutInsight": {
+      "title": "Información del entrenamiento",
+      "description": "Elige cómo prepara Musclog la información para tu próxima sesión. La IA se adapta según los datos de recuperación cuando está habilitada.",
+      "none": "Ninguna",
+      "algorithm": "Algoritmo",
+      "ai": "IA"
+    },
+    "routine": "Rutina",
+    "repeatOnDays": "Repetir en los días",
+    "weekly": "Semanal",
+    "exercises": "Ejercicios",
+    "exercisesInWorkout": "Ejercicios en el entrenamiento",
+    "addExerciseError": "Error al Añadir Ejercicio",
+    "editTitle": "Editar Entrenamiento",
+    "loadError": "Error al Cargar",
+    "noExercisesPlaceholder": "Sin Ejercicios",
+    "saveError": "Error al Guardar",
+    "validation": {
+      "titleRequiredMessage": "Por favor, introduce un título para el entrenamiento"
+    }
+  }
+}

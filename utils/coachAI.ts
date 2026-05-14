@@ -1,17 +1,21 @@
-import { Content, Part } from '@google/generative-ai';
+import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
-import { NutritionService, SettingsService } from '@/database/services';
+import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
 import i18n from '@/lang/lang';
+import { isProduction } from '@/utils/app';
 
 import { configureBasicGenAI } from './gemini';
+import { handleError } from './handleError';
+import { sendOnDeviceMessage, sendOnDeviceStructured } from './onDeviceAi';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
-  getBaseSystemPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
+  getChatMessagePromptContent,
   getEstimateMacrosFunctions,
+  getEstimateMissingIngredientsFunctions,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
   getGenerateMealPlanFunctions,
@@ -19,6 +23,7 @@ import {
   getGenerateWorkoutPlanFunctions,
   getMealAnalysisPrompt,
   getMealCritiquePrompt,
+  getMissingIngredientsMacrosPrompt,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
   getParsePastNutritionPrompt,
@@ -27,18 +32,26 @@ import {
   getParseRetrospectiveNutritionFunctions,
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
+  getRecipeExtractionFunctions,
+  getRecipeExtractionPrompt,
   getRetrospectiveNutritionPrompt,
   getTrackMealFunctions,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 import { wrapUserContent } from './promptSanitizer';
-import { captureException } from './sentry';
 
 export class AiCreditsError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'AiCreditsError';
+  }
+}
+
+export class GatewayRateLimitError extends AiCreditsError {
+  constructor(message: string) {
+    super(message);
+    this.name = 'GatewayRateLimitError';
   }
 }
 
@@ -70,14 +83,184 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
-export type CoachAIProvider = 'gemini' | 'openai';
+const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
+const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
+
+function getErrorStatus(error: any): number | undefined {
+  return error?.status ?? error?.response?.status;
+}
+
+function getErrorCode(error: any): string {
+  return String(error?.error?.code ?? error?.code ?? '').toLowerCase();
+}
+
+function getErrorMessage(error: any): string {
+  return String(error?.message ?? '').toLowerCase();
+}
+
+function isQuotaStyleError(error: any): boolean {
+  const code = getErrorCode(error);
+  const message = getErrorMessage(error);
+
+  if (code === 'insufficient_quota') {
+    return true;
+  }
+
+  return (
+    message.includes('quota') ||
+    message.includes('insufficient_quota') ||
+    message.includes('resource_exhausted') ||
+    message.includes('billing') ||
+    message.includes('daily limit')
+  );
+}
+
+function shouldRetryLlmError(error: any): boolean {
+  const status = getErrorStatus(error);
+  if (status === undefined || !RETRYABLE_LLM_STATUSES.has(status)) {
+    return false;
+  }
+
+  if (status === 429 && isQuotaStyleError(error)) {
+    return false;
+  }
+
+  return true;
+}
+
+async function sleep(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withLlmRetry<T>(
+  operation: string,
+  provider: CoachAIProvider,
+  request: () => Promise<T>
+): Promise<T> {
+  let attempt = 0;
+
+  while (true) {
+    try {
+      return await request();
+    } catch (error) {
+      if (attempt >= LLM_RETRY_DELAYS_MS.length || !shouldRetryLlmError(error)) {
+        throw error;
+      }
+
+      const delayMs = LLM_RETRY_DELAYS_MS[attempt];
+      const nextAttempt = attempt + 2;
+      const status = getErrorStatus(error);
+
+      console.warn(
+        `[coachAI] ${operation} transient ${status ?? 'unknown'} from ${provider}; retrying in ${delayMs}ms (attempt ${nextAttempt}/${LLM_RETRY_DELAYS_MS.length + 1})`
+      );
+
+      attempt += 1;
+      await sleep(delayMs);
+    }
+  }
+}
+
+export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local' | 'gateway';
+
+export interface ProviderConfig {
+  maxCharBudget: number; // Maximum character budget for the total request context
+  promptComplexity: 'minimal' | 'standard';
+  enableContextInjection: boolean;
+  enableFoundationFoods: boolean;
+  enableMemories: boolean;
+}
+
+export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
+  'on-device': {
+    maxCharBudget: 4500, // Tight cap per Apple Intelligence optimization spec
+    promptComplexity: 'minimal',
+    enableContextInjection: true,
+    enableFoundationFoods: false,
+    enableMemories: false,
+  },
+  gemini: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  openai: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  local: {
+    maxCharBudget: 8000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: false,
+    enableMemories: true,
+  },
+  gateway: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+};
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
   apiKey?: string;
   model: string;
-  language?: string; // Re-introduced from old code
+  baseUrl?: string;
+  language?: string;
+  gatewayByokAlias?: string;
+  gatewayUserId?: string;
 };
+
+function buildOpenAIClient(config: CoachAIConfig): OpenAI {
+  // In web dev mode, route gateway requests through a local CORS proxy —
+  // Cloudflare AI Gateway doesn't return CORS headers for browser preflights.
+  const devWebProxyFetch =
+    !isProduction() && config.provider === 'gateway'
+      ? (url: RequestInfo | URL, init?: RequestInit) =>
+          fetch(`http://localhost:8090?url=${encodeURIComponent(url.toString())}`, init)
+      : undefined;
+
+  return new OpenAI({
+    apiKey: config.apiKey ?? 'unused',
+    baseURL: config.baseUrl,
+    dangerouslyAllowBrowser: true,
+    defaultHeaders: config.gatewayByokAlias
+      ? {
+          'cf-aig-byok-alias': config.gatewayByokAlias,
+          ...(config.gatewayUserId ? { 'cf-aig-user-id': config.gatewayUserId } : {}),
+        }
+      : undefined,
+    fetch: devWebProxyFetch,
+  });
+}
+
+async function logLlmDebugEvent(params: {
+  provider: CoachAIProvider;
+  direction: 'request' | 'response';
+  operation: string;
+  payload: unknown;
+  config?: CoachAIConfig;
+}): Promise<void> {
+  try {
+    await DebugDumpService.logJsonEvent({
+      provider: params.provider,
+      direction: params.direction,
+      operation: params.operation,
+      payload: params.payload,
+      secrets: params.config?.apiKey ? [params.config.apiKey] : [],
+    });
+  } catch (error) {
+    console.warn('[coachAI] Failed to write debug dump:', error);
+  }
+}
 
 export type ChatHistoryEntry = {
   role: 'user' | 'coach';
@@ -185,6 +368,26 @@ export type TrackMealResponse = {
   meals: TrackedMeal[];
 };
 
+export type RecipeIngredient = {
+  name: string;
+  grams: number;
+  foodId?: string;
+};
+
+export type RecipeTrackedMeal = {
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealName: string;
+  ingredients: RecipeIngredient[];
+};
+
+export type RecipeExtractionResponse = {
+  meals: RecipeTrackedMeal[];
+};
+
+export type MissingIngredientMacrosResponse = {
+  ingredients: TrackMealIngredient[];
+};
+
 export type GenerateMealPlanResponse = {
   meals: {
     day: number;
@@ -209,17 +412,6 @@ export type NutritionEntry = {
 };
 
 const LENGTH_SOFT_LIMIT = 50;
-
-/**
- * Merged System Prompt:
- * Combines Loggy's app integration with Chad's PhD personality and guardrails.
- */
-const getSystemPrompt = async (
-  language: string = 'en-US',
-  context?: 'nutrition' | 'exercise' | 'general'
-) => {
-  return await getBaseSystemPrompt(language, context);
-};
 
 const baseSchemaProperties = {
   msg4User: {
@@ -280,13 +472,38 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
   return result;
 }
 
+/**
+ * Truncates chat history to fit within a character budget,
+ * keeping the most recent messages.
+ */
+function truncateHistoryByBudget(
+  history: ChatHistoryEntry[],
+  maxChars: number
+): ChatHistoryEntry[] {
+  let currentChars = 0;
+  const truncated: ChatHistoryEntry[] = [];
+
+  // Traverse backwards to keep the most recent, relevant context
+  for (let i = history.length - 1; i >= 0; i--) {
+    const msgLength = history[i].content.length;
+    // If adding this message exceeds budget, stop if we already have context.
+    // If it's the very first message (most recent) and it's too big, we keep it
+    // but the model might still fail; however, we prioritize having at least one message.
+    if (currentChars + msgLength > maxChars && truncated.length > 0) {
+      break;
+    }
+
+    truncated.unshift({ ...history[i] });
+    currentChars += msgLength;
+  }
+
+  return truncated;
+}
+
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
-  if (typeof response?.text === 'function') {
-    return response.text() as string;
-  }
-  return response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  return response?.text ?? response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
@@ -355,9 +572,17 @@ async function sendViaGemini(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const systemPrompt = await getSystemPrompt(config.language, context);
+  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.gemini;
+  const systemPrompt = await getChatMessagePromptContent(
+    config.language,
+    undefined,
+    context,
+    config.provider
+  );
   const systemParts: Part[] = [{ text: systemPrompt }];
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
+
+  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
 
   const genModel = await configureBasicGenAI(
     {
@@ -371,9 +596,40 @@ async function sendViaGemini(
     systemParts
   );
 
-  const contents = buildGeminiContents(history, userMessage);
-  const result = await genModel.generateContent({ contents });
-  const raw = extractRawText(result.response);
+  const contents = buildGeminiContents(truncatedHistory, userMessage);
+  const requestPayload = {
+    model: config.model,
+    contents,
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: buildResponseSchema(includeUserSummary),
+      systemInstruction: {
+        parts: systemParts,
+      },
+    },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'sendViaGemini',
+    payload: requestPayload,
+    config,
+  });
+
+  const result = await withLlmRetry('sendViaGemini', config.provider, () =>
+    genModel.generateContent({ contents })
+  );
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'sendViaGemini',
+    payload: result,
+    config,
+  });
+
+  const raw = extractRawText(result);
   return parseCoachResponse(raw);
 }
 
@@ -383,11 +639,20 @@ async function sendViaOpenAI(
   userMessage: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = buildOpenAIClient(config);
   const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
-  const systemPrompt = await getSystemPrompt(config.language, context);
+  const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
 
-  const normalized = normalizeHistory(history);
+  const systemPrompt = await getChatMessagePromptContent(
+    config.language,
+    undefined,
+    context,
+    config.provider
+  );
+
+  const truncatedHistory = truncateHistoryByBudget(history, providerConfig.maxCharBudget);
+  const normalized = normalizeHistory(truncatedHistory);
+
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     ...normalized.map((entry) => ({
@@ -398,36 +663,122 @@ async function sendViaOpenAI(
   ];
 
   const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+    model: config.model,
+    messages,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'coach_response',
+        strict: true,
+        schema,
+      },
+    },
+  };
 
   try {
-    const completion = await client.chat.completions.create({
-      model: config.model,
-      messages,
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'coach_response',
-          strict: true,
-          schema,
-        },
-      },
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'sendViaOpenAI',
+      payload: requestPayload,
+      config,
+    });
+
+    const completion = await withLlmRetry('sendViaOpenAI', config.provider, () =>
+      client.chat.completions.create(requestPayload)
+    );
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'sendViaOpenAI',
+      payload: completion,
+      config,
     });
 
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error: any) {
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'sendViaOpenAI',
+      payload: { error },
+      config,
+    });
     console.error('[coachAI] sendViaOpenAI error:', error);
 
     // Log detailed error for debugging but don't expose internals to user
-    captureException(error, {
-      data: { context: 'coachAI.sendViaOpenAI', provider: 'openai' },
-    });
+    handleError(error, 'coachAI.sendViaOpenAI');
 
     if (isAiCreditsError(error)) {
-      throw new AiCreditsError(i18n.t('errors.aiCreditsError'));
+      throw config.provider === 'gateway'
+        ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
+        : new AiCreditsError(i18n.t('errors.aiCreditsError'));
     }
 
     // Return a user-friendly error message without exposing internal details
+    return {
+      msg4User: i18n.t('errors.aiProcessingError'),
+      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+    };
+  }
+}
+
+async function sendViaOnDevice(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<CoachResponse> {
+  try {
+    const providerConfig = PROVIDER_CONFIGS['on-device'];
+    const systemPrompt = await getChatMessagePromptContent(
+      config.language,
+      undefined,
+      context,
+      'on-device'
+    );
+
+    const truncatedHistory = truncateHistoryByBudget(
+      history,
+      providerConfig.maxCharBudget - userMessage.length
+    );
+    const normalized = normalizeHistory(truncatedHistory);
+
+    const messages = [
+      ...normalized.map((e) => ({
+        role: (e.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: e.content,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ];
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'request',
+      operation: 'sendCoachMessage',
+      payload: { systemPrompt, messages },
+      config,
+    });
+
+    const raw = await sendOnDeviceMessage(messages, systemPrompt);
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'response',
+      operation: 'sendCoachMessage',
+      payload: { text: raw },
+      config,
+    });
+
+    return {
+      msg4User: raw || i18n.t('errors.aiProcessingError'),
+      sumMsg: raw?.slice(0, 120) ?? '',
+    };
+  } catch (error) {
+    handleError(error, 'coachAI.sendViaOnDevice');
     return {
       msg4User: i18n.t('errors.aiProcessingError'),
       sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
@@ -449,6 +800,24 @@ async function generateText(
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
+      config: {
+        systemInstruction: {
+          parts: [{ text: promptWithLang } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateText',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -458,18 +827,49 @@ async function generateText(
     );
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const result = await withLlmRetry('generateText', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateText',
+      payload: result,
+      config,
+    });
+
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
-  const completion = await client.chat.completions.create({
+  const client = buildOpenAIClient(config);
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
       { role: 'user', content: sanitizedUserMessage },
     ],
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateText',
+    payload: requestPayload,
+    config,
+  });
+
+  const completion = await withLlmRetry('generateText', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateText',
+    payload: completion,
+    config,
   });
 
   const raw = completion.choices[0]?.message?.content ?? '';
@@ -489,6 +889,25 @@ async function generateTextWithHistory(
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedFinalUserMessage = wrapUserContent(finalUserMessage);
   if (config.provider === 'gemini') {
+    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
+    const requestPayload = {
+      model: config.model,
+      contents,
+      config: {
+        systemInstruction: {
+          parts: [{ text: systemPrompt } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateTextWithHistory',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -496,24 +915,55 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const contents = buildGeminiContents(recentConversation, sanitizedFinalUserMessage);
-    const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const result = await withLlmRetry('generateTextWithHistory', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateTextWithHistory',
+      payload: result,
+      config,
+    });
+
+    const raw = extractRawText(result);
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
-  const historyMessages = recentConversation.map((e) => ({
+  const client = buildOpenAIClient(config);
+  const historyMessages: OpenAI.Chat.ChatCompletionMessageParam[] = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
   }));
-  const completion = await client.chat.completions.create({
+
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: systemPrompt },
       ...historyMessages,
       { role: 'user', content: sanitizedFinalUserMessage },
     ],
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateTextWithHistory',
+    payload: requestPayload,
+    config,
+  });
+
+  const completion = await withLlmRetry('generateTextWithHistory', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateTextWithHistory',
+    payload: completion,
+    config,
   });
 
   const raw = completion.choices[0]?.message?.content ?? '';
@@ -547,7 +997,65 @@ async function generateStructured<T>(
 
   const lang = config.language ?? 'en-US';
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
+
+  if (config.provider === 'on-device') {
+    const messages = [{ role: 'user' as const, content: sanitizedUserMessage }];
+
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'request',
+      operation: schemaName,
+      payload: { systemPrompt: promptWithLang, messages, schema },
+      config,
+    });
+
+    try {
+      const result = await sendOnDeviceStructured<T>(messages, promptWithLang, schema);
+
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: schemaName,
+        payload: result,
+        config,
+      });
+
+      return result;
+    } catch (error) {
+      handleError(error, `coachAI.generateStructured[${schemaName}]`);
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: schemaName,
+        payload: { error: String(error) },
+        config,
+      });
+
+      return null;
+    }
+  }
+
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: schema,
+        systemInstruction: {
+          parts: [{ text: promptWithLang } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateStructured',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -560,11 +1068,23 @@ async function generateStructured<T>(
       [{ text: promptWithLang } as Part]
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+    const result = await withLlmRetry('generateStructured', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateStructured',
+      payload: result,
+      config,
+    });
+
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
+
     try {
       const clean = raw.replace(/```json|```/g, '').trim();
       return JSON.parse(clean) as T;
@@ -572,9 +1092,10 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+
+  const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: promptWithLang },
@@ -588,11 +1109,33 @@ async function generateStructured<T>(
         schema: strictSchema,
       },
     },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateStructured',
+    payload: requestPayload,
+    config,
   });
+
+  const completion = await withLlmRetry('generateStructured', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateStructured',
+    payload: completion,
+    config,
+  });
+
   const raw = completion.choices[0]?.message?.content ?? '';
   if (!raw?.trim()) {
     return null;
   }
+
   try {
     const clean = raw.replace(/```json|```/g, '').trim();
     return JSON.parse(clean) as T;
@@ -614,11 +1157,45 @@ async function generateWithImageStructured<T>(
   const sanitizedSuffix = userMessageSuffix?.trim()
     ? wrapUserContent(userMessageSuffix.trim())
     : '';
+
   const userText =
     'Analyze this image and return the structured data.' +
     (sanitizedSuffix ? `\n\n${sanitizedSuffix}` : '');
 
   if (config.provider === 'gemini') {
+    const requestPayload = {
+      model: config.model,
+      contents: [
+        {
+          parts: [
+            { text: userText } as Part,
+            {
+              inlineData: {
+                data: base64Image,
+                mimeType: mimeType,
+              },
+            } as Part,
+          ],
+          role: 'user',
+        },
+      ],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: schema,
+        systemInstruction: {
+          parts: [{ text: systemPrompt } as Part],
+        },
+      },
+    };
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: 'generateWithImageStructured',
+      payload: requestPayload,
+      config,
+    });
+
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -630,20 +1207,39 @@ async function generateWithImageStructured<T>(
       },
       [{ text: systemPrompt } as Part]
     );
+
     const contents: Content[] = [
       {
         parts: [
           { text: userText } as Part,
-          { inlineData: { mimeType, data: base64Image } } as Part,
+          {
+            inlineData: {
+              data: base64Image,
+              mimeType: mimeType,
+            },
+          } as Part,
         ],
         role: 'user',
       },
     ];
-    const result = await genModel.generateContent({ contents });
-    const raw = extractRawText(result.response);
+
+    const result = await withLlmRetry('generateWithImageStructured', config.provider, () =>
+      genModel.generateContent({ contents })
+    );
+
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: 'generateWithImageStructured',
+      payload: result,
+      config,
+    });
+
+    const raw = extractRawText(result);
     if (!raw?.trim()) {
       return null;
     }
+
     try {
       const clean = raw.replace(/```json|```/g, '').trim();
       return JSON.parse(clean) as T;
@@ -651,10 +1247,10 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
-  const completion = await client.chat.completions.create({
+  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -674,17 +1270,171 @@ async function generateWithImageStructured<T>(
         schema: strictSchema,
       },
     },
+  };
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation: 'generateWithImageStructured',
+    payload: requestPayload,
+    config,
   });
+
+  const completion = await withLlmRetry('generateWithImageStructured', config.provider, () =>
+    client.chat.completions.create(requestPayload)
+  );
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation: 'generateWithImageStructured',
+    payload: completion,
+    config,
+  });
+
   const raw = completion.choices[0]?.message?.content ?? '';
   if (!raw?.trim()) {
     return null;
   }
+
   try {
     const clean = raw.replace(/```json|```/g, '').trim();
     return JSON.parse(clean) as T;
   } catch {
     return null;
   }
+}
+
+async function extractRecipe(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<RecipeExtractionResponse | null> {
+  const lang = config.language ?? 'en-US';
+  const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
+  const includeFoundationFoods = providerConfig.enableFoundationFoods
+    ? await SettingsService.getSendFoundationFoodsToLlm()
+    : false;
+  const systemPrompt = await getRecipeExtractionPrompt(includeFoundationFoods, lang);
+  const fns = getRecipeExtractionFunctions(includeFoundationFoods);
+  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+  if (base64Image) {
+    if (config.provider === 'on-device') {
+      // TODO: for now, on-device cant parse images
+      return null;
+    }
+
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    return generateWithImageStructured<RecipeExtractionResponse>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'extractRecipe',
+      userMessage
+    );
+  }
+
+  return generateStructured<RecipeExtractionResponse>(
+    config,
+    systemPrompt,
+    userMessage,
+    schema,
+    'extractRecipe'
+  );
+}
+
+async function estimateMissingIngredients(
+  config: CoachAIConfig,
+  newIngredients: RecipeIngredient[],
+  knownIngredients: TrackMealIngredient[],
+  mealName: string
+): Promise<MissingIngredientMacrosResponse | null> {
+  const systemPrompt = getMissingIngredientsMacrosPrompt(
+    mealName,
+    knownIngredients,
+    newIngredients
+  );
+  const fns = getEstimateMissingIngredientsFunctions();
+  const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+  return generateStructured<MissingIngredientMacrosResponse>(
+    config,
+    systemPrompt,
+    `Estimate macros for the missing ingredients in "${mealName}".`,
+    schema,
+    'estimateMissingIngredients'
+  );
+}
+
+async function trackMealWithThinking(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<TrackMealResponse | null> {
+  const recipeResponse = await extractRecipe(config, userMessage, base64Image);
+  if (!recipeResponse?.meals?.length) {
+    return null;
+  }
+
+  const resultMeals: TrackedMeal[] = [];
+
+  for (const meal of recipeResponse.meals) {
+    const matchedIngredients = meal.ingredients.filter((i) => i.foodId);
+    const newIngredients = meal.ingredients.filter((i) => !i.foodId);
+
+    const matchedStubs: TrackMealIngredient[] = matchedIngredients.map((i) => ({
+      name: i.name,
+      grams: i.grams,
+      foodId: i.foodId,
+      kcal: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+    }));
+
+    let fullIngredients: TrackMealIngredient[] = matchedStubs;
+
+    if (newIngredients.length > 0) {
+      const normalizedMatched = await NutritionService.normalizeAiMealIngredients(matchedStubs);
+      const estimated = await estimateMissingIngredients(
+        config,
+        newIngredients,
+        normalizedMatched,
+        meal.mealName
+      );
+
+      fullIngredients = [
+        ...matchedStubs,
+        ...(estimated?.ingredients ??
+          newIngredients.map((i) => ({
+            name: i.name,
+            grams: i.grams,
+            kcal: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            fiber: 0,
+          }))),
+      ];
+    }
+
+    resultMeals.push({
+      mealType: meal.mealType,
+      mealName: meal.mealName,
+      ingredients: fullIngredients,
+    });
+  }
+
+  for (const meal of resultMeals) {
+    meal.ingredients = await NutritionService.normalizeAiMealIngredients(meal.ingredients);
+  }
+
+  return { meals: resultMeals };
 }
 
 /**
@@ -696,13 +1446,26 @@ export async function trackMeal(
   base64Image?: string
 ): Promise<TrackMealResponse | null> {
   try {
+    const useThinkingMode = await SettingsService.getUseThinkingMode();
+    if (useThinkingMode) {
+      return await trackMealWithThinking(config, userMessage, base64Image);
+    }
+
     const lang = config.language ?? 'en-US';
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
     const systemPrompt = await getMealAnalysisPrompt(includeFoundationFoods, lang);
     const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (base64Image) {
+      if (config.provider === 'on-device') {
+        // TODO: for now, on-device cant parse images
+        return null;
+      }
+
       const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
       const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
       return await generateWithImageStructured<TrackMealResponse>(
@@ -724,7 +1487,7 @@ export async function trackMeal(
       'trackMeal'
     );
   } catch (error) {
-    console.error('[coachAI] trackMeal error:', error);
+    handleError(error, 'coachAI.trackMeal');
     return null;
   }
 }
@@ -738,8 +1501,22 @@ export async function sendCoachMessage(
   // Wrap user message with delimiters to prevent prompt injection attacks
   const sanitizedMessage = wrapUserContent(userMessage);
 
+  if (config.provider === 'on-device') {
+    return sendViaOnDevice(config, history, sanitizedMessage, context);
+  }
+
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context);
+  }
+
+  // Local provider uses OpenAI-compatible API but with a custom base URL
+  if (config.provider === 'local') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
+  }
+
+  // Gateway uses OpenAI-compatible protocol via Cloudflare AI Gateway
+  if (config.provider === 'gateway') {
+    return sendViaOpenAI(config, history, sanitizedMessage, context);
   }
 
   return sendViaOpenAI(config, history, sanitizedMessage, context);
@@ -796,9 +1573,6 @@ export async function getNutritionInsights(
 }
 
 /**
- * Generate a workout plan from conversation history
- */
-/**
  * Generate a meal plan from conversation history
  */
 export async function generateMealPlan(
@@ -809,7 +1583,10 @@ export async function generateMealPlan(
 ): Promise<GenerateMealPlanResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
     const systemPrompt = await getGenerateMealPlanPrompt(
       lang,
       macroTargets,
@@ -833,7 +1610,7 @@ export async function generateMealPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] generateMealPlan error:', error);
+    handleError(error, 'coachAI.generateMealPlan');
     return null;
   }
 }
@@ -872,7 +1649,7 @@ export async function generateWorkoutPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] generateWorkoutPlan error:', error);
+    handleError(error, 'coachAI.generateWorkoutPlan');
     return null;
   }
 }
@@ -1024,13 +1801,37 @@ export async function estimateNutritionFromPhoto(
   base64Image: string,
   context?: MealPhotoContext | null
 ): Promise<TrackMealResponse | null> {
+  if (config.provider === 'on-device') {
+    // TODO: for now, on-device cant parse images
+    return null;
+  }
+
   try {
+    const useThinkingMode = await SettingsService.getUseThinkingMode();
+    if (useThinkingMode) {
+      let thinkingUserMessage = 'Analyze this meal photo.';
+      if (context?.description?.trim()) {
+        thinkingUserMessage += `\nUser description: ${context.description.trim()}`;
+      }
+
+      if (context?.tags?.length) {
+        thinkingUserMessage += `\nTags: ${context.tags.join(', ')}`;
+      }
+
+      return await trackMealWithThinking(config, thinkingUserMessage, base64Image);
+    }
+
     const customPrompts = await getActiveCustomPrompts();
-    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
+    const includeFoundationFoods = providerConfig.enableFoundationFoods
+      ? await SettingsService.getSendFoundationFoodsToLlm()
+      : false;
+
     const baseSystemPrompt = await getMealAnalysisPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
+
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
 
@@ -1072,8 +1873,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
-    console.error('[coachAI] estimateNutritionFromPhoto error:', error);
-    // TODO: show a snackbar
+    handleError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
 }

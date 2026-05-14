@@ -62,7 +62,7 @@ import {
 } from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
-import { ChatService } from '@/database/services';
+import { ChatService, MuscleService, WorkoutService } from '@/database/services';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -72,12 +72,13 @@ import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import { createThumbnail, pickDocument } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
-import { captureException } from '@/utils/sentry';
+import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
+import { WorkoutMusclesModal } from './WorkoutMusclesModal';
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
@@ -208,7 +209,8 @@ const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
-  onSeeAllMeals?: () => void
+  onSeeAllMeals?: () => void,
+  onViewMuscles?: (workoutLogId: string, workoutName: string) => void
 ) => {
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
@@ -219,6 +221,15 @@ const renderCustomView = (
           onViewDetails={
             onViewWorkoutDetails
               ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
+              : undefined
+          }
+          onViewMuscles={
+            onViewMuscles
+              ? () =>
+                  onViewMuscles(
+                    currentMessage.workoutCompleted!.workoutLogId,
+                    currentMessage.workoutCompleted!.workoutName
+                  )
               : undefined
           }
         />
@@ -272,7 +283,8 @@ const renderBubble = (
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
   onGoToSettings?: () => void,
   goToSettingsLabel?: string,
-  onSeeAllMeals?: () => void
+  onSeeAllMeals?: () => void,
+  onViewMuscles?: (workoutLogId: string, workoutName: string) => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -348,7 +360,13 @@ const renderBubble = (
         currentMessage?.workout ||
         currentMessage?.meal ||
         currentMessage?.mealPlan
-          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails, onSeeAllMeals)
+          ? renderCustomView(
+              props,
+              onViewWorkoutDetails,
+              onViewMealDetails,
+              onSeeAllMeals,
+              onViewMuscles
+            )
           : null}
       </Pressable>
     );
@@ -654,6 +672,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const pendingIntention = hookPendingIntention;
   const setPendingIntention = setHookPendingIntention;
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
+  const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
+  const [musclesWorkoutName, setMusclesWorkoutName] = useState('');
   const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
     messageId: string;
     mealTypeIdentifier: MealType;
@@ -711,6 +732,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   useEffect(() => {
     if (!visible) {
       setSelectedWorkoutId(null);
+      setIsMusclesModalVisible(false);
+      setMusclesModalGroups([]);
       setIsMenuVisible(false);
       setSelectedMessage(null);
       setIsClearHistoryModalVisible(false);
@@ -719,19 +742,21 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     }
   }, [visible]);
 
-  // On Android, KeyboardAvoidingView doesn't work inside a Modal.
-  // We manually track the keyboard height and apply it as padding.
+  // KeyboardAvoidingView doesn't work reliably inside a Modal on either platform.
+  // We manually track the keyboard height and apply it as padding instead.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   useEffect(() => {
-    if (Platform.OS !== 'android') {
-      return;
-    }
-    const show = Keyboard.addListener('keyboardDidShow', (e) => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const show = Keyboard.addListener(showEvent, (e) => {
       setKeyboardHeight(e.endCoordinates.height);
     });
-    const hide = Keyboard.addListener('keyboardDidHide', () => {
+
+    const hide = Keyboard.addListener(hideEvent, () => {
       setKeyboardHeight(0);
     });
+
     return () => {
       show.remove();
       hide.remove();
@@ -873,6 +898,34 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     setSelectedWorkoutId(workoutLogId);
   }, []);
 
+  const handleViewMuscles = useCallback(async (workoutLogId: string, workoutName: string) => {
+    try {
+      const { exercises } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+      const exerciseIds = exercises.map((e) => e.id);
+      const musclesByExercise = await MuscleService.getMusclesForExercises(exerciseIds);
+
+      let muscleNames: string[];
+      if (musclesByExercise.size > 0) {
+        muscleNames = [
+          ...new Set(
+            Array.from(musclesByExercise.values())
+              .flat()
+              .map((m) => m.name)
+          ),
+        ];
+      } else {
+        // Backfill may not have run yet — fall back to coarse muscle groups
+        muscleNames = [...new Set(exercises.map((e) => e.muscleGroup).filter(Boolean) as string[])];
+      }
+
+      setMusclesWorkoutName(workoutName);
+      setMusclesModalGroups(muscleNames);
+      setIsMusclesModalVisible(true);
+    } catch (err) {
+      console.error('Failed to load workout muscles:', err);
+    }
+  }, []);
+
   const handleViewMealDetails = useCallback(
     (meal: ExtendedIMessage['meal'], mealType: MealType) => {
       if (!meal) {
@@ -898,7 +951,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const handleGoToSettings = useCallback(() => {
     onClose();
-    router.navigate('/settings');
+    router.navigate('/app/settings');
   }, [onClose, router]);
 
   const handleSeeAllMeals = useCallback(() => {
@@ -1027,9 +1080,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       await shareText(lines.join('\n'));
     } catch (err) {
-      console.error('[CoachModal] shareHistory failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleShareHistory' } });
-      showSnackbar('error', t('coach.share.failed'));
+      handleError(err, 'CoachModal.handleShareHistory', {
+        snackbarMessage: t('coach.share.failed'),
+      });
     }
   }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
 
@@ -1045,9 +1098,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await clearHistory(conversationContext);
       showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
-      console.error('[CoachModal] clearHistory failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleConfirmClearHistory' } });
-      showSnackbar('error', t('coach.errors.generalError'));
+      handleError(err, 'CoachModal.handleConfirmClearHistory', {
+        snackbarMessage: t('coach.errors.generalError'),
+      });
     } finally {
       setIsClearingHistory(false);
     }
@@ -1065,9 +1118,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await deleteMessage(id);
       showSnackbar('success', t('coach.message.deleted'));
     } catch (err) {
-      console.error('[CoachModal] deleteMessage failed:', err);
-      captureException(err, { data: { context: 'CoachModal.handleConfirmDeleteMessage' } });
-      showSnackbar('error', t('coach.errors.generalError'));
+      handleError(err, 'CoachModal.handleConfirmDeleteMessage', {
+        snackbarMessage: t('coach.errors.generalError'),
+      });
     } finally {
       setIsDeletingMessage(false);
     }
@@ -1261,7 +1314,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         handleViewMealDetails,
         isCreditsError ? handleGoToSettings : undefined,
         isCreditsError ? t('coach.goToSettings') : undefined,
-        handleSeeAllMeals
+        handleSeeAllMeals,
+        handleViewMuscles
       ),
     [
       theme,
@@ -1272,6 +1326,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       isCreditsError,
       handleGoToSettings,
       handleSeeAllMeals,
+      handleViewMuscles,
       t,
     ]
   );
@@ -1282,8 +1337,14 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const gcRenderCustomView = useCallback(
     (props: Parameters<typeof renderCustomView>[0]) =>
-      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals),
-    [handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals]
+      renderCustomView(
+        props,
+        handleViewWorkoutDetails,
+        handleViewMealDetails,
+        handleSeeAllMeals,
+        handleViewMuscles
+      ),
+    [handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals, handleViewMuscles]
   );
 
   const gcRenderInputToolbar = useCallback(
@@ -1345,6 +1406,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     [theme]
   );
 
+  // TODO: implement using this
   const gcScrollToBottomComponent = useCallback(() => null, []);
 
   const contextIcon = useMemo(() => {
@@ -1541,6 +1603,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         workoutId={selectedWorkoutId || undefined}
       />
 
+      <WorkoutMusclesModal
+        visible={isMusclesModalVisible}
+        onClose={() => setIsMusclesModalVisible(false)}
+        title={musclesWorkoutName || undefined}
+        muscleGroups={musclesModalGroups}
+      />
+
       <BottomPopUpMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}
@@ -1582,6 +1651,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       {selectedMealForTracking && mealForLogMealModal ? (
         <LogMealModal
+          key={`log-meal-${selectedMealForTracking.messageId}-${selectedMealForTracking.mealTypeIdentifier}`}
           visible
           onClose={() => setSelectedMealForTracking(null)}
           meal={mealForLogMealModal}

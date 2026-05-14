@@ -1,4 +1,4 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
@@ -21,6 +21,8 @@ export type SpiderChartProps = {
   centerScore?: number;
   /** Label below center score (e.g. "PTS") */
   centerScoreLabel?: string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
   /** Primary focus label (e.g. "Power Output") */
   primaryFocus?: string;
   /** Area to improve label (e.g. "Flexibility") */
@@ -66,13 +68,16 @@ export function SpiderChart({
   dataColor,
   dataFillOpacity = 0.15,
   centerScore,
-  centerScoreLabel = 'PTS',
+  centerScoreLabel,
+  primaryLabel,
+  secondaryLabel,
   primaryFocus,
   areaToImprove,
   gridLevels = 4,
   size = 300,
   className,
 }: SpiderChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const DEFAULT_DATA_COLOR = theme.colors.status.emeraldLight;
@@ -84,7 +89,8 @@ export function SpiderChart({
 
   const cx = size / 2;
   const cy = size / 2;
-  const maxRadius = size * 0.43; // ~130 for 300
+  // Keep the radar slightly smaller so translated axis labels fit on mobile.
+  const maxRadius = size * 0.34;
 
   const gridColor = theme.colors?.border?.light ?? DEFAULT_GRID_COLOR;
   const mutedColor = theme.colors.text.tertiary;
@@ -112,7 +118,7 @@ export function SpiderChart({
   const dataPointsStr = dataPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   // Label positions: slightly outside the outer polygon
-  const labelRadius = maxRadius + size * 0.08;
+  const labelRadius = maxRadius + size * 0.09;
   const labelPositions = Array.from({ length: n }, (_, i) => {
     const p = vertex(cx, cy, labelRadius, i, n);
     const angle = vertexAngle(i, n);
@@ -123,7 +129,13 @@ export function SpiderChart({
     } else if (angle > 150 || angle < -150) {
       anchor = 'end';
     }
-    return { x: p.x, y: p.y, anchor };
+    const horizontalPadding = size * 0.09;
+    const verticalPadding = size * 0.07;
+    return {
+      x: Math.min(size - horizontalPadding, Math.max(horizontalPadding, p.x)),
+      y: Math.min(size - verticalPadding, Math.max(verticalPadding, p.y)),
+      anchor,
+    };
   });
 
   return (
@@ -161,7 +173,13 @@ export function SpiderChart({
         >
           {/* Concentric grid polygons */}
           {gridPolygons.map((points, idx) => (
-            <Polygon key={idx} points={points} fill="none" stroke={gridColor} strokeWidth={1} />
+            <Polygon
+              key={idx}
+              points={points}
+              fill="none"
+              stroke={gridColor}
+              strokeWidth={theme.borderWidth.thin}
+            />
           ))}
           {/* Radial lines */}
           {radialLines.map((line, idx) => (
@@ -172,7 +190,7 @@ export function SpiderChart({
               x2={line.x2}
               y2={line.y2}
               stroke={gridColor}
-              strokeWidth={1}
+              strokeWidth={theme.borderWidth.thin}
             />
           ))}
           {/* Data polygon */}
@@ -181,7 +199,7 @@ export function SpiderChart({
             fill={dataColorResolved}
             fillOpacity={dataFillOpacity}
             stroke={dataColorResolved}
-            strokeWidth={2.5}
+            strokeWidth={theme.borderWidth.medium}
             strokeLinejoin="round"
           />
           {/* Axis labels */}
@@ -191,9 +209,10 @@ export function SpiderChart({
               x={pos.x}
               y={pos.y}
               fill={textPrimary}
-              fontSize={11}
+              fontSize={theme.typography.fontSize.xs}
               fontWeight="600"
               textAnchor={pos.anchor}
+              alignmentBaseline="middle"
             >
               {String(axes[idx]).toUpperCase()}
             </SvgText>
@@ -216,11 +235,11 @@ export function SpiderChart({
           >
             <View
               style={{
-                width: 64,
-                height: 64,
-                borderRadius: 32,
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.full,
                 backgroundColor: theme.colors.background.primary,
-                borderWidth: 1,
+                borderWidth: theme.borderWidth.thin,
                 borderColor: gridColor,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -238,13 +257,13 @@ export function SpiderChart({
               </Text>
               <Text
                 style={{
-                  fontSize: 8,
+                  fontSize: theme.typography.fontSize.xxs,
                   textTransform: 'uppercase',
                   color: mutedColor,
-                  marginTop: 2,
+                  marginTop: theme.spacing.margin.xs,
                 }}
               >
-                {centerScoreLabel}
+                {centerScoreLabel || t('spiderChart.defaultScoreLabel')}
               </Text>
             </View>
           </View>
@@ -261,28 +280,35 @@ export function SpiderChart({
           }}
         >
           {primaryFocus != null ? (
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.md,
+              }}
+            >
               <View
                 style={{
-                  width: 4,
-                  height: 32,
-                  borderRadius: 2,
+                  width: theme.size.xs,
+                  height: theme.size['8'],
+                  borderRadius: theme.borderRadius['2'],
                   backgroundColor: dataColorResolved,
                 }}
               />
               <View>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xxs ?? 10,
+                    fontSize: theme.typography.fontSize.xxs,
                     textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >
-                  Primary Focus
+                  {primaryLabel || t('spiderChart.primaryFocus')}
                 </Text>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xs ?? 12,
+                    fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                     color: textPrimary,
                   }}
@@ -293,28 +319,35 @@ export function SpiderChart({
             </View>
           ) : null}
           {areaToImprove != null ? (
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.spacing.gap.base,
+              }}
+            >
               <View
                 style={{
-                  width: 4,
-                  height: 32,
-                  borderRadius: 2,
+                  width: theme.size.xs,
+                  height: theme.size['8'],
+                  borderRadius: theme.borderRadius['2'],
                   backgroundColor: gridColor,
                 }}
               />
               <View>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xxs ?? 10,
+                    fontSize: theme.typography.fontSize.xxs,
                     textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >
-                  Area to Improve
+                  {secondaryLabel || t('spiderChart.areaToImprove')}
                 </Text>
                 <Text
                   style={{
-                    fontSize: theme.typography?.fontSize?.xs ?? 12,
+                    fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                     color: textPrimary,
                   }}

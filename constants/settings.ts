@@ -71,6 +71,30 @@ export const ENABLE_GOOGLE_GEMINI_SETTING_TYPE = 'enable_google_gemini';
 export const ENABLE_OPENAI_SETTING_TYPE = 'enable_openai';
 
 /**
+ * Setting type for enabling Local LLM (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const ENABLE_LOCAL_LLM_SETTING_TYPE = 'enable_local_llm';
+
+/**
+ * Setting type for Local LLM base URL (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_BASE_URL_SETTING_TYPE = 'local_llm_base_url';
+
+/**
+ * Setting type for Local LLM model (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_MODEL_SETTING_TYPE = 'local_llm_model';
+
+/**
+ * Setting type for Local LLM API key (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const LOCAL_LLM_API_KEY_SETTING_TYPE = 'local_llm_api_key';
+
+/**
  * Setting type for daily nutrition insights (stored in WatermelonDB settings table).
  * value: 'true' | 'false'.
  */
@@ -172,13 +196,38 @@ export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
 export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 
 /**
+ * Setting type for enabling AI thinking mode.
+ * value: 'true' | 'false'.
+ */
+export const USE_THINKING_MODE_SETTING_TYPE = 'use_thinking_mode';
+
+/**
  * Setting type for showing the daily mood prompt on the home screen.
  * value: 'true' | 'false'.
  */
 export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
 
 /**
- * Setting type for always allowing food editing in FoodMealDetailsModal.
+ * Setting type for showing the daily water prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_WATER_PROMPT_SETTING_TYPE = 'show_daily_water_prompt';
+
+/**
+ * Setting type for showing the daily supplement prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_daily_supplement_prompt';
+
+/**
+ * Stores the local-day start timestamp for the last answered home water prompt.
+ * value: stringified local midnight timestamp in ms.
+ */
+export const LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE =
+  'last_home_water_prompt_answered_day';
+
+/**
+ * Setting type for always allowing food editing in FoodMealTrackingDetailsModal.
  * value: 'true' | 'false'.
  */
 export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';
@@ -196,11 +245,55 @@ export const SHOW_WEIGHT_PREDICTION_SETTING_TYPE = 'show_weight_prediction';
 export const REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE = 'require_export_encryption';
 
 /**
+ * Setting type for disabling the minimum calorie floor in nutrition calculations.
+ * When enabled, calorie targets are allowed to go below the default gender/BMR floor.
+ * value: 'true' | 'false'.
+ */
+export const DISABLE_MINIMUM_CALORIES_SETTING_TYPE = 'disable_minimum_calories';
+
+/**
+ * Setting type for using body fat percentage in nutrition calculations.
+ * value: 'true' | 'false'.
+ */
+export const USE_BF_FOR_CALCULATIONS_SETTING_TYPE = 'use_bf_for_calculations';
+
+/**
  * Setting type for intuitive eating mode.
  * When enabled, the daily summary card hides consumed amounts and shows '??' instead.
  * value: 'true' | 'false'.
  */
 export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
+
+/**
+ * Setting type for smart double progression preference.
+ * value: 'reps_first' | 'weight_first'.
+ */
+export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
+
+/**
+ * Setting type for enabling advanced data management.
+ * Gated behind a confirmation + biometric auth to prevent accidental data loss.
+ * value: 'true' | 'false'.
+ */
+export const ADVANCED_DATA_MANAGEMENT_SETTING_TYPE = 'advanced_data_management';
+
+/**
+ * Setting type for which macros to display in the nutrition summary.
+ * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
+ * '1' = visible, '0' = hidden. Default: '11111' (all visible).
+ * Example: '10100' = only carbs and fats visible.
+ */
+export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
+
+/**
+ * Setting type for preferring on-device AI when available.
+ * value: 'true' | 'false'.
+ */
+export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
+
+export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
+export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
+export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
 
 export type NavItemKey =
   | 'workouts'
@@ -214,6 +307,7 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
+export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
@@ -233,6 +327,12 @@ export type UseSettingsResult = {
   chartTooltipPosition: ChartTooltipPosition;
   alwaysAllowFoodEditing: boolean;
   showWeightPrediction: boolean;
+  useThinkingMode: boolean;
   requireExportEncryption: boolean;
+  disableMinimumCalories: boolean;
+  useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
+  progressionMode: ProgressionMode;
+  /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
+  nutritionDisplay: string;
 };

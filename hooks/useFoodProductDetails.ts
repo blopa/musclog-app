@@ -117,7 +117,11 @@ export async function fetchUSDAProductByBarcode(
 
     return null;
   } catch (e) {
-    console.error('Error fetching from USDA by barcode:', e);
+    const err = e as { name?: string };
+    if (err?.name !== 'AbortError') {
+      console.error('Error fetching from USDA by barcode:', e);
+    }
+
     return null;
   }
 }
@@ -235,7 +239,7 @@ export function useFoodProductDetails(
         const usdaData = await fetchUSDAProductByBarcode(barcode);
         if (usdaData) {
           // Wrap USDA data to match the expected structure as much as possible,
-          // though FoodMealDetailsModal will need to handle it.
+          // though FoodMealTrackingDetailsModal will need to handle it.
           // We mark it so the component knows it's USDA.
           return {
             status: 'success',

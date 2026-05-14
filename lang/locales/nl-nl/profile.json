@@ -1,0 +1,46 @@
+{
+  "profile": {
+    "header": {
+      "title": "Profiel"
+    },
+    "goal": "Doel",
+    "currentStats": "Huidige gegevens",
+    "history": "Geschiedenis",
+    "management": "Beheer",
+    "loading": "Laden...",
+    "syncing": {
+      "healthKit": "Synchroniseren met HealthKit..."
+    },
+    "bmiStatus": {
+      "underweight": "Ondergewicht",
+      "normal": "Gezond gewicht",
+      "overweight": "Overgewicht",
+      "obese": "Obesitas"
+    },
+    "gender": {
+      "male": "Man",
+      "female": "Vrouw",
+      "other": "Anders"
+    },
+    "managementItems": {
+      "editPersonal": "Persoonlijke info bewerken",
+      "editPersonalDesc": "Werk je naam, avatar en persoonlijke gegevens bij",
+      "editFitness": "Fitnessgegevens bewerken",
+      "editFitnessDesc": "Werk je fitnessdoelen en voorkeuren bij",
+      "appPreferences": "App-voorkeuren",
+      "appPreferencesDesc": "Pas app-instellingen en voorkeuren aan"
+    },
+    "stats": {
+      "weight": "Gewicht",
+      "height": "Lengte",
+      "bodyFat": "Vetpercentage",
+      "bmi": "BMI",
+      "age": "Leeftijd",
+      "gender": "Geslacht"
+    },
+    "weightPrediction": {
+      "title": "Voorspeld gewicht",
+      "subtitle": "Geschat op basis van TDEE en je calorie-inname sinds laatste weging"
+    }
+  }
+}

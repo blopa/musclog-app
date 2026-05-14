@@ -1,25 +1,64 @@
-/**
- * OCR Utility - Platform-agnostic export
- *
- * On Android: Uses rn-mlkit-ocr for on-device OCR (see ocr.android.ts)
- * On iOS: Stub implementation (see ocr.ios.ts) - rn-mlkit-ocr removed due to architecture incompatibility
- * On Web: Stub implementation (this file)
- *
- * For cross-platform OCR, consider using OcrService from "@/services/OcrService"
- * which uses Guten OCR and works on both iOS and Android.
- */
+export type OcrLanguageCode =
+  | 'auto'
+  | 'chi_sim'
+  | 'chi_tra'
+  | 'deu'
+  | 'eng'
+  | 'fra'
+  | 'jpn'
+  | 'kor'
+  | 'nld'
+  | 'por'
+  | 'rus'
+  | 'spa';
 
-/**
- * Stub implementation of performOcr for Web.
- * Returns null as OCR functionality is not available in the browser through rn-mlkit-ocr.
- *
- * For OCR on web, consider using a cloud-based OCR API (Google Vision API, AWS Textract, etc.)
- * or the OcrService if running in a React Native environment.
- */
-export async function performOcr(imageUri: string): Promise<string | null> {
-  console.warn(
-    '[ocr.ts] performOcr is not implemented for Web. ' +
-      'Please use a cloud-based OCR API for web implementations.'
-  );
-  return null;
+export function mapAppLanguageToOcrLanguage(appLanguage?: string): OcrLanguageCode {
+  const normalized = appLanguage?.toLowerCase().replace('_', '-') ?? 'en-us';
+
+  if (normalized.startsWith('pt')) {
+    return 'por';
+  }
+
+  if (normalized.startsWith('es')) {
+    return 'spa';
+  }
+
+  if (normalized.startsWith('nl')) {
+    return 'nld';
+  }
+
+  if (normalized.startsWith('de')) {
+    return 'deu';
+  }
+
+  if (normalized.startsWith('fr')) {
+    return 'fra';
+  }
+
+  if (normalized.startsWith('ru')) {
+    return 'rus';
+  }
+
+  if (normalized.startsWith('ja')) {
+    return 'jpn';
+  }
+
+  if (normalized.startsWith('ko')) {
+    return 'kor';
+  }
+
+  if (
+    normalized === 'zh-tw' ||
+    normalized === 'zh-hk' ||
+    normalized === 'zh-mo' ||
+    normalized.startsWith('zh-hant')
+  ) {
+    return 'chi_tra';
+  }
+
+  if (normalized.startsWith('zh')) {
+    return 'chi_sim';
+  }
+
+  return 'eng';
 }

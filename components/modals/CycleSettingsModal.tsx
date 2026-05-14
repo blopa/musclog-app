@@ -6,8 +6,7 @@ import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleS
 import { Button } from '@/components/theme/Button';
 import type MenstrualCycle from '@/database/models/MenstrualCycle';
 import { localDayStartMs } from '@/utils/calendarDate';
-import { captureException } from '@/utils/sentry';
-import { showSnackbar } from '@/utils/snackbarService';
+import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -51,9 +50,9 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
       // re-renders automatically with fresh data after this write.
       handleClose();
     } catch (error) {
-      console.error('Error updating cycle settings:', error);
-      captureException(error, { data: { context: 'CycleSettingsModal.handleSave' } });
-      showSnackbar('error', t('errors.somethingWentWrong'));
+      handleError(error, 'CycleSettingsModal.handleSave', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }

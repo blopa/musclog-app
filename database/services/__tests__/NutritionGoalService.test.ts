@@ -1,4 +1,4 @@
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import { NutritionGoalInput, NutritionGoalService } from '@/database/services/NutritionGoalService';
 
 import { createMockNutritionGoal } from './helpers';
@@ -282,6 +282,51 @@ describe('NutritionGoalService', () => {
       const mockGoal = {} as any;
       createCall(mockGoal);
       expect(mockGoal.targetDate).toBeNull();
+    });
+  });
+
+  describe('addGoalAtDate', () => {
+    it('persists the dynamic flag for backdated goals', async () => {
+      const startDate = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const existingGoal = createMockNutritionGoal({
+        createdAt: startDate - 7 * 24 * 60 * 60 * 1000,
+        effectiveUntil: null,
+      });
+      const mockFetch = jest.fn().mockResolvedValue([existingGoal]);
+      const mockQuery = {
+        fetch: mockFetch,
+        extend: jest.fn().mockReturnThis(),
+      };
+      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal({ isDynamic: true }));
+      const mockCollection = {
+        query: jest.fn().mockReturnValue(mockQuery),
+        create: mockCreate,
+      };
+
+      mockDatabase.get.mockReturnValue(mockCollection as any);
+      mockDatabase.write.mockImplementation(async (callback) => {
+        const mockWriter = {} as any;
+        return await callback(mockWriter);
+      });
+
+      await NutritionGoalService.addGoalAtDate(
+        {
+          totalCalories: 2200,
+          protein: 180,
+          carbs: 210,
+          fats: 70,
+          fiber: 30,
+          eatingPhase: 'cut',
+          isDynamic: true,
+        },
+        startDate
+      );
+
+      const createCall = mockCreate.mock.calls[0][0];
+      const mockGoal = {} as any;
+      createCall(mockGoal);
+
+      expect(mockGoal.isDynamic).toBe(true);
     });
   });
 

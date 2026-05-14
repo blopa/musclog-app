@@ -1,5 +1,9 @@
 {
   "workout": {
+    "title": "Workout",
+    "workouts": {
+      "title": "Workouts"
+    },
     "import": {
       "characters": "Characters",
       "emptyData": "Please paste or enter workout data.",

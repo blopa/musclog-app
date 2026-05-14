@@ -1,8 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesEnUS from '@/data/exercisesEnUS.json';
-import exercisesPtBr from '@/data/exercisesPtBr.json';
-import exercisesRuRu from '@/data/exercisesRuRu.json';
+import exercisesData from '@/data/exercisesData.json';
 import { database } from '@/database';
 import Exercise, {
   type EquipmentType,
@@ -10,29 +8,48 @@ import Exercise, {
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
-import i18n, { PT_BR, RU_RU } from '@/lang/lang';
+import ExerciseMuscle from '@/database/models/ExerciseMuscle';
+import i18n, { EN_US, EXERCISES_JSON } from '@/lang/lang';
 import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
+
+import { MuscleService } from './MuscleService';
 
 interface ExerciseJsonData {
   name: string;
+  description: string;
   muscleGroup: string;
   type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
-  description: string;
   targetMuscles?: string[];
   loadMultiplier?: number;
 }
 
-function getExercisesData(): ExerciseJsonData[] {
-  if (i18n.language === PT_BR) {
-    return exercisesPtBr as ExerciseJsonData[];
+const exercisesDataMap = new Map(exercisesData.map((d) => [d.exerciseIndex, d]));
+
+function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): ExerciseJsonData[] {
+  const result: ExerciseJsonData[] = [];
+  for (const localeEntry of EXERCISES_JSON[locale]) {
+    const data = exercisesDataMap.get(localeEntry.exerciseIndex);
+    if (!data) {
+      continue;
+    }
+
+    result.push({
+      name: localeEntry.name,
+      description: localeEntry.description,
+      muscleGroup: data.muscleGroup,
+      type: data.type as ExerciseJsonData['type'],
+      targetMuscles: data.targetMuscles,
+      loadMultiplier: data.loadMultiplier,
+    });
   }
 
-  if (i18n.language === RU_RU) {
-    return exercisesRuRu as ExerciseJsonData[];
-  }
-
-  return exercisesEnUS as ExerciseJsonData[];
+  return result;
 }
+
+const exercisesLocale = (
+  i18n.language in EXERCISES_JSON ? i18n.language : EN_US
+) as keyof typeof EXERCISES_JSON;
+const exercisesJson = buildMergedExercisesJson(exercisesLocale);
 
 export class ExerciseService {
   /**
@@ -447,63 +464,68 @@ export class ExerciseService {
    * Sets exercise.imageUrl to the GitHub raw-content cloud URL for the corresponding image.
    * Returns array of created exercises.
    */
-  static async createCommonExercises(): Promise<Exercise[]> {
+  static async createCommonExercises(muscleNameToId?: Map<string, string>): Promise<Exercise[]> {
     const exercises: Exercise[] = [];
-    const exercisesJson = getExercisesData();
     const now = Date.now();
 
+    const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
+
     await database.write(async () => {
-      // Get all existing exercises to check for duplicates
       const existingExercises = await database.get<Exercise>('exercises').query().fetch();
       const existingNames = new Set(
         existingExercises.map((ex: Exercise) => (ex.name ?? '').toLowerCase())
       );
 
-      // Prepare all new exercises
-      const exercisesToCreate = exercisesJson
-        .filter((exerciseData) => {
-          // Skip if exercise already exists
-          return !existingNames.has(exerciseData.name.toLowerCase());
-        })
-        .map((exerciseData) => {
-          const jsonIndex = exercisesJson.indexOf(exerciseData);
-          const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
-            exerciseData.type
-          );
-          const equipmentType = this.inferEquipmentFromName(exerciseData.name, defaultEquipment);
+      const filteredData = exercisesJson.filter(
+        (exerciseData) => !existingNames.has(exerciseData.name.toLowerCase())
+      );
 
-          return database.get<Exercise>('exercises').prepareCreate((exercise) => {
-            exercise.name = exerciseData.name;
-            exercise.description = exerciseData.description;
-            exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
-            exercise.equipmentType = equipmentType as EquipmentType;
-            exercise.mechanicType = mechanicType as MechanicType;
-            exercise.source = 'app';
-            exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0;
-            exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-            exercise.createdAt = now;
-            exercise.updatedAt = now;
-            exercise.deletedAt = undefined;
-          });
+      // prepareCreate assigns IDs synchronously — collect both exercises and junction records
+      const exercisesToCreate = filteredData.map((exerciseData) => {
+        const jsonIndex = exercisesJson.indexOf(exerciseData);
+        const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
+          exerciseData.type as ExerciseJsonData['type']
+        );
+        const equipmentType = this.inferEquipmentFromName(exerciseData.name, defaultEquipment);
+
+        return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+          exercise.name = exerciseData.name;
+          exercise.description = exerciseData.description;
+          exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
+          exercise.equipmentType = equipmentType as EquipmentType;
+          exercise.mechanicType = mechanicType as MechanicType;
+          exercise.source = 'app';
+          exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0;
+          exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
+          exercise.createdAt = now;
+          exercise.updatedAt = now;
+          exercise.deletedAt = undefined;
         });
+      });
 
-      // Batch create all new exercises (same approach as dev.ts)
+      // Prepare junction records using IDs already assigned by prepareCreate above
+      const junctionRecords = filteredData.flatMap((exerciseData, i) =>
+        (exerciseData.targetMuscles ?? []).flatMap((muscleName) => {
+          const muscleId = nameToId.get(muscleName);
+          if (!muscleId) {
+            return [];
+          }
+          return [
+            database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
+              link.exerciseId = exercisesToCreate[i].id;
+              link.muscleId = muscleId;
+              link.role = 'primary';
+              link.createdAt = now;
+              link.updatedAt = now;
+              link.deletedAt = undefined;
+            }),
+          ];
+        })
+      );
+
       if (exercisesToCreate.length > 0) {
-        await database.batch(...exercisesToCreate);
-
-        // Fetch the newly created exercises to return them
-        const newlyCreatedNames = new Set(
-          exercisesJson
-            .filter((exerciseData) => !existingNames.has(exerciseData.name.toLowerCase()))
-            .map((exerciseData) => exerciseData.name.toLowerCase())
-        );
-
-        const allExercisesAfter = await database.get<Exercise>('exercises').query().fetch();
-        const newExercises = allExercisesAfter.filter((ex) =>
-          newlyCreatedNames.has((ex.name ?? '').toLowerCase())
-        );
-
-        exercises.push(...newExercises);
+        await database.batch(...exercisesToCreate, ...junctionRecords);
+        exercises.push(...exercisesToCreate);
       }
     });
 
@@ -550,13 +572,9 @@ export class ExerciseService {
    * Safe to call repeatedly — already-correct exercises are left untouched.
    */
   static async backfillExerciseOrderIndex(): Promise<void> {
-    // Build name-to-index maps for both JSON files
-    const enUsNameToIndex = new Map(
-      exercisesEnUS.map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
-    );
-
-    const ptBrNameToIndex = new Map(
-      exercisesPtBr.map((ex, index) => [(ex as ExerciseJsonData).name.toLowerCase(), index])
+    const nameToIndexMaps = (Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]).map(
+      (lang) =>
+        new Map(buildMergedExercisesJson(lang).map((ex, index) => [ex.name.toLowerCase(), index]))
     );
 
     // Find app exercises without order_index (null/undefined)
@@ -574,10 +592,12 @@ export class ExerciseService {
       }
 
       const exerciseName = (exercise.name ?? '').toLowerCase();
-      // Try enUS first, then ptBR
-      let jsonIndex = enUsNameToIndex.get(exerciseName);
-      if (jsonIndex === undefined) {
-        jsonIndex = ptBrNameToIndex.get(exerciseName);
+      let jsonIndex: number | undefined;
+      for (const map of nameToIndexMaps) {
+        jsonIndex = map.get(exerciseName);
+        if (jsonIndex !== undefined) {
+          break;
+        }
       }
 
       if (jsonIndex !== undefined) {
@@ -607,7 +627,6 @@ export class ExerciseService {
    * Safe to call on every app start — it's a no-op when all images are already present.
    */
   static async repairMissingExerciseImages(): Promise<void> {
-    const exercisesJson = getExercisesData();
     const allExercises = await database.get<Exercise>('exercises').query().fetch();
     const broken = allExercises.filter(
       (ex) => !ex.imageUrl && !ex.deletedAt && ex.source === 'app'
@@ -643,7 +662,6 @@ export class ExerciseService {
    * immediately when there is nothing to migrate.
    */
   static async migrateExerciseImageUrlsToCloud(): Promise<void> {
-    const exercisesJson = getExercisesData();
     const allExercises = await database
       .get<Exercise>('exercises')
       .query(Q.where('source', 'app'))
@@ -662,7 +680,7 @@ export class ExerciseService {
         const imageUrl = exercise.imageUrl ?? '';
         const filename = imageUrl.split('/exercises/').pop() ?? '';
 
-        if (filename === 'fallback.png') {
+        if (filename === 'exercise-fallback.png' || filename === 'fallback.png') {
           await exercise.update((e) => {
             e.imageUrl = undefined;
           });
@@ -703,8 +721,6 @@ export class ExerciseService {
    * Returns the number of exercises created (0 on a no-op boot).
    */
   static async syncAppExercises(): Promise<number> {
-    const exercisesJson = getExercisesData();
-
     // Collect names of non-deleted app exercises already in the DB
     const existing = await database
       .get<Exercise>('exercises')
@@ -721,10 +737,15 @@ export class ExerciseService {
 
     const now = Date.now();
 
-    // Prepare records — prepareCreate assigns IDs and is usable after batch()
+    // Ensure muscles are seeded and get the name→id map for junction records
+    const muscleNameToId = await MuscleService.seedMuscles();
+
+    // prepareCreate assigns IDs synchronously
     const prepared = missing.map((data) => {
       const jsonIndex = exercisesJson.indexOf(data);
-      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type);
+      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
+        data.type as ExerciseJsonData['type']
+      );
       const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
 
       return database.get<Exercise>('exercises').prepareCreate((exercise) => {
@@ -743,11 +764,74 @@ export class ExerciseService {
       });
     });
 
+    const junctionRecords = missing.flatMap((data, i) =>
+      (data.targetMuscles ?? []).flatMap((muscleName) => {
+        const muscleId = muscleNameToId.get(muscleName);
+        if (!muscleId) {
+          return [];
+        }
+        return [
+          database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
+            link.exerciseId = prepared[i].id;
+            link.muscleId = muscleId;
+            link.role = 'primary';
+            link.createdAt = now;
+            link.updatedAt = now;
+            link.deletedAt = undefined;
+          }),
+        ];
+      })
+    );
+
     await database.write(async () => {
-      await database.batch(...prepared);
+      await database.batch(...prepared, ...junctionRecords);
     });
 
     console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
     return prepared.length;
+  }
+
+  /**
+   * Updates `loadMultiplier` for existing app exercises to match the latest values
+   * in the bundled JSON files. This ensures that users who already have these
+   * exercises in their DB get the refined scientific multipliers.
+   */
+  static async syncExerciseMultipliers(): Promise<void> {
+    // Map of name -> loadMultiplier from JSON
+    const multiplierMap = new Map(
+      exercisesJson.map((ex): [string, number] => [ex.name.toLowerCase(), ex.loadMultiplier ?? 1.0])
+    );
+
+    // Fetch all app exercises
+    const appExercises = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const toUpdate: { exercise: Exercise; newMultiplier: number }[] = [];
+
+    for (const exercise of appExercises) {
+      const newMultiplier = multiplierMap.get((exercise.name ?? '').toLowerCase());
+      if (
+        newMultiplier !== undefined &&
+        Math.abs((exercise.loadMultiplier ?? 0) - newMultiplier) > 0.001
+      ) {
+        toUpdate.push({ exercise, newMultiplier });
+      }
+    }
+
+    if (toUpdate.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (const { exercise, newMultiplier } of toUpdate) {
+        await exercise.update((e) => {
+          e.loadMultiplier = newMultiplier;
+        });
+      }
+    });
+
+    console.log(`[syncExerciseMultipliers] Updated ${toUpdate.length} exercise(s)`);
   }
 }

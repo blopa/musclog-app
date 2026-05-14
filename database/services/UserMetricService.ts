@@ -1,12 +1,32 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 import { Platform } from 'react-native';
 
+import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
-import { database } from '@/database/index';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
+import { handleError } from '@/utils/handleError';
 
 export class UserMetricService {
+  /**
+   * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
+   */
+  static async getUserBodyWeightKgForVolume(): Promise<number> {
+    const weightMetric = await UserMetricService.getLatest('weight');
+    if (!weightMetric) {
+      return 0;
+    }
+
+    const decrypted = await weightMetric.getDecrypted();
+    let kg = decrypted.value;
+    if (decrypted.unit === 'lbs') {
+      kg = convert(decrypted.value, 'lb').to('kg') as number;
+    }
+
+    return kg;
+  }
+
   /**
    * Get a metric by id. Returns null if not found or deleted.
    */
@@ -29,6 +49,28 @@ export class UserMetricService {
       .query(
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+    return metrics[0] ?? null;
+  }
+
+  /**
+   * Get the latest metric value for a specific type on or before a given day.
+   * Uses metric date first, then updated_at to break ties on the same day.
+   */
+  static async getLatestOnOrBefore(
+    type: UserMetricType | string,
+    maxDate: number
+  ): Promise<UserMetric | null> {
+    const metrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', type),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(maxDate)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
         Q.take(1)
@@ -82,6 +124,7 @@ export class UserMetricService {
     date: number;
     timezone: string;
     externalId?: string;
+    supplementId?: string;
   }): Promise<UserMetric> {
     const encrypted = await encryptUserMetricFields({
       value: plain.value,
@@ -93,6 +136,7 @@ export class UserMetricService {
       const newMetric = await database.get<UserMetric>('user_metrics').create((record) => {
         record.type = plain.type as UserMetricType;
         record.externalId = plain.externalId;
+        record.supplementId = plain.supplementId;
         record.valueRaw = encrypted.value;
         record.unitRaw = encrypted.unit;
         record.date = plain.date;
@@ -118,7 +162,9 @@ export class UserMetricService {
         value: plain.value,
         date: plain.date,
         timezone: plain.timezone,
-      }).catch(() => undefined);
+      }).catch((err) => {
+        handleError(err, 'UserMetricService.saveUserMetric.healthConnect');
+      });
 
       if (hcId) {
         await database.write(async () => {

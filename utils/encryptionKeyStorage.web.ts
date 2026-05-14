@@ -7,3 +7,7 @@ export const getStoredEncryptionKey = (key: string): Promise<null | string> => {
 export const storeEncryptionKey = (key: string, value: string): Promise<void> => {
   return AsyncStorage.setItem(key, value);
 };
+
+export const deleteStoredEncryptionKey = (key: string): Promise<void> => {
+  return AsyncStorage.removeItem(key);
+};

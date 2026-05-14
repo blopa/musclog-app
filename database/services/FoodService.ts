@@ -1,10 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { database } from '@/database/index';
-import Food, { type MicrosData } from '@/database/models/Food';
+import { database } from '@/database/database-instance';
+import Food, { type FoodLabels, type MicrosData } from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
+import MealFood from '@/database/models/MealFood';
 import { ProductV3 } from '@/types/openFoodFacts';
 import { getProductName } from '@/utils/openFoodFactsMapper';
 
@@ -27,12 +28,20 @@ export class FoodService {
       sodium?: number;
       micros?: MicrosData;
       isFavorite?: boolean;
+      nutriscore?: string;
+      ecoscore?: string;
+      novaGroup?: number;
+      labels?: FoodLabels;
     },
     customPortion?: FoodPortion | null,
     externalId?: string
   ): Promise<Food> {
     const defaultPortion =
-      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+      customPortion ??
+      (await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+        kind: 'mass',
+        scope: 'global',
+      }));
 
     return await database.write(async () => {
       const now = Date.now();
@@ -46,11 +55,11 @@ export class FoodService {
         food.imageUrl = product.image_url; // Save image URL from API
         food.description = (product as any).ingredients_text || undefined;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -66,6 +75,23 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'openfood';
+        food.nutritionBasis = 'per_100g';
+        if (nutritionData.nutriscore != null) {
+          food.nutriscore = nutritionData.nutriscore;
+        }
+
+        if (nutritionData.ecoscore != null) {
+          food.ecoscore = nutritionData.ecoscore;
+        }
+
+        if (nutritionData.novaGroup != null) {
+          food.novaGroup = nutritionData.novaGroup;
+        }
+
+        if (nutritionData.labels != null) {
+          food.labels = nutritionData.labels;
+        }
+
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -104,7 +130,11 @@ export class FoodService {
     externalId?: string
   ): Promise<Food> {
     const defaultPortion =
-      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+      customPortion ??
+      (await FoodPortionService.createFoodPortion('100g', 100, 'scale', 'basic', {
+        kind: 'mass',
+        scope: 'global',
+      }));
 
     return await database.write(async () => {
       const now = Date.now();
@@ -117,11 +147,11 @@ export class FoodService {
         food.externalId = externalId ?? String(product.fdcId); // Use provided externalId or default to fdcId
         food.description = product.ingredients || undefined;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -137,6 +167,7 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'usda';
+        food.nutritionBasis = 'per_100g';
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -165,11 +196,21 @@ export class FoodService {
       carbs: number;
       fat: number;
       fiber?: number;
+      sugar?: number;
+      saturatedFat?: number;
+      sodium?: number;
+      micros?: MicrosData;
       isFavorite?: boolean;
     },
     barcode?: string
   ): Promise<Food> {
-    const defaultPortion = await FoodPortionService.createFoodPortion('100g', 100);
+    const defaultPortion = await FoodPortionService.createFoodPortion(
+      '100g',
+      100,
+      'scale',
+      'basic',
+      { kind: 'mass', scope: 'global' }
+    );
 
     return await database.write(async () => {
       const now = Date.now();
@@ -180,15 +221,28 @@ export class FoodService {
         food.brand = product.brand;
         food.barcode = barcode;
         food.externalId = barcode;
+        food.description = product.description;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
-        food.micros = {};
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
+
+        const micros = {
+          sugar: nutritionData.sugar,
+          saturatedFat: nutritionData.saturatedFat,
+          sodium: nutritionData.sodium,
+          ...nutritionData.micros,
+        };
+
+        food.micros = Object.fromEntries(
+          Object.entries(micros).filter(([_, value]) => value !== undefined)
+        );
+
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'musclog';
+        food.nutritionBasis = 'per_100g';
         food.createdAt = now;
         food.updatedAt = now;
       });
@@ -223,8 +277,17 @@ export class FoodService {
     brand?: string,
     servingAmount: number = 100,
     servingUnit: string = 'g',
-    description?: string
+    description?: string,
+    options?: {
+      nutritionBasis?: 'per_100g' | 'per_serving';
+      servingName?: string;
+      selectedPortionIds?: string[];
+      imageUrl?: string;
+    }
   ): Promise<Food> {
+    const nutritionBasis = options?.nutritionBasis ?? 'per_100g';
+    const primarySelectedPortionId = options?.selectedPortionIds?.[0];
+
     // Convert serving amount to grams
     let gramWeight = servingAmount;
     if (servingUnit === 'oz') {
@@ -235,8 +298,26 @@ export class FoodService {
     }
     // For 'g' or other units, assume gramWeight = servingAmount
 
-    const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
-    const portion = await FoodPortionService.createFoodPortion(portionName, gramWeight);
+    let existingDefaultPortion: FoodPortion | null = null;
+    if (nutritionBasis === 'per_100g') {
+      if (primarySelectedPortionId) {
+        existingDefaultPortion = await FoodPortionService.getPortionById(primarySelectedPortionId);
+        if (existingDefaultPortion?.gramWeight == null) {
+          existingDefaultPortion = null;
+        }
+      }
+
+      if (!existingDefaultPortion) {
+        const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
+        existingDefaultPortion = await FoodPortionService.createFoodPortion(
+          portionName,
+          gramWeight,
+          undefined,
+          'basic',
+          { kind: 'mass', scope: 'global' }
+        );
+      }
+    }
 
     return await database.write(async () => {
       const now = Date.now();
@@ -246,12 +327,13 @@ export class FoodService {
         food.name = name;
         food.brand = brand;
         food.description = description;
+        food.imageUrl = options?.imageUrl;
 
-        food.calories = nutritionData.calories;
-        food.protein = nutritionData.protein;
-        food.carbs = nutritionData.carbs;
-        food.fat = nutritionData.fat;
-        food.fiber = nutritionData.fiber || 0;
+        food.calories = Math.max(0, nutritionData.calories);
+        food.protein = Math.max(0, nutritionData.protein);
+        food.carbs = Math.max(0, nutritionData.carbs);
+        food.fat = Math.max(0, nutritionData.fat);
+        food.fiber = Math.max(0, nutritionData.fiber || 0);
 
         // Store micros
         const micros = {
@@ -266,18 +348,51 @@ export class FoodService {
 
         food.isFavorite = false;
         food.source = 'user';
+        food.nutritionBasis = nutritionBasis;
         food.createdAt = now;
         food.updatedAt = now;
       });
 
-      // Link food to the portion as default
+      let defaultPortion: FoodPortion;
+      if (nutritionBasis === 'per_serving') {
+        defaultPortion = await database.get<FoodPortion>('food_portions').create((portion) => {
+          portion.name = options?.servingName?.trim() || '1 serving';
+          portion.source = 'custom';
+          portion.kind = 'named';
+          portion.scope = 'private';
+          portion.ownerType = 'food';
+          portion.ownerId = food.id;
+          portion.createdAt = now;
+          portion.updatedAt = now;
+        });
+      } else {
+        if (!existingDefaultPortion) {
+          throw new Error('Expected default mass portion for custom food');
+        }
+        defaultPortion = existingDefaultPortion;
+      }
+
       await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
         ffp.foodId = food.id;
-        ffp.foodPortionId = portion.id;
+        ffp.foodPortionId = defaultPortion.id;
         ffp.isDefault = true;
         ffp.createdAt = now;
         ffp.updatedAt = now;
       });
+
+      for (const portionId of options?.selectedPortionIds ?? []) {
+        if (portionId === defaultPortion.id) {
+          continue;
+        }
+
+        await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+          ffp.foodId = food.id;
+          ffp.foodPortionId = portionId;
+          ffp.isDefault = false;
+          ffp.createdAt = now;
+          ffp.updatedAt = now;
+        });
+      }
 
       return food;
     });
@@ -407,6 +522,7 @@ export class FoodService {
       fat?: number;
       fiber?: number;
       micros?: any;
+      imageUrl?: string | null;
     }
   ): Promise<Food> {
     return await database.write(async () => {
@@ -433,22 +549,25 @@ export class FoodService {
           record.externalId = updates.externalId;
         }
         if (updates.calories !== undefined) {
-          record.calories = updates.calories;
+          record.calories = Math.max(0, updates.calories);
         }
         if (updates.protein !== undefined) {
-          record.protein = updates.protein;
+          record.protein = Math.max(0, updates.protein);
         }
         if (updates.carbs !== undefined) {
-          record.carbs = updates.carbs;
+          record.carbs = Math.max(0, updates.carbs);
         }
         if (updates.fat !== undefined) {
-          record.fat = updates.fat;
+          record.fat = Math.max(0, updates.fat);
         }
         if (updates.fiber !== undefined) {
-          record.fiber = updates.fiber;
+          record.fiber = Math.max(0, updates.fiber);
         }
         if (updates.micros !== undefined) {
           record.micros = updates.micros;
+        }
+        if ('imageUrl' in updates) {
+          record.imageUrl = updates.imageUrl ?? undefined;
         }
         record.updatedAt = Date.now();
       });
@@ -459,11 +578,29 @@ export class FoodService {
 
   /**
    * Delete food (soft delete)
+   * Also soft-deletes all associated meal_foods and food_food_portions.
    */
   static async deleteFood(id: string): Promise<void> {
-    const food = await database.get<Food>('foods').find(id);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
-    await food.markAsDeleted();
+    return await database.write(async (writer) => {
+      const food = await database.get<Food>('foods').find(id);
+      await writer.callWriter(() => food.markAsDeleted());
+
+      const mealFoods = await database
+        .get<MealFood>('meal_foods')
+        .query(Q.where('food_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      for (const mealFood of mealFoods) {
+        await writer.callWriter(() => mealFood.markAsDeleted());
+      }
+
+      const foodFoodPortions = await database
+        .get<FoodFoodPortion>('food_food_portions')
+        .query(Q.where('food_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      for (const ffp of foodFoodPortions) {
+        await writer.callWriter(() => ffp.markAsDeleted());
+      }
+    });
   }
 
   /**
@@ -544,5 +681,28 @@ export class FoodService {
       .get<Food>('foods')
       .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)), Q.take(limit))
       .fetch();
+  }
+
+  static async fixNegativeFiber(): Promise<void> {
+    const foods = await database
+      .get<Food>('foods')
+      .query(Q.where('fiber', Q.lt(0)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (foods.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...foods.map((food) =>
+          food.prepareUpdate((r) => {
+            r.fiber = 0;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
   }
 }

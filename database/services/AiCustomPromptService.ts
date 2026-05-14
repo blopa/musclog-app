@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import AiCustomPrompt, {
   type AiCustomPromptContext,
   type AiCustomPromptType,

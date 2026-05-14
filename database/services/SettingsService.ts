@@ -1,13 +1,17 @@
 import { Q } from '@nozbe/watermelondb';
 
 import {
+  ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
+  DUMP_LLM_REQUESTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
+  ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
   type FoodSearchSource,
@@ -15,7 +19,12 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
+  LOCAL_LLM_API_KEY_SETTING_TYPE,
+  LOCAL_LLM_BASE_URL_SETTING_TYPE,
+  LOCAL_LLM_MODEL_SETTING_TYPE,
   MAX_AI_MEMORIES_SETTING_TYPE,
+  MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -27,20 +36,29 @@ import {
   NOTIFICATIONS_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
+  NUTRITION_DISPLAY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  PROGRESSION_MODE_SETTING_TYPE,
+  type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
+  SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  USE_BF_FOR_CALCULATIONS_SETTING_TYPE,
+  USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
+  USE_ON_DEVICE_AI_SETTING_TYPE,
+  USE_THINKING_MODE_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
@@ -60,6 +78,13 @@ export class SettingsService {
       return getDefaultUnits();
     }
     return settings[0].value === '1' ? 'imperial' : 'metric';
+  }
+
+  /**
+   * Upsert the use body fat for calculations setting
+   */
+  static async setUseBfForCalculations(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_BF_FOR_CALCULATIONS_SETTING_TYPE, value);
   }
 
   /**
@@ -209,6 +234,27 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the Local LLM API key setting (stored encrypted)
+   */
+  static async setLocalLlmApiKey(value: string) {
+    await SettingsService.setEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM model setting
+   */
+  static async setLocalLlmModel(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the Local LLM base URL setting
+   */
+  static async setLocalLlmBaseUrl(value: string) {
+    await SettingsService.setStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the enable Google Gemini setting
    */
   static async setEnableGoogleGemini(value: boolean) {
@@ -228,6 +274,18 @@ export class SettingsService {
       await SettingsService.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setEnableOpenAi:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upsert the enable Local LLM setting
+   */
+  static async setEnableLocalLlm(value: boolean) {
+    try {
+      await SettingsService.setBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, value);
+    } catch (error) {
+      console.error('[SettingsService] Error in setEnableLocalLlm:', error);
       throw error;
     }
   }
@@ -327,6 +385,17 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the use thinking mode setting
+   */
+  static async setUseThinkingMode(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
+  }
+
+  static async setDumpLlmRequests(value: boolean) {
+    await SettingsService.setBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the language setting
    */
   static async setLanguage(language: string) {
@@ -367,12 +436,28 @@ export class SettingsService {
     return SettingsService.getStringSetting(OPENAI_MODEL_SETTING_TYPE, '');
   }
 
+  static async getLocalLlmApiKey(): Promise<string> {
+    return SettingsService.getEncryptedStringSetting(LOCAL_LLM_API_KEY_SETTING_TYPE);
+  }
+
+  static async getLocalLlmModel(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getLocalLlmBaseUrl(): Promise<string> {
+    return SettingsService.getStringSetting(LOCAL_LLM_BASE_URL_SETTING_TYPE, '');
+  }
+
   static async getEnableGoogleGemini(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true);
   }
 
   static async getEnableOpenAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, true);
+  }
+
+  static async getEnableLocalLlm(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_LOCAL_LLM_SETTING_TYPE, false);
   }
 
   static async getNotifications(): Promise<boolean> {
@@ -414,6 +499,14 @@ export class SettingsService {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
   }
 
+  static async getUseThinkingMode(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, false);
+  }
+
+  static async getDumpLlmRequests(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, false);
+  }
+
   static async getDailyNutritionInsights(): Promise<boolean> {
     return SettingsService.getBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true);
   }
@@ -451,6 +544,49 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the show daily water prompt setting
+   */
+  static async setShowDailyWaterPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_WATER_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the show daily supplement prompt setting
+   */
+  static async setShowDailySupplementPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the show daily water prompt setting.
+   */
+  static async getShowDailyWaterPrompt(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(SHOW_DAILY_WATER_PROMPT_SETTING_TYPE, true);
+  }
+
+  /**
+   * Persist the local-day timestamp for the last answered home water prompt.
+   */
+  static async setLastHomeWaterPromptAnsweredDay(dayStartMs: number) {
+    await SettingsService.setStringSetting(
+      LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
+      dayStartMs.toString()
+    );
+  }
+
+  /**
+   * Get the local-day timestamp for the last answered home water prompt.
+   */
+  static async getLastHomeWaterPromptAnsweredDay(): Promise<number | null> {
+    const raw = await SettingsService.getStringSetting(
+      LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
+      ''
+    );
+    const parsed = Number.parseInt(raw, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  /**
    * Upsert the always allow food editing setting
    */
   static async setAlwaysAllowFoodEditing(value: boolean) {
@@ -469,6 +605,13 @@ export class SettingsService {
    */
   static async setRequireExportEncryption(value: boolean) {
     await SettingsService.setBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the disable minimum calories setting
+   */
+  static async setDisableMinimumCalories(value: boolean) {
+    await SettingsService.setBooleanSetting(DISABLE_MINIMUM_CALORIES_SETTING_TYPE, value);
   }
 
   /**
@@ -491,10 +634,38 @@ export class SettingsService {
   }
 
   /**
+   * Get the require export encryption setting
+   */
+  static async getRequireExportEncryption(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE, true);
+  }
+
+  /**
+   * Get the disable minimum calories setting
+   */
+  static async getDisableMinimumCalories(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the use body fat for calculations setting
+   */
+  static async getUseBfForCalculations(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false);
+  }
+
+  /**
    * Get the always allow food editing setting
    */
   static async getAlwaysAllowFoodEditing(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the advanced data management setting
+   */
+  static async setAdvancedDataManagement(value: boolean) {
+    await SettingsService.setBooleanSetting(ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, value);
   }
 
   /**
@@ -509,6 +680,41 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Get the progression mode setting ('reps_first' | 'weight_first').
+   * Defaults to 'reps_first'.
+   */
+  static async getProgressionMode(): Promise<ProgressionMode> {
+    return (await SettingsService.getStringSetting(
+      PROGRESSION_MODE_SETTING_TYPE,
+      'reps_first'
+    )) as ProgressionMode;
+  }
+
+  /**
+   * Upsert the progression mode setting ('reps_first' | 'weight_first')
+   */
+  static async setProgressionMode(mode: ProgressionMode) {
+    await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
+  }
+
+  /**
+   * Upsert the nutrition display setting.
+   * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
+   * '1' = visible, '0' = hidden. Default: '11111'.
+   */
+  static async setNutritionDisplay(value: string) {
+    await SettingsService.setStringSetting(NUTRITION_DISPLAY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the nutrition display setting.
+   * Returns a 5-char binary string. Defaults to '11111' (all visible).
+   */
+  static async getNutritionDisplay(): Promise<string> {
+    return SettingsService.getStringSetting(NUTRITION_DISPLAY_SETTING_TYPE, '11111');
   }
 
   /**
@@ -621,12 +827,12 @@ export class SettingsService {
       2: 'food',
       3: 'profile',
     };
-    const type =
-      slot === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slot === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let type = NAV_SLOT_3_SETTING_TYPE;
+    if (slot === 1) {
+      type = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slot === 2) {
+      type = NAV_SLOT_2_SETTING_TYPE;
+    }
     const value = await SettingsService.getStringSetting(type, defaults[slot]);
     return value as NavItemKey;
   }
@@ -635,12 +841,12 @@ export class SettingsService {
    * Upsert the nav item key for a customizable nav slot.
    */
   static async setNavSlot(slot: 1 | 2 | 3, item: NavItemKey) {
-    const type =
-      slot === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slot === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let type = NAV_SLOT_3_SETTING_TYPE;
+    if (slot === 1) {
+      type = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slot === 2) {
+      type = NAV_SLOT_2_SETTING_TYPE;
+    }
     await SettingsService.setStringSetting(type, item);
   }
 
@@ -654,18 +860,18 @@ export class SettingsService {
     slotB: 1 | 2 | 3,
     itemB: NavItemKey
   ) {
-    const typeA =
-      slotA === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slotA === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
-    const typeB =
-      slotB === 1
-        ? NAV_SLOT_1_SETTING_TYPE
-        : slotB === 2
-          ? NAV_SLOT_2_SETTING_TYPE
-          : NAV_SLOT_3_SETTING_TYPE;
+    let typeA = NAV_SLOT_3_SETTING_TYPE;
+    if (slotA === 1) {
+      typeA = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slotA === 2) {
+      typeA = NAV_SLOT_2_SETTING_TYPE;
+    }
+    let typeB = NAV_SLOT_3_SETTING_TYPE;
+    if (slotB === 1) {
+      typeB = NAV_SLOT_1_SETTING_TYPE;
+    } else if (slotB === 2) {
+      typeB = NAV_SLOT_2_SETTING_TYPE;
+    }
 
     const now = Date.now();
     const [existingA, existingB] = await Promise.all([
@@ -718,6 +924,7 @@ export class SettingsService {
     await Promise.all([
       SettingsService.migrateApiKey(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
       SettingsService.migrateApiKey(OPENAI_API_KEY_SETTING_TYPE),
+      SettingsService.migrateApiKey(LOCAL_LLM_API_KEY_SETTING_TYPE),
     ]);
   }
 
@@ -757,6 +964,30 @@ export class SettingsService {
   private static async setEncryptedStringSetting(type: string, value: string) {
     const encrypted = await encryptOptionalString(value);
     await SettingsService.setStringSetting(type, encrypted);
+  }
+
+  static async setUseOnDeviceAi(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, value);
+  }
+
+  static async getUseOnDeviceAi(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_ON_DEVICE_AI_SETTING_TYPE, false);
+  }
+
+  static async setUseMusclogFreeTier(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_MUSCLOG_FREE_TIER_SETTING_TYPE, value);
+  }
+
+  static async getUseMusclogFreeTier(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(USE_MUSCLOG_FREE_TIER_SETTING_TYPE, false);
+  }
+
+  static async setMusclogGatewayAnonymousId(id: string) {
+    await SettingsService.setStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, id);
+  }
+
+  static async getMusclogGatewayAnonymousId(): Promise<string> {
+    return SettingsService.getStringSetting(MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE, '');
   }
 
   /**

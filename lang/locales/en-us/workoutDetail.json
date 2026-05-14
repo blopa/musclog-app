@@ -1,5 +1,6 @@
 {
   "workoutDetail": {
+    "secondaryFocus": "Secondary Focus",
     "totalTime": "Total Time",
     "volume": "Volume",
     "calories": "Calories",
@@ -30,6 +31,18 @@
       "weightKg": "Weight (kg)",
       "weightLbs": "Weight (lbs)",
       "restSec": "Rest (sec)"
-    }
+    },
+    "musclesWorked": "Muscles Worked",
+    "frontMuscles": "Front",
+    "backMuscles": "Back",
+    "noMuscleData": "No muscle data available",
+    "muscleBalance": "Muscle Balance",
+    "musclesTargeted": "{{count}} Muscles Targeted",
+    "region_arms": "Arms",
+    "region_back": "Back",
+    "region_chest": "Chest",
+    "region_core": "Core",
+    "region_legs": "Legs",
+    "region_shoulders": "Shoulders"
   }
 }

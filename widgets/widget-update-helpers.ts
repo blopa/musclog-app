@@ -1,13 +1,17 @@
+import { Platform } from 'react-native';
 import type { WidgetInfo } from 'react-native-android-widget';
 import { requestWidgetUpdate } from 'react-native-android-widget';
 
-import { NutritionGoalService, NutritionService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionWidget } from './NutritionWidget';
 
 /**
- * Request an update for the Nutrition widget
- * This helper function provides the renderWidget callback required by requestWidgetUpdate
+ * Request an update for the Nutrition widget.
+ * Call this from UI components after making changes to nutrition data.
  */
 export async function requestNutritionWidgetUpdate(): Promise<void> {
   await requestWidgetUpdate({
@@ -19,17 +23,32 @@ export async function requestNutritionWidgetUpdate(): Promise<void> {
         NutritionGoalService.getGoalForDate(today),
       ]);
 
+      const macros = goal ? ((await resolveDailyMacros(goal, today)) ?? goal) : null;
+
       return NutritionWidget({
         calories: nutrients.calories,
-        targetCalories: goal?.totalCalories ?? 0,
+        targetCalories: macros?.totalCalories ?? 0,
         protein: nutrients.protein,
-        targetProtein: goal?.protein ?? 0,
+        targetProtein: macros?.protein ?? 0,
         carbs: nutrients.carbs,
-        targetCarbs: goal?.carbs ?? 0,
+        targetCarbs: macros?.carbs ?? 0,
         fat: nutrients.fat,
-        targetFat: goal?.fats ?? 0,
+        targetFat: macros?.fats ?? 0,
         width: props.width,
       });
     },
   });
 }
+
+/**
+ * Subscribe to widget update events from database services.
+ * This breaks the circular dependency between services and widget helpers.
+ */
+widgetEvents.onNutritionWidgetUpdate(() => {
+  // Only trigger on Android
+  if (Platform.OS === 'android') {
+    requestNutritionWidgetUpdate().catch((error: Error) => {
+      console.error('Failed to update nutrition widget:', error);
+    });
+  }
+});

@@ -40,7 +40,9 @@
       "moodHistory": "Настроение со временем",
       "moodCalories": "Настроение/Калории",
       "moodVolume": "Настроение/Объём тренировок",
-      "moodMacros": "Настроение/Макросы"
+      "moodMacros": "Настроение/Макросы",
+      "waterIntake": "Напоминание о Воде",
+      "supplementIntake": "Приём Добавок"
     },
     "mood": {
       "poor": "Плохо",

@@ -10,7 +10,7 @@ const noRelativeImportPaths = require('eslint-plugin-no-relative-import-paths');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'coverage/**'],
+    ignores: ['dist/*', 'coverage/**', 'app/test/**'],
   },
   {
     plugins: {
@@ -23,6 +23,8 @@ module.exports = defineConfig([
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
       // Enforce curly braces for all control statements (fixable)
       curly: ['warn', 'all'],
+      // Disallow nested ternary expressions
+      'no-nested-ternary': 'warn',
       // Disallow using `&&` inside JSX expression containers (fixable)
       'local/no-jsx-logical-expression': 'error',
       // Require lazy imports for conditionally rendered components (fixable)
@@ -33,6 +35,8 @@ module.exports = defineConfig([
       'local/no-theme-import': 'warn',
       // Modal files that render sub-modals must implement ghost-modal cleanup
       'local/require-sub-modal-cleanup': 'warn',
+      // Prevent modal components from being rendered as siblings (iOS UIViewController bug)
+      'local/no-sibling-modals': 'warn',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',

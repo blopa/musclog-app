@@ -1,10 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { database } from '@/database/index';
+import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionLog from '@/database/models/NutritionLog';
+import Supplement from '@/database/models/Supplement';
 import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -19,7 +20,7 @@ import {
 } from '@/utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
-import { calculateExerciseVolume, getUserBodyWeightKgForVolume } from '@/utils/workoutCalculator';
+import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
@@ -144,6 +145,19 @@ export interface MoodMacrosPoint {
   fat: number;
 }
 
+export interface AdherencePoint {
+  date: number;
+  adherence: number;
+}
+
+export interface SupplementIntakeSeries {
+  supplementId: string;
+  supplementName: string;
+  history: AdherencePoint[];
+  adherenceRate: number;
+  totalEntries: number;
+}
+
 export type TimeAggregation = 'daily' | 'weekly' | 'monthly';
 
 export interface ProgressData {
@@ -164,6 +178,8 @@ export interface ProgressData {
   moodCaloriesHistory: MoodCaloriesPoint[];
   moodVolumeHistory: MoodVolumePoint[];
   moodMacrosHistory: MoodMacrosPoint[];
+  waterIntakeHistory: AdherencePoint[];
+  supplementIntakeSeries: SupplementIntakeSeries[];
 }
 
 export class ProgressService {
@@ -243,6 +259,26 @@ export class ProgressService {
     const moodMetrics = await UserMetricService.getMetricsHistory('mood', dateRange);
     const moodPoints = await this.decryptMetricPoints(moodMetrics, false);
 
+    const waterMetrics = await UserMetricService.getMetricsHistory('water', dateRange);
+    const waterPoints = await this.decryptMetricPoints(waterMetrics, false);
+
+    const supplementMetrics = await UserMetricService.getMetricsHistory('supplement', dateRange);
+    const supplementNameById =
+      supplementMetrics.length > 0
+        ? new Map(
+            (
+              await database
+                .get<Supplement>('supplements')
+                .query(Q.sortBy('created_at', Q.asc))
+                .fetch()
+            ).map((supplement) => [supplement.id, supplement.name] as const)
+          )
+        : new Map<string, string>();
+    const supplementPoints = await this.decryptSupplementMetricPoints(
+      supplementMetrics,
+      supplementNameById
+    );
+
     // 5b. Calculate FFMI
     const ffmiHistory = this.calculateFFMIHistory(weightPoints, fatPoints, heightCm, isImperial);
 
@@ -319,6 +355,11 @@ export class ProgressService {
       nutritionDaily,
       aggregation
     );
+    const waterIntakeHistory = this.calculateAdherenceHistory(waterPoints, aggregation);
+    const supplementIntakeSeries = this.calculateSupplementIntakeSeries(
+      supplementPoints,
+      aggregation
+    );
 
     return {
       weightHistory: finalWeightPoints,
@@ -338,6 +379,8 @@ export class ProgressService {
       moodCaloriesHistory,
       moodVolumeHistory,
       moodMacrosHistory,
+      waterIntakeHistory,
+      supplementIntakeSeries,
     };
   }
 
@@ -364,6 +407,36 @@ export class ProgressService {
         return { date: m.date, value };
       })
     );
+    return points.sort((a, b) => a.date - b.date);
+  }
+
+  private static async decryptSupplementMetricPoints(
+    metrics: UserMetric[],
+    supplementNameById: Map<string, string>
+  ): Promise<(MetricPoint & { supplementId: string; supplementName: string })[]> {
+    const points = await Promise.all(
+      metrics.map(async (metric) => {
+        const [decrypted, note] = await Promise.all([metric.getDecrypted(), metric.getNote()]);
+        const trimmedNote = note?.trim();
+        const metricSupplementId = metric.supplementId?.trim();
+        const supplementName =
+          (metricSupplementId ? supplementNameById.get(metricSupplementId) : undefined) ||
+          trimmedNote ||
+          metricSupplementId ||
+          'Supplement';
+        const supplementId =
+          metricSupplementId ||
+          (trimmedNote ? `legacy:${trimmedNote.toLowerCase()}` : `legacy:${metric.id}`);
+
+        return {
+          date: metric.date,
+          value: decrypted.value,
+          supplementId,
+          supplementName,
+        };
+      })
+    );
+
     return points.sort((a, b) => a.date - b.date);
   }
 
@@ -588,8 +661,11 @@ export class ProgressService {
     endDate: number,
     isImperial: boolean
   ): Promise<ProgressInsights> {
-    const user = await UserService.getCurrentUser();
-    const currentGoal = await NutritionGoalService.getCurrent();
+    const [user, currentGoal, useBfForCalculations] = await Promise.all([
+      UserService.getCurrentUser(),
+      NutritionGoalService.getCurrent(),
+      SettingsService.getUseBfForCalculations(),
+    ]);
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
     // For empirical TDEE, we find the tracking window and anchor values.
@@ -598,10 +674,13 @@ export class ProgressService {
       empiricalEnd,
       initialWeight: initW,
       finalWeight: finW,
-      initialFat,
-      finalFat,
+      initialFat: rawInitialFat,
+      finalFat: rawFinalFat,
       empiricalDays,
     } = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, startDate, endDate);
+
+    const initialFat = useBfForCalculations ? rawInitialFat : undefined;
+    const finalFat = useBfForCalculations ? rawFinalFat : undefined;
 
     let initialWeight = initW;
     let finalWeight = finW;
@@ -621,7 +700,7 @@ export class ProgressService {
       finalWeight = convert(finalWeight, 'lb').to('kg') as number;
     }
 
-    const gender = user?.gender || 'male';
+    const gender = user?.gender || 'other';
     const weightKg =
       finalWeight ||
       (isImperial
@@ -647,7 +726,7 @@ export class ProgressService {
 
     const statisticalTdee = calculateTDEE({
       bmr,
-      activityLevel: user?.activityLevel || 3,
+      activityLevel: user?.activityLevel || 2,
     });
 
     const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;
@@ -709,8 +788,10 @@ export class ProgressService {
       }
     }
 
-    const weightTrend =
-      Math.abs(weightChangeWeekly) < 0.05 ? 'stable' : weightChangeWeekly > 0 ? 'up' : 'down';
+    let weightTrend: 'stable' | 'up' | 'down' = 'stable';
+    if (Math.abs(weightChangeWeekly) >= 0.05) {
+      weightTrend = weightChangeWeekly > 0 ? 'up' : 'down';
+    }
 
     const intakeDayCount = nutritionDaily.length;
     let averageIntake: AverageIntakeForPeriod | null = null;
@@ -866,12 +947,12 @@ export class ProgressService {
     const energyMetrics = await UserMetricService.getMetricsHistory('mood', { startDate, endDate });
     const energyPoints = await this.decryptMetricPoints(energyMetrics, false);
 
-    const step =
-      aggregation === 'daily'
-        ? MS_PER_SOLAR_DAY
-        : aggregation === 'weekly'
-          ? MS_PER_SOLAR_DAY * 7
-          : MS_PER_SOLAR_DAY * 30;
+    let step = MS_PER_SOLAR_DAY * 30;
+    if (aggregation === 'daily') {
+      step = MS_PER_SOLAR_DAY;
+    } else if (aggregation === 'weekly') {
+      step = MS_PER_SOLAR_DAY * 7;
+    }
 
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);
@@ -986,7 +1067,7 @@ export class ProgressService {
             .fetch()
         : [];
     const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
 
     // Fetch all sets for all log exercises at once
     const logExIds = allLogExercises.map((le) => le.id);
@@ -1202,5 +1283,81 @@ export class ProgressService {
         fat: data.fat / data.nutCount,
       }))
       .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateAdherenceHistory(
+    points: MetricPoint[],
+    aggregation: TimeAggregation
+  ): AdherencePoint[] {
+    const grouped = new Map<number, { positiveCount: number; totalCount: number }>();
+
+    for (const point of points) {
+      const start = this.getStartOfAggregation(point.date, aggregation);
+      const existing = grouped.get(start) || { positiveCount: 0, totalCount: 0 };
+      existing.positiveCount += point.value > 0 ? 1 : 0;
+      existing.totalCount += 1;
+      grouped.set(start, existing);
+    }
+
+    return Array.from(grouped.entries())
+      .filter(([, data]) => data.totalCount > 0)
+      .map(([date, data]) => ({
+        date,
+        adherence: data.positiveCount / data.totalCount,
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateSupplementIntakeSeries(
+    points: (MetricPoint & { supplementId: string; supplementName: string })[],
+    aggregation: TimeAggregation
+  ): SupplementIntakeSeries[] {
+    const seriesMap = new Map<
+      string,
+      {
+        supplementName: string;
+        positiveCount: number;
+        totalCount: number;
+        grouped: Map<number, { positiveCount: number; totalCount: number }>;
+      }
+    >();
+
+    for (const point of points) {
+      const existing = seriesMap.get(point.supplementId) || {
+        supplementName: point.supplementName,
+        positiveCount: 0,
+        totalCount: 0,
+        grouped: new Map<number, { positiveCount: number; totalCount: number }>(),
+      };
+
+      existing.supplementName = point.supplementName;
+      existing.positiveCount += point.value > 0 ? 1 : 0;
+      existing.totalCount += 1;
+
+      const start = this.getStartOfAggregation(point.date, aggregation);
+      const groupedPoint = existing.grouped.get(start) || { positiveCount: 0, totalCount: 0 };
+      groupedPoint.positiveCount += point.value > 0 ? 1 : 0;
+      groupedPoint.totalCount += 1;
+      existing.grouped.set(start, groupedPoint);
+
+      seriesMap.set(point.supplementId, existing);
+    }
+
+    return Array.from(seriesMap.entries())
+      .map(([supplementId, series]) => ({
+        supplementId,
+        supplementName: series.supplementName,
+        history: Array.from(series.grouped.entries())
+          .filter(([, data]) => data.totalCount > 0)
+          .map(([date, data]) => ({
+            date,
+            adherence: data.positiveCount / data.totalCount,
+          }))
+          .sort((a, b) => a.date - b.date),
+        adherenceRate: series.totalCount > 0 ? series.positiveCount / series.totalCount : 0,
+        totalEntries: series.totalCount,
+      }))
+      .filter((series) => series.history.length > 0)
+      .sort((a, b) => a.supplementName.localeCompare(b.supplementName));
   }
 }

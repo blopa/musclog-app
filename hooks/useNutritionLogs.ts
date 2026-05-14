@@ -11,6 +11,7 @@ import {
   localDayStartMs,
   localNextDayStartMsFromDate,
 } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
@@ -49,7 +50,14 @@ export type UseNutritionLogsResultRecentLogs = {
   recentNutritionLogs: {
     log: NutritionLog;
     food: Food | null;
-    nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+    nutrients: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber: number;
+      alcohol: number;
+    };
     gramWeight: number;
     displayName: string;
   }[];
@@ -66,6 +74,7 @@ export type UseNutritionLogsResultDaily = {
     carbs: number;
     fat: number;
     fiber: number;
+    alcohol: number;
     byMealType: Record<
       MealType,
       {
@@ -74,6 +83,7 @@ export type UseNutritionLogsResultDaily = {
         carbs: number;
         fat: number;
         fiber: number;
+        alcohol: number;
       }
     >;
   };
@@ -109,6 +119,67 @@ export type UseNutritionLogsResult =
   | UseNutritionLogsResultRange
   | UseNutritionLogsResultRecent
   | UseNutritionLogsResultRecentLogs;
+
+type NutritionLogSortBy = NonNullable<UseNutritionLogsParams['sortBy']>;
+type NutritionLogSortOrder = NonNullable<UseNutritionLogsParams['sortOrder']>;
+
+const nutritionLogSortFieldMap: Record<NutritionLogSortBy, keyof NutritionLog> = {
+  date: 'date',
+  created_at: 'createdAt',
+  updated_at: 'updatedAt',
+};
+
+function compareNutritionLogValues(aValue: unknown, bValue: unknown): number {
+  if (aValue == null && bValue == null) {
+    return 0;
+  }
+
+  if (aValue == null) {
+    return -1;
+  }
+
+  if (bValue == null) {
+    return 1;
+  }
+
+  if (typeof aValue === 'string' && typeof bValue === 'string') {
+    return aValue.localeCompare(bValue);
+  }
+
+  if (aValue > bValue) {
+    return 1;
+  }
+
+  if (aValue < bValue) {
+    return -1;
+  }
+
+  return 0;
+}
+
+function sortNutritionLogs(
+  logsToSort: NutritionLog[],
+  sortBy: NutritionLogSortBy,
+  sortOrder: NutritionLogSortOrder
+): NutritionLog[] {
+  const primaryField = nutritionLogSortFieldMap[sortBy];
+  const secondaryField = primaryField === 'createdAt' ? 'date' : 'createdAt';
+  const direction = sortOrder === 'asc' ? 1 : -1;
+
+  return [...logsToSort].sort((a, b) => {
+    const primaryCompare = compareNutritionLogValues(a[primaryField], b[primaryField]);
+    if (primaryCompare !== 0) {
+      return primaryCompare * direction;
+    }
+
+    const secondaryCompare = compareNutritionLogValues(a[secondaryField], b[secondaryField]);
+    if (secondaryCompare !== 0) {
+      return secondaryCompare * direction;
+    }
+
+    return a.id.localeCompare(b.id) * direction;
+  });
+}
 
 export function useNutritionLogs(
   params: UseNutritionLogsParams & { mode?: 'daily'; date: Date }
@@ -160,12 +231,13 @@ export function useNutritionLogs({
       carbs: 0,
       fat: 0,
       fiber: 0,
+      alcohol: 0,
       byMealType: {
-        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
-        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        snack: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
+        other: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, alcohol: 0 },
       },
     }),
     []
@@ -187,7 +259,14 @@ export function useNutritionLogs({
     {
       log: NutritionLog;
       food: Food | null;
-      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      nutrients: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        fiber: number;
+        alcohol: number;
+      };
       gramWeight: number;
       displayName: string;
     }[]
@@ -236,7 +315,11 @@ export function useNutritionLogs({
 
       if (mode === 'daily' && date) {
         // Daily mode
-        logsList = await NutritionService.getNutritionLogsForDate(date);
+        logsList = sortNutritionLogs(
+          await NutritionService.getNutritionLogsForDate(date),
+          sortBy,
+          sortOrder
+        );
         setHasMore(false); // No pagination for daily mode
 
         // Calculate daily nutrients
@@ -269,7 +352,11 @@ export function useNutritionLogs({
         setTotalCount(allLogsCount);
       } else if (mode === 'range' && startDate && endDate) {
         // Range mode
-        logsList = await NutritionService.getNutritionLogsForDateRange(startDate, endDate);
+        logsList = sortNutritionLogs(
+          await NutritionService.getNutritionLogsForDateRange(startDate, endDate),
+          sortBy,
+          sortOrder
+        );
         setHasMore(false); // No pagination for range mode
 
         // Calculate range nutrients
@@ -277,7 +364,11 @@ export function useNutritionLogs({
         setRangeNutrients(nutrients);
       } else if (mode === 'meal-type' && date && mealType) {
         // Meal-type mode
-        logsList = await NutritionService.getNutritionLogsForMeal(date, mealType);
+        logsList = sortNutritionLogs(
+          await NutritionService.getNutritionLogsForMeal(date, mealType),
+          sortBy,
+          sortOrder
+        );
         setHasMore(false); // No pagination for meal-type mode
       } else if (mode === 'recent') {
         // Recent mode: return recently eaten foods for quick logging
@@ -293,9 +384,13 @@ export function useNutritionLogs({
         setHasMore(false);
       } else {
         // Default: get all logs with client-side pagination
-        const allLogs = await NutritionService.getNutritionLogsForDateRange(
-          new Date(0), // Beginning of time
-          new Date() // Now
+        const allLogs = sortNutritionLogs(
+          await NutritionService.getNutritionLogsForDateRange(
+            new Date(0), // Beginning of time
+            new Date() // Now
+          ),
+          sortBy,
+          sortOrder
         );
 
         if (getAll) {
@@ -319,6 +414,7 @@ export function useNutritionLogs({
         setTotalCount(allLogs.length);
       }
     } catch (err) {
+      handleError(err, 'useNutritionLogs.loadLogs');
       console.error('Error loading nutrition logs:', err);
       setLogs([]);
       setHasMore(false);
@@ -335,6 +431,8 @@ export function useNutritionLogs({
     mealType,
     initialLimit,
     getAll,
+    sortBy,
+    sortOrder,
   ]);
 
   // Load more logs (pagination)
@@ -361,7 +459,11 @@ export function useNutritionLogs({
 
     try {
       // Get all logs and slice the next batch
-      const allLogs = await NutritionService.getNutritionLogsForDateRange(new Date(0), new Date());
+      const allLogs = sortNutritionLogs(
+        await NutritionService.getNutritionLogsForDateRange(new Date(0), new Date()),
+        sortBy,
+        sortOrder
+      );
       const moreLogs = allLogs.slice(currentOffset, currentOffset + batchSize);
 
       if (moreLogs.length === 0) {
@@ -383,12 +485,13 @@ export function useNutritionLogs({
         setHasMore(newOffset < allLogs.length);
       }
     } catch (err) {
+      handleError(err, 'useNutritionLogs.loadMoreLogs');
       console.error('Error loading more nutrition logs:', err);
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, mode, getAll]);
+  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, mode, getAll, sortBy, sortOrder]);
 
   // Refresh data
   const refresh = useCallback(async () => {
@@ -444,6 +547,11 @@ export function useNutritionLogs({
         Q.where('date', Q.lt(nextStart)),
         Q.where('type', mealType)
       );
+    } else if (mode === 'recent' || mode === 'recent-logs') {
+      if (date) {
+        const { start, nextStart } = localDayHalfOpenRange(date);
+        query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+      }
     } else {
       // For basic mode, don't observe at all to avoid infinite loops during onboarding
       // Just load initial data once without reactivity
@@ -451,6 +559,7 @@ export function useNutritionLogs({
         loadInitialLogs();
         hasLoadedInitial.current = true;
       }
+
       return;
     }
 
