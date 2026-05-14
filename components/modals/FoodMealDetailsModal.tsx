@@ -1,6 +1,6 @@
 import { format, isToday, isYesterday } from 'date-fns';
 import { TFunction } from 'i18next';
-import { Clock, LucideScale, Utensils } from 'lucide-react-native';
+import { Clock, Layers, LucideScale, Tag, Utensils } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -61,15 +61,13 @@ function formatLogDateTime(createdAt: number, t: ReturnType<typeof useTranslatio
   if (isToday(date)) {
     return `${t('food.header.today')}, ${timeStr}`;
   }
-
   if (isYesterday(date)) {
     return `${t('common.yesterday')}, ${timeStr}`;
   }
-
   return `${format(date, 'MMM d')}, ${timeStr}`;
 }
 
-const NUTRISCORE_COLORS: Record<string, { bg: string; text: string }> = {
+const GRADE_COLORS: Record<string, { bg: string; text: string }> = {
   a: { bg: '#038141', text: '#ffffff' },
   b: { bg: '#85BB2F', text: '#ffffff' },
   c: { bg: '#FECB02', text: '#1a1a1a' },
@@ -77,20 +75,54 @@ const NUTRISCORE_COLORS: Record<string, { bg: string; text: string }> = {
   e: { bg: '#E63312', text: '#ffffff' },
 };
 
-function ScoreBadge({ label, score }: { label: string; score: string }) {
+const NOVA_COLORS: Record<number, { bg: string; text: string }> = {
+  1: { bg: '#038141', text: '#ffffff' },
+  2: { bg: '#85BB2F', text: '#ffffff' },
+  3: { bg: '#EE8100', text: '#ffffff' },
+  4: { bg: '#E63312', text: '#ffffff' },
+};
+
+const LABEL_KEYS: { key: keyof FoodLabels; translationKey: string }[] = [
+  { key: 'organic', translationKey: 'food.logDetails.labelOrganic' },
+  { key: 'vegan', translationKey: 'food.logDetails.labelVegan' },
+  { key: 'vegetarian', translationKey: 'food.logDetails.labelVegetarian' },
+  { key: 'palmOilFree', translationKey: 'food.logDetails.labelPalmOilFree' },
+  { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
+];
+
+function ScoreCard({ label, score }: { label: string; score: string }) {
+  const theme = useTheme();
   const normalized = score.toLowerCase();
-  const colors = NUTRISCORE_COLORS[normalized] ?? { bg: '#6B8070', text: '#ffffff' };
+  const colors = GRADE_COLORS[normalized] ?? { bg: '#6B8070', text: '#ffffff' };
 
   return (
-    <View className="flex-1 items-center gap-1">
-      <Text className="text-xs font-medium uppercase tracking-wider text-text-secondary">
+    <View
+      className="flex-1 items-center rounded-2xl py-4"
+      style={{
+        backgroundColor: theme.colors.background.cardElevated,
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.background.white5,
+      }}
+    >
+      <Text className="mb-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
         {label}
       </Text>
       <View
-        className="h-10 w-10 items-center justify-center rounded-lg"
-        style={{ backgroundColor: colors.bg }}
+        style={{
+          backgroundColor: colors.bg,
+          width: 68,
+          height: 68,
+          borderRadius: 18,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: colors.bg,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.55,
+          shadowRadius: 10,
+          elevation: 6,
+        }}
       >
-        <Text className="text-xl font-extrabold" style={{ color: colors.text }}>
+        <Text style={{ color: colors.text, fontWeight: '900', fontSize: 38, lineHeight: 44 }}>
           {score.toUpperCase()}
         </Text>
       </View>
@@ -98,37 +130,104 @@ function ScoreBadge({ label, score }: { label: string; score: string }) {
   );
 }
 
-function NovaGroupBadge({ group, label }: { group: number; label: string }) {
-  const novaColors: Record<number, { bg: string; text: string }> = {
-    1: { bg: '#038141', text: '#ffffff' },
-    2: { bg: '#85BB2F', text: '#ffffff' },
-    3: { bg: '#EE8100', text: '#ffffff' },
-    4: { bg: '#E63312', text: '#ffffff' },
-  };
-  const colors = novaColors[group] ?? { bg: '#6B8070', text: '#ffffff' };
+function NovaRow({ group, description }: { group: number; description: string }) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  const colors = NOVA_COLORS[group] ?? { bg: '#6B8070', text: '#ffffff' };
 
   return (
-    <View className="flex-row items-center gap-3">
+    <View
+      className="flex-row items-center gap-3 rounded-3xl px-4 py-3"
+      style={{
+        backgroundColor: theme.colors.background.cardElevated,
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.background.white5,
+      }}
+    >
       <View
-        className="h-10 w-10 items-center justify-center rounded-lg"
-        style={{ backgroundColor: colors.bg }}
+        className="h-10 w-10 items-center justify-center rounded-xl"
+        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
       >
-        <Text className="text-xl font-extrabold" style={{ color: colors.text }}>
+        <Layers size={18} color={theme.colors.text.secondary} />
+      </View>
+
+      <Text
+        className="text-xs font-bold uppercase leading-tight text-text-secondary"
+        style={{ maxWidth: 48 }}
+      >
+        {t('food.logDetails.novaGroup').replace(' ', '\n')}
+      </Text>
+
+      <View
+        style={{
+          backgroundColor: colors.bg,
+          width: 40,
+          height: 40,
+          borderRadius: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: colors.bg,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          elevation: 4,
+        }}
+      >
+        <Text style={{ color: colors.text, fontWeight: '900', fontSize: 20, lineHeight: 24 }}>
           {group}
         </Text>
       </View>
-      <Text className="flex-1 text-sm text-text-primary">{label}</Text>
+
+      <Text className="flex-1 text-base font-medium text-text-primary" numberOfLines={2}>
+        {description}
+      </Text>
     </View>
   );
 }
 
-const LABEL_KEYS: Array<{ key: keyof FoodLabels; translationKey: string }> = [
-  { key: 'organic', translationKey: 'food.logDetails.labelOrganic' },
-  { key: 'vegan', translationKey: 'food.logDetails.labelVegan' },
-  { key: 'vegetarian', translationKey: 'food.logDetails.labelVegetarian' },
-  { key: 'palmOilFree', translationKey: 'food.logDetails.labelPalmOilFree' },
-  { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
-];
+function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+
+  return (
+    <View
+      className="flex-row items-center gap-3 rounded-3xl px-4 py-3"
+      style={{
+        backgroundColor: theme.colors.background.cardElevated,
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.background.white5,
+      }}
+    >
+      <View
+        className="h-10 w-10 items-center justify-center rounded-xl"
+        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+      >
+        <Tag size={18} color={theme.colors.text.secondary} />
+      </View>
+
+      <Text className="text-xs font-bold uppercase text-text-secondary">
+        {t('food.logDetails.foodLabels')}
+      </Text>
+
+      <View className="flex-1 flex-row flex-wrap gap-2">
+        {activeLabels.map(({ translationKey }) => (
+          <View
+            key={translationKey}
+            className="rounded-full px-3 py-1"
+            style={{
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.status.emerald,
+            }}
+          >
+            <Text className="text-sm font-semibold" style={{ color: theme.colors.status.emerald }}>
+              {t(translationKey)}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
 
 export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetailsModalProps) {
   const theme = useTheme();
@@ -182,15 +281,15 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const foodLabels = food?.labels ?? {};
   const activeLabels = LABEL_KEYS.filter(({ key }) => foodLabels[key] === true);
 
-  const novaLabels: Record<number, string> = {
+  const novaDescriptions: Record<number, string> = {
     1: t('food.logDetails.nova1'),
     2: t('food.logDetails.nova2'),
     3: t('food.logDetails.nova3'),
     4: t('food.logDetails.nova4'),
   };
 
-  const hasQualityData =
-    !!nutriScore || !!ecoScore || novaGroup != null || activeLabels.length > 0;
+  const hasScores = !!nutriScore || !!ecoScore;
+  const hasQualityData = hasScores || novaGroup != null || activeLabels.length > 0;
 
   return (
     <FullScreenModal
@@ -251,64 +350,26 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
         </GenericCard>
 
         {hasQualityData ? (
-          <View
-            className="mt-4 rounded-2xl border p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              backgroundColor: theme.colors.background.overlay,
-            }}
-          >
-            <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
-              {t('food.logDetails.foodQuality')}
-            </Text>
-
-            {(nutriScore || ecoScore) ? (
-              <View className="mb-4 flex-row gap-4">
+          <View className="mt-3 gap-3">
+            {hasScores ? (
+              <View className="flex-row gap-3">
                 {nutriScore ? (
-                  <ScoreBadge label={t('food.logDetails.nutriScore')} score={nutriScore} />
+                  <ScoreCard label={t('food.logDetails.nutriScore')} score={nutriScore} />
                 ) : null}
                 {ecoScore ? (
-                  <ScoreBadge label={t('food.logDetails.ecoScore')} score={ecoScore} />
+                  <ScoreCard label={t('food.logDetails.ecoScore')} score={ecoScore} />
                 ) : null}
               </View>
             ) : null}
 
             {novaGroup != null ? (
-              <View className={nutriScore || ecoScore ? 'mb-3' : 'mb-1'}>
-                <Text className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {t('food.logDetails.novaGroup')}
-                </Text>
-                <NovaGroupBadge
-                  group={novaGroup}
-                  label={novaLabels[novaGroup] ?? String(novaGroup)}
-                />
-              </View>
+              <NovaRow
+                group={novaGroup}
+                description={novaDescriptions[novaGroup] ?? String(novaGroup)}
+              />
             ) : null}
 
-            {activeLabels.length > 0 ? (
-              <View className="mt-1">
-                <Text className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {t('food.logDetails.foodLabels')}
-                </Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {activeLabels.map(({ translationKey }) => (
-                    <View
-                      key={translationKey}
-                      className="rounded-full px-3 py-1"
-                      style={{
-                        backgroundColor: theme.colors.status.emerald20,
-                        borderColor: theme.colors.status.emerald,
-                        borderWidth: theme.borderWidth.thin,
-                      }}
-                    >
-                      <Text className="text-xs font-medium text-text-primary">
-                        {t(translationKey)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ) : null}
+            {activeLabels.length > 0 ? <LabelsRow activeLabels={activeLabels} /> : null}
           </View>
         ) : null}
 
