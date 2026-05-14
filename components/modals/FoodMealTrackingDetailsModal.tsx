@@ -2433,6 +2433,7 @@ export function FoodMealTrackingDetailsModal({
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 productServingSize={parsedProductServingSize}
                 productMeasures={parsedProductMeasures}
+                showPortionSelector={Boolean(food || localFood)}
               />
             )
           ) : resolvedMealServingMode ? (

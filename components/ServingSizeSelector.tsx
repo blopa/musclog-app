@@ -260,6 +260,30 @@ export function ServingSizeSelector({
   const handleIncrease = () => onChange(value + stepAmount);
   const handleChangeValue = (displayVal: number) => onChange(displayToGrams(displayVal, units));
 
+  // The reference portion used in "portions" mode: prefer food-specific DB portions,
+  // fall back to the first available quick size.
+  const defaultPortionForMode = useMemo(() => {
+    const first = portions.find(hasGramWeight);
+    if (first) {
+      return { name: first.name, gramWeight: first.gramWeight };
+    }
+    const firstQuick = effectiveQuickSizes[0];
+    if (firstQuick) {
+      return { name: firstQuick.label, gramWeight: firstQuick.value };
+    }
+    return null;
+  }, [portions, effectiveQuickSizes]);
+
+  const canShowPortionMode = showPortionSelector && defaultPortionForMode !== null;
+
+  // Derive serving count from the current gram value so the stepper stays in sync.
+  const servingCount = useMemo(() => {
+    if (!defaultPortionForMode || defaultPortionForMode.gramWeight <= 0) {
+      return 1;
+    }
+    return Math.round((value / defaultPortionForMode.gramWeight) * 100) / 100;
+  }, [value, defaultPortionForMode]);
+
   const quickSizeTabs = effectiveQuickSizes
     .filter((size, i, arr) => arr.findIndex((s) => s.value === size.value) === i)
     .map((size) => ({
@@ -269,7 +293,7 @@ export function ServingSizeSelector({
 
   return (
     <GenericCard variant="default">
-      {showPortionSelector ? (
+      {canShowPortionMode ? (
         <View className="mt-4 w-full pl-4 pr-4">
           <SegmentedControl
             variant="outline"
@@ -282,32 +306,59 @@ export function ServingSizeSelector({
           />
         </View>
       ) : null}
-      <View className={`${showPortionSelector ? 'mt-2' : 'mt-6'} w-full gap-3 pl-4 pr-4`}>
-        <StepperInput
-          label={t('food.foodDetails.servingSize')}
-          value={displayValue}
-          step={stepDisplay}
-          onIncrement={handleIncrease}
-          onDecrement={handleDecrease}
-          onChangeValue={handleChangeValue}
-          onFocus={onFocus}
-          unit={massUnit}
-          variant="portion"
-        />
-        {quickSizeTabs.length > 0 ? (
-          <FilterTabs
-            tabs={quickSizeTabs}
-            activeTab={String(value)}
-            onTabChange={(id) => onChange(Number(id))}
-            showContainer={false}
-            inactiveBackgroundColor={theme.colors.background.secondaryDark}
-            scrollViewContentContainerStyle={{
-              paddingHorizontal: theme.spacing.padding.sm,
-              paddingVertical: theme.spacing.padding.sm,
-            }}
+      <View
+        className={`${canShowPortionMode ? 'mt-2' : 'mt-6'} w-full gap-3 pl-4 pr-4 ${servingMode === 'portions' ? 'pb-6' : ''}`}
+      >
+        {servingMode === 'portions' && defaultPortionForMode ? (
+          <StepperInput
+            label={t('food.foodDetails.servings')}
+            value={servingCount}
+            step={0.5}
+            maxFractionDigits={2}
+            onIncrement={() =>
+              onChange(defaultPortionForMode.gramWeight * (servingCount + 0.5))
+            }
+            onDecrement={() =>
+              onChange(
+                defaultPortionForMode.gramWeight * Math.max(0.5, servingCount - 0.5)
+              )
+            }
+            onChangeValue={(count) =>
+              onChange(defaultPortionForMode.gramWeight * Math.max(0.5, count))
+            }
+            onFocus={onFocus}
+            unit={defaultPortionForMode.name}
+            variant="portion"
           />
         ) : (
-          <View pointerEvents="none" style={{ height: theme.spacing.padding.xs }} />
+          <>
+            <StepperInput
+              label={t('food.foodDetails.servingSize')}
+              value={displayValue}
+              step={stepDisplay}
+              onIncrement={handleIncrease}
+              onDecrement={handleDecrease}
+              onChangeValue={handleChangeValue}
+              onFocus={onFocus}
+              unit={massUnit}
+              variant="portion"
+            />
+            {quickSizeTabs.length > 0 ? (
+              <FilterTabs
+                tabs={quickSizeTabs}
+                activeTab={String(value)}
+                onTabChange={(id) => onChange(Number(id))}
+                showContainer={false}
+                inactiveBackgroundColor={theme.colors.background.secondaryDark}
+                scrollViewContentContainerStyle={{
+                  paddingHorizontal: theme.spacing.padding.sm,
+                  paddingVertical: theme.spacing.padding.sm,
+                }}
+              />
+            ) : (
+              <View pointerEvents="none" style={{ height: theme.spacing.padding.xs }} />
+            )}
+          </>
         )}
       </View>
     </GenericCard>
