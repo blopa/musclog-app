@@ -20,6 +20,7 @@ type ServingSizeSelectorProps = {
   food?: Food;
   onFocus?: () => void;
   productServingSize?: number;
+  showPortionSelector?: false;
   productMeasures?: { name: string; gramWeight: number }[];
 };
 
@@ -48,6 +49,7 @@ export function ServingSizeSelector({
   onFocus,
   productServingSize,
   productMeasures,
+  showPortionSelector = false,
 }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -265,6 +267,7 @@ export function ServingSizeSelector({
 
   return (
     <GenericCard variant="default">
+      {/* TODO: add SegmentedControl here with two options: grams | portions - for now doesnt need to do anything */}
       <View className="mt-6 w-full gap-3 pl-4 pr-4">
         <StepperInput
           label={t('food.foodDetails.servingSize')}
