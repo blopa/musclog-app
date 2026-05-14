@@ -1464,11 +1464,24 @@ export function FoodMealTrackingDetailsModal({
             // ignore
           }
         } else if (food || localFood) {
-          const baseValue =
-            (food || localFood)?.resolvedNutritionBasis === 'per_serving'
-              ? initialServingSize || 1
-              : initialServingSize || 100;
-          setServingSize(baseValue);
+          const targetFood = food || localFood;
+          if (targetFood?.resolvedNutritionBasis === 'per_serving') {
+            setServingSize(initialServingSize || 1);
+          } else if (initialServingSize) {
+            setServingSize(initialServingSize);
+          } else {
+            try {
+              const defaultPortion = await targetFood?.getDefaultPortionAsync();
+              if (defaultPortion?.gramWeight && defaultPortion.gramWeight > 0) {
+                setServingSize(defaultPortion.gramWeight);
+              } else {
+                setServingSize(100);
+              }
+            } catch {
+              setServingSize(100);
+            }
+          }
+
           hasInitializedServingSizeRef.current = true;
         } else {
           const defaultSize = await getDefaultServingSize();
