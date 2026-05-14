@@ -141,16 +141,6 @@ function offBarcodeUrl(barcode) {
   return `https://world.openfoodfacts.org/api/v3/product/${encodeURIComponent(barcode)}`;
 }
 
-function usdaBarcodeUrl(barcode) {
-  const params = new URLSearchParams({
-    query: barcode,
-    pageSize: '1',
-    api_key: USDA_API_KEY,
-  });
-
-  return `https://api.nal.usda.gov/fdc/v1/foods/search?${params.toString()}`;
-}
-
 function usdaFoodDetailsUrl(foodId) {
   const params = new URLSearchParams({
     api_key: USDA_API_KEY,
@@ -197,11 +187,6 @@ async function main() {
         label: `OFF barcode ${barcode}`,
         fileName: `off-barcode-${barcode}.json`,
         url: offBarcodeUrl(barcode),
-      },
-      {
-        label: `USDA barcode ${barcode}`,
-        fileName: `usda-barcode-${barcode}.json`,
-        url: usdaBarcodeUrl(barcode),
       },
       {
         label: `Musclog barcode ${barcode}`,

@@ -1,0 +1,32 @@
+[
+  {
+    "label": "OFF search \"egg\"",
+    "ok": true,
+    "status": 200,
+    "url": "https://world.openfoodfacts.org/cgi/search.pl?search_terms=egg&json=1&page_size=20&page=1&fields=code%2Cproduct_name%2Cbrands%2Cgeneric_name%2Cnutriments%2Cserving_size%2Ccategories%2Cimage_url%2Cimage_small_url"
+  },
+  {
+    "label": "USDA search \"egg\"",
+    "ok": true,
+    "status": 200,
+    "url": "https://api.nal.usda.gov/fdc/v1/foods/search?query=egg&pageSize=20&pageNumber=1&api_key=%3Credacted%3E"
+  },
+  {
+    "label": "OFF barcode 7613035648494",
+    "ok": true,
+    "status": 200,
+    "url": "https://world.openfoodfacts.org/api/v3/product/7613035648494"
+  },
+  {
+    "label": "Musclog barcode 7613035648494",
+    "ok": false,
+    "status": 404,
+    "url": "https://api.musclog.app/barcodes/7613035648494.json"
+  },
+  {
+    "label": "USDA food details 2575290",
+    "ok": true,
+    "status": 200,
+    "url": "https://api.nal.usda.gov/fdc/v1/food/2575290?api_key=%3Credacted%3E"
+  }
+]
