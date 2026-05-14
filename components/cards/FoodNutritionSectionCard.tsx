@@ -236,7 +236,13 @@ export function FoodNutritionSectionCard({
       ) : null}
 
       <View>
-        <View style={useQualityAccordion && !nutritionExpanded ? { maxHeight: 110, overflow: 'hidden' } : undefined}>
+        <View
+          style={
+            useQualityAccordion && !nutritionExpanded
+              ? { maxHeight: 110, overflow: 'hidden' }
+              : undefined
+          }
+        >
           {nutritionQuality ? (
             <NutritionQualityData
               nutriScore={nutritionQuality.nutriScore}
@@ -404,7 +410,9 @@ export function FoodNutritionSectionCard({
           ) : null}
         </View>
 
-        {useQualityAccordion && !nutritionExpanded && (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
+        {useQualityAccordion &&
+        !nutritionExpanded &&
+        (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
           <>
             <LinearGradient
               colors={[

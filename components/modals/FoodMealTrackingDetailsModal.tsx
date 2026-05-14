@@ -1153,6 +1153,75 @@ export function FoodMealTrackingDetailsModal({
     );
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
 
+  const nutritionQuality = useMemo(() => {
+    if (food || localFood) {
+      const foodData = food || localFood;
+      const hasQuality =
+        foodData!.nutriscore ||
+        foodData!.ecoscore ||
+        foodData!.novaGroup != null ||
+        foodData!.labels;
+
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return {
+        nutriScore: foodData!.nutriscore,
+        ecoScore: foodData!.ecoscore,
+        novaGroup: foodData!.novaGroup,
+        labels: foodData!.labels,
+      };
+    }
+
+    if (productFromSearch?.source === 'openfood') {
+      const mapped = mapOpenFoodFactsProduct(productFromSearch);
+      const hasQuality =
+        mapped.nutriscore || mapped.ecoscore || mapped.novaGroup != null || mapped.labels;
+
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return {
+        nutriScore: mapped.nutriscore,
+        ecoScore: mapped.ecoscore,
+        novaGroup: mapped.novaGroup,
+        labels: mapped.labels,
+      };
+    }
+
+    const effectiveDetails = refetchedProductDetails ?? productDetails;
+    if (
+      isSuccessFoodDetailProductState(effectiveDetails) &&
+      (effectiveDetails as any).source !== 'usda'
+    ) {
+      const product = effectiveDetails.product;
+      const nutriScore =
+        typeof (product as any).nutriscore_grade === 'string' && (product as any).nutriscore_grade
+          ? (product as any).nutriscore_grade.toLowerCase()
+          : undefined;
+
+      const ecoScore =
+        typeof (product as any).ecoscore_grade === 'string' && (product as any).ecoscore_grade
+          ? (product as any).ecoscore_grade.toLowerCase()
+          : undefined;
+
+      const novaGroup =
+        typeof (product as any).nova_group === 'number' ? (product as any).nova_group : undefined;
+
+      const labels = extractLabelsFromOFFProduct(product as any);
+      const hasQuality = nutriScore || ecoScore || novaGroup != null || labels;
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return { nutriScore, ecoScore, novaGroup, labels };
+    }
+
+    return undefined;
+  }, [food, localFood, productFromSearch, productDetails, refetchedProductDetails]);
+
   const nutritionalData = useMemo(() => {
     const macroBase =
       editedOverrides &&
@@ -1198,26 +1267,32 @@ export function FoodMealTrackingDetailsModal({
     if (mode !== 'externalProduct' || refetchedProductDetails) {
       return false;
     }
+
     // Wait until local DB lookup finishes so we don't use placeholder zeros before we know local vs remote data.
     if (barcode && !hasCheckedLocalFood) {
       return false;
     }
+
     // While the barcode product query is active, wait for it to finish (not the USDA-by-id path).
     if (barcodeForHook && isLoadingDetails) {
       return false;
     }
+
     if (!areCoreMacrosEffectivelyZero(baseNutritionalData)) {
       return false;
     }
+
     const hasProductPayload =
       !!food ||
       !!localFood ||
       !!productFromSearch ||
       isSuccessFoodDetailProductState(productDetails) ||
       isSuccessFoodDetailProductState(refetchedProductDetails);
+
     if (!hasProductPayload) {
       return false;
     }
+
     return true;
   }, [
     mode,
@@ -1238,6 +1313,7 @@ export function FoodMealTrackingDetailsModal({
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
       return editedOverrides.name.trim();
     }
+
     if (meal) {
       return meal.name || t('meals.history.unknownMeal');
     }
@@ -1298,6 +1374,7 @@ export function FoodMealTrackingDetailsModal({
         if (brand && category) {
           return `${brand} • ${category}`;
         }
+
         return brand || category || '';
       }
       const brand = productFromSearch.brands;
@@ -1333,6 +1410,7 @@ export function FoodMealTrackingDetailsModal({
 
         return usdaBrand || usdaCategory || '';
       }
+
       const product2 = effectiveProductDetails.product;
       const brand = product2.brands;
       const categories = product2.categories;
@@ -1349,6 +1427,7 @@ export function FoodMealTrackingDetailsModal({
         return categories;
       }
     }
+
     return '';
   }, [
     productDetails,
@@ -2283,7 +2362,7 @@ export function FoodMealTrackingDetailsModal({
     >
       <View className="flex-1 px-4 pb-6">
         <FoodNutritionSectionCard
-          // nutritionQuality={{}} // TODO: pass nutrition quality when available
+          nutritionQuality={nutritionQuality}
           food={scaledFood}
           canEdit={localCanEdit || hasNoNutrition}
           mode={mode}
