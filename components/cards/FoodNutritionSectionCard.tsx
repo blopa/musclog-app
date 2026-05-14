@@ -73,6 +73,7 @@ type FoodNutritionSectionProps = {
   };
   intuitiveMode?: boolean;
   showName?: boolean;
+  useQualityAccordion?: boolean;
   ingredients?: MealIngredient[];
   nutritionQuality?: NutritionQuality;
 };
@@ -95,6 +96,7 @@ export function FoodNutritionSectionCard({
   showName = true,
   ingredients,
   nutritionQuality,
+  useQualityAccordion = true, // TODO: use this prop
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -415,6 +417,7 @@ export function FoodNutritionSectionCard({
               style={{ bottom: 0, height: 130, left: 0, position: 'absolute', right: 0 }}
               pointerEvents="none"
             />
+            {/*TODO: move the text to be on top of the fadded area, instead of below it */}
             <Pressable
               onPress={() => setNutritionExpanded(true)}
               hitSlop={12}
