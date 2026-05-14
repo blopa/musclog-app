@@ -2283,6 +2283,7 @@ export function FoodMealTrackingDetailsModal({
     >
       <View className="flex-1 px-4 pb-6">
         <FoodNutritionSectionCard
+          // nutritionQuality={{}} // TODO: pass nutrition quality when available
           food={scaledFood}
           canEdit={localCanEdit || hasNoNutrition}
           mode={mode}

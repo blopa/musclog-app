@@ -96,7 +96,7 @@ export function FoodNutritionSectionCard({
   showName = true,
   ingredients,
   nutritionQuality,
-  useQualityAccordion = true, // TODO: use this prop
+  useQualityAccordion = true,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -236,7 +236,7 @@ export function FoodNutritionSectionCard({
       ) : null}
 
       <View>
-        <View style={nutritionExpanded ? undefined : { maxHeight: 110, overflow: 'hidden' }}>
+        <View style={useQualityAccordion && !nutritionExpanded ? { maxHeight: 110, overflow: 'hidden' } : undefined}>
           {nutritionQuality ? (
             <NutritionQualityData
               nutriScore={nutritionQuality.nutriScore}
@@ -404,7 +404,7 @@ export function FoodNutritionSectionCard({
           ) : null}
         </View>
 
-        {!nutritionExpanded && (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
+        {useQualityAccordion && !nutritionExpanded && (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
           <>
             <LinearGradient
               colors={[
@@ -414,14 +414,14 @@ export function FoodNutritionSectionCard({
                 theme.colors.background.primary,
               ]}
               locations={[0, 0.2, 0.42, 0.62]}
-              style={{ bottom: 0, height: 130, left: 0, position: 'absolute', right: 0 }}
+              style={{ bottom: 0, height: 100, left: 0, position: 'absolute', right: 0 }}
               pointerEvents="none"
             />
-            {/*TODO: move the text to be on top of the fadded area, instead of below it */}
             <Pressable
               onPress={() => setNutritionExpanded(true)}
               hitSlop={12}
               className="items-center py-1"
+              style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}
             >
               <Text
                 className="text-xs font-semibold"
