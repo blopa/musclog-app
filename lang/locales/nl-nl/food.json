@@ -12,7 +12,21 @@
       "title": "Voedsellogboek Details",
       "trackedAmount": "{{amount}} {{unit}} bijgehouden",
       "dateAndTime": "Datum en Tijd",
-      "mealType": "Maaltijdtype"
+      "mealType": "Maaltijdtype",
+      "foodQuality": "Voedselkwaliteit",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "NOVA Groep",
+      "nova1": "Onbewerkt of minimaal bewerkt",
+      "nova2": "Verwerkte culinaire ingrediënten",
+      "nova3": "Bewerkte voedingsmiddelen",
+      "nova4": "Sterk bewerkte voedingsmiddelen",
+      "foodLabels": "Labels",
+      "labelOrganic": "Biologisch",
+      "labelVegan": "Veganistisch",
+      "labelVegetarian": "Vegetarisch",
+      "labelPalmOilFree": "Palmolie-vrij",
+      "labelFairTrade": "Eerlijke handel"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Weet je zeker dat je dit voedingsmiddel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",

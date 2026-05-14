@@ -12,7 +12,21 @@
       "title": "Detalhes do Registro",
       "trackedAmount": "{{amount}} {{unit}} registrado",
       "dateAndTime": "Data e Hora",
-      "mealType": "Tipo de refeição"
+      "mealType": "Tipo de refeição",
+      "foodQuality": "Qualidade alimentar",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "Grupo NOVA",
+      "nova1": "Não processado ou minimamente processado",
+      "nova2": "Ingredientes culinários processados",
+      "nova3": "Alimentos processados",
+      "nova4": "Alimentos ultraprocessados",
+      "foodLabels": "Etiquetas",
+      "labelOrganic": "Orgânico",
+      "labelVegan": "Vegano",
+      "labelVegetarian": "Vegetariano",
+      "labelPalmOilFree": "Sem óleo de palma",
+      "labelFairTrade": "Comércio justo"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Tem certeza de que deseja excluir este alimento? Esta ação não pode ser desfeita.",

@@ -12,7 +12,21 @@
       "title": "Детали записи",
       "trackedAmount": "{{amount}} {{unit}} отслежено",
       "dateAndTime": "Дата и время",
-      "mealType": "Тип приёма пищи"
+      "mealType": "Тип приёма пищи",
+      "foodQuality": "Качество питания",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "Группа NOVA",
+      "nova1": "Необработанные или минимально обработанные",
+      "nova2": "Обработанные кулинарные ингредиенты",
+      "nova3": "Обработанные продукты",
+      "nova4": "Ультраобработанные продукты",
+      "foodLabels": "Метки",
+      "labelOrganic": "Органический",
+      "labelVegan": "Веганский",
+      "labelVegetarian": "Вегетарианский",
+      "labelPalmOilFree": "Без пальмового масла",
+      "labelFairTrade": "Справедливая торговля"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Вы уверены, что хотите удалить этот продукт? Это действие нельзя отменить.",
