@@ -9,7 +9,7 @@
       "f4": "100% privado e no dispositivo",
       "tagline": "Acompanhamento de fitness e nutrição com IA — gratuito e open source.",
       "qrcode_title": "Baixe o App",
-      "qrcode_text": "Escaneie para baixar no Android"
+      "qrcode_text": "Escaneie para baixar o Musclog"
     },
     "hero": {
       "badge1": "★ GRÁTIS E OPEN SOURCE",
@@ -232,7 +232,14 @@
       "appleTitle": "BAIXAR NA",
       "appleStore": "App Store",
       "comingSoon": "App Store em breve!",
-      "qrButton": "Mostrar códigos QR"
+      "qrButton": "Mostrar códigos QR",
+      "qrTitle": "Códigos QR",
+      "qrDescription": "Abra a página de instalação para Android ou iOS diretamente no seu celular.",
+      "qrGoogleLabel": "Página de instalação para Android",
+      "qrAppleLabel": "Página de instalação para iOS",
+      "qrGoogleAlt": "Código QR para o Google Play",
+      "qrAppleAlt": "Código QR para a App Store",
+      "close": "Fechar"
     },
     "download": {
       "pageTitle": "Baixar Musclog",
@@ -737,9 +744,18 @@
                 "Mifflin-St Jeor (padrão, sem necessidade de % GC): TMB = 10 × peso + 6,25 × altura − 5 × idade ± constante de gênero (+5 homem, −161 mulher). Validada como a equação de TMB mais precisa para a população geral em várias meta-análises."
               ],
               "citations": [
-                { "label": "Katch-McArdle (1996)", "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27" },
-                { "label": "Mifflin et al. (1990)", "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/" },
-                { "label": "Frankenfield et al. meta-analysis (2005)", "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/" }
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al. meta-analysis (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
               ]
             },
             {
@@ -751,10 +767,22 @@
                 "Correção de deriva do TDEE: O TDEE empírico representa a média do período intermediário. Para projetá-lo para o estado corporal atual, três ajustes em camadas são aplicados: (1) Queda do tecido em repouso — o tecido magro queima ~13 kcal/kg/dia e a gordura ~4,5 kcal/kg/dia (Elia 1992); (2) Queda escalada por atividade — o custo mecânico do movimento escala com a massa corporal; (3) Penalidade de termogênese adaptativa de 20 kcal/dia por kg de massa corporal perdida, refletindo a supressão do NEAT e adaptação hormonal (leptina, tireoide)."
               ],
               "citations": [
-                { "label": "Hall (2008) — Energy deficit per unit weight loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
-                { "label": "Elia (1992) — RMR tissue coefficients", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/" },
-                { "label": "Müller et al. (2022) — Adaptive thermogenesis", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
-                { "label": "Hall et al. (NIH) — Dynamic energy balance", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+                {
+                  "label": "Hall (2008) — Energy deficit per unit weight loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — RMR tissue coefficients",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller et al. (2022) — Adaptive thermogenesis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
               ]
             },
             {
@@ -768,9 +796,18 @@
               "formula": "kcal/kg_efetivas = 9.440 × fração_gordura + 1.820 × fração_magra",
               "formulaCaption": "Densidade energética combinada de Hall (2008) — fração de gordura determinada pela curva de Forbes / Lambert W",
               "citations": [
-                { "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
-                { "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" },
-                { "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" }
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
               ]
             },
             {
@@ -782,9 +819,18 @@
                 "Pisos mínimos de calorias: 1.200 kcal/dia para mulheres, 1.500 kcal/dia para homens, e nunca abaixo de 80 % da TMB — consistente com as diretrizes do IOM / Academias Nacionais."
               ],
               "citations": [
-                { "label": "Garthe et al. (2011) — Rate of weight loss and body composition", "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/" },
-                { "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders", "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/" },
-                { "label": "ACE — Body fat percentage classifications", "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/" }
+                {
+                  "label": "Garthe et al. (2011) — Rate of weight loss and body composition",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Body fat percentage classifications",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
               ]
             },
             {
@@ -796,8 +842,14 @@
                 "Projeção de superávit: Os estoques de glicogênio são assumidos como cheios, portanto todo o superávit vai para síntese de gordura/tecido magro a custos ponderados pela experiência (iniciante ~5.300 kcal/kg ganho; intermediário ~6.370 kcal/kg; avançado ~7.430 kcal/kg)."
               ],
               "citations": [
-                { "label": "Hall (2008) — Energy density of weight loss tissue", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
-                { "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" }
+                {
+                  "label": "Hall (2008) — Energy density of weight loss tissue",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
               ]
             },
             {
@@ -806,19 +858,61 @@
               "table": {
                 "head": ["Objetivo", "Carboidratos", "Proteína", "Gordura", "Justificativa"],
                 "rows": [
-                  ["Perda de Peso", "40 %", "30 %", "30 %", "Alta proteína para preservar músculo em déficit (ISSN/Helms 2014)"],
-                  ["Hipertrofia", "45 %", "30 %", "25 %", "Proteína para MPS; carboidratos apoiam treino de volume"],
-                  ["Força", "50 %", "30 %", "20 %", "Carboidratos para demanda glicolítica do trabalho composto pesado"],
-                  ["Resistência", "55 %", "20 %", "25 %", "Prioridade ao glicogênio (diretriz ACSM 6–10 g/kg/dia)"],
-                  ["Geral", "45 %", "25 %", "30 %", "Centralizado dentro do AMDR do IOM para fitness geral"]
+                  [
+                    "Perda de Peso",
+                    "40 %",
+                    "30 %",
+                    "30 %",
+                    "Alta proteína para preservar músculo em déficit (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Hipertrofia",
+                    "45 %",
+                    "30 %",
+                    "25 %",
+                    "Proteína para MPS; carboidratos apoiam treino de volume"
+                  ],
+                  [
+                    "Força",
+                    "50 %",
+                    "30 %",
+                    "20 %",
+                    "Carboidratos para demanda glicolítica do trabalho composto pesado"
+                  ],
+                  [
+                    "Resistência",
+                    "55 %",
+                    "20 %",
+                    "25 %",
+                    "Prioridade ao glicogênio (diretriz ACSM 6–10 g/kg/dia)"
+                  ],
+                  [
+                    "Geral",
+                    "45 %",
+                    "25 %",
+                    "30 %",
+                    "Centralizado dentro do AMDR do IOM para fitness geral"
+                  ]
                 ]
               },
               "answer2": "Para os objetivos de Perda de Peso e Hipertrofia, quando o % de gordura corporal é conhecido, a proteína é atualizada de uma meta percentual para uma meta absoluta baseada na MCM (2,7 g/kg MCM para perda de peso; 2,0 g/kg MCM para hipertrofia), com as calorias restantes divididas proporcionalmente entre carboidratos e gorduras.",
               "citations": [
-                { "label": "IOM Dietary Reference Intakes (2005) — AMDR", "url": "https://doi.org/10.17226/10490" },
-                { "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/" },
-                { "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/" },
-                { "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/" }
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
               ]
             },
             {
@@ -831,9 +925,18 @@
                 "Essas divisões usam os custos termodinâmicos de construção: 8.840 kcal/kg para gordura e 3.900 kcal/kg para músculo, refletindo ~87 % de eficiência de síntese para gordura e ~32 % para músculo (a maior parte da energia de síntese muscular é perdida como calor)."
               ],
               "citations": [
-                { "label": "Schoenfeld et al. — Resistance training load meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" },
-                { "label": "Sports Med (2023) — Plateau in muscle growth with resistance training", "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/" },
-                { "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/" }
+                {
+                  "label": "Schoenfeld et al. — Resistance training load meta-analysis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Plateau in muscle growth with resistance training",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
               ]
             },
             {
@@ -845,8 +948,14 @@
                 "Ambas as penalidades se acumulam de forma aditiva quando aplicáveis (ex.: pessoa obesa com mais de 50 → −5 % total)."
               ],
               "citations": [
-                { "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction", "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/" },
-                { "label": "St-Onge & Gallagher (2010) — Body composition changes with aging", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/" }
+                {
+                  "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Body composition changes with aging",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
               ]
             }
           ]
@@ -860,23 +969,50 @@
               "table": {
                 "head": ["Fórmula", "Equação", "Melhor Para"],
                 "rows": [
-                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; a mais amplamente usada"],
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 reps; a mais amplamente usada"
+                  ],
                   ["Epley (1985)", "w × (1 + r / 30)", "Uso geral; ligeiramente conservadora"],
                   ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Faixas de repetições moderadas"],
                   ["Lombardi (1989)", "w × r^0,1", "Faixas de poucas repetições"],
-                  ["Mayhew et al. (1992)", "w / (0,522 + 0,419 × e^{−0,055r})", "Ampla faixa de reps; modelo exponencial"],
+                  [
+                    "Mayhew et al. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Ampla faixa de reps; modelo exponencial"
+                  ],
                   ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Linear; conservadora"],
-                  ["Wathen (1994)", "w / (0,488 + 0,539 × e^{−0,035r})", "Faixas de mais repetições"]
+                  [
+                    "Wathen (1994)",
+                    "w / (0,488 + 0,539 × e^{−0,035r})",
+                    "Faixas de mais repetições"
+                  ]
                 ]
               },
               "answer2": "As Repetições em Reserva (RIR) são adicionadas às repetições reais antes de aplicar qualquer fórmula (reps_ajustadas = reps + RIR). Isso mapeia o esforço submáximo para um equivalente de esforço máximo, portanto uma série de 8 reps com 2 RIR é tratada como 10 reps até a falha para fins de estimativa do 1RM.",
               "citations": [
-                { "label": "Brzycki (1993)", "url": "https://doi.org/10.1080/07303084.1993.10606684" },
-                { "label": "Epley (1985)", "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7" },
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
                 { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
-                { "label": "Lombardi (1989)", "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum" },
-                { "label": "Mayhew et al. (1992)", "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/" },
-                { "label": "O'Connor et al. (1989)", "url": "https://www.vcalc.com/wiki/oconner-et-al" },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew et al. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor et al. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
                 { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
               ]
             },
@@ -900,9 +1036,18 @@
                 "A derivação elimina a necessidade de conhecer a cadência, removendo o 'paradoxo da cadência' onde caminhar mais rápido parece idêntico a caminhar mais devagar com a mesma contagem de passos."
               ],
               "citations": [
-                { "label": "ACSM Metabolic Equations — Walking VO₂", "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm" },
-                { "label": "Pratama et al. (2012) — Stride length estimation", "url": "https://www.mdpi.com/2072-4292/11/1/55" },
-                { "label": "Meta-Analysis — Stride length and height ratios", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/" }
+                {
+                  "label": "ACSM Metabolic Equations — Walking VO₂",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama et al. (2012) — Stride length estimation",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Meta-Analysis — Stride length and height ratios",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
               ]
             },
             {
@@ -913,7 +1058,10 @@
                 "Repetições para peso-alvo: O conjunto médio não tem inversa de forma fechada, então o app usa busca binária. Como as estimativas de 1RM são monotonamente crescentes em relação às repetições, a busca binária converge em ~6 iterações para qualquer faixa prática de repetições (1–50). Veja Helms et al. (2016) para a base de pesquisa de autorregulação baseada em RIR."
               ],
               "citations": [
-                { "label": "Helms et al. (2016) — RPE and RIR-based autoregulation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/" }
+                {
+                  "label": "Helms et al. (2016) — RPE and RIR-based autoregulation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
               ]
             }
           ]
@@ -941,8 +1089,14 @@
                 "Sem esse modelo, os períodos de cutting para indivíduos magros são sistematicamente subestimados — a regra clássica trata toda a perda de peso como gordura e superestimaria quanto de gordura é realmente perdida."
               ],
               "citations": [
-                { "label": "Forbes (1987) — Human Body Composition", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
-                { "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" }
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
               ]
             },
             {
@@ -955,8 +1109,14 @@
                 "O Musclog modela a TA como uma penalidade de 20 kcal/dia por kg de massa corporal total perdida (usando o ponto médio da faixa de Hall et al. de 20–30 kcal/dia/kg). Isso é aplicado na correção de deriva do TDEE ao calcular a partir de dados de rastreamento empírico, e na projeção de 90 dias para mostrar uma trajetória realista de perda de peso em vez de uma linear."
               ],
               "citations": [
-                { "label": "Müller et al. (2022) — Magnitude of AT in clinical trials", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
-                { "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+                {
+                  "label": "Müller et al. (2022) — Magnitude of AT in clinical trials",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
               ]
             },
             {
@@ -967,8 +1127,14 @@
                 "Pesquisas dietéticas mostram que as bebidas contribuem com aproximadamente 70–80 % da ingestão total de água em adultos (Gandy et al. 2016)."
               ],
               "citations": [
-                { "label": "PMC7692653 — Water intake from beverages vs food", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food" },
-                { "label": "PMC5946122 — Percentage of water intake from beverages", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/" }
+                {
+                  "label": "PMC7692653 — Water intake from beverages vs food",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Percentage of water intake from beverages",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
               ]
             }
           ]

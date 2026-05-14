@@ -124,7 +124,7 @@ export async function processWorkoutPlanResponse(
           weight,
           isBodyweight: matchedExercise.equipmentType === 'bodyweight',
           restTimeAfter: 60, // Default rest time
-          isDropSet: false,
+          setType: 'normal',
         });
       }
 

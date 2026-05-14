@@ -12,7 +12,21 @@
       "title": "Voedsellogboek Details",
       "trackedAmount": "{{amount}} {{unit}} bijgehouden",
       "dateAndTime": "Datum en Tijd",
-      "mealType": "Maaltijdtype"
+      "mealType": "Maaltijdtype",
+      "foodQuality": "Voedselkwaliteit",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "NOVA Groep",
+      "nova1": "Onbewerkt of minimaal bewerkt",
+      "nova2": "Verwerkte culinaire ingrediënten",
+      "nova3": "Bewerkte voedingsmiddelen",
+      "nova4": "Sterk bewerkte voedingsmiddelen",
+      "foodLabels": "Labels",
+      "labelOrganic": "Biologisch",
+      "labelVegan": "Veganistisch",
+      "labelVegetarian": "Vegetarisch",
+      "labelPalmOilFree": "Palmolie-vrij",
+      "labelFairTrade": "Eerlijke handel"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Weet je zeker dat je dit voedingsmiddel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
@@ -293,6 +307,7 @@
       "perServing": "Per portie",
       "perRecipe": "Per recept",
       "byGrams": "Op gram",
+      "byOz": "Op oz",
       "servingName": "Portienaam",
       "servingNamePlaceholder": "bijv. pannenkoek",
       "recipeServings": "Porties per recept",
@@ -341,7 +356,8 @@
       "tryAnotherSourceNotFound": "Geen voedingswaarden gevonden van andere bronnen.",
       "caloriesTooLowTitle": "Calorieën komen niet overeen met macro's",
       "caloriesTooLowBody": "De gerapporteerde calorieën komen niet overeen met wat de macro's suggereren. Afgeleide waarde: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Bijwerken naar {{inferred}} kcal >"
+      "caloriesTooLowAction": "Bijwerken naar {{inferred}} kcal >",
+      "showMoreNutrition": "Meer voedingsinformatie tonen"
     },
     "addFoodItemToMeal": {
       "title": "Item toevoegen",

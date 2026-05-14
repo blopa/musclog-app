@@ -37,7 +37,14 @@
       "addToWorkout": "Toevoegen aan workout",
       "restTime": "Rusttijd",
       "seconds": "sec",
-      "dropSet": "Dropset",
+      "setType": {
+        "label": "Set Type",
+        "normal": "Normaal",
+        "warmup": "Warming-up",
+        "failure": "Falen",
+        "drop_set": "Dropset",
+        "myo_rep": "Myo-rep"
+      },
       "notes": "Notities",
       "notesPlaceholder": "Apparaatinstellingen, greepvariaties, enz.",
       "muscleGroups": {

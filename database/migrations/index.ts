@@ -14,6 +14,7 @@ import migrationV12 from '@/database/migrations/2026/04/migration-v12';
 import migrationV13 from '@/database/migrations/2026/04/migration-v13';
 import migrationV14 from '@/database/migrations/2026/04/migration-v14';
 import migrationV15 from '@/database/migrations/2026/04/migration-v15';
+import migrationV16 from '@/database/migrations/2026/04/migration-v16';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -73,5 +74,7 @@ export const migrations = schemaMigrations({
     migrationV14,
     // Version 15: Add private/custom named servings for foods and meals add optional notes to saved-for-later meals
     migrationV15,
+    // Version 16: Replace is_drop_set boolean with set_type string on log/template sets; add nutriscore/ecoscore/nova_group/labels_json to foods
+    migrationV16,
   ],
 });

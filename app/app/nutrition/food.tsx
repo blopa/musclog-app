@@ -2097,7 +2097,7 @@ export default function FoodScreen() {
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
         title={selectedFoodItem?.displayName ?? t('food.generic')}
-        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false })} kcal`}
+        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${t('common.amount_kcal', { amount: formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false }) })}`}
         items={foodMenuItems}
       />
 

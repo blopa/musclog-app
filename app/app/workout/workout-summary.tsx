@@ -222,8 +222,16 @@ export default function WorkoutSummaryScreen() {
       '',
       `⏱ ${totalTime}`,
       `🏋️ ${volume}`,
-      ...(caloriesBurned > 0 ? [`🔥 ${formatAppInteger(locale, caloriesBurned)} kcal`] : []),
-      ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []),
+      ...(caloriesBurned > 0
+        ? [
+            `🔥 ${t('common.amount_kcal', {
+              amount: formatAppInteger(locale, caloriesBurned),
+            })}`,
+          ]
+        : []),
+      ...(personalRecords > 0
+        ? [t('workoutSummary.sharePersonalRecords', { count: personalRecords })]
+        : []),
     ];
 
     try {

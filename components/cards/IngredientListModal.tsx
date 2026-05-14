@@ -104,7 +104,9 @@ export function IngredientListModal({
                     intuitiveMode ? blurFilter(4) : undefined,
                   ]}
                 >
-                  {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal, 2)} kcal
+                  {t('common.amount_kcal', {
+                    amount: intuitiveMode ? '0' : formatRoundedDecimal(ingredient.kcal, 2),
+                  })}
                 </Text>
               </View>
             </View>

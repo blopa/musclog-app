@@ -24,7 +24,7 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'reps_in_reserve',
   'difficulty_level',
   'is_skipped',
-  'is_drop_set',
+  'set_type',
   'set_order',
   'deleted_at',
 ] as const;

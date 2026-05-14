@@ -69,6 +69,7 @@ import {
 } from '@/utils/localizedDecimalInput';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
+  extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
   getNutrimentValue,
   getProductName,
@@ -755,6 +756,25 @@ export function ScannedFoodDetailsModal({
             if (currentSource) {
               record.source = currentSource;
             }
+            const bp = (effectiveProductDetails as any)?.product;
+            if (bp) {
+              if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
+                record.nutriscore = bp.nutriscore_grade.toLowerCase();
+              }
+
+              if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
+                record.ecoscore = bp.ecoscore_grade.toLowerCase();
+              }
+
+              if (typeof bp.nova_group === 'number') {
+                record.novaGroup = bp.nova_group;
+              }
+
+              const extractedLabels = extractLabelsFromOFFProduct(bp);
+              if (extractedLabels != null) {
+                record.labels = extractedLabels;
+              }
+            }
           });
         }
 
@@ -844,6 +864,17 @@ export function ScannedFoodDetailsModal({
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
             micros: effectiveMicrosPer100g,
+            nutriscore:
+              typeof baseProduct.nutriscore_grade === 'string' && baseProduct.nutriscore_grade
+                ? baseProduct.nutriscore_grade.toLowerCase()
+                : undefined,
+            ecoscore:
+              typeof baseProduct.ecoscore_grade === 'string' && baseProduct.ecoscore_grade
+                ? baseProduct.ecoscore_grade.toLowerCase()
+                : undefined,
+            novaGroup:
+              typeof baseProduct.nova_group === 'number' ? baseProduct.nova_group : undefined,
+            labels: extractLabelsFromOFFProduct(baseProduct),
           },
           null
         );

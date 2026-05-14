@@ -87,6 +87,7 @@ import {
 } from '@/utils/localizedDecimalInput';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
+  extractLabelsFromOFFProduct,
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
@@ -134,6 +135,28 @@ function computeMealScaleFactor(
   }
 
   return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
+}
+
+function getMealDefaultTime(mealType: MealType, date: Date): Date {
+  const d = new Date(date);
+  switch (mealType) {
+    case 'breakfast':
+      d.setHours(8, 0, 0, 0);
+      break;
+    case 'lunch':
+      d.setHours(12, 30, 0, 0);
+      break;
+    case 'dinner':
+      d.setHours(19, 0, 0, 0);
+      break;
+    case 'snack':
+      d.setHours(15, 0, 0, 0);
+      break;
+    default:
+      d.setHours(12, 0, 0, 0);
+  }
+
+  return d;
 }
 
 function areCoreMacrosEffectivelyZero(data: {
@@ -254,6 +277,7 @@ export function FoodMealTrackingDetailsModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+  const [isTimePristine, setIsTimePristine] = useState(true);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(
     () => !!meal || !!food || !!foodLog || !!productFromSearch
@@ -370,6 +394,26 @@ export function FoodMealTrackingDetailsModal({
       setServingSize(initialServingSize);
     }
   }, [visible, initialServingSize, foodLog]);
+
+  // Keep selected time in sync with selected date and meal when the user hasn't manually picked a time.
+  // If the date is today, show current time ("now"); if it's another day, use a meal-type default.
+  useEffect(() => {
+    if (!isTimePristine) {
+      return;
+    }
+
+    const today = new Date();
+    const isToday =
+      selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate();
+
+    if (isToday) {
+      setSelectedTime(new Date());
+    } else {
+      setSelectedTime(getMealDefaultTime(selectedMeal, selectedDate));
+    }
+  }, [selectedDate, selectedMeal, isTimePristine]);
 
   // Check local database for food with barcode first
   useEffect(() => {
@@ -585,6 +629,7 @@ export function FoodMealTrackingDetailsModal({
           meal.getTotalNutrients(),
           MealService.getMealWithFoods(meal.id),
         ]);
+
         setMealNutrients({
           calories: roundToDecimalPlaces(nutrients.calories),
           protein: roundToDecimalPlaces(nutrients.protein),
@@ -592,6 +637,7 @@ export function FoodMealTrackingDetailsModal({
           fat: roundToDecimalPlaces(nutrients.fat),
           fiber: roundToDecimalPlaces(nutrients.fiber),
         });
+
         if (mealWithFoods?.foods) {
           let rawGrams = 0;
           const ingredientLabels: MealIngredient[] = [];
@@ -676,6 +722,7 @@ export function FoodMealTrackingDetailsModal({
     } catch (e) {
       setSelectedTime(new Date());
     }
+    setIsTimePristine(false);
 
     let cancelled = false;
     foodLog.getDecryptedSnapshot().then((snap: DecryptedNutritionLogSnapshot) => {
@@ -858,6 +905,7 @@ export function FoodMealTrackingDetailsModal({
         fiber =
           carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
       }
+
       const sodium =
         getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
 
@@ -980,6 +1028,7 @@ export function FoodMealTrackingDetailsModal({
 
         const sodium =
           getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+
         return {
           calories: getNum('energy-kcal') || getNum('kcal'),
           protein: getNum('proteins'),
@@ -1031,6 +1080,7 @@ export function FoodMealTrackingDetailsModal({
     if (food || localFood) {
       return { ...((food || localFood)!.micros ?? {}) };
     }
+
     if (
       foodLog &&
       foodLogDecrypted?.loggedMicros &&
@@ -1108,6 +1158,75 @@ export function FoodMealTrackingDetailsModal({
     );
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
 
+  const nutritionQuality = useMemo(() => {
+    if (food || localFood) {
+      const foodData = food || localFood;
+      const hasQuality =
+        foodData!.nutriscore ||
+        foodData!.ecoscore ||
+        foodData!.novaGroup != null ||
+        foodData!.labels;
+
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return {
+        nutriScore: foodData!.nutriscore,
+        ecoScore: foodData!.ecoscore,
+        novaGroup: foodData!.novaGroup,
+        labels: foodData!.labels,
+      };
+    }
+
+    if (productFromSearch?.source === 'openfood') {
+      const mapped = mapOpenFoodFactsProduct(productFromSearch);
+      const hasQuality =
+        mapped.nutriscore || mapped.ecoscore || mapped.novaGroup != null || mapped.labels;
+
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return {
+        nutriScore: mapped.nutriscore,
+        ecoScore: mapped.ecoscore,
+        novaGroup: mapped.novaGroup,
+        labels: mapped.labels,
+      };
+    }
+
+    const effectiveDetails = refetchedProductDetails ?? productDetails;
+    if (
+      isSuccessFoodDetailProductState(effectiveDetails) &&
+      (effectiveDetails as any).source !== 'usda'
+    ) {
+      const product = effectiveDetails.product;
+      const nutriScore =
+        typeof (product as any).nutriscore_grade === 'string' && (product as any).nutriscore_grade
+          ? (product as any).nutriscore_grade.toLowerCase()
+          : undefined;
+
+      const ecoScore =
+        typeof (product as any).ecoscore_grade === 'string' && (product as any).ecoscore_grade
+          ? (product as any).ecoscore_grade.toLowerCase()
+          : undefined;
+
+      const novaGroup =
+        typeof (product as any).nova_group === 'number' ? (product as any).nova_group : undefined;
+
+      const labels = extractLabelsFromOFFProduct(product as any);
+      const hasQuality = nutriScore || ecoScore || novaGroup != null || labels;
+      if (!hasQuality) {
+        return undefined;
+      }
+
+      return { nutriScore, ecoScore, novaGroup, labels };
+    }
+
+    return undefined;
+  }, [food, localFood, productFromSearch, productDetails, refetchedProductDetails]);
+
   const nutritionalData = useMemo(() => {
     const macroBase =
       editedOverrides &&
@@ -1153,26 +1272,32 @@ export function FoodMealTrackingDetailsModal({
     if (mode !== 'externalProduct' || refetchedProductDetails) {
       return false;
     }
+
     // Wait until local DB lookup finishes so we don't use placeholder zeros before we know local vs remote data.
     if (barcode && !hasCheckedLocalFood) {
       return false;
     }
+
     // While the barcode product query is active, wait for it to finish (not the USDA-by-id path).
     if (barcodeForHook && isLoadingDetails) {
       return false;
     }
+
     if (!areCoreMacrosEffectivelyZero(baseNutritionalData)) {
       return false;
     }
+
     const hasProductPayload =
       !!food ||
       !!localFood ||
       !!productFromSearch ||
       isSuccessFoodDetailProductState(productDetails) ||
       isSuccessFoodDetailProductState(refetchedProductDetails);
+
     if (!hasProductPayload) {
       return false;
     }
+
     return true;
   }, [
     mode,
@@ -1193,6 +1318,7 @@ export function FoodMealTrackingDetailsModal({
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
       return editedOverrides.name.trim();
     }
+
     if (meal) {
       return meal.name || t('meals.history.unknownMeal');
     }
@@ -1253,6 +1379,7 @@ export function FoodMealTrackingDetailsModal({
         if (brand && category) {
           return `${brand} • ${category}`;
         }
+
         return brand || category || '';
       }
       const brand = productFromSearch.brands;
@@ -1288,6 +1415,7 @@ export function FoodMealTrackingDetailsModal({
 
         return usdaBrand || usdaCategory || '';
       }
+
       const product2 = effectiveProductDetails.product;
       const brand = product2.brands;
       const categories = product2.categories;
@@ -1304,6 +1432,7 @@ export function FoodMealTrackingDetailsModal({
         return categories;
       }
     }
+
     return '';
   }, [
     productDetails,
@@ -1335,11 +1464,24 @@ export function FoodMealTrackingDetailsModal({
             // ignore
           }
         } else if (food || localFood) {
-          const baseValue =
-            (food || localFood)?.resolvedNutritionBasis === 'per_serving'
-              ? initialServingSize || 1
-              : initialServingSize || 100;
-          setServingSize(baseValue);
+          const targetFood = food || localFood;
+          if (targetFood?.resolvedNutritionBasis === 'per_serving') {
+            setServingSize(initialServingSize || 1);
+          } else if (initialServingSize) {
+            setServingSize(initialServingSize);
+          } else {
+            try {
+              const defaultPortion = await targetFood?.getDefaultPortionAsync();
+              if (defaultPortion?.gramWeight && defaultPortion.gramWeight > 0) {
+                setServingSize(defaultPortion.gramWeight);
+              } else {
+                setServingSize(100);
+              }
+            } catch {
+              setServingSize(100);
+            }
+          }
+
           hasInitializedServingSizeRef.current = true;
         } else {
           const defaultSize = await getDefaultServingSize();
@@ -1872,6 +2014,19 @@ export function FoodMealTrackingDetailsModal({
             ...effectiveMicrosPer100g,
           },
           isFavorite: isFavorite,
+          nutriscore:
+            typeof productToSave.nutriscore_grade === 'string' && productToSave.nutriscore_grade
+              ? productToSave.nutriscore_grade.toLowerCase()
+              : productFromSearch?.nutriscore,
+          ecoscore:
+            typeof productToSave.ecoscore_grade === 'string' && productToSave.ecoscore_grade
+              ? productToSave.ecoscore_grade.toLowerCase()
+              : productFromSearch?.ecoscore,
+          novaGroup:
+            typeof productToSave.nova_group === 'number'
+              ? productToSave.nova_group
+              : productFromSearch?.novaGroup,
+          labels: extractLabelsFromOFFProduct(productToSave) ?? productFromSearch?.labels,
         },
         matchedPortion
       );
@@ -2129,6 +2284,7 @@ export function FoodMealTrackingDetailsModal({
       setLocalCanEdit(canEdit);
       hasInitializedServingSizeRef.current = false;
       setSelectedTime(new Date());
+      setIsTimePristine(true);
     }
   }, [visible, canEdit]);
 
@@ -2224,6 +2380,7 @@ export function FoodMealTrackingDetailsModal({
     >
       <View className="flex-1 px-4 pb-6">
         <FoodNutritionSectionCard
+          nutritionQuality={nutritionQuality}
           food={scaledFood}
           canEdit={localCanEdit || hasNoNutrition}
           mode={mode}
@@ -2276,6 +2433,7 @@ export function FoodMealTrackingDetailsModal({
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 productServingSize={parsedProductServingSize}
                 productMeasures={parsedProductMeasures}
+                showPortionSelector={Boolean(food || localFood)}
               />
             )
           ) : resolvedMealServingMode ? (
@@ -2358,7 +2516,10 @@ export function FoodMealTrackingDetailsModal({
         onClose={() => setIsTimePickerVisible(false)}
         selectedTime={selectedTime}
         title={t('timePicker.selectTime')}
-        onTimeSelect={setSelectedTime}
+        onTimeSelect={(time) => {
+          setSelectedTime(time);
+          setIsTimePristine(false);
+        }}
       />
       <BottomPopUp
         visible={isEditPopUpVisible ? editForm !== null : false}

@@ -9,7 +9,7 @@
       "f4": "100% private & on-device",
       "tagline": "AI-powered fitness & nutrition tracking — free & open source.",
       "qrcode_title": "Download the App",
-      "qrcode_text": "Scan to download for Android"
+      "qrcode_text": "Scan to download Musclog"
     },
     "hero": {
       "badge1": "★ FREE & OPEN SOURCE",
@@ -232,7 +232,14 @@
       "appleTitle": "DOWNLOAD ON THE",
       "appleStore": "App Store",
       "comingSoon": "App Store coming soon!",
-      "qrButton": "Show QR codes"
+      "qrButton": "Show QR codes",
+      "qrTitle": "QR codes",
+      "qrDescription": "Open the Android or iOS install page directly on your phone.",
+      "qrGoogleLabel": "Android install page",
+      "qrAppleLabel": "iOS install page",
+      "qrGoogleAlt": "QR code for Google Play",
+      "qrAppleAlt": "QR code for the App Store",
+      "close": "Close"
     },
     "download": {
       "pageTitle": "Download Musclog",
@@ -333,10 +340,7 @@
           "typesCollected": {
             "title": "Types of Data Collected",
             "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:",
-            "items": [
-              "First name and last name",
-              "Usage Data"
-            ]
+            "items": ["First name and last name", "Usage Data"]
           },
           "googleOAuth": {
             "title": "Google OAuth Data",
@@ -852,13 +856,7 @@
               "question": "How are my daily macros calculated?",
               "answer": "Macro splits are based on fitness goal, using IOM AMDR ranges as the framework and ISSN/ACSM sport-specific research for refinement.",
               "table": {
-                "head": [
-                  "Goal",
-                  "Carbs",
-                  "Protein",
-                  "Fat",
-                  "Rationale"
-                ],
+                "head": ["Goal", "Carbs", "Protein", "Fat", "Rationale"],
                 "rows": [
                   [
                     "Weight Loss",
@@ -969,47 +967,19 @@
               "question": "How are one-rep max (1RM) estimates calculated?",
               "answer": "Musclog calculates 1RM using an ensemble of seven published formulas and averages their outputs. Averaging reduces the systematic error of any single formula, which each have different accuracy profiles across rep ranges.",
               "table": {
-                "head": [
-                  "Formula",
-                  "Equation",
-                  "Best For"
-                ],
+                "head": ["Formula", "Equation", "Best For"],
                 "rows": [
-                  [
-                    "Brzycki (1993)",
-                    "w / (1.0278 − 0.0278 × r)",
-                    "2–10 reps; most widely used"
-                  ],
-                  [
-                    "Epley (1985)",
-                    "w × (1 + r / 30)",
-                    "General use; slightly conservative"
-                  ],
-                  [
-                    "Lander (1985)",
-                    "w / (1.013 − 0.0267 × r)",
-                    "Moderate rep ranges"
-                  ],
-                  [
-                    "Lombardi (1989)",
-                    "w × r^0.1",
-                    "Low rep ranges"
-                  ],
+                  ["Brzycki (1993)", "w / (1.0278 − 0.0278 × r)", "2–10 reps; most widely used"],
+                  ["Epley (1985)", "w × (1 + r / 30)", "General use; slightly conservative"],
+                  ["Lander (1985)", "w / (1.013 − 0.0267 × r)", "Moderate rep ranges"],
+                  ["Lombardi (1989)", "w × r^0.1", "Low rep ranges"],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0.522 + 0.419 × e^{−0.055r})",
                     "Wide rep range; exponential model"
                   ],
-                  [
-                    "O'Connor et al. (1989)",
-                    "w × (1 + 0.025 × r)",
-                    "Linear; conservative"
-                  ],
-                  [
-                    "Wathen (1994)",
-                    "w / (0.488 + 0.539 × e^{−0.035r})",
-                    "Higher rep ranges"
-                  ]
+                  ["O'Connor et al. (1989)", "w × (1 + 0.025 × r)", "Linear; conservative"],
+                  ["Wathen (1994)", "w / (0.488 + 0.539 × e^{−0.035r})", "Higher rep ranges"]
                 ]
               },
               "answer2": "Reps in Reserve (RIR) is added to actual reps before applying any formula (adjusted_reps = reps + RIR). This maps submaximal effort to a full-effort equivalent, so a set of 8 reps with 2 RIR is treated as 10 reps at failure for 1RM estimation purposes.",

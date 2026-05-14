@@ -1353,7 +1353,11 @@ async function estimateMissingIngredients(
   knownIngredients: TrackMealIngredient[],
   mealName: string
 ): Promise<MissingIngredientMacrosResponse | null> {
-  const systemPrompt = getMissingIngredientsMacrosPrompt(mealName, knownIngredients, newIngredients);
+  const systemPrompt = getMissingIngredientsMacrosPrompt(
+    mealName,
+    knownIngredients,
+    newIngredients
+  );
   const fns = getEstimateMissingIngredientsFunctions();
   const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 

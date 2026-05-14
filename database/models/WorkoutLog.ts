@@ -104,7 +104,7 @@ export default class WorkoutLog extends Model {
       repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
-      isDropSet?: boolean;
+      setType?: string;
     }
   ): Promise<void> {
     const isOnlyRestTimeAfter = Object.keys(data).length === 1 && data.restTimeAfter !== undefined;
@@ -148,8 +148,8 @@ export default class WorkoutLog extends Model {
         }
         updatedSet.difficultyLevel = data.difficultyLevel;
       }
-      if (data.isDropSet !== undefined) {
-        updatedSet.isDropSet = data.isDropSet;
+      if (data.setType !== undefined) {
+        updatedSet.setType = data.setType;
       }
       updatedSet.updatedAt = now;
     });
@@ -201,7 +201,7 @@ export default class WorkoutLog extends Model {
       logSet.restTimeAfter = 0;
       logSet.repsInReserve = 0;
       logSet.difficultyLevel = 0;
-      logSet.isDropSet = false;
+      logSet.setType = 'normal';
       logSet.setOrder = newSetOrder;
       logSet.createdAt = now;
       logSet.updatedAt = now;
@@ -262,7 +262,7 @@ export default class WorkoutLog extends Model {
         logSet.repsInReserve = 0;
         logSet.difficultyLevel = 0;
         logSet.isSkipped = false;
-        logSet.isDropSet = false;
+        logSet.setType = 'normal';
         logSet.setOrder = maxSetOrder + i + 1;
         logSet.createdAt = now;
         logSet.updatedAt = now;

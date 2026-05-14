@@ -21,7 +21,10 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
 
   // Stable reference so NavigationMenu (wrapped in memo) does not re-render
   // when this layout re-renders due to screen state changes.
-  const handleCameraPress = useCallback(() => openCamera({ showBarcodeTextSearch: true }), [openCamera]);
+  const handleCameraPress = useCallback(
+    () => openCamera({ showBarcodeTextSearch: true }),
+    [openCamera]
+  );
 
   return (
     <View

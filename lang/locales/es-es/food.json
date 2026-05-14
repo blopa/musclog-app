@@ -12,7 +12,21 @@
       "title": "Detalles del Registro",
       "trackedAmount": "{{amount}} {{unit}} registrado",
       "dateAndTime": "Fecha y Hora",
-      "mealType": "Tipo de comida"
+      "mealType": "Tipo de comida",
+      "foodQuality": "Calidad alimentaria",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "Grupo NOVA",
+      "nova1": "Sin procesar o mínimamente procesado",
+      "nova2": "Ingredientes culinarios procesados",
+      "nova3": "Alimentos procesados",
+      "nova4": "Alimentos ultraprocesados",
+      "foodLabels": "Etiquetas",
+      "labelOrganic": "Orgánico",
+      "labelVegan": "Vegano",
+      "labelVegetarian": "Vegetariano",
+      "labelPalmOilFree": "Sin aceite de palma",
+      "labelFairTrade": "Comercio justo"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "¿Estás seguro de que deseas eliminar este alimento? Esta acción no se puede deshacer.",
@@ -293,6 +307,7 @@
       "perServing": "Por porción",
       "perRecipe": "Por receta",
       "byGrams": "Por gramos",
+      "byOz": "Por oz",
       "servingName": "Nombre de la porción",
       "servingNamePlaceholder": "ej. tortita",
       "recipeServings": "Porciones de la receta",
@@ -341,7 +356,8 @@
       "tryAnotherSourceNotFound": "No se encontraron datos de nutrición de otras fuentes.",
       "caloriesTooLowTitle": "Las calorías no coinciden con los macros",
       "caloriesTooLowBody": "Las calorías reportadas no coinciden con lo que sugieren los macros. Valor inferido: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Actualizar a {{inferred}} kcal >"
+      "caloriesTooLowAction": "Actualizar a {{inferred}} kcal >",
+      "showMoreNutrition": "Ver más detalles nutricionales"
     },
     "addFoodItemToMeal": {
       "title": "Añadir Alimento",

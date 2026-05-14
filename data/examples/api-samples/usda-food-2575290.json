@@ -1,0 +1,390 @@
+{
+  "discontinuedDate": "",
+  "foodComponents": [],
+  "foodAttributes": [
+    {
+      "id": 3041908,
+      "value": 5,
+      "name": "Nutrient Added"
+    },
+    {
+      "id": 3041909,
+      "value": 6,
+      "name": "Nutrient Removed"
+    },
+    {
+      "id": 3041910,
+      "value": 19
+    }
+  ],
+  "foodPortions": [],
+  "fdcId": 2575290,
+  "description": "EGG",
+  "publicationDate": "6/29/2023",
+  "foodNutrients": [
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1162,
+        "number": "401",
+        "name": "Vitamin C, total ascorbic acid",
+        "rank": 6300,
+        "unitName": "mg"
+      },
+      "foodNutrientDerivation": {
+        "id": 75,
+        "code": "LCCD",
+        "description": "Calculated from a daily value percentage per serving size measure"
+      },
+      "id": 32114123,
+      "amount": 0
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1008,
+        "number": "208",
+        "name": "Energy",
+        "rank": 300,
+        "unitName": "kcal"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114117,
+      "amount": 513
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 2000,
+        "number": "269",
+        "name": "Total Sugars",
+        "rank": 1510,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114118,
+      "amount": 54.49
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1079,
+        "number": "291",
+        "name": "Fiber, total dietary",
+        "rank": 1200,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114119,
+      "amount": 3.2
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1004,
+        "number": "204",
+        "name": "Total lipid (fat)",
+        "rank": 800,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114115,
+      "amount": 28.85
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1087,
+        "number": "301",
+        "name": "Calcium, Ca",
+        "rank": 5300,
+        "unitName": "mg"
+      },
+      "foodNutrientDerivation": {
+        "id": 75,
+        "code": "LCCD",
+        "description": "Calculated from a daily value percentage per serving size measure"
+      },
+      "id": 32114120,
+      "amount": 128
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1257,
+        "number": "605",
+        "name": "Fatty acids, total trans",
+        "rank": 15400,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114125,
+      "amount": 0
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1106,
+        "number": "320",
+        "name": "Vitamin A, RAE",
+        "rank": 7420,
+        "unitName": "µg"
+      },
+      "foodNutrientDerivation": {
+        "id": 75,
+        "code": "LCCD",
+        "description": "Calculated from a daily value percentage per serving size measure"
+      },
+      "id": 32114127,
+      "amount": 0
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1005,
+        "number": "205",
+        "name": "Carbohydrate, by difference",
+        "rank": 1110,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114116,
+      "amount": 57.69
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1093,
+        "number": "307",
+        "name": "Sodium, Na",
+        "rank": 5800,
+        "unitName": "mg"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114122,
+      "amount": 176
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1089,
+        "number": "303",
+        "name": "Iron, Fe",
+        "rank": 5400,
+        "unitName": "mg"
+      },
+      "foodNutrientDerivation": {
+        "id": 75,
+        "code": "LCCD",
+        "description": "Calculated from a daily value percentage per serving size measure"
+      },
+      "id": 32114121,
+      "amount": 0
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1253,
+        "number": "601",
+        "name": "Cholesterol",
+        "rank": 15700,
+        "unitName": "mg"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114124,
+      "amount": 32
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1003,
+        "number": "203",
+        "name": "Protein",
+        "rank": 600,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114114,
+      "amount": 6.41
+    },
+    {
+      "type": "FoodNutrient",
+      "nutrient": {
+        "id": 1258,
+        "number": "606",
+        "name": "Fatty acids, total saturated",
+        "rank": 9700,
+        "unitName": "g"
+      },
+      "foodNutrientDerivation": {
+        "id": 70,
+        "code": "LCCS",
+        "description": "Calculated from value per serving size measure"
+      },
+      "id": 32114126,
+      "amount": 16.03
+    }
+  ],
+  "dataType": "Branded",
+  "foodClass": "Branded",
+  "shortDescription": "",
+  "modifiedDate": "5/4/2023",
+  "availableDate": "5/4/2023",
+  "brandOwner": "Mars Chocolate North America LLC",
+  "brandName": "SNICKERS",
+  "dataSource": "LI",
+  "brandedFoodCategory": "Candy",
+  "gtinUpc": "040000449270",
+  "householdServingFullText": "1 EGG",
+  "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+  "marketCountry": "United States",
+  "servingSizeUnit": "GRM",
+  "packageWeight": "1.10 oz/31.2 g",
+  "foodUpdateLog": [
+    {
+      "discontinuedDate": "",
+      "foodAttributes": [],
+      "fdcId": 2575290,
+      "description": "EGG",
+      "publicationDate": "6/29/2023",
+      "dataType": "Branded",
+      "foodClass": "Branded",
+      "shortDescription": "",
+      "modifiedDate": "5/4/2023",
+      "availableDate": "5/4/2023",
+      "brandOwner": "Mars Chocolate North America LLC",
+      "brandName": "SNICKERS",
+      "dataSource": "LI",
+      "brandedFoodCategory": "Candy",
+      "gtinUpc": "040000449270",
+      "householdServingFullText": "1 EGG",
+      "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+      "marketCountry": "United States",
+      "servingSizeUnit": "GRM",
+      "packageWeight": "1.10 oz/31.2 g"
+    },
+    {
+      "discontinuedDate": "",
+      "foodAttributes": [],
+      "fdcId": 2523301,
+      "description": "EGG",
+      "publicationDate": "4/27/2023",
+      "dataType": "Branded",
+      "foodClass": "Branded",
+      "shortDescription": "",
+      "modifiedDate": "3/2/2023",
+      "availableDate": "3/2/2023",
+      "brandOwner": "Mars Chocolate North America LLC",
+      "brandName": "SNICKERS",
+      "dataSource": "LI",
+      "brandedFoodCategory": "Candy",
+      "gtinUpc": "040000449270",
+      "householdServingFullText": "1 EGG",
+      "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+      "marketCountry": "United States",
+      "servingSizeUnit": "MG",
+      "packageWeight": "1.10 oz/31.2 g"
+    },
+    {
+      "discontinuedDate": "",
+      "foodAttributes": [],
+      "fdcId": 2111189,
+      "description": "EGG",
+      "publicationDate": "10/28/2021",
+      "dataType": "Branded",
+      "foodClass": "Branded",
+      "modifiedDate": "11/13/2017",
+      "availableDate": "11/13/2017",
+      "brandOwner": "Mars Chocolate North America LLC",
+      "brandName": "SNICKERS",
+      "dataSource": "LI",
+      "brandedFoodCategory": "Candy",
+      "gtinUpc": "040000449270",
+      "householdServingFullText": "1.1 ONZ",
+      "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+      "marketCountry": "United States",
+      "servingSizeUnit": "g",
+      "packageWeight": "1.1 oz/31.2 g"
+    },
+    {
+      "discontinuedDate": "",
+      "foodAttributes": [],
+      "fdcId": 1634277,
+      "description": "EGG",
+      "publicationDate": "3/19/2021",
+      "dataType": "Branded",
+      "foodClass": "Branded",
+      "modifiedDate": "11/13/2017",
+      "availableDate": "11/13/2017",
+      "brandOwner": "Mars Chocolate North America LLC",
+      "brandName": "SNICKERS",
+      "dataSource": "LI",
+      "brandedFoodCategory": "Candy",
+      "gtinUpc": "040000449270",
+      "householdServingFullText": "1.1 ONZ",
+      "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+      "marketCountry": "United States",
+      "servingSizeUnit": "g"
+    },
+    {
+      "discontinuedDate": "",
+      "foodAttributes": [],
+      "fdcId": 1342122,
+      "description": "EGG",
+      "publicationDate": "2/26/2021",
+      "dataType": "Branded",
+      "foodClass": "Branded",
+      "modifiedDate": "11/13/2017",
+      "availableDate": "11/13/2017",
+      "brandOwner": "Mars Chocolate North America LLC",
+      "brandName": "SNICKERS",
+      "subbrandName": "",
+      "dataSource": "LI",
+      "brandedFoodCategory": "Candy",
+      "gtinUpc": "040000449270",
+      "householdServingFullText": "1.1 ONZ",
+      "ingredients": "MILK CHOCOLATE (SUGAR, COCOA BUTTER, CHOCOLATE, SKIM MILK, LACTOSE, MILKFAT, SOY LECITHIN, ARTIFICIAL FLAVOR), PEANUTS, SUGAR, INVERT SUGAR, HYDROGENATED PALM KERNEL OIL AND/OR PALM OIL, CORN SYRUP, SKIM MILK, LESS THAN 2% - BUTTER, MILKFAT, PARTIALLY HYDROGENATED SOYBEAN OIL, SALT, SOY LECITHIN, POTASSIUM SORBATE TO MAINTAIN FRESHNESS, ARTIFICIAL FLAVOR.",
+      "marketCountry": "United States",
+      "servingSizeUnit": "g",
+      "packageWeight": "",
+      "notaSignificantSourceOf": ""
+    }
+  ],
+  "labelNutrients": {}
+}

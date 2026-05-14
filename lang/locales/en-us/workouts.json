@@ -37,7 +37,14 @@
       "addToWorkout": "Add to Workout",
       "restTime": "Rest Time",
       "seconds": "sec",
-      "dropSet": "Drop set",
+      "setType": {
+        "label": "Set Type",
+        "normal": "Normal",
+        "warmup": "Warm-up",
+        "failure": "Failure",
+        "drop_set": "Drop Set",
+        "myo_rep": "Myo-rep"
+      },
       "notes": "Notes",
       "notesPlaceholder": "Machine settings, grip variations, etc.",
       "muscleGroups": {

@@ -37,7 +37,14 @@
       "addToWorkout": "Adicionar ao Treino",
       "restTime": "Tempo de Descanso",
       "seconds": "seg",
-      "dropSet": "Drop set",
+      "setType": {
+        "label": "Tipo de Série",
+        "normal": "Normal",
+        "warmup": "Aquecimento",
+        "failure": "Falha",
+        "drop_set": "Drop Set",
+        "myo_rep": "Myo-rep"
+      },
       "notes": "Observações",
       "notesPlaceholder": "Configurações da máquina, variações de pegada, etc.",
       "muscleGroups": {

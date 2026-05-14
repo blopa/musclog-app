@@ -18,7 +18,7 @@ export default class WorkoutLogSet extends Model {
   @field('reps_in_reserve') repsInReserve!: number;
   @field('is_skipped') isSkipped?: boolean;
   @field('difficulty_level') difficultyLevel!: number;
-  @field('is_drop_set') isDropSet!: boolean;
+  @field('set_type') setType!: string;
   @field('set_order') setOrder!: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

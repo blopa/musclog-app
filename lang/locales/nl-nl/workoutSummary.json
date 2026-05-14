@@ -9,6 +9,8 @@
     "youCrushedIt": "Je hebt het geweldig gedaan!",
     "feedbackSubmitted": "Workout-feedback succesvol ingediend.",
     "shareText": "Ik heb net een workout geknald!",
+    "sharePersonalRecords_one": "🏆 {{count}} PR",
+    "sharePersonalRecords_other": "🏆 {{count}} PR's",
     "shareSummary": "Samenvatting delen",
     "workoutCompleted": "Workout voltooid!",
     "viewDetails": "Details bekijken",

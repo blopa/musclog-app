@@ -9,6 +9,8 @@
     "youCrushedIt": "You Crushed It!",
     "feedbackSubmitted": "Workout feedback submitted successfully.",
     "shareText": "I just crushed a workout!",
+    "sharePersonalRecords_one": "🏆 {{count}} PR",
+    "sharePersonalRecords_other": "🏆 {{count}} PRs",
     "shareSummary": "Share Summary",
     "workoutCompleted": "Workout Completed!",
     "viewDetails": "View Details",

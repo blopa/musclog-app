@@ -183,7 +183,7 @@ export interface ExerciseMetadata {
   isBodyweight: boolean;
   restTimeAfter?: number;
   groupId?: string;
-  isDropSet?: boolean;
+  setType?: string;
   notes?: string;
 }
 
@@ -245,7 +245,7 @@ export function extractExerciseMetadata(exercise: ExerciseInWorkout): ExerciseMe
     isBodyweight: exercise.isBodyweight,
     restTimeAfter: exercise.restTimeAfter,
     groupId: exercise.groupId,
-    isDropSet: exercise.isDropSet,
+    setType: exercise.setType,
     notes: exercise.notes,
   };
 }
@@ -271,7 +271,7 @@ export function updateMetadataWithGroupIds(
         isBodyweight: false,
         restTimeAfter: 60,
         groupId: ex.groupId,
-        isDropSet: false,
+        setType: 'normal',
         notes: undefined,
       });
     }
@@ -295,7 +295,7 @@ export function exercisesToWorkoutFormat(
       isBodyweight: false,
       restTimeAfter: 60,
       groupId: undefined,
-      isDropSet: false,
+      setType: 'normal',
       notes: undefined,
     };
 
@@ -313,7 +313,7 @@ export function exercisesToWorkoutFormat(
       weight: meta.weight,
       isBodyweight: meta.isBodyweight,
       restTimeAfter: meta.restTimeAfter,
-      isDropSet: meta.isDropSet,
+      setType: meta.setType,
     };
   });
 }

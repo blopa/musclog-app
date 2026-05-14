@@ -18,7 +18,7 @@ export function useEditWorkoutSets() {
       repsInReserve?: number;
       difficultyLevel?: number;
       isSkipped?: boolean;
-      isDropSet?: boolean;
+      setType?: string;
     }[],
     deletedSetIds?: string[]
   ) => {

@@ -121,7 +121,7 @@ export const schema = appSchema({
         { name: 'target_weight', type: 'number' },
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -177,7 +177,7 @@ export const schema = appSchema({
         { name: 'reps_in_reserve', type: 'number' },
         { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -203,9 +203,17 @@ export const schema = appSchema({
         { name: 'fiber', type: 'number' },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. USDA, Open Food Facts)
 
+        // External food scoring and processing metadata
+        { name: 'nutriscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'ecoscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'nova_group', type: 'number', isOptional: true, isIndexed: true }, // 1 (unprocessed) to 4 (ultra-processed)
+
         // Extended data (Fiber, Sugar, Sodium, Vitamins, Alcohol, etc.) stored as JSON
         // Usage: @json decorator in the Model
         { name: 'micros_json', type: 'string', isOptional: true },
+
+        // Label and ingredient analysis data from Open Food Facts (organic, vegan, etc.)
+        { name: 'labels_json', type: 'string', isOptional: true },
 
         { name: 'is_favorite', type: 'boolean' }, // Quick access
         { name: 'source', type: 'string', isOptional: true }, // 'user', 'usda', 'ai', 'openfood', 'foundation'
@@ -324,6 +332,9 @@ export const schema = appSchema({
         { name: 'logged_carbs', type: 'string' }, // isEncrypted: true
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
+        { name: 'logged_nutriscore', type: 'string', isOptional: true }, // Snapshot of the food's nutriscore at log time
+        { name: 'logged_ecoscore', type: 'string', isOptional: true }, // Snapshot of the food's ecoscore at log time
+        { name: 'logged_nova_group', type: 'number', isOptional: true }, // Snapshot of the food's nova group at log time
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'snapshot_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 

@@ -1,7 +1,14 @@
 'use client';
 
 import Head from 'expo-router/head';
-import { BookOpen, ChevronDown, Dumbbell, FlaskConical, HelpCircle, Salad } from 'lucide-react-native';
+import {
+  BookOpen,
+  ChevronDown,
+  Dumbbell,
+  FlaskConical,
+  HelpCircle,
+  Salad,
+} from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -106,10 +113,7 @@ function FormulaBlock({ formula, caption }: { formula: string; caption?: string 
         borderColor: 'rgba(0,255,163,0.2)',
       }}
     >
-      <code
-        className="block text-sm font-mono tracking-wide"
-        style={{ color: BRAND_GREEN_BRIGHT }}
-      >
+      <code className="block font-mono text-sm tracking-wide" style={{ color: BRAND_GREEN_BRIGHT }}>
         {formula}
       </code>
       {caption ? (
@@ -123,38 +127,37 @@ function FormulaBlock({ formula, caption }: { formula: string; caption?: string 
 
 function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
   return (
-    <div className="my-4 overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+    <div
+      className="my-4 overflow-x-auto rounded-xl border"
+      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+    >
       <table className="w-full min-w-[520px] text-sm">
         <thead>
-        <tr style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
-          {head.map((h) => (
-            <th
-              key={h}
-              className="px-4 py-3 text-left font-semibold text-white first:rounded-tl-xl last:rounded-tr-xl"
-            >
-              {h}
-            </th>
-          ))}
-        </tr>
-        </thead>
-        <tbody>
-        {rows.map((row, i) => (
-          <tr
-            key={i}
-            className="border-t"
-            style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-          >
-            {row.map((cell, j) => (
-              <td
-                key={j}
-                className="px-4 py-3"
-                style={{ color: j === 0 ? '#E5E7EB' : BODY_TEXT_SOFT }}
+          <tr style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+            {head.map((h) => (
+              <th
+                key={h}
+                className="px-4 py-3 text-left font-semibold text-white first:rounded-tl-xl last:rounded-tr-xl"
               >
-                {cell}
-              </td>
+                {h}
+              </th>
             ))}
           </tr>
-        ))}
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i} className="border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+              {row.map((cell, j) => (
+                <td
+                  key={j}
+                  className="px-4 py-3"
+                  style={{ color: j === 0 ? '#E5E7EB' : BODY_TEXT_SOFT }}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -162,12 +165,12 @@ function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
 }
 
 function AccordionItem({
-                         accentColor,
-                         isOpen,
-                         item,
-                         onToggle,
-                         sourcesLabel,
-                       }: {
+  accentColor,
+  isOpen,
+  item,
+  onToggle,
+  sourcesLabel,
+}: {
   accentColor: string;
   isOpen: boolean;
   item: FaqItem;
@@ -198,12 +201,9 @@ function AccordionItem({
 
       {isOpen ? (
         <div className="px-6 pb-6">
-          <div
-            className="mb-4 border-t"
-            style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-          />
+          <div className="mb-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }} />
 
-          <p className="mb-3 leading-relaxed text-sm" style={{ color: BODY_TEXT_SOFT }}>
+          <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {item.answer}
           </p>
 
@@ -211,7 +211,9 @@ function AccordionItem({
             <ul className="mb-3 space-y-2">
               {item.bullets.map((b, i) => (
                 <li key={i} className="flex gap-2.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
-                  <span className="mt-1 shrink-0" style={{ color: accentColor }}>›</span>
+                  <span className="mt-1 shrink-0" style={{ color: accentColor }}>
+                    ›
+                  </span>
                   <span>{b}</span>
                 </li>
               ))}
@@ -225,7 +227,7 @@ function AccordionItem({
           {item.table ? <DataTable head={item.table.head} rows={item.table.rows} /> : null}
 
           {item.answer2 ? (
-            <p className="mb-3 leading-relaxed text-sm" style={{ color: BODY_TEXT_SOFT }}>
+            <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {item.answer2}
             </p>
           ) : null}
@@ -321,7 +323,10 @@ export default function Faq() {
               {t('titlePrefix')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
             </h1>
-            <p className="mx-auto max-w-xl leading-relaxed text-sm md:text-base" style={{ color: BODY_TEXT_SOFT }}>
+            <p
+              className="mx-auto max-w-xl text-sm leading-relaxed md:text-base"
+              style={{ color: BODY_TEXT_SOFT }}
+            >
               {t('description')}
             </p>
           </div>

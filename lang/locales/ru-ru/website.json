@@ -9,7 +9,7 @@
       "f4": "100% приватно и на устройстве",
       "tagline": "Трекинг фитнеса и питания на базе ИИ — бесплатно и с открытым кодом.",
       "qrcode_title": "Скачать приложение",
-      "qrcode_text": "Сканируйте для загрузки на Android"
+      "qrcode_text": "Отсканируйте, чтобы скачать Musclog"
     },
     "hero": {
       "badge1": "★ БЕСПЛАТНО И OPEN SOURCE",
@@ -232,7 +232,14 @@
       "appleTitle": "СКАЧАТЬ В",
       "appleStore": "App Store",
       "comingSoon": "App Store скоро!",
-      "qrButton": "Показать QR-коды"
+      "qrButton": "Показать QR-коды",
+      "qrTitle": "QR-коды",
+      "qrDescription": "Откройте страницу установки для Android или iOS прямо на телефоне.",
+      "qrGoogleLabel": "Страница установки для Android",
+      "qrAppleLabel": "Страница установки для iOS",
+      "qrGoogleAlt": "QR-код для Google Play",
+      "qrAppleAlt": "QR-код для App Store",
+      "close": "Закрыть"
     },
     "download": {
       "pageTitle": "Скачать Musclog",
@@ -737,9 +744,18 @@
                 "Mifflin-St Jeor (по умолчанию, без необходимости указывать % ЖМ): BMR = 10 × вес + 6,25 × рост − 5 × возраст ± половая константа (+5 мужчины, −161 женщины). Подтверждено как наиболее точное уравнение BMR для общей популяции в нескольких мета-анализах."
               ],
               "citations": [
-                { "label": "Katch-McArdle (1996)", "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27" },
-                { "label": "Mifflin et al. (1990)", "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/" },
-                { "label": "Frankenfield et al. meta-analysis (2005)", "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/" }
+                {
+                  "label": "Katch-McArdle (1996)",
+                  "url": "https://en.wikipedia.org/wiki/Basal_metabolic_rate#cite_note-27"
+                },
+                {
+                  "label": "Mifflin et al. (1990)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+                },
+                {
+                  "label": "Frankenfield et al. meta-analysis (2005)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/15883556/"
+                }
               ]
             },
             {
@@ -751,10 +767,22 @@
                 "Коррекция дрейфа TDEE: Эмпирический TDEE представляет среднее значение за промежуточный период. Для проецирования на текущее состояние тела применяются три наложенные корректировки: (1) Снижение метаболизма тканей в покое — тощая ткань сжигает ~13 ккал/кг/сут, жировая ткань ~4,5 ккал/кг/сут (Elia 1992); (2) Снижение, масштабируемое по активности — механические затраты на движение масштабируются с массой тела; (3) Штраф адаптивного термогенеза 20 ккал/сут на кг потерянной массы тела, отражающий подавление NEAT и гормональную адаптацию (лептин, щитовидная железа)."
               ],
               "citations": [
-                { "label": "Hall (2008) — Energy deficit per unit weight loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
-                { "label": "Elia (1992) — RMR tissue coefficients", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/" },
-                { "label": "Müller et al. (2022) — Adaptive thermogenesis", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
-                { "label": "Hall et al. (NIH) — Dynamic energy balance", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+                {
+                  "label": "Hall (2008) — Energy deficit per unit weight loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Elia (1992) — RMR tissue coefficients",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4192648/"
+                },
+                {
+                  "label": "Müller et al. (2022) — Adaptive thermogenesis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
               ]
             },
             {
@@ -768,9 +796,18 @@
               "formula": "эффективные_ккал/кг = 9 440 × доля_жира + 1 820 × тощая_доля",
               "formulaCaption": "Смешанная энергетическая плотность Hall (2008) — доля жира определяется кривой Форбса / функцией Ламберта W",
               "citations": [
-                { "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
-                { "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" },
-                { "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" }
+                {
+                  "label": "Forbes (1987) — Body Composition: Growth, Aging, Nutrition, and Activity",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — Predicting metabolic adaptation, body weight, and body fat changes",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                },
+                {
+                  "label": "Hall (2008) — Required Energy Deficit per unit Weight Loss",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                }
               ]
             },
             {
@@ -782,9 +819,18 @@
                 "Минимальные калорийные порги: 1 200 ккал/сут для женщин, 1 500 ккал/сут для мужчин, и никогда ниже 80 % от BMR — в соответствии с рекомендациями IOM / Национальных академий."
               ],
               "citations": [
-                { "label": "Garthe et al. (2011) — Rate of weight loss and body composition", "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/" },
-                { "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders", "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/" },
-                { "label": "ACE — Body fat percentage classifications", "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/" }
+                {
+                  "label": "Garthe et al. (2011) — Rate of weight loss and body composition",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/21558571/"
+                },
+                {
+                  "label": "Iraki et al. (2019) — Nutrition recommendations for natural bodybuilders",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/31247944/"
+                },
+                {
+                  "label": "ACE — Body fat percentage classifications",
+                  "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8602/body-fat-percentage-charting-averages-in-men-and-women-very-well-health/"
+                }
               ]
             },
             {
@@ -796,8 +842,14 @@
                 "Прогноз при профиците: Запасы гликогена предполагаются полными, поэтому весь профицит идёт на синтез жировой/тощей ткани по затратам, взвешенным по опыту (начинающий ~5 300 ккал/кг набранного; средний ~6 370 ккал/кг; продвинутый ~7 430 ккал/кг)."
               ],
               "citations": [
-                { "label": "Hall (2008) — Energy density of weight loss tissue", "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045" },
-                { "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" }
+                {
+                  "label": "Hall (2008) — Energy density of weight loss tissue",
+                  "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000045"
+                },
+                {
+                  "label": "Schoenfeld et al. — Hypertrophy effect sizes, trained vs untrained",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                }
               ]
             },
             {
@@ -806,19 +858,61 @@
               "table": {
                 "head": ["Цель", "Углеводы", "Белок", "Жиры", "Обоснование"],
                 "rows": [
-                  ["Снижение веса", "40 %", "30 %", "30 %", "Высокий белок для сохранения мышц в дефиците (ISSN/Helms 2014)"],
-                  ["Гипертрофия", "45 %", "30 %", "25 %", "Белок для MPS; углеводы поддерживают объёмный тренинг"],
-                  ["Сила", "50 %", "30 %", "20 %", "Углеводы для гликолитических потребностей тяжёлых базовых упражнений"],
-                  ["Выносливость", "55 %", "20 %", "25 %", "Приоритет гликогену (рекомендация ACSM 6–10 г/кг/сут)"],
-                  ["Общий фитнес", "45 %", "25 %", "30 %", "Центрировано в рамках AMDR IOM для общего фитнеса"]
+                  [
+                    "Снижение веса",
+                    "40 %",
+                    "30 %",
+                    "30 %",
+                    "Высокий белок для сохранения мышц в дефиците (ISSN/Helms 2014)"
+                  ],
+                  [
+                    "Гипертрофия",
+                    "45 %",
+                    "30 %",
+                    "25 %",
+                    "Белок для MPS; углеводы поддерживают объёмный тренинг"
+                  ],
+                  [
+                    "Сила",
+                    "50 %",
+                    "30 %",
+                    "20 %",
+                    "Углеводы для гликолитических потребностей тяжёлых базовых упражнений"
+                  ],
+                  [
+                    "Выносливость",
+                    "55 %",
+                    "20 %",
+                    "25 %",
+                    "Приоритет гликогену (рекомендация ACSM 6–10 г/кг/сут)"
+                  ],
+                  [
+                    "Общий фитнес",
+                    "45 %",
+                    "25 %",
+                    "30 %",
+                    "Центрировано в рамках AMDR IOM для общего фитнеса"
+                  ]
                 ]
               },
               "answer2": "Для целей «Снижение веса» и «Гипертрофия», когда известен % ЖМ, белок обновляется с процентного показателя до абсолютной цели на основе БМТ (2,7 г/кг БМТ для снижения веса; 2,0 г/кг БМТ для гипертрофии), а оставшиеся калории делятся пропорционально между углеводами и жирами.",
               "citations": [
-                { "label": "IOM Dietary Reference Intakes (2005) — AMDR", "url": "https://doi.org/10.17226/10490" },
-                { "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/" },
-                { "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/" },
-                { "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand", "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/" }
+                {
+                  "label": "IOM Dietary Reference Intakes (2005) — AMDR",
+                  "url": "https://doi.org/10.17226/10490"
+                },
+                {
+                  "label": "Jäger et al. (2017) — ISSN Protein and Exercise Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/28642676/"
+                },
+                {
+                  "label": "Helms et al. (2014) — Evidence-based bodybuilding nutrition recommendations",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4033492/"
+                },
+                {
+                  "label": "Thomas et al. (2016) — ACSM/ADA/DC Joint Position Stand",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26891166/"
+                }
               ]
             },
             {
@@ -831,9 +925,18 @@
                 "Эти соотношения используют термодинамические затраты на синтез: 8 840 ккал/кг для жира и 3 900 ккал/кг для мышц, что отражает ~87 % эффективности синтеза для жира и ~32 % для мышц (большая часть энергии синтеза мышечного белка рассеивается в виде тепла)."
               ],
               "citations": [
-                { "label": "Schoenfeld et al. — Resistance training load meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/" },
-                { "label": "Sports Med (2023) — Plateau in muscle growth with resistance training", "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/" },
-                { "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/" }
+                {
+                  "label": "Schoenfeld et al. — Resistance training load meta-analysis",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/33497853/"
+                },
+                {
+                  "label": "Sports Med (2023) — Plateau in muscle growth with resistance training",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/37787845/"
+                },
+                {
+                  "label": "NCBI (2022) — Thermodynamic efficiency of muscle protein synthesis",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8775074/"
+                }
               ]
             },
             {
@@ -845,8 +948,14 @@
                 "Оба штрафа суммируются аддитивно при их применимости (например, человек с ожирением старше 50 лет → −5 % суммарно)."
               ],
               "citations": [
-                { "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction", "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/" },
-                { "label": "St-Onge & Gallagher (2010) — Body composition changes with aging", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/" }
+                {
+                  "label": "Müller et al. (2013) — Metabolic adaptation to caloric restriction",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/26399868/"
+                },
+                {
+                  "label": "St-Onge & Gallagher (2010) — Body composition changes with aging",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2880224/"
+                }
               ]
             }
           ]
@@ -860,23 +969,54 @@
               "table": {
                 "head": ["Формула", "Уравнение", "Лучше всего для"],
                 "rows": [
-                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 повт.; наиболее широко используемая"],
-                  ["Epley (1985)", "w × (1 + r / 30)", "Общее использование; немного консервативная"],
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 повт.; наиболее широко используемая"
+                  ],
+                  [
+                    "Epley (1985)",
+                    "w × (1 + r / 30)",
+                    "Общее использование; немного консервативная"
+                  ],
                   ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Умеренные диапазоны повторений"],
                   ["Lombardi (1989)", "w × r^0,1", "Малые диапазоны повторений"],
-                  ["Mayhew et al. (1992)", "w / (0,522 + 0,419 × e^{−0,055r})", "Широкий диапазон повт.; экспоненциальная модель"],
+                  [
+                    "Mayhew et al. (1992)",
+                    "w / (0,522 + 0,419 × e^{−0,055r})",
+                    "Широкий диапазон повт.; экспоненциальная модель"
+                  ],
                   ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Линейная; консервативная"],
-                  ["Wathen (1994)", "w / (0,488 + 0,539 × e^{−0,035r})", "Высокие диапазоны повторений"]
+                  [
+                    "Wathen (1994)",
+                    "w / (0,488 + 0,539 × e^{−0,035r})",
+                    "Высокие диапазоны повторений"
+                  ]
                 ]
               },
               "answer2": "Повторения в запасе (RIR) добавляются к фактическим повторениям перед применением любой формулы (скорректированные_повт. = повт. + RIR). Это сопоставляет субмаксимальное усилие с эквивалентом полного усилия, поэтому подход из 8 повторений с 2 RIR рассматривается как 10 повторений до отказа для целей оценки 1ПМ.",
               "citations": [
-                { "label": "Brzycki (1993)", "url": "https://doi.org/10.1080/07303084.1993.10606684" },
-                { "label": "Epley (1985)", "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7" },
+                {
+                  "label": "Brzycki (1993)",
+                  "url": "https://doi.org/10.1080/07303084.1993.10606684"
+                },
+                {
+                  "label": "Epley (1985)",
+                  "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
+                },
                 { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
-                { "label": "Lombardi (1989)", "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum" },
-                { "label": "Mayhew et al. (1992)", "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/" },
-                { "label": "O'Connor et al. (1989)", "url": "https://www.vcalc.com/wiki/oconner-et-al" },
+                {
+                  "label": "Lombardi (1989)",
+                  "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
+                },
+                {
+                  "label": "Mayhew et al. (1992)",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/18714230/"
+                },
+                {
+                  "label": "O'Connor et al. (1989)",
+                  "url": "https://www.vcalc.com/wiki/oconner-et-al"
+                },
                 { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
               ]
             },
@@ -900,9 +1040,18 @@
                 "Вывод устраняет необходимость знать каденс, убирая «парадокс каденса», при котором более быстрая ходьба кажется идентичной более медленной при одинаковом количестве шагов."
               ],
               "citations": [
-                { "label": "ACSM Metabolic Equations — Walking VO₂", "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm" },
-                { "label": "Pratama et al. (2012) — Stride length estimation", "url": "https://www.mdpi.com/2072-4292/11/1/55" },
-                { "label": "Meta-Analysis — Stride length and height ratios", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/" }
+                {
+                  "label": "ACSM Metabolic Equations — Walking VO₂",
+                  "url": "https://www.scribd.com/document/811373428/ecuaciones-acsm"
+                },
+                {
+                  "label": "Pratama et al. (2012) — Stride length estimation",
+                  "url": "https://www.mdpi.com/2072-4292/11/1/55"
+                },
+                {
+                  "label": "Meta-Analysis — Stride length and height ratios",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8235531/"
+                }
               ]
             },
             {
@@ -913,7 +1062,10 @@
                 "Повторения для целевого веса: Усреднённый ансамбль не имеет аналитической обратной формулы, поэтому приложение использует бинарный поиск. Поскольку оценки 1ПМ монотонно возрастают по повторениям, бинарный поиск сходится примерно за 6 итераций для любого практического диапазона повторений (1–50). См. Helms et al. (2016) для научной основы авторегуляции на основе RIR."
               ],
               "citations": [
-                { "label": "Helms et al. (2016) — RPE and RIR-based autoregulation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/" }
+                {
+                  "label": "Helms et al. (2016) — RPE and RIR-based autoregulation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4961270/"
+                }
               ]
             }
           ]
@@ -941,8 +1093,14 @@
                 "Без этой модели диеты для снижения веса у стройных людей систематически недооцениваются — классическое правило рассматривает всю потерю веса как жир и переоценивало бы фактически потерянный жир."
               ],
               "citations": [
-                { "label": "Forbes (1987) — Human Body Composition", "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1" },
-                { "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/" }
+                {
+                  "label": "Forbes (1987) — Human Body Composition",
+                  "url": "https://link.springer.com/book/10.1007/978-1-4612-4654-1"
+                },
+                {
+                  "label": "Hall (2007) — PMC2376748 — Forbes curve formalisation",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2376748/"
+                }
               ]
             },
             {
@@ -955,8 +1113,14 @@
                 "Musclog моделирует АТ как штраф 20 ккал/сут на кг общей потерянной массы тела (используя среднее значение диапазона Hall et al. 20–30 ккал/сут/кг). Это применяется при коррекции дрейфа TDEE на основе эмпирических данных отслеживания и в 90-дневном прогнозе для отображения реалистичной, нелинейной траектории снижения веса."
               ],
               "citations": [
-                { "label": "Müller et al. (2022) — Magnitude of AT in clinical trials", "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/" },
-                { "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/" }
+                {
+                  "label": "Müller et al. (2022) — Magnitude of AT in clinical trials",
+                  "url": "https://pubmed.ncbi.nlm.nih.gov/36863769/"
+                },
+                {
+                  "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
               ]
             },
             {
@@ -967,8 +1131,14 @@
                 "Диетологические исследования показывают, что напитки обеспечивают примерно 70–80 % общего потребления воды у взрослых (Gandy et al. 2016)."
               ],
               "citations": [
-                { "label": "PMC7692653 — Water intake from beverages vs food", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food" },
-                { "label": "PMC5946122 — Percentage of water intake from beverages", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/" }
+                {
+                  "label": "PMC7692653 — Water intake from beverages vs food",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7692653/#:~:text=In%201945%2C%20the%20U.S.%20Food"
+                },
+                {
+                  "label": "PMC5946122 — Percentage of water intake from beverages",
+                  "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5946122/"
+                }
               ]
             }
           ]

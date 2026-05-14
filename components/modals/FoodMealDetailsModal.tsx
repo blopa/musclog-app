@@ -60,11 +60,9 @@ function formatLogDateTime(createdAt: number, t: ReturnType<typeof useTranslatio
   if (isToday(date)) {
     return `${t('food.header.today')}, ${timeStr}`;
   }
-
   if (isYesterday(date)) {
     return `${t('common.yesterday')}, ${timeStr}`;
   }
-
   return `${format(date, 'MMM d')}, ${timeStr}`;
 }
 
@@ -113,6 +111,10 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formattedGrams = formatDisplayGrams(locale, units, gramWeight);
   const dateTimeLabel = formatLogDateTime(log.createdAt, t);
+
+  const nutriScore = log.loggedNutriscore || food?.nutriscore;
+  const ecoScore = log.loggedEcoscore || food?.ecoscore;
+  const novaGroup = log.loggedNovaGroup ?? food?.novaGroup;
 
   return (
     <FullScreenModal
@@ -182,6 +184,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
           showName={false}
+          nutritionQuality={{ nutriScore, ecoScore, novaGroup, labels: food?.labels }}
         />
       </ScrollView>
     </FullScreenModal>

@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
 import { database } from '@/database/database-instance';
-import Food, { type MicrosData } from '@/database/models/Food';
+import Food, { type FoodLabels, type MicrosData } from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
 import MealFood from '@/database/models/MealFood';
@@ -28,6 +28,10 @@ export class FoodService {
       sodium?: number;
       micros?: MicrosData;
       isFavorite?: boolean;
+      nutriscore?: string;
+      ecoscore?: string;
+      novaGroup?: number;
+      labels?: FoodLabels;
     },
     customPortion?: FoodPortion | null,
     externalId?: string
@@ -72,6 +76,22 @@ export class FoodService {
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'openfood';
         food.nutritionBasis = 'per_100g';
+        if (nutritionData.nutriscore != null) {
+          food.nutriscore = nutritionData.nutriscore;
+        }
+
+        if (nutritionData.ecoscore != null) {
+          food.ecoscore = nutritionData.ecoscore;
+        }
+
+        if (nutritionData.novaGroup != null) {
+          food.novaGroup = nutritionData.novaGroup;
+        }
+
+        if (nutritionData.labels != null) {
+          food.labels = nutritionData.labels;
+        }
+
         food.createdAt = now;
         food.updatedAt = now;
       });

@@ -12,7 +12,21 @@
       "title": "Food Log Details",
       "trackedAmount": "{{amount}} {{unit}} tracked",
       "dateAndTime": "Date & Time",
-      "mealType": "Meal type"
+      "mealType": "Meal type",
+      "foodQuality": "Food Quality",
+      "nutriScore": "Nutri-Score",
+      "ecoScore": "Eco-Score",
+      "novaGroup": "NOVA Group",
+      "nova1": "Unprocessed or minimally processed",
+      "nova2": "Processed culinary ingredients",
+      "nova3": "Processed foods",
+      "nova4": "Ultra-processed foods",
+      "foodLabels": "Labels",
+      "labelOrganic": "Organic",
+      "labelVegan": "Vegan",
+      "labelVegetarian": "Vegetarian",
+      "labelPalmOilFree": "Palm-oil free",
+      "labelFairTrade": "Fair trade"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Are you sure you want to delete this food? This action cannot be undone.",
@@ -293,6 +307,7 @@
       "perServing": "Per serving",
       "perRecipe": "Per recipe",
       "byGrams": "By grams",
+      "byOz": "By oz",
       "servingName": "Serving name",
       "servingNamePlaceholder": "e.g. pancake",
       "recipeServings": "Recipe servings",
@@ -341,7 +356,8 @@
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
       "caloriesTooLowTitle": "Calories don't match the macros",
       "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Update to {{inferred}} kcal >"
+      "caloriesTooLowAction": "Update to {{inferred}} kcal >",
+      "showMoreNutrition": "Show more nutrition details"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",
