@@ -6,7 +6,6 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { GenericCard } from '@/components/cards/GenericCard';
-import { NutritionQualityData } from '@/components/cards/NutritionQualityData';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import NutritionLog from '@/database/models/NutritionLog';
@@ -185,14 +184,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
           showName={false}
-        />
-
-        {/* TODO: move the NutritionQualityData to just be inside the FoodNutritionSectionCard */}
-        <NutritionQualityData
-          nutriScore={nutriScore}
-          ecoScore={ecoScore}
-          novaGroup={novaGroup}
-          labels={food?.labels}
+          nutritionQuality={{ nutriScore, ecoScore, novaGroup, labels: food?.labels }}
         />
       </ScrollView>
     </FullScreenModal>

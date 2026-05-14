@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import type { FoodLabels } from '@/database/models/Food';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -10,6 +11,7 @@ import { blurFilter } from '@/utils/blurFilter';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
+import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
 
@@ -42,6 +44,13 @@ export type FoodDetailsNutritionSectionMode =
   | 'externalProduct'
   | null;
 
+type NutritionQuality = {
+  nutriScore?: string;
+  ecoScore?: string;
+  novaGroup?: number;
+  labels?: FoodLabels;
+};
+
 type FoodNutritionSectionProps = {
   food: FoodData;
   canEdit: boolean;
@@ -63,6 +72,7 @@ type FoodNutritionSectionProps = {
   intuitiveMode?: boolean;
   showName?: boolean;
   ingredients?: MealIngredient[];
+  nutritionQuality?: NutritionQuality;
 };
 
 export function FoodNutritionSectionCard({
@@ -82,6 +92,7 @@ export function FoodNutritionSectionCard({
   intuitiveMode = false,
   showName = true,
   ingredients,
+  nutritionQuality,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -219,156 +230,170 @@ export function FoodNutritionSectionCard({
         </View>
       ) : null}
 
-      {showAdditionalNutrition ? (
-        <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-          <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
-            {t('food.foodDetails.additionalNutrition')}
-          </Text>
-          <View className="gap-2">
-            {nutritionalData.fiber > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal(nutritionalData.fiber * scaleFactor, 1)}
-                  g
-                </Text>
-              </View>
-            ) : null}
-            {(nutritionalData.sugar ?? 0) > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.sugars')}</Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal((nutritionalData.sugar ?? 0) * scaleFactor, 1)}
-                  g
-                </Text>
-              </View>
-            ) : null}
-            {nutritionalData.saturatedFat > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
-                  {t('food.foodDetails.saturatedFat')}
-                </Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}
-                  g
-                </Text>
-              </View>
-            ) : null}
-            {nutritionalData.sodium > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}
-                  g
-                </Text>
-              </View>
-            ) : null}
-            {(nutritionalData.alcohol ?? 0) > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.macros.alcohol')}</Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal((nutritionalData.alcohol ?? 0) * scaleFactor, 1)}
-                  g
-                </Text>
-              </View>
-            ) : null}
-            {(nutritionalData.potassium ?? 0) > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
-                  {t('food.foodDetails.potassium')}
-                </Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal(
-                        (nutritionalData.potassium ?? 0) * scaleFactor * 1000,
-                        1
-                      )}
-                  mg
-                </Text>
-              </View>
-            ) : null}
-            {(nutritionalData.magnesium ?? 0) > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">
-                  {t('food.foodDetails.magnesium')}
-                </Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal(
-                        (nutritionalData.magnesium ?? 0) * scaleFactor * 1000,
-                        1
-                      )}
-                  mg
-                </Text>
-              </View>
-            ) : null}
-            {(nutritionalData.zinc ?? 0) > 0 ? (
-              <View className="flex-row justify-between">
-                <Text className="text-sm text-text-secondary">{t('food.foodDetails.zinc')}</Text>
-                <Text
-                  className="text-sm font-medium text-text-primary"
-                  style={intuitiveMode ? blurFilter(4) : undefined}
-                >
-                  {intuitiveMode
-                    ? '0'
-                    : formatRoundedDecimal((nutritionalData.zinc ?? 0) * scaleFactor * 1000, 2)}
-                  mg
-                </Text>
-              </View>
-            ) : null}
-            {isLoadingDetails ? (
-              <View className="mt-2 flex-row items-center justify-center gap-2">
-                <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                <Text className="text-xs text-text-secondary">
-                  {t('food.foodDetails.loadingMoreDetails')}
-                </Text>
-              </View>
-            ) : null}
-          </View>
-        </View>
-      ) : showLoadingOnly ? (
-        <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-          <View className="flex-row items-center justify-center gap-2">
-            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-            <Text className="text-xs text-text-secondary">
-              {t('food.foodDetails.loadingDetails')}
+      {/* TODO: add some sort of accordion, that shows a bit of this section, with a fade part cut and a button to show more, but no need for a button to close it */}
+      <>
+        {nutritionQuality ? (
+          <NutritionQualityData
+            nutriScore={nutritionQuality.nutriScore}
+            ecoScore={nutritionQuality.ecoScore}
+            novaGroup={nutritionQuality.novaGroup}
+            labels={nutritionQuality.labels}
+          />
+        ) : null}
+
+        {showAdditionalNutrition ? (
+          <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+            <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
+              {t('food.foodDetails.additionalNutrition')}
             </Text>
+            <View className="gap-2">
+              {nutritionalData.fiber > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal(nutritionalData.fiber * scaleFactor, 1)}
+                    g
+                  </Text>
+                </View>
+              ) : null}
+              {(nutritionalData.sugar ?? 0) > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">
+                    {t('food.foodDetails.sugars')}
+                  </Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal((nutritionalData.sugar ?? 0) * scaleFactor, 1)}
+                    g
+                  </Text>
+                </View>
+              ) : null}
+              {nutritionalData.saturatedFat > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">
+                    {t('food.foodDetails.saturatedFat')}
+                  </Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}
+                    g
+                  </Text>
+                </View>
+              ) : null}
+              {nutritionalData.sodium > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}
+                    g
+                  </Text>
+                </View>
+              ) : null}
+              {(nutritionalData.alcohol ?? 0) > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">{t('food.macros.alcohol')}</Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal((nutritionalData.alcohol ?? 0) * scaleFactor, 1)}
+                    g
+                  </Text>
+                </View>
+              ) : null}
+              {(nutritionalData.potassium ?? 0) > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">
+                    {t('food.foodDetails.potassium')}
+                  </Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal(
+                          (nutritionalData.potassium ?? 0) * scaleFactor * 1000,
+                          1
+                        )}
+                    mg
+                  </Text>
+                </View>
+              ) : null}
+              {(nutritionalData.magnesium ?? 0) > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">
+                    {t('food.foodDetails.magnesium')}
+                  </Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal(
+                          (nutritionalData.magnesium ?? 0) * scaleFactor * 1000,
+                          1
+                        )}
+                    mg
+                  </Text>
+                </View>
+              ) : null}
+              {(nutritionalData.zinc ?? 0) > 0 ? (
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-text-secondary">{t('food.foodDetails.zinc')}</Text>
+                  <Text
+                    className="text-sm font-medium text-text-primary"
+                    style={intuitiveMode ? blurFilter(4) : undefined}
+                  >
+                    {intuitiveMode
+                      ? '0'
+                      : formatRoundedDecimal((nutritionalData.zinc ?? 0) * scaleFactor * 1000, 2)}
+                    mg
+                  </Text>
+                </View>
+              ) : null}
+              {isLoadingDetails ? (
+                <View className="mt-2 flex-row items-center justify-center gap-2">
+                  <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                  <Text className="text-xs text-text-secondary">
+                    {t('food.foodDetails.loadingMoreDetails')}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
-        </View>
-      ) : null}
+        ) : showLoadingOnly ? (
+          <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+            <View className="flex-row items-center justify-center gap-2">
+              <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+              <Text className="text-xs text-text-secondary">
+                {t('food.foodDetails.loadingDetails')}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+      </>
     </View>
   );
 }

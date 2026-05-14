@@ -211,6 +211,7 @@ export function NutritionQualityData({
         <NovaRow group={novaGroup} description={novaDescriptions[novaGroup] ?? String(novaGroup)} />
       ) : null}
 
+      {/* TODO: make this scrollable sideways */}
       {activeLabels.length > 0 ? <LabelsRow activeLabels={activeLabels} /> : null}
     </View>
   );
