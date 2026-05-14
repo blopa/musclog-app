@@ -2,18 +2,7 @@
   "totalHits": 50921,
   "currentPage": 1,
   "totalPages": 2547,
-  "pageList": [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10
-  ],
+  "pageList": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   "foodSearchCriteria": {
     "query": "egg",
     "generalSearchInput": "egg",
@@ -41,9 +30,7 @@
       "servingSize": 31.200000762939453,
       "householdServingFullText": "1 EGG",
       "shortDescription": "",
-      "tradeChannels": [
-        "NO_TRADE_CHANNEL"
-      ],
+      "tradeChannels": ["NO_TRADE_CHANNEL"],
       "allHighlightFields": "",
       "score": 957.9052,
       "microbes": [],
@@ -306,9 +293,7 @@
       "servingSizeUnit": "g",
       "servingSize": 30,
       "householdServingFullText": "30 pieces",
-      "tradeChannels": [
-        "NO_TRADE_CHANNEL"
-      ],
+      "tradeChannels": ["NO_TRADE_CHANNEL"],
       "allHighlightFields": "",
       "score": 957.9052,
       "microbes": [],
@@ -454,9 +439,7 @@
       "servingSize": 44,
       "householdServingFullText": "3 Tbsp",
       "shortDescription": "",
-      "tradeChannels": [
-        "NO_TRADE_CHANNEL"
-      ],
+      "tradeChannels": ["NO_TRADE_CHANNEL"],
       "allHighlightFields": "",
       "score": 957.9052,
       "microbes": [],

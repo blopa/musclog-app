@@ -20,35 +20,17 @@
     ],
     "added_countries_tags": [],
     "additives_n": 5,
-    "additives_original_tags": [
-      "en:e471",
-      "en:e472e",
-      "en:e481",
-      "en:e200",
-      "en:e300"
-    ],
-    "additives_tags": [
-      "en:e200",
-      "en:e300",
-      "en:e471",
-      "en:e472e",
-      "en:e481"
-    ],
+    "additives_original_tags": ["en:e471", "en:e472e", "en:e481", "en:e200", "en:e300"],
+    "additives_tags": ["en:e200", "en:e300", "en:e471", "en:e472e", "en:e481"],
     "allergens": "",
     "allergens_from_ingredients": "en:gluten, en:gluten, en:gluten, gerst,  tarwe, tarwe",
     "allergens_from_user": "(en) ",
-    "allergens_hierarchy": [
-      "en:gluten"
-    ],
+    "allergens_hierarchy": ["en:gluten"],
     "allergens_lc": "en",
-    "allergens_tags": [
-      "en:gluten"
-    ],
+    "allergens_tags": ["en:gluten"],
     "amino_acids_tags": [],
     "brands": "AH",
-    "brands_tags": [
-      "albert-heijn"
-    ],
+    "brands_tags": ["albert-heijn"],
     "categories": "Plant-based foods and beverages,Plant-based foods,Cereals and potatoes,Breads,Sliced breads",
     "categories_hierarchy": [
       "en:plant-based-foods-and-beverages",
@@ -111,13 +93,9 @@
       "municorn-calorie-counter-app"
     ],
     "countries": "Netherlands",
-    "countries_hierarchy": [
-      "en:netherlands"
-    ],
+    "countries_hierarchy": ["en:netherlands"],
     "countries_lc": "en",
-    "countries_tags": [
-      "en:netherlands"
-    ],
+    "countries_tags": ["en:netherlands"],
     "created_t": 1661107486,
     "creator": "halal-app-chakib",
     "data_quality_bugs_tags": [],
@@ -206,10 +184,7 @@
       "app-macrofactor",
       "app-caloriecounterapp"
     ],
-    "debug_param_sorted_langs": [
-      "ne",
-      "nl"
-    ],
+    "debug_param_sorted_langs": ["ne", "nl"],
     "ecoscore_data": {
       "adjustments": {
         "origins_of_ingredients": {
@@ -223,12 +198,8 @@
           ],
           "epi_score": 0,
           "epi_value": -5,
-          "origins_from_categories": [
-            "en:unknown"
-          ],
-          "origins_from_origins_field": [
-            "en:unknown"
-          ],
+          "origins_from_categories": ["en:unknown"],
+          "origins_from_origins_field": ["en:unknown"],
           "transportation_score": 0,
           "transportation_scores": {
             "ad": 0,
@@ -635,9 +606,7 @@
     },
     "ecoscore_grade": "b",
     "ecoscore_score": 72,
-    "ecoscore_tags": [
-      "b"
-    ],
+    "ecoscore_tags": ["b"],
     "editors_tags": [
       "aleene",
       "bertusdendroef",
@@ -653,17 +622,10 @@
     ],
     "emb_codes": "",
     "emb_codes_tags": [],
-    "entry_dates_tags": [
-      "2022-08-21",
-      "2022-08",
-      "2022"
-    ],
+    "entry_dates_tags": ["2022-08-21", "2022-08", "2022"],
     "expiration_date": "",
     "food_groups": "en:bread",
-    "food_groups_tags": [
-      "en:cereals-and-potatoes",
-      "en:bread"
-    ],
+    "food_groups_tags": ["en:cereals-and-potatoes", "en:bread"],
     "generic_name": "Tijger volkoren",
     "generic_name_en": "",
     "generic_name_ne": "",
@@ -1061,23 +1023,11 @@
       }
     ],
     "ingredients_analysis": {
-      "en:may-contain-palm-oil": [
-        "en:e471",
-        "en:e481",
-        "en:e471"
-      ],
-      "en:vegan-status-unknown": [
-        "nl:veresterd-met-monoacetyl"
-      ],
-      "en:vegetarian-status-unknown": [
-        "nl:veresterd-met-monoacetyl"
-      ]
+      "en:may-contain-palm-oil": ["en:e471", "en:e481", "en:e471"],
+      "en:vegan-status-unknown": ["nl:veresterd-met-monoacetyl"],
+      "en:vegetarian-status-unknown": ["nl:veresterd-met-monoacetyl"]
     },
-    "ingredients_analysis_tags": [
-      "en:may-contain-palm-oil",
-      "en:vegan",
-      "en:vegetarian"
-    ],
+    "ingredients_analysis_tags": ["en:may-contain-palm-oil", "en:vegan", "en:vegetarian"],
     "ingredients_from_palm_oil_tags": [],
     "ingredients_hierarchy": [
       "en:whole-wheat-flour",
@@ -1116,10 +1066,7 @@
     ],
     "ingredients_lc": "nl",
     "ingredients_n": 24,
-    "ingredients_n_tags": [
-      "24",
-      "21-30"
-    ],
+    "ingredients_n_tags": ["24", "21-30"],
     "ingredients_non_nutritive_sweeteners_n": 0,
     "ingredients_original_tags": [
       "en:whole-wheat-flour",
@@ -1232,16 +1179,10 @@
     "interface_version_modified": "20150316.jqm2",
     "known_ingredients_n": 23,
     "labels": "en:vegan, en:vegetarian",
-    "labels_hierarchy": [
-      "en:vegetarian",
-      "en:vegan"
-    ],
+    "labels_hierarchy": ["en:vegetarian", "en:vegan"],
     "labels_lc": "en",
     "labels_old": "",
-    "labels_tags": [
-      "en:vegetarian",
-      "en:vegan"
-    ],
+    "labels_tags": ["en:vegetarian", "en:vegan"],
     "lang": "nl",
     "languages": {
       "en:dutch": 4,
@@ -1253,29 +1194,11 @@
       "ne": 2,
       "nl": 4
     },
-    "languages_hierarchy": [
-      "en:dutch",
-      "en:english",
-      "en:nepali"
-    ],
-    "languages_tags": [
-      "en:dutch",
-      "en:english",
-      "en:nepali",
-      "en:3",
-      "en:multilingual"
-    ],
-    "last_edit_dates_tags": [
-      "2026-05-07",
-      "2026-05",
-      "2026"
-    ],
+    "languages_hierarchy": ["en:dutch", "en:english", "en:nepali"],
+    "languages_tags": ["en:dutch", "en:english", "en:nepali", "en:3", "en:multilingual"],
+    "last_edit_dates_tags": ["2026-05-07", "2026-05", "2026"],
     "last_editor": "municorn-calorie-counter-app",
-    "last_image_dates_tags": [
-      "2024-07-23",
-      "2024-07",
-      "2024"
-    ],
+    "last_image_dates_tags": ["2024-07-23", "2024-07", "2024"],
     "last_image_t": 1721725921,
     "last_modified_by": "municorn-calorie-counter-app",
     "last_modified_t": 1778167016,
@@ -1314,53 +1237,21 @@
     "nova_groups": "4",
     "nova_groups_markers": {
       "3": [
-        [
-          "ingredients",
-          "en:preservative"
-        ],
-        [
-          "ingredients",
-          "en:salt"
-        ]
+        ["ingredients", "en:preservative"],
+        ["ingredients", "en:salt"]
       ],
       "4": [
-        [
-          "additives",
-          "en:e471"
-        ],
-        [
-          "additives",
-          "en:e472e"
-        ],
-        [
-          "additives",
-          "en:e481"
-        ],
-        [
-          "ingredients",
-          "en:dextrose"
-        ],
-        [
-          "ingredients",
-          "en:emulsifier"
-        ],
-        [
-          "ingredients",
-          "en:flavouring"
-        ],
-        [
-          "ingredients",
-          "en:glucose"
-        ],
-        [
-          "ingredients",
-          "en:gluten"
-        ]
+        ["additives", "en:e471"],
+        ["additives", "en:e472e"],
+        ["additives", "en:e481"],
+        ["ingredients", "en:dextrose"],
+        ["ingredients", "en:emulsifier"],
+        ["ingredients", "en:flavouring"],
+        ["ingredients", "en:glucose"],
+        ["ingredients", "en:gluten"]
       ]
     },
-    "nova_groups_tags": [
-      "en:4-ultra-processed-food-and-drink-products"
-    ],
+    "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
     "nucleotides_tags": [],
     "nutrient_levels": {
       "fat": "low",
@@ -1553,11 +1444,7 @@
           "is_water": 0,
           "negative_points": 7,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 8,
           "positive_points_max": 17
         },
@@ -1570,12 +1457,8 @@
         "score": -1
       }
     },
-    "nutriscore_2021_tags": [
-      "a"
-    ],
-    "nutriscore_2023_tags": [
-      "a"
-    ],
+    "nutriscore_2021_tags": ["a"],
+    "nutriscore_2023_tags": ["a"],
     "nutriscore_data": {
       "components": {
         "negative": [
@@ -1642,11 +1525,7 @@
       "is_water": 0,
       "negative_points": 7,
       "negative_points_max": 55,
-      "positive_nutrients": [
-        "proteins",
-        "fiber",
-        "fruits_vegetables_legumes"
-      ],
+      "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
       "positive_points": 8,
       "positive_points_max": 17,
       "score": -1
@@ -1654,18 +1533,14 @@
     "nutriscore_grade": "a",
     "nutriscore_score": -1,
     "nutriscore_score_opposite": 1,
-    "nutriscore_tags": [
-      "a"
-    ],
+    "nutriscore_tags": ["a"],
     "nutriscore_version": "2023",
     "nutrition_data": "on",
     "nutrition_data_per": "100g",
     "nutrition_data_prepared_per": "100g",
     "nutrition_grade_fr": "a",
     "nutrition_grades": "a",
-    "nutrition_grades_tags": [
-      "a"
-    ],
+    "nutrition_grades_tags": ["a"],
     "nutrition_score_beverage": 0,
     "nutrition_score_debug": "",
     "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -1697,20 +1572,11 @@
     "packagings": [],
     "packagings_complete": 0,
     "packagings_materials": {},
-    "photographers_tags": [
-      "foodvisor",
-      "koen1234"
-    ],
+    "photographers_tags": ["foodvisor", "koen1234"],
     "pnns_groups_1": "Cereals and potatoes",
-    "pnns_groups_1_tags": [
-      "cereals-and-potatoes",
-      "known"
-    ],
+    "pnns_groups_1_tags": ["cereals-and-potatoes", "known"],
     "pnns_groups_2": "Bread",
-    "pnns_groups_2_tags": [
-      "bread",
-      "known"
-    ],
+    "pnns_groups_2_tags": ["bread", "known"],
     "popularity_key": 24900000012,
     "popularity_tags": [
       "bottom-25-percent-scans-2022",
@@ -1854,15 +1720,9 @@
       "en:photos-uploaded"
     ],
     "stores": "Albert Heijn",
-    "stores_tags": [
-      "albert-heijn"
-    ],
+    "stores_tags": ["albert-heijn"],
     "teams": "chocolatine,la-robe-est-bleue,bodysupport",
-    "teams_tags": [
-      "chocolatine",
-      "la-robe-est-bleue",
-      "bodysupport"
-    ],
+    "teams_tags": ["chocolatine", "la-robe-est-bleue", "bodysupport"],
     "traces": "",
     "traces_from_ingredients": "",
     "traces_from_user": "(en) ",

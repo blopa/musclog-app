@@ -44,7 +44,7 @@ export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
   weight: number;
   isBodyweight: boolean;
   restTimeAfter?: number;
-  isDropSet?: boolean;
+  setType?: string;
 };
 
 export interface SaveTemplateData {
@@ -191,7 +191,7 @@ export class WorkoutTemplateService {
         weight: firstSet?.targetWeight ?? 0,
         isBodyweight,
         restTimeAfter: firstSet?.restTimeAfter,
-        isDropSet: exerciseSets.some((s) => s.isDropSet),
+        setType: exerciseSets[0]?.setType ?? 'normal',
       });
     }
 
@@ -309,7 +309,7 @@ export class WorkoutTemplateService {
               ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
               ts.restTimeAfter = exercise.restTimeAfter ?? 60;
               ts.setOrder = currentSetOrder;
-              ts.isDropSet = exercise.isDropSet ?? false;
+              ts.setType = exercise.setType ?? 'normal';
               ts.createdAt = now;
               ts.updatedAt = now;
             })
@@ -1025,7 +1025,7 @@ export class WorkoutTemplateService {
             ts.targetWeight = set.targetWeight;
             ts.restTimeAfter = set.restTimeAfter;
             ts.setOrder = set.setOrder;
-            ts.isDropSet = set.isDropSet;
+            ts.setType = set.setType ?? 'normal';
             ts.createdAt = now;
             ts.updatedAt = now;
           })

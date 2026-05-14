@@ -40,7 +40,7 @@ export interface AddExerciseData {
   weight: number;
   isBodyweight: boolean;
   restTimeAfter?: number;
-  isDropSet?: boolean;
+  setType?: string;
   notes?: string;
 }
 
@@ -153,7 +153,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
             isBodyweight: exerciseData.isBodyweight,
             restTimeAfter: exerciseData.restTimeAfter ?? 60,
             groupId: undefined,
-            isDropSet: exerciseData.isDropSet ?? false,
+            setType: exerciseData.setType ?? 'normal',
             notes: exerciseData.notes,
           });
           return updated;

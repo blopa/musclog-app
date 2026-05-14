@@ -7,6 +7,7 @@ import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
@@ -120,7 +121,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
   const [restTime, setRestTime] = useState('60'); // Rest time in seconds
-  const [isDropSet, setIsDropSet] = useState(false);
+  const [setType, setSetType] = useState('normal');
   const [notes, setNotes] = useState('');
 
   const {
@@ -213,7 +214,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     if (visible) {
       setSelectedExerciseId(null);
       selectedExerciseIdRef.current = null;
-      setIsDropSet(false);
+      setSetType('normal');
       setNotes('');
     }
   }, [visible]);
@@ -295,7 +296,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       weight: parseWeightString(weight),
       isBodyweight,
       restTimeAfter: parseInt(restTime, 10) || 60,
-      isDropSet,
+      setType,
       notes: notes.trim() || undefined,
     });
     onClose();
@@ -523,24 +524,28 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                 marginVertical: theme.spacing.gap.sm,
               }}
             />
-            <View className="mb-4 flex-row items-center justify-between">
+            <View className="mb-4">
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.base,
                   fontWeight: theme.typography.fontWeight.medium,
                   color: theme.colors.text.primary,
+                  marginBottom: theme.spacing.padding.sm,
                 }}
               >
-                {t('workouts.addExercise.dropSet')}
+                {t('workouts.addExercise.setType.label')}
               </Text>
-              <Switch
-                value={isDropSet}
-                onValueChange={setIsDropSet}
-                trackColor={{
-                  false: theme.colors.background.overlay,
-                  true: theme.colors.accent.primary,
-                }}
-                thumbColor={theme.colors.text.white}
+              {/*TODO: use a BottomPopUpMenuModal instead*/}
+              <SegmentedControl
+                options={[
+                  { label: t('workouts.addExercise.setType.normal'), value: 'normal' },
+                  { label: t('workouts.addExercise.setType.warmup'), value: 'warmup' },
+                  { label: t('workouts.addExercise.setType.failure'), value: 'failure' },
+                  { label: t('workouts.addExercise.setType.drop_set'), value: 'drop_set' },
+                  { label: t('workouts.addExercise.setType.myo_rep'), value: 'myo_rep' },
+                ]}
+                value={setType}
+                onValueChange={setSetType}
               />
             </View>
           </View>

@@ -37,7 +37,14 @@
       "addToWorkout": "Добавить в тренировку",
       "restTime": "Время отдыха",
       "seconds": "сек",
-      "dropSet": "Дроп-сет",
+      "setType": {
+        "label": "Тип подхода",
+        "normal": "Обычный",
+        "warmup": "Разминка",
+        "failure": "До отказа",
+        "drop_set": "Дроп-сет",
+        "myo_rep": "Мио-реп"
+      },
       "notes": "Заметки",
       "notesPlaceholder": "Настройки тренажёра, варианты хвата и т.д.",
       "muscleGroups": {

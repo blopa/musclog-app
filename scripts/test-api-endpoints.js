@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-undef */
 
 /**
  * Fetch raw sample responses from the nutrition APIs used by the app.
@@ -35,7 +36,10 @@ const OFF_SEARCH_FIELDS = [
 ].join(',');
 
 function slug(value) {
-  return String(value).replace(/[^a-z0-9_-]+/gi, '-').replace(/^-|-$/g, '').toLowerCase();
+  return String(value)
+    .replace(/[^a-z0-9_-]+/gi, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
 }
 
 function delay(ms) {

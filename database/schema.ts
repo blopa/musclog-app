@@ -121,7 +121,7 @@ export const schema = appSchema({
         { name: 'target_weight', type: 'number' },
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -177,7 +177,7 @@ export const schema = appSchema({
         { name: 'reps_in_reserve', type: 'number' },
         { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
-        { name: 'is_drop_set', type: 'boolean' },
+        { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

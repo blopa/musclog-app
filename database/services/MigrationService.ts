@@ -1387,7 +1387,7 @@ export class MigrationService {
                     ? Number(oldSet.restTime)
                     : undefined;
                 ts.setOrder = Number(oldSet.setOrder) ?? 0;
-                ts.isDropSet = Boolean(oldSet.isDropSet);
+                ts.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
                 const createdAt = this.convertTimestamp(oldSet.createdAt);
                 ts.createdAt = createdAt;
                 ts.updatedAt = createdAt;
@@ -1503,7 +1503,7 @@ export class MigrationService {
                 ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
                 ls.repsInReserve = 0;
                 ls.difficultyLevel = difficultyLevel;
-                ls.isDropSet = Boolean(oldSet.isDropSet);
+                ls.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
                 ls.setOrder = Number(oldSet.setOrder) ?? 0;
                 const createdAt = this.convertTimestamp(oldSet.createdAt);
                 ls.createdAt = createdAt;

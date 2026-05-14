@@ -499,7 +499,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
           restTimeAfter: 60,
           groupId: 'group-1',
-          isDropSet: false,
+          setType: 'normal',
         });
       });
 

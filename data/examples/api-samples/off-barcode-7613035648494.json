@@ -49,22 +49,16 @@
     "allergens": "en:gluten",
     "allergens_from_ingredients": "en:gluten, en:gluten, BLE, GLUTEN , BLE, BLE, GLUTEN, BLE",
     "allergens_from_user": "(fr) en:gluten",
-    "allergens_hierarchy": [
-      "en:gluten"
-    ],
+    "allergens_hierarchy": ["en:gluten"],
     "allergens_imported": "Gluten",
     "allergens_lc": "fr",
-    "allergens_tags": [
-      "en:gluten"
-    ],
+    "allergens_tags": ["en:gluten"],
     "amino_acids_prev_tags": [],
     "amino_acids_tags": [],
     "brands": "Herta",
     "brands_imported": "Herta",
     "brands_old": "Herta",
-    "brands_tags": [
-      "herta"
-    ],
+    "brands_tags": ["herta"],
     "categories": "Aliments et boissons à base de végétaux, Aliments d'origine végétale, Céréales et pommes de terre, Produits de boulangerie, Pâtes à pizza, en:Pâtes à pizza, Pâte à pizza fine, Aides culinaires, en:Baking Mixes, en:Refrigerated baking mixes, en:Frozen baking mixes",
     "categories_hierarchy": [
       "en:plant-based-foods-and-beverages",
@@ -112,9 +106,7 @@
     ],
     "category_properties": {},
     "checkers_tags": [],
-    "ciqual_food_name_tags": [
-      "unknown"
-    ],
+    "ciqual_food_name_tags": ["unknown"],
     "cities_tags": [],
     "code": "7613035648494",
     "codes_tags": [
@@ -166,16 +158,10 @@
     ],
     "countries": "France, en:belgium",
     "countries_beforescanbot": "France",
-    "countries_hierarchy": [
-      "en:belgium",
-      "en:france"
-    ],
+    "countries_hierarchy": ["en:belgium", "en:france"],
     "countries_imported": "France",
     "countries_lc": "en",
-    "countries_tags": [
-      "en:belgium",
-      "en:france"
-    ],
+    "countries_tags": ["en:belgium", "en:france"],
     "created_t": 1473889781,
     "creator": "openfoodfacts-contributors",
     "customer_service": "HERTA, 16 bd du Mont d'Est – 93160 Noisy-le-Grand",
@@ -269,9 +255,7 @@
       "database-gdsn",
       "databases"
     ],
-    "debug_param_sorted_langs": [
-      "fr"
-    ],
+    "debug_param_sorted_langs": ["fr"],
     "ecoscore_data": {
       "adjustments": {
         "origins_of_ingredients": {
@@ -285,12 +269,8 @@
           ],
           "epi_score": 93,
           "epi_value": 4,
-          "origins_from_categories": [
-            "en:unknown"
-          ],
-          "origins_from_origins_field": [
-            "en:france"
-          ],
+          "origins_from_categories": ["en:unknown"],
+          "origins_from_origins_field": ["en:france"],
           "transportation_score": 0,
           "transportation_scores": {
             "ad": 57,
@@ -722,9 +702,7 @@
     },
     "ecoscore_grade": "a-plus",
     "ecoscore_score": 91,
-    "ecoscore_tags": [
-      "a-plus"
-    ],
+    "ecoscore_tags": ["a-plus"],
     "editors_tags": [
       "additives-app-chakib",
       "asmoth",
@@ -764,18 +742,12 @@
     "emb_codes": "",
     "emb_codes_orig": "",
     "emb_codes_tags": [],
-    "entry_dates_tags": [
-      "2016-09-14",
-      "2016-09",
-      "2016"
-    ],
+    "entry_dates_tags": ["2016-09-14", "2016-09", "2016"],
     "environment_impact_level": "",
     "environment_impact_level_tags": [],
     "expiration_date": "2017-08-25",
     "food_groups": "en:cereals-and-potatoes",
-    "food_groups_tags": [
-      "en:cereals-and-potatoes"
-    ],
+    "food_groups_tags": ["en:cereals-and-potatoes"],
     "fruits-vegetables-nuts_100g_estimate": 0,
     "generic_name": "Pâte à pizza",
     "generic_name_en": "",
@@ -1527,15 +1499,9 @@
       }
     ],
     "ingredients_analysis": {
-      "en:maybe-vegan": [
-        "en:alcohol"
-      ]
+      "en:maybe-vegan": ["en:alcohol"]
     },
-    "ingredients_analysis_tags": [
-      "en:palm-oil-free",
-      "en:maybe-vegan",
-      "en:vegetarian"
-    ],
+    "ingredients_analysis_tags": ["en:palm-oil-free", "en:maybe-vegan", "en:vegetarian"],
     "ingredients_debug": [
       "Farine de _blé_",
       ",",
@@ -1661,10 +1627,7 @@
     ],
     "ingredients_lc": "fr",
     "ingredients_n": 8,
-    "ingredients_n_tags": [
-      "8",
-      "1-10"
-    ],
+    "ingredients_n_tags": ["8", "1-10"],
     "ingredients_non_nutritive_sweeteners_n": 0,
     "ingredients_original_tags": [
       "en:wheat-flour",
@@ -1714,9 +1677,7 @@
     "ingredients_with_specified_percent_sum": 0,
     "ingredients_with_unspecified_percent_n": 8,
     "ingredients_with_unspecified_percent_sum": 100,
-    "ingredients_without_ciqual_codes": [
-      "en:wheat-gluten"
-    ],
+    "ingredients_without_ciqual_codes": ["en:wheat-gluten"],
     "ingredients_without_ciqual_codes_n": 1,
     "ingredients_without_ecobalyse_ids": [
       "en:alcohol",
@@ -1761,27 +1722,11 @@
       "en": 2,
       "fr": 12
     },
-    "languages_hierarchy": [
-      "en:english",
-      "en:french"
-    ],
-    "languages_tags": [
-      "en:english",
-      "en:french",
-      "en:2",
-      "en:multilingual"
-    ],
-    "last_edit_dates_tags": [
-      "2026-04-23",
-      "2026-04",
-      "2026"
-    ],
+    "languages_hierarchy": ["en:english", "en:french"],
+    "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+    "last_edit_dates_tags": ["2026-04-23", "2026-04", "2026"],
     "last_editor": "foodless",
-    "last_image_dates_tags": [
-      "2026-03-16",
-      "2026-03",
-      "2026"
-    ],
+    "last_image_dates_tags": ["2026-03-16", "2026-03", "2026"],
     "last_image_t": 1773681926,
     "last_modified_by": "foodless",
     "last_modified_t": 1776926032,
@@ -1821,22 +1766,10 @@
     "nova_group_debug": "",
     "nova_groups": "4",
     "nova_groups_markers": {
-      "3": [
-        [
-          "ingredients",
-          "en:salt"
-        ]
-      ],
-      "4": [
-        [
-          "ingredients",
-          "en:gluten"
-        ]
-      ]
+      "3": [["ingredients", "en:salt"]],
+      "4": [["ingredients", "en:gluten"]]
     },
-    "nova_groups_tags": [
-      "en:4-ultra-processed-food-and-drink-products"
-    ],
+    "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
     "nucleotides_prev_tags": [],
     "nucleotides_tags": [],
     "nutrient_levels": {
@@ -2029,11 +1962,7 @@
           "is_water": 0,
           "negative_points": 8,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17
         },
@@ -2046,12 +1975,8 @@
         "score": 5
       }
     },
-    "nutriscore_2021_tags": [
-      "b"
-    ],
-    "nutriscore_2023_tags": [
-      "c"
-    ],
+    "nutriscore_2021_tags": ["b"],
+    "nutriscore_2023_tags": ["c"],
     "nutriscore_data": {
       "components": {
         "negative": [
@@ -2118,11 +2043,7 @@
       "is_water": 0,
       "negative_points": 8,
       "negative_points_max": 55,
-      "positive_nutrients": [
-        "proteins",
-        "fiber",
-        "fruits_vegetables_legumes"
-      ],
+      "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
       "positive_points": 3,
       "positive_points_max": 17,
       "score": 5
@@ -2132,9 +2053,7 @@
     "nutriscore_grade_producer_imported": "b",
     "nutriscore_score": 5,
     "nutriscore_score_opposite": -5,
-    "nutriscore_tags": [
-      "c"
-    ],
+    "nutriscore_tags": ["c"],
     "nutriscore_version": "2023",
     "nutrition_data": "on",
     "nutrition_data_per": "100g",
@@ -2143,9 +2062,7 @@
     "nutrition_data_prepared_per_imported": "100g",
     "nutrition_grade_fr": "c",
     "nutrition_grades": "c",
-    "nutrition_grades_tags": [
-      "c"
-    ],
+    "nutrition_grades_tags": ["c"],
     "nutrition_score_beverage": 0,
     "nutrition_score_debug": "",
     "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -2159,14 +2076,10 @@
     "origin_en": "",
     "origin_fr": "",
     "origins": "France",
-    "origins_hierarchy": [
-      "en:france"
-    ],
+    "origins_hierarchy": ["en:france"],
     "origins_lc": "fr",
     "origins_old": "",
-    "origins_tags": [
-      "en:france"
-    ],
+    "origins_tags": ["en:france"],
     "other_nutritional_substances_tags": [],
     "owner": "org-herta-sas",
     "owner_fields": {
@@ -2207,31 +2120,14 @@
     "owner_imported": "org-herta-sas",
     "owners_tags": "org-herta-sas",
     "packaging": "Plastique,Frais",
-    "packaging_hierarchy": [
-      "en:plastic",
-      "en:fresh"
-    ],
+    "packaging_hierarchy": ["en:plastic", "en:fresh"],
     "packaging_lc": "fr",
-    "packaging_materials_tags": [
-      "en:cardboard",
-      "en:paper",
-      "en:plastic"
-    ],
+    "packaging_materials_tags": ["en:cardboard", "en:paper", "en:plastic"],
     "packaging_old": "Plastique, Frais",
     "packaging_old_before_taxonomization": "Frais,plastique",
-    "packaging_recycling_tags": [
-      "en:discard",
-      "en:recycle"
-    ],
-    "packaging_shapes_tags": [
-      "en:film",
-      "en:sleeve",
-      "en:unknown"
-    ],
-    "packaging_tags": [
-      "en:plastic",
-      "en:fresh"
-    ],
+    "packaging_recycling_tags": ["en:discard", "en:recycle"],
+    "packaging_shapes_tags": ["en:film", "en:sleeve", "en:unknown"],
+    "packaging_tags": ["en:plastic", "en:fresh"],
     "packaging_text": "1 PAPIER DE CUISSON À JETER\r\n1 FILM PLASTIQUE À JETER\r\n1 ÉTUI CARTON À RECYCLER",
     "packaging_text_en": "",
     "packaging_text_fr": "1 PAPIER DE CUISSON À JETER\r\n1 FILM PLASTIQUE À JETER\r\n1 ÉTUI CARTON À RECYCLER",
@@ -2289,15 +2185,9 @@
       "org-herta-sas"
     ],
     "pnns_groups_1": "unknown",
-    "pnns_groups_1_tags": [
-      "unknown",
-      "missing-association"
-    ],
+    "pnns_groups_1_tags": ["unknown", "missing-association"],
     "pnns_groups_2": "unknown",
-    "pnns_groups_2_tags": [
-      "unknown",
-      "missing-association"
-    ],
+    "pnns_groups_2_tags": ["unknown", "missing-association"],
     "popularity_key": 24995000221,
     "popularity_tags": [
       "top-5000-scans-2019",
@@ -2518,9 +2408,7 @@
     "product_quantity_unit": "g",
     "product_type": "food",
     "purchase_places": "France",
-    "purchase_places_tags": [
-      "france"
-    ],
+    "purchase_places_tags": ["france"],
     "quantity": "265 g",
     "quantity_imported": "265 g",
     "removed_countries_tags": [],
@@ -2629,9 +2517,7 @@
         "url": null
       },
       {
-        "fields": [
-          "categories"
-        ],
+        "fields": ["categories"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1743220841,
@@ -2667,10 +2553,7 @@
         "url": null
       },
       {
-        "fields": [
-          "categories",
-          "labels"
-        ],
+        "fields": ["categories", "labels"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1748318095,
@@ -2688,9 +2571,7 @@
         "url": null
       },
       {
-        "fields": [
-          "categories"
-        ],
+        "fields": ["categories"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1749701244,
@@ -2744,9 +2625,7 @@
         "url": null
       },
       {
-        "fields": [
-          "nutrition"
-        ],
+        "fields": ["nutrition"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1773681914,
@@ -2755,9 +2634,7 @@
         "url": null
       },
       {
-        "fields": [
-          "nutrition"
-        ],
+        "fields": ["nutrition"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1774497340,
@@ -2766,10 +2643,7 @@
         "url": null
       },
       {
-        "fields": [
-          "nutrition",
-          "nutrition"
-        ],
+        "fields": ["nutrition", "nutrition"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1775015145,
@@ -2778,9 +2652,7 @@
         "url": null
       },
       {
-        "fields": [
-          "nutrition"
-        ],
+        "fields": ["nutrition"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1776098645,
@@ -2789,9 +2661,7 @@
         "url": null
       },
       {
-        "fields": [
-          "nutrition"
-        ],
+        "fields": ["nutrition"],
         "id": "org-herta-sas",
         "images": [],
         "import_t": 1776105478,
@@ -2867,24 +2737,14 @@
       "carrefour-fr"
     ],
     "teams": "pain-au-chocolat",
-    "teams_tags": [
-      "pain-au-chocolat"
-    ],
+    "teams_tags": ["pain-au-chocolat"],
     "traces": "en:milk,en:mustard,en:soybeans",
     "traces_from_ingredients": "LAIT, SOJA, MOUTARDE, LAIT, SOJA, MOUTARDE",
     "traces_from_user": "(fr) en:milk,en:mustard,en:soybeans",
-    "traces_hierarchy": [
-      "en:milk",
-      "en:mustard",
-      "en:soybeans"
-    ],
+    "traces_hierarchy": ["en:milk", "en:mustard", "en:soybeans"],
     "traces_imported": "Lait, Moutarde, Soja",
     "traces_lc": "fr",
-    "traces_tags": [
-      "en:milk",
-      "en:mustard",
-      "en:soybeans"
-    ],
+    "traces_tags": ["en:milk", "en:mustard", "en:soybeans"],
     "unique_scans_n": 210,
     "unknown_ingredients_n": 0,
     "unknown_nutrients_tags": [],
