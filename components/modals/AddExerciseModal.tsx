@@ -374,7 +374,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               iconColor: theme.colors.status.purple,
               iconBgColor: theme.colors.status.purple20,
             };
-            // TODO: implement these
+          // TODO: implement these
           // case 'failure':
           //   return {
           //     value,
