@@ -12,6 +12,7 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint:all": "git add . && npm run lint:eslint-fix && npm run format && npm run prebuild:cross-platform && npm run typecheck",
+    "lint:some": "git add . && npm run lint:eslint-fix && npm run format && npm run typecheck",
     "prebuild:cross-platform": "npm run prebuild",
     "bump": "ncu -u -t minor",
     "bump-any": "ncu -u",

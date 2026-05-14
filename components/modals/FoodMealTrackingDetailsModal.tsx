@@ -136,6 +136,28 @@ function computeMealScaleFactor(
   return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
 }
 
+function getMealDefaultTime(mealType: MealType, date: Date): Date {
+  const d = new Date(date);
+  switch (mealType) {
+    case 'breakfast':
+      d.setHours(8, 0, 0, 0);
+      break;
+    case 'lunch':
+      d.setHours(12, 30, 0, 0);
+      break;
+    case 'dinner':
+      d.setHours(19, 0, 0, 0);
+      break;
+    case 'snack':
+      d.setHours(15, 0, 0, 0);
+      break;
+    default:
+      d.setHours(12, 0, 0, 0);
+  }
+
+  return d;
+}
+
 function areCoreMacrosEffectivelyZero(data: {
   calories?: unknown;
   protein?: unknown;
@@ -254,6 +276,7 @@ export function FoodMealTrackingDetailsModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+  const [isTimePristine, setIsTimePristine] = useState(true);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(
     () => !!meal || !!food || !!foodLog || !!productFromSearch
@@ -370,6 +393,26 @@ export function FoodMealTrackingDetailsModal({
       setServingSize(initialServingSize);
     }
   }, [visible, initialServingSize, foodLog]);
+
+  // Keep selected time in sync with selected date and meal when the user hasn't manually picked a time.
+  // If the date is today, show current time ("now"); if it's another day, use a meal-type default.
+  useEffect(() => {
+    if (!isTimePristine) {
+      return;
+    }
+
+    const today = new Date();
+    const isToday =
+      selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate();
+
+    if (isToday) {
+      setSelectedTime(new Date());
+    } else {
+      setSelectedTime(getMealDefaultTime(selectedMeal, selectedDate));
+    }
+  }, [selectedDate, selectedMeal, isTimePristine]);
 
   // Check local database for food with barcode first
   useEffect(() => {
@@ -676,6 +719,7 @@ export function FoodMealTrackingDetailsModal({
     } catch (e) {
       setSelectedTime(new Date());
     }
+    setIsTimePristine(false);
 
     let cancelled = false;
     foodLog.getDecryptedSnapshot().then((snap: DecryptedNutritionLogSnapshot) => {
@@ -2129,6 +2173,7 @@ export function FoodMealTrackingDetailsModal({
       setLocalCanEdit(canEdit);
       hasInitializedServingSizeRef.current = false;
       setSelectedTime(new Date());
+      setIsTimePristine(true);
     }
   }, [visible, canEdit]);
 
@@ -2358,7 +2403,10 @@ export function FoodMealTrackingDetailsModal({
         onClose={() => setIsTimePickerVisible(false)}
         selectedTime={selectedTime}
         title={t('timePicker.selectTime')}
-        onTimeSelect={setSelectedTime}
+        onTimeSelect={(time) => {
+          setSelectedTime(time);
+          setIsTimePristine(false);
+        }}
       />
       <BottomPopUp
         visible={isEditPopUpVisible ? editForm !== null : false}

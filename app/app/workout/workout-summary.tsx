@@ -230,11 +230,7 @@ export default function WorkoutSummaryScreen() {
           ]
         : []),
       ...(personalRecords > 0
-        ? [
-            t('workoutSummary.sharePersonalRecords',
-              { count: personalRecords }
-            ),
-          ]
+        ? [t('workoutSummary.sharePersonalRecords', { count: personalRecords })]
         : []),
     ];
 

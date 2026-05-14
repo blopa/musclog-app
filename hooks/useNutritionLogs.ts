@@ -491,17 +491,7 @@ export function useNutritionLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [
-    isLoadingMore,
-    hasMore,
-    visible,
-    currentOffset,
-    batchSize,
-    mode,
-    getAll,
-    sortBy,
-    sortOrder,
-  ]);
+  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, mode, getAll, sortBy, sortOrder]);
 
   // Refresh data
   const refresh = useCallback(async () => {
