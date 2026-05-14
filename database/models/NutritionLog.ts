@@ -20,6 +20,9 @@ export interface DecryptedNutritionLogSnapshot {
   loggedCarbs: number;
   loggedFat: number;
   loggedFiber: number;
+  loggedNutriscore?: string;
+  loggedEcoscore?: string;
+  loggedNovaGroup?: number;
   loggedMicros?: MicrosData;
   snapshotBasis?: FoodNutritionBasis;
 }
@@ -47,6 +50,9 @@ export default class NutritionLog extends Model {
   @field('logged_carbs') loggedCarbsRaw?: string;
   @field('logged_fat') loggedFatRaw?: string;
   @field('logged_fiber') loggedFiberRaw?: string;
+  @field('logged_nutriscore') loggedNutriscore?: string;
+  @field('logged_ecoscore') loggedEcoscore?: string;
+  @field('logged_nova_group') loggedNovaGroup?: number;
   @field('logged_micros_json') loggedMicrosRaw?: string;
   @field('snapshot_basis') snapshotBasis?: FoodNutritionBasis;
 
@@ -126,6 +132,9 @@ export default class NutritionLog extends Model {
       loggedCarbs,
       loggedFat,
       loggedFiber,
+      loggedNutriscore: this.loggedNutriscore || undefined,
+      loggedEcoscore: this.loggedEcoscore || undefined,
+      loggedNovaGroup: this.loggedNovaGroup ?? undefined,
       loggedMicros: Object.keys(loggedMicros).length > 0 ? loggedMicros : undefined,
       snapshotBasis: this.snapshotBasis ?? 'per_100g',
     };

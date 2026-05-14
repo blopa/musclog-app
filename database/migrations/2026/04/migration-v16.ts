@@ -4,6 +4,22 @@ const migrationV16 = {
   toVersion: 16,
   steps: [
     addColumns({
+      table: 'foods',
+      columns: [
+        { name: 'nutriscore', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'ecoscore', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'nova_group', type: 'number', isOptional: true, isIndexed: true },
+      ],
+    }),
+    addColumns({
+      table: 'nutrition_logs',
+      columns: [
+        { name: 'logged_nutriscore', type: 'string', isOptional: true },
+        { name: 'logged_ecoscore', type: 'string', isOptional: true },
+        { name: 'logged_nova_group', type: 'number', isOptional: true },
+      ],
+    }),
+    addColumns({
       table: 'workout_log_sets',
       columns: [{ name: 'set_type', type: 'string', isOptional: true }],
     }),

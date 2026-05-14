@@ -76,6 +76,9 @@ export default class Food extends Model {
   @field('carbs') carbs!: number;
   @field('fat') fat!: number;
   @field('fiber') fiber!: number;
+  @field('nutriscore') nutriscore?: string;
+  @field('ecoscore') ecoscore?: string;
+  @field('nova_group') novaGroup?: number;
 
   // Extended data stored as JSON
   @json('micros_json', (data: any): MicrosData => {

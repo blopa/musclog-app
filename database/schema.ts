@@ -203,6 +203,11 @@ export const schema = appSchema({
         { name: 'fiber', type: 'number' },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. USDA, Open Food Facts)
 
+        // External food scoring and processing metadata
+        { name: 'nutriscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'ecoscore', type: 'string', isOptional: true, isIndexed: true }, // 'a', 'b', 'c', 'd', 'e'
+        { name: 'nova_group', type: 'number', isOptional: true, isIndexed: true }, // 1 (unprocessed) to 4 (ultra-processed)
+
         // Extended data (Fiber, Sugar, Sodium, Vitamins, Alcohol, etc.) stored as JSON
         // Usage: @json decorator in the Model
         { name: 'micros_json', type: 'string', isOptional: true },
@@ -324,6 +329,9 @@ export const schema = appSchema({
         { name: 'logged_carbs', type: 'string' }, // isEncrypted: true
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
+        { name: 'logged_nutriscore', type: 'string', isOptional: true }, // Snapshot of the food's nutriscore at log time
+        { name: 'logged_ecoscore', type: 'string', isOptional: true }, // Snapshot of the food's ecoscore at log time
+        { name: 'logged_nova_group', type: 'number', isOptional: true }, // Snapshot of the food's nova group at log time
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'snapshot_basis', type: 'string', isOptional: true }, // 'per_100g' | 'per_serving'
 
