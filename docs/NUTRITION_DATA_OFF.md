@@ -1,6 +1,7 @@
 # Smooth App - Comprehensive Nutrition Data Flow Investigation
 
 ## Overview
+
 This document details how the smooth-app processes nutrition data from the Open Food Facts API, including REST endpoints, JSON parsing, data models, attributes system, and knowledge panels.
 
 ---
@@ -8,13 +9,16 @@ This document details how the smooth-app processes nutrition data from the Open 
 ## 1. REST API Endpoint and Fields
 
 ### API Version and Configuration
+
 - **API Version**: V3 (ProductQueryVersion.v3)
 - **openfoodfacts Package Version**: 3.30.2
 - **API Client**: `OpenFoodAPIClient` (from openfoodfacts package)
 - **Main API Call**: `OpenFoodAPIClient.getProductV3()`
 
 ### API Call Location
+
 **File**: [lib/pages/product/common/product_refresher.dart](lib/pages/product/common/product_refresher.dart#L192)
+
 ```dart
 final ProductResultV3 result = await OpenFoodAPIClient.getProductV3(
   getBarcodeQueryConfiguration(...),
@@ -24,7 +28,9 @@ final ProductResultV3 result = await OpenFoodAPIClient.getProductV3(
 ```
 
 ### Query Configuration
+
 **File**: [lib/pages/product/common/product_refresher.dart](lib/pages/product/common/product_refresher.dart#L79)
+
 ```dart
 ProductQueryConfiguration getBarcodeQueryConfiguration(
   final String barcode,
@@ -43,6 +49,7 @@ ProductQueryConfiguration getBarcodeQueryConfiguration(
 ```
 
 ### Fields Requested
+
 **File**: [lib/query/product_query.dart](lib/query/product_query.dart#L277)
 
 The app requests 57 fields from the API:
@@ -109,23 +116,27 @@ static List<ProductField> get fields => const <ProductField>[
 ```
 
 #### Key Nutrition-Related Fields:
-| Field | Purpose |
-|-------|---------|
-| `NUTRIMENT_DATA_PER` | Specifies unit (per 100g, per serving, per container) |
-| `NUTRIMENTS` | Map of nutrient values (energy, proteins, fats, carbs, sugars, salt, fiber, etc.) |
-| `NUTRIENT_LEVELS` | Categorization of nutrients (high/medium/low) |
-| `NUTRISCORE` | Nutri-Score grade (A-E) |
-| `ATTRIBUTE_GROUPS` | Product attributes with scores |
-| `KNOWLEDGE_PANELS` | Structured nutrition info panels (including nutrition facts table) |
-| `ECOSCORE_*` | Environmental scoring data |
+
+| Field                | Purpose                                                                           |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `NUTRIMENT_DATA_PER` | Specifies unit (per 100g, per serving, per container)                             |
+| `NUTRIMENTS`         | Map of nutrient values (energy, proteins, fats, carbs, sugars, salt, fiber, etc.) |
+| `NUTRIENT_LEVELS`    | Categorization of nutrients (high/medium/low)                                     |
+| `NUTRISCORE`         | Nutri-Score grade (A-E)                                                           |
+| `ATTRIBUTE_GROUPS`   | Product attributes with scores                                                    |
+| `KNOWLEDGE_PANELS`   | Structured nutrition info panels (including nutrition facts table)                |
+| `ECOSCORE_*`         | Environmental scoring data                                                        |
 
 ### API Endpoint URL Structure
+
 The app uses different endpoints based on configuration:
+
 - **Production**: `https://world.openfoodfacts.org/`
 - **Test**: `https://world-test.openfoodfacts.org/`
 - **Custom**: Configurable via dev mode preferences
 
 The actual endpoint is constructed by the openfoodfacts package using:
+
 - API version: v3
 - Barcode: The product code
 - Fields as query parameters
@@ -136,16 +147,18 @@ The actual endpoint is constructed by the openfoodfacts package using:
 ## 2. JSON Response Parsing & Data Deserialization
 
 ### API Response Structure
+
 **Response Type**: `ProductResultV3` (from openfoodfacts package)
 
 **File**: [lib/pages/product/common/product_refresher.dart](lib/pages/product/common/product_refresher.dart#L192-L210)
+
 ```dart
 final ProductResultV3 result = await OpenFoodAPIClient.getProductV3(...);
 if (result.product != null) {
   // Deserialized Product object
   await DaoProduct(localDatabase).put(
-    result.product!, 
-    language, 
+    result.product!,
+    language,
     productType: productType
   );
   return FetchedProduct.found(result.product!);
@@ -153,9 +166,11 @@ if (result.product != null) {
 ```
 
 ### openfoodfacts Package Models
+
 **Version**: 3.30.2
 
 **Key Models Used**:
+
 - **Product**: Main product model containing all fields
 - **Nutrient**: Individual nutrient data (energy, proteins, fats, etc.)
 - **Attribute**: Product attributes (nova, additives, allergens, etc.)
@@ -166,6 +181,7 @@ if (result.product != null) {
 - **OrderedNutrients**: Server-provided ordered list of nutrients for a product type
 
 ### Data Deserialization Process
+
 1. **OpenFoodAPIClient** makes HTTP request with ProductQueryConfiguration
 2. API returns JSON response
 3. **openfoodfacts package** deserializes JSON into Dart objects
@@ -174,12 +190,15 @@ if (result.product != null) {
 6. **LocalDatabase** caches product for offline access
 
 ### Key Classes & Deserialization
+
 **File Imports** across codebase show these models from openfoodfacts:
+
 ```dart
 import 'package:openfoodfacts/openfoodfacts.dart';
 ```
 
 This provides:
+
 - JSON deserialization via generated `.fromJson()` constructors
 - JSON serialization via `.toJson()` methods
 - Factory constructors for model creation
@@ -191,10 +210,12 @@ This provides:
 ### Product Nutrition Fields
 
 #### 3.1 Nutriments (Individual Values)
+
 **Field**: `product.nutriments` - Map of nutrient values
 **Type**: `Map<String, dynamic>?`
 
 **Common Nutrient Keys**:
+
 - `energy` / `energy-kcal` / `energy-kj` - Energy values
 - `proteins` - Protein content
 - `fat` - Total fat
@@ -209,6 +230,7 @@ This provides:
 - `alcohol` - Alcohol content
 
 **Example Structure**:
+
 ```json
 {
   "nutriments": {
@@ -226,9 +248,11 @@ This provides:
 ```
 
 #### 3.2 Nutrition Data Per Unit
+
 **Field**: `product.nutrimentDataPer` (from `NUTRIMENT_DATA_PER`)
 **Type**: `String`
 **Values**:
+
 - `"100g"` - Per 100 grams (standard reference)
 - `"serving"` - Per serving
 - `"container"` - Per entire package/container
@@ -236,12 +260,14 @@ This provides:
 **Associated Field**: `product.servingSize` - Size of one serving (e.g., "30g")
 
 #### 3.3 Nutrient Levels
+
 **Field**: `product.nutrientLevels` - Categorization of nutrients
 **Type**: `Map<String, String>?`
 **Format**: Keys are nutrient names, values are levels
 **Possible Values**: `"high"`, `"moderate"`, `"low"`
 
 **Example**:
+
 ```json
 {
   "nutrient_levels": {
@@ -254,17 +280,21 @@ This provides:
 ```
 
 #### 3.4 Nutrition Data Field
+
 **Field**: `product.nutritionData`
 **Purpose**: Alternative/supplementary nutrition data storage
 
 #### 3.5 No Nutrition Data Flag
+
 **Field**: `product.noNutritionData` - Boolean flag
 **Indicates**: Whether product has missing nutrition facts
 
 ### Nutrient Ordering
+
 **File**: [lib/pages/product/ordered_nutrients_cache.dart](lib/pages/product/ordered_nutrients_cache.dart)
 
 The app fetches **OrderedNutrients** from server per product type:
+
 ```dart
 final OrderedNutrients? cache = await OrderedNutrientsCache.getCache(
   context,
@@ -280,13 +310,16 @@ This ensures nutrients are displayed in the correct order for different product 
 ## 4. Attributes System
 
 ### Attribute Definition
+
 **File**: [lib/pages/product/attribute_extensions.dart](lib/pages/product/attribute_extensions.dart)
 
 **Field**: `product.attributeGroups` - List of AttributeGroup objects
 **Each AttributeGroup contains**: List of Attribute objects
 
 ### Attribute Structure
+
 **Properties** (from openfoodfacts package):
+
 - `id` - Unique identifier (string)
 - `name` - Display name
 - `title` - Title/heading
@@ -303,7 +336,9 @@ This ensures nutrients are displayed in the correct order for different product 
 - `descriptionShort` - Short description text
 
 ### Main Attributes (SCORE_ATTRIBUTE_IDS)
+
 **File**: [lib/helpers/ui_helpers.dart](lib/helpers/ui_helpers.dart#L10)
+
 ```dart
 const List<String> SCORE_ATTRIBUTE_IDS = <String>[
   Attribute.ATTRIBUTE_NUTRISCORE,  // Nutri-Score grade
@@ -312,7 +347,9 @@ const List<String> SCORE_ATTRIBUTE_IDS = <String>[
 ```
 
 ### Attribute Examples
+
 Common attributes include:
+
 - `nutriscore` - Nutri-Score (A-E) grade
 - `ecoscore` - Eco-Score (A-E) grade
 - `nova` - NOVA food processing level (1-4)
@@ -325,9 +362,11 @@ Common attributes include:
 - `sugars` - Sugar content level
 
 ### Attribute Evaluation
+
 **File**: [lib/helpers/attributes_card_helper.dart](lib/helpers/attributes_card_helper.dart#L81)
 
 **Evaluation Enum**:
+
 ```dart
 enum AttributeEvaluation {
   UNKNOWN,    // No data or match score invalid
@@ -340,6 +379,7 @@ enum AttributeEvaluation {
 ```
 
 **Match Score Calculation** (lines 85-104):
+
 ```dart
 // 0-20: Very Bad
 // 21-40: Bad
@@ -352,6 +392,7 @@ final int matchGrade = (attribute.match! / 20.0).ceil();
 ```
 
 **Evaluation to Color Mapping** (lines 55-75):
+
 ```dart
 UNKNOWN    → Grey
 VERY_BAD   → Red
@@ -362,10 +403,12 @@ VERY_GOOD  → Dark Green
 ```
 
 ### Attribute Availability Check
+
 **Method**: `isMatchAvailable(Attribute attribute)`
+
 ```dart
 bool isMatchAvailable(Attribute attribute) {
-  return attribute.status == Attribute.STATUS_KNOWN && 
+  return attribute.status == Attribute.STATUS_KNOWN &&
          attribute.match != null;
 }
 ```
@@ -375,13 +418,16 @@ bool isMatchAvailable(Attribute attribute) {
 ## 5. Knowledge Panels - Nutrition Information Structure
 
 ### Knowledge Panel Architecture
+
 **Field**: `product.knowledgePanels`
 **Type**: `KnowledgePanels` object containing `Map<String, KnowledgePanel>`
 
 ### Panel ID References
+
 **File**: [lib/pages/product/reorderable_knowledge_panel_page.dart](lib/pages/product/reorderable_knowledge_panel_page.dart)
 
 **Main Panels**:
+
 - `'root'` - Root panel containing all sub-panels
 - `'simplified_root'` - Simplified version (when activateKnowledgePanelsSimplified: true)
 - `'health_card'` - Nutrition/health information
@@ -393,7 +439,9 @@ bool isMatchAvailable(Attribute attribute) {
 - `'nutrient_level_salt'` - Salt level
 
 ### KnowledgePanel Structure
+
 **Properties**:
+
 - `titleElement` - TitleElement with grade, icon, title
 - `panelId` - Unique panel identifier
 - `elements` - List of KnowledgePanelElement objects
@@ -402,31 +450,35 @@ bool isMatchAvailable(Attribute attribute) {
 - `halfWidthOnMobile` - Display hint
 
 ### KnowledgePanelElement Types
+
 **File**: [lib/knowledge_panel/knowledge_panels_builder.dart](lib/knowledge_panel/knowledge_panels_builder.dart#L250-L290)
 
 **ElementType Enum**:
+
 ```dart
 case KnowledgePanelElementType.TEXT:
   → KnowledgePanelTextCard
-  
+
 case KnowledgePanelElementType.IMAGE:
   → KnowledgePanelImageCard
-  
+
 case KnowledgePanelElementType.TABLE:
   → KnowledgePanelTableCard  // Nutrition facts table
-  
+
 case KnowledgePanelElementType.PANEL:
   → Nested panel reference
-  
+
 case KnowledgePanelElementType.PANEL_GROUP:
   → Group of multiple panels
-  
+
 case KnowledgePanelElementType.ACTION:
   → Interactive action element
 ```
 
 ### TitleElement with Grades
+
 **Properties**:
+
 - `title` - Panel title string
 - `subtitle` - Subtitle text
 - `grade` - Grade enum (A, B, C, D, E, UNKNOWN)
@@ -438,6 +490,7 @@ case KnowledgePanelElementType.ACTION:
 **File**: [lib/cards/data_cards/score_card.dart](lib/cards/data_cards/score_card.dart#L53)
 
 **Grade to CardEvaluation Mapping**:
+
 ```dart
 extension GradeExtension on Grade? {
   CardEvaluation getCardEvaluation() {
@@ -460,30 +513,36 @@ extension GradeExtension on Grade? {
 ```
 
 ### Nutrition Facts Table Element
+
 **Type**: `KnowledgePanelTableElement`
 **File**: [lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart](lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart)
 
 **Properties**:
+
 - `rows` - Table rows
 - `columns` - Table column definitions
 - Each column can have dropdown variants for different measurement units
 
 **Column Variants**:
+
 - Per 100g
 - Per serving
 - Per container
 - Different units (g, mg, % daily value, etc.)
 
 ### Knowledge Panel Builder
+
 **File**: [lib/knowledge_panel/knowledge_panels_builder.dart](lib/knowledge_panel/knowledge_panels_builder.dart)
 
 **Main Methods**:
+
 - `getKnowledgePanel(product, panelId)` - Retrieve panel by ID
 - `getRootPanelElements(product)` - Get all root-level panels
 - `getChildren(context, panelElement, product)` - Build widget tree from panel
 - `getElementWidget()` - Convert element to Flutter widget
 
 **Panel Data Flow**:
+
 ```
 product.knowledgePanels
   ↓
@@ -501,16 +560,18 @@ Display as KnowledgePanelTitleCard, KnowledgePanelTableCard, etc.
 ## 6. Key Data Models
 
 ### Product Model
+
 **Source**: openfoodfacts package
 **Primary Storage Location**: [lib/database/dao_product.dart](lib/database/dao_product.dart)
 
 **Key Fields for Nutrition**:
+
 ```dart
 class Product {
   String? barcode;
   String? productName;
   String? brands;
-  
+
   // Nutrition data
   Map<String, dynamic>? nutriments;        // Individual nutrient values
   String? nutrimentDataPer;                // "100g", "serving", "container"
@@ -519,25 +580,25 @@ class Product {
   String? nutritionData;                   // Alternative nutrition data
   bool? noNutritionData;                   // No nutrition facts available
   String? nutrimentEnergyUnit;             // "kJ" or "kcal"
-  
+
   // Scoring
   String? nutritionGradeFr;                // Nutri-Score grade
   String? ecoscore;                        // Eco-Score letter
   Map<String, dynamic>? ecoscoreData;     // Eco-Score details
-  
+
   // Attributes
   List<AttributeGroup>? attributeGroups;  // Attributes with scores
-  
+
   // Knowledge Panels
   KnowledgePanels? knowledgePanels;       // Structured nutrition info
-  
+
   // Other fields
   List<String>? categoriesTags;
   List<String>? labelsTags;
   String? ingredientsText;
   List<String>? additivesTags;
   String? productType;
-  
+
   ProductImage? selectedImage;
   List<ProductImage>? images;
   // ... 50+ other fields
@@ -545,17 +606,21 @@ class Product {
 ```
 
 ### Nutrient Model
+
 **Purpose**: Individual nutrient data representation
 **Used In**: OrderedNutrients list
 
 **Key Properties**:
+
 - `name` - Nutrient name (e.g., "Proteins")
 - `tag` - Tag identifier (e.g., "proteins")
 - `value` - Numerical value
 - `unit` - Measurement unit (g, mg, %, etc.)
 
 ### Attribute Model
+
 **Properties**:
+
 - `id` - String identifier
 - `name` - Display name
 - `title` - Title
@@ -566,6 +631,7 @@ class Product {
 - `iconUrl` - Icon URL
 
 **Extension** (file: attribute_extensions.dart):
+
 ```dart
 extension AttributeExtensions on Attribute {
   Widget? getIcon() { ... }
@@ -575,8 +641,10 @@ extension AttributeExtensions on Attribute {
 ```
 
 ### Grade Enum
+
 **Source**: openfoodfacts package
 **Values**:
+
 ```dart
 enum Grade {
   UNKNOWN,
@@ -589,7 +657,9 @@ enum Grade {
 ```
 
 ### KnowledgePanel Model
+
 **Structure**:
+
 ```dart
 class KnowledgePanel {
   String? panelId;
@@ -602,9 +672,11 @@ class KnowledgePanel {
 ```
 
 ### TitleElement Model
+
 **Used in**: KnowledgePanel title sections and ScoreCard
 
 **Properties**:
+
 ```dart
 class TitleElement {
   String? title;
@@ -619,10 +691,12 @@ class TitleElement {
 ```
 
 ### OrderedNutrients Model
+
 **Purpose**: Server-provided nutrient ordering for product type
 **File**: [lib/pages/product/ordered_nutrients_cache.dart](lib/pages/product/ordered_nutrients_cache.dart)
 
 **Structure**:
+
 ```dart
 class OrderedNutrients {
   List<Nutrient> nutrients;
@@ -762,7 +836,7 @@ Cache             _helper          s_builder        _cache
     ↓                 ↓              ↓                ↓
 Nutrients list   Attribute        Panel widgets    Nutrient
 displayed in     Evaluation       with TitleElem   ordering
-correct order    enum             and elements     
+correct order    enum             and elements
 ```
 
 ---
@@ -770,6 +844,7 @@ correct order    enum             and elements
 ## 8. Specific Implementation Details
 
 ### 8.1 Nutrition Facts Display
+
 **File**: [lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart](lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart)
 
 - Displays nutrition facts in table format
@@ -779,6 +854,7 @@ correct order    enum             and elements
 - Color-coded nutrition levels
 
 ### 8.2 Nutrition Portion Calculator
+
 **File**: [lib/pages/product/portion_calculator.dart](lib/pages/product/portion_calculator.dart)
 
 - Uses `product.nutriments` map
@@ -787,10 +863,11 @@ correct order    enum             and elements
 - Displays calculated nutrition per custom portion
 
 ### 8.3 Attribute Score Calculation
+
 **File**: [lib/helpers/attributes_card_helper.dart](lib/helpers/attributes_card_helper.dart)
 
 ```
-Attribute.match (0-100) 
+Attribute.match (0-100)
   ↓
 Match ÷ 20 = Integer (0-5)
   ↓
@@ -804,6 +881,7 @@ Switch on result:
 ```
 
 ### 8.4 Knowledge Panel Rendering
+
 **File**: [lib/knowledge_panel/knowledge_panels_builder.dart](lib/knowledge_panel/knowledge_panels_builder.dart#L30-L75)
 
 ```dart
@@ -820,6 +898,7 @@ KnowledgePanelsBuilder.getChildren()
 ```
 
 ### 8.5 Score Card Display
+
 **File**: [lib/cards/data_cards/score_card.dart](lib/cards/data_cards/score_card.dart)
 
 Two constructors for different use cases:
@@ -843,11 +922,13 @@ ScoreCard.attribute(
 ## 9. Key Constants and Enumerations
 
 ### Product Field Constants
+
 **File**: [lib/query/product_query.dart](lib/query/product_query.dart)
 
 57 fields defined in static getter `ProductQuery.fields`
 
 ### Attribute Evaluation Levels
+
 **File**: [lib/helpers/attributes_card_helper.dart](lib/helpers/attributes_card_helper.dart#L9)
 
 ```dart
@@ -862,6 +943,7 @@ enum AttributeEvaluation {
 ```
 
 ### Card Evaluation Colors
+
 **File**: [lib/cards/data_cards/score_card.dart](lib/cards/data_cards/score_card.dart#L9)
 
 ```dart
@@ -876,6 +958,7 @@ enum CardEvaluation {
 ```
 
 ### Knowledge Panel Element Types
+
 **Source**: openfoodfacts package
 
 ```
@@ -883,6 +966,7 @@ TEXT, IMAGE, TABLE, PANEL, PANEL_GROUP, ACTION, WORLD_MAP, SQUARE
 ```
 
 ### Grade Enum
+
 ```
 UNKNOWN, A, B, C, D, E
 ```
@@ -894,6 +978,7 @@ UNKNOWN, A, B, C, D, E
 ### Three Main Data Pathways
 
 #### Pathway 1: Raw Nutriments
+
 ```
 product.nutriments {energy, proteins, fats, ...}
   ↓
@@ -905,13 +990,14 @@ User sees nutrition facts with values per 100g/serving
 ```
 
 #### Pathway 2: Attribute Scores
+
 ```
 product.attributeGroups[].attributes[]
   ├─ Attribute.match (0-100 score)
   ├─ Attribute.status (KNOWN/UNKNOWN)
   │
   ↓ (via attributes_card_helper)
-  
+
 AttributeEvaluation (VERY_BAD/BAD/NEUTRAL/GOOD/VERY_GOOD)
   ↓
 CardEvaluation (Color + Icon)
@@ -922,6 +1008,7 @@ User sees icon with color based on match score
 ```
 
 #### Pathway 3: Knowledge Panels
+
 ```
 product.knowledgePanels.panelIdToPanelMap
   ├─ 'health_card' (nutrition)
@@ -929,13 +1016,13 @@ product.knowledgePanels.panelIdToPanelMap
   └─ 'nutrition_facts_table' (detailed table)
   │
   ↓ (contains)
-  
+
 KnowledgePanel
   ├─ titleElement (with Grade A-E)
   └─ elements[] (text, image, table, etc.)
   │
   ↓ (via KnowledgePanelsBuilder)
-  
+
 KnowledgePanelTitleCard (displays grade with color)
 KnowledgePanelTableCard (displays nutrition table)
 KnowledgePanelTextCard (displays explanation text)
@@ -949,30 +1036,36 @@ User sees structured, labeled nutrition information
 ## 11. File Index - All Key Files
 
 ### Query & API
+
 - [lib/query/product_query.dart](lib/query/product_query.dart) - API fields definition
 - [lib/pages/product/common/product_refresher.dart](lib/pages/product/common/product_refresher.dart) - API call implementation
 
 ### Data Models & Storage
+
 - [lib/database/dao_product.dart](lib/database/dao_product.dart) - Product storage
 - [lib/data_models/fetched_product.dart](lib/data_models/fetched_product.dart) - Fetch result wrapper
 - [lib/pages/product/ordered_nutrients_cache.dart](lib/pages/product/ordered_nutrients_cache.dart) - Nutrient ordering
 
 ### Nutrition Display
+
 - [lib/knowledge_panel/knowledge_panels_builder.dart](lib/knowledge_panel/knowledge_panels_builder.dart) - Panel rendering engine
 - [lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart](lib/knowledge_panel/knowledge_panels/knowledge_panel_table_card.dart) - Nutrition table
 - [lib/knowledge_panel/knowledge_panels/knowledge_panel_title_card.dart](lib/knowledge_panel/knowledge_panels/knowledge_panel_title_card.dart) - Panel titles with grades
 - [lib/pages/product/portion_calculator.dart](lib/pages/product/portion_calculator.dart) - Nutrition calculation
 
 ### Attributes System
+
 - [lib/pages/product/attribute_extensions.dart](lib/pages/product/attribute_extensions.dart) - Attribute extensions
 - [lib/helpers/attributes_card_helper.dart](lib/helpers/attributes_card_helper.dart) - Attribute evaluation & display
 - [lib/helpers/ui_helpers.dart](lib/helpers/ui_helpers.dart) - Score attribute IDs constant
 
 ### Score Display
+
 - [lib/cards/data_cards/score_card.dart](lib/cards/data_cards/score_card.dart) - Score card widget
 - [lib/helpers/score_card_helper.dart](lib/helpers/score_card_helper.dart) - Grade to evaluation conversion
 
 ### Supporting UI
+
 - [lib/pages/product/add_nutrition_button.dart](lib/pages/product/add_nutrition_button.dart) - Add nutrition facts UI
 - [lib/pages/product/product_incomplete_card.dart](lib/pages/product/product_incomplete_card.dart) - Missing nutrition indicator
 
@@ -981,19 +1074,23 @@ User sees structured, labeled nutrition information
 ## 12. Development Notes
 
 ### Testing Nutrition Display
+
 To verify nutrition data flow:
+
 1. Scan a product with complete nutrition facts (barcode scan)
 2. Check `product.nutriments` in local database
 3. Verify `knowledgePanels['nutrition_facts_table']` contains table element
 4. Verify `knowledgePanels['health_card']` contains health information with grade
 
 ### Debugging Tips
+
 - **Product fields**: Check what fields are being requested in ProductQuery.fields
 - **Knowledge panels**: product.knowledgePanels.panelIdToPanelMap.keys shows available panels
 - **Attributes**: product.attributeGroups[].attributes shows all attributes
-- **Nutrient ordering**: OrderedNutrientsCache._getKey() builds cache key
+- **Nutrient ordering**: OrderedNutrientsCache.\_getKey() builds cache key
 
 ### Common Modification Points
+
 1. **Add new nutrition field**: Add to ProductQuery.fields
 2. **Change nutrient display order**: Modify OrderedNutrients server response handling
 3. **Add new attribute type**: Update attribute_extensions.dart icon mapping
@@ -1004,6 +1101,7 @@ To verify nutrition data flow:
 ## 13. API Example
 
 ### Sample API Call
+
 ```
 GET /api/v3/product/{barcode}
   ?fields=nutrition_grade_fr,nutriments,nutrient_levels,attribute_groups,knowledge_panels,ecoscore_grade,...
@@ -1012,6 +1110,7 @@ GET /api/v3/product/{barcode}
 ```
 
 ### Sample JSON Response (simplified)
+
 ```json
 {
   "code": "8250161000000",
@@ -1100,6 +1199,7 @@ The smooth-app implements a sophisticated multi-layered approach to nutrition da
 7. **Scoring**: Grade enum (A-E) with color-coded visual representation
 
 The architecture separates concerns effectively:
+
 - API/Query layer handles data retrieval
 - DAO layer handles persistence
 - Model extensions provide computed properties
