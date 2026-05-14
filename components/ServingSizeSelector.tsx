@@ -1,5 +1,5 @@
 import { Food } from 'database/models';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -11,6 +11,7 @@ import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitCo
 
 import { GenericCard } from './cards/GenericCard';
 import { FilterTabs } from './FilterTabs';
+import { SegmentedControl } from './theme/SegmentedControl';
 import { StepperInput } from './theme/StepperInput';
 
 type ServingSizeSelectorProps = {
@@ -20,7 +21,7 @@ type ServingSizeSelectorProps = {
   food?: Food;
   onFocus?: () => void;
   productServingSize?: number;
-  showPortionSelector?: false;
+  showPortionSelector?: boolean;
   productMeasures?: { name: string; gramWeight: number }[];
 };
 
@@ -51,6 +52,7 @@ export function ServingSizeSelector({
   productMeasures,
   showPortionSelector = false,
 }: ServingSizeSelectorProps) {
+  const [servingMode, setServingMode] = useState<'grams' | 'portions'>('grams');
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -267,8 +269,20 @@ export function ServingSizeSelector({
 
   return (
     <GenericCard variant="default">
-      {/* TODO: add SegmentedControl here with two options: grams | portions - for now doesnt need to do anything */}
-      <View className="mt-6 w-full gap-3 pl-4 pr-4">
+      {showPortionSelector ? (
+        <View className="mt-4 w-full pl-4 pr-4">
+          <SegmentedControl
+            variant="outline"
+            options={[
+              { label: t('food.foodDetails.byGrams'), value: 'grams' },
+              { label: t('food.foodDetails.servings'), value: 'portions' },
+            ]}
+            value={servingMode}
+            onValueChange={(v) => setServingMode(v as 'grams' | 'portions')}
+          />
+        </View>
+      ) : null}
+      <View className={`${showPortionSelector ? 'mt-2' : 'mt-6'} w-full gap-3 pl-4 pr-4`}>
         <StepperInput
           label={t('food.foodDetails.servingSize')}
           value={displayValue}
