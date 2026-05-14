@@ -165,6 +165,9 @@ export class NutritionService {
         record.loggedFatRaw = encrypted.loggedFat;
         record.loggedFiberRaw = encrypted.loggedFiber;
         record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.loggedNutriscore = food.nutriscore ?? undefined;
+        record.loggedEcoscore = food.ecoscore ?? undefined;
+        record.loggedNovaGroup = food.novaGroup ?? undefined;
         record.snapshotBasis = food.resolvedNutritionBasis;
         record.groupId = groupId;
         record.loggedMealName = loggedMealName;
@@ -568,6 +571,9 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.loggedNutriscore = log.loggedNutriscore;
+            record.loggedEcoscore = log.loggedEcoscore;
+            record.loggedNovaGroup = log.loggedNovaGroup;
             record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
@@ -640,6 +646,9 @@ export class NutritionService {
             record.loggedFatRaw = log.loggedFatRaw;
             record.loggedFiberRaw = log.loggedFiberRaw;
             record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.loggedNutriscore = log.loggedNutriscore;
+            record.loggedEcoscore = log.loggedEcoscore;
+            record.loggedNovaGroup = log.loggedNovaGroup;
             record.snapshotBasis = log.snapshotBasis;
             record.groupId = log.groupId;
             record.loggedMealName = log.loggedMealName;
@@ -950,6 +959,9 @@ export class NutritionService {
         log.loggedFatRaw = originalLog.loggedFatRaw ?? '';
         log.loggedFiberRaw = originalLog.loggedFiberRaw ?? '';
         log.loggedMicrosRaw = originalLog.loggedMicrosRaw;
+        log.loggedNutriscore = originalLog.loggedNutriscore;
+        log.loggedEcoscore = originalLog.loggedEcoscore;
+        log.loggedNovaGroup = originalLog.loggedNovaGroup;
         log.snapshotBasis = originalLog.snapshotBasis;
         log.createdAt = now;
         log.updatedAt = now;

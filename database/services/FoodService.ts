@@ -28,6 +28,9 @@ export class FoodService {
       sodium?: number;
       micros?: MicrosData;
       isFavorite?: boolean;
+      nutriscore?: string;
+      ecoscore?: string;
+      novaGroup?: number;
     },
     customPortion?: FoodPortion | null,
     externalId?: string
@@ -72,6 +75,18 @@ export class FoodService {
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'openfood';
         food.nutritionBasis = 'per_100g';
+        if (nutritionData.nutriscore != null) {
+          food.nutriscore = nutritionData.nutriscore;
+        }
+
+        if (nutritionData.ecoscore != null) {
+          food.ecoscore = nutritionData.ecoscore;
+        }
+
+        if (nutritionData.novaGroup != null) {
+          food.novaGroup = nutritionData.novaGroup;
+        }
+
         food.createdAt = now;
         food.updatedAt = now;
       });

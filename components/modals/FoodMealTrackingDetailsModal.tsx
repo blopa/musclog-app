@@ -1916,6 +1916,18 @@ export function FoodMealTrackingDetailsModal({
             ...effectiveMicrosPer100g,
           },
           isFavorite: isFavorite,
+          nutriscore:
+            typeof productToSave.nutriscore_grade === 'string' && productToSave.nutriscore_grade
+              ? productToSave.nutriscore_grade.toLowerCase()
+              : productFromSearch?.nutriscore,
+          ecoscore:
+            typeof productToSave.ecoscore_grade === 'string' && productToSave.ecoscore_grade
+              ? productToSave.ecoscore_grade.toLowerCase()
+              : productFromSearch?.ecoscore,
+          novaGroup:
+            typeof productToSave.nova_group === 'number'
+              ? productToSave.nova_group
+              : productFromSearch?.novaGroup,
         },
         matchedPortion
       );

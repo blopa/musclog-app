@@ -411,6 +411,17 @@ export function mapOpenFoodFactsProduct(
   // Extract environmental data
   const carbonFootprint = getNutrimentValue(nutriments, 'carbon-footprint-from-known-ingredients');
 
+  // Extract product scores
+  const nutriscoreGrade =
+    typeof product.nutriscore_grade === 'string' && product.nutriscore_grade
+      ? product.nutriscore_grade.toLowerCase()
+      : undefined;
+  const ecoscoreGrade =
+    typeof product.ecoscore_grade === 'string' && product.ecoscore_grade
+      ? product.ecoscore_grade.toLowerCase()
+      : undefined;
+  const novaGroup = typeof product.nova_group === 'number' ? product.nova_group : undefined;
+
   return {
     id: product.code || String(Math.random()),
     name: getProductName(product),
@@ -478,6 +489,9 @@ export function mapOpenFoodFactsProduct(
       },
     },
     source: 'openfood' as const,
+    nutriscore: nutriscoreGrade,
+    ecoscore: ecoscoreGrade,
+    novaGroup,
     _raw: product,
   };
 }
