@@ -1,13 +1,22 @@
-import { Dumbbell, PlusCircle, Search, User } from 'lucide-react-native';
+import {
+  ChevronDown,
+  Dumbbell,
+  Flame,
+  PlusCircle,
+  Repeat2,
+  Search,
+  TriangleAlert,
+  User,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, Text, View } from 'react-native';
 
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
-import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
@@ -28,6 +37,9 @@ import { FullScreenModal } from './FullScreenModal';
 type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 
 type ExerciseId = string;
+type SetType = 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep';
+
+const SET_TYPE_VALUES: SetType[] = ['normal', 'warmup', 'failure', 'drop_set', 'myo_rep'];
 
 type ExerciseOption = SelectorOption<ExerciseId> & {
   category: string;
@@ -121,7 +133,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
   const [restTime, setRestTime] = useState('60'); // Rest time in seconds
-  const [setType, setSetType] = useState('normal');
+  const [setType, setSetType] = useState<SetType>('normal');
+  const [isSetTypePickerVisible, setIsSetTypePickerVisible] = useState(false);
   const [notes, setNotes] = useState('');
 
   const {
@@ -215,6 +228,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       setSelectedExerciseId(null);
       selectedExerciseIdRef.current = null;
       setSetType('normal');
+      setIsSetTypePickerVisible(false);
       setNotes('');
     }
   }, [visible]);
@@ -284,6 +298,149 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     const allExercises = Object.values(exercises).flat();
     return allExercises.find((ex) => ex.id === selectedExerciseId) || null;
   }, [selectedExerciseId, exercises]);
+
+  const exerciseListContent = useMemo(() => {
+    if (isLoading && filteredExercises.length === 0) {
+      return (
+        <View className="items-center justify-center py-12">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      );
+    }
+
+    if (filteredExercises.length > 0) {
+      return (
+        <>
+          <OptionsSelector
+            title=""
+            options={filteredExercises}
+            selectedId={selectedExerciseId || undefined}
+            onSelect={handleSelectExercise as any}
+          />
+          {hasMore ? (
+            <View className="py-4">
+              <Button
+                label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
+                variant="outline"
+                size="md"
+                width="full"
+                onPress={loadMore}
+                disabled={isLoadingMore}
+                loading={isLoadingMore}
+              />
+            </View>
+          ) : null}
+        </>
+      );
+    }
+
+    return (
+      <View className="items-center justify-center py-12">
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.base,
+            color: theme.colors.text.secondary,
+            textAlign: 'center',
+          }}
+        >
+          {emptyStateMessage}
+        </Text>
+      </View>
+    );
+  }, [
+    emptyStateMessage,
+    filteredExercises,
+    hasMore,
+    handleSelectExercise,
+    isLoading,
+    isLoadingMore,
+    loadMore,
+    selectedExerciseId,
+    t,
+    theme.colors.accent.primary,
+    theme.colors.text.secondary,
+    theme.typography.fontSize.base,
+  ]);
+
+  const setTypeOptions = useMemo(
+    () =>
+      SET_TYPE_VALUES.map((value) => {
+        switch (value) {
+          case 'warmup':
+            return {
+              value,
+              label: t('workouts.addExercise.setType.warmup'),
+              icon: Flame,
+              iconColor: theme.colors.status.purple,
+              iconBgColor: theme.colors.status.purple20,
+            };
+            // TODO: implement these
+          // case 'failure':
+          //   return {
+          //     value,
+          //     label: t('workouts.addExercise.setType.failure'),
+          //     icon: TriangleAlert,
+          //     iconColor: theme.colors.rose.brand,
+          //     iconBgColor: theme.colors.rose.brand10,
+          //   };
+          // case 'myo_rep':
+          //   return {
+          //     value,
+          //     label: t('workouts.addExercise.setType.myo_rep'),
+          //     icon: Repeat2,
+          //     iconColor: theme.colors.text.primary,
+          //     iconBgColor: theme.colors.text.primary20,
+          //   };
+          case 'drop_set':
+            return {
+              value,
+              label: t('workouts.addExercise.setType.drop_set'),
+              icon: Repeat2,
+              iconColor: theme.colors.accent.secondary,
+              iconBgColor: theme.colors.accent.secondary10,
+            };
+          case 'normal':
+          default:
+            return {
+              value,
+              label: t('workouts.addExercise.setType.normal'),
+              icon: Dumbbell,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+            };
+        }
+      }),
+    [
+      t,
+      theme.colors.accent.primary,
+      theme.colors.accent.primary10,
+      theme.colors.accent.secondary,
+      theme.colors.accent.secondary10,
+      theme.colors.rose.brand,
+      theme.colors.rose.brand10,
+      theme.colors.status.purple,
+      theme.colors.status.purple20,
+      theme.colors.text.primary,
+      theme.colors.text.primary20,
+    ]
+  );
+
+  const setTypeMenuItems = useMemo<BottomPopUpMenuItem[]>(
+    () =>
+      setTypeOptions.map((option) => ({
+        icon: option.icon,
+        iconColor: option.iconColor,
+        iconBgColor: option.iconBgColor,
+        title: option.label,
+        description: '',
+        onPress: () => setSetType(option.value),
+      })),
+    [setTypeOptions]
+  );
+
+  const selectedSetTypeLabel =
+    setTypeOptions.find((option) => option.value === setType)?.label ??
+    t('workouts.addExercise.setType.label');
 
   const handleAdd = () => {
     if (!selectedExerciseId) {
@@ -371,47 +528,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             </View>
 
             {/* Exercise List */}
-            <View className="mb-8">
-              {isLoading && filteredExercises.length === 0 ? (
-                <View className="items-center justify-center py-12">
-                  <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-                </View>
-              ) : filteredExercises.length > 0 ? (
-                <>
-                  <OptionsSelector
-                    title=""
-                    options={filteredExercises}
-                    selectedId={selectedExerciseId || undefined}
-                    onSelect={handleSelectExercise as any}
-                  />
-                  {hasMore ? (
-                    <View className="py-4">
-                      <Button
-                        label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
-                        variant="outline"
-                        size="md"
-                        width="full"
-                        onPress={loadMore}
-                        disabled={isLoadingMore}
-                        loading={isLoadingMore}
-                      />
-                    </View>
-                  ) : null}
-                </>
-              ) : (
-                <View className="items-center justify-center py-12">
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.base,
-                      color: theme.colors.text.secondary,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {emptyStateMessage}
-                  </Text>
-                </View>
-              )}
-            </View>
+            <View className="mb-8">{exerciseListContent}</View>
           </>
         )}
 
@@ -535,21 +652,32 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               >
                 {t('workouts.addExercise.setType.label')}
               </Text>
-              {/*TODO: use a BottomPopUpMenuModal instead*/}
-              <SegmentedControl
-                options={[
-                  { label: t('workouts.addExercise.setType.normal'), value: 'normal' },
-                  { label: t('workouts.addExercise.setType.warmup'), value: 'warmup' },
-                  { label: t('workouts.addExercise.setType.failure'), value: 'failure' },
-                  { label: t('workouts.addExercise.setType.drop_set'), value: 'drop_set' },
-                  { label: t('workouts.addExercise.setType.myo_rep'), value: 'myo_rep' },
-                ]}
-                value={setType}
-                onValueChange={setSetType}
-              />
+              <Pressable
+                onPress={() => setIsSetTypePickerVisible(true)}
+                className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
+              >
+                <View className="flex-row items-center justify-between px-4 py-3">
+                  <Text
+                    className="min-w-0 flex-1 text-base font-medium"
+                    style={{ color: theme.colors.text.primary }}
+                  >
+                    {selectedSetTypeLabel}
+                  </Text>
+                  <View className="shrink-0 justify-center pl-2">
+                    <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  </View>
+                </View>
+              </Pressable>
             </View>
           </View>
         </View>
+
+        <BottomPopUpMenu
+          visible={isSetTypePickerVisible}
+          onClose={() => setIsSetTypePickerVisible(false)}
+          title={t('workouts.addExercise.setType.label')}
+          items={setTypeMenuItems}
+        />
 
         {/* Notes Section */}
         <View className="mt-6">

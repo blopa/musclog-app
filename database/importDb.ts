@@ -36,6 +36,24 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
   const parsed = JSON.parse(jsonString);
 
+  // Pre-validate migration: exports before v16 store is_drop_set (boolean) instead of
+  // set_type (string) on workout_log_sets and workout_template_sets.
+  // Normalise in-place before Zod validation so old backups pass schema validation.
+  if (typeof parsed._exportVersion === 'number' && parsed._exportVersion < 16) {
+    for (const table of ['workout_log_sets', 'workout_template_sets'] as const) {
+      const rows = parsed[table];
+      if (Array.isArray(rows)) {
+        for (const row of rows) {
+          if (row.set_type == null) {
+            row.set_type = row.is_drop_set ? 'drop_set' : 'normal';
+          }
+
+          delete row.is_drop_set;
+        }
+      }
+    }
+  }
+
   // Validate the export data against schema (generated from WatermelonDB schema)
   const validationResult: ValidationResult = validateExportDump(parsed);
 
