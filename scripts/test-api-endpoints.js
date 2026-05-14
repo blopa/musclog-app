@@ -16,7 +16,7 @@ const path = require('node:path');
 require('dotenv/config');
 
 const SEARCH_TERM = 'egg';
-const BARCODES = ['7613035648494'];
+const BARCODES = ['08718907611718'];
 const USDA_FOOD_IDS = ['2575290'];
 const OUTPUT_DIR = path.join(__dirname, 'api-samples');
 const USDA_API_KEY = process.env.EXPO_PUBLIC_USDA_API_KEY || process.env.USDA_API_KEY || '';
