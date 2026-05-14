@@ -246,8 +246,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       const lowerFilter = activeFilter.toLowerCase();
       filtered = filtered.filter((meal) => {
         if (lowerFilter === 'high-protein') {
-          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein'));
+          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein')); // TODO: shouldn't this use translation?
         }
+
         return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
       });
     }
