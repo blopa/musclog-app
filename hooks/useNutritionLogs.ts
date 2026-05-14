@@ -464,6 +464,11 @@ export function useNutritionLogs({
         Q.where('date', Q.lt(nextStart)),
         Q.where('type', mealType)
       );
+    } else if (mode === 'recent' || mode === 'recent-logs') {
+      if (date) {
+        const { start, nextStart } = localDayHalfOpenRange(date);
+        query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+      }
     } else {
       // For basic mode, don't observe at all to avoid infinite loops during onboarding
       // Just load initial data once without reactivity
@@ -471,6 +476,7 @@ export function useNutritionLogs({
         loadInitialLogs();
         hasLoadedInitial.current = true;
       }
+
       return;
     }
 
