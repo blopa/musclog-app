@@ -355,7 +355,8 @@
       "tryAnotherSourceNotFound": "Данные о питании из других источников не найдены.",
       "caloriesTooLowTitle": "Калории не соответствуют макросам",
       "caloriesTooLowBody": "Указанные калории не соответствуют тому, что предполагают макросы. Вычисленное значение: {{inferred}} ккал / 100г.",
-      "caloriesTooLowAction": "Обновить до {{inferred}} ккал >"
+      "caloriesTooLowAction": "Обновить до {{inferred}} ккал >",
+      "showMoreNutrition": "Показать больше сведений о питании"
     },
     "addFoodItemToMeal": {
       "title": "Добавить продукт",

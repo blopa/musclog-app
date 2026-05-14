@@ -355,7 +355,8 @@
       "tryAnotherSourceNotFound": "Geen voedingswaarden gevonden van andere bronnen.",
       "caloriesTooLowTitle": "Calorieën komen niet overeen met macro's",
       "caloriesTooLowBody": "De gerapporteerde calorieën komen niet overeen met wat de macro's suggereren. Afgeleide waarde: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Bijwerken naar {{inferred}} kcal >"
+      "caloriesTooLowAction": "Bijwerken naar {{inferred}} kcal >",
+      "showMoreNutrition": "Meer voedingsinformatie tonen"
     },
     "addFoodItemToMeal": {
       "title": "Item toevoegen",

@@ -355,7 +355,8 @@
       "tryAnotherSourceNotFound": "No se encontraron datos de nutrición de otras fuentes.",
       "caloriesTooLowTitle": "Las calorías no coinciden con los macros",
       "caloriesTooLowBody": "Las calorías reportadas no coinciden con lo que sugieren los macros. Valor inferido: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Actualizar a {{inferred}} kcal >"
+      "caloriesTooLowAction": "Actualizar a {{inferred}} kcal >",
+      "showMoreNutrition": "Ver más detalles nutricionales"
     },
     "addFoodItemToMeal": {
       "title": "Añadir Alimento",
