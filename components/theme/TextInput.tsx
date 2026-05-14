@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ReactNode, useMemo } from 'react';
+import { forwardRef, ReactNode, useImperativeHandle, useMemo, useRef } from 'react';
 import { Animated, Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -28,25 +28,32 @@ const ANIMATION_DURATION = 100;
  * On web, uses focus-within CSS. On native, uses Animated.Value updated via onFocus/onBlur.
  * This is a "native" React Native approach without useState/useReducer/useRef hooks.
  */
-export function TextInput({
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  keyboardType = 'default',
-  icon,
-  secureTextEntry,
-  onFocus,
-  onBlur,
-  required = false,
-  selectTextOnFocus = true,
-  multiline = false,
-  numberOfLines = 4,
-  editable = true,
-}: TestInputProps) {
-  const theme = useTheme();
+export const TextInput = forwardRef<RNTextInput, TestInputProps>(
+  (
+    {
+      label,
+      value,
+      onChangeText,
+      placeholder,
+      keyboardType = 'default',
+      icon,
+      secureTextEntry,
+      onFocus,
+      onBlur,
+      required = false,
+      selectTextOnFocus = true,
+      multiline = false,
+      numberOfLines = 4,
+      editable = true,
+    },
+    ref
+  ) => {
+    const theme = useTheme();
+    const inputRef = useRef<RNTextInput>(null);
 
-  // Use Animated.Value (React Native native API, not a React hook)
+    useImperativeHandle(ref, () => inputRef.current!);
+
+    // Use Animated.Value (React Native native API, not a React hook)
   // Create once per component instance using useMemo to avoid recreating
   const focusAnim = useMemo(() => new Animated.Value(0), []);
 
@@ -108,6 +115,7 @@ export function TextInput({
           )}
         >
           <RNTextInput
+            ref={inputRef}
             className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
             placeholder={placeholder}
             placeholderTextColor={theme.colors.text.tertiary}
@@ -115,10 +123,15 @@ export function TextInput({
             onChangeText={onChangeText}
             keyboardType={keyboardType}
             secureTextEntry={secureTextEntry}
-            onFocus={handleFocus}
+            onFocus={() => {
+              handleFocus();
+              if (Platform.OS === 'android' && selectTextOnFocus) {
+                inputRef.current?.setSelection(0, value?.length ?? 0);
+              }
+            }}
             onBlur={handleBlur}
             style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
-            selectTextOnFocus={selectTextOnFocus}
+            selectTextOnFocus={Platform.OS === 'ios' ? selectTextOnFocus : false}
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             textAlignVertical={multiline ? 'top' : 'center'}
@@ -152,6 +165,7 @@ export function TextInput({
           }}
         >
           <RNTextInput
+            ref={inputRef}
             className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
             placeholder={placeholder}
             placeholderTextColor={theme.colors.text.tertiary}
@@ -159,10 +173,15 @@ export function TextInput({
             onChangeText={onChangeText}
             keyboardType={keyboardType}
             secureTextEntry={secureTextEntry}
-            onFocus={handleFocus}
+            onFocus={() => {
+              handleFocus();
+              if (Platform.OS === 'android' && selectTextOnFocus) {
+                inputRef.current?.setSelection(0, value?.length ?? 0);
+              }
+            }}
             onBlur={handleBlur}
             style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
-            selectTextOnFocus={selectTextOnFocus}
+            selectTextOnFocus={Platform.OS === 'ios' ? selectTextOnFocus : false}
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             textAlignVertical={multiline ? 'top' : 'center'}
@@ -183,3 +202,4 @@ export function TextInput({
     </View>
   );
 }
+);

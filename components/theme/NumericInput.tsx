@@ -29,17 +29,6 @@ export function NumericInput({
   const unitColorFinal = unitColor || theme.colors.accent.primary;
   const inputRef = useRef<RNTextInput | null>(null);
 
-  const handleFocus = () => {
-    // iOS supports selectTextOnFocus; on Android explicitly set selection
-    if (inputRef.current && typeof inputRef.current.setNativeProps === 'function') {
-      try {
-        inputRef.current.setNativeProps({ selection: { start: 0, end: value?.length ?? 0 } });
-      } catch (e) {
-        // ignore any native errors
-      }
-    }
-  };
-
   return (
     <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-white/10 bg-bg-card p-4">
       <Text
@@ -63,7 +52,6 @@ export function NumericInput({
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"
-        onFocus={handleFocus}
         style={{ borderWidth: theme.borderWidth.none }}
       />
       <Text className="text-xs font-medium" style={{ color: unitColorFinal }}>
