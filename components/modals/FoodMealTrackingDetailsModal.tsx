@@ -629,6 +629,7 @@ export function FoodMealTrackingDetailsModal({
           meal.getTotalNutrients(),
           MealService.getMealWithFoods(meal.id),
         ]);
+
         setMealNutrients({
           calories: roundToDecimalPlaces(nutrients.calories),
           protein: roundToDecimalPlaces(nutrients.protein),
@@ -636,6 +637,7 @@ export function FoodMealTrackingDetailsModal({
           fat: roundToDecimalPlaces(nutrients.fat),
           fiber: roundToDecimalPlaces(nutrients.fiber),
         });
+
         if (mealWithFoods?.foods) {
           let rawGrams = 0;
           const ingredientLabels: MealIngredient[] = [];
@@ -903,6 +905,7 @@ export function FoodMealTrackingDetailsModal({
         fiber =
           carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
       }
+
       const sodium =
         getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
 
@@ -1025,6 +1028,7 @@ export function FoodMealTrackingDetailsModal({
 
         const sodium =
           getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+
         return {
           calories: getNum('energy-kcal') || getNum('kcal'),
           protein: getNum('proteins'),
@@ -1076,6 +1080,7 @@ export function FoodMealTrackingDetailsModal({
     if (food || localFood) {
       return { ...((food || localFood)!.micros ?? {}) };
     }
+
     if (
       foodLog &&
       foodLogDecrypted?.loggedMicros &&

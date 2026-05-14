@@ -1,6 +1,7 @@
 import { Layers, Tag } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform, ScrollView as RNScrollView, Text, View } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 
 import type { FoodLabels } from '@/database/models/Food';
 import { useTheme } from '@/hooks/useTheme';
@@ -11,6 +12,9 @@ type NutritionQualityDataProps = {
   novaGroup?: number;
   labels?: FoodLabels;
 };
+
+// iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView wins correctly.
+const ScrollView = Platform.OS === 'ios' ? RNScrollView : GHScrollView;
 
 const GRADE_COLORS: Record<string, { bg: string; text: string }> = {
   a: { bg: '#038141', text: '#ffffff' },
@@ -153,7 +157,12 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
         {t('food.logDetails.foodLabels')}
       </Text>
 
-      <View className="flex-1 flex-row flex-wrap gap-2">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-1"
+        contentContainerStyle={{ gap: 8 }}
+      >
         {activeLabels.map(({ translationKey }) => (
           <View
             key={translationKey}
@@ -168,7 +177,7 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
             </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -211,7 +220,6 @@ export function NutritionQualityData({
         <NovaRow group={novaGroup} description={novaDescriptions[novaGroup] ?? String(novaGroup)} />
       ) : null}
 
-      {/* TODO: make this scrollable sideways */}
       {activeLabels.length > 0 ? <LabelsRow activeLabels={activeLabels} /> : null}
     </View>
   );
