@@ -69,6 +69,7 @@ import {
 } from '@/utils/localizedDecimalInput';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
+  extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
   getNutrimentValue,
   getProductName,
@@ -768,6 +769,11 @@ export function ScannedFoodDetailsModal({
               if (typeof bp.nova_group === 'number') {
                 record.novaGroup = bp.nova_group;
               }
+
+              const extractedLabels = extractLabelsFromOFFProduct(bp);
+              if (extractedLabels != null) {
+                record.labels = extractedLabels;
+              }
             }
           });
         }
@@ -868,6 +874,7 @@ export function ScannedFoodDetailsModal({
                 : undefined,
             novaGroup:
               typeof baseProduct.nova_group === 'number' ? baseProduct.nova_group : undefined,
+            labels: extractLabelsFromOFFProduct(baseProduct),
           },
           null
         );

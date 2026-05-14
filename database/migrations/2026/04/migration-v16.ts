@@ -9,6 +9,7 @@ const migrationV16 = {
         { name: 'nutriscore', type: 'string', isOptional: true, isIndexed: true },
         { name: 'ecoscore', type: 'string', isOptional: true, isIndexed: true },
         { name: 'nova_group', type: 'number', isOptional: true, isIndexed: true },
+        { name: 'labels_json', type: 'string', isOptional: true },
       ],
     }),
     addColumns({

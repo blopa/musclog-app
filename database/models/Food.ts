@@ -54,6 +54,14 @@ export interface MicrosData {
 
 export type FoodNutritionBasis = 'per_100g' | 'per_serving';
 
+export interface FoodLabels {
+  organic?: boolean;
+  vegan?: boolean;
+  vegetarian?: boolean;
+  palmOilFree?: boolean;
+  fairTrade?: boolean;
+}
+
 export default class Food extends Model {
   static table = 'foods';
 
@@ -131,9 +139,25 @@ export default class Food extends Model {
         potassium: typeof data.potassium === 'number' ? data.potassium : undefined,
       };
     }
+
     return {};
   })
   micros?: MicrosData;
+
+  @json('labels_json', (data: any): FoodLabels => {
+    if (typeof data === 'object' && data !== null) {
+      return {
+        organic: typeof data.organic === 'boolean' ? data.organic : undefined,
+        vegan: typeof data.vegan === 'boolean' ? data.vegan : undefined,
+        vegetarian: typeof data.vegetarian === 'boolean' ? data.vegetarian : undefined,
+        palmOilFree: typeof data.palmOilFree === 'boolean' ? data.palmOilFree : undefined,
+        fairTrade: typeof data.fairTrade === 'boolean' ? data.fairTrade : undefined,
+      };
+    }
+
+    return {};
+  })
+  labels?: FoodLabels;
 
   @field('is_favorite') isFavorite!: boolean;
   @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood', 'foundation'

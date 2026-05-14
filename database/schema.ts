@@ -212,6 +212,9 @@ export const schema = appSchema({
         // Usage: @json decorator in the Model
         { name: 'micros_json', type: 'string', isOptional: true },
 
+        // Label and ingredient analysis data from Open Food Facts (organic, vegan, etc.)
+        { name: 'labels_json', type: 'string', isOptional: true },
+
         { name: 'is_favorite', type: 'boolean' }, // Quick access
         { name: 'source', type: 'string', isOptional: true }, // 'user', 'usda', 'ai', 'openfood', 'foundation'
         { name: 'image_url', type: 'string', isOptional: true }, // URL to product image

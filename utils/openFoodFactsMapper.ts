@@ -1,4 +1,5 @@
 import { Units } from '@/constants/settings';
+import { type FoodLabels } from '@/database/models/Food';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
@@ -322,6 +323,78 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 }
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
+/**
+ * Extract FoodLabels from an OFF product's labels_tags and ingredients_analysis_tags.
+ * Used for both barcode (V3) and text-search (V2) paths.
+ *
+ * vegan/vegetarian/palmOilFree are three-state:
+ *   true  = confirmed (e.g. en:vegan)
+ *   false = confirmed NOT (e.g. en:non-vegan)
+ *   undefined = unknown / maybe
+ *
+ * organic / fairTrade are true-or-undefined (absence of label ≠ not organic).
+ */
+export function extractLabelsFromOFFProduct(product: {
+  labels_tags?: string[];
+  ingredients_analysis_tags?: string[];
+}): FoodLabels | undefined {
+  const lt = product.labels_tags ?? [];
+  const at = product.ingredients_analysis_tags ?? [];
+
+  if (lt.length === 0 && at.length === 0) {
+    return undefined;
+  }
+
+  const organic = lt.some((t) => t === 'en:organic' || t === 'en:eu-organic') ? true : undefined;
+  const fairTrade = lt.some((t) => t === 'en:fair-trade' || t === 'en:fairtrade')
+    ? true
+    : undefined;
+
+  let vegan: boolean | undefined;
+  if (at.includes('en:vegan')) {
+    vegan = true;
+  } else if (at.includes('en:non-vegan')) {
+    vegan = false;
+  }
+
+  let vegetarian: boolean | undefined;
+  if (at.includes('en:vegetarian')) {
+    vegetarian = true;
+  } else if (at.includes('en:non-vegetarian')) {
+    vegetarian = false;
+  }
+
+  let palmOilFree: boolean | undefined;
+  if (at.includes('en:palm-oil-free')) {
+    palmOilFree = true;
+  } else if (at.includes('en:palm-oil')) {
+    palmOilFree = false;
+  }
+
+  const result: FoodLabels = {};
+  if (organic !== undefined) {
+    result.organic = organic;
+  }
+
+  if (fairTrade !== undefined) {
+    result.fairTrade = fairTrade;
+  }
+
+  if (vegan !== undefined) {
+    result.vegan = vegan;
+  }
+
+  if (vegetarian !== undefined) {
+    result.vegetarian = vegetarian;
+  }
+
+  if (palmOilFree !== undefined) {
+    result.palmOilFree = palmOilFree;
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 export function mapOpenFoodFactsProduct(
   product: SearchResultProduct,
   units: Units = 'metric'
@@ -421,6 +494,7 @@ export function mapOpenFoodFactsProduct(
       ? product.ecoscore_grade.toLowerCase()
       : undefined;
   const novaGroup = typeof product.nova_group === 'number' ? product.nova_group : undefined;
+  const labels = extractLabelsFromOFFProduct(product);
 
   return {
     id: product.code || String(Math.random()),
@@ -492,6 +566,7 @@ export function mapOpenFoodFactsProduct(
     nutriscore: nutriscoreGrade,
     ecoscore: ecoscoreGrade,
     novaGroup,
+    labels,
     _raw: product,
   };
 }

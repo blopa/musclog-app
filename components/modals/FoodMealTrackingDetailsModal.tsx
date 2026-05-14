@@ -87,6 +87,7 @@ import {
 } from '@/utils/localizedDecimalInput';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
+  extractLabelsFromOFFProduct,
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
@@ -1928,6 +1929,7 @@ export function FoodMealTrackingDetailsModal({
             typeof productToSave.nova_group === 'number'
               ? productToSave.nova_group
               : productFromSearch?.novaGroup,
+          labels: extractLabelsFromOFFProduct(productToSave) ?? productFromSearch?.labels,
         },
         matchedPortion
       );
