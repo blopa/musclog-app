@@ -307,6 +307,7 @@
       "perServing": "Per serving",
       "perRecipe": "Per recipe",
       "byGrams": "By grams",
+      "byOz": "By oz",
       "servingName": "Serving name",
       "servingNamePlaceholder": "e.g. pancake",
       "recipeServings": "Recipe servings",

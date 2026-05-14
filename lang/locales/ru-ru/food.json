@@ -307,6 +307,7 @@
       "perServing": "На порцию",
       "perRecipe": "На рецепт",
       "byGrams": "По граммам",
+      "byOz": "По oz",
       "servingName": "Название порции",
       "servingNamePlaceholder": "напр. блинчик",
       "recipeServings": "Порций в рецепте",

@@ -298,7 +298,11 @@ export function ServingSizeSelector({
           <SegmentedControl
             variant="outline"
             options={[
-              { label: t('food.foodDetails.byGrams'), value: 'grams' },
+              {
+                label:
+                  units === 'imperial' ? t('food.foodDetails.byOz') : t('food.foodDetails.byGrams'),
+                value: 'grams',
+              },
               { label: t('food.foodDetails.servings'), value: 'portions' },
             ]}
             value={servingMode}
@@ -315,13 +319,9 @@ export function ServingSizeSelector({
             value={servingCount}
             step={0.5}
             maxFractionDigits={2}
-            onIncrement={() =>
-              onChange(defaultPortionForMode.gramWeight * (servingCount + 0.5))
-            }
+            onIncrement={() => onChange(defaultPortionForMode.gramWeight * (servingCount + 0.5))}
             onDecrement={() =>
-              onChange(
-                defaultPortionForMode.gramWeight * Math.max(0.5, servingCount - 0.5)
-              )
+              onChange(defaultPortionForMode.gramWeight * Math.max(0.5, servingCount - 0.5))
             }
             onChangeValue={(count) =>
               onChange(defaultPortionForMode.gramWeight * Math.max(0.5, count))

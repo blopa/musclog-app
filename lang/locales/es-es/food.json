@@ -307,6 +307,7 @@
       "perServing": "Por porción",
       "perRecipe": "Por receta",
       "byGrams": "Por gramos",
+      "byOz": "Por oz",
       "servingName": "Nombre de la porción",
       "servingNamePlaceholder": "ej. tortita",
       "recipeServings": "Porciones de la receta",
