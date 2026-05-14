@@ -89,6 +89,7 @@ export function ServingSizeSelector({
       const match = allGlobalPortions.find(
         (p): p is typeof p & { gramWeight: number } => p.gramWeight != null && p.gramWeight === gw
       );
+
       if (!match) {
         return [];
       }
@@ -235,11 +236,13 @@ export function ServingSizeSelector({
         result.push(p);
       }
     }
+
     for (const p of supplement) {
       if (!result.some((r) => r.value === p.value)) {
         result.push(p);
       }
     }
+
     return result;
   }, [
     quickSizes,
