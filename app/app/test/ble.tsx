@@ -305,19 +305,36 @@ export default function BleTestScreen() {
         setConnectedDevice(connected);
         addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
 
-        // Request shortest possible BLE connection interval (Android only)
+        // Let the connection stabilize before sending config
+        await new Promise((r) => setTimeout(r, 300));
+
+        // Request shortest BLE connection interval (Android only — peripheral may ignore)
         try {
           await connected.requestConnectionPriority(ConnectionPriority.High);
-          addLog('High-priority BLE connection requested');
+          addLog('High-priority connection requested');
         } catch (_) {}
 
-        // Tell the sensor to output at 100Hz (WIT protocol: FF AA 03 09 00)
+        // WIT protocol config sequence: unlock → set rate → save
+        // Without unlock the device silently ignores rate commands
         try {
-          const cmd = Buffer.from([0xff, 0xaa, 0x03, 0x09, 0x00]).toString('base64');
-          await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, cmd);
-          addLog('Output rate set to 100Hz', 'success');
+          const write = async (bytes: number[]) => {
+            const b64 = Buffer.from(bytes).toString('base64');
+            await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
+            await new Promise((r) => setTimeout(r, 120));
+          };
+
+          addLog('Unlocking device for config…');
+          await write([0xff, 0xaa, 0x69, 0x88, 0xb5]); // unlock
+
+          addLog('Setting output rate to 100Hz…');
+          await write([0xff, 0xaa, 0x03, 0x09, 0x00]); // rate = 100Hz
+
+          addLog('Saving config to flash…');
+          await write([0xff, 0xaa, 0x00, 0x00, 0x00]); // save
+
+          addLog('Rate config complete — 100Hz active', 'success');
         } catch (e: any) {
-          addLog(`Rate cmd failed: ${e.message}`, 'error');
+          addLog(`Rate config failed: ${e.message}`, 'error');
         }
 
         // Log all services + characteristics so we can find the real UUIDs
