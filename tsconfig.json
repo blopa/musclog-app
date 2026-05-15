@@ -22,6 +22,7 @@
     "database",
     "hooks",
     "lang",
+    "modules",
     "services",
     "types",
     "utils",

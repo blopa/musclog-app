@@ -337,6 +337,13 @@ export default function BleTestScreen() {
     return () => clearInterval(id);
   }, [connectedDevice]);
 
+  const addLog = useCallback((text: string, level: LogEntry['level'] = 'info') => {
+    setLogs((prev) => [
+      { id: logIdRef.current++, text: `[${new Date().toLocaleTimeString()}] ${text}`, level },
+      ...prev.slice(0, 99),
+    ]);
+  }, []);
+
   const sendRateCommand = useCallback(async (hz: 20 | 50 | 100) => {
     if (!connectedDevice) return;
     const rateMap: Record<number, number> = { 20: 0x07, 50: 0x08, 100: 0x09 };
@@ -355,13 +362,6 @@ export default function BleTestScreen() {
       addLog(`Rate error: ${e.message}`, 'error');
     }
   }, [connectedDevice, addLog]);
-
-  const addLog = useCallback((text: string, level: LogEntry['level'] = 'info') => {
-    setLogs((prev) => [
-      { id: logIdRef.current++, text: `[${new Date().toLocaleTimeString()}] ${text}`, level },
-      ...prev.slice(0, 99),
-    ]);
-  }, []);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
