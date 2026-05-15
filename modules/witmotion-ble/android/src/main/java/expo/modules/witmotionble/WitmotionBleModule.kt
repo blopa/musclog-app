@@ -164,8 +164,8 @@ class WitmotionBleModule : Module() {
     val device = adapter().getRemoteDevice(deviceId)
     sendConnectionState("connecting", deviceId, device.name, "Connecting")
 
-    val manager = ensureWitManager()
-    val ble = manager.getBluetoothBLE(deviceId)
+    ensureWitManager()
+    val ble = BluetoothBLE(context, device.name ?: device.address, deviceId)
     ble.registerObserver(deviceObserver)
     ble.connect(deviceId)
     connectedBle = ble
