@@ -49,6 +49,10 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Allow Musclog to connect to your WitMotion sensor and stream live motion data.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>Allow Musclog to connect to your WitMotion sensor and stream live motion data.</string>
     <key>NSCalendarsFullAccessUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your calendars</string>
     <key>NSCalendarsUsageDescription</key>

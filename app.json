@@ -24,6 +24,7 @@
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
+      "./plugins/withWitmotionBle",
       "expo-router",
       "expo-health-connect",
       [

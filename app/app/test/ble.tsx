@@ -16,7 +16,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { PermissionsAndroid, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
@@ -44,6 +44,24 @@ interface LogEntry {
   id: number;
   text: string;
   level: 'info' | 'success' | 'error' | 'data';
+}
+
+async function ensureBlePermissions() {
+  if (Platform.OS !== 'android') {
+    return true;
+  }
+
+  const apiLevel = typeof Platform.Version === 'number' ? Platform.Version : Number(Platform.Version);
+  const permissions =
+    apiLevel >= 31
+      ? [
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        ]
+      : [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+
+  const result = await PermissionsAndroid.requestMultiple(permissions);
+  return permissions.every((permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED);
 }
 
 function fmt(n: number) {
@@ -356,19 +374,29 @@ export default function BleTestScreen() {
   }, [addLog, scanning]);
 
   const startScan = useCallback(() => {
-    setFoundDevices([]);
-    setScanning(true);
-    addLog('Scanning for WT9011DCL devices…');
-    startWitmotionScan().catch((e: any) => {
-      addLog(`Scan error: ${e.message}`, 'error');
-      setScanning(false);
-    });
+    (async () => {
+      const allowed = await ensureBlePermissions();
+      if (!allowed) {
+        addLog('Bluetooth permissions were not granted.', 'error');
+        return;
+      }
 
-    setTimeout(() => {
-      stopWitmotionScan().catch(() => {});
-      setScanning(false);
-      addLog('Scan stopped');
-    }, 15000);
+      setFoundDevices([]);
+      setScanning(true);
+      addLog('Scanning for WT9011DCL devices…');
+      startWitmotionScan().catch((e: any) => {
+        addLog(`Scan error: ${e.message}`, 'error');
+        setScanning(false);
+      });
+
+      setTimeout(() => {
+        stopWitmotionScan().catch(() => {});
+        setScanning(false);
+        addLog('Scan stopped');
+      }, 15000);
+    })().catch((e: any) => {
+      addLog(`Permission error: ${e.message}`, 'error');
+    });
   }, [addLog]);
 
   const stopScan = useCallback(() => {
@@ -379,6 +407,12 @@ export default function BleTestScreen() {
 
   const connectDevice = useCallback(
     async (device: WitScannedDevice) => {
+      const allowed = await ensureBlePermissions();
+      if (!allowed) {
+        addLog('Bluetooth permissions were not granted.', 'error');
+        return;
+      }
+
       stopWitmotionScan().catch(() => {});
       setScanning(false);
 
