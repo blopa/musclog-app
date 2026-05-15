@@ -4,7 +4,7 @@ import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { BleManager, ConnectionPriority, Device, ScanMode, State } from 'react-native-ble-plx';
+import { BleManager, Device, ScanMode, State } from 'react-native-ble-plx';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
@@ -198,96 +198,53 @@ const LOG_COLORS: Record<LogEntry['level'], string> = {
   data: 'text-accent-primary',
 };
 
-// How many milliseconds of history to display
-const CHART_WINDOW_MS = 5000;
-const CHART_Y_RANGE = 2.0; // ±2g displayed
+const CHART_WINDOW_MS = 3000;
+const MIN_Y_RANGE = 0.4; // always show at least ±0.4g even when device is still
 
 interface ChartPoint {
-  t: number; // ms timestamp
-  v: number; // net accel (|a| − 1g)
-}
-
-function buildPolyline(
-  points: ChartPoint[],
-  now: number,
-  width: number,
-  height: number,
-  padLeft: number,
-  padRight: number,
-  padTop: number,
-  padBottom: number
-): string {
-  if (points.length < 2) return '';
-  const innerW = width - padLeft - padRight;
-  const innerH = height - padTop - padBottom;
-  const midY = padTop + innerH / 2;
-  return points
-    .map((p) => {
-      const x = padLeft + ((p.t - (now - CHART_WINDOW_MS)) / CHART_WINDOW_MS) * innerW;
-      const y = midY - (p.v / CHART_Y_RANGE) * (innerH / 2);
-      return `${x.toFixed(1)},${Math.max(padTop, Math.min(padTop + innerH, y)).toFixed(1)}`;
-    })
-    .join(' ');
+  t: number;
+  v: number;
 }
 
 function MovementChart({ points, now }: { points: ChartPoint[]; now: number }) {
   const WIDTH = 320;
   const HEIGHT = 160;
-  const PAD_LEFT = 32;
+  const PAD_LEFT = 36;
   const PAD_RIGHT = 8;
   const PAD_TOP = 8;
-  const PAD_BOTTOM = 20;
+  const PAD_BOTTOM = 16;
+  const innerW = WIDTH - PAD_LEFT - PAD_RIGHT;
   const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
   const midY = PAD_TOP + innerH / 2;
 
-  const poly = buildPolyline(points, now, WIDTH, HEIGHT, PAD_LEFT, PAD_RIGHT, PAD_TOP, PAD_BOTTOM);
+  // Auto-scale: find the actual peak in visible data
+  const windowStart = now - CHART_WINDOW_MS;
+  const visible = points.filter((p) => p.t >= windowStart);
+  const peak = visible.reduce((m, p) => Math.max(m, Math.abs(p.v)), MIN_Y_RANGE);
+  const yRange = peak * 1.2; // 20% headroom
+
+  const toX = (t: number) => PAD_LEFT + ((t - windowStart) / CHART_WINDOW_MS) * innerW;
+  const toY = (v: number) => Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, midY - (v / yRange) * (innerH / 2)));
+
+  const poly =
+    visible.length < 2
+      ? ''
+      : visible.map((p) => `${toX(p.t).toFixed(1)},${toY(p.v).toFixed(1)}`).join(' ');
+
+  const yLabel = (v: number) => (v >= 1 ? `+${v.toFixed(1)}` : v <= -1 ? v.toFixed(1) : v.toFixed(2)) + 'g';
 
   return (
     <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
       <Svg width={WIDTH} height={HEIGHT}>
-        {/* Zero line */}
-        <SvgLine
-          x1={PAD_LEFT}
-          y1={midY}
-          x2={WIDTH - PAD_RIGHT}
-          y2={midY}
-          stroke="#444"
-          strokeWidth={1}
-          strokeDasharray="4,4"
-        />
-        {/* ±1g guides */}
-        {[-1, 1].map((g) => {
-          const gy = midY - (g / CHART_Y_RANGE) * (innerH / 2);
-          return (
-            <SvgLine
-              key={g}
-              x1={PAD_LEFT}
-              y1={gy}
-              x2={WIDTH - PAD_RIGHT}
-              y2={gy}
-              stroke="#333"
-              strokeWidth={1}
-              strokeDasharray="2,6"
-            />
-          );
+        <SvgLine x1={PAD_LEFT} y1={midY} x2={WIDTH - PAD_RIGHT} y2={midY} stroke="#555" strokeWidth={1} strokeDasharray="4,3" />
+        {[-1, 1].map((sign) => {
+          const gy = toY(sign * yRange * 0.75);
+          return <SvgLine key={sign} x1={PAD_LEFT} y1={gy} x2={WIDTH - PAD_RIGHT} y2={gy} stroke="#333" strokeWidth={1} strokeDasharray="2,6" />;
         })}
-        {/* Y-axis labels */}
-        {(
-          [
-            [-CHART_Y_RANGE, `−${CHART_Y_RANGE}g`],
-            [0, '0g'],
-            [CHART_Y_RANGE, `+${CHART_Y_RANGE}g`],
-          ] as [number, string][]
-        ).map(([val, label]) => {
-          const ly = midY - (val / CHART_Y_RANGE) * (innerH / 2);
-          return (
-            <SvgText key={label} x={PAD_LEFT - 4} y={ly + 4} fontSize={9} fill="#888" textAnchor="end">
-              {label}
-            </SvgText>
-          );
-        })}
-        {/* Waveform */}
-        {poly ? <Polyline points={poly} fill="none" stroke="#4ade80" strokeWidth={1.5} /> : null}
+        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + 8} fontSize={8} fill="#888" textAnchor="end">{yLabel(yRange)}</SvgText>
+        <SvgText x={PAD_LEFT - 3} y={midY + 4} fontSize={8} fill="#888" textAnchor="end">0g</SvgText>
+        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + innerH} fontSize={8} fill="#888" textAnchor="end">{yLabel(-yRange)}</SvgText>
+        {poly ? <Polyline points={poly} fill="none" stroke="#4ade80" strokeWidth={2} /> : null}
       </Svg>
     </View>
   );
@@ -319,16 +276,17 @@ export default function BleTestScreen() {
   const sensorDataRef = useRef<SensorData>({ accel: null, gyro: null, angle: null, mag: null });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [pktPerSec, setPktPerSec] = useState(0);
+  const [maxGapMs, setMaxGapMs] = useState(0);
   const [chartPoints, setChartPoints] = useState<ChartPoint[]>([]);
   const [chartNow, setChartNow] = useState(0);
-  // Long-lived time-stamped chart buffer — trimmed to CHART_WINDOW_MS
   const chartBufferRef = useRef<ChartPoint[]>([]);
-  // Values that arrived during the current flush interval (no timestamps yet)
   const burstValuesRef = useRef<number[]>([]);
   const lastFlushTimeRef = useRef<number>(0);
+  // Gap tracking — definitive diagnostic for BLE connection interval
+  const lastPktTimestampRef = useRef(0);
+  const maxGapWindowRef = useRef(0);
   const logIdRef = useRef(0);
   const subscriptionRef = useRef<{ remove: () => void } | null>(null);
-  const priorityRetryRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pktCountRef = useRef(0);
 
   // Refresh UI and flush burst data at 50ms cadence while connected.
@@ -338,11 +296,14 @@ export default function BleTestScreen() {
   useEffect(() => {
     if (!connectedDevice) {
       setPktPerSec(0);
+      setMaxGapMs(0);
       setSensorData({ accel: null, gyro: null, angle: null, mag: null });
       setChartPoints([]);
       chartBufferRef.current = [];
       burstValuesRef.current = [];
       lastFlushTimeRef.current = 0;
+      lastPktTimestampRef.current = 0;
+      maxGapWindowRef.current = 0;
       return;
     }
     lastFlushTimeRef.current = Date.now();
@@ -351,7 +312,6 @@ export default function BleTestScreen() {
       tick++;
       const now = Date.now();
 
-      // Flush burst values with interpolated timestamps
       const burst = burstValuesRef.current.splice(0);
       if (burst.length > 0) {
         const flushStart = lastFlushTimeRef.current;
@@ -371,9 +331,12 @@ export default function BleTestScreen() {
       setChartPoints([...chartBufferRef.current]);
       setChartNow(now);
 
+      // Every second: update pkt/s and max gap, then reset window counters
       if (tick % 20 === 0) {
         setPktPerSec(pktCountRef.current);
+        setMaxGapMs(maxGapWindowRef.current);
         pktCountRef.current = 0;
+        maxGapWindowRef.current = 0;
       }
     }, 50);
     return () => clearInterval(id);
@@ -481,19 +444,23 @@ export default function BleTestScreen() {
 
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);
-        const connected = await device.connect();
 
-        try {
-          await connected.requestMTU(517);
-        } catch (_) {}
+        // autoConnect:true — Android uses background-scan connect rather than direct connect.
+        // Direct connect (false, default) starts at 7.5ms interval: the nRF52 rejects it and
+        // counter-proposes 100ms+latency=4, which Android accepts → 500ms burst cycle.
+        // Background connect starts at a moderate interval the device accepts without CPUP.
+        // vrublack/WT901BLECL (working reference) uses autoConnect=true with no priority calls.
+        // We also avoid requestConnectionPriority — each call re-triggers parameter negotiation,
+        // causing the nRF52 to re-assert its preferred 100ms+latency=4 all over again.
+        const connected = await device.connect({ autoConnect: true });
+
+        // Skip MTU negotiation — can trigger nRF52 to re-assert preferred connection params.
 
         await connected.discoverAllServicesAndCharacteristics();
         setConnectedDevice(connected);
         addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
 
-        // Read Peripheral Preferred Connection Parameters (PPCP) for diagnostics.
-        // UUID 0x2A04 in Generic Access service 0x1800 encodes:
-        //   min interval (1.25ms units), max interval, slave latency, supervision timeout (10ms units)
+        // Read PPCP — tells us exactly what the device firmware prefers
         try {
           const ppcp = await connected.readCharacteristicForService(
             '00001800-0000-1000-8000-00805f9b34fb',
@@ -509,37 +476,29 @@ export default function BleTestScreen() {
               `PPCP: interval ${minMs}-${maxMs}ms, latency=${latency}, timeout=${timeoutMs}ms`,
               'data'
             );
-            if (latency > 0) {
-              addLog(
-                `Device prefers slave latency=${latency} (burst every ${maxMs * (latency + 1)}ms) — will override`,
-                'error'
-              );
-            }
           }
-        } catch (_) {
-          addLog('PPCP characteristic not readable (ok)');
-        }
+        } catch (_) {}
 
-        // WIT protocol: unlock → set 50Hz rate → save to flash
-        // Do ALL GATT writes BEFORE requesting connection priority.
-        // Each write can cause the device's nRF52 firmware to re-request its preferred
-        // connection parameters (latency=4), overriding any priority we set earlier.
+        // WIT protocol: unlock → set 50Hz rate → save
         try {
           const write = async (bytes: number[]) => {
             const b64 = Buffer.from(bytes).toString('base64');
             await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
-            await new Promise((r) => setTimeout(r, 120));
+            await new Promise((r) => setTimeout(r, 80));
           };
           addLog('Configuring 50Hz output rate…');
-          await write([0xff, 0xaa, 0x69, 0x88, 0xb5]); // unlock
-          await write([0xff, 0xaa, 0x03, 0x08, 0x00]); // rate = 50Hz
-          await write([0xff, 0xaa, 0x00, 0x00, 0x00]); // save
+          await write([0xff, 0xaa, 0x69, 0x88, 0xb5]);
+          await write([0xff, 0xaa, 0x03, 0x08, 0x00]);
+          await write([0xff, 0xaa, 0x00, 0x00, 0x00]);
           addLog('50Hz config sent', 'success');
         } catch (e: any) {
           addLog(`Rate config failed: ${e.message}`, 'error');
         }
 
         pktCountRef.current = 0;
+        lastPktTimestampRef.current = 0;
+        maxGapWindowRef.current = 0;
+
         subscriptionRef.current = connected.monitorCharacteristicForService(
           SERVICE_UUID,
           CHAR_UUID,
@@ -548,18 +507,20 @@ export default function BleTestScreen() {
               addLog(`Monitor error: ${err.message}`, 'error');
               return;
             }
-
-            if (!char?.value) {
-              return;
-            }
+            if (!char?.value) return;
 
             pktCountRef.current++;
 
+            const pktTs = Date.now();
+            if (lastPktTimestampRef.current > 0) {
+              const gap = pktTs - lastPktTimestampRef.current;
+              if (gap > maxGapWindowRef.current) maxGapWindowRef.current = gap;
+            }
+            lastPktTimestampRef.current = pktTs;
+
             const packets = parsePacket(char.value);
             packets.forEach((pkt) => {
-              // Write to ref — no re-render, UI polls at 50ms
               sensorDataRef.current = { ...sensorDataRef.current, [pkt.type]: pkt };
-
               if (pkt.type === 'accel') {
                 const net = Math.sqrt(pkt.x * pkt.x + pkt.y * pkt.y + pkt.z * pkt.z) - 1.0;
                 burstValuesRef.current.push(net);
@@ -568,47 +529,13 @@ export default function BleTestScreen() {
           }
         );
 
-        // Request HIGH priority AFTER all GATT operations (discovery, writes, CCCD enable).
-        // The nRF52 firmware re-asserts its preferred latency=4 after each write — so we wait
-        // for everything to settle, then override. We retry on a timer because the device will
-        // keep fighting to restore its preferred params; we must win the last negotiation.
-        const applyHighPriority = async (attempt: number) => {
-          try {
-            await connected.requestConnectionPriority(ConnectionPriority.High);
-            addLog(`HIGH priority applied (attempt ${attempt}) — 11-15ms, latency=0`, 'success');
-          } catch (e: any) {
-            addLog(`Priority attempt ${attempt} failed: ${e.message}`, 'error');
-          }
-        };
-
-        // Clear any previous retry loop
-        if (priorityRetryRef.current) clearInterval(priorityRetryRef.current);
-
-        // First attempt after all GATT ops have settled
-        await new Promise((r) => setTimeout(r, 600));
-        await applyHighPriority(1);
-
-        // Keep re-asserting every 2s for 30s — the device may keep re-requesting latency=4
-        let attempt = 2;
-        priorityRetryRef.current = setInterval(async () => {
-          if (attempt > 15) {
-            clearInterval(priorityRetryRef.current!);
-            priorityRetryRef.current = null;
-            addLog('Priority negotiation complete');
-            return;
-          }
-          await applyHighPriority(attempt++);
-        }, 2000);
-
         connected.onDisconnected((err) => {
           addLog(`Disconnected${err ? `: ${err.message}` : ''}`, err ? 'error' : 'info');
-          if (priorityRetryRef.current) {
-            clearInterval(priorityRetryRef.current);
-            priorityRetryRef.current = null;
-          }
           sensorDataRef.current = { accel: null, gyro: null, angle: null, mag: null };
           chartBufferRef.current = [];
           burstValuesRef.current = [];
+          lastPktTimestampRef.current = 0;
+          maxGapWindowRef.current = 0;
           setConnectedDevice(null);
           subscriptionRef.current = null;
         });
@@ -647,10 +574,6 @@ export default function BleTestScreen() {
     }
 
     try {
-      if (priorityRetryRef.current) {
-        clearInterval(priorityRetryRef.current);
-        priorityRetryRef.current = null;
-      }
       subscriptionRef.current?.remove();
       subscriptionRef.current = null;
       await connectedDevice.cancelConnection();
@@ -741,9 +664,15 @@ export default function BleTestScreen() {
 
               {/* Data rate controls */}
               <View className="mt-3 flex-row items-center gap-3">
-                <View className="flex-1 items-center rounded-xl border border-border-accent bg-bg-overlay py-2">
-                  <Text className="text-2xl font-bold text-accent-primary">{pktPerSec}</Text>
-                  <Text className="text-xs text-text-tertiary">pkt/s</Text>
+                <View className="flex-1 gap-1">
+                  <View className="items-center rounded-xl border border-border-accent bg-bg-overlay py-2">
+                    <Text className="text-2xl font-bold text-accent-primary">{pktPerSec}</Text>
+                    <Text className="text-xs text-text-tertiary">pkt/s</Text>
+                  </View>
+                  <View className={`items-center rounded-xl border py-2 ${maxGapMs > 200 ? 'border-status-error bg-status-error/10' : 'border-status-success bg-status-success/10'}`}>
+                    <Text className={`text-lg font-bold ${maxGapMs > 200 ? 'text-status-error' : 'text-status-success'}`}>{maxGapMs}ms</Text>
+                    <Text className="text-xs text-text-tertiary">max gap</Text>
+                  </View>
                 </View>
                 <View className="flex-1 gap-1">
                   <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">Output rate</Text>
@@ -756,20 +685,6 @@ export default function BleTestScreen() {
                       <Text className="text-xs font-bold text-text-primary">{hz} Hz</Text>
                     </Pressable>
                   ))}
-                  <Pressable
-                    onPress={async () => {
-                      if (!connectedDevice) return;
-                      try {
-                        await connectedDevice.requestConnectionPriority(ConnectionPriority.High);
-                        addLog('HIGH priority re-applied manually', 'success');
-                      } catch (e: any) {
-                        addLog(`Priority error: ${e.message}`, 'error');
-                      }
-                    }}
-                    className="items-center rounded-lg border border-accent-primary bg-bg-overlay py-1"
-                  >
-                    <Text className="text-xs font-bold text-accent-primary">Force Fast</Text>
-                  </Pressable>
                 </View>
               </View>
 
@@ -777,7 +692,7 @@ export default function BleTestScreen() {
               <View className="mt-3 rounded-xl border border-border-light bg-bg-primary p-4">
                 <Text className="mb-2 font-bold text-text-primary">Movement</Text>
                 <Text className="mb-3 text-xs text-text-tertiary">
-                  Net acceleration (|a| − 1g) · last 5 seconds
+                  Net acceleration (|a| − 1g) · last 3 seconds
                 </Text>
                 {chartPoints.length > 1 ? (
                   <MovementChart points={chartPoints} now={chartNow} />
