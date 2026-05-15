@@ -1,6 +1,5 @@
 import {
   addConnectionListener,
-  addDeviceFoundListener,
   addErrorListener,
   addLogListener,
   addPacketListener,
@@ -8,8 +7,6 @@ import {
   disconnect as disconnectWitmotion,
   getBondedDevices as getWitmotionBondedDevices,
   setOutputRate as setWitmotionOutputRate,
-  startScan as startWitmotionScan,
-  stopScan as stopWitmotionScan,
   type WitPacket,
   type WitScannedDevice,
 } from '@musclog/witmotion-ble';
@@ -19,6 +16,7 @@ import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lu
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PermissionsAndroid, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
+import { BleManager } from 'react-native-ble-plx';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
@@ -210,9 +208,12 @@ function MovementChart({ points, now }: { points: ChartPoint[]; now: number }) {
 
 export default function BleTestScreen() {
   const theme = useTheme();
-  const [bleState] = useState('PoweredOn');
+  const bleManagerRef = useRef<BleManager | null>(null);
+  if (!bleManagerRef.current) {
+    bleManagerRef.current = new BleManager();
+  }
+  const [bleState, setBleState] = useState('Unknown');
   const [scanning, setScanning] = useState(false);
-  const scanningRef = useRef(false);
   const [foundDevices, setFoundDevices] = useState<WitScannedDevice[]>([]);
   const [bondedDevices, setBondedDevices] = useState<WitScannedDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<WitScannedDevice | null>(null);
@@ -237,6 +238,23 @@ export default function BleTestScreen() {
   const maxGapWindowRef = useRef(0);
   const logIdRef = useRef(0);
   const pktCountRef = useRef(0);
+  const scanStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const bleManager = bleManagerRef.current!;
+    const subscription = bleManager.onStateChange((state) => {
+      setBleState(state);
+    }, true);
+
+    return () => {
+      subscription.remove();
+      bleManager.stopDeviceScan();
+      bleManager.destroy();
+      if (scanStopTimerRef.current) {
+        clearTimeout(scanStopTimerRef.current);
+      }
+    };
+  }, []);
 
   // Refresh UI and flush burst data at 50ms cadence while connected.
   // Burst temporal interpolation: values accumulated since last flush are given evenly-spaced
@@ -315,23 +333,7 @@ export default function BleTestScreen() {
   );
 
   useEffect(() => {
-    if (Platform.OS !== 'android') {
-      return;
-    }
-
     const listeners = [
-      addDeviceFoundListener((device) => {
-        if (!scanningRef.current) {
-          return;
-        }
-        setFoundDevices((prev) => {
-          if (prev.find((d) => d.id === device.id)) {
-            return prev;
-          }
-          addLog(`Found: ${device.name ?? device.localName ?? 'Unknown'} (${device.id})`);
-          return [...prev, device];
-        });
-      }),
       addConnectionListener((event) => {
         if (event.message) {
           addLog(event.message, event.state === 'disconnected' ? 'info' : 'data');
@@ -407,26 +409,57 @@ export default function BleTestScreen() {
 
   const startScan = useCallback(() => {
     (async () => {
+      const bleManager = bleManagerRef.current!;
       const allowed = await ensureBlePermissions();
       if (!allowed) {
         addLog('Bluetooth permissions were not granted.', 'error');
         return;
       }
 
+      if (scanStopTimerRef.current) {
+        clearTimeout(scanStopTimerRef.current);
+        scanStopTimerRef.current = null;
+      }
+
       setFoundDevices([]);
-      scanningRef.current = true;
       setScanning(true);
-      addLog('Scanning for WT9011DCL devices…');
-      startWitmotionScan().catch((e: any) => {
-        addLog(`Scan error: ${e.message}`, 'error');
-        setScanning(false);
-        scanningRef.current = false;
+      addLog('Scanning for nearby BLE devices…');
+
+      bleManager.startDeviceScan(null, { allowDuplicates: false }, (error, device) => {
+        if (error) {
+          addLog(`Scan error: ${error.message}`, 'error');
+          bleManager.stopDeviceScan();
+          setScanning(false);
+          return;
+        }
+
+        if (!device) {
+          return;
+        }
+
+        setFoundDevices((prev) => {
+          const nextDevice: WitScannedDevice = {
+            id: device.id,
+            name: device.name,
+            localName: device.localName,
+            rssi: device.rssi,
+          };
+          const existingIndex = prev.findIndex((d) => d.id === nextDevice.id);
+          if (existingIndex >= 0) {
+            const next = prev.slice();
+            next[existingIndex] = nextDevice;
+            return next;
+          }
+          addLog(
+            `Found: ${nextDevice.name ?? nextDevice.localName ?? 'Unknown'} (${nextDevice.id})`
+          );
+          return [...prev, nextDevice];
+        });
       });
 
-      setTimeout(() => {
-        stopWitmotionScan().catch(() => {});
+      scanStopTimerRef.current = setTimeout(() => {
+        bleManager.stopDeviceScan();
         setScanning(false);
-        scanningRef.current = false;
         addLog('Scan stopped');
       }, 15000);
     })().catch((e: any) => {
@@ -435,23 +468,30 @@ export default function BleTestScreen() {
   }, [addLog]);
 
   const stopScan = useCallback(() => {
-    stopWitmotionScan().catch(() => {});
+    bleManagerRef.current?.stopDeviceScan();
+    if (scanStopTimerRef.current) {
+      clearTimeout(scanStopTimerRef.current);
+      scanStopTimerRef.current = null;
+    }
     setScanning(false);
-    scanningRef.current = false;
     addLog('Scan stopped by user');
   }, [addLog]);
 
   const connectDevice = useCallback(
     async (device: WitScannedDevice) => {
+      const bleManager = bleManagerRef.current!;
       const allowed = await ensureBlePermissions();
       if (!allowed) {
         addLog('Bluetooth permissions were not granted.', 'error');
         return;
       }
 
-      stopWitmotionScan().catch(() => {});
+      bleManager.stopDeviceScan();
+      if (scanStopTimerRef.current) {
+        clearTimeout(scanStopTimerRef.current);
+        scanStopTimerRef.current = null;
+      }
       setScanning(false);
-      scanningRef.current = false;
 
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);

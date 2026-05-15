@@ -146,6 +146,7 @@
     "react-native-android-widget": "^0.20.3",
     "react-native-barcodes-detector": "^0.1.1",
     "@musclog/witmotion-ble": "file:./modules/witmotion-ble",
+    "react-native-ble-plx": "3.5.1",
     "react-native-body-highlighter": "^3.2.0",
     "react-native-css-interop": "^0.2.3",
     "react-native-device-info": "15.0.2",
