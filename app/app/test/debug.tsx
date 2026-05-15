@@ -92,7 +92,7 @@ const APP_SCREENS = [
   { name: 'Test: Modals', route: '/app/test/modals', category: 'Test' },
   { name: 'Test: Graphs', route: '/app/test/graphs', category: 'Test' },
   { name: 'Test: Snackbar', route: '/app/test/snackbar', category: 'Test' },
-  { name: 'Test: BLE Sensor', route: '/app/test/ble', category: 'Test' },
+  { name: 'Test: BLE Sensor', route: '/app/test/witmotion', category: 'Test' },
 ];
 
 export default function DebugTestScreen() {
