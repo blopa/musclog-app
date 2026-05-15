@@ -4,7 +4,7 @@ import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { BleManager, Device, ScanMode, State } from 'react-native-ble-plx';
+import { BleManager, ConnectionPriority, Device, ScanMode, State } from 'react-native-ble-plx';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
@@ -445,18 +445,30 @@ export default function BleTestScreen() {
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);
 
-        // autoConnect:true — Android uses background-scan connect rather than direct connect.
-        // Direct connect (false, default) starts at 7.5ms interval: the nRF52 rejects it and
-        // counter-proposes 100ms+latency=4, which Android accepts → 500ms burst cycle.
-        // Background connect starts at a moderate interval the device accepts without CPUP.
-        // vrublack/WT901BLECL (working reference) uses autoConnect=true with no priority calls.
-        // We also avoid requestConnectionPriority — each call re-triggers parameter negotiation,
-        // causing the nRF52 to re-assert its preferred 100ms+latency=4 all over again.
-        const connected = await device.connect({ autoConnect: true });
+        // Connect directly, then explicitly ask Android for a low-latency link.
+        // The library's autoConnect mode is for background discovery, not stream throughput.
+        const connected = await device.connect();
 
-        // Skip MTU negotiation — can trigger nRF52 to re-assert preferred connection params.
+        if (Platform.OS === 'android') {
+          try {
+            await connected.requestConnectionPriority(ConnectionPriority.High);
+            addLog('Requested high connection priority', 'data');
+          } catch (e: any) {
+            addLog(`Connection priority request failed: ${e.message}`, 'error');
+          }
+        }
+
+        if (Platform.OS === 'android') {
+          try {
+            await connected.requestMTU(517);
+            addLog('Requested MTU 517', 'data');
+          } catch (e: any) {
+            addLog(`MTU request failed: ${e.message}`, 'error');
+          }
+        }
 
         await connected.discoverAllServicesAndCharacteristics();
+
         setConnectedDevice(connected);
         addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
 
@@ -528,6 +540,15 @@ export default function BleTestScreen() {
             });
           }
         );
+
+        if (Platform.OS === 'android') {
+          setTimeout(() => {
+            connected
+              .requestConnectionPriority(ConnectionPriority.High)
+              .then(() => addLog('Re-requested high connection priority', 'data'))
+              .catch((e: any) => addLog(`Priority retry failed: ${e.message}`, 'error'));
+          }, 300);
+        }
 
         connected.onDisconnected((err) => {
           addLog(`Disconnected${err ? `: ${err.message}` : ''}`, err ? 'error' : 'info');
