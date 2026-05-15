@@ -1,19 +1,27 @@
-import { Buffer } from 'buffer';
+import {
+  addConnectionListener,
+  addDeviceFoundListener,
+  addErrorListener,
+  addLogListener,
+  addPacketListener,
+  connect as connectWitmotion,
+  disconnect as disconnectWitmotion,
+  setOutputRate as setWitmotionOutputRate,
+  startScan as startWitmotionScan,
+  stopScan as stopWitmotionScan,
+  type WitPacket,
+  type WitScannedDevice,
+} from '@musclog/witmotion-ble';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { BleManager, ConnectionPriority, Device, ScanMode, State } from 'react-native-ble-plx';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
-
-const SERVICE_UUID = '0000FFE5-0000-1000-8000-00805F9A34FB';
-const CHAR_UUID = '0000FFE4-0000-1000-8000-00805F9A34FB'; // notify — data stream
-const WRITE_UUID = '0000FFE9-0000-1000-8000-00805F9A34FB'; // write — config commands
 
 type PacketType = 'accel' | 'gyro' | 'angle' | 'mag' | 'unknown';
 
@@ -36,114 +44,6 @@ interface LogEntry {
   id: number;
   text: string;
   level: 'info' | 'success' | 'error' | 'data';
-}
-
-function parsePacket(base64: string): ParsedPacket[] {
-  const buf = Buffer.from(base64, 'base64');
-  const results: ParsedPacket[] = [];
-  let offset = 0;
-
-  while (offset < buf.length) {
-    if (buf[offset] !== 0x55) {
-      offset++;
-      continue;
-    }
-    if (offset + 1 >= buf.length) {
-      break;
-    }
-
-    const type = buf[offset + 1];
-    const now = Date.now();
-    const r = (i: number) => buf.readInt16LE(offset + 2 + i * 2);
-
-    switch (type) {
-      // Combined 20-byte packet: accel + gyro + angle in one notification
-      case 0x61:
-        if (offset + 19 >= buf.length) {
-          offset++;
-          break;
-        }
-        results.push({
-          type: 'accel',
-          x: (r(0) / 32768) * 16,
-          y: (r(1) / 32768) * 16,
-          z: (r(2) / 32768) * 16,
-          timestamp: now,
-        });
-        results.push({
-          type: 'gyro',
-          x: (r(3) / 32768) * 2000,
-          y: (r(4) / 32768) * 2000,
-          z: (r(5) / 32768) * 2000,
-          timestamp: now,
-        });
-        results.push({
-          type: 'angle',
-          x: (r(6) / 32768) * 180,
-          y: (r(7) / 32768) * 180,
-          z: (r(8) / 32768) * 180,
-          timestamp: now,
-        });
-        offset += 20;
-        break;
-      // Legacy 11-byte individual packets
-      case 0x51:
-        if (offset + 10 >= buf.length) {
-          offset++;
-          break;
-        }
-        results.push({
-          type: 'accel',
-          x: (r(0) / 32768) * 16,
-          y: (r(1) / 32768) * 16,
-          z: (r(2) / 32768) * 16,
-          timestamp: now,
-        });
-        offset += 11;
-        break;
-      case 0x52:
-        if (offset + 10 >= buf.length) {
-          offset++;
-          break;
-        }
-        results.push({
-          type: 'gyro',
-          x: (r(0) / 32768) * 2000,
-          y: (r(1) / 32768) * 2000,
-          z: (r(2) / 32768) * 2000,
-          timestamp: now,
-        });
-        offset += 11;
-        break;
-      case 0x53:
-        if (offset + 10 >= buf.length) {
-          offset++;
-          break;
-        }
-        results.push({
-          type: 'angle',
-          x: (r(0) / 32768) * 180,
-          y: (r(1) / 32768) * 180,
-          z: (r(2) / 32768) * 180,
-          timestamp: now,
-        });
-        offset += 11;
-        break;
-      case 0x54:
-        if (offset + 10 >= buf.length) {
-          offset++;
-          break;
-        }
-        results.push({ type: 'mag', x: r(0), y: r(1), z: r(2), timestamp: now });
-        offset += 11;
-        break;
-      default:
-        offset++;
-        break;
-    }
-  }
-
-  return results;
 }
 
 function fmt(n: number) {
@@ -224,48 +124,65 @@ function MovementChart({ points, now }: { points: ChartPoint[]; now: number }) {
   const yRange = peak * 1.2; // 20% headroom
 
   const toX = (t: number) => PAD_LEFT + ((t - windowStart) / CHART_WINDOW_MS) * innerW;
-  const toY = (v: number) => Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, midY - (v / yRange) * (innerH / 2)));
+  const toY = (v: number) =>
+    Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, midY - (v / yRange) * (innerH / 2)));
 
   const poly =
     visible.length < 2
       ? ''
       : visible.map((p) => `${toX(p.t).toFixed(1)},${toY(p.v).toFixed(1)}`).join(' ');
 
-  const yLabel = (v: number) => (v >= 1 ? `+${v.toFixed(1)}` : v <= -1 ? v.toFixed(1) : v.toFixed(2)) + 'g';
+  const yLabel = (v: number) =>
+    (v >= 1 ? `+${v.toFixed(1)}` : v <= -1 ? v.toFixed(1) : v.toFixed(2)) + 'g';
 
   return (
     <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
       <Svg width={WIDTH} height={HEIGHT}>
-        <SvgLine x1={PAD_LEFT} y1={midY} x2={WIDTH - PAD_RIGHT} y2={midY} stroke="#555" strokeWidth={1} strokeDasharray="4,3" />
+        <SvgLine
+          x1={PAD_LEFT}
+          y1={midY}
+          x2={WIDTH - PAD_RIGHT}
+          y2={midY}
+          stroke="#555"
+          strokeWidth={1}
+          strokeDasharray="4,3"
+        />
         {[-1, 1].map((sign) => {
           const gy = toY(sign * yRange * 0.75);
-          return <SvgLine key={sign} x1={PAD_LEFT} y1={gy} x2={WIDTH - PAD_RIGHT} y2={gy} stroke="#333" strokeWidth={1} strokeDasharray="2,6" />;
+          return (
+            <SvgLine
+              key={sign}
+              x1={PAD_LEFT}
+              y1={gy}
+              x2={WIDTH - PAD_RIGHT}
+              y2={gy}
+              stroke="#333"
+              strokeWidth={1}
+              strokeDasharray="2,6"
+            />
+          );
         })}
-        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + 8} fontSize={8} fill="#888" textAnchor="end">{yLabel(yRange)}</SvgText>
-        <SvgText x={PAD_LEFT - 3} y={midY + 4} fontSize={8} fill="#888" textAnchor="end">0g</SvgText>
-        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + innerH} fontSize={8} fill="#888" textAnchor="end">{yLabel(-yRange)}</SvgText>
+        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + 8} fontSize={8} fill="#888" textAnchor="end">
+          {yLabel(yRange)}
+        </SvgText>
+        <SvgText x={PAD_LEFT - 3} y={midY + 4} fontSize={8} fill="#888" textAnchor="end">
+          0g
+        </SvgText>
+        <SvgText x={PAD_LEFT - 3} y={PAD_TOP + innerH} fontSize={8} fill="#888" textAnchor="end">
+          {yLabel(-yRange)}
+        </SvgText>
         {poly ? <Polyline points={poly} fill="none" stroke="#4ade80" strokeWidth={2} /> : null}
       </Svg>
     </View>
   );
 }
 
-let bleManager: BleManager | null = null;
-
-function getManager() {
-  if (!bleManager) {
-    bleManager = new BleManager();
-  }
-
-  return bleManager;
-}
-
 export default function BleTestScreen() {
   const theme = useTheme();
-  const [bleState, setBleState] = useState<State>(State.Unknown);
+  const [bleState] = useState('PoweredOn');
   const [scanning, setScanning] = useState(false);
-  const [foundDevices, setFoundDevices] = useState<Device[]>([]);
-  const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
+  const [foundDevices, setFoundDevices] = useState<WitScannedDevice[]>([]);
+  const [connectedDevice, setConnectedDevice] = useState<WitScannedDevice | null>(null);
   const [sensorData, setSensorData] = useState<SensorData>({
     accel: null,
     gyro: null,
@@ -286,7 +203,6 @@ export default function BleTestScreen() {
   const lastPktTimestampRef = useRef(0);
   const maxGapWindowRef = useRef(0);
   const logIdRef = useRef(0);
-  const subscriptionRef = useRef<{ remove: () => void } | null>(null);
   const pktCountRef = useRef(0);
 
   // Refresh UI and flush burst data at 50ms cadence while connected.
@@ -349,217 +265,132 @@ export default function BleTestScreen() {
     ]);
   }, []);
 
-  const sendRateCommand = useCallback(async (hz: 20 | 50 | 100) => {
-    if (!connectedDevice) return;
-    const rateMap: Record<number, number> = { 20: 0x07, 50: 0x08, 100: 0x09 };
-    try {
-      const write = async (bytes: number[]) => {
-        const b64 = Buffer.from(bytes).toString('base64');
-        await connectedDevice.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
-        await new Promise((r) => setTimeout(r, 120));
-      };
-      addLog(`Setting rate to ${hz}Hz…`);
-      await write([0xff, 0xaa, 0x69, 0x88, 0xb5]);
-      await write([0xff, 0xaa, 0x03, rateMap[hz], 0x00]);
-      await write([0xff, 0xaa, 0x00, 0x00, 0x00]);
-      addLog(`Rate set to ${hz}Hz`, 'success');
-    } catch (e: any) {
-      addLog(`Rate error: ${e.message}`, 'error');
-    }
-  }, [connectedDevice, addLog]);
+  const sendRateCommand = useCallback(
+    async (hz: 20 | 50 | 100) => {
+      if (!connectedDevice) {
+        return;
+      }
+      try {
+        addLog(`Setting rate to ${hz}Hz…`);
+        await setWitmotionOutputRate(hz);
+        addLog(`Rate set to ${hz}Hz`, 'success');
+      } catch (e: any) {
+        addLog(`Rate error: ${e.message}`, 'error');
+      }
+    },
+    [connectedDevice, addLog]
+  );
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS !== 'android') {
       return;
     }
 
-    const manager = getManager();
-    const sub = manager.onStateChange((state) => {
-      setBleState(state);
-      addLog(`Bluetooth state: ${state}`);
-    }, true);
-
-    return () => {
-      sub.remove();
-      subscriptionRef.current?.remove();
-      manager.stopDeviceScan();
-    };
-  }, [addLog]);
-
-  const startScan = useCallback(() => {
-    if (bleState !== State.PoweredOn) {
-      addLog('Bluetooth is not powered on', 'error');
-      return;
-    }
-
-    setFoundDevices([]);
-    setScanning(true);
-    addLog('Scanning for WT9011DCL devices…');
-
-    const manager = getManager();
-    manager.startDeviceScan(null, { allowDuplicates: false, scanMode: ScanMode.LowLatency }, (error, device) => {
-      if (error) {
-        addLog(`Scan error: ${error.message}`, 'error');
-        setScanning(false);
-        return;
-      }
-
-      if (!device) {
-        return;
-      }
-
-      const name = device.name ?? device.localName ?? '';
-      if (!name) {
-        return;
-      }
-
-      setFoundDevices((prev) => {
-        if (prev.find((d) => d.id === device.id)) {
-          return prev;
+    const listeners = [
+      addDeviceFoundListener((device) => {
+        if (!scanning) {
+          return;
         }
-        addLog(`Found: ${name} (${device.id})`);
-        return [...prev, device];
-      });
-    });
-
-    // Auto-stop after 15s
-    setTimeout(() => {
-      manager.stopDeviceScan();
-      setScanning(false);
-      addLog('Scan stopped');
-    }, 15000);
-  }, [bleState, addLog]);
-
-  const stopScan = useCallback(() => {
-    getManager().stopDeviceScan();
-    setScanning(false);
-    addLog('Scan stopped by user');
-  }, [addLog]);
-
-  const connectDevice = useCallback(
-    async (device: Device) => {
-      const manager = getManager();
-      manager.stopDeviceScan();
-      setScanning(false);
-
-      try {
-        addLog(`Connecting to ${device.name ?? device.id}…`);
-
-        // Connect directly, then explicitly ask Android for a low-latency link.
-        // The library's autoConnect mode is for background discovery, not stream throughput.
-        const connected = await device.connect();
-
-        if (Platform.OS === 'android') {
-          try {
-            await connected.requestConnectionPriority(ConnectionPriority.High);
-            addLog('Requested high connection priority', 'data');
-          } catch (e: any) {
-            addLog(`Connection priority request failed: ${e.message}`, 'error');
+        setFoundDevices((prev) => {
+          if (prev.find((d) => d.id === device.id)) {
+            return prev;
           }
+          addLog(`Found: ${device.name ?? device.localName ?? 'Unknown'} (${device.id})`);
+          return [...prev, device];
+        });
+      }),
+      addConnectionListener((event) => {
+        if (event.message) {
+          addLog(event.message, event.state === 'disconnected' ? 'info' : 'data');
         }
-
-        if (Platform.OS === 'android') {
-          try {
-            await connected.requestMTU(517);
-            addLog('Requested MTU 517', 'data');
-          } catch (e: any) {
-            addLog(`MTU request failed: ${e.message}`, 'error');
-          }
-        }
-
-        await connected.discoverAllServicesAndCharacteristics();
-
-        setConnectedDevice(connected);
-        addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
-
-        // Read PPCP — tells us exactly what the device firmware prefers
-        try {
-          const ppcp = await connected.readCharacteristicForService(
-            '00001800-0000-1000-8000-00805f9b34fb',
-            '00002a04-0000-1000-8000-00805f9b34fb'
-          );
-          if (ppcp?.value) {
-            const b = Buffer.from(ppcp.value, 'base64');
-            const minMs = b.readUInt16LE(0) * 1.25;
-            const maxMs = b.readUInt16LE(2) * 1.25;
-            const latency = b.readUInt16LE(4);
-            const timeoutMs = b.readUInt16LE(6) * 10;
-            addLog(
-              `PPCP: interval ${minMs}-${maxMs}ms, latency=${latency}, timeout=${timeoutMs}ms`,
-              'data'
-            );
-          }
-        } catch (_) {}
-
-        // WIT protocol: unlock → set 50Hz rate → save
-        try {
-          const write = async (bytes: number[]) => {
-            const b64 = Buffer.from(bytes).toString('base64');
-            await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
-            await new Promise((r) => setTimeout(r, 80));
-          };
-          addLog('Configuring 50Hz output rate…');
-          await write([0xff, 0xaa, 0x69, 0x88, 0xb5]);
-          await write([0xff, 0xaa, 0x03, 0x08, 0x00]);
-          await write([0xff, 0xaa, 0x00, 0x00, 0x00]);
-          addLog('50Hz config sent', 'success');
-        } catch (e: any) {
-          addLog(`Rate config failed: ${e.message}`, 'error');
-        }
-
-        pktCountRef.current = 0;
-        lastPktTimestampRef.current = 0;
-        maxGapWindowRef.current = 0;
-
-        subscriptionRef.current = connected.monitorCharacteristicForService(
-          SERVICE_UUID,
-          CHAR_UUID,
-          (err, char) => {
-            if (err) {
-              addLog(`Monitor error: ${err.message}`, 'error');
-              return;
-            }
-            if (!char?.value) return;
-
-            pktCountRef.current++;
-
-            const pktTs = Date.now();
-            if (lastPktTimestampRef.current > 0) {
-              const gap = pktTs - lastPktTimestampRef.current;
-              if (gap > maxGapWindowRef.current) maxGapWindowRef.current = gap;
-            }
-            lastPktTimestampRef.current = pktTs;
-
-            const packets = parsePacket(char.value);
-            packets.forEach((pkt) => {
-              sensorDataRef.current = { ...sensorDataRef.current, [pkt.type]: pkt };
-              if (pkt.type === 'accel') {
-                const net = Math.sqrt(pkt.x * pkt.x + pkt.y * pkt.y + pkt.z * pkt.z) - 1.0;
-                burstValuesRef.current.push(net);
-              }
-            });
-          }
-        );
-
-        if (Platform.OS === 'android') {
-          setTimeout(() => {
-            connected
-              .requestConnectionPriority(ConnectionPriority.High)
-              .then(() => addLog('Re-requested high connection priority', 'data'))
-              .catch((e: any) => addLog(`Priority retry failed: ${e.message}`, 'error'));
-          }, 300);
-        }
-
-        connected.onDisconnected((err) => {
-          addLog(`Disconnected${err ? `: ${err.message}` : ''}`, err ? 'error' : 'info');
+        if (event.state === 'disconnected') {
+          setConnectedDevice(null);
+          setSensorData({ accel: null, gyro: null, angle: null, mag: null });
           sensorDataRef.current = { accel: null, gyro: null, angle: null, mag: null };
           chartBufferRef.current = [];
           burstValuesRef.current = [];
           lastPktTimestampRef.current = 0;
           maxGapWindowRef.current = 0;
-          setConnectedDevice(null);
-          subscriptionRef.current = null;
-        });
+          pktCountRef.current = 0;
+        }
+      }),
+      addPacketListener((event) => {
+        const pkt = event.packet as WitPacket;
+        pktCountRef.current++;
+
+        const pktTs = Date.now();
+        if (lastPktTimestampRef.current > 0) {
+          const gap = pktTs - lastPktTimestampRef.current;
+          if (gap > maxGapWindowRef.current) {
+            maxGapWindowRef.current = gap;
+          }
+        }
+        lastPktTimestampRef.current = pktTs;
+
+        const parsed: ParsedPacket = {
+          type: pkt.type,
+          x: pkt.x,
+          y: pkt.y,
+          z: pkt.z,
+          timestamp: pkt.timestamp,
+        };
+
+        sensorDataRef.current = { ...sensorDataRef.current, [parsed.type]: parsed };
+        if (parsed.type === 'accel') {
+          const net =
+            Math.sqrt(parsed.x * parsed.x + parsed.y * parsed.y + parsed.z * parsed.z) - 1.0;
+          burstValuesRef.current.push(net);
+        }
+      }),
+      addErrorListener((event) => {
+        addLog(event.message, 'error');
+      }),
+      addLogListener((event) => {
+        addLog(event.message, event.level);
+      }),
+    ];
+
+    return () => {
+      listeners.forEach((listener) => listener.remove());
+    };
+  }, [addLog, scanning]);
+
+  const startScan = useCallback(() => {
+    setFoundDevices([]);
+    setScanning(true);
+    addLog('Scanning for WT9011DCL devices…');
+    startWitmotionScan().catch((e: any) => {
+      addLog(`Scan error: ${e.message}`, 'error');
+      setScanning(false);
+    });
+
+    setTimeout(() => {
+      stopWitmotionScan().catch(() => {});
+      setScanning(false);
+      addLog('Scan stopped');
+    }, 15000);
+  }, [addLog]);
+
+  const stopScan = useCallback(() => {
+    stopWitmotionScan().catch(() => {});
+    setScanning(false);
+    addLog('Scan stopped by user');
+  }, [addLog]);
+
+  const connectDevice = useCallback(
+    async (device: WitScannedDevice) => {
+      stopWitmotionScan().catch(() => {});
+      setScanning(false);
+
+      try {
+        addLog(`Connecting to ${device.name ?? device.id}…`);
+        const connected = await connectWitmotion(device.id, 50);
+        pktCountRef.current = 0;
+        lastPktTimestampRef.current = 0;
+        maxGapWindowRef.current = 0;
+        sensorDataRef.current = { accel: null, gyro: null, angle: null, mag: null };
+        setConnectedDevice(connected);
+        addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
       } catch (e: any) {
         addLog(`Connection failed: ${e.message}`, 'error');
       }
@@ -595,9 +426,7 @@ export default function BleTestScreen() {
     }
 
     try {
-      subscriptionRef.current?.remove();
-      subscriptionRef.current = null;
-      await connectedDevice.cancelConnection();
+      await disconnectWitmotion();
       setConnectedDevice(null);
       setSensorData({ accel: null, gyro: null, angle: null, mag: null });
       addLog('Disconnected');
@@ -617,7 +446,7 @@ export default function BleTestScreen() {
     );
   }
 
-  const isOn = bleState === State.PoweredOn;
+  const isOn = bleState === 'PoweredOn';
 
   return (
     <MasterLayout>
@@ -690,13 +519,21 @@ export default function BleTestScreen() {
                     <Text className="text-2xl font-bold text-accent-primary">{pktPerSec}</Text>
                     <Text className="text-xs text-text-tertiary">pkt/s</Text>
                   </View>
-                  <View className={`items-center rounded-xl border py-2 ${maxGapMs > 200 ? 'border-status-error bg-status-error/10' : 'border-status-success bg-status-success/10'}`}>
-                    <Text className={`text-lg font-bold ${maxGapMs > 200 ? 'text-status-error' : 'text-status-success'}`}>{maxGapMs}ms</Text>
+                  <View
+                    className={`items-center rounded-xl border py-2 ${maxGapMs > 200 ? 'border-status-error bg-status-error/10' : 'border-status-success bg-status-success/10'}`}
+                  >
+                    <Text
+                      className={`text-lg font-bold ${maxGapMs > 200 ? 'text-status-error' : 'text-status-success'}`}
+                    >
+                      {maxGapMs}ms
+                    </Text>
                     <Text className="text-xs text-text-tertiary">max gap</Text>
                   </View>
                 </View>
                 <View className="flex-1 gap-1">
-                  <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">Output rate</Text>
+                  <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+                    Output rate
+                  </Text>
                   {([20, 50, 100] as const).map((hz) => (
                     <Pressable
                       key={hz}
@@ -719,7 +556,9 @@ export default function BleTestScreen() {
                   <MovementChart points={chartPoints} now={chartNow} />
                 ) : (
                   <View className="items-center rounded-lg border border-border-light bg-bg-overlay py-8">
-                    <Text className="text-xs text-text-tertiary">Move the device to see the waveform</Text>
+                    <Text className="text-xs text-text-tertiary">
+                      Move the device to see the waveform
+                    </Text>
                   </View>
                 )}
               </View>

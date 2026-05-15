@@ -1,0 +1,26 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+expoModule {
+  canBePublished false
+}
+
+group = 'host.exp.exponent'
+version = '1.0.0'
+
+android {
+  namespace "expo.modules.witmotionble"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
+  implementation 'androidx.annotation:annotation:1.9.1'
+
+  // Optional vendor SDK. If the WitMotion AAR is dropped into android/libs, Gradle will pick it up.
+  implementation fileTree(dir: "libs", include: ["*.aar"])
+}

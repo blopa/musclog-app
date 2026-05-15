@@ -120,15 +120,7 @@
         }
       ],
       "expo-secure-store",
-      "@sentry/react-native",
-      [
-        "react-native-ble-plx",
-        {
-          "isBackgroundEnabled": false,
-          "modes": ["central"],
-          "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
-        }
-      ]
+      "@sentry/react-native"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
