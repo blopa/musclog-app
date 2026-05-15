@@ -1,37 +1,19 @@
 package expo.modules.witmotionble
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanResult
-import android.bluetooth.le.ScanSettings
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import com.wit.witsdk.observer.interfaces.Observer
+import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothBLE
+import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothSPP
+import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.WitBluetoothManager
+import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.interfaces.IBluetoothFoundObserver
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.ByteArrayOutputStream
 import java.util.ArrayDeque
-import java.util.UUID
-
-private const val SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9b34fb"
-private const val NOTIFY_UUID = "0000ffe4-0000-1000-8000-00805f9b34fb"
-private const val WRITE_UUID = "0000ffe9-0000-1000-8000-00805f9b34fb"
-private const val CCCD_UUID = "00002902-0000-1000-8000-00805f9b34fb"
-
-private val SERVICE_UUID_OBJECT = UUID.fromString(SERVICE_UUID)
-private val NOTIFY_UUID_OBJECT = UUID.fromString(NOTIFY_UUID)
-private val WRITE_UUID_OBJECT = UUID.fromString(WRITE_UUID)
-private val CCCD_UUID_OBJECT = UUID.fromString(CCCD_UUID)
 
 private data class ParsedPacket(
   val type: String,
@@ -44,10 +26,9 @@ private data class ParsedPacket(
 class WitmotionBleModule : Module() {
   private val mainHandler = Handler(Looper.getMainLooper())
   private var bluetoothAdapter: BluetoothAdapter? = null
-  private var scannerCallback: ScanCallback? = null
-  private var gatt: BluetoothGatt? = null
-  private var notifyCharacteristic: BluetoothGattCharacteristic? = null
-  private var writeCharacteristic: BluetoothGattCharacteristic? = null
+  private var witBluetoothManager: WitBluetoothManager? = null
+  private var foundObserverRegistered = false
+  private var connectedBle: BluetoothBLE? = null
   private val incomingBuffer = ByteArrayOutputStream()
   private var pendingRateCommands: ArrayDeque<ByteArray>? = null
   private var pendingRateResolve: (() -> Unit)? = null
@@ -93,6 +74,18 @@ class WitmotionBleModule : Module() {
       disconnectInternal()
     }
 
+    AsyncFunction("getBondedDevices") {
+      ensureBluetoothReady("getBondedDevices")
+      adapter().bondedDevices.map { device ->
+        mapOf(
+          "id" to device.address,
+          "name" to device.name,
+          "localName" to device.name,
+          "rssi" to null
+        )
+      }
+    }
+
     AsyncFunction("setOutputRate") { hz: Int ->
       ensureBluetoothReady("setOutputRate")
       setOutputRateInternal(hz, null, null)
@@ -116,52 +109,52 @@ class WitmotionBleModule : Module() {
     }
   }
 
+  private fun requireActivity() =
+    requireNotNull(appContext.currentActivity) {
+      "Bluetooth requires a foreground Activity"
+    }
+
+  private fun ensureWitManager(): WitBluetoothManager {
+    val activity = requireActivity()
+    if (!WitBluetoothManager.checkPermissions(activity)) {
+      WitBluetoothManager.requestPermissions(activity)
+      throw IllegalStateException("Bluetooth permissions were requested; please try again")
+    }
+
+    val current = witBluetoothManager
+    if (current != null) {
+      return current
+    }
+
+    WitBluetoothManager.initInstance(activity)
+    return WitBluetoothManager.getInstance().also {
+      witBluetoothManager = it
+    }
+  }
+
   private fun startScanInternal() {
     stopScanInternal()
-    val scanner = adapter().bluetoothLeScanner ?: error("BLE scanner not available")
-    val settings = ScanSettings.Builder()
-      .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-      .build()
-
-    val seen = mutableSetOf<String>()
-    scannerCallback = object : ScanCallback() {
-      override fun onScanResult(callbackType: Int, result: ScanResult) {
-        val device = result.device ?: return
-        if (!seen.add(device.address)) {
-          return
-        }
-
-        sendEvent("onDeviceFound", mapOf(
-          "id" to device.address,
-          "name" to device.name,
-          "localName" to result.scanRecord?.deviceName,
-          "rssi" to result.rssi
-        ))
-      }
-
-      override fun onScanFailed(errorCode: Int) {
-        sendError("Scan failed with code $errorCode")
-      }
+    val manager = ensureWitManager()
+    if (!foundObserverRegistered) {
+      manager.registerObserver(foundObserver)
+      foundObserverRegistered = true
     }
 
     mainHandler.post {
-      sendLog("Starting BLE scan", "info")
-      scanner.startScan(null, settings, scannerCallback)
+      sendLog("Starting WitMotion discovery", "info")
+      manager.startDiscovery()
     }
   }
 
   private fun stopScanInternal() {
-    val scanner = bluetoothAdapter?.bluetoothLeScanner ?: return
-    scannerCallback?.let { callback ->
-      mainHandler.post {
-        try {
-          scanner.stopScan(callback)
-          sendLog("Stopped BLE scan", "info")
-        } catch (_: Throwable) {
-        }
+    val manager = witBluetoothManager ?: return
+    mainHandler.post {
+      try {
+        manager.stopDiscovery()
+        sendLog("Stopped BLE scan", "info")
+      } catch (_: Throwable) {
       }
     }
-    scannerCallback = null
   }
 
   private fun connectInternal(deviceId: String): Map<String, Any?> {
@@ -170,12 +163,23 @@ class WitmotionBleModule : Module() {
     val device = adapter().getRemoteDevice(deviceId)
     sendConnectionState("connecting", deviceId, device.name, "Connecting")
 
-    gatt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
-    } else {
-      @Suppress("DEPRECATION")
-      device.connectGatt(context, false, gattCallback)
-    }
+    val manager = ensureWitManager()
+    val ble = manager.getBluetoothBLE(deviceId)
+    ble.registerObserver(deviceObserver)
+    ble.connect(deviceId)
+    connectedBle = ble
+
+    mainHandler.postDelayed({
+      if (connectedBle === ble) {
+        sendConnectionState("connected", device.address, device.name, "Connected")
+        if (!initialRateScheduled) {
+          initialRateScheduled = true
+          mainHandler.postDelayed({
+            setOutputRateInternal(defaultRateHz, null, { error -> sendError(error) })
+          }, 200)
+        }
+      }
+    }, 600)
 
     return mapOf(
       "id" to device.address,
@@ -191,20 +195,15 @@ class WitmotionBleModule : Module() {
     pendingRateReject = null
     initialRateScheduled = false
 
-    val currentGatt = gatt
-    gatt = null
-    notifyCharacteristic = null
-    writeCharacteristic = null
+    val currentBle = connectedBle
+    connectedBle = null
     incomingBuffer.reset()
 
-    if (currentGatt != null) {
+    if (currentBle != null) {
       try {
         sendConnectionState("disconnecting", null, null, "Disconnecting")
-        currentGatt.disconnect()
-      } catch (_: Throwable) {
-      }
-      try {
-        currentGatt.close()
+        currentBle.removeObserver(deviceObserver)
+        currentBle.disconnect()
       } catch (_: Throwable) {
       }
     }
@@ -212,64 +211,11 @@ class WitmotionBleModule : Module() {
     sendConnectionState("disconnected", null, null, "Disconnected")
   }
 
-  private fun onConnected(gatt: BluetoothGatt) {
-    try {
-      gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-      sendLog("Requested high connection priority", "data")
-    } catch (error: Throwable) {
-      sendLog("Connection priority request failed: ${error.message}", "error")
-    }
-
-    try {
-      gatt.requestMtu(517)
-      sendLog("Requested MTU 517", "data")
-    } catch (error: Throwable) {
-      sendLog("MTU request failed: ${error.message}", "error")
-    }
-
-    gatt.discoverServices()
-  }
-
-  private fun onServicesReady(gatt: BluetoothGatt) {
-    val service = gatt.getService(SERVICE_UUID_OBJECT)
-    if (service == null) {
-      sendError("WitMotion service $SERVICE_UUID not found")
-      return
-    }
-
-    notifyCharacteristic = service.getCharacteristic(NOTIFY_UUID_OBJECT)
-    writeCharacteristic = service.getCharacteristic(WRITE_UUID_OBJECT)
-
-    if (notifyCharacteristic == null) {
-      sendError("Notify characteristic $NOTIFY_UUID not found")
-      return
-    }
-
-    val ok = gatt.setCharacteristicNotification(notifyCharacteristic, true)
-    if (!ok) {
-      sendError("Failed to enable characteristic notifications")
-      return
-    }
-
-    val descriptor = notifyCharacteristic?.getDescriptor(CCCD_UUID_OBJECT)
-    if (descriptor == null) {
-      sendError("Notification descriptor not found")
-      return
-    }
-
-    @Suppress("DEPRECATION")
-    descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-
-    val written = gatt.writeDescriptor(descriptor)
-    if (!written) {
-      sendError("Failed to write notification descriptor")
-      return
-    }
-
-    sendConnectionState("connected", gatt.device?.address, gatt.device?.name, "Connected")
-  }
-
-  private fun startPendingRateWrite(rateHz: Int, resolve: (() -> Unit)?, reject: ((String) -> Unit)?) {
+  private fun startPendingRateWrite(
+    rateHz: Int,
+    resolve: (() -> Unit)?,
+    reject: ((String) -> Unit)?
+  ) {
     val commands = when (rateHz) {
       20 -> listOf(
         byteArrayOf(0xff.toByte(), 0xaa.toByte(), 0x69, 0x88.toByte(), 0xb5.toByte()),
@@ -296,12 +242,8 @@ class WitmotionBleModule : Module() {
   }
 
   private fun setOutputRateInternal(rateHz: Int, resolve: (() -> Unit)?, reject: ((String) -> Unit)?) {
-    val currentGatt = gatt ?: run {
+    if (connectedBle == null) {
       reject?.invoke("Not connected")
-      return
-    }
-    if (writeCharacteristic == null) {
-      reject?.invoke("Write characteristic unavailable")
       return
     }
     sendLog("Setting output rate to ${rateHz}Hz", "info")
@@ -309,8 +251,7 @@ class WitmotionBleModule : Module() {
   }
 
   private fun writeNextPendingRateCommand() {
-    val currentGatt = gatt ?: return
-    val characteristic = writeCharacteristic ?: return
+    val currentBle = connectedBle ?: return
     val queue = pendingRateCommands ?: return
     if (queue.isEmpty()) {
       pendingRateCommands = null
@@ -320,18 +261,21 @@ class WitmotionBleModule : Module() {
       sendLog("Output rate configured", "success")
       return
     }
-    val next = queue.removeFirst()
 
-    @Suppress("DEPRECATION")
-    characteristic.value = next
-    characteristic.writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-    val ok = currentGatt.writeCharacteristic(characteristic)
-    if (!ok) {
+    val next = queue.removeFirst()
+    try {
+      currentBle.write(next)
+    } catch (error: Throwable) {
       pendingRateCommands = null
-      pendingRateReject?.invoke("Failed to write rate command")
+      pendingRateReject?.invoke("Failed to write rate command: ${error.message}")
       pendingRateResolve = null
       pendingRateReject = null
+      return
     }
+
+    mainHandler.postDelayed({
+      writeNextPendingRateCommand()
+    }, 80)
   }
 
   private fun appendIncoming(bytes: ByteArray) {
@@ -465,9 +409,6 @@ class WitmotionBleModule : Module() {
 
   private fun emitParsedPackets(vararg packets: ParsedPacket) {
     packets.forEach { packet ->
-      if (packet.type == "accel") {
-        // no-op, stream consumers handle derived metrics in JS
-      }
       sendEvent(
         "onPacket",
         mapOf(
@@ -511,62 +452,37 @@ class WitmotionBleModule : Module() {
     sendEvent("onLog", mapOf("message" to message, "level" to level))
   }
 
-  private val gattCallback = object : BluetoothGattCallback() {
-    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        sendError("GATT connection error: $status")
-        disconnectInternal()
-        return
-      }
-
-      when (newState) {
-        BluetoothProfile.STATE_CONNECTED -> onConnected(gatt)
-        BluetoothProfile.STATE_DISCONNECTED -> disconnectInternal()
-      }
+  private val foundObserver = object : IBluetoothFoundObserver {
+    override fun onFoundBle(device: BluetoothBLE) {
+      sendEvent(
+        "onDeviceFound",
+        mapOf(
+          "id" to device.mac,
+          "name" to device.name,
+          "localName" to device.name,
+          "rssi" to device.rssi
+        )
+      )
     }
 
-    override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        sendError("Service discovery failed: $status")
-        return
-      }
-      onServicesReady(gatt)
+    override fun onFoundSPP(device: BluetoothSPP) {
+      sendEvent(
+        "onDeviceFound",
+        mapOf(
+          "id" to device.mac,
+          "name" to device.name,
+          "localName" to device.name,
+          "rssi" to device.rssi
+        )
+      )
     }
 
-    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
-      val value = characteristic.value ?: return
-      appendIncoming(value)
+    override fun onFoundDual(device: BluetoothBLE) {
+      onFoundBle(device)
     }
+  }
 
-    override fun onDescriptorWrite(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        sendError("Descriptor write failed: $status")
-        return
-      }
-
-      if (!initialRateScheduled) {
-        initialRateScheduled = true
-        mainHandler.postDelayed({
-          setOutputRateInternal(defaultRateHz, null, { error -> sendError(error) })
-        }, 50)
-      }
-    }
-
-    override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        pendingRateCommands = null
-        pendingRateReject?.invoke("Rate command write failed: $status")
-        pendingRateResolve = null
-        pendingRateReject = null
-        return
-      }
-      writeNextPendingRateCommand()
-    }
-
-    override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
-      if (status == BluetoothGatt.GATT_SUCCESS) {
-        sendLog("Negotiated MTU $mtu", "data")
-      }
-    }
+  private val deviceObserver = Observer { bytes ->
+    appendIncoming(bytes)
   }
 }

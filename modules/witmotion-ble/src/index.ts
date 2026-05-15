@@ -32,6 +32,7 @@ export interface WitConnectionEvent {
 type NativeWitmotionBleModule = {
   startScan(): Promise<void>;
   stopScan(): Promise<void>;
+  getBondedDevices(): Promise<WitScannedDevice[]>;
   connect(deviceId: string, outputRateHz?: number): Promise<WitScannedDevice>;
   disconnect(): Promise<void>;
   setOutputRate(hz: number): Promise<void>;
@@ -54,6 +55,13 @@ export function startScan(): Promise<void> {
 
 export function stopScan(): Promise<void> {
   return native?.stopScan() ?? Promise.reject(new UnavailabilityError('WitmotionBle', 'stopScan'));
+}
+
+export function getBondedDevices(): Promise<WitScannedDevice[]> {
+  return (
+    native?.getBondedDevices() ??
+    Promise.reject(new UnavailabilityError('WitmotionBle', 'getBondedDevices'))
+  );
 }
 
 export function connect(deviceId: string, outputRateHz = 50): Promise<WitScannedDevice> {

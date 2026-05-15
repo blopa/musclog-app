@@ -6,6 +6,7 @@ import {
   addPacketListener,
   connect as connectWitmotion,
   disconnect as disconnectWitmotion,
+  getBondedDevices as getWitmotionBondedDevices,
   setOutputRate as setWitmotionOutputRate,
   startScan as startWitmotionScan,
   stopScan as stopWitmotionScan,
@@ -51,17 +52,29 @@ async function ensureBlePermissions() {
     return true;
   }
 
-  const apiLevel = typeof Platform.Version === 'number' ? Platform.Version : Number(Platform.Version);
+  const apiLevel =
+    typeof Platform.Version === 'number' ? Platform.Version : Number(Platform.Version);
   const permissions =
     apiLevel >= 31
       ? [
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
         ]
-      : [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+      : [
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        ];
 
-  const result = await PermissionsAndroid.requestMultiple(permissions);
-  return permissions.every((permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED);
+  const result = await PermissionsAndroid.requestMultiple(
+    permissions as Parameters<typeof PermissionsAndroid.requestMultiple>[0]
+  );
+  return permissions.every(
+    (permission) =>
+      result[permission as keyof typeof result] === PermissionsAndroid.RESULTS.GRANTED
+  );
 }
 
 function fmt(n: number) {
@@ -199,7 +212,9 @@ export default function BleTestScreen() {
   const theme = useTheme();
   const [bleState] = useState('PoweredOn');
   const [scanning, setScanning] = useState(false);
+  const scanningRef = useRef(false);
   const [foundDevices, setFoundDevices] = useState<WitScannedDevice[]>([]);
+  const [bondedDevices, setBondedDevices] = useState<WitScannedDevice[]>([]);
   const [connectedDevice, setConnectedDevice] = useState<WitScannedDevice | null>(null);
   const [sensorData, setSensorData] = useState<SensorData>({
     accel: null,
@@ -306,7 +321,7 @@ export default function BleTestScreen() {
 
     const listeners = [
       addDeviceFoundListener((device) => {
-        if (!scanning) {
+        if (!scanningRef.current) {
           return;
         }
         setFoundDevices((prev) => {
@@ -371,7 +386,24 @@ export default function BleTestScreen() {
     return () => {
       listeners.forEach((listener) => listener.remove());
     };
-  }, [addLog, scanning]);
+  }, [addLog]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+
+    getWitmotionBondedDevices()
+      .then((devices) => {
+        setBondedDevices(devices);
+        if (devices.length > 0) {
+          addLog(`Loaded ${devices.length} bonded device(s)`, 'data');
+        }
+      })
+      .catch((e: any) => {
+        addLog(`Bonded device lookup failed: ${e.message}`, 'error');
+      });
+  }, [addLog]);
 
   const startScan = useCallback(() => {
     (async () => {
@@ -382,16 +414,19 @@ export default function BleTestScreen() {
       }
 
       setFoundDevices([]);
+      scanningRef.current = true;
       setScanning(true);
       addLog('Scanning for WT9011DCL devices…');
       startWitmotionScan().catch((e: any) => {
         addLog(`Scan error: ${e.message}`, 'error');
         setScanning(false);
+        scanningRef.current = false;
       });
 
       setTimeout(() => {
         stopWitmotionScan().catch(() => {});
         setScanning(false);
+        scanningRef.current = false;
         addLog('Scan stopped');
       }, 15000);
     })().catch((e: any) => {
@@ -402,6 +437,7 @@ export default function BleTestScreen() {
   const stopScan = useCallback(() => {
     stopWitmotionScan().catch(() => {});
     setScanning(false);
+    scanningRef.current = false;
     addLog('Scan stopped by user');
   }, [addLog]);
 
@@ -415,6 +451,7 @@ export default function BleTestScreen() {
 
       stopWitmotionScan().catch(() => {});
       setScanning(false);
+      scanningRef.current = false;
 
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);
@@ -513,7 +550,7 @@ export default function BleTestScreen() {
             ) : (
               <View className="flex-row items-center gap-1">
                 <WifiOff size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                <Text className="text-xs text-text-tertiary">Not connected</Text>
+                <Text className="text-xs text-text-tertiary">Device disconnected</Text>
               </View>
             )}
           </View>
@@ -617,6 +654,29 @@ export default function BleTestScreen() {
                 </View>
               ) : null}
 
+              {bondedDevices.length > 0 ? (
+                <View className="mb-4 gap-2">
+                  <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                    Paired devices ({bondedDevices.length})
+                  </Text>
+                  {bondedDevices.map((device) => (
+                    <Pressable
+                      key={device.id}
+                      onPress={() => connectDevice(device)}
+                      className="flex-row items-center justify-between rounded-lg border border-border-light bg-bg-primary p-3"
+                    >
+                      <View>
+                        <Text className="font-medium text-text-primary">
+                          {device.name ?? device.localName ?? 'Unknown'}
+                        </Text>
+                        <Text className="text-xs text-text-tertiary">{device.id}</Text>
+                      </View>
+                      <Text className="text-xs font-bold text-accent-primary">Connect</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
+
               {foundDevices.length > 0 ? (
                 <View className="mt-4 gap-2">
                   <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
@@ -640,7 +700,8 @@ export default function BleTestScreen() {
                 </View>
               ) : !scanning ? (
                 <Text className="mt-3 text-sm text-text-tertiary">
-                  No devices found. Press Start Scan to search.
+                  No nearby BLE devices found. Press Start Scan to search, or try a paired device
+                  above.
                 </Text>
               ) : null}
             </View>
