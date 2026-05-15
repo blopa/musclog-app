@@ -160,26 +160,32 @@ class WitmotionBleModule : Module() {
   }
 
   private fun connectInternal(deviceId: String): Map<String, Any?> {
-    disconnectInternal(emitState = false)
+    try {
+      disconnectInternal(emitState = false)
 
-    val device = adapter().getRemoteDevice(deviceId)
-    sendConnectionState("connecting", deviceId, device.name, "Connecting")
-    connectionEstablished = false
-    sawFirstPacket = false
+      val device = adapter().getRemoteDevice(deviceId)
+      sendConnectionState("connecting", deviceId, device.name, "Connecting")
+      connectionEstablished = false
+      sawFirstPacket = false
 
-    ensureWitManager()
-    val ble =
-      BluetoothBLE(context, deviceId, device.name ?: device.address)
-    ble.registerObserver(deviceObserver)
-    ble.connect(deviceId)
-    connectedBle = ble
+      ensureWitManager()
+      val ble =
+        BluetoothBLE(context, deviceId, device.name ?: device.address)
+      ble.registerObserver(deviceObserver)
+      ble.connect(deviceId)
+      connectedBle = ble
 
-    return mapOf(
-      "id" to device.address,
-      "name" to device.name,
-      "localName" to device.name,
-      "rssi" to null
-    )
+      return mapOf(
+        "id" to device.address,
+        "name" to device.name,
+        "localName" to device.name,
+        "rssi" to null
+      )
+    } catch (error: Throwable) {
+      disconnectInternal(emitState = false)
+      sendError("Connection failed: ${error::class.java.simpleName}: ${error.message}")
+      throw error
+    }
   }
 
   private fun disconnectInternal(emitState: Boolean = true) {

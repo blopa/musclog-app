@@ -6,13 +6,43 @@
  * stay in sync with the BLE feature.
  */
 
-const { withAndroidManifest, withInfoPlist } = require('@expo/config-plugins');
+const { withAndroidManifest, withInfoPlist, withProjectBuildGradle } = require('@expo/config-plugins');
 
 function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
 module.exports = function withWitmotionBle(config) {
+  config = withProjectBuildGradle(config, (config) => {
+    const buildGradle = config.modResults.contents;
+    const repoLine = "    maven { url 'https://verve.jfrog.io/artifactory/verve-gradle-release' }";
+
+    if (!buildGradle.includes(repoLine)) {
+      config.modResults.contents = buildGradle.replace(
+        /allprojects\s*\{\s*repositories\s*\{([\s\S]*?)\n\s*\}\s*\}/m,
+        (match, reposBlock) => {
+          if (reposBlock.includes("verve.jfrog.io/artifactory/verve-gradle-release")) {
+            return match;
+          }
+          const insertionPoint = reposBlock.includes("maven { url 'https://www.jitpack.io' }")
+            ? "    maven { url 'https://www.jitpack.io' }\n"
+            : "    mavenCentral()\n";
+
+          if (reposBlock.includes("maven { url 'https://www.jitpack.io' }")) {
+            return match.replace(
+              "    maven { url 'https://www.jitpack.io' }\n",
+              "    maven { url 'https://www.jitpack.io' }\n" + repoLine + "\n"
+            );
+          }
+
+          return match.replace(insertionPoint, insertionPoint + repoLine + "\n");
+        }
+      );
+    }
+
+    return config;
+  });
+
   config = withAndroidManifest(config, (config) => {
     const manifest = config.modResults.manifest;
     manifest['uses-permission'] = ensureArray(manifest['uses-permission']);
