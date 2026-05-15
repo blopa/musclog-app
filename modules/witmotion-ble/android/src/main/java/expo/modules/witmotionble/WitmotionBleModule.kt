@@ -1,19 +1,13 @@
 package expo.modules.witmotionble
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
-import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.wit.witsdk.observer.interfaces.Observer
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothBLE
+import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.CustomBluetoothBLE
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothSPP
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.WitBluetoothManager
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.interfaces.IBluetoothFoundObserver
@@ -21,7 +15,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.ByteArrayOutputStream
 import java.util.ArrayDeque
-import java.util.UUID
 
 private data class ParsedPacket(
   val type: String,
@@ -31,240 +24,16 @@ private data class ParsedPacket(
   val timestamp: Long
 )
 
-private class DirectWitBleConnection(
-  private val context: Context,
-  val mac: String,
-  val name: String,
-  private val onByteArray: (ByteArray) -> Unit,
-  private val onWriteComplete: (Boolean, String?) -> Unit,
-  private val onDisconnected: () -> Unit,
-  private val onLog: (String) -> Unit,
-  private val onError: (String) -> Unit
-) {
-  private val observers = mutableSetOf<Observer>()
-  private var bluetoothGatt: BluetoothGatt? = null
-  private var writeCharacteristic: BluetoothGattCharacteristic? = null
-  private var notifyCharacteristic: BluetoothGattCharacteristic? = null
-  private var openedAt = 0L
-  private var opened = false
-  private var notificationSubscribed = false
-  private var awaitingRateAck = false
-
-  companion object {
-    private val SERVICE_UUID = UUID.fromString("49535343-fe7d-4ae5-8fa9-9fafd205e455")
-    private val WRITE_UUID = UUID.fromString("49535343-8841-43f4-a8d4-ecbe34729bb3")
-    private val NOTIFY_UUID = UUID.fromString("49535343-1e4d-4bd9-ba61-23c647249616")
-    private val CCCD_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-  }
-
-  private val callback = object : BluetoothGattCallback() {
-    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-      if (newState == BluetoothProfile.STATE_CONNECTED) {
-        onLog("GATT connected, discovering services")
-        try {
-          gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
-        } catch (_: Throwable) {
-        }
-        try {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            gatt.requestMtu(517)
-          }
-        } catch (_: Throwable) {
-        }
-        gatt.discoverServices()
-        return
-      }
-
-      if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-        opened = false
-        notificationSubscribed = false
-        writeCharacteristic = null
-        notifyCharacteristic = null
-        onLog("GATT disconnected")
-        closeGatt()
-        onDisconnected()
-      }
-    }
-
-    override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        onError("Service discovery failed: $status")
-        return
-      }
-
-      var foundWrite = false
-      var foundNotify = false
-      onLog("Discovered ${gatt.services.size} GATT service(s)")
-      for (service in gatt.services) {
-        onLog("Service: ${service.uuid}")
-        for (characteristic in service.characteristics) {
-          onLog("Characteristic: ${characteristic.uuid} props=${characteristic.properties}")
-          when {
-            !foundWrite &&
-              (
-                characteristic.uuid == WRITE_UUID ||
-                  characteristic.properties and BluetoothGattCharacteristic.PROPERTY_WRITE != 0 ||
-                  characteristic.properties and BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE != 0
-              ) -> {
-              writeCharacteristic = characteristic
-              foundWrite = true
-              onLog("Selected write characteristic: ${characteristic.uuid}")
-            }
-            !foundNotify &&
-              (
-                characteristic.uuid == NOTIFY_UUID ||
-                  characteristic.properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY != 0 ||
-                  characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE != 0
-              ) -> {
-              notifyCharacteristic = characteristic
-              foundNotify = true
-              onLog("Selected notify characteristic: ${characteristic.uuid}")
-              enableNotification(gatt, characteristic)
-            }
-          }
-        }
-      }
-
-      if (!foundWrite || !foundNotify) {
-        onError("WitMotion characteristics not found in service discovery")
-        return
-      }
-
-      onLog("WitMotion GATT session ready; waiting for notification subscription")
-    }
-
-    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
-      val bytes = characteristic.value ?: return
-      notifyObservers(bytes)
-      onByteArray(bytes)
-    }
-
-    override fun onCharacteristicWrite(
-      gatt: BluetoothGatt,
-      characteristic: BluetoothGattCharacteristic,
-      status: Int
-    ) {
-      if (characteristic.uuid != writeCharacteristic?.uuid) {
-        return
-      }
-
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        onWriteComplete(false, "Rate command write failed: $status")
-        return
-      }
-
-      onWriteComplete(true, null)
-    }
-
-    override fun onDescriptorWrite(
-      gatt: BluetoothGatt,
-      descriptor: BluetoothGattDescriptor,
-      status: Int
-    ) {
-      if (descriptor.uuid != CCCD_UUID) {
-        return
-      }
-
-      if (status != BluetoothGatt.GATT_SUCCESS) {
-        onError("Notification descriptor write failed: $status")
-        return
-      }
-
-      notificationSubscribed = true
-      opened = true
-      openedAt = System.currentTimeMillis()
-      onLog("Notification subscription enabled")
-    }
-
-    private fun enableNotification(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
-      gatt.setCharacteristicNotification(characteristic, true)
-      for (descriptor in characteristic.descriptors) {
-        if (descriptor.uuid == CCCD_UUID) {
-          descriptor.value =
-            if ((characteristic.properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
-              BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            } else {
-              BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            }
-          gatt.writeDescriptor(descriptor)
-        }
-      }
-    }
-  }
-
-  fun connect() {
-    val device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mac)
-    onLog("Connecting to ${device.address}")
-    bluetoothGatt =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        device.connectGatt(context, false, callback, BluetoothDevice.TRANSPORT_LE)
-      } else {
-        @Suppress("DEPRECATION")
-        device.connectGatt(context, false, callback)
-      }
-  }
-
-  fun disconnect() {
-    opened = false
-    notificationSubscribed = false
-    awaitingRateAck = false
-    writeCharacteristic = null
-    notifyCharacteristic = null
-    closeGatt()
-  }
-
-  fun registerObserver(observer: Observer) {
-    observers.add(observer)
-  }
-
-  fun removeObserver(observer: Observer) {
-    observers.remove(observer)
-  }
-
-  fun write(bytes: ByteArray) {
-    val gatt = bluetoothGatt ?: return
-    val characteristic = writeCharacteristic ?: return
-    if (!opened) {
-      return
-    }
-    if (System.currentTimeMillis() - openedAt < 1000) {
-      return
-    }
-    characteristic.value = bytes
-    @Suppress("DEPRECATION")
-    gatt.writeCharacteristic(characteristic)
-  }
-
-  private fun closeGatt() {
-    try {
-      bluetoothGatt?.disconnect()
-    } catch (_: Throwable) {
-    }
-    try {
-      bluetoothGatt?.close()
-    } catch (_: Throwable) {
-    }
-    bluetoothGatt = null
-  }
-
-  private fun notifyObservers(bytes: ByteArray) {
-    observers.forEach { observer ->
-      observer.update(bytes)
-    }
-  }
-}
-
 class WitmotionBleModule : Module() {
   private val mainHandler = Handler(Looper.getMainLooper())
   private var bluetoothAdapter: BluetoothAdapter? = null
   private var witBluetoothManager: WitBluetoothManager? = null
   private var foundObserverRegistered = false
-  private var connectedBle: DirectWitBleConnection? = null
+  private var connectedBle: CustomBluetoothBLE? = null
   private val incomingBuffer = ByteArrayOutputStream()
   private var pendingRateCommands: ArrayDeque<ByteArray>? = null
   private var pendingRateResolve: (() -> Unit)? = null
   private var pendingRateReject: ((String) -> Unit)? = null
-  private var awaitingRateAck = false
   private var defaultRateHz: Int = 50
   private var connectionEstablished = false
   private var sawFirstPacket = false
@@ -401,22 +170,9 @@ class WitmotionBleModule : Module() {
 
     ensureWitManager()
     val ble =
-      DirectWitBleConnection(
-        context = context,
-        mac = deviceId,
-        name = device.name ?: device.address,
-        onByteArray = { bytes -> appendIncoming(bytes) },
-        onWriteComplete = { success, message -> handleRateWriteComplete(success, message) },
-        onDisconnected = {
-          connectionEstablished = false
-          sawFirstPacket = false
-          sendConnectionState("disconnected", null, null, "Disconnected")
-        },
-        onLog = { message -> sendLog(message, "info") },
-        onError = { message -> sendError(message) }
-      )
+      CustomBluetoothBLE(context, deviceId, device.name ?: device.address)
     ble.registerObserver(deviceObserver)
-    ble.connect()
+    ble.connect(deviceId)
     connectedBle = ble
 
     return mapOf(
@@ -431,8 +187,6 @@ class WitmotionBleModule : Module() {
     pendingRateCommands = null
     pendingRateResolve = null
     pendingRateReject = null
-    connectionEstablished = false
-    sawFirstPacket = false
 
     val currentBle = connectedBle
     connectedBle = null
@@ -502,36 +256,20 @@ class WitmotionBleModule : Module() {
       return
     }
 
-    if (awaitingRateAck) {
-      return
-    }
-
     val next = queue.removeFirst()
     try {
       currentBle.write(next)
-      awaitingRateAck = true
     } catch (error: Throwable) {
-      awaitingRateAck = false
       pendingRateCommands = null
       pendingRateReject?.invoke("Failed to write rate command: ${error.message}")
       pendingRateResolve = null
       pendingRateReject = null
       return
     }
-  }
 
-  private fun handleRateWriteComplete(success: Boolean, message: String?) {
-    if (!success) {
-      awaitingRateAck = false
-      pendingRateCommands = null
-      pendingRateReject?.invoke(message ?: "Rate command write failed")
-      pendingRateResolve = null
-      pendingRateReject = null
-      return
-    }
-
-    awaitingRateAck = false
-    writeNextPendingRateCommand()
+    mainHandler.postDelayed({
+      writeNextPendingRateCommand()
+    }, 80)
   }
 
   private fun appendIncoming(bytes: ByteArray) {
