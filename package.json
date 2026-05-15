@@ -76,6 +76,7 @@
     "@gutenye/ocr-react-native": "^1.4.8",
     "@kingstinct/react-native-healthkit": "^14.0.1",
     "@mjcdev/react-body-highlighter": "^0.0.4",
+    "@musclog/witmotion-ble": "file:modules/witmotion-ble",
     "@nozbe/watermelondb": "0.28.0",
     "@openfoodfacts/openfoodfacts-nodejs": "2.0.0-alpha.30",
     "@react-native-ai/apple": "^0.12.0",

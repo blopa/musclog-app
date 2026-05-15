@@ -27,7 +27,7 @@ export interface WitMotionLiveData {
 
 export interface WitMotionState {
   status: WitMotionConnectionStatus;
-  bleState: BleState;
+  bleState: BleState | 'unknown';
   isScanning: boolean;
   isConnected: boolean;
   connectedDevice: WitMotionDevice | null;
@@ -50,10 +50,10 @@ export interface WitMotionConnectOptions {
 
 export interface WitMotionActionApi {
   requestPermissions: () => Promise<boolean>;
-  startScan: (options?: WitMotionScanOptions) => Promise<void>;
+  startScan: (options?: WitMotionScanOptions) => Promise<boolean>;
   stopScan: () => void;
   connect: (deviceOrId: string | WitMotionDevice) => Promise<WitMotionDevice>;
-  disconnect: () => Promise<void>;
+  disconnect: () => Promise<boolean>;
   reset: () => Promise<void>;
   setOutputRate: (value: 1 | 5 | 10 | 50 | 100 | 200) => Promise<void>;
   setBandwidth: (value: 5 | 10 | 20 | 42 | 98 | 188) => Promise<void>;
@@ -66,6 +66,24 @@ export interface WitMotionActionApi {
 }
 
 export interface WitMotionHookResult extends WitMotionState, WitMotionActionApi {}
+
+export interface WitMotionNativeModule {
+  requestPermissions: () => Promise<boolean>;
+  startScan: (options?: WitMotionScanOptions) => Promise<boolean>;
+  stopScan: () => void;
+  connect: (deviceId: string) => Promise<WitMotionDevice>;
+  disconnect: () => Promise<boolean>;
+  reset: () => Promise<void>;
+  setOutputRate: (value: 1 | 5 | 10 | 50 | 100 | 200) => Promise<void>;
+  setBandwidth: (value: 5 | 10 | 20 | 42 | 98 | 188) => Promise<void>;
+  setAngleZero: () => Promise<void>;
+  startMagCalibration: () => Promise<void>;
+  stopMagCalibration: () => Promise<void>;
+  requestMagneticField: () => Promise<void>;
+  requestBattery: () => Promise<void>;
+  sendRawCommand: (bytes: number[], persist?: boolean) => Promise<void>;
+  getState: () => Promise<WitMotionState>;
+}
 
 export type WitMotionPacket =
   | {
