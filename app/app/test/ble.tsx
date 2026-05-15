@@ -3,8 +3,9 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { BleManager, ConnectionPriority, Device, State } from 'react-native-ble-plx';
+import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
@@ -197,6 +198,88 @@ const LOG_COLORS: Record<LogEntry['level'], string> = {
   data: 'text-accent-primary',
 };
 
+const CHART_MAX_POINTS = 300;
+const CHART_Y_RANGE = 2.0; // ±2g displayed
+
+function MovementChart({ data }: { data: number[] }) {
+  const WIDTH = 320;
+  const HEIGHT = 160;
+  const PAD_LEFT = 32;
+  const PAD_RIGHT = 8;
+  const PAD_TOP = 8;
+  const PAD_BOTTOM = 20;
+  const innerW = WIDTH - PAD_LEFT - PAD_RIGHT;
+  const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
+
+  const midY = PAD_TOP + innerH / 2;
+
+  const points =
+    data.length < 2
+      ? ''
+      : data
+          .map((v, i) => {
+            const x = PAD_LEFT + (i / (CHART_MAX_POINTS - 1)) * innerW;
+            const y = midY - (v / CHART_Y_RANGE) * (innerH / 2);
+            return `${x.toFixed(1)},${Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, y)).toFixed(1)}`;
+          })
+          .join(' ');
+
+  return (
+    <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+      <Svg width={WIDTH} height={HEIGHT}>
+        {/* Zero line */}
+        <SvgLine
+          x1={PAD_LEFT}
+          y1={midY}
+          x2={WIDTH - PAD_RIGHT}
+          y2={midY}
+          stroke="#444"
+          strokeWidth={1}
+          strokeDasharray="4,4"
+        />
+        {/* +1g / -1g guides */}
+        {[-1, 1].map((g) => {
+          const gy = midY - (g / CHART_Y_RANGE) * (innerH / 2);
+          return (
+            <SvgLine
+              key={g}
+              x1={PAD_LEFT}
+              y1={gy}
+              x2={WIDTH - PAD_RIGHT}
+              y2={gy}
+              stroke="#333"
+              strokeWidth={1}
+              strokeDasharray="2,6"
+            />
+          );
+        })}
+        {/* Y-axis labels */}
+        {[[-CHART_Y_RANGE, `−${CHART_Y_RANGE}g`], [0, '0g'], [CHART_Y_RANGE, `+${CHART_Y_RANGE}g`]].map(
+          ([val, label]) => {
+            const ly = midY - ((val as number) / CHART_Y_RANGE) * (innerH / 2);
+            return (
+              <SvgText
+                key={String(label)}
+                x={PAD_LEFT - 4}
+                y={ly + 4}
+                fontSize={9}
+                fill="#888"
+                textAnchor="end"
+              >
+                {String(label)}
+              </SvgText>
+            );
+          }
+        )}
+        {/* Waveform */}
+        {points ? (
+          <Polyline points={points} fill="none" stroke="#4ade80" strokeWidth={1.5} />
+        ) : null}
+      </Svg>
+    </View>
+  );
+}
+
 let bleManager: BleManager | null = null;
 
 function getManager() {
@@ -219,60 +302,59 @@ export default function BleTestScreen() {
     angle: null,
     mag: null,
   });
+  // Ref holds latest data without triggering renders — UI polls this at 100ms
+  const sensorDataRef = useRef<SensorData>({ accel: null, gyro: null, angle: null, mag: null });
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [repCount, setRepCount] = useState(0);
-  const [repPhase, setRepPhase] = useState<'rest' | 'active'>('rest');
+  const [pktPerSec, setPktPerSec] = useState(0);
+  const [chartData, setChartData] = useState<number[]>([]);
+  const chartBufferRef = useRef<number[]>([]);
   const logIdRef = useRef(0);
   const subscriptionRef = useRef<{ remove: () => void } | null>(null);
-  // Rep counter state machine lives in a ref to avoid stale closures in the BLE callback
-  const repStateRef = useRef({
-    smoothed: 0,
-    phase: 'rest' as 'rest' | 'active',
-    halfReps: 0,
-    lastTransitionAt: 0,
-  });
+  const pktCountRef = useRef(0);
 
-  // EMA-smoothed net acceleration magnitude → state machine
-  // rest→active→rest = half-rep; 2 half-reps = 1 full rep
-  const HIGH = 0.25; // g above static — entered "moving"
-  const LOW = 0.1; // g — back to "rest"
-  const ALPHA = 0.7; // EMA weight — high so a single sample can trigger the threshold
-  const MIN_MS = 300; // debounce — ignore transitions faster than this
-
-  const processRepAccel = useCallback((ax: number, ay: number, az: number) => {
-    const s = repStateRef.current;
-    const net = Math.sqrt(ax * ax + ay * ay + az * az) - 1.0;
-    s.smoothed = ALPHA * net + (1 - ALPHA) * s.smoothed;
-
-    const now = Date.now();
-    if (now - s.lastTransitionAt < MIN_MS) {
+  // Count packets/sec and refresh sensor UI at a fixed 100ms cadence while connected.
+  // Decouples BLE ingestion (ref writes) from React renders (state writes).
+  useEffect(() => {
+    if (!connectedDevice) {
+      setPktPerSec(0);
+      setSensorData({ accel: null, gyro: null, angle: null, mag: null });
+      setChartData([]);
+      chartBufferRef.current = [];
       return;
     }
-
-    if (s.phase === 'rest' && s.smoothed > HIGH) {
-      s.phase = 'active';
-      s.lastTransitionAt = now;
-      setRepPhase('active');
-    } else if (s.phase === 'active' && s.smoothed < LOW) {
-      s.phase = 'rest';
-      s.lastTransitionAt = now;
-      s.halfReps += 1;
-      setRepPhase('rest');
-      if (s.halfReps % 2 === 0) {
-        setRepCount((c) => c + 1);
+    let tick = 0;
+    const id = setInterval(() => {
+      tick++;
+      // Refresh UI at 10Hz (every 100ms)
+      setSensorData({ ...sensorDataRef.current });
+      setChartData([...chartBufferRef.current]);
+      // Update pkt/s counter once per second
+      if (tick % 10 === 0) {
+        setPktPerSec(pktCountRef.current);
+        pktCountRef.current = 0;
       }
-    }
-  }, []);
+    }, 100);
+    return () => clearInterval(id);
+  }, [connectedDevice]);
 
-  const resetReps = useCallback(() => {
-    const s = repStateRef.current;
-    s.smoothed = 0;
-    s.phase = 'rest';
-    s.halfReps = 0;
-    s.lastTransitionAt = 0;
-    setRepCount(0);
-    setRepPhase('rest');
-  }, []);
+  const sendRateCommand = useCallback(async (hz: 20 | 50 | 100) => {
+    if (!connectedDevice) return;
+    const rateMap: Record<number, number> = { 20: 0x07, 50: 0x08, 100: 0x09 };
+    try {
+      const write = async (bytes: number[]) => {
+        const b64 = Buffer.from(bytes).toString('base64');
+        await connectedDevice.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
+        await new Promise((r) => setTimeout(r, 120));
+      };
+      addLog(`Setting rate to ${hz}Hz…`);
+      await write([0xff, 0xaa, 0x69, 0x88, 0xb5]);
+      await write([0xff, 0xaa, 0x03, rateMap[hz], 0x00]);
+      await write([0xff, 0xaa, 0x00, 0x00, 0x00]);
+      addLog(`Rate set to ${hz}Hz`, 'success');
+    } catch (e: any) {
+      addLog(`Rate error: ${e.message}`, 'error');
+    }
+  }, [connectedDevice, addLog]);
 
   const addLog = useCallback((text: string, level: LogEntry['level'] = 'info') => {
     setLogs((prev) => [
@@ -358,58 +440,41 @@ export default function BleTestScreen() {
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);
         const connected = await device.connect();
+
+        // Negotiate faster BLE params BEFORE service discovery —
+        // earlier in the session = higher chance the peripheral accepts them
+        try {
+          await connected.requestConnectionPriority(ConnectionPriority.High);
+          addLog('High-priority connection requested');
+        } catch (e: any) {
+          addLog(`Connection priority error: ${e.message}`, 'error');
+        }
+
+        try {
+          await connected.requestMTU(517);
+        } catch (_) {}
+
         await connected.discoverAllServicesAndCharacteristics();
         setConnectedDevice(connected);
         addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
 
-        // Let the connection stabilize before sending config
-        await new Promise((r) => setTimeout(r, 300));
-
-        // Request shortest BLE connection interval (Android only — peripheral may ignore)
-        try {
-          await connected.requestConnectionPriority(ConnectionPriority.High);
-          addLog('High-priority connection requested');
-        } catch (_) {}
-
-        // WIT protocol config sequence: unlock → set rate → save
-        // Without unlock the device silently ignores rate commands
+        // WIT protocol: unlock → set 100Hz rate → save to flash
         try {
           const write = async (bytes: number[]) => {
             const b64 = Buffer.from(bytes).toString('base64');
-            await connected.writeCharacteristicWithResponseForService(
-              SERVICE_UUID,
-              WRITE_UUID,
-              b64
-            );
+            await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
             await new Promise((r) => setTimeout(r, 120));
           };
-
-          addLog('Unlocking device for config…');
+          addLog('Configuring 100Hz output rate…');
           await write([0xff, 0xaa, 0x69, 0x88, 0xb5]); // unlock
-
-          addLog('Setting output rate to 100Hz…');
           await write([0xff, 0xaa, 0x03, 0x09, 0x00]); // rate = 100Hz
-
-          addLog('Saving config to flash…');
           await write([0xff, 0xaa, 0x00, 0x00, 0x00]); // save
-
-          addLog('Rate config complete — 100Hz active', 'success');
+          addLog('100Hz config sent', 'success');
         } catch (e: any) {
           addLog(`Rate config failed: ${e.message}`, 'error');
         }
 
-        // Log all services + characteristics so we can find the real UUIDs
-        const services = await connected.services();
-        for (const svc of services) {
-          addLog(`Service: ${svc.uuid}`);
-          const chars = await svc.characteristics();
-          for (const ch of chars) {
-            addLog(
-              `  Char: ${ch.uuid} [r:${ch.isReadable} w:${ch.isWritableWithResponse} n:${ch.isNotifiable}]`
-            );
-          }
-        }
-
+        pktCountRef.current = 0;
         subscriptionRef.current = connected.monitorCharacteristicForService(
           SERVICE_UUID,
           CHAR_UUID,
@@ -423,11 +488,19 @@ export default function BleTestScreen() {
               return;
             }
 
+            pktCountRef.current++;
+
             const packets = parsePacket(char.value);
             packets.forEach((pkt) => {
-              setSensorData((prev) => ({ ...prev, [pkt.type]: pkt }));
+              // Write to ref — no re-render, UI polls at 100ms
+              sensorDataRef.current = { ...sensorDataRef.current, [pkt.type]: pkt };
+
               if (pkt.type === 'accel') {
-                processRepAccel(pkt.x, pkt.y, pkt.z);
+                const net = Math.sqrt(pkt.x * pkt.x + pkt.y * pkt.y + pkt.z * pkt.z) - 1.0;
+                chartBufferRef.current.push(net);
+                if (chartBufferRef.current.length > CHART_MAX_POINTS) {
+                  chartBufferRef.current.shift();
+                }
               }
             });
           }
@@ -435,16 +508,16 @@ export default function BleTestScreen() {
 
         connected.onDisconnected((err) => {
           addLog(`Disconnected${err ? `: ${err.message}` : ''}`, err ? 'error' : 'info');
+          sensorDataRef.current = { accel: null, gyro: null, angle: null, mag: null };
+          chartBufferRef.current = [];
           setConnectedDevice(null);
-          setSensorData({ accel: null, gyro: null, angle: null, mag: null });
           subscriptionRef.current = null;
-          resetReps();
         });
       } catch (e: any) {
         addLog(`Connection failed: ${e.message}`, 'error');
       }
     },
-    [addLog, processRepAccel, resetReps]
+    [addLog]
   );
 
   const shareLogs = useCallback(async () => {
@@ -563,32 +636,39 @@ export default function BleTestScreen() {
                 </View>
               </View>
 
-              {/* Rep Counter */}
+              {/* Data rate controls */}
+              <View className="mt-3 flex-row items-center gap-3">
+                <View className="flex-1 items-center rounded-xl border border-border-accent bg-bg-overlay py-2">
+                  <Text className="text-2xl font-bold text-accent-primary">{pktPerSec}</Text>
+                  <Text className="text-xs text-text-tertiary">pkt/s</Text>
+                </View>
+                <View className="flex-1 gap-1">
+                  <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">Output rate</Text>
+                  {([20, 50, 100] as const).map((hz) => (
+                    <Pressable
+                      key={hz}
+                      onPress={() => sendRateCommand(hz)}
+                      className="items-center rounded-lg border border-border-light bg-bg-overlay py-1"
+                    >
+                      <Text className="text-xs font-bold text-text-primary">{hz} Hz</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+
+              {/* Movement Waveform */}
               <View className="mt-3 rounded-xl border border-border-light bg-bg-primary p-4">
-                <View className="mb-3 flex-row items-center justify-between">
-                  <Text className="font-bold text-text-primary">Rep Counter</Text>
-                  <Pressable
-                    onPress={resetReps}
-                    className="rounded-lg border border-border-light px-3 py-1"
-                  >
-                    <Text className="text-xs text-text-tertiary">Reset</Text>
-                  </Pressable>
-                </View>
-
-                <View className="items-center py-4">
-                  <Text className="text-8xl font-bold text-accent-primary">{repCount}</Text>
-                  <Text className="mt-1 text-sm text-text-tertiary">reps</Text>
-                </View>
-
-                <View
-                  className={`mt-2 items-center rounded-lg py-2 ${repPhase === 'active' ? 'bg-accent-primary/20' : 'bg-bg-overlay'}`}
-                >
-                  <Text
-                    className={`text-xs font-bold uppercase tracking-widest ${repPhase === 'active' ? 'text-accent-primary' : 'text-text-tertiary'}`}
-                  >
-                    {repPhase === 'active' ? '● Moving' : '○ Rest'}
-                  </Text>
-                </View>
+                <Text className="mb-2 font-bold text-text-primary">Movement</Text>
+                <Text className="mb-3 text-xs text-text-tertiary">
+                  Net acceleration (|a| − 1g) · last {CHART_MAX_POINTS} samples
+                </Text>
+                {chartData.length > 1 ? (
+                  <MovementChart data={chartData} />
+                ) : (
+                  <View className="items-center rounded-lg border border-border-light bg-bg-overlay py-8">
+                    <Text className="text-xs text-text-tertiary">Move the device to see the waveform</Text>
+                  </View>
+                )}
               </View>
             </View>
           ) : (
