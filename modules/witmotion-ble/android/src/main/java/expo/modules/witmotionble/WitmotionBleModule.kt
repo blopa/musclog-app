@@ -135,13 +135,14 @@ class WitmotionBleModule : Module() {
   private fun startScanInternal() {
     stopScanInternal()
     val manager = ensureWitManager()
+    WitBluetoothManager.DeviceNameFilter = listOf("WT")
     if (!foundObserverRegistered) {
       manager.registerObserver(foundObserver)
       foundObserverRegistered = true
     }
 
     mainHandler.post {
-      sendLog("Starting WitMotion discovery", "info")
+      sendLog("Starting WitMotion discovery for WT devices", "info")
       manager.startDiscovery()
     }
   }
