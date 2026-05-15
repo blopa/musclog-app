@@ -36,6 +36,8 @@ class WitmotionBleModule : Module() {
   private var pendingRateReject: ((String) -> Unit)? = null
   private var defaultRateHz: Int = 50
   private var initialRateScheduled = false
+  private var connectionEstablished = false
+  private var sawFirstPacket = false
 
   private val context: Context
     get() = requireNotNull(appContext.reactContext) { "React context is null" }
@@ -164,6 +166,8 @@ class WitmotionBleModule : Module() {
 
     val device = adapter().getRemoteDevice(deviceId)
     sendConnectionState("connecting", deviceId, device.name, "Connecting")
+    connectionEstablished = false
+    sawFirstPacket = false
 
     ensureWitManager()
     val ble = CustomBluetoothBLE(context, deviceId, device.name ?: device.address)
@@ -171,17 +175,7 @@ class WitmotionBleModule : Module() {
     ble.connect(deviceId)
     connectedBle = ble
 
-    mainHandler.postDelayed({
-      if (connectedBle === ble) {
-        sendConnectionState("connected", device.address, device.name, "Connected")
-        if (!initialRateScheduled) {
-          initialRateScheduled = true
-          mainHandler.postDelayed({
-            setOutputRateInternal(defaultRateHz, null, { error -> sendError(error) })
-          }, 200)
-        }
-      }
-    }, 600)
+    scheduleInitialRateKickoff(ble, defaultRateHz, 4)
 
     return mapOf(
       "id" to device.address,
@@ -196,6 +190,8 @@ class WitmotionBleModule : Module() {
     pendingRateResolve = null
     pendingRateReject = null
     initialRateScheduled = false
+    connectionEstablished = false
+    sawFirstPacket = false
 
     val currentBle = connectedBle
     connectedBle = null
@@ -250,6 +246,34 @@ class WitmotionBleModule : Module() {
     }
     sendLog("Setting output rate to ${rateHz}Hz", "info")
     startPendingRateWrite(rateHz, resolve, reject)
+  }
+
+  private fun scheduleInitialRateKickoff(
+    ble: CustomBluetoothBLE,
+    rateHz: Int,
+    attemptsRemaining: Int
+  ) {
+    if (connectedBle !== ble || sawFirstPacket) {
+      return
+    }
+    if (initialRateScheduled) {
+      return
+    }
+    initialRateScheduled = true
+
+    mainHandler.postDelayed({
+      if (connectedBle !== ble || sawFirstPacket) {
+        return@postDelayed
+      }
+
+      sendLog("Kicking sensor output rate to ${rateHz}Hz", "info")
+      setOutputRateInternal(rateHz, null, { error -> sendError(error) })
+
+      if (!sawFirstPacket && attemptsRemaining > 1) {
+        initialRateScheduled = false
+        scheduleInitialRateKickoff(ble, rateHz, attemptsRemaining - 1)
+      }
+    }, 1500)
   }
 
   private fun writeNextPendingRateCommand() {
@@ -411,6 +435,12 @@ class WitmotionBleModule : Module() {
 
   private fun emitParsedPackets(vararg packets: ParsedPacket) {
     packets.forEach { packet ->
+      if (!connectionEstablished) {
+        connectionEstablished = true
+        sendConnectionState("connected", connectedBle?.mac, connectedBle?.name, "Connected")
+        sendLog("First packet received", "success")
+      }
+      sawFirstPacket = true
       sendEvent(
         "onPacket",
         mapOf(

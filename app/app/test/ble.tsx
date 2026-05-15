@@ -338,6 +338,14 @@ export default function BleTestScreen() {
         if (event.message) {
           addLog(event.message, event.state === 'disconnected' ? 'info' : 'data');
         }
+        if (event.state === 'connected') {
+          setConnectedDevice({
+            id: event.deviceId ?? '',
+            name: event.deviceName,
+            localName: event.deviceName,
+            rssi: null,
+          });
+        }
         if (event.state === 'disconnected') {
           setConnectedDevice(null);
           setSensorData({ accel: null, gyro: null, angle: null, mag: null });
@@ -495,13 +503,12 @@ export default function BleTestScreen() {
 
       try {
         addLog(`Connecting to ${device.name ?? device.id}…`);
-        const connected = await connectWitmotion(device.id, 50);
+        await connectWitmotion(device.id, 50);
         pktCountRef.current = 0;
         lastPktTimestampRef.current = 0;
         maxGapWindowRef.current = 0;
         sensorDataRef.current = { accel: null, gyro: null, angle: null, mag: null };
-        setConnectedDevice(connected);
-        addLog(`Connected to ${connected.name ?? connected.id}`, 'success');
+        addLog(`Connection requested for ${device.name ?? device.id}`, 'info');
       } catch (e: any) {
         addLog(`Connection failed: ${e.message}`, 'error');
       }
