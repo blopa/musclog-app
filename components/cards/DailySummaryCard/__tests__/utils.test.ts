@@ -1,4 +1,4 @@
-import { calculateProgress } from '../utils';
+import { calculateProgress } from '@/components/cards/DailySummaryCard/utils';
 
 describe('DailySummaryCard utils', () => {
   it('shows 100 percent when goal and consumption are both zero', () => {

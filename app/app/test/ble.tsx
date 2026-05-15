@@ -1,19 +1,18 @@
 import { Buffer } from 'buffer';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { Bluetooth, BluetoothOff, RefreshCw, Share2, Wifi, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { BleManager, ConnectionPriority, Device, State } from 'react-native-ble-plx';
 
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
-
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 
-const SERVICE_UUID  = '0000FFE5-0000-1000-8000-00805F9A34FB';
-const CHAR_UUID     = '0000FFE4-0000-1000-8000-00805F9A34FB'; // notify — data stream
-const WRITE_UUID    = '0000FFE9-0000-1000-8000-00805F9A34FB'; // write — config commands
+const SERVICE_UUID = '0000FFE5-0000-1000-8000-00805F9A34FB';
+const CHAR_UUID = '0000FFE4-0000-1000-8000-00805F9A34FB'; // notify — data stream
+const WRITE_UUID = '0000FFE9-0000-1000-8000-00805F9A34FB'; // write — config commands
 
 type PacketType = 'accel' | 'gyro' | 'angle' | 'mag' | 'unknown';
 
@@ -44,8 +43,13 @@ function parsePacket(base64: string): ParsedPacket[] {
   let offset = 0;
 
   while (offset < buf.length) {
-    if (buf[offset] !== 0x55) { offset++; continue; }
-    if (offset + 1 >= buf.length) break;
+    if (buf[offset] !== 0x55) {
+      offset++;
+      continue;
+    }
+    if (offset + 1 >= buf.length) {
+      break;
+    }
 
     const type = buf[offset + 1];
     const now = Date.now();
@@ -54,30 +58,81 @@ function parsePacket(base64: string): ParsedPacket[] {
     switch (type) {
       // Combined 20-byte packet: accel + gyro + angle in one notification
       case 0x61:
-        if (offset + 19 >= buf.length) { offset++; break; }
-        results.push({ type: 'accel', x: (r(0) / 32768) * 16,   y: (r(1) / 32768) * 16,   z: (r(2) / 32768) * 16,   timestamp: now });
-        results.push({ type: 'gyro',  x: (r(3) / 32768) * 2000, y: (r(4) / 32768) * 2000, z: (r(5) / 32768) * 2000, timestamp: now });
-        results.push({ type: 'angle', x: (r(6) / 32768) * 180,  y: (r(7) / 32768) * 180,  z: (r(8) / 32768) * 180,  timestamp: now });
+        if (offset + 19 >= buf.length) {
+          offset++;
+          break;
+        }
+        results.push({
+          type: 'accel',
+          x: (r(0) / 32768) * 16,
+          y: (r(1) / 32768) * 16,
+          z: (r(2) / 32768) * 16,
+          timestamp: now,
+        });
+        results.push({
+          type: 'gyro',
+          x: (r(3) / 32768) * 2000,
+          y: (r(4) / 32768) * 2000,
+          z: (r(5) / 32768) * 2000,
+          timestamp: now,
+        });
+        results.push({
+          type: 'angle',
+          x: (r(6) / 32768) * 180,
+          y: (r(7) / 32768) * 180,
+          z: (r(8) / 32768) * 180,
+          timestamp: now,
+        });
         offset += 20;
         break;
       // Legacy 11-byte individual packets
       case 0x51:
-        if (offset + 10 >= buf.length) { offset++; break; }
-        results.push({ type: 'accel', x: (r(0) / 32768) * 16,   y: (r(1) / 32768) * 16,   z: (r(2) / 32768) * 16,   timestamp: now });
+        if (offset + 10 >= buf.length) {
+          offset++;
+          break;
+        }
+        results.push({
+          type: 'accel',
+          x: (r(0) / 32768) * 16,
+          y: (r(1) / 32768) * 16,
+          z: (r(2) / 32768) * 16,
+          timestamp: now,
+        });
         offset += 11;
         break;
       case 0x52:
-        if (offset + 10 >= buf.length) { offset++; break; }
-        results.push({ type: 'gyro',  x: (r(0) / 32768) * 2000, y: (r(1) / 32768) * 2000, z: (r(2) / 32768) * 2000, timestamp: now });
+        if (offset + 10 >= buf.length) {
+          offset++;
+          break;
+        }
+        results.push({
+          type: 'gyro',
+          x: (r(0) / 32768) * 2000,
+          y: (r(1) / 32768) * 2000,
+          z: (r(2) / 32768) * 2000,
+          timestamp: now,
+        });
         offset += 11;
         break;
       case 0x53:
-        if (offset + 10 >= buf.length) { offset++; break; }
-        results.push({ type: 'angle', x: (r(0) / 32768) * 180,  y: (r(1) / 32768) * 180,  z: (r(2) / 32768) * 180,  timestamp: now });
+        if (offset + 10 >= buf.length) {
+          offset++;
+          break;
+        }
+        results.push({
+          type: 'angle',
+          x: (r(0) / 32768) * 180,
+          y: (r(1) / 32768) * 180,
+          z: (r(2) / 32768) * 180,
+          timestamp: now,
+        });
         offset += 11;
         break;
       case 0x54:
-        if (offset + 10 >= buf.length) { offset++; break; }
+        if (offset + 10 >= buf.length) {
+          offset++;
+          break;
+        }
         results.push({ type: 'mag', x: r(0), y: r(1), z: r(2), timestamp: now });
         offset += 11;
         break;
@@ -179,9 +234,9 @@ export default function BleTestScreen() {
 
   // EMA-smoothed net acceleration magnitude → state machine
   // rest→active→rest = half-rep; 2 half-reps = 1 full rep
-  const HIGH  = 0.25; // g above static — entered "moving"
-  const LOW   = 0.10; // g — back to "rest"
-  const ALPHA = 0.7;  // EMA weight — high so a single sample can trigger the threshold
+  const HIGH = 0.25; // g above static — entered "moving"
+  const LOW = 0.1; // g — back to "rest"
+  const ALPHA = 0.7; // EMA weight — high so a single sample can trigger the threshold
   const MIN_MS = 300; // debounce — ignore transitions faster than this
 
   const processRepAccel = useCallback((ax: number, ay: number, az: number) => {
@@ -190,7 +245,9 @@ export default function BleTestScreen() {
     s.smoothed = ALPHA * net + (1 - ALPHA) * s.smoothed;
 
     const now = Date.now();
-    if (now - s.lastTransitionAt < MIN_MS) return;
+    if (now - s.lastTransitionAt < MIN_MS) {
+      return;
+    }
 
     if (s.phase === 'rest' && s.smoothed > HIGH) {
       s.phase = 'active';
@@ -319,7 +376,11 @@ export default function BleTestScreen() {
         try {
           const write = async (bytes: number[]) => {
             const b64 = Buffer.from(bytes).toString('base64');
-            await connected.writeCharacteristicWithResponseForService(SERVICE_UUID, WRITE_UUID, b64);
+            await connected.writeCharacteristicWithResponseForService(
+              SERVICE_UUID,
+              WRITE_UUID,
+              b64
+            );
             await new Promise((r) => setTimeout(r, 120));
           };
 
@@ -343,7 +404,9 @@ export default function BleTestScreen() {
           addLog(`Service: ${svc.uuid}`);
           const chars = await svc.characteristics();
           for (const ch of chars) {
-            addLog(`  Char: ${ch.uuid} [r:${ch.isReadable} w:${ch.isWritableWithResponse} n:${ch.isNotifiable}]`);
+            addLog(
+              `  Char: ${ch.uuid} [r:${ch.isReadable} w:${ch.isWritableWithResponse} n:${ch.isNotifiable}]`
+            );
           }
         }
 
@@ -385,14 +448,19 @@ export default function BleTestScreen() {
   );
 
   const shareLogs = useCallback(async () => {
-    if (logs.length === 0) return;
+    if (logs.length === 0) {
+      return;
+    }
     try {
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
         addLog('Sharing not available on this device', 'error');
         return;
       }
-      const text = [...logs].reverse().map((e) => e.text).join('\n');
+      const text = [...logs]
+        .reverse()
+        .map((e) => e.text)
+        .join('\n');
       const path = `${FileSystem.cacheDirectory}ble-log.txt`;
       await FileSystem.writeAsStringAsync(path, text, { encoding: 'utf8' });
       await Sharing.shareAsync(path, { mimeType: 'text/plain', dialogTitle: 'BLE Event Log' });
@@ -499,7 +567,10 @@ export default function BleTestScreen() {
               <View className="mt-3 rounded-xl border border-border-light bg-bg-primary p-4">
                 <View className="mb-3 flex-row items-center justify-between">
                   <Text className="font-bold text-text-primary">Rep Counter</Text>
-                  <Pressable onPress={resetReps} className="rounded-lg border border-border-light px-3 py-1">
+                  <Pressable
+                    onPress={resetReps}
+                    className="rounded-lg border border-border-light px-3 py-1"
+                  >
                     <Text className="text-xs text-text-tertiary">Reset</Text>
                   </Pressable>
                 </View>

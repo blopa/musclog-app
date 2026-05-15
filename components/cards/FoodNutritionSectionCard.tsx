@@ -13,6 +13,7 @@ import { blurFilter } from '@/utils/blurFilter';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
+import { hasNutritionQualityData } from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
@@ -116,6 +117,9 @@ export function FoodNutritionSectionCard({
       (nutritionalData.potassium ?? 0) > 0 ||
       (nutritionalData.magnesium ?? 0) > 0 ||
       (nutritionalData.zinc ?? 0) > 0);
+  const hasExpandableNutritionContent =
+    showAdditionalNutrition ||
+    (nutritionQuality != null && hasNutritionQualityData(nutritionQuality));
 
   const showLoadingOnly = isLoadingDetails && (mode === 'externalProduct' || mode === null);
 
@@ -410,9 +414,7 @@ export function FoodNutritionSectionCard({
           ) : null}
         </View>
 
-        {useQualityAccordion &&
-        !nutritionExpanded &&
-        (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
+        {useQualityAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
           <>
             <LinearGradient
               colors={[

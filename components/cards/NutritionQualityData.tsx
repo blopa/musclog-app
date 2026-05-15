@@ -6,6 +6,8 @@ import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import type { FoodLabels } from '@/database/models/Food';
 import { useTheme } from '@/hooks/useTheme';
 
+import { hasNutritionQualityData } from './nutritionQuality';
+
 type NutritionQualityDataProps = {
   nutriScore?: string;
   ecoScore?: string;
@@ -192,7 +194,7 @@ export function NutritionQualityData({
 
   const activeLabels = LABEL_KEYS.filter(({ key }) => labels?.[key] === true);
   const hasScores = !!nutriScore || !!ecoScore;
-  const hasData = hasScores || novaGroup != null || activeLabels.length > 0;
+  const hasData = hasNutritionQualityData({ nutriScore, ecoScore, novaGroup, labels });
 
   if (!hasData) {
     return null;
