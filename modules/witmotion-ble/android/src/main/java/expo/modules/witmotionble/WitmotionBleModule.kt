@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import com.wit.witsdk.observer.interfaces.Observer
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothBLE
-import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.CustomBluetoothBLE
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.BluetoothSPP
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.WitBluetoothManager
 import com.wit.witsdk.sensor.modular.connector.modular.bluetooth.interfaces.IBluetoothFoundObserver
@@ -29,7 +28,7 @@ class WitmotionBleModule : Module() {
   private var bluetoothAdapter: BluetoothAdapter? = null
   private var witBluetoothManager: WitBluetoothManager? = null
   private var foundObserverRegistered = false
-  private var connectedBle: CustomBluetoothBLE? = null
+  private var connectedBle: BluetoothBLE? = null
   private val incomingBuffer = ByteArrayOutputStream()
   private var pendingRateCommands: ArrayDeque<ByteArray>? = null
   private var pendingRateResolve: (() -> Unit)? = null
@@ -170,7 +169,7 @@ class WitmotionBleModule : Module() {
 
     ensureWitManager()
     val ble =
-      CustomBluetoothBLE(context, deviceId, device.name ?: device.address)
+      BluetoothBLE(context, deviceId, device.name ?: device.address)
     ble.registerObserver(deviceObserver)
     ble.connect(deviceId)
     connectedBle = ble
