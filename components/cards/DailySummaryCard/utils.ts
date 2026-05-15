@@ -83,6 +83,10 @@ export function getStatusLabel(status: GoalStatus, t: TFunction): string {
  * Calculates the progress percentage
  */
 export function calculateProgress(consumed: number, goal: number): number {
+  if (goal === 0) {
+    return consumed <= 0 ? 100 : Number.POSITIVE_INFINITY;
+  }
+
   return (consumed / goal) * 100;
 }
 
