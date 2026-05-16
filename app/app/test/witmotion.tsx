@@ -29,25 +29,16 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting via dual-EMA adaptive threshold on raw acceleration magnitude.
-// Uses acc_r = sqrt(ax²+ay²+az²) — works regardless of sensor orientation or exercise type.
-// Approach validated by daveebbelaar/tracking-barbell-exercises and SmartLift-Analysis-Project.
-//
-// SIGNAL_ALPHA = 0.06  →  τ ≈ 157 ms  →  cutoff ≈ 1.0 Hz  (smooths noise, keeps rep shape)
-// BASELINE_ALPHA = 0.003 →  τ ≈ 3.3 s  →  cutoff ≈ 0.05 Hz (tracks gravity-only floor slowly)
-//
-// The feature is (smoothMag − baseline): rises above RISE_G during a rep, falls below FALL_G
-// at rest. Because baseline adapts, slow reps (smaller peaks) are still detected — their floor
-// also drops proportionally, so the net rise stays detectable.
-const SIGNAL_ALPHA = 0.06;
-const BASELINE_ALPHA = 0.003;
-const RISE_G = 0.025; // lower threshold so controlled reps still arm the detector
-const FALL_G = 0.01; // must fall below this for the rep to be confirmed
-const MIN_REP_MS = 220; // active phase must last at least this long (filters vibration noise)
-const MIN_GAP_MS = 500; // minimum ms between rep counts (prevents double-counting)
-const REARM_WINDOW = 6; // consecutive low samples required before the next rep can arm
-
-type RepPhase = 'REST' | 'ACTIVE';
+// Rep counting uses a smoothed, adaptive motion envelope built from raw accel magnitude.
+// The detector looks for local peaks in (fastEMA - slowEMA) and adapts the gap between
+// accepted peaks based on recent cadence. That keeps slow reps from double-counting while
+// still allowing faster sets to be counted normally.
+const REP_FAST_ALPHA = 0.18;
+const REP_SLOW_ALPHA = 0.012;
+const REP_PEAK_THRESHOLD_G = 0.025;
+const REP_MIN_PEAK_GAP_MS = 650;
+const REP_MAX_PEAK_GAP_MS = 1500;
+const REP_CADENCE_GAP_MULTIPLIER = 0.6;
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -87,13 +78,12 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
   }
 
   let repCount = 0;
-  let phase: RepPhase = 'REST';
-  let smoothMag = 0;
-  let baseline = 0;
+  let fastMag = 0;
+  let slowMag = 0;
+  let previousFeature = 0;
+  let previousSlope = 0;
+  const acceptedPeakTimestamps: number[] = [];
   let initialized = false;
-  let activeStartMs: number | null = null;
-  let lastRepMs: number | null = null;
-  let restStreak = 0;
   let previousTs: number | null = null;
 
   for (const sample of samples) {
@@ -101,8 +91,10 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
 
     if (!initialized) {
-      smoothMag = accelMag;
-      baseline = accelMag;
+      fastMag = accelMag;
+      slowMag = accelMag;
+      previousFeature = 0;
+      previousSlope = 0;
       initialized = true;
       previousTs = timestamp;
       continue;
@@ -112,43 +104,47 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     previousTs = timestamp;
 
     if (gapMs > RECONNECT_GAP_S * 1000) {
-      phase = 'REST';
-      activeStartMs = null;
-      restStreak = 0;
-      smoothMag = accelMag;
-      baseline = accelMag;
+      fastMag = accelMag;
+      slowMag = accelMag;
+      previousFeature = 0;
+      previousSlope = 0;
+      acceptedPeakTimestamps.length = 0;
       continue;
     }
 
-    smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * smoothMag;
-    baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * baseline;
-    const feature = smoothMag - baseline;
+    fastMag = REP_FAST_ALPHA * accelMag + (1 - REP_FAST_ALPHA) * fastMag;
+    slowMag = REP_SLOW_ALPHA * accelMag + (1 - REP_SLOW_ALPHA) * slowMag;
+    const feature = fastMag - slowMag;
+    const slope = feature - previousFeature;
+    const isLocalPeak = previousSlope > 0 && slope <= 0;
+    if (isLocalPeak && previousFeature > REP_PEAK_THRESHOLD_G) {
+      const recentPeakTimestamps = acceptedPeakTimestamps.slice(-4);
+      const recentIntervals = recentPeakTimestamps
+        .slice(1)
+        .map((peakTs, index) => peakTs - recentPeakTimestamps[index]);
+      const sortedIntervals = [...recentIntervals].sort((a, b) => a - b);
+      const medianIntervalMs =
+        sortedIntervals.length > 0 ? sortedIntervals[Math.floor(sortedIntervals.length / 2)] : 0;
+      const adaptiveGapMs =
+        medianIntervalMs > 0
+          ? Math.max(
+              REP_MIN_PEAK_GAP_MS,
+              Math.min(REP_MAX_PEAK_GAP_MS, medianIntervalMs * REP_CADENCE_GAP_MULTIPLIER),
+            )
+          : REP_MIN_PEAK_GAP_MS;
+      const peakGapMs =
+        acceptedPeakTimestamps.length === 0
+          ? Infinity
+          : timestamp - acceptedPeakTimestamps[acceptedPeakTimestamps.length - 1];
 
-    const nowMs = timestamp;
-    const msSinceLast = lastRepMs !== null ? nowMs - lastRepMs : Infinity;
-
-    if (phase === 'REST') {
-      if (feature > RISE_G && restStreak >= REARM_WINDOW && msSinceLast > MIN_GAP_MS) {
-        phase = 'ACTIVE';
-        activeStartMs = nowMs;
-        restStreak = 0;
-      } else if (feature < FALL_G) {
-        restStreak += 1;
-      } else {
-        restStreak = 0;
-      }
-    } else if (feature < FALL_G) {
-      const activeMs = nowMs - (activeStartMs ?? nowMs);
-      if (activeMs >= MIN_REP_MS) {
+      if (peakGapMs >= adaptiveGapMs) {
         repCount += 1;
-        lastRepMs = nowMs;
+        acceptedPeakTimestamps.push(timestamp);
       }
-      phase = 'REST';
-      activeStartMs = null;
-      restStreak = 1;
-    } else {
-      restStreak = 0;
     }
+
+    previousFeature = feature;
+    previousSlope = slope;
   }
 
   const durationMs = samples[samples.length - 1].timestamp - samples[0].timestamp;
@@ -365,7 +361,7 @@ export default function WitMotionTestScreen() {
   // React state for display (updated at 20 Hz via the interval timer)
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
-  // (smoothMag − baseline): what the Schmitt trigger actually reads
+  // fastEMA − slowEMA: live motion envelope used by the rep detector
   const [liveFeature, setLiveFeature] = useState(0);
 
   useEffect(() => {
@@ -428,8 +424,10 @@ export default function WitMotionTestScreen() {
           liveFeatureState.smoothMag = accelMag;
           liveFeatureState.baseline = accelMag;
         } else {
-          liveFeatureState.smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * liveFeatureState.smoothMag;
-          liveFeatureState.baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * liveFeatureState.baseline;
+          liveFeatureState.smoothMag =
+            REP_FAST_ALPHA * accelMag + (1 - REP_FAST_ALPHA) * liveFeatureState.smoothMag;
+          liveFeatureState.baseline =
+            REP_SLOW_ALPHA * accelMag + (1 - REP_SLOW_ALPHA) * liveFeatureState.baseline;
         }
         const adaptiveFeature = liveFeatureState.smoothMag - liveFeatureState.baseline;
 
@@ -486,7 +484,7 @@ export default function WitMotionTestScreen() {
             ang.splice(0, ang.length - CHART_MAX_POINTS);
           }
 
-          // (smoothMag − baseline) — the feature the rep counter actually reads
+          // fastEMA − slowEMA — the feature the rep counter actually reads
           const sm = smoothBufRef.current;
           sm.push(adaptiveFeature);
           if (sm.length > CHART_MAX_POINTS) {
@@ -822,7 +820,7 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              smoothMag − baseline · ACTIVE when &gt;{RISE_G} g · now: {liveFeature.toFixed(3)} g
+              fastEMA − slowEMA · peak when &gt;{REP_PEAK_THRESHOLD_G} g · now: {liveFeature.toFixed(3)} g
             </Text>
             {smoothData.length > 1 ? (
               <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
