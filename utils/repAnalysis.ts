@@ -17,54 +17,53 @@ export interface RepAnalysisSummary {
   durationMs: number;
 }
 
-// Rep counting uses the dominant gyroscope axis, which has a much larger
-// signal range than raw acceleration for slow/controlled movements.
-const REP_SMOOTH_ALPHA = 0.15;
-const REP_PEAK_THRESHOLD_DPS = 10;
-const REP_MIN_PEAK_GAP_MS = 500;
+// Rep counting uses the dominant angle axis (x or y — z is excluded because it
+// wraps at ±180°). The AHRS angle signal represents actual limb position and
+// naturally integrates velocity, so it produces one clean peak per rep
+// regardless of whether the movement is slow/unidirectional or fast/bidirectional.
+const REP_ANGLE_SMOOTH_ALPHA = 0.15;
+const REP_ANGLE_PEAK_THRESHOLD_DEG = 4;
+const REP_MIN_PEAK_GAP_MS = 1500;
 
 export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary {
   if (samples.length === 0) {
     return { repCount: 0, sampleCount: 0, durationMs: 0 };
   }
 
-  const axes = ['x', 'y', 'z'] as const;
-  const mins: Record<'x' | 'y' | 'z', number> = { x: Infinity, y: Infinity, z: Infinity };
-  const maxs: Record<'x' | 'y' | 'z', number> = { x: -Infinity, y: -Infinity, z: -Infinity };
+  // angle.z wraps at ±180° so we only consider x and y
+  const axes = ['x', 'y'] as const;
+  const mins: Record<'x' | 'y', number> = { x: Infinity, y: Infinity };
+  const maxs: Record<'x' | 'y', number> = { x: -Infinity, y: -Infinity };
 
   for (const sample of samples) {
     for (const axis of axes) {
-      if (sample.gyro[axis] < mins[axis]) mins[axis] = sample.gyro[axis];
-      if (sample.gyro[axis] > maxs[axis]) maxs[axis] = sample.gyro[axis];
+      if (sample.angle[axis] < mins[axis]) mins[axis] = sample.angle[axis];
+      if (sample.angle[axis] > maxs[axis]) maxs[axis] = sample.angle[axis];
     }
   }
 
-  const dominantAxis = axes.reduce((best, axis) => {
-    return maxs[axis] - mins[axis] > maxs[best] - mins[best] ? axis : best;
-  }, 'z' as const);
-
-  const rawValues = samples.map((s) => s.gyro[dominantAxis]);
-
-  const smoothed: number[] = [rawValues[0]];
-  for (let i = 1; i < rawValues.length; i++) {
-    smoothed.push(REP_SMOOTH_ALPHA * rawValues[i] + (1 - REP_SMOOTH_ALPHA) * smoothed[i - 1]);
-  }
+  const dominantAxis = (maxs.x - mins.x >= maxs.y - mins.y ? 'x' : 'y') as 'x' | 'y';
+  const rawValues = samples.map((s) => s.angle[dominantAxis]);
 
   const baselineWindow = Math.min(20, rawValues.length);
   const baselineSorted = rawValues.slice(0, baselineWindow).slice().sort((a, b) => a - b);
   const baseline = baselineSorted[Math.floor(baselineSorted.length / 2)];
 
+  // Smooth the absolute deviation from baseline
+  const devs = rawValues.map((v) => Math.abs(v - baseline));
+  const smoothed: number[] = [devs[0]];
+  for (let i = 1; i < devs.length; i++) {
+    smoothed.push(REP_ANGLE_SMOOTH_ALPHA * devs[i] + (1 - REP_ANGLE_SMOOTH_ALPHA) * smoothed[i - 1]);
+  }
+
   let repCount = 0;
   let lastPeakMs: number | null = null;
 
   for (let i = 1; i < smoothed.length - 1; i++) {
-    const dev = Math.abs(smoothed[i] - baseline);
-    const devPrev = Math.abs(smoothed[i - 1] - baseline);
-    const devNext = Math.abs(smoothed[i + 1] - baseline);
-    const isPeak = dev > devPrev && dev >= devNext;
+    const isPeak = smoothed[i] > smoothed[i - 1] && smoothed[i] >= smoothed[i + 1];
     const gapMs = lastPeakMs === null ? Infinity : samples[i].timestamp - lastPeakMs;
 
-    if (isPeak && dev > REP_PEAK_THRESHOLD_DPS && gapMs >= REP_MIN_PEAK_GAP_MS) {
+    if (isPeak && smoothed[i] > REP_ANGLE_PEAK_THRESHOLD_DEG && gapMs >= REP_MIN_PEAK_GAP_MS) {
       repCount++;
       lastPeakMs = samples[i].timestamp;
     }
