@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import { useWitMotion } from '@/modules/witmotion-ble';
+import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -15,12 +16,40 @@ function valueOrDash(value: number | null | undefined, digits = 2) {
 }
 
 const CHART_MAX_POINTS = 180;
-const CHART_Y_RANGE = 2.0;
+const GRAVITY_MS2 = 9.81;
+// Decay velocity toward zero when net accel stays below this (device appears still)
+const STILL_THRESHOLD_G = 0.04;
+const STILL_DECAY_FRAMES = 6;
+const VELOCITY_DECAY = 0.80;
 
-function MovementChart({ data }: { data: number[] }) {
+/**
+ * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
+ * from the sensor's AHRS output. Yaw cancels for the vertical axis.
+ * Returns signed vertical acceleration in g units; 0 = no vertical movement.
+ */
+function verticalAccelWorld(accel: WitMotionVector3, angle: WitMotionVector3): number {
+  const roll = (angle.x * Math.PI) / 180;
+  const pitch = (angle.y * Math.PI) / 180;
+  // Third row of R = Rz(yaw)*Ry(pitch)*Rx(roll) — yaw term drops out here
+  const azWorld =
+    -Math.sin(pitch) * accel.x +
+    Math.cos(pitch) * Math.sin(roll) * accel.y +
+    Math.cos(pitch) * Math.cos(roll) * accel.z;
+  return azWorld - 1.0;
+}
+
+interface ChartProps {
+  data: number[];
+  yRange: number;
+  unitLabel: string;
+  color?: string;
+  zeroLabel?: string;
+}
+
+function SignedChart({ data, yRange, unitLabel, color = '#4ade80', zeroLabel }: ChartProps) {
   const WIDTH = 320;
   const HEIGHT = 160;
-  const PAD_LEFT = 32;
+  const PAD_LEFT = 44;
   const PAD_RIGHT = 8;
   const PAD_TOP = 8;
   const PAD_BOTTOM = 20;
@@ -34,10 +63,16 @@ function MovementChart({ data }: { data: number[] }) {
       : data
           .map((v, i) => {
             const x = PAD_LEFT + (i / (CHART_MAX_POINTS - 1)) * innerW;
-            const y = midY - (v / CHART_Y_RANGE) * (innerH / 2);
+            const y = midY - (v / yRange) * (innerH / 2);
             return `${x.toFixed(1)},${Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, y)).toFixed(1)}`;
           })
           .join(' ');
+
+  const labels: Array<[number, string]> = [
+    [-yRange, `−${yRange}${unitLabel}`],
+    [0, zeroLabel ?? `0${unitLabel}`],
+    [yRange, `+${yRange}${unitLabel}`],
+  ];
 
   return (
     <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
@@ -52,7 +87,7 @@ function MovementChart({ data }: { data: number[] }) {
           strokeDasharray="4,4"
         />
         {[-1, 1].map((g) => {
-          const gy = midY - (g / CHART_Y_RANGE) * (innerH / 2);
+          const gy = midY - (g / yRange) * (innerH / 2);
           return (
             <SvgLine
               key={g}
@@ -66,24 +101,15 @@ function MovementChart({ data }: { data: number[] }) {
             />
           );
         })}
-        {[[-CHART_Y_RANGE, `−${CHART_Y_RANGE}g`], [0, '0g'], [CHART_Y_RANGE, `+${CHART_Y_RANGE}g`]].map(
-          ([val, label]) => {
-            const ly = midY - ((val as number) / CHART_Y_RANGE) * (innerH / 2);
-            return (
-              <SvgText
-                key={String(label)}
-                x={PAD_LEFT - 4}
-                y={ly + 4}
-                fontSize={9}
-                fill="#888"
-                textAnchor="end"
-              >
-                {String(label)}
-              </SvgText>
-            );
-          }
-        )}
-        {points ? <Polyline points={points} fill="none" stroke="#4ade80" strokeWidth={1.5} /> : null}
+        {labels.map(([val, label]) => {
+          const ly = midY - (val / yRange) * (innerH / 2);
+          return (
+            <SvgText key={label} x={PAD_LEFT - 4} y={ly + 4} fontSize={9} fill="#888" textAnchor="end">
+              {label}
+            </SvgText>
+          );
+        })}
+        {points ? <Polyline points={points} fill="none" stroke={color} strokeWidth={1.5} /> : null}
       </Svg>
     </View>
   );
@@ -92,42 +118,80 @@ function MovementChart({ data }: { data: number[] }) {
 export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
-  const chartBufferRef = useRef<number[]>([]);
-  const [chartData, setChartData] = useState<number[]>([]);
 
-  const accelMagnitude = useMemo(() => {
-    const accel = wit.liveData.accel;
-    if (!accel) {
-      return null;
-    }
+  const accelBufRef = useRef<number[]>([]);
+  const posBufRef = useRef<number[]>([]);
+  const [accelData, setAccelData] = useState<number[]>([]);
+  const [posData, setPosData] = useState<number[]>([]);
 
-    return Math.sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z) - 1.0;
-  }, [wit.liveData.accel]);
+  // Integration state: velocity (m/s), position (m), last timestamp, still-frame counter
+  const integRef = useRef({ velocity: 0, position: 0, lastTs: null as number | null, stillCount: 0 });
+  const [positionCm, setPositionCm] = useState(0);
+  const [velocityMs, setVelocityMs] = useState(0);
 
   useEffect(() => {
     void requestPermissions();
   }, [requestPermissions]);
 
   useEffect(() => {
-    if (accelMagnitude === null) {
-      chartBufferRef.current = [];
-      setChartData([]);
+    const { accel, angle, updatedAt } = wit.liveData;
+    if (!accel || !angle || updatedAt === null) {
       return;
     }
 
-    const next = [...chartBufferRef.current, accelMagnitude];
-    if (next.length > CHART_MAX_POINTS) {
-      next.splice(0, next.length - CHART_MAX_POINTS);
-    }
-    chartBufferRef.current = next;
-  }, [accelMagnitude]);
+    const now = updatedAt;
+    const integ = integRef.current;
+    const dt = integ.lastTs !== null ? (now - integ.lastTs) / 1000 : 0;
+    integ.lastTs = now;
 
+    const aVert = verticalAccelWorld(accel, angle);
+    const netMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2) - 1.0;
+
+    // Push vertical accel sample
+    const nextAccel = [...accelBufRef.current, aVert];
+    if (nextAccel.length > CHART_MAX_POINTS) {
+      nextAccel.splice(0, nextAccel.length - CHART_MAX_POINTS);
+    }
+    accelBufRef.current = nextAccel;
+
+    if (dt > 0 && dt < 0.5) {
+      // Drift correction: decay velocity when device appears still
+      if (Math.abs(netMag) < STILL_THRESHOLD_G) {
+        integ.stillCount++;
+        if (integ.stillCount > STILL_DECAY_FRAMES) {
+          integ.velocity *= VELOCITY_DECAY;
+        }
+      } else {
+        integ.stillCount = 0;
+      }
+
+      integ.velocity += aVert * GRAVITY_MS2 * dt;
+      integ.position += integ.velocity * dt;
+    }
+
+    const nextPos = [...posBufRef.current, integ.position * 100]; // meters → cm
+    if (nextPos.length > CHART_MAX_POINTS) {
+      nextPos.splice(0, nextPos.length - CHART_MAX_POINTS);
+    }
+    posBufRef.current = nextPos;
+  }, [wit.liveData]);
+
+  // Throttle React state updates to 20 fps
   useEffect(() => {
     const interval = setInterval(() => {
-      setChartData([...chartBufferRef.current]);
+      setAccelData([...accelBufRef.current]);
+      setPosData([...posBufRef.current]);
+      setPositionCm(integRef.current.position * 100);
+      setVelocityMs(integRef.current.velocity);
     }, 50);
-
     return () => clearInterval(interval);
+  }, []);
+
+  const handleSetAnchor = useCallback(() => {
+    integRef.current.velocity = 0;
+    integRef.current.position = 0;
+    integRef.current.stillCount = 0;
+    posBufRef.current = [];
   }, []);
 
   return (
@@ -216,16 +280,45 @@ export default function WitMotionTestScreen() {
             <Text className="text-xs text-text-tertiary">Packets received: {wit.packetCount}</Text>
           </View>
 
+          {/* Vertical acceleration chart */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 font-bold text-text-primary">Movement</Text>
+            <Text className="mb-1 font-bold text-text-primary">Vertical acceleration</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              Net acceleration (|a| - 1g) · last {CHART_MAX_POINTS} samples
+              World-frame vertical net accel (up = +, down = −) · last {CHART_MAX_POINTS} samples
             </Text>
-            {chartData.length > 1 ? (
-              <MovementChart data={chartData} />
+            {accelData.length > 1 ? (
+              <SignedChart data={accelData} yRange={2} unitLabel="g" color="#4ade80" />
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
-                <Text className="text-xs text-text-tertiary">Move the device to see the waveform</Text>
+                <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Vertical position chart */}
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="mb-3 flex-row items-center justify-between">
+              <View>
+                <Text className="font-bold text-text-primary">Vertical position</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Displacement from anchor · last {CHART_MAX_POINTS} samples
+                </Text>
+              </View>
+              <Button label="Set Anchor" onPress={handleSetAnchor} size="sm" variant="accent" />
+            </View>
+            <View className="mb-3 flex-row gap-4">
+              <Text className="text-sm text-text-primary">
+                Position: <Text className="font-bold">{positionCm.toFixed(1)} cm</Text>
+              </Text>
+              <Text className="text-sm text-text-primary">
+                Velocity: <Text className="font-bold">{(velocityMs * 100).toFixed(1)} cm/s</Text>
+              </Text>
+            </View>
+            {posData.length > 1 ? (
+              <SignedChart data={posData} yRange={50} unitLabel="cm" color="#60a5fa" zeroLabel="anchor" />
+            ) : (
+              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+                <Text className="text-xs text-text-tertiary">Press Set Anchor then move the device</Text>
               </View>
             )}
           </View>
