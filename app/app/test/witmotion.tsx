@@ -29,11 +29,13 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting: pick the dominant accel axis, smooth it slightly, then count the obvious peaks.
-// This keeps the logic close to the chart you see on screen and avoids a more fragile state machine.
+// Rep counting: analyze the same decimated stream shown on the chart, then count obvious peaks.
+// Using absolute deviation from a baseline lets the detector work whether the motion shows up
+// as a bump or a dip on the mounted axis.
+const REP_ANALYSIS_STRIDE = 5;
 const REP_SMOOTH_ALPHA = 0.25;
-const REP_PEAK_THRESHOLD_G = 0.42;
-const REP_MIN_PEAK_GAP_MS = 250;
+const REP_PEAK_THRESHOLD_G = 0.35;
+const REP_MIN_PEAK_GAP_MS = 400;
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -72,9 +74,18 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     };
   }
 
+  const analysisSamples = samples.filter((_, index) => index % REP_ANALYSIS_STRIDE === 0);
+  if (analysisSamples.length === 0) {
+    return {
+      repCount: 0,
+      sampleCount: samples.length,
+      durationMs: Math.max(0, samples[samples.length - 1].timestamp - samples[0].timestamp),
+    };
+  }
+
   const mins: Record<'x' | 'y' | 'z', number> = { x: Infinity, y: Infinity, z: Infinity };
   const maxs: Record<'x' | 'y' | 'z', number> = { x: -Infinity, y: -Infinity, z: -Infinity };
-  for (const sample of samples) {
+  for (const sample of analysisSamples) {
     mins.x = Math.min(mins.x, sample.accel.x);
     mins.y = Math.min(mins.y, sample.accel.y);
     mins.z = Math.min(mins.z, sample.accel.z);
@@ -89,7 +100,7 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     return axisRange > bestRange ? axis : bestAxis;
   }, 'z' as const);
 
-  const axisValues = samples.map((sample) => sample.accel[dominantAxis]);
+  const axisValues = analysisSamples.map((sample) => sample.accel[dominantAxis]);
   const smoothed: number[] = [];
   let smoothValue = axisValues[0];
   smoothed.push(smoothValue);
@@ -98,20 +109,22 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     smoothed.push(smoothValue);
   }
 
-  const baselineWindow = Math.min(50, axisValues.length);
+  const baselineWindow = Math.min(10, axisValues.length);
   const baselineValues = axisValues.slice(0, baselineWindow).slice().sort((a, b) => a - b);
   const baseline = baselineValues[Math.floor(baselineValues.length / 2)] ?? axisValues[0];
 
   let repCount = 0;
   let lastPeakMs: number | null = null;
   for (let i = 1; i < smoothed.length - 1; i += 1) {
-    const current = smoothed[i];
-    const isPeak = current > smoothed[i - 1] && current >= smoothed[i + 1];
-    const peakGapMs = lastPeakMs === null ? Infinity : samples[i].timestamp - lastPeakMs;
+    const currentDeviation = Math.abs(smoothed[i] - baseline);
+    const previousDeviation = Math.abs(smoothed[i - 1] - baseline);
+    const nextDeviation = Math.abs(smoothed[i + 1] - baseline);
+    const isPeak = currentDeviation > previousDeviation && currentDeviation >= nextDeviation;
+    const peakGapMs = lastPeakMs === null ? Infinity : analysisSamples[i].timestamp - lastPeakMs;
 
-    if (isPeak && current > baseline + REP_PEAK_THRESHOLD_G && peakGapMs >= REP_MIN_PEAK_GAP_MS) {
+    if (isPeak && currentDeviation > REP_PEAK_THRESHOLD_G && peakGapMs >= REP_MIN_PEAK_GAP_MS) {
       repCount += 1;
-      lastPeakMs = samples[i].timestamp;
+      lastPeakMs = analysisSamples[i].timestamp;
     }
   }
 
