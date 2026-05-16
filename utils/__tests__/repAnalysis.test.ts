@@ -53,7 +53,7 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(5);
   });
 
-  it.skip('counts 5 reps in standing_shoulder_barbell_press.json', () => {
+  it('counts 5 reps in standing_shoulder_barbell_press.json', () => {
     const samples = loadRepsJson('standing_shoulder_barbell_press.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(5);
