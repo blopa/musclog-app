@@ -29,15 +29,19 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Angle-based rep counting (Schmitt trigger on AHRS angle — drift-free, works at any speed)
-// Uses 2D angular distance from anchor (roll² + pitch²), ignoring yaw (magnetometer-dependent).
-// OUTER: how far the device must travel from anchor to register "extended" phase.
-// INNER: how close it must return to register rep completion (hysteresis prevents jitter).
-const REP_OUTER_THRESH_DEG = 20; // degrees — adjust if exercise has small ROM
-const REP_INNER_THRESH_DEG = 8;  // degrees — hysteresis band around anchor
-const REP_MIN_DURATION_MS = 400; // ms — full excursion must take at least this long
+// Rep counting via peak detection on EMA-smoothed net vertical acceleration.
+// No integration, no anchor, no drift. Uses AHRS angles only for gravity projection.
+// Research: Zelman 2020, RecoFit 2014 — peak detection on LPF-smoothed accel is most reliable.
+//
+// EMA_ALPHA = 0.25  →  τ = dt*(1-α)/α = 0.01*0.75/0.25 = 30 ms  →  cutoff ≈ 5.3 Hz
+// This preserves rep dynamics (0.3–2 Hz) while smoothing sensor noise.
+const REP_EMA_ALPHA = 0.25;
+const REP_UPPER_G = 0.15;  // smoothed net vertical accel must exceed this to start a rep
+const REP_LOWER_G = 0.03;  // must drop below this to complete the rep (hysteresis)
+const REP_MIN_PEAK_MS = 150;   // concentric phase must last at least 150 ms
+const REP_REFRACTORY_MS = 800; // minimum ms between consecutive rep counts
 
-type RepPhase = 'IDLE' | 'EXTENDED';
+type RepPhase = 'IDLE' | 'CONCENTRIC';
 
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
@@ -158,19 +162,25 @@ export default function WitMotionTestScreen() {
     stillCount: 0, // consecutive samples below ZVU thresholds
   });
 
-  // Angle-based rep counting state
+  // Vertical-accel peak detection rep state — mutated inside onBatch, never causes renders
   const repRef = useRef({
     phase: 'IDLE' as RepPhase,
     repCount: 0,
-    extendedStartMs: null as number | null, // real-time ms when EXTENDED phase began
+    smoothVert: 0,       // EMA-filtered net vertical accel (g)
+    peakStartMs: null as number | null,
+    lastRepMs: null as number | null,
   });
+
+  // Buffer for the smoothed vertical accel chart
+  const smoothBufRef = useRef<number[]>([]);
+  const [smoothData, setSmoothData] = useState<number[]>([]);
 
   // React state for display (updated at 20 Hz via the interval timer)
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
   const [repCount, setRepCount] = useState(0);
   const [repPhase, setRepPhase] = useState<RepPhase>('IDLE');
-  const [angleDeltaDeg, setAngleDeltaDeg] = useState(0);
+  const [liveSmooth, setLiveSmooth] = useState(0);
 
   useEffect(() => {
     void requestPermissions();
@@ -201,7 +211,8 @@ export default function WitMotionTestScreen() {
           integ.hpfVel = 0;
           integ.stillCount = 0;
           rep.phase = 'IDLE';
-          rep.extendedStartMs = null;
+          rep.smoothVert = 0;
+          rep.peakStartMs = null;
           continue;
         }
 
@@ -229,29 +240,28 @@ export default function WitMotionTestScreen() {
         integ.prevRawVel = integ.rawVel;
         integ.position += integ.hpfVel * SENSOR_DT_S;
 
-        // Angle-based rep counter (Schmitt trigger on AHRS Euler angles).
-        // Uses 2D angular distance from anchor (roll + pitch, ignoring yaw).
-        // The WT901 internal Kalman filter makes these drift-free at any speed.
-        const anchor = anchorAngleRef.current;
-        if (anchor) {
-          const dRoll = angle.x - anchor.x;
-          const dPitch = angle.y - anchor.y;
-          const angDist = Math.sqrt(dRoll * dRoll + dPitch * dPitch);
+        // Peak detection on EMA-smoothed net vertical acceleration.
+        // aVert is already gravity-subtracted (0 at rest, + when pushed upward).
+        // No anchor needed — the AHRS projection handles any sensor orientation.
+        rep.smoothVert = REP_EMA_ALPHA * aVert + (1 - REP_EMA_ALPHA) * rep.smoothVert;
 
-          if (rep.phase === 'IDLE') {
-            if (angDist > REP_OUTER_THRESH_DEG) {
-              rep.phase = 'EXTENDED';
-              rep.extendedStartMs = Date.now();
+        const nowMs = Date.now();
+        const msSinceLastRep = rep.lastRepMs !== null ? nowMs - rep.lastRepMs : Infinity;
+
+        if (rep.phase === 'IDLE') {
+          if (rep.smoothVert > REP_UPPER_G && msSinceLastRep > REP_REFRACTORY_MS) {
+            rep.phase = 'CONCENTRIC';
+            rep.peakStartMs = nowMs;
+          }
+        } else if (rep.phase === 'CONCENTRIC') {
+          if (rep.smoothVert < REP_LOWER_G) {
+            const peakMs = nowMs - (rep.peakStartMs ?? nowMs);
+            if (peakMs >= REP_MIN_PEAK_MS) {
+              rep.repCount += 1;
+              rep.lastRepMs = nowMs;
             }
-          } else if (rep.phase === 'EXTENDED') {
-            if (angDist < REP_INNER_THRESH_DEG) {
-              const duration = Date.now() - (rep.extendedStartMs ?? Date.now());
-              if (duration >= REP_MIN_DURATION_MS) {
-                rep.repCount += 1;
-              }
-              rep.phase = 'IDLE';
-              rep.extendedStartMs = null;
-            }
+            rep.phase = 'IDLE';
+            rep.peakStartMs = null;
           }
         }
 
@@ -271,6 +281,11 @@ export default function WitMotionTestScreen() {
           const ang = angleBufRef.current;
           ang.push(aDelta);
           if (ang.length > CHART_MAX_POINTS) ang.splice(0, ang.length - CHART_MAX_POINTS);
+
+          // Smoothed vertical accel — the signal the rep counter actually uses
+          const sm = smoothBufRef.current;
+          sm.push(rep.smoothVert);
+          if (sm.length > CHART_MAX_POINTS) sm.splice(0, sm.length - CHART_MAX_POINTS);
         }
       }
     });
@@ -286,15 +301,8 @@ export default function WitMotionTestScreen() {
       setVelocityMs(integRef.current.hpfVel);
       setRepCount(repRef.current.repCount);
       setRepPhase(repRef.current.phase);
-      const anchor = anchorAngleRef.current;
-      const cur = currentAngleRef.current;
-      if (anchor && cur) {
-        const dR = cur.x - anchor.x;
-        const dP = cur.y - anchor.y;
-        setAngleDeltaDeg(Math.sqrt(dR * dR + dP * dP));
-      } else {
-        setAngleDeltaDeg(0);
-      }
+      setLiveSmooth(repRef.current.smoothVert);
+      setSmoothData([...smoothBufRef.current]);
     }, 50);
     return () => clearInterval(interval);
   }, []);
@@ -320,12 +328,14 @@ export default function WitMotionTestScreen() {
     const rep = repRef.current;
     rep.repCount = 0;
     rep.phase = 'IDLE';
-    rep.extendedStartMs = null;
+    rep.smoothVert = 0;
+    rep.peakStartMs = null;
+    rep.lastRepMs = null;
+    smoothBufRef.current = [];
   }, []);
 
-  const phaseColor = repPhase === 'EXTENDED' ? '#4ade80' : '#888';
-  const phaseLabel = repPhase === 'EXTENDED' ? '↔ MOVING' : 'REST';
-  const hasAnchor = anchorAngleRef.current !== null;
+  const phaseColor = repPhase === 'CONCENTRIC' ? '#4ade80' : '#888';
+  const phaseLabel = repPhase === 'CONCENTRIC' ? '↑ LIFTING' : 'REST';
 
   return (
     <MasterLayout>
@@ -340,21 +350,10 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border-2 border-border-accent bg-bg-overlay p-5">
             <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-lg font-bold text-text-primary">Rep Counter</Text>
-              <View className="flex-row gap-2">
-                <Button label="Set Anchor" onPress={handleSetAnchor} size="sm" variant="accent" />
-                <Button label="Reset" onPress={handleResetReps} size="sm" variant="secondary" />
-              </View>
+              <Button label="Reset" onPress={handleResetReps} size="sm" variant="secondary" />
             </View>
 
-            {!hasAnchor ? (
-              <View className="mb-3 rounded-lg bg-bg-primary px-3 py-2">
-                <Text className="text-xs text-text-tertiary">
-                  Press Set Anchor in your starting position before counting reps.
-                </Text>
-              </View>
-            ) : null}
-
-            {/* Phase + angle */}
+            {/* Phase pill + live signal readout */}
             <View className="mb-3 flex-row items-center gap-3">
               <View className="rounded-full px-3 py-1" style={{ backgroundColor: phaseColor + '33' }}>
                 <Text className="text-sm font-bold" style={{ color: phaseColor }}>
@@ -362,8 +361,8 @@ export default function WitMotionTestScreen() {
                 </Text>
               </View>
               <Text className="text-sm text-text-secondary">
-                {angleDeltaDeg.toFixed(1)}° from anchor
-                {hasAnchor ? ` (need >${REP_OUTER_THRESH_DEG}° to register)` : ''}
+                signal: <Text className="font-bold">{liveSmooth.toFixed(3)} g</Text>
+                {'  '}threshold: {REP_UPPER_G} g
               </Text>
             </View>
 
@@ -371,7 +370,10 @@ export default function WitMotionTestScreen() {
             <Text className="text-center font-bold text-text-primary" style={{ fontSize: 96, lineHeight: 100 }}>
               {repCount}
             </Text>
-            <Text className="text-center text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
+            <Text className="mb-1 text-center text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
+            <Text className="text-center text-xs text-text-tertiary">
+              No anchor needed — just move the device up and down
+            </Text>
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
@@ -473,6 +475,21 @@ export default function WitMotionTestScreen() {
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">Press Set Anchor then tilt the device</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Smoothed vertical accel — the signal the rep counter reads */}
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-1 font-bold text-text-primary">Rep signal (smoothed vert. accel)</Text>
+            <Text className="mb-3 text-xs text-text-tertiary">
+              EMA-filtered net vertical accel · counts rep when above {REP_UPPER_G} g · now: {liveSmooth.toFixed(3)} g
+            </Text>
+            {smoothData.length > 1 ? (
+              <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
+            ) : (
+              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+                <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
               </View>
             )}
           </View>
