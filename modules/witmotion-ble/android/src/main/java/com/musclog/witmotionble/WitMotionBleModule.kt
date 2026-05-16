@@ -31,6 +31,7 @@ private const val NOTIFY_DESCRIPTOR_UUID = "00002902-0000-1000-8000-00805f9b34fb
 private const val DEVICE_PREFIX = "WT"
 private const val DEFAULT_SCAN_TIMEOUT_MS = 10_000L
 private const val DEFAULT_POLL_INTERVAL_MS = 500L
+private const val DATA_BATCH_INTERVAL_MS = 250L
 
 private data class WitDeviceInfo(
   val id: String,
@@ -67,10 +68,49 @@ private data class WitState(
   val error: String? = null
 )
 
-private data class ParsedPacket(
-  val liveData: LiveData,
-  val packetCount: Int = 1
-)
+private sealed class WitPacket {
+  abstract val timestamp: Long
+  abstract fun toMap(): Map<String, Any?>
+
+  data class Motion(
+    override val timestamp: Long,
+    val accel: Vector3,
+    val gyro: Vector3,
+    val angle: Vector3
+  ) : WitPacket() {
+    override fun toMap(): Map<String, Any?> = mapOf(
+      "kind" to "motion",
+      "timestamp" to timestamp,
+      "accel" to accel.toMap(),
+      "gyro" to gyro.toMap(),
+      "angle" to angle.toMap()
+    )
+  }
+
+  data class Magnetic(
+    override val timestamp: Long,
+    val magnetic: Vector3
+  ) : WitPacket() {
+    override fun toMap(): Map<String, Any?> = mapOf(
+      "kind" to "magnetic",
+      "timestamp" to timestamp,
+      "magnetic" to magnetic.toMap()
+    )
+  }
+
+  data class Battery(
+    override val timestamp: Long,
+    val voltage: Double,
+    val percent: Double
+  ) : WitPacket() {
+    override fun toMap(): Map<String, Any?> = mapOf(
+      "kind" to "battery",
+      "timestamp" to timestamp,
+      "voltage" to voltage,
+      "percent" to percent
+    )
+  }
+}
 
 private fun WitDeviceInfo.toMap(): Map<String, Any?> = mapOf(
   "id" to id,
@@ -153,11 +193,12 @@ private fun formatDisplayData(data: LiveData): String {
   }
 }
 
-private fun parsePacket(bytes: ByteArray): ParsedPacket? {
+private fun parsePacket(bytes: ByteArray): WitPacket? {
   if (bytes.size < 20 || bytes[0] != 0x55.toByte()) {
     return null
   }
 
+  val timestamp = System.currentTimeMillis()
   return when (bytes[1]) {
     0x61.toByte() -> {
       val accel = Vector3(
@@ -175,7 +216,7 @@ private fun parsePacket(bytes: ByteArray): ParsedPacket? {
         bytes.readShortLE(16).toSignedDouble(180.0),
         bytes.readShortLE(18).toSignedDouble(180.0)
       )
-      ParsedPacket(LiveData(accel = accel, gyro = gyro, angle = angle, updatedAt = System.currentTimeMillis()))
+      WitPacket.Motion(timestamp, accel, gyro, angle)
     }
 
     0x71.toByte() -> {
@@ -186,18 +227,12 @@ private fun parsePacket(bytes: ByteArray): ParsedPacket? {
             bytes.readShortLE(6).toInt() / 120.0,
             bytes.readShortLE(8).toInt() / 120.0
           )
-          ParsedPacket(LiveData(magnetic = magnetic, updatedAt = System.currentTimeMillis()))
+          WitPacket.Magnetic(timestamp, magnetic)
         }
 
         100 -> {
           val voltage = bytes.readShortLE(4).toInt() / 100.0
-          ParsedPacket(
-            LiveData(
-              batteryVoltage = voltage,
-              batteryPercent = batteryPercentFromVoltage(voltage),
-              updatedAt = System.currentTimeMillis()
-            )
-          )
+          WitPacket.Battery(timestamp, voltage, batteryPercentFromVoltage(voltage))
         }
 
         else -> null
@@ -212,12 +247,15 @@ class WitMotionBleModule : Module() {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val deviceMap = ConcurrentHashMap<String, BluetoothDevice>()
   private val stateLock = Any()
+  private val batchLock = Any()
   @Volatile private var state = WitState()
 
   private var bluetoothAdapter: BluetoothAdapter? = null
   private var bluetoothLeScanner: BluetoothLeScanner? = null
   private var scanCallback: ScanCallback? = null
   private var scanStopRunnable: Runnable? = null
+  private var batchFlushRunnable: Runnable? = null
+  private val pendingPackets = ArrayList<WitPacket>()
   private var activeSession: DeviceSession? = null
 
   private val context: Context
@@ -226,11 +264,12 @@ class WitMotionBleModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("WitMotionBle")
 
-    Events("onStateChanged", "onDeviceFound", "onError")
+    Events("onStateChanged", "onDataBatch", "onDeviceFound", "onError")
 
     OnDestroy {
       stopScan()
       disconnectInternal()
+      clearPendingBatch()
       bluetoothLeScanner = null
       bluetoothAdapter = null
     }
@@ -312,12 +351,14 @@ class WitMotionBleModule : Module() {
 
   private fun snapshot(): WitState = synchronized(stateLock) { state }
 
-  private fun updateState(mutator: (WitState) -> WitState) {
+  private fun updateState(emit: Boolean = true, mutator: (WitState) -> WitState) {
     val next = synchronized(stateLock) {
       state = mutator(state)
       state
     }
-    postState(next)
+    if (emit) {
+      postState(next)
+    }
   }
 
   private fun postState(next: WitState) {
@@ -329,6 +370,106 @@ class WitMotionBleModule : Module() {
   private fun postError(message: String) {
     updateState { it.copy(status = "error", error = message) }
     mainHandler.post { sendEvent("onError", mapOf("message" to message)) }
+  }
+
+  private fun clearPendingBatch() {
+    synchronized(batchLock) {
+      batchFlushRunnable?.let { mainHandler.removeCallbacks(it) }
+      batchFlushRunnable = null
+      pendingPackets.clear()
+    }
+  }
+
+  private fun enqueuePackets(packets: List<WitPacket>) {
+    if (packets.isEmpty()) {
+      return
+    }
+
+    var shouldSchedule = false
+    synchronized(batchLock) {
+      pendingPackets.addAll(packets)
+      if (batchFlushRunnable == null) {
+        batchFlushRunnable = Runnable { flushPendingBatch() }
+        shouldSchedule = true
+      }
+    }
+
+    if (shouldSchedule) {
+      mainHandler.postDelayed(batchFlushRunnable!!, DATA_BATCH_INTERVAL_MS)
+    }
+  }
+
+  private fun flushPendingBatch() {
+    val batch = synchronized(batchLock) {
+      if (pendingPackets.isEmpty()) {
+        batchFlushRunnable = null
+        return
+      }
+
+      val snapshot = pendingPackets.toList()
+      pendingPackets.clear()
+      batchFlushRunnable = null
+      snapshot
+    }
+
+    val mergedLiveData = mergePacketsIntoLiveData(batch)
+    val nextState = synchronized(stateLock) {
+      val next = state.copy(
+        liveData = mergedLiveData,
+        packetCount = state.packetCount + batch.size,
+        error = null
+      )
+      state = next
+      next
+    }
+
+    mainHandler.post {
+      sendEvent(
+        "onDataBatch",
+        mapOf(
+          "packets" to batch.map { it.toMap() },
+          "packetCountDelta" to batch.size,
+          "packetCountTotal" to nextState.packetCount,
+          "liveData" to mergedLiveData.toMap(),
+          "receivedAt" to System.currentTimeMillis()
+        )
+      )
+    }
+
+    synchronized(batchLock) {
+      if (pendingPackets.isNotEmpty() && batchFlushRunnable == null) {
+        batchFlushRunnable = Runnable { flushPendingBatch() }
+        mainHandler.postDelayed(batchFlushRunnable!!, DATA_BATCH_INTERVAL_MS)
+      }
+    }
+  }
+
+  private fun mergePacketsIntoLiveData(packets: List<WitPacket>): LiveData {
+    var nextLiveData = snapshot().liveData
+
+    packets.forEach { packet ->
+      nextLiveData = when (packet) {
+        is WitPacket.Motion -> nextLiveData.copy(
+          accel = packet.accel,
+          gyro = packet.gyro,
+          angle = packet.angle,
+          updatedAt = packet.timestamp
+        )
+
+        is WitPacket.Magnetic -> nextLiveData.copy(
+          magnetic = packet.magnetic,
+          updatedAt = packet.timestamp
+        )
+
+        is WitPacket.Battery -> nextLiveData.copy(
+          batteryVoltage = packet.voltage,
+          batteryPercent = packet.percent,
+          updatedAt = packet.timestamp
+        )
+      }
+    }
+
+    return nextLiveData
   }
 
   private fun ensureBluetoothAdapter(): BluetoothAdapter? {
@@ -494,6 +635,7 @@ class WitMotionBleModule : Module() {
 
   @SuppressLint("MissingPermission")
   private fun disconnectInternal(): Boolean {
+    clearPendingBatch()
     val session = activeSession ?: run {
       updateState {
         it.copy(
@@ -509,6 +651,7 @@ class WitMotionBleModule : Module() {
 
     session.close()
     activeSession = null
+    clearPendingBatch()
     updateState {
       it.copy(
         status = "idle",
@@ -726,8 +869,7 @@ class WitMotionBleModule : Module() {
 
     private fun handleIncomingBytes(value: ByteArray) {
       var offset = 0
-      var packetCountDelta = 0
-      var nextLiveData = snapshot().liveData
+      val parsedPackets = ArrayList<WitPacket>()
 
       while (offset + 20 <= value.size) {
         if (value[offset] != 0x55.toByte()) {
@@ -738,33 +880,12 @@ class WitMotionBleModule : Module() {
         val chunk = value.copyOfRange(offset, offset + 20)
         val parsed = parsePacket(chunk)
         if (parsed != null) {
-          nextLiveData = mergeLiveData(nextLiveData, parsed.liveData)
-          packetCountDelta += parsed.packetCount
+          parsedPackets.add(parsed)
         }
         offset += 20
       }
 
-      if (packetCountDelta > 0) {
-        updateState { current ->
-          current.copy(
-            liveData = nextLiveData,
-            packetCount = current.packetCount + packetCountDelta,
-            error = null
-          )
-        }
-      }
-    }
-
-    private fun mergeLiveData(current: LiveData, update: LiveData): LiveData {
-      return LiveData(
-        accel = update.accel ?: current.accel,
-        gyro = update.gyro ?: current.gyro,
-        angle = update.angle ?: current.angle,
-        magnetic = update.magnetic ?: current.magnetic,
-        batteryVoltage = update.batteryVoltage ?: current.batteryVoltage,
-        batteryPercent = update.batteryPercent ?: current.batteryPercent,
-        updatedAt = update.updatedAt ?: current.updatedAt
-      )
+      enqueuePackets(parsedPackets)
     }
   }
 }

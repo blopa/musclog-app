@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 import { createEmptyLiveData } from './parser';
 import type {
   WitMotionActionApi,
+  WitMotionDataBatch,
   WitMotionDevice,
-  WitMotionHookResult,
   WitMotionNativeModule,
   WitMotionScanOptions,
   WitMotionState,
@@ -124,6 +124,21 @@ class WitMotionClient implements WitMotionActionApi {
           ...nextState,
           connectedDevice: nextState.connectedDevice ? { ...nextState.connectedDevice } : null,
           discoveredDevices: nextState.discoveredDevices?.map((device) => ({ ...device })) ?? [],
+        });
+      });
+
+      emitter.addListener('onDataBatch', (batch: WitMotionDataBatch) => {
+        this.replaceState({
+          ...this.state,
+          liveData: {
+            ...batch.liveData,
+            accel: batch.liveData.accel ? { ...batch.liveData.accel } : null,
+            gyro: batch.liveData.gyro ? { ...batch.liveData.gyro } : null,
+            angle: batch.liveData.angle ? { ...batch.liveData.angle } : null,
+            magnetic: batch.liveData.magnetic ? { ...batch.liveData.magnetic } : null,
+          },
+          packetCount: batch.packetCountTotal,
+          error: null,
         });
       });
     }

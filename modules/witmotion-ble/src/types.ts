@@ -67,6 +67,14 @@ export interface WitMotionActionApi {
 
 export interface WitMotionHookResult extends WitMotionState, WitMotionActionApi {}
 
+export interface WitMotionDataBatch {
+  packets: WitMotionPacket[];
+  liveData: WitMotionLiveData;
+  packetCountDelta: number;
+  packetCountTotal: number;
+  receivedAt: number;
+}
+
 export interface WitMotionNativeModule {
   requestPermissions: () => Promise<boolean>;
   startScan: (options?: WitMotionScanOptions) => Promise<boolean>;
