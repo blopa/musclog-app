@@ -51,31 +51,90 @@ function cloneState(state: WitMotionState): WitMotionState {
   };
 }
 
+function sameVector(
+  a: { x: number; y: number; z: number } | null,
+  b: { x: number; y: number; z: number } | null
+) {
+  return a?.x === b?.x && a?.y === b?.y && a?.z === b?.z;
+}
+
+function sameDevice(
+  a: WitMotionDevice | null,
+  b: WitMotionDevice | null
+) {
+  return a?.id === b?.id && a?.name === b?.name && a?.localName === b?.localName && a?.rssi === b?.rssi;
+}
+
+function sameLiveData(a: WitMotionState['liveData'], b: WitMotionState['liveData']) {
+  return (
+    sameVector(a.accel, b.accel) &&
+    sameVector(a.gyro, b.gyro) &&
+    sameVector(a.angle, b.angle) &&
+    sameVector(a.magnetic, b.magnetic) &&
+    a.batteryVoltage === b.batteryVoltage &&
+    a.batteryPercent === b.batteryPercent &&
+    a.updatedAt === b.updatedAt
+  );
+}
+
+function sameState(a: WitMotionState, b: WitMotionState) {
+  if (
+    a.status !== b.status ||
+    a.bleState !== b.bleState ||
+    a.isScanning !== b.isScanning ||
+    a.isConnected !== b.isConnected ||
+    a.packetCount !== b.packetCount ||
+    a.error !== b.error ||
+    !sameDevice(a.connectedDevice, b.connectedDevice) ||
+    a.discoveredDevices.length !== b.discoveredDevices.length ||
+    !sameLiveData(a.liveData, b.liveData)
+  ) {
+    return false;
+  }
+
+  for (let i = 0; i < a.discoveredDevices.length; i += 1) {
+    if (!sameDevice(a.discoveredDevices[i] ?? null, b.discoveredDevices[i] ?? null)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 class WitMotionClient implements WitMotionActionApi {
   private listeners = new Set<() => void>();
   private state: WitMotionState = cloneState(DEFAULT_STATE);
 
+  private replaceState(nextState: WitMotionState) {
+    const normalized = cloneState(nextState);
+
+    if (sameState(this.state, normalized)) {
+      return;
+    }
+
+    this.state = normalized;
+    this.emit();
+  }
+
   constructor() {
     if (emitter) {
       emitter.addListener('onStateChanged', (nextState: WitMotionState) => {
-        this.state = cloneState({
+        this.replaceState({
           ...DEFAULT_STATE,
           ...nextState,
           connectedDevice: nextState.connectedDevice ? { ...nextState.connectedDevice } : null,
           discoveredDevices: nextState.discoveredDevices?.map((device) => ({ ...device })) ?? [],
         });
-        this.emit();
       });
     }
 
     void nativeModule?.getState().then((nextState) => {
-      this.state = cloneState({
+      this.replaceState({
         ...DEFAULT_STATE,
         ...nextState,
         connectedDevice: nextState.connectedDevice ? { ...nextState.connectedDevice } : null,
         discoveredDevices: nextState.discoveredDevices?.map((device) => ({ ...device })) ?? [],
       });
-      this.emit();
     });
   }
 
@@ -86,13 +145,19 @@ class WitMotionClient implements WitMotionActionApi {
   }
 
   private setState(next: Partial<WitMotionState>) {
-    this.state = cloneState({
+    const normalized = cloneState({
       ...this.state,
       ...next,
       connectedDevice: next.connectedDevice ? { ...next.connectedDevice } : next.connectedDevice ?? null,
       discoveredDevices:
         next.discoveredDevices?.map((device) => ({ ...device })) ?? this.state.discoveredDevices,
     });
+
+    if (sameState(this.state, normalized)) {
+      return;
+    }
+
+    this.state = normalized;
     this.emit();
   }
 

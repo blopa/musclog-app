@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
 
@@ -92,6 +92,7 @@ function MovementChart({ data }: { data: number[] }) {
 export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
+  const chartBufferRef = useRef<number[]>([]);
   const [chartData, setChartData] = useState<number[]>([]);
 
   const accelMagnitude = useMemo(() => {
@@ -109,18 +110,25 @@ export default function WitMotionTestScreen() {
 
   useEffect(() => {
     if (accelMagnitude === null) {
+      chartBufferRef.current = [];
       setChartData([]);
       return;
     }
 
-    setChartData((prev) => {
-      const next = [...prev, accelMagnitude];
-      if (next.length > CHART_MAX_POINTS) {
-        next.splice(0, next.length - CHART_MAX_POINTS);
-      }
-      return next;
-    });
+    const next = [...chartBufferRef.current, accelMagnitude];
+    if (next.length > CHART_MAX_POINTS) {
+      next.splice(0, next.length - CHART_MAX_POINTS);
+    }
+    chartBufferRef.current = next;
   }, [accelMagnitude]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChartData([...chartBufferRef.current]);
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <MasterLayout>
