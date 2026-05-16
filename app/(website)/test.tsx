@@ -1,4 +1,5 @@
 import Head from 'expo-router/head';
+import savitzkyGolay from 'ml-savitzky-golay';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -40,6 +41,8 @@ type ChartRow = {
   accY: number;
   accZ: number;
 };
+
+type AxisKey = 'accX' | 'accY' | 'accZ';
 
 type LoadedFileState = {
   fileName: string;
@@ -125,8 +128,8 @@ function createChartRows(samples: Sample[]): ChartRow[] {
   }));
 }
 
-function getExtents(rows: ChartRow[]) {
-  const values = rows.flatMap((row) => [row.accX, row.accY, row.accZ]);
+function getExtents(rows: ChartRow[], visibleAxes: AxisKey[]) {
+  const values = rows.flatMap((row) => visibleAxes.map((axis) => row[axis]));
   const min = Math.min(...values);
   const max = Math.max(...values);
   const padding = Math.max(0.12, (max - min) * 0.12 || 0.12);
@@ -147,43 +150,117 @@ function buildYAxisLabels(min: number, max: number, formatValue: (value: number)
   ];
 }
 
+const SMOOTHING_PRESETS = [
+  { level: 0, label: 'Raw', windowSize: null },
+  { level: 1, label: 'Light', windowSize: 5 },
+  { level: 2, label: 'Medium', windowSize: 9 },
+  { level: 3, label: 'Strong', windowSize: 15 },
+  { level: 4, label: 'Very strong', windowSize: 21 },
+] as const;
+
+type SmoothingLevel = (typeof SMOOTHING_PRESETS)[number]['level'];
+
+function getSmoothingPreset(level: SmoothingLevel) {
+  return SMOOTHING_PRESETS.find((preset) => preset.level === level) ?? SMOOTHING_PRESETS[0];
+}
+
+function chooseSavitzkyGolayWindowSize(length: number, desiredWindowSize: number | null): number | null {
+  if (length < 5 || desiredWindowSize == null) {
+    return null;
+  }
+
+  const capped = Math.min(desiredWindowSize, length);
+  const oddPreferred = capped % 2 === 1 ? capped : capped - 1;
+  return Math.max(5, oddPreferred);
+}
+
+function smoothSeries(values: number[], desiredWindowSize: number | null): number[] {
+  const windowSize = chooseSavitzkyGolayWindowSize(values.length, desiredWindowSize);
+  if (windowSize == null) {
+    return values;
+  }
+
+  return savitzkyGolay(values, 1, {
+    windowSize,
+    derivative: 0,
+    polynomial: 3,
+    pad: 'pre',
+    padValue: 'replicate',
+  });
+}
+
+function smoothChartRows(rows: ChartRow[], desiredWindowSize: number | null): ChartRow[] {
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const smoothX = smoothSeries(rows.map((row) => row.accX), desiredWindowSize);
+  const smoothY = smoothSeries(rows.map((row) => row.accY), desiredWindowSize);
+  const smoothZ = smoothSeries(rows.map((row) => row.accZ), desiredWindowSize);
+
+  return rows.map((row, index) => ({
+    x: row.x,
+    accX: smoothX[index] ?? row.accX,
+    accY: smoothY[index] ?? row.accY,
+    accZ: smoothZ[index] ?? row.accZ,
+  }));
+}
+
+const AXIS_CONFIG: { key: AxisKey; label: string; color: string }[] = [
+  { key: 'accX', label: 'AccX', color: '#94a3b8' },
+  { key: 'accY', label: 'AccY', color: '#facc15' },
+  { key: 'accZ', label: 'AccZ', color: '#f59e0b' },
+];
+
 export default function Test() {
   const { formatRoundedDecimal, formatInteger, locale } = useFormatAppNumber();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [smoothingLevel, setSmoothingLevel] = useState<SmoothingLevel>(2);
+  const [visibleAxes, setVisibleAxes] = useState<Record<AxisKey, boolean>>({
+    accX: true,
+    accY: true,
+    accZ: true,
+  });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fileState, setFileState] = useState<LoadedFileState | null>(null);
 
-  const rows = useMemo(() => createChartRows(fileState?.samples ?? []), [fileState?.samples]);
-  const extents = useMemo(() => getExtents(rows), [rows]);
-  const yAxisLabels = useMemo(
-    () => buildYAxisLabels(extents.min, extents.max, (value) => formatRoundedDecimal(value, 1)),
-    [extents.max, extents.min, formatRoundedDecimal]
+  const rawRows = useMemo(() => createChartRows(fileState?.samples ?? []), [fileState?.samples]);
+  const displayRows = useMemo(
+    () => {
+      const preset = getSmoothingPreset(smoothingLevel);
+      return preset.windowSize != null ? smoothChartRows(rawRows, preset.windowSize) : rawRows;
+    },
+    [rawRows, smoothingLevel]
   );
-  const lastRow = rows[rows.length - 1] ?? null;
+  const activeAxes = useMemo(
+    () => AXIS_CONFIG.filter((axis) => visibleAxes[axis.key]).map((axis) => axis.key),
+    [visibleAxes]
+  );
+  const extents = useMemo(
+    () => (activeAxes.length > 0 ? getExtents(displayRows, activeAxes) : null),
+    [activeAxes, displayRows]
+  );
+  const yAxisLabels = useMemo(
+    () =>
+      extents == null
+        ? []
+        : buildYAxisLabels(extents.min, extents.max, (value) => formatRoundedDecimal(value, 1)),
+    [extents, formatRoundedDecimal]
+  );
+  const lastRow = displayRows[displayRows.length - 1] ?? null;
+  const currentPreset = getSmoothingPreset(smoothingLevel);
+  const currentSmoothingLabel = currentPreset.label;
 
   const series = useMemo(
-    () => [
-      {
-        key: 'accX',
-        label: 'AccX',
-        color: '#94a3b8',
-        value: lastRow ? formatRoundedDecimal(lastRow.accX, 2) : undefined,
-      },
-      {
-        key: 'accY',
-        label: 'AccY',
-        color: '#facc15',
-        value: lastRow ? formatRoundedDecimal(lastRow.accY, 2) : undefined,
-      },
-      {
-        key: 'accZ',
-        label: 'AccZ',
-        color: '#f59e0b',
-        value: lastRow ? formatRoundedDecimal(lastRow.accZ, 2) : undefined,
-      },
-    ],
-    [formatRoundedDecimal, lastRow]
+    () =>
+      AXIS_CONFIG.filter((axis) => visibleAxes[axis.key]).map((axis) => ({
+        key: axis.key,
+        label: axis.label,
+        color: axis.color,
+        value: lastRow ? formatRoundedDecimal(lastRow[axis.key], 2) : undefined,
+      })),
+    [formatRoundedDecimal, lastRow, visibleAxes]
   );
 
   const handleParsedFile = useCallback((fileName: string, text: string) => {
@@ -257,6 +334,43 @@ export default function Test() {
   const startedAt = fileState?.startedAt != null ? new Date(fileState.startedAt) : null;
   const stoppedAt = fileState?.stoppedAt != null ? new Date(fileState.stoppedAt) : null;
   const fileLabel = fileState?.fileName ?? 'No file loaded yet';
+  const visibleAxisCount = activeAxes.length;
+  let chartBody: React.ReactNode;
+  if (displayRows.length > 1 && visibleAxisCount > 0 && extents != null) {
+    chartBody = (
+      <div className="rounded-[1.75rem] border border-white/10 bg-[#050b08] p-3 md:p-4">
+        <MultipleLinesChart
+          title={undefined}
+          subtitle={undefined}
+          data={displayRows}
+          series={series}
+          height={360}
+          xDomain={[displayRows[0].x, displayRows[displayRows.length - 1].x]}
+          yDomain={[extents.min, extents.max]}
+          yAxisLabels={yAxisLabels}
+          showGridLines
+          gridLineColor="rgba(255,255,255,0.12)"
+          lineWidth={3}
+          marginTop={0}
+          marginBottom={0}
+          interactive={false}
+          className="w-full"
+        />
+      </div>
+    );
+  } else if (displayRows.length > 1) {
+    chartBody = (
+      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-white/10 bg-[#050b08] px-6 text-center text-sm text-white/45">
+        Turn on at least one axis to render the chart.
+      </div>
+    );
+  } else {
+    chartBody = (
+      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-white/10 bg-[#050b08] px-6 text-center text-sm text-white/45">
+        Load a JSON file with at least two samples to render the chart.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -320,13 +434,73 @@ export default function Test() {
                   <p className="text-xs text-white/45">Locale aware labels: {locale}</p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={openPicker}
-                  className="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-black transition-transform hover:-translate-y-0.5 hover:bg-emerald-300"
-                >
-                  Choose JSON file
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSmoothingLevel((current) => (current === 0 ? 2 : 0))}
+                    className={[
+                      'inline-flex items-center justify-center rounded-xl border px-4 py-3 text-sm font-bold transition-colors',
+                      smoothingLevel > 0
+                        ? 'border-emerald-300 bg-emerald-400/15 text-emerald-200 hover:bg-emerald-400/20'
+                        : 'border-white/15 bg-white/5 text-white hover:bg-white/10',
+                    ].join(' ')}
+                    title="Savitzky-Golay smoothing keeps the shape of peaks better than a simple moving average."
+                  >
+                    {smoothingLevel > 0 ? 'Show raw data' : 'Smooth peaks'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openPicker}
+                    className="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-black transition-transform hover:-translate-y-0.5 hover:bg-emerald-300"
+                  >
+                    Choose JSON file
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Smoothing strength</p>
+                    <p className="text-xs text-white/45">
+                      {currentSmoothingLabel === 'Raw'
+                        ? 'No smoothing applied'
+                        : `Savitzky-Golay window: ${getSmoothingPreset(smoothingLevel).windowSize}`}
+                    </p>
+                  </div>
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-200/70">
+                    {currentSmoothingLabel}
+                  </p>
+                </div>
+
+                <input
+                  type="range"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={smoothingLevel}
+                  onChange={(event) => setSmoothingLevel(Number(event.target.value) as SmoothingLevel)}
+                  className="mt-4 w-full accent-emerald-400"
+                  aria-label="Smoothing strength"
+                />
+
+                <div className="mt-3 grid grid-cols-5 gap-2 text-[11px] uppercase tracking-[0.16em] text-white/35">
+                  {SMOOTHING_PRESETS.map((preset) => (
+                    <button
+                      key={preset.level}
+                      type="button"
+                      onClick={() => setSmoothingLevel(preset.level)}
+                      className={[
+                        'rounded-lg px-2 py-2 text-center transition-colors',
+                        smoothingLevel === preset.level
+                          ? 'bg-emerald-400/15 text-emerald-100'
+                          : 'bg-black/20 hover:bg-white/10',
+                      ].join(' ')}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -346,6 +520,48 @@ export default function Test() {
                 </div>
               </div>
 
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Visible axes</p>
+                    <p className="text-xs text-white/45">
+                      {visibleAxisCount === 0
+                        ? 'Turn at least one axis on to render the chart.'
+                        : `${visibleAxisCount} axis${visibleAxisCount === 1 ? '' : 'es'} visible`}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {AXIS_CONFIG.map((axis) => {
+                      const isVisible = visibleAxes[axis.key];
+                      return (
+                        <button
+                          key={axis.key}
+                          type="button"
+                          onClick={() =>
+                            setVisibleAxes((current) => ({
+                              ...current,
+                              [axis.key]: !current[axis.key],
+                            }))
+                          }
+                          className={[
+                            'inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
+                            isVisible
+                              ? 'border-white/15 bg-black/20 text-white'
+                              : 'border-white/10 bg-transparent text-white/40 hover:bg-white/5',
+                          ].join(' ')}
+                        >
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: axis.color, opacity: isVisible ? 1 : 0.35 }}
+                          />
+                          {axis.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
               {errorMessage != null ? (
                 <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
                   {errorMessage}
@@ -360,6 +576,7 @@ export default function Test() {
                 <h2 className="text-2xl font-black text-white">Raw acceleration</h2>
                 <p className="mt-1 text-sm text-white/55">
                   The chart below plots `AccX`, `AccY`, and `AccZ` over the sample timeline.
+                  {smoothingLevel > 0 ? ' Savitzky-Golay smoothing is enabled.' : ''}
                 </p>
               </div>
               {startedAt != null && stoppedAt != null ? (
@@ -370,31 +587,7 @@ export default function Test() {
               ) : null}
             </div>
 
-            {rows.length > 1 ? (
-              <div className="rounded-[1.75rem] border border-white/10 bg-[#050b08] p-3 md:p-4">
-                <MultipleLinesChart
-                  title={undefined}
-                  subtitle={undefined}
-                  data={rows}
-                  series={series}
-                  height={360}
-                  xDomain={[rows[0].x, rows[rows.length - 1].x]}
-                  yDomain={[extents.min, extents.max]}
-                  yAxisLabels={yAxisLabels}
-                  showGridLines
-                  gridLineColor="rgba(255,255,255,0.12)"
-                  lineWidth={3}
-                  marginTop={0}
-                  marginBottom={0}
-                  interactive={false}
-                  className="w-full"
-                />
-              </div>
-            ) : (
-              <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-white/10 bg-[#050b08] px-6 text-center text-sm text-white/45">
-                Load a JSON file with at least two samples to render the chart.
-              </div>
-            )}
+            {chartBody}
 
             {fileState?.analysis != null ? (
               <div className="mt-4 grid gap-3 md:grid-cols-3">
