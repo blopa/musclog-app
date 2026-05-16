@@ -6,6 +6,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { analyzeRecordedReps } from '@/utils/repAnalysis';
 
 export interface Vector3D {
   x: number;
@@ -49,7 +50,7 @@ type LoadedFileState = {
   samples: Sample[];
   startedAt?: string;
   stoppedAt?: string;
-  analysis?: Analysis;
+  analysis: Analysis;
 };
 
 function isNumber(value: unknown): value is number {
@@ -77,20 +78,12 @@ function isSample(value: unknown): value is Sample {
   );
 }
 
-function isAnalysis(value: unknown): value is Analysis {
-  return (
-    value != null &&
-    typeof value === 'object' &&
-    isNumber((value as Analysis).repCount) &&
-    isNumber((value as Analysis).sampleCount) &&
-    isNumber((value as Analysis).durationMs)
-  );
-}
-
 function parseDebugData(raw: unknown): LoadedFileState | null {
   if (Array.isArray(raw)) {
     const samples = raw.filter(isSample);
-    return samples.length > 0 ? { fileName: 'samples.json', samples } : null;
+    return samples.length > 0
+      ? { fileName: 'samples.json', samples, analysis: analyzeRecordedReps(samples) }
+      : null;
   }
 
   if (raw == null || typeof raw !== 'object') {
@@ -110,7 +103,7 @@ function parseDebugData(raw: unknown): LoadedFileState | null {
     samples: maybeSamples,
     startedAt: typeof (raw as DebugData).startedAt === 'string' ? (raw as DebugData).startedAt : undefined,
     stoppedAt: typeof (raw as DebugData).stoppedAt === 'string' ? (raw as DebugData).stoppedAt : undefined,
-    analysis: isAnalysis((raw as DebugData).analysis) ? (raw as DebugData).analysis : undefined,
+    analysis: analyzeRecordedReps(maybeSamples),
   };
 }
 

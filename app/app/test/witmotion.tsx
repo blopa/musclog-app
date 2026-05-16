@@ -8,6 +8,8 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
+import { analyzeRecordedReps } from '@/utils/repAnalysis';
+import type { RepAnalysisSummary } from '@/utils/repAnalysis';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -31,12 +33,9 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting: scan the full stream, smooth it lightly, then count obvious peaks.
-// Using absolute deviation from a baseline lets the detector work whether the motion shows up
-// as a bump or a dip on the mounted axis.
-const REP_SMOOTH_ALPHA = 0.2;
-const REP_PEAK_THRESHOLD_G = 0.3;
-const REP_MIN_PEAK_GAP_MS = 250;
+// Display threshold for the live accel envelope shown in the "Rep signal" card.
+const REP_PEAK_THRESHOLD_G = 0.42;
+
 const DEBUG_DATA_FILE_NAME = 'debug_data.json';
 
 interface RecordedMotionSample {
@@ -44,12 +43,6 @@ interface RecordedMotionSample {
   accel: WitMotionVector3;
   gyro: WitMotionVector3;
   angle: WitMotionVector3;
-}
-
-interface RepAnalysisSummary {
-  repCount: number;
-  sampleCount: number;
-  durationMs: number;
 }
 
 interface DebugMotionFile {
@@ -97,70 +90,6 @@ function buildDebugMotionFile(
   };
 }
 
-function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummary {
-  if (samples.length === 0) {
-    return {
-      repCount: 0,
-      sampleCount: 0,
-      durationMs: 0,
-    };
-  }
-
-  const analysisSamples = samples;
-
-  const mins: Record<'x' | 'y' | 'z', number> = { x: Infinity, y: Infinity, z: Infinity };
-  const maxs: Record<'x' | 'y' | 'z', number> = { x: -Infinity, y: -Infinity, z: -Infinity };
-  for (const sample of analysisSamples) {
-    mins.x = Math.min(mins.x, sample.accel.x);
-    mins.y = Math.min(mins.y, sample.accel.y);
-    mins.z = Math.min(mins.z, sample.accel.z);
-    maxs.x = Math.max(maxs.x, sample.accel.x);
-    maxs.y = Math.max(maxs.y, sample.accel.y);
-    maxs.z = Math.max(maxs.z, sample.accel.z);
-  }
-
-  const dominantAxis = (['x', 'y', 'z'] as const).reduce((bestAxis, axis) => {
-    const bestRange = maxs[bestAxis] - mins[bestAxis];
-    const axisRange = maxs[axis] - mins[axis];
-    return axisRange > bestRange ? axis : bestAxis;
-  }, 'z' as const);
-
-  const axisValues = analysisSamples.map((sample) => sample.accel[dominantAxis]);
-  const smoothed: number[] = [];
-  let smoothValue = axisValues[0];
-  smoothed.push(smoothValue);
-  for (let i = 1; i < axisValues.length; i += 1) {
-    smoothValue = REP_SMOOTH_ALPHA * axisValues[i] + (1 - REP_SMOOTH_ALPHA) * smoothValue;
-    smoothed.push(smoothValue);
-  }
-
-  const baselineWindow = Math.min(20, axisValues.length);
-  const baselineValues = axisValues.slice(0, baselineWindow).slice().sort((a, b) => a - b);
-  const baseline = baselineValues[Math.floor(baselineValues.length / 2)] ?? axisValues[0];
-
-  let repCount = 0;
-  let lastPeakMs: number | null = null;
-  for (let i = 1; i < smoothed.length - 1; i += 1) {
-    const currentDeviation = Math.abs(smoothed[i] - baseline);
-    const previousDeviation = Math.abs(smoothed[i - 1] - baseline);
-    const nextDeviation = Math.abs(smoothed[i + 1] - baseline);
-    const isPeak = currentDeviation > previousDeviation && currentDeviation >= nextDeviation;
-    const peakGapMs = lastPeakMs === null ? Infinity : analysisSamples[i].timestamp - lastPeakMs;
-
-    if (isPeak && currentDeviation > REP_PEAK_THRESHOLD_G && peakGapMs >= REP_MIN_PEAK_GAP_MS) {
-      repCount += 1;
-      lastPeakMs = analysisSamples[i].timestamp;
-    }
-  }
-
-  const durationMs = samples[samples.length - 1].timestamp - samples[0].timestamp;
-
-  return {
-    repCount,
-    sampleCount: samples.length,
-    durationMs: Math.max(0, durationMs),
-  };
-}
 
 interface ChartProps {
   data: number[];
