@@ -1,4 +1,12 @@
-import { cacheDirectory, documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  deleteAsync,
+  documentDirectory,
+  makeDirectoryAsync,
+  readAsStringAsync,
+  readDirectoryAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -8,8 +16,8 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
-import { analyzeRecordedReps } from '@/utils/repAnalysis';
 import type { RepAnalysisSummary } from '@/utils/repAnalysis';
+import { analyzeRecordedReps } from '@/utils/repAnalysis';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -36,7 +44,7 @@ const ZVU_WINDOW = 20;
 // Display threshold for the live accel envelope shown in the "Rep signal" card.
 const REP_PEAK_THRESHOLD_G = 0.42;
 
-const DEBUG_DATA_FILE_NAME = 'debug_data.json';
+const DEBUG_DATA_DIRECTORY_NAME = 'witmotion-debug';
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -54,6 +62,12 @@ interface DebugMotionFile {
   samples: RecordedMotionSample[];
 }
 
+interface StoredDebugMotionFile extends DebugMotionFile {
+  uri: string;
+  fileName: string;
+  sortTimestampMs: number;
+}
+
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
  * from the sensor's AHRS output. Yaw cancels for the vertical axis.
@@ -69,9 +83,96 @@ function verticalAccelWorld(accel: WitMotionVector3, angle: WitMotionVector3): n
   return azWorld - 1.0;
 }
 
-function getDebugDataFileUri(): string | null {
+function getDebugDataDirectoryUri(): string | null {
   const baseDirectory = documentDirectory ?? cacheDirectory;
-  return baseDirectory ? `${baseDirectory}${DEBUG_DATA_FILE_NAME}` : null;
+  return baseDirectory ? `${baseDirectory}${DEBUG_DATA_DIRECTORY_NAME}/` : null;
+}
+
+function joinUri(baseUri: string, childName: string): string {
+  return `${baseUri.replace(/\/?$/, '/')}${childName}`;
+}
+
+function buildDebugMotionFileName(startedAtMs: number, stoppedAtMs: number, sampleCount: number): string {
+  const startedStamp = new Date(startedAtMs).toISOString().replace(/[:.]/g, '-');
+  const stoppedStamp = new Date(stoppedAtMs).toISOString().replace(/[:.]/g, '-');
+  const randomSuffix = Math.random().toString(36).slice(2, 8);
+  return `witmotion-${startedStamp}-to-${stoppedStamp}-${sampleCount}samples-${randomSuffix}.json`;
+}
+
+async function ensureDebugDataDirectoryUri(): Promise<string | null> {
+  const directoryUri = getDebugDataDirectoryUri();
+  if (!directoryUri) {
+    return null;
+  }
+
+  await makeDirectoryAsync(directoryUri, { intermediates: true });
+  return directoryUri;
+}
+
+function isDebugMotionFile(value: unknown): value is DebugMotionFile {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<DebugMotionFile>;
+  return (
+    candidate.version === 1 &&
+    typeof candidate.startedAt === 'string' &&
+    (candidate.stoppedAt === undefined || typeof candidate.stoppedAt === 'string') &&
+    typeof candidate.sampleCount === 'number' &&
+    Array.isArray(candidate.samples)
+  );
+}
+
+function formatDebugDateTime(isoString: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(isoString));
+}
+
+async function loadStoredDebugMotionFiles(): Promise<StoredDebugMotionFile[]> {
+  const directoryUri = await ensureDebugDataDirectoryUri();
+  if (!directoryUri) {
+    return [];
+  }
+
+  let fileNames: string[] = [];
+  try {
+    fileNames = await readDirectoryAsync(directoryUri);
+  } catch {
+    return [];
+  }
+
+  const files = await Promise.all(
+    fileNames
+      .filter((fileName) => fileName.endsWith('.json'))
+      .map(async (fileName) => {
+        const uri = joinUri(directoryUri, fileName);
+
+        try {
+          const raw = await readAsStringAsync(uri);
+          const parsed = JSON.parse(raw) as unknown;
+          if (!isDebugMotionFile(parsed)) {
+            return null;
+          }
+
+          const sortTimestampMs = new Date(parsed.stoppedAt ?? parsed.startedAt).getTime();
+          return {
+            ...parsed,
+            uri,
+            fileName,
+            sortTimestampMs,
+          } satisfies StoredDebugMotionFile;
+        } catch {
+          return null;
+        }
+      })
+  );
+
+  return files
+    .filter((file): file is StoredDebugMotionFile => file !== null)
+    .sort((a, b) => b.sortTimestampMs - a.sortTimestampMs);
 }
 
 function buildDebugMotionFile(
@@ -265,15 +366,15 @@ export default function WitMotionTestScreen() {
   const recordedMotionRef = useRef<RecordedMotionSample[]>([]);
   const recordingActiveRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
-  const debugDataFileUriRef = useRef<string | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'analyzed'>('idle');
   const [analysisSummary, setAnalysisSummary] = useState<RepAnalysisSummary | null>(null);
   const [recordedSampleCount, setRecordedSampleCount] = useState(0);
-  const [debugDataFileUri, setDebugDataFileUri] = useState<string | null>(null);
-  const [debugDataStatus, setDebugDataStatus] = useState('No debug file yet');
+  const [debugDataStatus, setDebugDataStatus] = useState('No saved debug files yet');
   const [isSavingDebugData, setIsSavingDebugData] = useState(false);
   const [isSharingDebugData, setIsSharingDebugData] = useState(false);
   const [isSharingAvailable, setIsSharingAvailable] = useState(false);
+  const [storedDebugFiles, setStoredDebugFiles] = useState<StoredDebugMotionFile[]>([]);
+  const [isLoadingStoredDebugFiles, setIsLoadingStoredDebugFiles] = useState(false);
 
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
@@ -441,6 +542,26 @@ export default function WitMotionTestScreen() {
     });
   }, []);
 
+  const refreshStoredDebugFiles = useCallback(async () => {
+    setIsLoadingStoredDebugFiles(true);
+    try {
+      const files = await loadStoredDebugMotionFiles();
+      setStoredDebugFiles(files);
+      if (files.length === 0) {
+        setDebugDataStatus('No saved debug files yet');
+      }
+    } catch (error) {
+      console.error('Failed to load stored debug files:', error);
+      setDebugDataStatus('Failed to load saved debug files');
+    } finally {
+      setIsLoadingStoredDebugFiles(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshStoredDebugFiles();
+  }, [refreshStoredDebugFiles]);
+
   // Throttle React state updates to 20 fps
   useEffect(() => {
     const interval = setInterval(() => {
@@ -468,7 +589,7 @@ export default function WitMotionTestScreen() {
     setAnalysisSummary(null);
     setRecordedSampleCount(0);
     setRecordingStatus('recording');
-    setDebugDataStatus('Preparing debug_data.json...');
+    setDebugDataStatus('Recording... a new JSON file will be saved when you stop');
     setLiveFeature(0);
     setPositionCm(0);
     setVelocityMs(0);
@@ -499,29 +620,6 @@ export default function WitMotionTestScreen() {
       baseline: 0,
       initialized: false,
     };
-
-    const fileUri = getDebugDataFileUri();
-    debugDataFileUriRef.current = fileUri;
-    setDebugDataFileUri(fileUri);
-
-    if (!fileUri) {
-      setDebugDataStatus('Debug file location unavailable');
-      setIsSavingDebugData(false);
-      return;
-    }
-
-    setIsSavingDebugData(true);
-    try {
-      const startedAtMs = recordingStartedAtRef.current ?? Date.now();
-      const initialPayload = buildDebugMotionFile([], startedAtMs, null);
-      await writeAsStringAsync(fileUri, JSON.stringify(initialPayload, null, 2));
-      setDebugDataStatus(`Reset ${DEBUG_DATA_FILE_NAME}`);
-    } catch (error) {
-      console.error('Failed to initialize debug data file:', error);
-      setDebugDataStatus('Failed to initialize debug data file');
-    } finally {
-      setIsSavingDebugData(false);
-    }
   }, []);
 
   const handleStopRecording = useCallback(async () => {
@@ -531,8 +629,8 @@ export default function WitMotionTestScreen() {
     setAnalysisSummary(summary);
     setRecordingStatus('analyzed');
 
-    const fileUri = debugDataFileUriRef.current ?? getDebugDataFileUri();
-    if (!fileUri) {
+    const directoryUri = await ensureDebugDataDirectoryUri();
+    if (!directoryUri) {
       setDebugDataStatus('Debug file location unavailable');
       return;
     }
@@ -542,41 +640,57 @@ export default function WitMotionTestScreen() {
       const startedAtMs = recordingStartedAtRef.current ?? samples[0]?.timestamp ?? Date.now();
       const stoppedAtMs = samples[samples.length - 1]?.timestamp ?? Date.now();
       const payload = buildDebugMotionFile(samples, startedAtMs, stoppedAtMs, summary);
+      const fileName = buildDebugMotionFileName(startedAtMs, stoppedAtMs, samples.length);
+      const fileUri = joinUri(directoryUri, fileName);
       await writeAsStringAsync(fileUri, JSON.stringify(payload, null, 2));
-      debugDataFileUriRef.current = fileUri;
-      setDebugDataFileUri(fileUri);
-      setDebugDataStatus(`Saved ${DEBUG_DATA_FILE_NAME}`);
+      setDebugDataStatus(`Saved ${fileName}`);
+      await refreshStoredDebugFiles();
     } catch (error) {
       console.error('Failed to save debug data file:', error);
       setDebugDataStatus('Failed to save debug data file');
     } finally {
       setIsSavingDebugData(false);
     }
-  }, []);
+    recordingStartedAtRef.current = null;
+  }, [refreshStoredDebugFiles]);
 
-  const handleShareDebugData = useCallback(async () => {
-    const fileUri = debugDataFileUriRef.current ?? getDebugDataFileUri();
-    if (!fileUri) {
-      setDebugDataStatus('Debug file location unavailable');
-      return;
-    }
+  const handleShareDebugFile = useCallback(
+    async (file: StoredDebugMotionFile) => {
+      if (!isSharingAvailable) {
+        setDebugDataStatus('Sharing is not available on this device');
+        return;
+      }
 
-    if (!isSharingAvailable) {
-      setDebugDataStatus('Sharing is not available on this device');
-      return;
-    }
+      setIsSharingDebugData(true);
+      try {
+        await Sharing.shareAsync(file.uri, { mimeType: 'application/json' });
+        setDebugDataStatus(`Shared ${file.fileName}`);
+      } catch (error) {
+        console.error('Failed to share debug data file:', error);
+        setDebugDataStatus(`Failed to share ${file.fileName}`);
+      } finally {
+        setIsSharingDebugData(false);
+      }
+    },
+    [isSharingAvailable]
+  );
 
-    setIsSharingDebugData(true);
-    try {
-      await Sharing.shareAsync(fileUri, { mimeType: 'application/json' });
-      setDebugDataStatus(`Shared ${DEBUG_DATA_FILE_NAME}`);
-    } catch (error) {
-      console.error('Failed to share debug data file:', error);
-      setDebugDataStatus('Failed to share debug data file');
-    } finally {
-      setIsSharingDebugData(false);
-    }
-  }, [isSharingAvailable]);
+  const handleDeleteDebugFile = useCallback(
+    async (file: StoredDebugMotionFile) => {
+      setIsSavingDebugData(true);
+      try {
+        await deleteAsync(file.uri, { idempotent: true });
+        setDebugDataStatus(`Deleted ${file.fileName}`);
+        await refreshStoredDebugFiles();
+      } catch (error) {
+        console.error('Failed to delete debug data file:', error);
+        setDebugDataStatus(`Failed to delete ${file.fileName}`);
+      } finally {
+        setIsSavingDebugData(false);
+      }
+    },
+    [refreshStoredDebugFiles]
+  );
 
   const handleSetAnchor = useCallback(() => {
     const integ = integRef.current;
@@ -600,12 +714,10 @@ export default function WitMotionTestScreen() {
     recordingActiveRef.current = false;
     recordedMotionRef.current = [];
     recordingStartedAtRef.current = null;
-    debugDataFileUriRef.current = null;
     setRecordingStatus('idle');
     setAnalysisSummary(null);
     setRecordedSampleCount(0);
-    setDebugDataFileUri(null);
-    setDebugDataStatus('No debug file yet');
+    setDebugDataStatus('Recording cleared');
     setLiveFeature(0);
     setPositionCm(0);
     setVelocityMs(0);
@@ -675,7 +787,7 @@ export default function WitMotionTestScreen() {
                 onPress={() => void handleStartRecording()}
                 size="sm"
                 variant={recordingStatus === 'recording' ? 'secondary' : 'accent'}
-                disabled={isSavingDebugData || isSharingDebugData}
+                disabled={recordingStatus === 'recording' || isSavingDebugData || isSharingDebugData}
               />
               <Button
                 label="Stop"
@@ -684,22 +796,12 @@ export default function WitMotionTestScreen() {
                 variant="secondary"
                 disabled={recordingStatus !== 'recording' || isSavingDebugData || isSharingDebugData}
               />
-              <Button
-                label="Share file"
-                onPress={() => void handleShareDebugData()}
-                size="sm"
-                variant="secondary"
-                disabled={
-                  recordingStatus !== 'analyzed' ||
-                  !debugDataFileUri ||
-                  !isSharingAvailable ||
-                  isSavingDebugData ||
-                  isSharingDebugData
-                }
-              />
             </View>
             <Text className="mb-1 text-xs text-text-tertiary">
-              Debug file: <Text className="font-bold text-text-primary">{debugDataStatus}</Text>
+              Debug storage: <Text className="font-bold text-text-primary">{debugDataStatus}</Text>
+            </Text>
+            <Text className="mb-4 text-xs text-text-tertiary">
+              Saved sessions: <Text className="font-bold text-text-primary">{storedDebugFiles.length}</Text>
             </Text>
 
             {/* Big rep number */}
@@ -932,6 +1034,70 @@ export default function WitMotionTestScreen() {
                 variant="secondary"
               />
             </View>
+          </View>
+
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="mb-3 flex-row items-start justify-between gap-3">
+              <View className="flex-1">
+                <Text className="font-bold text-text-primary">Saved debug files</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Every Stop writes a new local JSON file so you can review, share, or delete old sessions.
+                </Text>
+              </View>
+              <Button
+                label="Refresh"
+                onPress={() => void refreshStoredDebugFiles()}
+                size="xs"
+                variant="secondary"
+                loading={isLoadingStoredDebugFiles}
+              />
+            </View>
+
+            {storedDebugFiles.length > 0 ? (
+              <View className="gap-3">
+                {storedDebugFiles.map((file) => {
+                  const savedAtLabel = formatDebugDateTime(file.stoppedAt ?? file.startedAt);
+                  const repLabel = file.analysis ? `${file.analysis.repCount} reps` : 'No analysis';
+                  const durationSeconds = file.analysis ? Math.max(0, file.analysis.durationMs / 1000) : null;
+
+                  return (
+                    <View key={file.uri} className="rounded-lg border border-border-light bg-bg-primary p-3">
+                      <View className="mb-3">
+                        <Text className="font-medium text-text-primary" numberOfLines={1}>
+                          {file.fileName}
+                        </Text>
+                        <Text className="text-xs text-text-tertiary">
+                          {savedAtLabel} · {file.sampleCount} samples · {repLabel}
+                          {durationSeconds !== null ? ` · ${durationSeconds.toFixed(1)} s` : ''}
+                        </Text>
+                      </View>
+                      <View className="flex-row flex-wrap gap-2">
+                        <Button
+                          label="Share"
+                          onPress={() => void handleShareDebugFile(file)}
+                          size="xs"
+                          variant="secondary"
+                          disabled={!isSharingAvailable || isSharingDebugData || isSavingDebugData}
+                        />
+                        <Button
+                          label="Delete"
+                          onPress={() => void handleDeleteDebugFile(file)}
+                          size="xs"
+                          variant="discard"
+                          disabled={isSharingDebugData || isSavingDebugData}
+                        />
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+                <Text className="text-xs text-text-tertiary">
+                  No saved debug files yet. Press Start, then Stop to create one.
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
