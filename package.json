@@ -39,6 +39,7 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "prebuild": "expo prebuild --clean",
     "setup-android": "turtle setup:android",
+    "build-android-debug": "eas build --platform android --profile development:device --local",
     "build-android": "eas build -p android --profile production --clear-cache",
     "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",
