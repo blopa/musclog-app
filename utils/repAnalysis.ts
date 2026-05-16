@@ -19,12 +19,16 @@ export interface RepAnalysisSummary {
 
 // Rep counting uses the dominant angle axis (x or y — z is excluded because it
 // wraps at ±180°). The signal is smoothed, then we track turning points and
-// score a rep when three significant turns form a full excursion. This is more
-// stable than counting raw peaks because it tolerates mixed cadence and
-// amplitude changes within the same set.
+// score a rep when three significant turns form a full excursion. For cable or
+// stack machines where x/y barely move, we fall back to accel.z peaks because
+// that axis carries the repeated load spike more clearly than orientation.
 const REP_ANGLE_SMOOTH_ALPHA = 0.15;
 const REP_TURNING_POINT_MIN_DELTA_FRACTION = 0.15;
 const REP_HEIGHT_THRESHOLD_FRACTION = 0.45;
+const REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG = 5;
+const REP_ACCEL_Z_SMOOTH_ALPHA = 0.15;
+const REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION = 0.3;
+const REP_ACCEL_Z_MIN_PEAK_GAP_MS = 100;
 
 function smoothEma(values: number[], alpha: number): number[] {
   if (values.length === 0) {
@@ -106,12 +110,45 @@ function filterCloseTurningPoints(
   return filtered;
 }
 
+function countPositivePeaks(
+  values: number[],
+  timestamps: number[],
+  smoothAlpha: number,
+  thresholdFraction: number,
+  minPeakGapMs: number
+): number {
+  if (values.length < 3) {
+    return 0;
+  }
+
+  const smoothed = smoothEma(values, smoothAlpha);
+  const baselineWindow = Math.min(20, smoothed.length);
+  const baseline = median(smoothed.slice(0, baselineWindow));
+  const centered = smoothed.map((value) => value - baseline);
+  const signalRange = Math.max(...centered) - Math.min(...centered);
+  const peakThreshold = signalRange * thresholdFraction;
+
+  let count = 0;
+  let lastPeakMs: number | null = null;
+
+  for (let i = 1; i < centered.length - 1; i++) {
+    const isPeak = centered[i] > centered[i - 1] && centered[i] >= centered[i + 1];
+    const gapMs = lastPeakMs === null ? Infinity : timestamps[i] - lastPeakMs;
+
+    if (isPeak && centered[i] > peakThreshold && gapMs >= minPeakGapMs) {
+      count++;
+      lastPeakMs = timestamps[i];
+    }
+  }
+
+  return count;
+}
+
 export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary {
   if (samples.length === 0) {
     return { repCount: 0, sampleCount: 0, durationMs: 0 };
   }
 
-  // angle.z wraps at ±180° so we only consider x and y
   const axes = ['x', 'y'] as const;
   const mins: Record<'x' | 'y', number> = { x: Infinity, y: Infinity };
   const maxs: Record<'x' | 'y', number> = { x: -Infinity, y: -Infinity };
@@ -123,6 +160,8 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     }
   }
 
+  const timestamps = samples.map((sample) => sample.timestamp);
+  const angleFlatRangeDeg = Math.max(maxs.x - mins.x, maxs.y - mins.y);
   const dominantAxis = (maxs.x - mins.x >= maxs.y - mins.y ? 'x' : 'y') as 'x' | 'y';
   const rawValues = samples.map((s) => s.angle[dominantAxis]);
   const smoothed = smoothEma(rawValues, REP_ANGLE_SMOOTH_ALPHA);
@@ -133,7 +172,6 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const minTurningPointDelta = signalRange * REP_TURNING_POINT_MIN_DELTA_FRACTION;
   const repHeightThreshold = signalRange * REP_HEIGHT_THRESHOLD_FRACTION;
 
-  const timestamps = samples.map((s) => s.timestamp);
   const rawTurningPoints = collectTurningPoints(centered, timestamps, minTurningPointDelta);
   const filteredTurningPoints = filterCloseTurningPoints(rawTurningPoints, 300);
   const turningPointValues = filteredTurningPoints.map(([, v]) => v);
@@ -155,6 +193,20 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
       } else {
         turningPointBuffer.splice(0, 1);
       }
+    }
+  }
+
+  if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {
+    const accelZRepCount = countPositivePeaks(
+      samples.map((sample) => sample.accel.z),
+      timestamps,
+      REP_ACCEL_Z_SMOOTH_ALPHA,
+      REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION,
+      REP_ACCEL_Z_MIN_PEAK_GAP_MS
+    );
+
+    if (accelZRepCount > repCount) {
+      repCount = accelZRepCount;
     }
   }
 
