@@ -1,11 +1,11 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { analyzeRecordedReps } from '@/utils/repAnalysis';
 import type { MotionSample } from '@/utils/repAnalysis';
+import { analyzeRecordedReps } from '@/utils/repAnalysis';
 
 function loadRepsJson(fileName: string = 'slow_reps.json'): MotionSample[] {
-  const filePath = join(__dirname, `../../data/dev/${fileName}`);
+  const filePath = join(__dirname, `../../data/dev/reps/${fileName}`);
   const raw = JSON.parse(readFileSync(filePath, 'utf-8')) as { samples: MotionSample[] };
   return raw.samples;
 }
@@ -51,6 +51,30 @@ describe('analyzeRecordedReps', () => {
     const samples = loadRepsJson('fast_paced.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(5);
+  });
+
+  it('counts 5 reps in standing_shoulder_barbell_press.json', () => {
+    const samples = loadRepsJson('standing_shoulder_barbell_press.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(5);
+  });
+
+  it('counts 13 reps in barbell_bicep_curls.json', () => {
+    const samples = loadRepsJson('barbell_bicep_curls.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(13);
+  });
+
+  it('counts 13 reps in cable_lateral_raises.json', () => {
+    const samples = loadRepsJson('cable_lateral_raises.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(13);
+  });
+
+  it('counts 13 reps in bench_press.json', () => {
+    const samples = loadRepsJson('bench_press.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(13);
   });
 
   it('returns 0 reps for empty input', () => {
