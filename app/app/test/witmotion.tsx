@@ -49,6 +49,19 @@ const REARM_WINDOW = 6; // consecutive low samples required before the next rep 
 
 type RepPhase = 'REST' | 'ACTIVE';
 
+interface RecordedMotionSample {
+  timestamp: number;
+  accel: WitMotionVector3;
+  gyro: WitMotionVector3;
+  angle: WitMotionVector3;
+}
+
+interface RepAnalysisSummary {
+  repCount: number;
+  sampleCount: number;
+  durationMs: number;
+}
+
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
  * from the sensor's AHRS output. Yaw cancels for the vertical axis.
@@ -62,6 +75,91 @@ function verticalAccelWorld(accel: WitMotionVector3, angle: WitMotionVector3): n
     Math.cos(pitch) * Math.sin(roll) * accel.y +
     Math.cos(pitch) * Math.cos(roll) * accel.z;
   return azWorld - 1.0;
+}
+
+function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummary {
+  if (samples.length === 0) {
+    return {
+      repCount: 0,
+      sampleCount: 0,
+      durationMs: 0,
+    };
+  }
+
+  let repCount = 0;
+  let phase: RepPhase = 'REST';
+  let smoothMag = 0;
+  let baseline = 0;
+  let initialized = false;
+  let activeStartMs: number | null = null;
+  let lastRepMs: number | null = null;
+  let restStreak = 0;
+  let previousTs: number | null = null;
+
+  for (const sample of samples) {
+    const { accel, timestamp } = sample;
+    const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+
+    if (!initialized) {
+      smoothMag = accelMag;
+      baseline = accelMag;
+      initialized = true;
+      previousTs = timestamp;
+      continue;
+    }
+
+    const gapMs = previousTs !== null ? timestamp - previousTs : 0;
+    previousTs = timestamp;
+
+    if (gapMs > RECONNECT_GAP_S * 1000) {
+      phase = 'REST';
+      activeStartMs = null;
+      restStreak = 0;
+      smoothMag = accelMag;
+      baseline = accelMag;
+      continue;
+    }
+
+    smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * smoothMag;
+    baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * baseline;
+    const feature = smoothMag - baseline;
+
+    const nowMs = timestamp;
+    const msSinceLast = lastRepMs !== null ? nowMs - lastRepMs : Infinity;
+
+    if (phase === 'REST') {
+      if (feature < FALL_G) {
+        restStreak += 1;
+      } else {
+        restStreak = 0;
+      }
+
+      if (feature > RISE_G && restStreak >= REARM_WINDOW && msSinceLast > MIN_GAP_MS) {
+        phase = 'ACTIVE';
+        activeStartMs = nowMs;
+        restStreak = 0;
+      }
+    } else if (feature < FALL_G) {
+      const activeMs = nowMs - (activeStartMs ?? nowMs);
+      if (activeMs >= MIN_REP_MS) {
+        repCount += 1;
+        lastRepMs = nowMs;
+      }
+      phase = 'REST';
+      activeStartMs = null;
+      restStreak = 1;
+    } else {
+      restStreak = 0;
+    }
+  }
+
+  const durationMs = samples[samples.length - 1].timestamp - samples[0].timestamp;
+
+  return {
+    repCount,
+    sampleCount: samples.length,
+    durationMs: Math.max(0, durationMs),
+  };
 }
 
 interface ChartProps {
@@ -235,9 +333,19 @@ export default function WitMotionTestScreen() {
     y: [] as number[],
     z: [] as number[],
   });
+  const recordedMotionRef = useRef<RecordedMotionSample[]>([]);
+  const recordingActiveRef = useRef(false);
+  const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'analyzed'>('idle');
+  const [analysisSummary, setAnalysisSummary] = useState<RepAnalysisSummary | null>(null);
+  const [recordedSampleCount, setRecordedSampleCount] = useState(0);
 
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const liveFeatureRef = useRef({
+    smoothMag: 0,
+    baseline: 0,
+    initialized: false,
+  });
 
   // HPF integration state
   const integRef = useRef({
@@ -252,18 +360,6 @@ export default function WitMotionTestScreen() {
     stillCount: 0, // consecutive samples below ZVU thresholds
   });
 
-  // Dual-EMA rep detection state — mutated inside onBatch, never causes renders
-  const repRef = useRef({
-    phase: 'REST' as RepPhase,
-    repCount: 0,
-    smoothMag: 0,          // fast EMA of acc_r  (~1 Hz cutoff)
-    baseline: 0,           // slow EMA of acc_r  (~0.05 Hz) — tracks the at-rest floor
-    activeStartMs: null as number | null, // when ACTIVE phase began
-    lastRepMs: null as number | null,
-    restStreak: 0,
-    initialized: false,    // prevents startup transient from triggering phantom reps
-  });
-
   // Buffer for the smoothed vertical accel chart
   const smoothBufRef = useRef<number[]>([]);
   const [smoothData, setSmoothData] = useState<number[]>([]);
@@ -271,8 +367,6 @@ export default function WitMotionTestScreen() {
   // React state for display (updated at 20 Hz via the interval timer)
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
-  const [repCount, setRepCount] = useState(0);
-  const [repPhase, setRepPhase] = useState<RepPhase>('REST');
   // (smoothMag − baseline): what the Schmitt trigger actually reads
   const [liveFeature, setLiveFeature] = useState(0);
 
@@ -283,7 +377,6 @@ export default function WitMotionTestScreen() {
   useEffect(() => {
     return witMotionClient.onBatch((batch) => {
       const integ = integRef.current;
-      const rep = repRef.current;
 
       for (const packet of batch.packets) {
         if (packet.kind !== 'motion') {
@@ -294,18 +387,18 @@ export default function WitMotionTestScreen() {
         currentAngleRef.current = angle;
         const sampleTs = timestamp;
 
+        if (recordingActiveRef.current) {
+          recordedMotionRef.current.push({
+            timestamp: sampleTs,
+            accel: { ...accel },
+            gyro: { ...gyro },
+            angle: { ...angle },
+          });
+        }
+
         const wallGapS = integ.lastTs !== null ? (sampleTs - integ.lastTs) / 1000 : 0;
         const isGap = wallGapS > RECONNECT_GAP_S;
         integ.lastTs = sampleTs;
-
-        // Initialize both EMA filters from the first real packet to avoid startup transient.
-        // Without this, both start at 0 and the surge to ~1g counts as a phantom rep.
-        if (!rep.initialized) {
-          const initMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
-          rep.smoothMag = initMag;
-          rep.baseline = initMag;
-          rep.initialized = true;
-        }
 
         if (isGap) {
           integ.prevAVert = 0;
@@ -314,13 +407,7 @@ export default function WitMotionTestScreen() {
           integ.prevRawVel = 0;
           integ.hpfVel = 0;
           integ.stillCount = 0;
-          rep.phase = 'REST';
-          rep.activeStartMs = null;
-          rep.restStreak = 0;
           // Re-seed filters from current packet after a gap
-          const gapMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
-          rep.smoothMag = gapMag;
-          rep.baseline = gapMag;
           continue;
         }
 
@@ -332,6 +419,22 @@ export default function WitMotionTestScreen() {
         integ.rawVel += integ.hpfAccel * GRAVITY_MS2 * SENSOR_DT_S;
 
         const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+        const liveFeatureState = liveFeatureRef.current;
+        if (!liveFeatureState.initialized) {
+          liveFeatureState.smoothMag = accelMag;
+          liveFeatureState.baseline = accelMag;
+          liveFeatureState.initialized = true;
+        }
+
+        if (isGap) {
+          liveFeatureState.smoothMag = accelMag;
+          liveFeatureState.baseline = accelMag;
+        } else {
+          liveFeatureState.smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * liveFeatureState.smoothMag;
+          liveFeatureState.baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * liveFeatureState.baseline;
+        }
+        const adaptiveFeature = liveFeatureState.smoothMag - liveFeatureState.baseline;
+
         const gyroMag = Math.sqrt(gyro.x ** 2 + gyro.y ** 2 + gyro.z ** 2);
         if (Math.abs(accelMag - 1.0) < ZVU_ACCEL_THRESH_G && gyroMag < ZVU_GYRO_THRESH_DPS) {
           integ.stillCount += 1;
@@ -347,44 +450,6 @@ export default function WitMotionTestScreen() {
         integ.hpfVel = HPF_ALPHA_VEL * (integ.hpfVel + integ.rawVel - integ.prevRawVel);
         integ.prevRawVel = integ.rawVel;
         integ.position += integ.hpfVel * SENSOR_DT_S;
-
-        // Dual-EMA adaptive rep detection.
-        // smoothMag tracks rep dynamics; baseline tracks the gravity floor.
-        // Feature = smoothMag − baseline: rises during any acceleration away from rest,
-        // regardless of direction or exercise type.
-        rep.smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * rep.smoothMag;
-        rep.baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * rep.baseline;
-        const feature = rep.smoothMag - rep.baseline;
-
-        const nowMs = sampleTs;
-        const msSinceLast = rep.lastRepMs !== null ? nowMs - rep.lastRepMs : Infinity;
-
-        if (rep.phase === 'REST') {
-          if (feature < FALL_G) {
-            rep.restStreak += 1;
-          } else {
-            rep.restStreak = 0;
-          }
-
-          if (feature > RISE_G && rep.restStreak >= REARM_WINDOW && msSinceLast > MIN_GAP_MS) {
-            rep.phase = 'ACTIVE';
-            rep.activeStartMs = nowMs;
-            rep.restStreak = 0;
-          }
-        } else if (rep.phase === 'ACTIVE') {
-          if (feature < FALL_G) {
-            const activeMs = nowMs - (rep.activeStartMs ?? nowMs);
-            if (activeMs >= MIN_REP_MS) {
-              rep.repCount += 1;
-              rep.lastRepMs = nowMs;
-            }
-            rep.phase = 'REST';
-            rep.activeStartMs = null;
-            rep.restStreak = 1;
-          } else {
-            rep.restStreak = 0;
-          }
-        }
 
         // Push to chart buffer every 5 packets (100 Hz → 20 Hz chart data → ~9 s visible)
         integ.chartTick = (integ.chartTick + 1) % 5;
@@ -425,7 +490,7 @@ export default function WitMotionTestScreen() {
 
           // (smoothMag − baseline) — the feature the rep counter actually reads
           const sm = smoothBufRef.current;
-          sm.push(rep.smoothMag - rep.baseline);
+          sm.push(adaptiveFeature);
           if (sm.length > CHART_MAX_POINTS) {
             sm.splice(0, sm.length - CHART_MAX_POINTS);
           }
@@ -445,14 +510,58 @@ export default function WitMotionTestScreen() {
         y: [...rawAccelBufRef.current.y],
         z: [...rawAccelBufRef.current.z],
       });
+      setRecordedSampleCount(recordedMotionRef.current.length);
       setPositionCm(integRef.current.position * 100);
       setVelocityMs(integRef.current.hpfVel);
-      setRepCount(repRef.current.repCount);
-      setRepPhase(repRef.current.phase);
-      setLiveFeature(repRef.current.smoothMag - repRef.current.baseline);
+      setLiveFeature(liveFeatureRef.current.smoothMag - liveFeatureRef.current.baseline);
       setSmoothData([...smoothBufRef.current]);
     }, 50);
     return () => clearInterval(interval);
+  }, []);
+
+  const handleStartRecording = useCallback(() => {
+    recordingActiveRef.current = true;
+    recordedMotionRef.current = [];
+    setAnalysisSummary(null);
+    setRecordedSampleCount(0);
+    setRecordingStatus('recording');
+    setLiveFeature(0);
+    setPositionCm(0);
+    setVelocityMs(0);
+    setVelData([]);
+    setPosData([]);
+    setAngleData([]);
+    setRawAccelData({ x: [], y: [], z: [] });
+    setSmoothData([]);
+
+    const integ = integRef.current;
+    integ.prevAVert = 0;
+    integ.hpfAccel = 0;
+    integ.rawVel = 0;
+    integ.prevRawVel = 0;
+    integ.hpfVel = 0;
+    integ.position = 0;
+    integ.lastTs = null;
+    integ.chartTick = 0;
+    integ.stillCount = 0;
+
+    velBufRef.current = [];
+    posBufRef.current = [];
+    angleBufRef.current = [];
+    rawAccelBufRef.current = { x: [], y: [], z: [] };
+    smoothBufRef.current = [];
+    liveFeatureRef.current = {
+      smoothMag: 0,
+      baseline: 0,
+      initialized: false,
+    };
+  }, []);
+
+  const handleStopRecording = useCallback(() => {
+    recordingActiveRef.current = false;
+    const summary = analyzeRecordedReps(recordedMotionRef.current);
+    setAnalysisSummary(summary);
+    setRecordingStatus('analyzed');
   }, []);
 
   const handleSetAnchor = useCallback(() => {
@@ -474,18 +583,42 @@ export default function WitMotionTestScreen() {
   }, []);
 
   const handleResetReps = useCallback(() => {
-    const rep = repRef.current;
-    rep.repCount = 0;
-    rep.phase = 'REST';
-    rep.activeStartMs = null;
-    rep.lastRepMs = null;
-    rep.restStreak = 0;
-    // Keep smoothMag/baseline — resetting them causes startup transient again
+    recordingActiveRef.current = false;
+    recordedMotionRef.current = [];
+    setRecordingStatus('idle');
+    setAnalysisSummary(null);
+    setRecordedSampleCount(0);
+    setLiveFeature(0);
+    setPositionCm(0);
+    setVelocityMs(0);
+    setVelData([]);
+    setPosData([]);
+    setAngleData([]);
+    setRawAccelData({ x: [], y: [], z: [] });
     smoothBufRef.current = [];
+    setSmoothData([]);
+    liveFeatureRef.current = {
+      smoothMag: 0,
+      baseline: 0,
+      initialized: false,
+    };
   }, []);
 
-  const phaseColor = repPhase === 'ACTIVE' ? '#4ade80' : '#888';
-  const phaseLabel = repPhase === 'ACTIVE' ? '● ACTIVE' : '○ REST';
+  let recordingColor = '#888';
+  let recordingLabel = '○ IDLE';
+  let recordingFooterText = 'Press Start, do your set, then press Stop to count reps';
+  if (recordingStatus === 'recording') {
+    recordingColor = '#4ade80';
+    recordingLabel = '● RECORDING';
+    recordingFooterText = `Recording ${recordedSampleCount} motion samples...`;
+  } else if (recordingStatus === 'analyzed') {
+    recordingColor = '#60a5fa';
+    recordingLabel = '● DONE';
+    recordingFooterText = analysisSummary
+      ? `Analysis used ${analysisSummary.sampleCount} samples over ${(analysisSummary.durationMs / 1000).toFixed(1)} s`
+      : 'Recording finished';
+  }
+  const repCount = analysisSummary?.repCount ?? 0;
 
   return (
     <MasterLayout>
@@ -499,21 +632,39 @@ export default function WitMotionTestScreen() {
           {/* Rep Counter — primary card */}
           <View className="rounded-xl border-2 border-border-accent bg-bg-overlay p-5">
             <View className="mb-3 flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-text-primary">Rep Counter</Text>
-              <Button label="Reset" onPress={handleResetReps} size="sm" variant="secondary" />
+              <View>
+                <Text className="text-lg font-bold text-text-primary">Rep Recorder</Text>
+                <Text className="text-xs text-text-tertiary">Record a set, then analyze it when you stop</Text>
+              </View>
+              <Button label="Clear" onPress={handleResetReps} size="sm" variant="secondary" />
             </View>
 
-            {/* Phase pill + live signal readout */}
+            {/* Recording controls + live signal readout */}
             <View className="mb-3 flex-row items-center gap-3">
-              <View className="rounded-full px-3 py-1" style={{ backgroundColor: phaseColor + '33' }}>
-                <Text className="text-sm font-bold" style={{ color: phaseColor }}>
-                  {phaseLabel}
+              <View className="rounded-full px-3 py-1" style={{ backgroundColor: recordingColor + '33' }}>
+                <Text className="text-sm font-bold" style={{ color: recordingColor }}>
+                  {recordingLabel}
                 </Text>
               </View>
               <Text className="text-sm text-text-secondary">
-                signal: <Text className="font-bold">{liveFeature.toFixed(3)} g</Text>
-                {'  '}rise@{RISE_G} g
+                samples: <Text className="font-bold">{recordedSampleCount}</Text>
               </Text>
+            </View>
+
+            <View className="mb-4 flex-row gap-3">
+              <Button
+                label="Start"
+                onPress={handleStartRecording}
+                size="sm"
+                variant={recordingStatus === 'recording' ? 'secondary' : 'accent'}
+              />
+              <Button
+                label="Stop"
+                onPress={handleStopRecording}
+                size="sm"
+                variant="secondary"
+                disabled={recordingStatus !== 'recording'}
+              />
             </View>
 
             {/* Big rep number */}
@@ -522,7 +673,7 @@ export default function WitMotionTestScreen() {
             </Text>
             <Text className="mb-1 text-center text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
             <Text className="text-center text-xs text-text-tertiary">
-              No anchor needed — just move the device up and down
+              {recordingFooterText}
             </Text>
           </View>
 
