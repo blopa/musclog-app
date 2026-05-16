@@ -29,7 +29,7 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(7);
   });
 
-  it('counts 5 reps in slow_fast_mixed.json', () => {
+  it('counts 5 reps in fast_paced.json', () => {
     const samples = loadRepsJson('fast_paced.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(5);
