@@ -193,12 +193,10 @@ private fun formatDisplayData(data: LiveData): String {
   }
 }
 
-private fun parsePacket(bytes: ByteArray): WitPacket? {
+private fun parsePacket(bytes: ByteArray, timestamp: Long = System.currentTimeMillis()): WitPacket? {
   if (bytes.size < 20 || bytes[0] != 0x55.toByte()) {
     return null
   }
-
-  val timestamp = System.currentTimeMillis()
   return when (bytes[1]) {
     0x61.toByte() -> {
       val accel = Vector3(
@@ -868,21 +866,29 @@ class WitMotionBleModule : Module() {
     }
 
     private fun handleIncomingBytes(value: ByteArray) {
+      // Collect raw chunks first so we know the total count before assigning timestamps.
+      val arrivalMs = System.currentTimeMillis()
       var offset = 0
-      val parsedPackets = ArrayList<WitPacket>()
+      val chunks = ArrayList<ByteArray>()
 
       while (offset + 20 <= value.size) {
         if (value[offset] != 0x55.toByte()) {
           offset += 1
           continue
         }
-
-        val chunk = value.copyOfRange(offset, offset + 20)
-        val parsed = parsePacket(chunk)
-        if (parsed != null) {
-          parsedPackets.add(parsed)
-        }
+        chunks.add(value.copyOfRange(offset, offset + 20))
         offset += 20
+      }
+
+      // Spread timestamps backwards from arrivalMs at 10 ms apart (100 Hz nominal).
+      // This gives every packet in the notification a distinct, monotonically increasing
+      // timestamp even when the OS delivers them all in a single BLE callback.
+      val n = chunks.size
+      val parsedPackets = ArrayList<WitPacket>(n)
+      chunks.forEachIndexed { i, chunk ->
+        val t = arrivalMs - (n - 1 - i) * 10L
+        val parsed = parsePacket(chunk, t)
+        if (parsed != null) parsedPackets.add(parsed)
       }
 
       enqueuePackets(parsedPackets)

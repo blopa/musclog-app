@@ -17,6 +17,13 @@ function valueOrDash(value: number | null | undefined, digits = 2) {
 
 const CHART_MAX_POINTS = 180;
 const GRAVITY_MS2 = 9.81;
+// Fixed per-sample dt. We do NOT derive dt from wall-clock timestamps because packets
+// inside the same BLE notification share a timestamp (the OS delivers them all at once),
+// which would make dt = 0 for most packets and break the integrator entirely.
+// 100 Hz = 10 ms nominal; this also matches the setOutputRate(100) call on connect.
+const SENSOR_DT_S = 0.01;
+// Wall-clock gap larger than this means the device disconnected — skip integration.
+const RECONNECT_GAP_S = 2.0;
 // Acceleration below this is treated as noise/bias and is NEVER fed into the integrator.
 // This sensor shows ~0.014 g of static bias, so 0.035 g clears it with margin.
 // Trade-off: movements that stay under 0.035 g won't register — a physics limitation.
@@ -161,30 +168,41 @@ export default function WitMotionTestScreen() {
         }
 
         const { accel, angle, timestamp } = packet;
-        const dt = integ.lastTs !== null ? (timestamp - integ.lastTs) / 1000 : 0;
+
+        // Use the wall-clock timestamp ONLY to detect a real disconnection gap.
+        // Never derive dt from it: packets inside the same BLE notification all share
+        // the same millisecond timestamp, so (timestamp - lastTs) = 0 for most of them,
+        // which would silently skip the integrator for every packet except the first.
+        const wallGapS = integ.lastTs !== null ? (timestamp - integ.lastTs) / 1000 : 0;
+        const isGap = wallGapS > RECONNECT_GAP_S;
         integ.lastTs = timestamp;
 
+        if (isGap) {
+          // Device was disconnected — force velocity to zero and skip this sample.
+          integ.velocity = 0;
+          integ.aVertSmoothed = 0;
+          integ.stillCount = 0;
+          continue;
+        }
+
         const aVert = verticalAccelWorld(accel, angle);
+        integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
 
-        if (dt > 0 && dt < 0.5) {
-          integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
-
-          if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
-            integ.velocity += aVert * GRAVITY_MS2 * dt;
-            integ.stillCount = 0;
-          } else {
-            integ.stillCount++;
-            if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
-              integ.velocity *= VELOCITY_DECAY_STILL;
-              if (Math.abs(integ.velocity) < 0.0005) {
-                integ.velocity = 0;
-              }
+        if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
+          integ.velocity += aVert * GRAVITY_MS2 * SENSOR_DT_S;
+          integ.stillCount = 0;
+        } else {
+          integ.stillCount++;
+          if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
+            integ.velocity *= VELOCITY_DECAY_STILL;
+            if (Math.abs(integ.velocity) < 0.0005) {
+              integ.velocity = 0;
             }
           }
-
-          integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
-          integ.position += integ.velocity * dt;
         }
+
+        integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
+        integ.position += integ.velocity * SENSOR_DT_S;
 
         // Push to chart buffer every 5 packets (at 100 Hz → 20 Hz of chart data → 9 s visible).
         integ.chartTick = (integ.chartTick + 1) % 5;
