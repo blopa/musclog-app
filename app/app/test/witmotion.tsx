@@ -29,16 +29,12 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting uses a smoothed, adaptive motion envelope built from raw accel magnitude.
-// The detector looks for local peaks in (fastEMA - slowEMA) and adapts the gap between
-// accepted peaks based on recent cadence. That keeps slow reps from double-counting while
-// still allowing faster sets to be counted normally.
-const REP_FAST_ALPHA = 0.18;
-const REP_SLOW_ALPHA = 0.012;
-const REP_PEAK_THRESHOLD_G = 0.025;
-const REP_MIN_PEAK_GAP_MS = 650;
-const REP_MAX_PEAK_GAP_MS = 1500;
-const REP_CADENCE_GAP_MULTIPLIER = 0.6;
+// Rep counting: Schmitt trigger on |accel_magnitude − 1g|.
+// At rest the sensor reads ~1g (gravity). During a rep it deviates significantly.
+// ACTIVE when deviation > ENTER_G, REST when deviation < EXIT_G (hysteresis prevents chatter).
+const REP_ENTER_G = 0.20;   // deviation above this → rep in progress
+const REP_EXIT_G = 0.08;    // deviation below this → rep done
+const REP_MIN_ACTIVE_MS = 200; // ignore blips shorter than this
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -78,73 +74,34 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
   }
 
   let repCount = 0;
-  let fastMag = 0;
-  let slowMag = 0;
-  let previousFeature = 0;
-  let previousSlope = 0;
-  const acceptedPeakTimestamps: number[] = [];
-  let initialized = false;
+  let phase: 'REST' | 'ACTIVE' = 'REST';
+  let activeStartMs = 0;
   let previousTs: number | null = null;
 
   for (const sample of samples) {
     const { accel, timestamp } = sample;
     const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
-
-    if (!initialized) {
-      fastMag = accelMag;
-      slowMag = accelMag;
-      previousFeature = 0;
-      previousSlope = 0;
-      initialized = true;
-      previousTs = timestamp;
-      continue;
-    }
+    const deviation = Math.abs(accelMag - 1.0);
 
     const gapMs = previousTs !== null ? timestamp - previousTs : 0;
     previousTs = timestamp;
 
     if (gapMs > RECONNECT_GAP_S * 1000) {
-      fastMag = accelMag;
-      slowMag = accelMag;
-      previousFeature = 0;
-      previousSlope = 0;
-      acceptedPeakTimestamps.length = 0;
+      phase = 'REST';
       continue;
     }
 
-    fastMag = REP_FAST_ALPHA * accelMag + (1 - REP_FAST_ALPHA) * fastMag;
-    slowMag = REP_SLOW_ALPHA * accelMag + (1 - REP_SLOW_ALPHA) * slowMag;
-    const feature = fastMag - slowMag;
-    const slope = feature - previousFeature;
-    const isLocalPeak = previousSlope > 0 && slope <= 0;
-    if (isLocalPeak && previousFeature > REP_PEAK_THRESHOLD_G) {
-      const recentPeakTimestamps = acceptedPeakTimestamps.slice(-4);
-      const recentIntervals = recentPeakTimestamps
-        .slice(1)
-        .map((peakTs, index) => peakTs - recentPeakTimestamps[index]);
-      const sortedIntervals = [...recentIntervals].sort((a, b) => a - b);
-      const medianIntervalMs =
-        sortedIntervals.length > 0 ? sortedIntervals[Math.floor(sortedIntervals.length / 2)] : 0;
-      const adaptiveGapMs =
-        medianIntervalMs > 0
-          ? Math.max(
-              REP_MIN_PEAK_GAP_MS,
-              Math.min(REP_MAX_PEAK_GAP_MS, medianIntervalMs * REP_CADENCE_GAP_MULTIPLIER),
-            )
-          : REP_MIN_PEAK_GAP_MS;
-      const peakGapMs =
-        acceptedPeakTimestamps.length === 0
-          ? Infinity
-          : timestamp - acceptedPeakTimestamps[acceptedPeakTimestamps.length - 1];
-
-      if (peakGapMs >= adaptiveGapMs) {
-        repCount += 1;
-        acceptedPeakTimestamps.push(timestamp);
+    if (phase === 'REST') {
+      if (deviation > REP_ENTER_G) {
+        phase = 'ACTIVE';
+        activeStartMs = timestamp;
       }
+    } else if (deviation < REP_EXIT_G) {
+      if (timestamp - activeStartMs >= REP_MIN_ACTIVE_MS) {
+        repCount += 1;
+      }
+      phase = 'REST';
     }
-
-    previousFeature = feature;
-    previousSlope = slope;
   }
 
   const durationMs = samples[samples.length - 1].timestamp - samples[0].timestamp;
@@ -413,23 +370,7 @@ export default function WitMotionTestScreen() {
         integ.rawVel += integ.hpfAccel * GRAVITY_MS2 * SENSOR_DT_S;
 
         const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
-        const liveFeatureState = liveFeatureRef.current;
-        if (!liveFeatureState.initialized) {
-          liveFeatureState.smoothMag = accelMag;
-          liveFeatureState.baseline = accelMag;
-          liveFeatureState.initialized = true;
-        }
-
-        if (isGap) {
-          liveFeatureState.smoothMag = accelMag;
-          liveFeatureState.baseline = accelMag;
-        } else {
-          liveFeatureState.smoothMag =
-            REP_FAST_ALPHA * accelMag + (1 - REP_FAST_ALPHA) * liveFeatureState.smoothMag;
-          liveFeatureState.baseline =
-            REP_SLOW_ALPHA * accelMag + (1 - REP_SLOW_ALPHA) * liveFeatureState.baseline;
-        }
-        const adaptiveFeature = liveFeatureState.smoothMag - liveFeatureState.baseline;
+        const adaptiveFeature = Math.abs(accelMag - 1.0);
 
         const gyroMag = Math.sqrt(gyro.x ** 2 + gyro.y ** 2 + gyro.z ** 2);
         if (Math.abs(accelMag - 1.0) < ZVU_ACCEL_THRESH_G && gyroMag < ZVU_GYRO_THRESH_DPS) {
@@ -820,7 +761,7 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              fastEMA − slowEMA · peak when &gt;{REP_PEAK_THRESHOLD_G} g · now: {liveFeature.toFixed(3)} g
+              |mag − 1g| · active when &gt;{REP_ENTER_G} g · now: {liveFeature.toFixed(3)} g
             </Text>
             {smoothData.length > 1 ? (
               <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
