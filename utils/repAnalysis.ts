@@ -48,12 +48,16 @@ function median(values: number[]): number {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
-function collectTurningPoints(values: number[], minDelta: number): number[] {
+function collectTurningPoints(
+  values: number[],
+  timestamps: number[],
+  minDelta: number
+): Array<[number, number]> {
   if (values.length < 3) {
     return [];
   }
 
-  const turningPoints: number[] = [];
+  const turningPoints: Array<[number, number]> = [];
   let trend = 0;
   let lastAcceptedValue = values[0];
 
@@ -63,7 +67,7 @@ function collectTurningPoints(values: number[], minDelta: number): number[] {
 
     if (trend !== 0 && nextTrend !== 0 && nextTrend !== trend) {
       if (Math.abs(values[i] - lastAcceptedValue) >= minDelta) {
-        turningPoints.push(values[i]);
+        turningPoints.push([timestamps[i], values[i]]);
         lastAcceptedValue = values[i];
         trend = nextTrend;
       }
@@ -73,6 +77,33 @@ function collectTurningPoints(values: number[], minDelta: number): number[] {
   }
 
   return turningPoints;
+}
+
+function filterCloseTurningPoints(
+  tps: Array<[number, number]>,
+  minGapMs: number
+): Array<[number, number]> {
+  if (tps.length === 0) {
+    return [];
+  }
+
+  const filtered: Array<[number, number]> = [tps[0]];
+
+  for (let i = 1; i < tps.length; i++) {
+    const [prevTs, prevVal] = filtered[filtered.length - 1];
+    const [curTs, curVal] = tps[i];
+
+    if (curTs - prevTs < minGapMs) {
+      // Keep the more extreme (larger absolute) value
+      if (Math.abs(curVal) > Math.abs(prevVal)) {
+        filtered[filtered.length - 1] = tps[i];
+      }
+    } else {
+      filtered.push(tps[i]);
+    }
+  }
+
+  return filtered;
 }
 
 export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary {
@@ -102,12 +133,15 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const minTurningPointDelta = signalRange * REP_TURNING_POINT_MIN_DELTA_FRACTION;
   const repHeightThreshold = signalRange * REP_HEIGHT_THRESHOLD_FRACTION;
 
-  const turningPoints = collectTurningPoints(centered, minTurningPointDelta);
+  const timestamps = samples.map((s) => s.timestamp);
+  const rawTurningPoints = collectTurningPoints(centered, timestamps, minTurningPointDelta);
+  const filteredTurningPoints = filterCloseTurningPoints(rawTurningPoints, 300);
+  const turningPointValues = filteredTurningPoints.map(([, v]) => v);
 
   let repCount = 0;
   const turningPointBuffer: number[] = [];
 
-  for (const turningPoint of turningPoints) {
+  for (const turningPoint of turningPointValues) {
     turningPointBuffer.push(turningPoint);
 
     while (turningPointBuffer.length >= 3) {
