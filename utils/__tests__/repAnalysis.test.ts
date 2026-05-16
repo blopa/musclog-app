@@ -29,6 +29,12 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(7);
   });
 
+  it('counts 5 reps in slow_fast_mixed.json', () => {
+    const samples = loadRepsJson('fast_paced.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(5);
+  });
+
   it('returns 0 reps for empty input', () => {
     expect(analyzeRecordedReps([])).toEqual({ repCount: 0, sampleCount: 0, durationMs: 0 });
   });
