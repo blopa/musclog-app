@@ -31,7 +31,6 @@ private const val NOTIFY_DESCRIPTOR_UUID = "00002902-0000-1000-8000-00805f9b34fb
 private const val DEVICE_PREFIX = "WT"
 private const val DEFAULT_SCAN_TIMEOUT_MS = 10_000L
 private const val DEFAULT_POLL_INTERVAL_MS = 500L
-private const val STATE_EMIT_INTERVAL_MS = 100L
 
 private data class WitDeviceInfo(
   val id: String,
@@ -213,11 +212,7 @@ class WitMotionBleModule : Module() {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val deviceMap = ConcurrentHashMap<String, BluetoothDevice>()
   private val stateLock = Any()
-  private val pendingStateLock = Any()
   @Volatile private var state = WitState()
-  @Volatile private var lastEmittedStateAt = 0L
-  @Volatile private var pendingState: WitState? = null
-  @Volatile private var pendingStateRunnable: Runnable? = null
 
   private var bluetoothAdapter: BluetoothAdapter? = null
   private var bluetoothLeScanner: BluetoothLeScanner? = null
@@ -236,7 +231,6 @@ class WitMotionBleModule : Module() {
     OnDestroy {
       stopScan()
       disconnectInternal()
-      clearPendingStateEmission()
       bluetoothLeScanner = null
       bluetoothAdapter = null
     }
@@ -327,50 +321,8 @@ class WitMotionBleModule : Module() {
   }
 
   private fun postState(next: WitState) {
-    val now = System.currentTimeMillis()
-    val dueIn = synchronized(pendingStateLock) {
-      pendingState = next
-
-      val elapsed = now - lastEmittedStateAt
-      if (elapsed >= STATE_EMIT_INTERVAL_MS) {
-        lastEmittedStateAt = now
-        pendingState = null
-        pendingStateRunnable?.let { mainHandler.removeCallbacks(it) }
-        pendingStateRunnable = null
-        -1L
-      } else {
-        val delay = STATE_EMIT_INTERVAL_MS - elapsed
-        if (pendingStateRunnable == null) {
-          pendingStateRunnable = Runnable {
-            val stateToEmit = synchronized(pendingStateLock) {
-              lastEmittedStateAt = System.currentTimeMillis()
-              val snapshot = pendingState
-              pendingState = null
-              pendingStateRunnable = null
-              snapshot
-            }
-            if (stateToEmit != null) {
-              sendEvent("onStateChanged", stateToEmit.toMap())
-            }
-          }
-          mainHandler.postDelayed(pendingStateRunnable!!, delay)
-        }
-        delay
-      }
-    }
-
-    if (dueIn < 0) {
-      mainHandler.post {
-        sendEvent("onStateChanged", next.toMap())
-      }
-    }
-  }
-
-  private fun clearPendingStateEmission() {
-    synchronized(pendingStateLock) {
-      pendingState = null
-      pendingStateRunnable?.let { mainHandler.removeCallbacks(it) }
-      pendingStateRunnable = null
+    mainHandler.post {
+      sendEvent("onStateChanged", next.toMap())
     }
   }
 
@@ -542,7 +494,6 @@ class WitMotionBleModule : Module() {
 
   @SuppressLint("MissingPermission")
   private fun disconnectInternal(): Boolean {
-    clearPendingStateEmission()
     val session = activeSession ?: run {
       updateState {
         it.copy(
