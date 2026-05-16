@@ -127,8 +127,15 @@ export default function WitMotionTestScreen() {
 
   const velBufRef = useRef<number[]>([]);
   const posBufRef = useRef<number[]>([]);
+  const angleBufRef = useRef<number[]>([]);
   const [velData, setVelData] = useState<number[]>([]);
   const [posData, setPosData] = useState<number[]>([]);
+  const [angleData, setAngleData] = useState<number[]>([]);
+
+  // Anchor angle: captured on "Set Anchor", used as zero-reference for the angle chart.
+  // Updated from the onBatch callback so it's always current.
+  const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
 
   // HPF state machine — no deadband, no clamp, no decay heuristics.
   // hpfAccel  = high-pass filtered vertical acceleration (bias removed)
@@ -166,6 +173,7 @@ export default function WitMotionTestScreen() {
         }
 
         const { accel, angle, timestamp } = packet;
+        currentAngleRef.current = angle;
 
         // Use the wall-clock timestamp ONLY to detect a real disconnection gap.
         // Never derive dt from it: packets inside the same BLE notification all share
@@ -208,15 +216,18 @@ export default function WitMotionTestScreen() {
         if (integ.chartTick === 0) {
           const vel = velBufRef.current;
           vel.push(integ.hpfVel * 100); // m/s → cm/s
-          if (vel.length > CHART_MAX_POINTS) {
-            vel.splice(0, vel.length - CHART_MAX_POINTS);
-          }
+          if (vel.length > CHART_MAX_POINTS) vel.splice(0, vel.length - CHART_MAX_POINTS);
 
           const pos = posBufRef.current;
           pos.push(integ.position * 100); // m → cm
-          if (pos.length > CHART_MAX_POINTS) {
-            pos.splice(0, pos.length - CHART_MAX_POINTS);
-          }
+          if (pos.length > CHART_MAX_POINTS) pos.splice(0, pos.length - CHART_MAX_POINTS);
+
+          // Angle delta from anchor — drift-free, any speed, uses AHRS Kalman output directly.
+          const anchor = anchorAngleRef.current;
+          const aDelta = anchor !== null ? angle.y - anchor.y : 0;
+          const ang = angleBufRef.current;
+          ang.push(aDelta);
+          if (ang.length > CHART_MAX_POINTS) ang.splice(0, ang.length - CHART_MAX_POINTS);
         }
       }
     });
@@ -227,6 +238,7 @@ export default function WitMotionTestScreen() {
     const interval = setInterval(() => {
       setVelData([...velBufRef.current]);
       setPosData([...posBufRef.current]);
+      setAngleData([...angleBufRef.current]);
       setPositionCm(integRef.current.position * 100);
       setVelocityMs(integRef.current.hpfVel);
     }, 50);
@@ -243,8 +255,13 @@ export default function WitMotionTestScreen() {
     integ.position = 0;
     integ.lastTs = null;
     integ.chartTick = 0;
+    // Capture the live angle as the zero-reference for the angle chart.
+    anchorAngleRef.current = currentAngleRef.current
+      ? { ...currentAngleRef.current }
+      : null;
     velBufRef.current = [];
     posBufRef.current = [];
+    angleBufRef.current = [];
   }, []);
 
   return (
@@ -333,11 +350,37 @@ export default function WitMotionTestScreen() {
             <Text className="text-xs text-text-tertiary">Packets received: {wit.packetCount}</Text>
           </View>
 
-          {/* Vertical velocity chart */}
+          {/* Pitch angle from anchor — works at ANY speed, zero drift (uses AHRS directly) */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-1 font-bold text-text-primary">Vertical velocity</Text>
+            <View className="mb-2 flex-row items-start justify-between">
+              <View className="flex-1 pr-2">
+                <Text className="font-bold text-text-primary">Tilt from anchor</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Pitch angle change since Set Anchor · works at any speed · zero drift
+                </Text>
+              </View>
+              <Button label="Set Anchor" onPress={handleSetAnchor} size="sm" variant="accent" />
+            </View>
             <Text className="mb-3 text-xs text-text-tertiary">
-              + = moving up · − = moving down · near 0 = stationary · last {CHART_MAX_POINTS} samples
+              Pitch now: {valueOrDash(wit.liveData.angle?.y, 1)}°
+              {anchorAngleRef.current != null
+                ? `  anchor: ${anchorAngleRef.current.y.toFixed(1)}°`
+                : '  (no anchor set)'}
+            </Text>
+            {angleData.length > 1 ? (
+              <SignedChart data={angleData} yRange={45} unitLabel="°" color="#f59e0b" zeroLabel="anchor" />
+            ) : (
+              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+                <Text className="text-xs text-text-tertiary">Press Set Anchor then tilt the device</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Vertical velocity — works for fast movements via HPF integration */}
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-1 font-bold text-text-primary">Vertical velocity (fast moves)</Text>
+            <Text className="mb-3 text-xs text-text-tertiary">
+              HPF-integrated acceleration · + = up · − = down · best for movements {'>'} 0.5 Hz
             </Text>
             {velData.length > 1 ? (
               <SignedChart data={velData} yRange={80} unitLabel="cm/s" color="#4ade80" />
@@ -348,16 +391,15 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          {/* Vertical position chart */}
+          {/* Vertical position — integrated HPF velocity, still drifts over long periods */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <View className="mb-3 flex-row items-center justify-between">
               <View>
-                <Text className="font-bold text-text-primary">Vertical position</Text>
+                <Text className="font-bold text-text-primary">Vertical position (fast moves)</Text>
                 <Text className="text-xs text-text-tertiary">
                   Displacement from anchor · last {CHART_MAX_POINTS} samples
                 </Text>
               </View>
-              <Button label="Set Anchor" onPress={handleSetAnchor} size="sm" variant="accent" />
             </View>
             <View className="mb-3 flex-row gap-4">
               <Text className="text-sm text-text-primary">
