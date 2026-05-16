@@ -29,19 +29,24 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting via peak detection on EMA-smoothed net vertical acceleration.
-// No integration, no anchor, no drift. Uses AHRS angles only for gravity projection.
-// Research: Zelman 2020, RecoFit 2014 — peak detection on LPF-smoothed accel is most reliable.
+// Rep counting via dual-EMA adaptive threshold on raw acceleration magnitude.
+// Uses acc_r = sqrt(ax²+ay²+az²) — works regardless of sensor orientation or exercise type.
+// Approach validated by daveebbelaar/tracking-barbell-exercises and SmartLift-Analysis-Project.
 //
-// EMA_ALPHA = 0.25  →  τ = dt*(1-α)/α = 0.01*0.75/0.25 = 30 ms  →  cutoff ≈ 5.3 Hz
-// This preserves rep dynamics (0.3–2 Hz) while smoothing sensor noise.
-const REP_EMA_ALPHA = 0.25;
-const REP_UPPER_G = 0.15;  // smoothed net vertical accel must exceed this to start a rep
-const REP_LOWER_G = 0.03;  // must drop below this to complete the rep (hysteresis)
-const REP_MIN_PEAK_MS = 150;   // concentric phase must last at least 150 ms
-const REP_REFRACTORY_MS = 800; // minimum ms between consecutive rep counts
+// SIGNAL_ALPHA = 0.06  →  τ ≈ 157 ms  →  cutoff ≈ 1.0 Hz  (smooths noise, keeps rep shape)
+// BASELINE_ALPHA = 0.003 →  τ ≈ 3.3 s  →  cutoff ≈ 0.05 Hz (tracks gravity-only floor slowly)
+//
+// The feature is (smoothMag − baseline): rises above RISE_G during a rep, falls below FALL_G
+// at rest. Because baseline adapts, slow reps (smaller peaks) are still detected — their floor
+// also drops proportionally, so the net rise stays detectable.
+const SIGNAL_ALPHA = 0.06;
+const BASELINE_ALPHA = 0.003;
+const RISE_G = 0.06;    // (smoothMag − baseline) must exceed this to enter ACTIVE phase
+const FALL_G = 0.02;    // must fall below this for the rep to be confirmed
+const MIN_REP_MS = 300; // active phase must last at least this long (filters vibration noise)
+const MIN_GAP_MS = 1200; // minimum ms between rep counts (prevents double-counting)
 
-type RepPhase = 'IDLE' | 'CONCENTRIC';
+type RepPhase = 'REST' | 'ACTIVE';
 
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
@@ -162,13 +167,15 @@ export default function WitMotionTestScreen() {
     stillCount: 0, // consecutive samples below ZVU thresholds
   });
 
-  // Vertical-accel peak detection rep state — mutated inside onBatch, never causes renders
+  // Dual-EMA rep detection state — mutated inside onBatch, never causes renders
   const repRef = useRef({
-    phase: 'IDLE' as RepPhase,
+    phase: 'REST' as RepPhase,
     repCount: 0,
-    smoothVert: 0,       // EMA-filtered net vertical accel (g)
-    peakStartMs: null as number | null,
+    smoothMag: 0,          // fast EMA of acc_r  (~1 Hz cutoff)
+    baseline: 0,           // slow EMA of acc_r  (~0.05 Hz) — tracks the at-rest floor
+    activeStartMs: null as number | null, // when ACTIVE phase began
     lastRepMs: null as number | null,
+    initialized: false,    // prevents startup transient from triggering phantom reps
   });
 
   // Buffer for the smoothed vertical accel chart
@@ -179,8 +186,9 @@ export default function WitMotionTestScreen() {
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
   const [repCount, setRepCount] = useState(0);
-  const [repPhase, setRepPhase] = useState<RepPhase>('IDLE');
-  const [liveSmooth, setLiveSmooth] = useState(0);
+  const [repPhase, setRepPhase] = useState<RepPhase>('REST');
+  // (smoothMag − baseline): what the Schmitt trigger actually reads
+  const [liveFeature, setLiveFeature] = useState(0);
 
   useEffect(() => {
     void requestPermissions();
@@ -203,6 +211,15 @@ export default function WitMotionTestScreen() {
         const isGap = wallGapS > RECONNECT_GAP_S;
         integ.lastTs = timestamp;
 
+        // Initialize both EMA filters from the first real packet to avoid startup transient.
+        // Without this, both start at 0 and the surge to ~1g counts as a phantom rep.
+        if (!rep.initialized) {
+          const initMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+          rep.smoothMag = initMag;
+          rep.baseline = initMag;
+          rep.initialized = true;
+        }
+
         if (isGap) {
           integ.prevAVert = 0;
           integ.hpfAccel = 0;
@@ -210,9 +227,12 @@ export default function WitMotionTestScreen() {
           integ.prevRawVel = 0;
           integ.hpfVel = 0;
           integ.stillCount = 0;
-          rep.phase = 'IDLE';
-          rep.smoothVert = 0;
-          rep.peakStartMs = null;
+          rep.phase = 'REST';
+          rep.activeStartMs = null;
+          // Re-seed filters from current packet after a gap
+          const gapMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+          rep.smoothMag = gapMag;
+          rep.baseline = gapMag;
           continue;
         }
 
@@ -240,28 +260,31 @@ export default function WitMotionTestScreen() {
         integ.prevRawVel = integ.rawVel;
         integ.position += integ.hpfVel * SENSOR_DT_S;
 
-        // Peak detection on EMA-smoothed net vertical acceleration.
-        // aVert is already gravity-subtracted (0 at rest, + when pushed upward).
-        // No anchor needed — the AHRS projection handles any sensor orientation.
-        rep.smoothVert = REP_EMA_ALPHA * aVert + (1 - REP_EMA_ALPHA) * rep.smoothVert;
+        // Dual-EMA adaptive rep detection.
+        // smoothMag tracks rep dynamics; baseline tracks the gravity floor.
+        // Feature = smoothMag − baseline: rises during any acceleration away from rest,
+        // regardless of direction or exercise type.
+        rep.smoothMag = SIGNAL_ALPHA * accelMag + (1 - SIGNAL_ALPHA) * rep.smoothMag;
+        rep.baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * rep.baseline;
+        const feature = rep.smoothMag - rep.baseline;
 
         const nowMs = Date.now();
-        const msSinceLastRep = rep.lastRepMs !== null ? nowMs - rep.lastRepMs : Infinity;
+        const msSinceLast = rep.lastRepMs !== null ? nowMs - rep.lastRepMs : Infinity;
 
-        if (rep.phase === 'IDLE') {
-          if (rep.smoothVert > REP_UPPER_G && msSinceLastRep > REP_REFRACTORY_MS) {
-            rep.phase = 'CONCENTRIC';
-            rep.peakStartMs = nowMs;
+        if (rep.phase === 'REST') {
+          if (feature > RISE_G && msSinceLast > MIN_GAP_MS) {
+            rep.phase = 'ACTIVE';
+            rep.activeStartMs = nowMs;
           }
-        } else if (rep.phase === 'CONCENTRIC') {
-          if (rep.smoothVert < REP_LOWER_G) {
-            const peakMs = nowMs - (rep.peakStartMs ?? nowMs);
-            if (peakMs >= REP_MIN_PEAK_MS) {
+        } else if (rep.phase === 'ACTIVE') {
+          if (feature < FALL_G) {
+            const activeMs = nowMs - (rep.activeStartMs ?? nowMs);
+            if (activeMs >= MIN_REP_MS) {
               rep.repCount += 1;
               rep.lastRepMs = nowMs;
             }
-            rep.phase = 'IDLE';
-            rep.peakStartMs = null;
+            rep.phase = 'REST';
+            rep.activeStartMs = null;
           }
         }
 
@@ -282,9 +305,9 @@ export default function WitMotionTestScreen() {
           ang.push(aDelta);
           if (ang.length > CHART_MAX_POINTS) ang.splice(0, ang.length - CHART_MAX_POINTS);
 
-          // Smoothed vertical accel — the signal the rep counter actually uses
+          // (smoothMag − baseline) — the feature the rep counter actually reads
           const sm = smoothBufRef.current;
-          sm.push(rep.smoothVert);
+          sm.push(rep.smoothMag - rep.baseline);
           if (sm.length > CHART_MAX_POINTS) sm.splice(0, sm.length - CHART_MAX_POINTS);
         }
       }
@@ -301,7 +324,7 @@ export default function WitMotionTestScreen() {
       setVelocityMs(integRef.current.hpfVel);
       setRepCount(repRef.current.repCount);
       setRepPhase(repRef.current.phase);
-      setLiveSmooth(repRef.current.smoothVert);
+      setLiveFeature(repRef.current.smoothMag - repRef.current.baseline);
       setSmoothData([...smoothBufRef.current]);
     }, 50);
     return () => clearInterval(interval);
@@ -327,15 +350,15 @@ export default function WitMotionTestScreen() {
   const handleResetReps = useCallback(() => {
     const rep = repRef.current;
     rep.repCount = 0;
-    rep.phase = 'IDLE';
-    rep.smoothVert = 0;
-    rep.peakStartMs = null;
+    rep.phase = 'REST';
+    rep.activeStartMs = null;
     rep.lastRepMs = null;
+    // Keep smoothMag/baseline — resetting them causes startup transient again
     smoothBufRef.current = [];
   }, []);
 
-  const phaseColor = repPhase === 'CONCENTRIC' ? '#4ade80' : '#888';
-  const phaseLabel = repPhase === 'CONCENTRIC' ? '↑ LIFTING' : 'REST';
+  const phaseColor = repPhase === 'ACTIVE' ? '#4ade80' : '#888';
+  const phaseLabel = repPhase === 'ACTIVE' ? '● ACTIVE' : '○ REST';
 
   return (
     <MasterLayout>
@@ -361,8 +384,8 @@ export default function WitMotionTestScreen() {
                 </Text>
               </View>
               <Text className="text-sm text-text-secondary">
-                signal: <Text className="font-bold">{liveSmooth.toFixed(3)} g</Text>
-                {'  '}threshold: {REP_UPPER_G} g
+                signal: <Text className="font-bold">{liveFeature.toFixed(3)} g</Text>
+                {'  '}rise@{RISE_G} g
               </Text>
             </View>
 
@@ -479,11 +502,11 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          {/* Smoothed vertical accel — the signal the rep counter reads */}
+          {/* (smoothMag − baseline) — the signal the rep counter reads */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-1 font-bold text-text-primary">Rep signal (smoothed vert. accel)</Text>
+            <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              EMA-filtered net vertical accel · counts rep when above {REP_UPPER_G} g · now: {liveSmooth.toFixed(3)} g
+              smoothMag − baseline · ACTIVE when &gt;{RISE_G} g · now: {liveFeature.toFixed(3)} g
             </Text>
             {smoothData.length > 1 ? (
               <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
