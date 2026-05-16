@@ -231,7 +231,16 @@ class WitMotionClient implements WitMotionActionApi {
 
   disconnect = async () => {
     if (nativeModule) {
-      return nativeModule.disconnect();
+      const result = nativeModule.disconnect();
+      this.setState({
+        status: 'idle',
+        isConnected: false,
+        connectedDevice: null,
+        liveData: createEmptyLiveData(),
+        packetCount: 0,
+        error: null,
+      });
+      return result;
     }
 
     this.setState({

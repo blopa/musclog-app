@@ -538,6 +538,7 @@ class WitMotionBleModule : Module() {
     private val summary: WitDeviceInfo
   ) {
     @Volatile private var gatt: BluetoothGatt? = null
+    @Volatile private var readCharacteristic: BluetoothGattCharacteristic? = null
     @Volatile private var writeCharacteristic: BluetoothGattCharacteristic? = null
     @Volatile private var running = true
     private var pollingThread: Thread? = null
@@ -546,6 +547,9 @@ class WitMotionBleModule : Module() {
       @SuppressLint("MissingPermission")
       override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
+        if (!running) {
+          return
+        }
         when (newState) {
           BluetoothProfile.STATE_CONNECTED -> {
             gatt.discoverServices()
@@ -560,12 +564,14 @@ class WitMotionBleModule : Module() {
           }
 
           BluetoothProfile.STATE_DISCONNECTED -> {
+            readCharacteristic = null
+            writeCharacteristic = null
+            this@DeviceSession.gatt = null
             gatt.close()
             if (activeSession === this@DeviceSession) {
               activeSession = null
             }
             running = false
-            writeCharacteristic = null
             updateState {
               it.copy(
                 status = "idle",
@@ -596,6 +602,7 @@ class WitMotionBleModule : Module() {
         targetService.characteristics.forEach { characteristic ->
           when (characteristic.uuid.toString().lowercase()) {
             READ_UUID -> {
+              readCharacteristic = characteristic
               gatt.setCharacteristicNotification(characteristic, true)
               val descriptor = characteristic.getDescriptor(UUID.fromString(NOTIFY_DESCRIPTOR_UUID))
               if (descriptor != null) {
@@ -615,6 +622,9 @@ class WitMotionBleModule : Module() {
       }
 
       override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
+        if (!running) {
+          return
+        }
         if (!characteristic.uuid.toString().equals(READ_UUID, ignoreCase = true)) {
           return
         }
@@ -631,12 +641,33 @@ class WitMotionBleModule : Module() {
     @SuppressLint("MissingPermission")
     fun close() {
       running = false
+      pollingThread?.interrupt()
+      pollingThread = null
+      disableNotifications()
       try {
         gatt?.disconnect()
       } finally {
         gatt?.close()
         gatt = null
+        readCharacteristic = null
         writeCharacteristic = null
+      }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun disableNotifications() {
+      val gattRef = gatt ?: return
+      val readRef = readCharacteristic ?: return
+
+      try {
+        gattRef.setCharacteristicNotification(readRef, false)
+        val descriptor = readRef.getDescriptor(UUID.fromString(NOTIFY_DESCRIPTOR_UUID))
+        if (descriptor != null) {
+          descriptor.value = BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+          gattRef.writeDescriptor(descriptor)
+        }
+      } catch (_: Throwable) {
+        // Best-effort shutdown; the connection teardown below still stops the session.
       }
     }
 
@@ -669,8 +700,15 @@ class WitMotionBleModule : Module() {
 
     @SuppressLint("MissingPermission")
     fun sendData(data: ByteArray, save: Boolean) {
+      if (!running) {
+        return
+      }
+
       Thread {
         try {
+          if (!running) {
+            return@Thread
+          }
           val gattRef = gatt ?: return@Thread
           val writeRef = writeCharacteristic ?: return@Thread
           writeRef.value = data
