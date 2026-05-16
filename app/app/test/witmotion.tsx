@@ -17,10 +17,17 @@ function valueOrDash(value: number | null | undefined, digits = 2) {
 
 const CHART_MAX_POINTS = 180;
 const GRAVITY_MS2 = 9.81;
-// Decay velocity toward zero when net accel stays below this (device appears still)
-const STILL_THRESHOLD_G = 0.04;
-const STILL_DECAY_FRAMES = 6;
-const VELOCITY_DECAY = 0.80;
+// Acceleration below this is treated as noise/bias and is NEVER fed into the integrator.
+// This sensor shows ~0.014 g of static bias, so 0.035 g clears it with margin.
+// Trade-off: movements that stay under 0.035 g won't register — a physics limitation.
+const ACCEL_DEADBAND_G = 0.035;
+// Smoothing factor for aVert before deadband test — prevents brief noise spikes from
+// resetting the still counter and letting bias sneak into the integrator.
+const ACCEL_SMOOTH = 0.25;
+// Frames of sub-deadband accel before we start decaying velocity toward zero.
+const STILL_FRAMES_TO_DECAY = 12;
+// Per-frame velocity decay while still: 0.88^20 ≈ 7 % — zeroes out in ~0.2 s at 100 Hz.
+const VELOCITY_DECAY_STILL = 0.88;
 
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
@@ -119,13 +126,20 @@ export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
 
-  const accelBufRef = useRef<number[]>([]);
+  const velBufRef = useRef<number[]>([]);
   const posBufRef = useRef<number[]>([]);
-  const [accelData, setAccelData] = useState<number[]>([]);
+  const [velData, setVelData] = useState<number[]>([]);
   const [posData, setPosData] = useState<number[]>([]);
 
-  // Integration state: velocity (m/s), position (m), last timestamp, still-frame counter
-  const integRef = useRef({ velocity: 0, position: 0, lastTs: null as number | null, stillCount: 0 });
+  // Integration state: velocity (m/s), position (m), last timestamp, still-frame counter,
+  // and an EMA-smoothed aVert used for the deadband test (not the integration itself).
+  const integRef = useRef({
+    velocity: 0,
+    position: 0,
+    lastTs: null as number | null,
+    stillCount: 0,
+    aVertSmoothed: 0,
+  });
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
 
@@ -145,29 +159,37 @@ export default function WitMotionTestScreen() {
     integ.lastTs = now;
 
     const aVert = verticalAccelWorld(accel, angle);
-    const netMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2) - 1.0;
-
-    // Push vertical accel sample
-    const nextAccel = [...accelBufRef.current, aVert];
-    if (nextAccel.length > CHART_MAX_POINTS) {
-      nextAccel.splice(0, nextAccel.length - CHART_MAX_POINTS);
-    }
-    accelBufRef.current = nextAccel;
 
     if (dt > 0 && dt < 0.5) {
-      // Drift correction: decay velocity when device appears still
-      if (Math.abs(netMag) < STILL_THRESHOLD_G) {
-        integ.stillCount++;
-        if (integ.stillCount > STILL_DECAY_FRAMES) {
-          integ.velocity *= VELOCITY_DECAY;
-        }
-      } else {
+      // Smooth aVert so brief noise spikes don't reset the still counter.
+      integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
+
+      if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
+        // Genuine movement detected — integrate the raw (unsmoothed) value for accuracy.
+        integ.velocity += aVert * GRAVITY_MS2 * dt;
         integ.stillCount = 0;
+      } else {
+        // Below deadband: do NOT integrate (this is where bias is blocked from entering).
+        integ.stillCount++;
+        if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
+          integ.velocity *= VELOCITY_DECAY_STILL;
+          if (Math.abs(integ.velocity) < 0.0005) {
+            integ.velocity = 0;
+          }
+        }
       }
 
-      integ.velocity += aVert * GRAVITY_MS2 * dt;
+      // Hard clamp — prevents runaway if something unexpected happens.
+      integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
       integ.position += integ.velocity * dt;
     }
+
+    // velocity buffer (cm/s)
+    const nextVel = [...velBufRef.current, integ.velocity * 100];
+    if (nextVel.length > CHART_MAX_POINTS) {
+      nextVel.splice(0, nextVel.length - CHART_MAX_POINTS);
+    }
+    velBufRef.current = nextVel;
 
     const nextPos = [...posBufRef.current, integ.position * 100]; // meters → cm
     if (nextPos.length > CHART_MAX_POINTS) {
@@ -179,7 +201,7 @@ export default function WitMotionTestScreen() {
   // Throttle React state updates to 20 fps
   useEffect(() => {
     const interval = setInterval(() => {
-      setAccelData([...accelBufRef.current]);
+      setVelData([...velBufRef.current]);
       setPosData([...posBufRef.current]);
       setPositionCm(integRef.current.position * 100);
       setVelocityMs(integRef.current.velocity);
@@ -191,6 +213,9 @@ export default function WitMotionTestScreen() {
     integRef.current.velocity = 0;
     integRef.current.position = 0;
     integRef.current.stillCount = 0;
+    integRef.current.aVertSmoothed = 0;
+    integRef.current.lastTs = null;
+    velBufRef.current = [];
     posBufRef.current = [];
   }, []);
 
@@ -280,14 +305,14 @@ export default function WitMotionTestScreen() {
             <Text className="text-xs text-text-tertiary">Packets received: {wit.packetCount}</Text>
           </View>
 
-          {/* Vertical acceleration chart */}
+          {/* Vertical velocity chart */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-1 font-bold text-text-primary">Vertical acceleration</Text>
+            <Text className="mb-1 font-bold text-text-primary">Vertical velocity</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              World-frame vertical net accel (up = +, down = −) · last {CHART_MAX_POINTS} samples
+              + = moving up · − = moving down · near 0 = stationary · last {CHART_MAX_POINTS} samples
             </Text>
-            {accelData.length > 1 ? (
-              <SignedChart data={accelData} yRange={2} unitLabel="g" color="#4ade80" />
+            {velData.length > 1 ? (
+              <SignedChart data={velData} yRange={80} unitLabel="cm/s" color="#4ade80" />
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
