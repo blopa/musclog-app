@@ -29,13 +29,12 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting: analyze the same decimated stream shown on the chart, then count obvious peaks.
+// Rep counting: scan the full stream, smooth it lightly, then count obvious peaks.
 // Using absolute deviation from a baseline lets the detector work whether the motion shows up
 // as a bump or a dip on the mounted axis.
-const REP_ANALYSIS_STRIDE = 5;
-const REP_SMOOTH_ALPHA = 0.25;
-const REP_PEAK_THRESHOLD_G = 0.35;
-const REP_MIN_PEAK_GAP_MS = 400;
+const REP_SMOOTH_ALPHA = 0.2;
+const REP_PEAK_THRESHOLD_G = 0.3;
+const REP_MIN_PEAK_GAP_MS = 250;
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -74,14 +73,7 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     };
   }
 
-  const analysisSamples = samples.filter((_, index) => index % REP_ANALYSIS_STRIDE === 0);
-  if (analysisSamples.length === 0) {
-    return {
-      repCount: 0,
-      sampleCount: samples.length,
-      durationMs: Math.max(0, samples[samples.length - 1].timestamp - samples[0].timestamp),
-    };
-  }
+  const analysisSamples = samples;
 
   const mins: Record<'x' | 'y' | 'z', number> = { x: Infinity, y: Infinity, z: Infinity };
   const maxs: Record<'x' | 'y' | 'z', number> = { x: -Infinity, y: -Infinity, z: -Infinity };
@@ -109,7 +101,7 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     smoothed.push(smoothValue);
   }
 
-  const baselineWindow = Math.min(10, axisValues.length);
+  const baselineWindow = Math.min(20, axisValues.length);
   const baselineValues = axisValues.slice(0, baselineWindow).slice().sort((a, b) => a - b);
   const baseline = baselineValues[Math.floor(baselineValues.length / 2)] ?? axisValues[0];
 
