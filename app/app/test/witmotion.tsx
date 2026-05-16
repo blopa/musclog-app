@@ -4,7 +4,7 @@ import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-sv
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
-import { useWitMotion } from '@/modules/witmotion-ble';
+import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
@@ -132,13 +132,14 @@ export default function WitMotionTestScreen() {
   const [posData, setPosData] = useState<number[]>([]);
 
   // Integration state: velocity (m/s), position (m), last timestamp, still-frame counter,
-  // and an EMA-smoothed aVert used for the deadband test (not the integration itself).
+  // EMA-smoothed aVert for the deadband test, and a subsampling counter for the chart buffer.
   const integRef = useRef({
     velocity: 0,
     position: 0,
     lastTs: null as number | null,
     stillCount: 0,
     aVertSmoothed: 0,
+    chartTick: 0,
   });
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
@@ -147,56 +148,62 @@ export default function WitMotionTestScreen() {
     void requestPermissions();
   }, [requestPermissions]);
 
+  // Subscribe to every individual packet so none are discarded by the 250ms batch merge.
+  // The liveData snapshot only carries the last packet per batch; integrating against it
+  // produces a 25× dt error at 100 Hz which saturates the velocity chart immediately.
   useEffect(() => {
-    const { accel, angle, updatedAt } = wit.liveData;
-    if (!accel || !angle || updatedAt === null) {
-      return;
-    }
+    return witMotionClient.onBatch((batch) => {
+      const integ = integRef.current;
 
-    const now = updatedAt;
-    const integ = integRef.current;
-    const dt = integ.lastTs !== null ? (now - integ.lastTs) / 1000 : 0;
-    integ.lastTs = now;
+      for (const packet of batch.packets) {
+        if (packet.kind !== 'motion') {
+          continue;
+        }
 
-    const aVert = verticalAccelWorld(accel, angle);
+        const { accel, angle, timestamp } = packet;
+        const dt = integ.lastTs !== null ? (timestamp - integ.lastTs) / 1000 : 0;
+        integ.lastTs = timestamp;
 
-    if (dt > 0 && dt < 0.5) {
-      // Smooth aVert so brief noise spikes don't reset the still counter.
-      integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
+        const aVert = verticalAccelWorld(accel, angle);
 
-      if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
-        // Genuine movement detected — integrate the raw (unsmoothed) value for accuracy.
-        integ.velocity += aVert * GRAVITY_MS2 * dt;
-        integ.stillCount = 0;
-      } else {
-        // Below deadband: do NOT integrate (this is where bias is blocked from entering).
-        integ.stillCount++;
-        if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
-          integ.velocity *= VELOCITY_DECAY_STILL;
-          if (Math.abs(integ.velocity) < 0.0005) {
-            integ.velocity = 0;
+        if (dt > 0 && dt < 0.5) {
+          integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
+
+          if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
+            integ.velocity += aVert * GRAVITY_MS2 * dt;
+            integ.stillCount = 0;
+          } else {
+            integ.stillCount++;
+            if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
+              integ.velocity *= VELOCITY_DECAY_STILL;
+              if (Math.abs(integ.velocity) < 0.0005) {
+                integ.velocity = 0;
+              }
+            }
+          }
+
+          integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
+          integ.position += integ.velocity * dt;
+        }
+
+        // Push to chart buffer every 5 packets (at 100 Hz → 20 Hz of chart data → 9 s visible).
+        integ.chartTick = (integ.chartTick + 1) % 5;
+        if (integ.chartTick === 0) {
+          const vel = velBufRef.current;
+          vel.push(integ.velocity * 100);
+          if (vel.length > CHART_MAX_POINTS) {
+            vel.splice(0, vel.length - CHART_MAX_POINTS);
+          }
+
+          const pos = posBufRef.current;
+          pos.push(integ.position * 100);
+          if (pos.length > CHART_MAX_POINTS) {
+            pos.splice(0, pos.length - CHART_MAX_POINTS);
           }
         }
       }
-
-      // Hard clamp — prevents runaway if something unexpected happens.
-      integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
-      integ.position += integ.velocity * dt;
-    }
-
-    // velocity buffer (cm/s)
-    const nextVel = [...velBufRef.current, integ.velocity * 100];
-    if (nextVel.length > CHART_MAX_POINTS) {
-      nextVel.splice(0, nextVel.length - CHART_MAX_POINTS);
-    }
-    velBufRef.current = nextVel;
-
-    const nextPos = [...posBufRef.current, integ.position * 100]; // meters → cm
-    if (nextPos.length > CHART_MAX_POINTS) {
-      nextPos.splice(0, nextPos.length - CHART_MAX_POINTS);
-    }
-    posBufRef.current = nextPos;
-  }, [wit.liveData]);
+    });
+  }, []);
 
   // Throttle React state updates to 20 fps
   useEffect(() => {
@@ -215,6 +222,7 @@ export default function WitMotionTestScreen() {
     integRef.current.stillCount = 0;
     integRef.current.aVertSmoothed = 0;
     integRef.current.lastTs = null;
+    integRef.current.chartTick = 0;
     velBufRef.current = [];
     posBufRef.current = [];
   }, []);

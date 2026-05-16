@@ -103,6 +103,7 @@ function sameState(a: WitMotionState, b: WitMotionState) {
 
 class WitMotionClient implements WitMotionActionApi {
   private listeners = new Set<() => void>();
+  private batchCallbacks = new Set<(batch: WitMotionDataBatch) => void>();
   private state: WitMotionState = cloneState(DEFAULT_STATE);
 
   private replaceState(nextState: WitMotionState) {
@@ -128,6 +129,10 @@ class WitMotionClient implements WitMotionActionApi {
       });
 
       emitter.addListener('onDataBatch', (batch: WitMotionDataBatch) => {
+        // Notify per-packet subscribers before merging so they see every sample.
+        for (const cb of this.batchCallbacks) {
+          cb(batch);
+        }
         this.replaceState({
           ...this.state,
           liveData: {
@@ -175,6 +180,13 @@ class WitMotionClient implements WitMotionActionApi {
     this.state = normalized;
     this.emit();
   }
+
+  onBatch = (callback: (batch: WitMotionDataBatch) => void): (() => void) => {
+    this.batchCallbacks.add(callback);
+    return () => {
+      this.batchCallbacks.delete(callback);
+    };
+  };
 
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
