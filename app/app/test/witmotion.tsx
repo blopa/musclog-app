@@ -21,12 +21,23 @@ const SENSOR_DT_S = 0.01; // fixed 10 ms per sample — never derived from wall-
 const RECONNECT_GAP_S = 2.0;
 
 // High-pass filter coefficients — alpha = tau / (tau + dt)
-// Accel HPF: tau = 1.0 s → cutoff ≈ 0.16 Hz. Removes static bias while passing gym-speed
-// movements (≥ 0.5 Hz). A deadband is NOT needed; the HPF cancels bias algebraically.
-const HPF_ALPHA_ACCEL = 1.0 / (1.0 + SENSOR_DT_S); // ≈ 0.990
-// Velocity HPF: tau = 0.5 s → cutoff ≈ 0.32 Hz. Removes any drift that leaks through
-// the accel HPF after integration so the velocity signal auto-zeros when stationary.
-const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S); // ≈ 0.980
+const HPF_ALPHA_ACCEL = 1.0 / (1.0 + SENSOR_DT_S); // tau=1s, cutoff≈0.16Hz
+const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S);   // tau=0.5s, cutoff≈0.32Hz
+
+// Zero Velocity Update — forces velocity to 0 when device is truly stationary
+const ZVU_ACCEL_THRESH_G = 0.05;
+const ZVU_GYRO_THRESH_DPS = 5.0;
+const ZVU_WINDOW = 20;
+
+// Angle-based rep counting (Schmitt trigger on AHRS angle — drift-free, works at any speed)
+// Uses 2D angular distance from anchor (roll² + pitch²), ignoring yaw (magnetometer-dependent).
+// OUTER: how far the device must travel from anchor to register "extended" phase.
+// INNER: how close it must return to register rep completion (hysteresis prevents jitter).
+const REP_OUTER_THRESH_DEG = 20; // degrees — adjust if exercise has small ROM
+const REP_INNER_THRESH_DEG = 8;  // degrees — hysteresis band around anchor
+const REP_MIN_DURATION_MS = 400; // ms — full excursion must take at least this long
+
+type RepPhase = 'IDLE' | 'EXTENDED';
 
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
@@ -36,7 +47,6 @@ const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S); // ≈ 0.980
 function verticalAccelWorld(accel: WitMotionVector3, angle: WitMotionVector3): number {
   const roll = (angle.x * Math.PI) / 180;
   const pitch = (angle.y * Math.PI) / 180;
-  // Third row of R = Rz(yaw)*Ry(pitch)*Rx(roll) — yaw term drops out here
   const azWorld =
     -Math.sin(pitch) * accel.x +
     Math.cos(pitch) * Math.sin(roll) * accel.y +
@@ -132,17 +142,10 @@ export default function WitMotionTestScreen() {
   const [posData, setPosData] = useState<number[]>([]);
   const [angleData, setAngleData] = useState<number[]>([]);
 
-  // Anchor angle: captured on "Set Anchor", used as zero-reference for the angle chart.
-  // Updated from the onBatch callback so it's always current.
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
 
-  // HPF state machine — no deadband, no clamp, no decay heuristics.
-  // hpfAccel  = high-pass filtered vertical acceleration (bias removed)
-  // rawVel    = integral of hpfAccel (in m/s)
-  // hpfVel    = high-pass filtered rawVel (integration drift removed, auto-zeros at rest)
-  // position  = integral of hpfVel (relative displacement in m)
-  // prevAVert / prevRawVel are the previous raw values needed for the HPF difference term.
+  // HPF integration state
   const integRef = useRef({
     prevAVert: 0,
     hpfAccel: 0,
@@ -152,77 +155,117 @@ export default function WitMotionTestScreen() {
     position: 0,
     lastTs: null as number | null,
     chartTick: 0,
+    stillCount: 0, // consecutive samples below ZVU thresholds
   });
+
+  // Angle-based rep counting state
+  const repRef = useRef({
+    phase: 'IDLE' as RepPhase,
+    repCount: 0,
+    extendedStartMs: null as number | null, // real-time ms when EXTENDED phase began
+  });
+
+  // React state for display (updated at 20 Hz via the interval timer)
   const [positionCm, setPositionCm] = useState(0);
   const [velocityMs, setVelocityMs] = useState(0);
+  const [repCount, setRepCount] = useState(0);
+  const [repPhase, setRepPhase] = useState<RepPhase>('IDLE');
+  const [angleDeltaDeg, setAngleDeltaDeg] = useState(0);
 
   useEffect(() => {
     void requestPermissions();
   }, [requestPermissions]);
 
-  // Subscribe to every individual packet so none are discarded by the 250ms batch merge.
-  // The liveData snapshot only carries the last packet per batch; integrating against it
-  // produces a 25× dt error at 100 Hz which saturates the velocity chart immediately.
   useEffect(() => {
     return witMotionClient.onBatch((batch) => {
       const integ = integRef.current;
+      const rep = repRef.current;
 
       for (const packet of batch.packets) {
         if (packet.kind !== 'motion') {
           continue;
         }
 
-        const { accel, angle, timestamp } = packet;
+        const { accel, gyro, angle, timestamp } = packet;
         currentAngleRef.current = angle;
 
-        // Use the wall-clock timestamp ONLY to detect a real disconnection gap.
-        // Never derive dt from it: packets inside the same BLE notification all share
-        // the same millisecond timestamp, so (timestamp - lastTs) = 0 for most of them,
-        // which would silently skip the integrator for every packet except the first.
         const wallGapS = integ.lastTs !== null ? (timestamp - integ.lastTs) / 1000 : 0;
         const isGap = wallGapS > RECONNECT_GAP_S;
         integ.lastTs = timestamp;
 
         if (isGap) {
-          // Disconnection — reset filter state so old values don't pollute the next run.
           integ.prevAVert = 0;
           integ.hpfAccel = 0;
           integ.rawVel = 0;
           integ.prevRawVel = 0;
           integ.hpfVel = 0;
+          integ.stillCount = 0;
+          rep.phase = 'IDLE';
+          rep.extendedStartMs = null;
           continue;
         }
 
         const aVert = verticalAccelWorld(accel, angle);
 
-        // Stage 1 — HPF on acceleration.
-        // y[n] = α·(y[n-1] + x[n] − x[n-1])
-        // This algebraically removes any constant bias so it never enters the integrator.
+        // HPF on acceleration → integrate → HPF on velocity → integrate position
         integ.hpfAccel = HPF_ALPHA_ACCEL * (integ.hpfAccel + aVert - integ.prevAVert);
         integ.prevAVert = aVert;
-
-        // Stage 2 — integrate HPF acceleration → raw velocity.
         integ.rawVel += integ.hpfAccel * GRAVITY_MS2 * SENSOR_DT_S;
 
-        // Stage 3 — HPF on velocity removes integration drift; signal auto-zeros at rest.
+        const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
+        const gyroMag = Math.sqrt(gyro.x ** 2 + gyro.y ** 2 + gyro.z ** 2);
+        if (Math.abs(accelMag - 1.0) < ZVU_ACCEL_THRESH_G && gyroMag < ZVU_GYRO_THRESH_DPS) {
+          integ.stillCount += 1;
+          if (integ.stillCount >= ZVU_WINDOW) {
+            integ.rawVel = 0;
+            integ.prevRawVel = 0;
+            integ.hpfVel = 0;
+          }
+        } else {
+          integ.stillCount = 0;
+        }
+
         integ.hpfVel = HPF_ALPHA_VEL * (integ.hpfVel + integ.rawVel - integ.prevRawVel);
         integ.prevRawVel = integ.rawVel;
-
-        // Stage 4 — integrate HPF velocity → position (relative displacement).
         integ.position += integ.hpfVel * SENSOR_DT_S;
 
-        // Push to chart buffer every 5 packets (at 100 Hz → 20 Hz of chart data → 9 s visible).
+        // Angle-based rep counter (Schmitt trigger on AHRS Euler angles).
+        // Uses 2D angular distance from anchor (roll + pitch, ignoring yaw).
+        // The WT901 internal Kalman filter makes these drift-free at any speed.
+        const anchor = anchorAngleRef.current;
+        if (anchor) {
+          const dRoll = angle.x - anchor.x;
+          const dPitch = angle.y - anchor.y;
+          const angDist = Math.sqrt(dRoll * dRoll + dPitch * dPitch);
+
+          if (rep.phase === 'IDLE') {
+            if (angDist > REP_OUTER_THRESH_DEG) {
+              rep.phase = 'EXTENDED';
+              rep.extendedStartMs = Date.now();
+            }
+          } else if (rep.phase === 'EXTENDED') {
+            if (angDist < REP_INNER_THRESH_DEG) {
+              const duration = Date.now() - (rep.extendedStartMs ?? Date.now());
+              if (duration >= REP_MIN_DURATION_MS) {
+                rep.repCount += 1;
+              }
+              rep.phase = 'IDLE';
+              rep.extendedStartMs = null;
+            }
+          }
+        }
+
+        // Push to chart buffer every 5 packets (100 Hz → 20 Hz chart data → ~9 s visible)
         integ.chartTick = (integ.chartTick + 1) % 5;
         if (integ.chartTick === 0) {
-          const vel = velBufRef.current;
-          vel.push(integ.hpfVel * 100); // m/s → cm/s
-          if (vel.length > CHART_MAX_POINTS) vel.splice(0, vel.length - CHART_MAX_POINTS);
+          const vel2 = velBufRef.current;
+          vel2.push(integ.hpfVel * 100); // m/s → cm/s
+          if (vel2.length > CHART_MAX_POINTS) vel2.splice(0, vel2.length - CHART_MAX_POINTS);
 
           const pos = posBufRef.current;
           pos.push(integ.position * 100); // m → cm
           if (pos.length > CHART_MAX_POINTS) pos.splice(0, pos.length - CHART_MAX_POINTS);
 
-          // Angle delta from anchor — drift-free, any speed, uses AHRS Kalman output directly.
           const anchor = anchorAngleRef.current;
           const aDelta = anchor !== null ? angle.y - anchor.y : 0;
           const ang = angleBufRef.current;
@@ -241,6 +284,17 @@ export default function WitMotionTestScreen() {
       setAngleData([...angleBufRef.current]);
       setPositionCm(integRef.current.position * 100);
       setVelocityMs(integRef.current.hpfVel);
+      setRepCount(repRef.current.repCount);
+      setRepPhase(repRef.current.phase);
+      const anchor = anchorAngleRef.current;
+      const cur = currentAngleRef.current;
+      if (anchor && cur) {
+        const dR = cur.x - anchor.x;
+        const dP = cur.y - anchor.y;
+        setAngleDeltaDeg(Math.sqrt(dR * dR + dP * dP));
+      } else {
+        setAngleDeltaDeg(0);
+      }
     }, 50);
     return () => clearInterval(interval);
   }, []);
@@ -255,14 +309,23 @@ export default function WitMotionTestScreen() {
     integ.position = 0;
     integ.lastTs = null;
     integ.chartTick = 0;
-    // Capture the live angle as the zero-reference for the angle chart.
-    anchorAngleRef.current = currentAngleRef.current
-      ? { ...currentAngleRef.current }
-      : null;
+    integ.stillCount = 0;
+    anchorAngleRef.current = currentAngleRef.current ? { ...currentAngleRef.current } : null;
     velBufRef.current = [];
     posBufRef.current = [];
     angleBufRef.current = [];
   }, []);
+
+  const handleResetReps = useCallback(() => {
+    const rep = repRef.current;
+    rep.repCount = 0;
+    rep.phase = 'IDLE';
+    rep.extendedStartMs = null;
+  }, []);
+
+  const phaseColor = repPhase === 'EXTENDED' ? '#4ade80' : '#888';
+  const phaseLabel = repPhase === 'EXTENDED' ? '↔ MOVING' : 'REST';
+  const hasAnchor = anchorAngleRef.current !== null;
 
   return (
     <MasterLayout>
@@ -271,6 +334,44 @@ export default function WitMotionTestScreen() {
           <View>
             <Text className="text-2xl font-bold text-text-primary">Wit Motion BLE</Text>
             <Text className="text-text-secondary">Expo hook demo for WT sensors</Text>
+          </View>
+
+          {/* Rep Counter — primary card */}
+          <View className="rounded-xl border-2 border-border-accent bg-bg-overlay p-5">
+            <View className="mb-3 flex-row items-center justify-between">
+              <Text className="text-lg font-bold text-text-primary">Rep Counter</Text>
+              <View className="flex-row gap-2">
+                <Button label="Set Anchor" onPress={handleSetAnchor} size="sm" variant="accent" />
+                <Button label="Reset" onPress={handleResetReps} size="sm" variant="secondary" />
+              </View>
+            </View>
+
+            {!hasAnchor ? (
+              <View className="mb-3 rounded-lg bg-bg-primary px-3 py-2">
+                <Text className="text-xs text-text-tertiary">
+                  Press Set Anchor in your starting position before counting reps.
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Phase + angle */}
+            <View className="mb-3 flex-row items-center gap-3">
+              <View className="rounded-full px-3 py-1" style={{ backgroundColor: phaseColor + '33' }}>
+                <Text className="text-sm font-bold" style={{ color: phaseColor }}>
+                  {phaseLabel}
+                </Text>
+              </View>
+              <Text className="text-sm text-text-secondary">
+                {angleDeltaDeg.toFixed(1)}° from anchor
+                {hasAnchor ? ` (need >${REP_OUTER_THRESH_DEG}° to register)` : ''}
+              </Text>
+            </View>
+
+            {/* Big rep number */}
+            <Text className="text-center font-bold text-text-primary" style={{ fontSize: 96, lineHeight: 100 }}>
+              {repCount}
+            </Text>
+            <Text className="text-center text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
@@ -350,7 +451,7 @@ export default function WitMotionTestScreen() {
             <Text className="text-xs text-text-tertiary">Packets received: {wit.packetCount}</Text>
           </View>
 
-          {/* Pitch angle from anchor — works at ANY speed, zero drift (uses AHRS directly) */}
+          {/* Pitch angle from anchor */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <View className="mb-2 flex-row items-start justify-between">
               <View className="flex-1 pr-2">
@@ -376,11 +477,11 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          {/* Vertical velocity — works for fast movements via HPF integration */}
+          {/* Vertical velocity */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-1 font-bold text-text-primary">Vertical velocity (fast moves)</Text>
+            <Text className="mb-1 font-bold text-text-primary">Vertical velocity</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              HPF-integrated acceleration · + = up · − = down · best for movements {'>'} 0.5 Hz
+              HPF-integrated acceleration · + = up · − = down · Velocity: {(velocityMs * 100).toFixed(1)} cm/s
             </Text>
             {velData.length > 1 ? (
               <SignedChart data={velData} yRange={80} unitLabel="cm/s" color="#4ade80" />
@@ -391,23 +492,15 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          {/* Vertical position — integrated HPF velocity, still drifts over long periods */}
+          {/* Vertical position */}
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <View className="mb-3 flex-row items-center justify-between">
               <View>
-                <Text className="font-bold text-text-primary">Vertical position (fast moves)</Text>
+                <Text className="font-bold text-text-primary">Vertical position</Text>
                 <Text className="text-xs text-text-tertiary">
-                  Displacement from anchor · last {CHART_MAX_POINTS} samples
+                  Displacement from anchor · Position: {positionCm.toFixed(1)} cm
                 </Text>
               </View>
-            </View>
-            <View className="mb-3 flex-row gap-4">
-              <Text className="text-sm text-text-primary">
-                Position: <Text className="font-bold">{positionCm.toFixed(1)} cm</Text>
-              </Text>
-              <Text className="text-sm text-text-primary">
-                Velocity: <Text className="font-bold">{(velocityMs * 100).toFixed(1)} cm/s</Text>
-              </Text>
             </View>
             {posData.length > 1 ? (
               <SignedChart data={posData} yRange={50} unitLabel="cm" color="#60a5fa" zeroLabel="anchor" />
