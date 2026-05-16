@@ -4,8 +4,8 @@ import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-sv
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
-import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
+import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -41,10 +41,11 @@ const ZVU_WINDOW = 20;
 // also drops proportionally, so the net rise stays detectable.
 const SIGNAL_ALPHA = 0.06;
 const BASELINE_ALPHA = 0.003;
-const RISE_G = 0.06;    // (smoothMag − baseline) must exceed this to enter ACTIVE phase
-const FALL_G = 0.02;    // must fall below this for the rep to be confirmed
-const MIN_REP_MS = 300; // active phase must last at least this long (filters vibration noise)
-const MIN_GAP_MS = 1200; // minimum ms between rep counts (prevents double-counting)
+const RISE_G = 0.025; // lower threshold so controlled reps still arm the detector
+const FALL_G = 0.01; // must fall below this for the rep to be confirmed
+const MIN_REP_MS = 220; // active phase must last at least this long (filters vibration noise)
+const MIN_GAP_MS = 500; // minimum ms between rep counts (prevents double-counting)
+const REARM_WINDOW = 6; // consecutive low samples required before the next rep can arm
 
 type RepPhase = 'REST' | 'ACTIVE';
 
@@ -93,7 +94,7 @@ function SignedChart({ data, yRange, unitLabel, color = '#4ade80', zeroLabel }: 
           })
           .join(' ');
 
-  const labels: Array<[number, string]> = [
+  const labels: [number, string][] = [
     [-yRange, `−${yRange}${unitLabel}`],
     [0, zeroLabel ?? `0${unitLabel}`],
     [yRange, `+${yRange}${unitLabel}`],
@@ -140,6 +141,80 @@ function SignedChart({ data, yRange, unitLabel, color = '#4ade80', zeroLabel }: 
   );
 }
 
+interface MultiChartSeries {
+  key: string;
+  label: string;
+  color: string;
+  data: number[];
+}
+
+interface RangeChartProps {
+  series: MultiChartSeries[];
+  minY: number;
+  maxY: number;
+}
+
+function RangeChart({ series, minY, maxY }: RangeChartProps) {
+  const WIDTH = 320;
+  const HEIGHT = 160;
+  const PAD_LEFT = 44;
+  const PAD_RIGHT = 8;
+  const PAD_TOP = 8;
+  const PAD_BOTTOM = 20;
+  const innerW = WIDTH - PAD_LEFT - PAD_RIGHT;
+  const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const span = maxY - minY;
+  const ticks = [1.1, 1.0, 0.8, 0.6, 0.4, 0.2, 0, -0.2];
+
+  return (
+    <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+      <Svg width={WIDTH} height={HEIGHT}>
+        {ticks.map((tick) => {
+          const clamped = Math.max(minY, Math.min(maxY, tick));
+          const y = PAD_TOP + ((maxY - clamped) / span) * innerH;
+          return (
+            <SvgLine
+              key={tick}
+              x1={PAD_LEFT}
+              y1={y}
+              x2={WIDTH - PAD_RIGHT}
+              y2={y}
+              stroke={tick === 0 || tick === 1 ? '#444' : '#333'}
+              strokeWidth={1}
+              strokeDasharray={tick === 0 || tick === 1 ? '4,4' : '2,6'}
+            />
+          );
+        })}
+        {ticks.map((tick) => {
+          const clamped = Math.max(minY, Math.min(maxY, tick));
+          const y = PAD_TOP + ((maxY - clamped) / span) * innerH;
+          return (
+            <SvgText key={`${tick}-label`} x={PAD_LEFT - 4} y={y + 4} fontSize={9} fill="#888" textAnchor="end">
+              {tick.toFixed(tick === 0 || tick === 1 ? 0 : 1)}
+            </SvgText>
+          );
+        })}
+        {series.map((item) => {
+          const points =
+            item.data.length < 2
+              ? ''
+              : item.data
+                  .map((v, i) => {
+                    const x = PAD_LEFT + (i / (CHART_MAX_POINTS - 1)) * innerW;
+                    const y = PAD_TOP + ((maxY - v) / span) * innerH;
+                    return `${x.toFixed(1)},${Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, y)).toFixed(1)}`;
+                  })
+                  .join(' ');
+
+          return points ? (
+            <Polyline key={item.key} points={points} fill="none" stroke={item.color} strokeWidth={1.5} />
+          ) : null;
+        })}
+      </Svg>
+    </View>
+  );
+}
+
 export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
@@ -147,9 +222,19 @@ export default function WitMotionTestScreen() {
   const velBufRef = useRef<number[]>([]);
   const posBufRef = useRef<number[]>([]);
   const angleBufRef = useRef<number[]>([]);
+  const rawAccelBufRef = useRef({
+    x: [] as number[],
+    y: [] as number[],
+    z: [] as number[],
+  });
   const [velData, setVelData] = useState<number[]>([]);
   const [posData, setPosData] = useState<number[]>([]);
   const [angleData, setAngleData] = useState<number[]>([]);
+  const [rawAccelData, setRawAccelData] = useState({
+    x: [] as number[],
+    y: [] as number[],
+    z: [] as number[],
+  });
 
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
@@ -175,6 +260,7 @@ export default function WitMotionTestScreen() {
     baseline: 0,           // slow EMA of acc_r  (~0.05 Hz) — tracks the at-rest floor
     activeStartMs: null as number | null, // when ACTIVE phase began
     lastRepMs: null as number | null,
+    restStreak: 0,
     initialized: false,    // prevents startup transient from triggering phantom reps
   });
 
@@ -206,10 +292,11 @@ export default function WitMotionTestScreen() {
 
         const { accel, gyro, angle, timestamp } = packet;
         currentAngleRef.current = angle;
+        const sampleTs = timestamp;
 
-        const wallGapS = integ.lastTs !== null ? (timestamp - integ.lastTs) / 1000 : 0;
+        const wallGapS = integ.lastTs !== null ? (sampleTs - integ.lastTs) / 1000 : 0;
         const isGap = wallGapS > RECONNECT_GAP_S;
-        integ.lastTs = timestamp;
+        integ.lastTs = sampleTs;
 
         // Initialize both EMA filters from the first real packet to avoid startup transient.
         // Without this, both start at 0 and the surge to ~1g counts as a phantom rep.
@@ -229,6 +316,7 @@ export default function WitMotionTestScreen() {
           integ.stillCount = 0;
           rep.phase = 'REST';
           rep.activeStartMs = null;
+          rep.restStreak = 0;
           // Re-seed filters from current packet after a gap
           const gapMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
           rep.smoothMag = gapMag;
@@ -268,13 +356,20 @@ export default function WitMotionTestScreen() {
         rep.baseline = BASELINE_ALPHA * accelMag + (1 - BASELINE_ALPHA) * rep.baseline;
         const feature = rep.smoothMag - rep.baseline;
 
-        const nowMs = Date.now();
+        const nowMs = sampleTs;
         const msSinceLast = rep.lastRepMs !== null ? nowMs - rep.lastRepMs : Infinity;
 
         if (rep.phase === 'REST') {
-          if (feature > RISE_G && msSinceLast > MIN_GAP_MS) {
+          if (feature < FALL_G) {
+            rep.restStreak += 1;
+          } else {
+            rep.restStreak = 0;
+          }
+
+          if (feature > RISE_G && rep.restStreak >= REARM_WINDOW && msSinceLast > MIN_GAP_MS) {
             rep.phase = 'ACTIVE';
             rep.activeStartMs = nowMs;
+            rep.restStreak = 0;
           }
         } else if (rep.phase === 'ACTIVE') {
           if (feature < FALL_G) {
@@ -285,30 +380,55 @@ export default function WitMotionTestScreen() {
             }
             rep.phase = 'REST';
             rep.activeStartMs = null;
+            rep.restStreak = 1;
+          } else {
+            rep.restStreak = 0;
           }
         }
 
         // Push to chart buffer every 5 packets (100 Hz → 20 Hz chart data → ~9 s visible)
         integ.chartTick = (integ.chartTick + 1) % 5;
         if (integ.chartTick === 0) {
+          const raw = rawAccelBufRef.current;
+          raw.x.push(accel.x);
+          raw.y.push(accel.y);
+          raw.z.push(accel.z);
+          if (raw.x.length > CHART_MAX_POINTS) {
+            raw.x.splice(0, raw.x.length - CHART_MAX_POINTS);
+          }
+          if (raw.y.length > CHART_MAX_POINTS) {
+            raw.y.splice(0, raw.y.length - CHART_MAX_POINTS);
+          }
+          if (raw.z.length > CHART_MAX_POINTS) {
+            raw.z.splice(0, raw.z.length - CHART_MAX_POINTS);
+          }
+
           const vel2 = velBufRef.current;
           vel2.push(integ.hpfVel * 100); // m/s → cm/s
-          if (vel2.length > CHART_MAX_POINTS) vel2.splice(0, vel2.length - CHART_MAX_POINTS);
+          if (vel2.length > CHART_MAX_POINTS) {
+            vel2.splice(0, vel2.length - CHART_MAX_POINTS);
+          }
 
           const pos = posBufRef.current;
           pos.push(integ.position * 100); // m → cm
-          if (pos.length > CHART_MAX_POINTS) pos.splice(0, pos.length - CHART_MAX_POINTS);
+          if (pos.length > CHART_MAX_POINTS) {
+            pos.splice(0, pos.length - CHART_MAX_POINTS);
+          }
 
           const anchor = anchorAngleRef.current;
           const aDelta = anchor !== null ? angle.y - anchor.y : 0;
           const ang = angleBufRef.current;
           ang.push(aDelta);
-          if (ang.length > CHART_MAX_POINTS) ang.splice(0, ang.length - CHART_MAX_POINTS);
+          if (ang.length > CHART_MAX_POINTS) {
+            ang.splice(0, ang.length - CHART_MAX_POINTS);
+          }
 
           // (smoothMag − baseline) — the feature the rep counter actually reads
           const sm = smoothBufRef.current;
           sm.push(rep.smoothMag - rep.baseline);
-          if (sm.length > CHART_MAX_POINTS) sm.splice(0, sm.length - CHART_MAX_POINTS);
+          if (sm.length > CHART_MAX_POINTS) {
+            sm.splice(0, sm.length - CHART_MAX_POINTS);
+          }
         }
       }
     });
@@ -320,6 +440,11 @@ export default function WitMotionTestScreen() {
       setVelData([...velBufRef.current]);
       setPosData([...posBufRef.current]);
       setAngleData([...angleBufRef.current]);
+      setRawAccelData({
+        x: [...rawAccelBufRef.current.x],
+        y: [...rawAccelBufRef.current.y],
+        z: [...rawAccelBufRef.current.z],
+      });
       setPositionCm(integRef.current.position * 100);
       setVelocityMs(integRef.current.hpfVel);
       setRepCount(repRef.current.repCount);
@@ -345,6 +470,7 @@ export default function WitMotionTestScreen() {
     velBufRef.current = [];
     posBufRef.current = [];
     angleBufRef.current = [];
+    rawAccelBufRef.current = { x: [], y: [], z: [] };
   }, []);
 
   const handleResetReps = useCallback(() => {
@@ -353,6 +479,7 @@ export default function WitMotionTestScreen() {
     rep.phase = 'REST';
     rep.activeStartMs = null;
     rep.lastRepMs = null;
+    rep.restStreak = 0;
     // Keep smoothMag/baseline — resetting them causes startup transient again
     smoothBufRef.current = [];
   }, []);
@@ -502,7 +629,45 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          {/* (smoothMag − baseline) — the signal the rep counter reads */}
+          {/* Raw acceleration chart, close to the official app's display */}
+          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-1 font-bold text-text-primary">Raw acceleration</Text>
+            <Text className="mb-3 text-xs text-text-tertiary">
+              Direct accel values from the sensor · slow movement still shows here
+            </Text>
+            {rawAccelData.x.length > 1 ? (
+              <>
+                <RangeChart
+                  series={[
+                    { key: 'x', label: 'AccX', color: '#94a3b8', data: rawAccelData.x },
+                    { key: 'y', label: 'AccY', color: '#facc15', data: rawAccelData.y },
+                    { key: 'z', label: 'AccZ', color: '#f59e0b', data: rawAccelData.z },
+                  ]}
+                  minY={-0.2}
+                  maxY={1.1}
+                />
+                <View className="mt-3 flex-row flex-wrap gap-3">
+                  {[
+                    { key: 'x', label: 'AccX', color: '#94a3b8', value: wit.liveData.accel?.x },
+                    { key: 'y', label: 'AccY', color: '#facc15', value: wit.liveData.accel?.y },
+                    { key: 'z', label: 'AccZ', color: '#f59e0b', value: wit.liveData.accel?.z },
+                  ].map((item) => (
+                    <View key={item.key} className="flex-row items-center gap-2">
+                      <View className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <Text className="text-xs text-text-secondary">
+                        {item.label} · {valueOrDash(item.value)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </>
+            ) : (
+              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+                <Text className="text-xs text-text-tertiary">Connect a device to see raw accel</Text>
+              </View>
+            )}
+          </View>
+
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
