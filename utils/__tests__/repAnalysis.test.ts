@@ -23,10 +23,28 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(10);
   });
 
+  it('counts 10 reps in pushups.json', () => {
+    const samples = loadRepsJson('pushups.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
   it('counts 7 reps in slow_fast_mixed.json', () => {
     const samples = loadRepsJson('slow_fast_mixed.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(7);
+  });
+
+  it('counts 8 reps in slow_fast_mixed_2.json', () => {
+    const samples = loadRepsJson('slow_fast_mixed_2.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(8);
+  });
+
+  it('counts 8 reps in slow_fast_mixed_3.json', () => {
+    const samples = loadRepsJson('slow_fast_mixed_3.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(8);
   });
 
   it('counts 5 reps in fast_paced.json', () => {
