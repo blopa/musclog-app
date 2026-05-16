@@ -29,12 +29,11 @@ const ZVU_ACCEL_THRESH_G = 0.05;
 const ZVU_GYRO_THRESH_DPS = 5.0;
 const ZVU_WINDOW = 20;
 
-// Rep counting: Schmitt trigger on |accel_magnitude − 1g|.
-// At rest the sensor reads ~1g (gravity). During a rep it deviates significantly.
-// ACTIVE when deviation > ENTER_G, REST when deviation < EXIT_G (hysteresis prevents chatter).
-const REP_ENTER_G = 0.20;   // deviation above this → rep in progress
-const REP_EXIT_G = 0.08;    // deviation below this → rep done
-const REP_MIN_ACTIVE_MS = 200; // ignore blips shorter than this
+// Rep counting: pick the dominant accel axis, smooth it slightly, then count the obvious peaks.
+// This keeps the logic close to the chart you see on screen and avoids a more fragile state machine.
+const REP_SMOOTH_ALPHA = 0.25;
+const REP_PEAK_THRESHOLD_G = 0.42;
+const REP_MIN_PEAK_GAP_MS = 250;
 
 interface RecordedMotionSample {
   timestamp: number;
@@ -73,34 +72,46 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     };
   }
 
-  let repCount = 0;
-  let phase: 'REST' | 'ACTIVE' = 'REST';
-  let activeStartMs = 0;
-  let previousTs: number | null = null;
-
+  const mins: Record<'x' | 'y' | 'z', number> = { x: Infinity, y: Infinity, z: Infinity };
+  const maxs: Record<'x' | 'y' | 'z', number> = { x: -Infinity, y: -Infinity, z: -Infinity };
   for (const sample of samples) {
-    const { accel, timestamp } = sample;
-    const accelMag = Math.sqrt(accel.x ** 2 + accel.y ** 2 + accel.z ** 2);
-    const deviation = Math.abs(accelMag - 1.0);
+    mins.x = Math.min(mins.x, sample.accel.x);
+    mins.y = Math.min(mins.y, sample.accel.y);
+    mins.z = Math.min(mins.z, sample.accel.z);
+    maxs.x = Math.max(maxs.x, sample.accel.x);
+    maxs.y = Math.max(maxs.y, sample.accel.y);
+    maxs.z = Math.max(maxs.z, sample.accel.z);
+  }
 
-    const gapMs = previousTs !== null ? timestamp - previousTs : 0;
-    previousTs = timestamp;
+  const dominantAxis = (['x', 'y', 'z'] as const).reduce((bestAxis, axis) => {
+    const bestRange = maxs[bestAxis] - mins[bestAxis];
+    const axisRange = maxs[axis] - mins[axis];
+    return axisRange > bestRange ? axis : bestAxis;
+  }, 'z' as const);
 
-    if (gapMs > RECONNECT_GAP_S * 1000) {
-      phase = 'REST';
-      continue;
-    }
+  const axisValues = samples.map((sample) => sample.accel[dominantAxis]);
+  const smoothed: number[] = [];
+  let smoothValue = axisValues[0];
+  smoothed.push(smoothValue);
+  for (let i = 1; i < axisValues.length; i += 1) {
+    smoothValue = REP_SMOOTH_ALPHA * axisValues[i] + (1 - REP_SMOOTH_ALPHA) * smoothValue;
+    smoothed.push(smoothValue);
+  }
 
-    if (phase === 'REST') {
-      if (deviation > REP_ENTER_G) {
-        phase = 'ACTIVE';
-        activeStartMs = timestamp;
-      }
-    } else if (deviation < REP_EXIT_G) {
-      if (timestamp - activeStartMs >= REP_MIN_ACTIVE_MS) {
-        repCount += 1;
-      }
-      phase = 'REST';
+  const baselineWindow = Math.min(50, axisValues.length);
+  const baselineValues = axisValues.slice(0, baselineWindow).slice().sort((a, b) => a - b);
+  const baseline = baselineValues[Math.floor(baselineValues.length / 2)] ?? axisValues[0];
+
+  let repCount = 0;
+  let lastPeakMs: number | null = null;
+  for (let i = 1; i < smoothed.length - 1; i += 1) {
+    const current = smoothed[i];
+    const isPeak = current > smoothed[i - 1] && current >= smoothed[i + 1];
+    const peakGapMs = lastPeakMs === null ? Infinity : samples[i].timestamp - lastPeakMs;
+
+    if (isPeak && current > baseline + REP_PEAK_THRESHOLD_G && peakGapMs >= REP_MIN_PEAK_GAP_MS) {
+      repCount += 1;
+      lastPeakMs = samples[i].timestamp;
     }
   }
 
@@ -761,7 +772,7 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              |mag − 1g| · active when &gt;{REP_ENTER_G} g · now: {liveFeature.toFixed(3)} g
+              |mag − 1g| · peak when &gt;{REP_PEAK_THRESHOLD_G} g · now: {liveFeature.toFixed(3)} g
             </Text>
             {smoothData.length > 1 ? (
               <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
