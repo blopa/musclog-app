@@ -128,15 +128,13 @@ function analyzeRecordedReps(samples: RecordedMotionSample[]): RepAnalysisSummar
     const msSinceLast = lastRepMs !== null ? nowMs - lastRepMs : Infinity;
 
     if (phase === 'REST') {
-      if (feature < FALL_G) {
-        restStreak += 1;
-      } else {
-        restStreak = 0;
-      }
-
       if (feature > RISE_G && restStreak >= REARM_WINDOW && msSinceLast > MIN_GAP_MS) {
         phase = 'ACTIVE';
         activeStartMs = nowMs;
+        restStreak = 0;
+      } else if (feature < FALL_G) {
+        restStreak += 1;
+      } else {
         restStreak = 0;
       }
     } else if (feature < FALL_G) {
@@ -559,7 +557,9 @@ export default function WitMotionTestScreen() {
 
   const handleStopRecording = useCallback(() => {
     recordingActiveRef.current = false;
-    const summary = analyzeRecordedReps(recordedMotionRef.current);
+    const samples = recordedMotionRef.current;
+    console.log('WITMOTION_RECORDED_SAMPLES', JSON.stringify(samples));
+    const summary = analyzeRecordedReps(samples);
     setAnalysisSummary(summary);
     setRecordingStatus('analyzed');
   }, []);
