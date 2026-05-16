@@ -17,24 +17,16 @@ function valueOrDash(value: number | null | undefined, digits = 2) {
 
 const CHART_MAX_POINTS = 180;
 const GRAVITY_MS2 = 9.81;
-// Fixed per-sample dt. We do NOT derive dt from wall-clock timestamps because packets
-// inside the same BLE notification share a timestamp (the OS delivers them all at once),
-// which would make dt = 0 for most packets and break the integrator entirely.
-// 100 Hz = 10 ms nominal; this also matches the setOutputRate(100) call on connect.
-const SENSOR_DT_S = 0.01;
-// Wall-clock gap larger than this means the device disconnected — skip integration.
+const SENSOR_DT_S = 0.01; // fixed 10 ms per sample — never derived from wall-clock timestamps
 const RECONNECT_GAP_S = 2.0;
-// Acceleration below this is treated as noise/bias and is NEVER fed into the integrator.
-// This sensor shows ~0.014 g of static bias, so 0.035 g clears it with margin.
-// Trade-off: movements that stay under 0.035 g won't register — a physics limitation.
-const ACCEL_DEADBAND_G = 0.035;
-// Smoothing factor for aVert before deadband test — prevents brief noise spikes from
-// resetting the still counter and letting bias sneak into the integrator.
-const ACCEL_SMOOTH = 0.25;
-// Frames of sub-deadband accel before we start decaying velocity toward zero.
-const STILL_FRAMES_TO_DECAY = 12;
-// Per-frame velocity decay while still: 0.88^20 ≈ 7 % — zeroes out in ~0.2 s at 100 Hz.
-const VELOCITY_DECAY_STILL = 0.88;
+
+// High-pass filter coefficients — alpha = tau / (tau + dt)
+// Accel HPF: tau = 1.0 s → cutoff ≈ 0.16 Hz. Removes static bias while passing gym-speed
+// movements (≥ 0.5 Hz). A deadband is NOT needed; the HPF cancels bias algebraically.
+const HPF_ALPHA_ACCEL = 1.0 / (1.0 + SENSOR_DT_S); // ≈ 0.990
+// Velocity HPF: tau = 0.5 s → cutoff ≈ 0.32 Hz. Removes any drift that leaks through
+// the accel HPF after integration so the velocity signal auto-zeros when stationary.
+const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S); // ≈ 0.980
 
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
@@ -138,14 +130,20 @@ export default function WitMotionTestScreen() {
   const [velData, setVelData] = useState<number[]>([]);
   const [posData, setPosData] = useState<number[]>([]);
 
-  // Integration state: velocity (m/s), position (m), last timestamp, still-frame counter,
-  // EMA-smoothed aVert for the deadband test, and a subsampling counter for the chart buffer.
+  // HPF state machine — no deadband, no clamp, no decay heuristics.
+  // hpfAccel  = high-pass filtered vertical acceleration (bias removed)
+  // rawVel    = integral of hpfAccel (in m/s)
+  // hpfVel    = high-pass filtered rawVel (integration drift removed, auto-zeros at rest)
+  // position  = integral of hpfVel (relative displacement in m)
+  // prevAVert / prevRawVel are the previous raw values needed for the HPF difference term.
   const integRef = useRef({
-    velocity: 0,
+    prevAVert: 0,
+    hpfAccel: 0,
+    rawVel: 0,
+    prevRawVel: 0,
+    hpfVel: 0,
     position: 0,
     lastTs: null as number | null,
-    stillCount: 0,
-    aVertSmoothed: 0,
     chartTick: 0,
   });
   const [positionCm, setPositionCm] = useState(0);
@@ -178,43 +176,44 @@ export default function WitMotionTestScreen() {
         integ.lastTs = timestamp;
 
         if (isGap) {
-          // Device was disconnected — force velocity to zero and skip this sample.
-          integ.velocity = 0;
-          integ.aVertSmoothed = 0;
-          integ.stillCount = 0;
+          // Disconnection — reset filter state so old values don't pollute the next run.
+          integ.prevAVert = 0;
+          integ.hpfAccel = 0;
+          integ.rawVel = 0;
+          integ.prevRawVel = 0;
+          integ.hpfVel = 0;
           continue;
         }
 
         const aVert = verticalAccelWorld(accel, angle);
-        integ.aVertSmoothed = ACCEL_SMOOTH * aVert + (1 - ACCEL_SMOOTH) * integ.aVertSmoothed;
 
-        if (Math.abs(integ.aVertSmoothed) > ACCEL_DEADBAND_G) {
-          integ.velocity += aVert * GRAVITY_MS2 * SENSOR_DT_S;
-          integ.stillCount = 0;
-        } else {
-          integ.stillCount++;
-          if (integ.stillCount > STILL_FRAMES_TO_DECAY) {
-            integ.velocity *= VELOCITY_DECAY_STILL;
-            if (Math.abs(integ.velocity) < 0.0005) {
-              integ.velocity = 0;
-            }
-          }
-        }
+        // Stage 1 — HPF on acceleration.
+        // y[n] = α·(y[n-1] + x[n] − x[n-1])
+        // This algebraically removes any constant bias so it never enters the integrator.
+        integ.hpfAccel = HPF_ALPHA_ACCEL * (integ.hpfAccel + aVert - integ.prevAVert);
+        integ.prevAVert = aVert;
 
-        integ.velocity = Math.max(-3, Math.min(3, integ.velocity));
-        integ.position += integ.velocity * SENSOR_DT_S;
+        // Stage 2 — integrate HPF acceleration → raw velocity.
+        integ.rawVel += integ.hpfAccel * GRAVITY_MS2 * SENSOR_DT_S;
+
+        // Stage 3 — HPF on velocity removes integration drift; signal auto-zeros at rest.
+        integ.hpfVel = HPF_ALPHA_VEL * (integ.hpfVel + integ.rawVel - integ.prevRawVel);
+        integ.prevRawVel = integ.rawVel;
+
+        // Stage 4 — integrate HPF velocity → position (relative displacement).
+        integ.position += integ.hpfVel * SENSOR_DT_S;
 
         // Push to chart buffer every 5 packets (at 100 Hz → 20 Hz of chart data → 9 s visible).
         integ.chartTick = (integ.chartTick + 1) % 5;
         if (integ.chartTick === 0) {
           const vel = velBufRef.current;
-          vel.push(integ.velocity * 100);
+          vel.push(integ.hpfVel * 100); // m/s → cm/s
           if (vel.length > CHART_MAX_POINTS) {
             vel.splice(0, vel.length - CHART_MAX_POINTS);
           }
 
           const pos = posBufRef.current;
-          pos.push(integ.position * 100);
+          pos.push(integ.position * 100); // m → cm
           if (pos.length > CHART_MAX_POINTS) {
             pos.splice(0, pos.length - CHART_MAX_POINTS);
           }
@@ -229,18 +228,21 @@ export default function WitMotionTestScreen() {
       setVelData([...velBufRef.current]);
       setPosData([...posBufRef.current]);
       setPositionCm(integRef.current.position * 100);
-      setVelocityMs(integRef.current.velocity);
+      setVelocityMs(integRef.current.hpfVel);
     }, 50);
     return () => clearInterval(interval);
   }, []);
 
   const handleSetAnchor = useCallback(() => {
-    integRef.current.velocity = 0;
-    integRef.current.position = 0;
-    integRef.current.stillCount = 0;
-    integRef.current.aVertSmoothed = 0;
-    integRef.current.lastTs = null;
-    integRef.current.chartTick = 0;
+    const integ = integRef.current;
+    integ.prevAVert = 0;
+    integ.hpfAccel = 0;
+    integ.rawVel = 0;
+    integ.prevRawVel = 0;
+    integ.hpfVel = 0;
+    integ.position = 0;
+    integ.lastTs = null;
+    integ.chartTick = 0;
     velBufRef.current = [];
     posBufRef.current = [];
   }, []);
