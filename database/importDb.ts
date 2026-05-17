@@ -209,10 +209,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               continue;
             }
 
-            // if (key === 'name' && value === '249 LOW CARPE SUGAR 24g LOW PROTON SUGAR nu whip i') {
-            //   debugger;
-            // }
-
             let assignValue = value;
             if (key.endsWith('_json')) {
               // @json properties may be named without the "_json" suffix (e.g. micros_json → micros),
