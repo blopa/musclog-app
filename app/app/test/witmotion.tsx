@@ -18,6 +18,8 @@ import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import type { RepAnalysisSummary } from '@/utils/repAnalysis';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
+import { extractRepCountingFeatures } from '@/utils/repCountingFeatures';
+import { predictRepCount } from '@/utils/repCountingModel';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -459,6 +461,7 @@ export default function WitMotionTestScreen() {
   const recordingStartedAtRef = useRef<number | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'analyzed'>('idle');
   const [analysisSummary, setAnalysisSummary] = useState<RepAnalysisSummary | null>(null);
+  const [mlRepCount, setMlRepCount] = useState<number | null>(null);
   const [recordedSampleCount, setRecordedSampleCount] = useState(0);
   const [debugDataStatus, setDebugDataStatus] = useState('No saved debug files yet');
   const [isSavingDebugData, setIsSavingDebugData] = useState(false);
@@ -688,6 +691,15 @@ export default function WitMotionTestScreen() {
     recordedMotionRef.current = [];
     const summary = analyzeRecordedReps(samples);
     setAnalysisSummary(summary);
+
+    try {
+      const features = extractRepCountingFeatures(samples);
+      const raw = predictRepCount(features) as number;
+      setMlRepCount(Math.round(raw));
+    } catch {
+      setMlRepCount(null);
+    }
+
     setRecordingStatus('analyzed');
 
     const directoryUri = await ensureDebugDataDirectoryUri();
@@ -774,6 +786,7 @@ export default function WitMotionTestScreen() {
     recordingStartedAtRef.current = null;
     setRecordingStatus('idle');
     setAnalysisSummary(null);
+    setMlRepCount(null);
     setRecordedSampleCount(0);
     setDebugDataStatus('Recording cleared');
     setLiveFeature(0);
@@ -872,17 +885,34 @@ export default function WitMotionTestScreen() {
               <Text className="font-bold text-text-primary">{storedDebugFiles.length}</Text>
             </Text>
 
-            {/* Big rep number */}
-            <Text
-              className="text-center font-bold text-text-primary"
-              style={{ fontSize: 96, lineHeight: 100 }}
-            >
-              {repCount}
+            {/* Rep counts — algorithmic + ML side by side */}
+            <View className="flex-row items-end justify-around">
+              <View className="flex-1 items-center">
+                <Text
+                  className="font-bold text-text-primary"
+                  style={{ fontSize: 80, lineHeight: 84 }}
+                >
+                  {repCount}
+                </Text>
+                <Text className="text-xs uppercase tracking-widest text-text-tertiary">
+                  algorithm
+                </Text>
+              </View>
+              <View className="flex-1 items-center">
+                <Text
+                  className="font-bold text-text-secondary"
+                  style={{ fontSize: 80, lineHeight: 84 }}
+                >
+                  {mlRepCount ?? '—'}
+                </Text>
+                <Text className="text-xs uppercase tracking-widest text-text-tertiary">
+                  ml model
+                </Text>
+              </View>
+            </View>
+            <Text className="mt-2 text-center text-xs text-text-tertiary">
+              {recordingFooterText}
             </Text>
-            <Text className="mb-1 text-center text-xs uppercase tracking-widest text-text-tertiary">
-              reps
-            </Text>
-            <Text className="text-center text-xs text-text-tertiary">{recordingFooterText}</Text>
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">

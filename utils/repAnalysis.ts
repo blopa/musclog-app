@@ -379,7 +379,13 @@ function countPositivePeaks(
   thresholdFraction: number,
   minPeakGapMs: number
 ): number {
-  return findPositivePeakTimestamps(values, timestamps, smoothAlpha, thresholdFraction, minPeakGapMs).length;
+  return findPositivePeakTimestamps(
+    values,
+    timestamps,
+    smoothAlpha,
+    thresholdFraction,
+    minPeakGapMs
+  ).length;
 }
 
 export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary {
@@ -410,8 +416,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const driftWindowSize = Math.min(20, Math.floor(centeredRaw.length * 0.05));
   const startMean =
     centeredRaw.slice(0, driftWindowSize).reduce((s, v) => s + v, 0) / driftWindowSize;
-  const endMean =
-    centeredRaw.slice(-driftWindowSize).reduce((s, v) => s + v, 0) / driftWindowSize;
+  const endMean = centeredRaw.slice(-driftWindowSize).reduce((s, v) => s + v, 0) / driftWindowSize;
   const driftRatio = signalRangeRaw > 0 ? Math.abs(endMean - startMean) / signalRangeRaw : 0;
   const driftActive = driftRatio >= 0.65;
   const centered = driftActive ? detrendLinear(centeredRaw) : centeredRaw;

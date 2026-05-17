@@ -23,6 +23,7 @@
     "check-locale-consistency": "node scripts/check-locale-consistency.js",
     "generate-lang": "node scripts/generateLangFile.js",
     "convert-exercise-images": "node scripts/convert-exercise-images-to-png.js",
+    "sync-ml-model": "cp training-data/output/model.js utils/repCountingModel.js",
     "postinstall": "patch-package",
     "prestart": "node scripts/sync-web-phone-frame.js",
     "start": "expo start",
