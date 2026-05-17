@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.7.10",
+  "version": "2.7.11",
   "engines": {
     "node": "24.x"
   },
@@ -40,7 +40,7 @@
     "prebuild": "expo prebuild --clean",
     "setup-android": "turtle setup:android",
     "build-android-debug": "eas build --platform android --profile development:device --local",
-    "build-android-debug-local": "EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build --platform android --profile development:device --local",
+    "build-android-debug-cache": "EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build --platform android --profile development:device --local",
     "build-android": "eas build -p android --profile production --clear-cache",
     "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",

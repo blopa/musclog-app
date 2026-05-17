@@ -94,8 +94,8 @@ android {
         applicationId 'com.werules.logger'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 238
-        versionName "2.7.10"
+        versionCode 239
+        versionName "2.7.11"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
