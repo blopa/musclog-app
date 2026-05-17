@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import { CURRENT_DATABASE_VERSION, DATABASE_NAME } from '@/constants/database';
 import {
   ASYNC_STORAGE_EXCLUDED_KEYS,
+  ASYNC_STORAGE_EXCLUDED_PREFIXES,
   RESTORE_ORDER,
   SETTINGS_EXCLUDED_TYPES,
 } from '@/constants/exportImport';
@@ -136,7 +137,11 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
 
   // Dump AsyncStorage (exclude device-specific and session-only keys)
   const allKeys = await AsyncStorage.getAllKeys();
-  const keysToBackup = allKeys.filter((k) => !ASYNC_STORAGE_EXCLUDED_KEYS.has(k));
+  const keysToBackup = allKeys.filter(
+    (k) =>
+      !ASYNC_STORAGE_EXCLUDED_KEYS.has(k) &&
+      !ASYNC_STORAGE_EXCLUDED_PREFIXES.some((p) => k.startsWith(p))
+  );
 
   if (keysToBackup.length > 0) {
     const pairs = await AsyncStorage.multiGet(keysToBackup);
