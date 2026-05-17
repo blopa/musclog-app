@@ -1,3 +1,5 @@
+import mlMax from 'ml-array-max';
+import mlMin from 'ml-array-min';
 import { PCA } from 'ml-pca';
 import savitzkyGolay from 'ml-savitzky-golay';
 import otsuThreshold from 'otsu';
@@ -148,7 +150,7 @@ function collectPeakClusterCandidate(
   const trimmedTimestamps = timestamps.slice(step, timestamps.length - step);
 
   const centered = detrendLinear(smoothed);
-  const signalRange = Math.max(...centered) - Math.min(...centered);
+  const signalRange = mlMax(centered) - mlMin(centered);
 
   if (signalRange <= 0) {
     return null;
@@ -353,7 +355,7 @@ function findPositivePeakTimestamps(
   const baselineWindow = Math.min(20, smoothed.length);
   const baseline = floorMedian(smoothed.slice(0, baselineWindow));
   const centered = smoothed.map((value) => value - baseline);
-  const signalRange = Math.max(...centered) - Math.min(...centered);
+  const signalRange = mlMax(centered) - mlMin(centered);
   const peakThreshold = signalRange * thresholdFraction;
 
   const peakTimestamps: number[] = [];
@@ -399,7 +401,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const axisRanges: Record<'x' | 'y', number> = { x: -Infinity, y: -Infinity };
   for (const axis of axes) {
     const vals = samples.map((s) => s.angle[axis]);
-    axisRanges[axis] = Math.max(...vals) - Math.min(...vals);
+    axisRanges[axis] = mlMax(vals) - mlMin(vals);
   }
 
   const dominantAxis = (axisRanges.x >= axisRanges.y ? 'x' : 'y') as 'x' | 'y';
@@ -409,7 +411,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const baselineWindow = Math.min(20, smoothed.length);
   const baseline = floorMedian(smoothed.slice(0, baselineWindow));
   const centeredRaw = smoothed.map((value) => value - baseline);
-  const signalRangeRaw = Math.max(...centeredRaw) - Math.min(...centeredRaw);
+  const signalRangeRaw = mlMax(centeredRaw) - mlMin(centeredRaw);
 
   // When gyro drift is dominant (start/end differ by ≥ 65 % of signal range),
   // linear detrend removes the accumulated error before turning-point analysis.
@@ -420,7 +422,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const driftRatio = signalRangeRaw > 0 ? Math.abs(endMean - startMean) / signalRangeRaw : 0;
   const driftActive = driftRatio >= 0.65;
   const centered = driftActive ? detrendLinear(centeredRaw) : centeredRaw;
-  const signalRange = Math.max(...centered) - Math.min(...centered);
+  const signalRange = mlMax(centered) - mlMin(centered);
   const minTurningPointDelta = signalRange * REP_TURNING_POINT_MIN_DELTA_FRACTION;
 
   const rawTurningPoints = collectTurningPoints(centered, timestamps, minTurningPointDelta);
@@ -545,8 +547,8 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   }
 
   const angleFlatRangeDeg = Math.max(
-    Math.max(...samples.map((s) => s.angle.x)) - Math.min(...samples.map((s) => s.angle.x)),
-    Math.max(...samples.map((s) => s.angle.y)) - Math.min(...samples.map((s) => s.angle.y))
+    mlMax(samples.map((s) => s.angle.x)) - mlMin(samples.map((s) => s.angle.x)),
+    mlMax(samples.map((s) => s.angle.y)) - mlMin(samples.map((s) => s.angle.y))
   );
 
   if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {

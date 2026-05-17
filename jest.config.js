@@ -1,6 +1,6 @@
 const baseConfig = {
   transformIgnorePatterns: [
-    'node_modules/(?!(lucide-react-native|@react-native|react-native|@nozbe|expo|@expo)/)',
+    'node_modules/(?!(lucide-react-native|@react-native|react-native|@nozbe|expo|@expo|ml-array-max|ml-array-min|is-any-array)/)',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
