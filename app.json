@@ -179,10 +179,7 @@
         "android.permission.health.WRITE_EXERCISE",
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS",
-        "android.permission.health.READ_HEALTH_DATA_HISTORY",
-        "android.permission.BLUETOOTH_SCAN",
-        "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.health.READ_HEALTH_DATA_HISTORY"
       ]
     },
     "extra": {
