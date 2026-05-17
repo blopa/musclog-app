@@ -54,152 +54,152 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
     useImperativeHandle(ref, () => inputRef.current!);
 
     // Use Animated.Value (React Native native API, not a React hook)
-  // Create once per component instance using useMemo to avoid recreating
-  const focusAnim = useMemo(() => new Animated.Value(0), []);
+    // Create once per component instance using useMemo to avoid recreating
+    const focusAnim = useMemo(() => new Animated.Value(0), []);
 
-  const handleFocus = () => {
-    Animated.timing(focusAnim, {
-      toValue: 1,
-      duration: ANIMATION_DURATION,
-      useNativeDriver: false, // Color animations need JS driver
-    }).start();
-    onFocus?.();
-  };
+    const handleFocus = () => {
+      Animated.timing(focusAnim, {
+        toValue: 1,
+        duration: ANIMATION_DURATION,
+        useNativeDriver: false, // Color animations need JS driver
+      }).start();
+      onFocus?.();
+    };
 
-  const handleBlur = () => {
-    Animated.timing(focusAnim, {
-      toValue: 0,
-      duration: ANIMATION_DURATION,
-      useNativeDriver: false,
-    }).start();
-    onBlur?.();
-  };
+    const handleBlur = () => {
+      Animated.timing(focusAnim, {
+        toValue: 0,
+        duration: ANIMATION_DURATION,
+        useNativeDriver: false,
+      }).start();
+      onBlur?.();
+    };
 
-  // Interpolate colors based on focus state
-  const borderColor = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [theme.colors.background.white10, theme.colors.accent.primary50],
-  });
+    // Interpolate colors based on focus state
+    const borderColor = focusAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [theme.colors.background.white10, theme.colors.accent.primary50],
+    });
 
-  const labelColor = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [theme.colors.text.secondary, theme.colors.accent.primary],
-  });
+    const labelColor = focusAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [theme.colors.text.secondary, theme.colors.accent.primary],
+    });
 
-  const shadowOpacity = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, theme.shadowOpacity.light],
-  });
+    const shadowOpacity = focusAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, theme.shadowOpacity.light],
+    });
 
-  return (
-    <View className="flex-col gap-2">
-      <View className="ml-1 flex-row items-center">
+    return (
+      <View className="flex-col gap-2">
+        <View className="ml-1 flex-row items-center">
+          {Platform.OS === 'web' ? (
+            <Text className="text-sm font-medium text-text-secondary">{label}</Text>
+          ) : (
+            <Animated.Text className="text-sm font-medium" style={{ color: labelColor }}>
+              {label}
+            </Animated.Text>
+          )}
+          {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}
+        </View>
         {Platform.OS === 'web' ? (
-          <Text className="text-sm font-medium text-text-secondary">{label}</Text>
+          <View
+            className={classNames(
+              'w-full flex-row rounded-lg border-2 bg-bg-card px-4',
+              {
+                'min-h-14 items-start py-3': multiline,
+                'h-14 items-center': !multiline,
+              },
+              'border-white/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
+            )}
+          >
+            <RNTextInput
+              ref={inputRef}
+              className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
+              placeholder={placeholder}
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={value}
+              onChangeText={onChangeText}
+              keyboardType={keyboardType}
+              secureTextEntry={secureTextEntry}
+              onFocus={() => {
+                handleFocus();
+                if (Platform.OS === 'android' && selectTextOnFocus) {
+                  inputRef.current?.setSelection(0, value?.length ?? 0);
+                }
+              }}
+              onBlur={handleBlur}
+              style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
+              selectTextOnFocus={Platform.select({ ios: selectTextOnFocus, default: false })}
+              multiline={multiline}
+              numberOfLines={multiline ? numberOfLines : undefined}
+              textAlignVertical={multiline ? 'top' : 'center'}
+              editable={editable}
+            />
+            {icon ? (
+              <View
+                className={classNames('absolute right-4 justify-center', {
+                  'bottom-0 top-0': !multiline,
+                  'top-3': multiline,
+                })}
+              >
+                {icon}
+              </View>
+            ) : null}
+          </View>
         ) : (
-          <Animated.Text className="text-sm font-medium" style={{ color: labelColor }}>
-            {label}
-          </Animated.Text>
-        )}
-        {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}
-      </View>
-      {Platform.OS === 'web' ? (
-        <View
-          className={classNames(
-            'w-full flex-row rounded-lg border-2 bg-bg-card px-4',
-            {
+          <Animated.View
+            className={classNames('w-full flex-row rounded-lg border-2 bg-bg-card px-4', {
               'min-h-14 items-start py-3': multiline,
               'h-14 items-center': !multiline,
-            },
-            'border-white/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
-          )}
-        >
-          <RNTextInput
-            ref={inputRef}
-            className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
-            placeholder={placeholder}
-            placeholderTextColor={theme.colors.text.tertiary}
-            value={value}
-            onChangeText={onChangeText}
-            keyboardType={keyboardType}
-            secureTextEntry={secureTextEntry}
-            onFocus={() => {
-              handleFocus();
-              if (Platform.OS === 'android' && selectTextOnFocus) {
-                inputRef.current?.setSelection(0, value?.length ?? 0);
-              }
+            })}
+            style={{
+              borderColor,
+              shadowColor: theme.colors.accent.primary,
+              shadowOffset: theme.shadowOffset.zero,
+              shadowOpacity,
+              shadowRadius: theme.shadowRadius.md,
+              // Note: elevation doesn't support Animated values, so we use shadowOpacity instead
+              elevation: theme.elevation.sm, // Static elevation for Android
             }}
-            onBlur={handleBlur}
-            style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
-            selectTextOnFocus={Platform.OS === 'ios' ? selectTextOnFocus : false}
-            multiline={multiline}
-            numberOfLines={multiline ? numberOfLines : undefined}
-            textAlignVertical={multiline ? 'top' : 'center'}
-            editable={editable}
-          />
-          {icon ? (
-            <View
-              className={classNames('absolute right-4 justify-center', {
-                'bottom-0 top-0': !multiline,
-                'top-3': multiline,
-              })}
-            >
-              {icon}
-            </View>
-          ) : null}
-        </View>
-      ) : (
-        <Animated.View
-          className={classNames('w-full flex-row rounded-lg border-2 bg-bg-card px-4', {
-            'min-h-14 items-start py-3': multiline,
-            'h-14 items-center': !multiline,
-          })}
-          style={{
-            borderColor,
-            shadowColor: theme.colors.accent.primary,
-            shadowOffset: theme.shadowOffset.zero,
-            shadowOpacity,
-            shadowRadius: theme.shadowRadius.md,
-            // Note: elevation doesn't support Animated values, so we use shadowOpacity instead
-            elevation: theme.elevation.sm, // Static elevation for Android
-          }}
-        >
-          <RNTextInput
-            ref={inputRef}
-            className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
-            placeholder={placeholder}
-            placeholderTextColor={theme.colors.text.tertiary}
-            value={value}
-            onChangeText={onChangeText}
-            keyboardType={keyboardType}
-            secureTextEntry={secureTextEntry}
-            onFocus={() => {
-              handleFocus();
-              if (Platform.OS === 'android' && selectTextOnFocus) {
-                inputRef.current?.setSelection(0, value?.length ?? 0);
-              }
-            }}
-            onBlur={handleBlur}
-            style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
-            selectTextOnFocus={Platform.OS === 'ios' ? selectTextOnFocus : false}
-            multiline={multiline}
-            numberOfLines={multiline ? numberOfLines : undefined}
-            textAlignVertical={multiline ? 'top' : 'center'}
-            editable={editable}
-          />
-          {icon ? (
-            <View
-              className={classNames('absolute right-4 justify-center', {
-                'bottom-0 top-0': !multiline,
-                'top-3': multiline,
-              })}
-            >
-              {icon}
-            </View>
-          ) : null}
-        </Animated.View>
-      )}
-    </View>
-  );
-}
+          >
+            <RNTextInput
+              ref={inputRef}
+              className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
+              placeholder={placeholder}
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={value}
+              onChangeText={onChangeText}
+              keyboardType={keyboardType}
+              secureTextEntry={secureTextEntry}
+              onFocus={() => {
+                handleFocus();
+                if (Platform.OS === 'android' && selectTextOnFocus) {
+                  inputRef.current?.setSelection(0, value?.length ?? 0);
+                }
+              }}
+              onBlur={handleBlur}
+              style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
+              selectTextOnFocus={Platform.select({ ios: selectTextOnFocus, default: false })}
+              multiline={multiline}
+              numberOfLines={multiline ? numberOfLines : undefined}
+              textAlignVertical={multiline ? 'top' : 'center'}
+              editable={editable}
+            />
+            {icon ? (
+              <View
+                className={classNames('absolute right-4 justify-center', {
+                  'bottom-0 top-0': !multiline,
+                  'top-3': multiline,
+                })}
+              >
+                {icon}
+              </View>
+            ) : null}
+          </Animated.View>
+        )}
+      </View>
+    );
+  }
 );
