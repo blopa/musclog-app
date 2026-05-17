@@ -71,7 +71,7 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(13);
   });
 
-  it.skip('counts 13 reps in bench_press.json', () => {
+  it('counts 13 reps in bench_press.json', () => {
     const samples = loadRepsJson('bench_press.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(13);
