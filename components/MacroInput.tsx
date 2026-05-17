@@ -1,5 +1,5 @@
-import { ReactNode, useState } from 'react';
-import { Text, TextInput as RNTextInput, View } from 'react-native';
+import { ReactNode, useRef, useState } from 'react';
+import { Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
@@ -66,6 +66,7 @@ export function MacroInput({
 }: MacroInputProps) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<RNTextInput>(null);
   const { sizeConfig, variantColors, variantBorderColors } = getVariantsData(theme);
 
   const highlightColor = variantColors[variant];
@@ -95,13 +96,19 @@ export function MacroInput({
         {topRightElement}
       </View>
       <RNTextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChange}
         placeholder="0"
         placeholderTextColor={theme.colors.text.primary12}
         keyboardType={allowDecimals ? 'decimal-pad' : 'numeric'}
-        selectTextOnFocus
-        onFocus={() => setIsFocused(true)}
+        selectTextOnFocus={Platform.OS === 'ios'}
+        onFocus={() => {
+          setIsFocused(true);
+          if (Platform.OS === 'android') {
+            inputRef.current?.setSelection(0, value?.length ?? 0);
+          }
+        }}
         onBlur={() => setIsFocused(false)}
         className="w-full border-0 bg-transparent p-0 font-bold text-text-primary"
         style={{
