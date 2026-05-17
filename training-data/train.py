@@ -54,9 +54,24 @@ FFT_MIN_HZ = 0.2           # lower bound for human movement frequency
 FFT_MAX_HZ = 3.0           # upper bound for human movement frequency
 
 # ---------------------------------------------------------------------------
-# Feature names — order matters: this list defines the model's input vector
+# Categorical metadata — fixed lists so the one-hot feature vector size is
+# always the same regardless of which exercises appear in a training run.
+# "unknown" is a valid value for recordings where the exercise isn't identified.
 # ---------------------------------------------------------------------------
-FEATURE_COLS = [
+MUSCLE_GROUPS = sorted([
+    "abdomen", "arms", "back", "chest", "core",
+    "full_body", "glutes", "legs", "shoulders", "unknown",
+])
+EXERCISE_TYPES = sorted([
+    "bodyweight", "cardio", "compound", "isolation",
+    "machine", "plyometric", "unknown",
+])
+
+# ---------------------------------------------------------------------------
+# Feature names — order matters: this list defines the model's input vector.
+# Signal features come first; one-hot categoricals follow.
+# ---------------------------------------------------------------------------
+_SIGNAL_FEATURES = [
     "duration_ms",           # total recording length
     "sample_rate_hz",        # sensor sampling rate
     "dominant_range_deg",    # full range of the main angle axis (x or y)
@@ -73,6 +88,11 @@ FEATURE_COLS = [
     "accel_z_peak_count",    # peaks in vertical acceleration
     "is_angle_flat",         # 1 if angle barely moves (cable/stack machine indicator)
 ]
+_CATEGORICAL_FEATURES = (
+    [f"muscle_{g}" for g in MUSCLE_GROUPS]   # one-hot: muscle group
+    + [f"type_{t}" for t in EXERCISE_TYPES]  # one-hot: exercise type
+)
+FEATURE_COLS = _SIGNAL_FEATURES + _CATEGORICAL_FEATURES
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +232,20 @@ def build_dataset() -> pd.DataFrame:
             data = json.load(f)
         try:
             feats = extract_features(data["samples"])
+
+            # One-hot encode categorical metadata.
+            # Falls back to "unknown" when the column is missing or blank.
+            mg = str(row.get("muscle_group", "unknown") or "unknown").strip().lower()
+            et = str(row.get("exercise_type", "unknown") or "unknown").strip().lower()
+            if mg not in MUSCLE_GROUPS:
+                mg = "unknown"
+            if et not in EXERCISE_TYPES:
+                et = "unknown"
+            for g in MUSCLE_GROUPS:
+                feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
+            for t in EXERCISE_TYPES:
+                feats[f"type_{t}"] = 1.0 if et == t else 0.0
+
             feats["filename"]  = row["filename"]
             feats["rep_count"] = int(row["rep_count"])
             rows.append(feats)
@@ -269,6 +303,18 @@ def main():
 
     if len(df) < 5:
         sys.exit("Need at least 5 recordings. Add more to recordings/ and labels.csv.")
+
+    # ── Categorical coverage report ─────────────────────────────────────────
+    n_known_mg = int((df["muscle_unknown"] == 0).sum())
+    n_known_et = int((df["type_unknown"]   == 0).sum())
+    print(f"  muscle_group labeled: {n_known_mg}/{len(df)}  "
+          f"({'%.0f' % (100*n_known_mg/len(df))}%)")
+    print(f"  exercise_type labeled: {n_known_et}/{len(df)}  "
+          f"({'%.0f' % (100*n_known_et/len(df))}%)")
+    if n_known_mg < len(df) * 0.7 or n_known_et < len(df) * 0.7:
+        print("  NOTE: fewer than 70% of recordings have categorical labels.")
+        print("        Fill in muscle_group / exercise_type in labels.csv as you")
+        print("        add more recordings — the model will improve noticeably.\n")
 
     df.to_csv(OUTPUT_DIR / "features.csv", index=False)
     print(f"  Feature matrix saved → output/features.csv")
