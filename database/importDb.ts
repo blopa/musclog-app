@@ -215,14 +215,21 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
             let assignValue = value;
             if (key.endsWith('_json')) {
-              // Some @json properties are named without the "_json" suffix (e.g. micros_json → micros),
-              // so camelCase(rawFieldName) misses the setter. Write _raw directly to avoid data loss.
+              // @json properties may be named without the "_json" suffix (e.g. micros_json → micros),
+              // so the camelCase setter path silently misses. Write _raw directly instead.
+              // _raw must hold a JSON *string* (WatermelonDB stringifies before _setRaw),
+              // so stringify objects coming from web exports that already hold parsed values.
               if (typeof value === 'string' && value) {
                 try {
-                  assignValue = JSON.parse(value);
+                  JSON.parse(value); // validate — keep as string
+                  assignValue = value;
                 } catch {
                   assignValue = null;
                 }
+              } else if (value !== null && value !== undefined && typeof value === 'object') {
+                assignValue = JSON.stringify(value);
+              } else {
+                assignValue = null;
               }
 
               rec._raw[key] = assignValue;
