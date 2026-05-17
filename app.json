@@ -126,6 +126,7 @@
         {
           "isBackgroundEnabled": false,
           "modes": ["central"],
+          "neverForLocation": true,
           "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
         }
       ]
