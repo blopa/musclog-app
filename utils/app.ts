@@ -4,7 +4,7 @@ import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
 
 export function isProduction() {
-  return !__DEV__;
+  return false; // TODO: REVERT THIS
 }
 
 export async function reloadApp() {
