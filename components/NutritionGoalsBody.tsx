@@ -606,6 +606,7 @@ export function NutritionGoalsBody({
     targetDate,
     targetWeight,
     units,
+    useBfForCalculations,
   ]);
 
   const tdeeEstimate = useMemo<number | null>(() => {
@@ -631,7 +632,14 @@ export function NutritionGoalsBody({
     } catch {
       return null;
     }
-  }, [user, latestWeightKg, userHeightM, latestBodyFatPercent, disableMinimumCalories]);
+  }, [
+    user,
+    latestWeightKg,
+    userHeightM,
+    useBfForCalculations,
+    latestBodyFatPercent,
+    disableMinimumCalories,
+  ]);
 
   const effectiveKcalPerKgHint = useMemo(() => {
     if (
@@ -666,6 +674,7 @@ export function NutritionGoalsBody({
     targetDate,
     targetWeight,
     units,
+    useBfForCalculations,
     user?.gender,
     user?.liftingExperience,
   ]);

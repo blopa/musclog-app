@@ -19,6 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -96,16 +97,18 @@ export default function LandingScreen() {
     setLoading(true);
     try {
       await importDatabase(decryptionPhrase || undefined);
+      await setOnboardingCompleted();
       setImportModalVisible(false);
       setDecryptionPhrase('');
       showSnackbar('success', t('settings.advancedSettings.importSuccessMessage'));
+      router.replace('/app');
     } catch (err) {
       console.error('Import failed:', err);
       showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
     } finally {
       setLoading(false);
     }
-  }, [decryptionPhrase, t, showSnackbar]);
+  }, [decryptionPhrase, router, showSnackbar, t]);
 
   return (
     <MasterLayout showNavigationMenu={false}>

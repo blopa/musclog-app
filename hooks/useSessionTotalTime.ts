@@ -68,7 +68,7 @@ export function useSessionTotalTime({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, initialTime.hours, initialTime.minutes, initialTime.seconds]);
+  }, [startTime, initialTime.hours, initialTime.minutes, initialTime.seconds, initialTime]);
 
   return time;
 }

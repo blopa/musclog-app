@@ -416,12 +416,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       theme.colors.accent.primary10,
       theme.colors.accent.secondary,
       theme.colors.accent.secondary10,
-      theme.colors.rose.brand,
-      theme.colors.rose.brand10,
       theme.colors.status.purple,
       theme.colors.status.purple20,
-      theme.colors.text.primary,
-      theme.colors.text.primary20,
     ]
   );
 

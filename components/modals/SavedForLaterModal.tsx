@@ -142,56 +142,59 @@ export function SavedForLaterModal({
     }
   };
 
-  const renderItem = useCallback(({ item }: { item: GroupWithNutrients }) => {
-    const originalDate = formatLocalCalendarDayIso(
-      new Date(localCalendarDayDateFromDayKeyMs(item.group.originalDate))
-    );
-    const mealTypeLabel = t(`food.meals.${item.group.originalMealType as any}`);
+  const renderItem = useCallback(
+    ({ item }: { item: GroupWithNutrients }) => {
+      const originalDate = formatLocalCalendarDayIso(
+        new Date(localCalendarDayDateFromDayKeyMs(item.group.originalDate))
+      );
+      const mealTypeLabel = t(`food.meals.${item.group.originalMealType as any}`);
 
-    return (
-      <View className="mb-4">
-        <GenericCard variant="card">
-          <View className="flex-row items-center justify-between p-4">
-            <View className="flex-1 pr-4">
-              <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
-                {item.group.name}
-              </Text>
-              <Text className="text-xs text-text-secondary">
-                {originalDate} • {mealTypeLabel}
-              </Text>
-              {item.note ? (
-                <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
-                  {item.note}
-                </Text>
-              ) : null}
-              <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
-                <Text className="text-sm font-semibold text-accent-primary">
-                  {t('common.amount_kcal', {
-                    amount: formatInteger(Math.round(item.nutrients.calories)),
-                  })}
+      return (
+        <View className="mb-4">
+          <GenericCard variant="card">
+            <View className="flex-row items-center justify-between p-4">
+              <View className="flex-1 pr-4">
+                <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
+                  {item.group.name}
                 </Text>
                 <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.protein)}g P
+                  {originalDate} • {mealTypeLabel}
                 </Text>
-                <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.carbs)}g C
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {Math.round(item.nutrients.fat)}g F
-                </Text>
+                {item.note ? (
+                  <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
+                    {item.note}
+                  </Text>
+                ) : null}
+                <View className="mt-2 flex-row flex-wrap gap-x-3 gap-y-1">
+                  <Text className="text-sm font-semibold text-accent-primary">
+                    {t('common.amount_kcal', {
+                      amount: formatInteger(Math.round(item.nutrients.calories)),
+                    })}
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.protein)}g P
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.carbs)}g C
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {Math.round(item.nutrients.fat)}g F
+                  </Text>
+                </View>
               </View>
+              <MenuButton
+                onPress={() => {
+                  setSelectedGroup(item);
+                  setIsMenuVisible(true);
+                }}
+              />
             </View>
-            <MenuButton
-              onPress={() => {
-                setSelectedGroup(item);
-                setIsMenuVisible(true);
-              }}
-            />
-          </View>
-        </GenericCard>
-      </View>
-    );
-  }, []);
+          </GenericCard>
+        </View>
+      );
+    },
+    [formatInteger, t]
+  );
 
   return (
     <FullScreenModal
