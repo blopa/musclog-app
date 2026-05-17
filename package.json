@@ -207,7 +207,7 @@
   },
   "main": "index.js",
   "private": false,
-  "license": "CC-BY-NC-ND-4.0",
+  "license": "GPL-3.0-or-later",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
