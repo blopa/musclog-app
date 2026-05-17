@@ -44,6 +44,7 @@
     "build-android": "eas build -p android --profile production --clear-cache",
     "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",
+    "build-android-local-cache": "EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build -p android --profile production --local --clear-cache",
     "build-android-web": "node scripts/sync-web-phone-frame.js && node scripts/export-web-wrapper.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
