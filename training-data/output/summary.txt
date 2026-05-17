@@ -2,7 +2,7 @@ Training summary
 ========================================
 Recordings:   17
 Best model:   Random Forest
-LOOCV MAE:    2.29
+LOOCV MAE:    2.18
 Exact match:  2/17 (12%)
 
 Feature order for inference (input array index → name):
