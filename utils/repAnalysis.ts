@@ -1,4 +1,7 @@
+import { PCA } from 'ml-pca';
 import savitzkyGolay from 'ml-savitzky-golay';
+import otsuThreshold from 'otsu';
+import { linearRegression, linearRegressionLine, quantile as ssQuantile } from 'simple-statistics';
 
 export interface Vector3 {
   x: number;
@@ -19,34 +22,30 @@ export interface RepAnalysisSummary {
   durationMs: number;
 }
 
-// Rep counting uses the dominant angle axis (x or y — z is excluded because it
-// wraps at ±180°). The signal is smoothed, then we track turning points and
-// score a rep when three significant turns form a full excursion.
+// Rep counting uses the dominant angle axis (x or y, selected by signal range).
+// The signal is smoothed with EMA, then turning points with a minimum-delta
+// filter detect direction reversals. Each rep is scored when three consecutive
+// turning points form a full excursion.
 //
 // Two types of outlier turning points are removed:
 //
 //   Leading: if the first TP is in the opposite direction from the TP median
 //   (e.g. rack exercises where the unracking spike is directionally opposite
-//   to the actual working range), those leading TPs are trimmed — no hardcoded
-//   timing required.
+//   to the actual working range), those leading TPs are trimmed.
 //
 //   Trailing: only when the median half-amplitude (medH) is representative of
-//   the exercise amplitude (signalRange / (2 × medH) < 2), we apply an IQR
-//   fence on consecutive half-amplitudes and trim the trailing TP when its
-//   half-amplitude is a clear outlier (e.g. the bar being re-racked pulls the
-//   signal to an unusual position).
+//   the exercise amplitude (signalRange / (2 × medH) < 2), an Otsu threshold
+//   on consecutive half-amplitudes trims the trailing TP when Otsu detects a
+//   bimodal distribution (outlier re-rack amplitude vs regular exercise range).
 //
-// When trimming occurs the rep height threshold adapts to 2 × medH × 0.45
-// (median half-amplitude of the remaining cluster). When no trimming occurs the
-// original signalRange × 0.45 threshold is used. For cable or stack machines
-// where x/y barely move, we fall back to accel.z peaks. A peak-cluster
-// cross-check on all signal axes corrects the rare case where a re-rack or
-// stutter TP creates exactly one spurious extra triplet.
+// When trimming occurs the rep height threshold adapts to 2 × medH × 0.45.
+// For cable/stack machines where x/y barely move, we fall back to accel.z peaks.
+// A peak-cluster cross-check corrects the rare case where a re-rack or stutter
+// TP creates exactly one spurious extra triplet.
 const REP_ANGLE_SMOOTH_ALPHA = 0.15;
 const REP_TURNING_POINT_MIN_DELTA_FRACTION = 0.15;
 const REP_HEIGHT_THRESHOLD_FRACTION = 0.45;
 const REP_PEAK_CLUSTER_THRESHOLD_FRACTION = 0.35;
-const REP_PEAK_CLUSTER_GAP_QUANTILE = 0.8;
 const REP_PEAK_CLUSTER_SG_WINDOW = 11;
 const REP_PEAK_CLUSTER_SG_POLYNOMIAL = 3;
 const REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG = 5;
@@ -56,6 +55,16 @@ const REP_ACCEL_Z_MIN_PEAK_GAP_MS = 100;
 // When signalRange / (2 × medH) is below this value, medH is considered a
 // reliable proxy for the exercise half-amplitude, enabling IQR trailing trim.
 const REP_MEDH_REPRESENTATIVE_RATIO = 2;
+
+// Original floor-based median (upper median for even-length arrays)
+function floorMedian(values: number[]): number {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
 
 function smoothEma(values: number[], alpha: number): number[] {
   if (values.length === 0) {
@@ -70,45 +79,16 @@ function smoothEma(values: number[], alpha: number): number[] {
   return smoothed;
 }
 
-function median(values: number[]): number {
-  if (values.length === 0) {
-    return 0;
-  }
-
-  const sorted = [...values].sort((a, b) => a - b);
-  return sorted[Math.floor(sorted.length / 2)];
-}
-
-function quantile(values: number[], q: number): number {
-  if (values.length === 0) {
-    return 0;
-  }
-
-  const sorted = [...values].sort((a, b) => a - b);
-  const position = (sorted.length - 1) * q;
-  const lowerIndex = Math.floor(position);
-  const upperIndex = Math.ceil(position);
-
-  if (lowerIndex === upperIndex) {
-    return sorted[lowerIndex];
-  }
-
-  const weight = position - lowerIndex;
-  return sorted[lowerIndex] + weight * (sorted[upperIndex] - sorted[lowerIndex]);
-}
-
+// OLS linear detrend: fits the best-fit line through all points (minimises
+// sum of squared residuals) rather than connecting only the two endpoints.
 function detrendLinear(values: number[]): number[] {
   if (values.length < 2) {
     return values.slice();
   }
 
-  const start = values[0];
-  const end = values[values.length - 1];
-
-  return values.map((value, index) => {
-    const trend = start + ((end - start) * index) / (values.length - 1);
-    return value - trend;
-  });
+  const pairs = values.map((y, i) => [i, y] as [number, number]);
+  const line = linearRegressionLine(linearRegression(pairs));
+  return values.map((y, i) => y - line(i));
 }
 
 function collectTurningPoints(
@@ -188,7 +168,7 @@ function collectPeakClusterCandidate(
     gaps.push(peaks[i][0] - peaks[i - 1][0]);
   }
 
-  const gapThreshold = quantile(gaps, REP_PEAK_CLUSTER_GAP_QUANTILE);
+  const gapThreshold = ssQuantile(gaps, 0.8);
 
   let bestCluster = [peaks[0]];
   let currentCluster = [peaks[0]];
@@ -226,7 +206,7 @@ function collectPeakClusterCandidate(
   );
   const gapCv = meanGap > 0 ? gapStdDev / meanGap : 0;
   const coverage = peaks.length > 0 ? bestCluster.length / peaks.length : 0;
-  const prominence = median(bestCluster.map(([, value]) => value)) / signalRange;
+  const prominence = floorMedian(bestCluster.map(([, value]) => value)) / signalRange;
   const score = (coverage * prominence) / (1 + gapCv);
 
   return { count: bestCluster.length, score };
@@ -262,9 +242,9 @@ function filterCloseTurningPoints(tps: [number, number][], minGapMs: number): [n
 // exercise median (e.g. setup spike from unracking a barbell). Purely
 // data-driven — no timing heuristics.
 //
-// Trailing trim: only when medH is representative (ratio < threshold), strips
-// the trailing TP if its adjacent half-amplitude is above the IQR fence of all
-// half-amplitudes in the remaining cluster (e.g. re-racking the bar).
+// Trailing trim: only when medH is representative (ratio < threshold) and
+// Otsu detects a bimodal distribution in the half-amplitudes (regular exercise
+// range vs outlier re-rack amplitude), strips the trailing TP.
 function trimBoundaryTurningPoints(
   tps: [number, number][],
   tpMedian: number,
@@ -299,14 +279,16 @@ function trimBoundaryTurningPoints(
     }
 
     if (halfAmps.length > 0) {
-      const sorted = [...halfAmps].sort((a, b) => a - b);
-      const q1 = sorted[Math.floor(sorted.length * 0.25)];
-      const q3 = sorted[Math.floor(sorted.length * 0.75)];
-      const fence = q3 + 1.5 * (q3 - q1);
+      // Otsu finds the optimal threshold between regular-rep half-amplitudes
+      // and the outlier re-rack amplitude. Skip trim when the distribution is
+      // unimodal (Otsu returns ≤ median, meaning no clear outlier class exists).
+      const fence = otsuThreshold(halfAmps);
 
-      while (end - start > 3 && halfAmps[halfAmps.length - 1] > fence) {
-        end--;
-        halfAmps.pop();
+      if (fence > floorMedian(halfAmps)) {
+        while (end - start > 3 && halfAmps[halfAmps.length - 1] >= fence) {
+          end--;
+          halfAmps.pop();
+        }
       }
     }
   }
@@ -327,7 +309,7 @@ function countPositivePeaks(
 
   const smoothed = smoothEma(values, smoothAlpha);
   const baselineWindow = Math.min(20, smoothed.length);
-  const baseline = median(smoothed.slice(0, baselineWindow));
+  const baseline = floorMedian(smoothed.slice(0, baselineWindow));
   const centered = smoothed.map((value) => value - baseline);
   const signalRange = Math.max(...centered) - Math.min(...centered);
   const peakThreshold = signalRange * thresholdFraction;
@@ -353,29 +335,21 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     return { repCount: 0, sampleCount: 0, durationMs: 0 };
   }
 
+  const timestamps = samples.map((sample) => sample.timestamp);
+
   const axes = ['x', 'y'] as const;
-  const mins: Record<'x' | 'y', number> = { x: Infinity, y: Infinity };
-  const maxs: Record<'x' | 'y', number> = { x: -Infinity, y: -Infinity };
-
-  for (const sample of samples) {
-    for (const axis of axes) {
-      if (sample.angle[axis] < mins[axis]) {
-        mins[axis] = sample.angle[axis];
-      }
-
-      if (sample.angle[axis] > maxs[axis]) {
-        maxs[axis] = sample.angle[axis];
-      }
-    }
+  const axisRanges: Record<'x' | 'y', number> = { x: -Infinity, y: -Infinity };
+  for (const axis of axes) {
+    const vals = samples.map((s) => s.angle[axis]);
+    axisRanges[axis] = Math.max(...vals) - Math.min(...vals);
   }
 
-  const timestamps = samples.map((sample) => sample.timestamp);
-  const angleFlatRangeDeg = Math.max(maxs.x - mins.x, maxs.y - mins.y);
-  const dominantAxis = (maxs.x - mins.x >= maxs.y - mins.y ? 'x' : 'y') as 'x' | 'y';
+  const dominantAxis = (axisRanges.x >= axisRanges.y ? 'x' : 'y') as 'x' | 'y';
+
   const rawValues = samples.map((s) => s.angle[dominantAxis]);
   const smoothed = smoothEma(rawValues, REP_ANGLE_SMOOTH_ALPHA);
   const baselineWindow = Math.min(20, smoothed.length);
-  const baseline = median(smoothed.slice(0, baselineWindow));
+  const baseline = floorMedian(smoothed.slice(0, baselineWindow));
   const centered = smoothed.map((value) => value - baseline);
   const signalRange = Math.max(...centered) - Math.min(...centered);
   const minTurningPointDelta = signalRange * REP_TURNING_POINT_MIN_DELTA_FRACTION;
@@ -389,8 +363,9 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     allHalfAmps.push(Math.abs(filteredTurningPoints[i + 1][1] - filteredTurningPoints[i][1]));
   }
 
-  const medH = allHalfAmps.length > 0 ? median(allHalfAmps) : signalRange / 4;
-  const tpMedian = median(filteredTurningPoints.map(([, v]) => v));
+  const medH = allHalfAmps.length > 0 ? floorMedian(allHalfAmps) : signalRange / 4;
+  const tpMedian =
+    filteredTurningPoints.length > 0 ? floorMedian(filteredTurningPoints.map(([, v]) => v)) : 0;
 
   const trimmedTurningPoints = trimBoundaryTurningPoints(
     filteredTurningPoints,
@@ -416,7 +391,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
       trimmedHalfAmps.push(Math.abs(trimmedTurningPoints[i + 1][1] - trimmedTurningPoints[i][1]));
     }
 
-    const trimmedMedH = trimmedHalfAmps.length > 0 ? median(trimmedHalfAmps) : signalRange / 4;
+    const trimmedMedH = trimmedHalfAmps.length > 0 ? floorMedian(trimmedHalfAmps) : signalRange / 4;
     repHeightThreshold = 2 * trimmedMedH * REP_HEIGHT_THRESHOLD_FRACTION;
   } else {
     repHeightThreshold = signalRange * REP_HEIGHT_THRESHOLD_FRACTION;
@@ -443,6 +418,19 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   }
 
   const peakClusterCandidates: { count: number; score: number }[] = [];
+
+  // PCA on the 2D angle data: the PC1 projection captures the true axis of
+  // maximum variance, including diagonal motion that pure x/y axes miss.
+  // Adding it as an extra candidate strengthens the cross-check without
+  // touching the main turning-point path.
+  const pc1Scores = new PCA(samples.map((s) => [s.angle.x, s.angle.y]))
+    .predict(samples.map((s) => [s.angle.x, s.angle.y]))
+    .to2DArray()
+    .map((r) => r[0]);
+  const pc1Candidate = collectPeakClusterCandidate(pc1Scores, timestamps);
+  if (pc1Candidate) {
+    peakClusterCandidates.push(pc1Candidate);
+  }
 
   for (const axis of axes) {
     const angleCandidate = collectPeakClusterCandidate(
@@ -481,6 +469,11 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
       repCount = downByOneCandidates[0].count;
     }
   }
+
+  const angleFlatRangeDeg = Math.max(
+    Math.max(...samples.map((s) => s.angle.x)) - Math.min(...samples.map((s) => s.angle.x)),
+    Math.max(...samples.map((s) => s.angle.y)) - Math.min(...samples.map((s) => s.angle.y))
+  );
 
   if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {
     const accelZRepCount = countPositivePeaks(
