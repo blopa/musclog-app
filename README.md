@@ -242,6 +242,12 @@ EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn
 SENTRY_AUTH_TOKEN=your_sentry_token
 ```
 
+If you run a local release build and Sentry uploads fail with an auth token error, run:
+
+```bash
+npx sentry-cli login
+```
+
 > For production builds, use [EAS Secrets](https://docs.expo.dev/eas/environment-variables/) instead of committing keys to version control.
 
 ### Running Tests
@@ -265,6 +271,8 @@ npm run start-clear         # Start with cleared cache
 ## Building for Production
 
 Musclog uses [EAS Build](https://docs.expo.dev/build/introduction/) for production builds.
+
+If a local EAS Android build fails during Sentry sourcemap upload, make sure `SENTRY_AUTH_TOKEN` is set or run `npx sentry-cli login` first.
 
 ```bash
 # Android
