@@ -1,3 +1,5 @@
+import savitzkyGolay from 'ml-savitzky-golay';
+
 export interface Vector3 {
   x: number;
   y: number;
@@ -45,6 +47,8 @@ const REP_TURNING_POINT_MIN_DELTA_FRACTION = 0.15;
 const REP_HEIGHT_THRESHOLD_FRACTION = 0.45;
 const REP_PEAK_CLUSTER_THRESHOLD_FRACTION = 0.35;
 const REP_PEAK_CLUSTER_GAP_QUANTILE = 0.8;
+const REP_PEAK_CLUSTER_SG_WINDOW = 11;
+const REP_PEAK_CLUSTER_SG_POLYNOMIAL = 3;
 const REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG = 5;
 const REP_ACCEL_Z_SMOOTH_ALPHA = 0.15;
 const REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION = 0.3;
@@ -142,11 +146,21 @@ function collectPeakClusterCandidate(
   values: number[],
   timestamps: number[]
 ): { count: number; score: number } | null {
-  if (values.length < 3) {
+  if (values.length < REP_PEAK_CLUSTER_SG_WINDOW) {
     return null;
   }
 
-  const smoothed = smoothEma(values, REP_ANGLE_SMOOTH_ALPHA);
+  const step = Math.floor(REP_PEAK_CLUSTER_SG_WINDOW / 2);
+  // SG uses a symmetric centered window, so peaks are neither shifted in time
+  // nor attenuated in amplitude — unlike causal EMA smoothing.
+  const smoothed = savitzkyGolay(values, 1, {
+    windowSize: REP_PEAK_CLUSTER_SG_WINDOW,
+    polynomial: REP_PEAK_CLUSTER_SG_POLYNOMIAL,
+    derivative: 0,
+  });
+  // SG output is shorter by `step` samples on each end; align timestamps.
+  const trimmedTimestamps = timestamps.slice(step, timestamps.length - step);
+
   const centered = detrendLinear(smoothed);
   const signalRange = Math.max(...centered) - Math.min(...centered);
 
@@ -161,7 +175,7 @@ function collectPeakClusterCandidate(
     const isPeak = centered[i] > centered[i - 1] && centered[i] >= centered[i + 1];
 
     if (isPeak && centered[i] > peakThreshold) {
-      peaks.push([timestamps[i], centered[i]]);
+      peaks.push([trimmedTimestamps[i], centered[i]]);
     }
   }
 
@@ -374,6 +388,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   for (let i = 0; i < filteredTurningPoints.length - 1; i++) {
     allHalfAmps.push(Math.abs(filteredTurningPoints[i + 1][1] - filteredTurningPoints[i][1]));
   }
+
   const medH = allHalfAmps.length > 0 ? median(allHalfAmps) : signalRange / 4;
   const tpMedian = median(filteredTurningPoints.map(([, v]) => v));
 
@@ -384,6 +399,13 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     signalRange
   );
   const trimHappened = trimmedTurningPoints.length < filteredTurningPoints.length;
+  // Leading trim means a setup/unrack phase was detected, which also implies a
+  // potential re-rack at the end that the triplet scorer may count as a rep.
+  const leadingTrimHappened =
+    trimHappened &&
+    filteredTurningPoints.length > 0 &&
+    trimmedTurningPoints.length > 0 &&
+    trimmedTurningPoints[0] !== filteredTurningPoints[0];
 
   // When trimming removed setup/racking TPs, the remaining cluster's medH is
   // the right scale reference for the threshold. Otherwise use signal range.
@@ -393,6 +415,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     for (let i = 0; i < trimmedTurningPoints.length - 1; i++) {
       trimmedHalfAmps.push(Math.abs(trimmedTurningPoints[i + 1][1] - trimmedTurningPoints[i][1]));
     }
+
     const trimmedMedH = trimmedHalfAmps.length > 0 ? median(trimmedHalfAmps) : signalRange / 4;
     repHeightThreshold = 2 * trimmedMedH * REP_HEIGHT_THRESHOLD_FRACTION;
   } else {
@@ -426,6 +449,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
       samples.map((sample) => sample.angle[axis]),
       timestamps
     );
+
     if (angleCandidate) {
       peakClusterCandidates.push(angleCandidate);
     }
@@ -436,23 +460,26 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
       samples.map((sample) => sample.accel[axis]),
       timestamps
     );
+
     if (accelCandidate) {
       peakClusterCandidates.push(accelCandidate);
     }
   }
 
-  // The TP method overcounts by exactly 1 when a setup/re-rack motion creates a
-  // spurious triplet at the boundary. A peak cluster with count = repCount − 1
-  // is the signal that this happened — correct it, then stop. Never correct
-  // upward here; the trimBoundaryTurningPoints adaptive threshold already handles
-  // exercises where AHRS drift compresses apparent rep amplitude.
-  const downByOneCandidates = peakClusterCandidates.filter(
-    (candidate) => candidate.count === repCount - 1
-  );
+  // When leading trim detected a setup/unrack, there's likely also a re-rack at
+  // the end that the triplet scorer can miscount as one extra rep. A peak cluster
+  // at repCount - 1 is the signal that this happened. Guard on leadingTrimHappened
+  // so the correction never fires for clean exercises where peak counting simply
+  // undershoots by 1 due to amplitude variation.
+  if (leadingTrimHappened) {
+    const downByOneCandidates = peakClusterCandidates.filter(
+      (candidate) => candidate.count === repCount - 1
+    );
 
-  if (downByOneCandidates.length > 0) {
-    downByOneCandidates.sort((a, b) => b.score - a.score);
-    repCount = downByOneCandidates[0].count;
+    if (downByOneCandidates.length > 0) {
+      downByOneCandidates.sort((a, b) => b.score - a.score);
+      repCount = downByOneCandidates[0].count;
+    }
   }
 
   if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {
