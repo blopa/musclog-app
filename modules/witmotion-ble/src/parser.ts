@@ -142,7 +142,12 @@ export function parseWitMotionPackets(base64Payload: string): WitMotionPacket[] 
         packets.push({ kind: 'magnetic', timestamp, magnetic });
       } else if (subtype === 100) {
         const voltage = readShortLE(buffer, offset + 4) / 100;
-        packets.push({ kind: 'battery', timestamp, voltage, percent: batteryVoltageToPercent(voltage) });
+        packets.push({
+          kind: 'battery',
+          timestamp,
+          voltage,
+          percent: batteryVoltageToPercent(voltage),
+        });
       }
 
       offset += frameLength;

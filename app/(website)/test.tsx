@@ -101,8 +101,10 @@ function parseDebugData(raw: unknown): LoadedFileState | null {
   return {
     fileName: 'debug_data.json',
     samples: maybeSamples,
-    startedAt: typeof (raw as DebugData).startedAt === 'string' ? (raw as DebugData).startedAt : undefined,
-    stoppedAt: typeof (raw as DebugData).stoppedAt === 'string' ? (raw as DebugData).stoppedAt : undefined,
+    startedAt:
+      typeof (raw as DebugData).startedAt === 'string' ? (raw as DebugData).startedAt : undefined,
+    stoppedAt:
+      typeof (raw as DebugData).stoppedAt === 'string' ? (raw as DebugData).stoppedAt : undefined,
     analysis: analyzeRecordedReps(maybeSamples),
   };
 }
@@ -157,7 +159,10 @@ function getSmoothingPreset(level: SmoothingLevel) {
   return SMOOTHING_PRESETS.find((preset) => preset.level === level) ?? SMOOTHING_PRESETS[0];
 }
 
-function chooseSavitzkyGolayWindowSize(length: number, desiredWindowSize: number | null): number | null {
+function chooseSavitzkyGolayWindowSize(
+  length: number,
+  desiredWindowSize: number | null
+): number | null {
   if (length < 5 || desiredWindowSize == null) {
     return null;
   }
@@ -187,9 +192,18 @@ function smoothChartRows(rows: ChartRow[], desiredWindowSize: number | null): Ch
     return [];
   }
 
-  const smoothX = smoothSeries(rows.map((row) => row.accX), desiredWindowSize);
-  const smoothY = smoothSeries(rows.map((row) => row.accY), desiredWindowSize);
-  const smoothZ = smoothSeries(rows.map((row) => row.accZ), desiredWindowSize);
+  const smoothX = smoothSeries(
+    rows.map((row) => row.accX),
+    desiredWindowSize
+  );
+  const smoothY = smoothSeries(
+    rows.map((row) => row.accY),
+    desiredWindowSize
+  );
+  const smoothZ = smoothSeries(
+    rows.map((row) => row.accZ),
+    desiredWindowSize
+  );
 
   return rows.map((row, index) => ({
     x: row.x,
@@ -219,13 +233,10 @@ export default function Test() {
   const [fileState, setFileState] = useState<LoadedFileState | null>(null);
 
   const rawRows = useMemo(() => createChartRows(fileState?.samples ?? []), [fileState?.samples]);
-  const displayRows = useMemo(
-    () => {
-      const preset = getSmoothingPreset(smoothingLevel);
-      return preset.windowSize != null ? smoothChartRows(rawRows, preset.windowSize) : rawRows;
-    },
-    [rawRows, smoothingLevel]
-  );
+  const displayRows = useMemo(() => {
+    const preset = getSmoothingPreset(smoothingLevel);
+    return preset.windowSize != null ? smoothChartRows(rawRows, preset.windowSize) : rawRows;
+  }, [rawRows, smoothingLevel]);
   const activeAxes = useMemo(
     () => AXIS_CONFIG.filter((axis) => visibleAxes[axis.key]).map((axis) => axis.key),
     [visibleAxes]
@@ -321,7 +332,8 @@ export default function Test() {
   const sampleCount = fileState?.samples.length ?? 0;
   const durationSeconds =
     fileState?.samples.length != null && fileState.samples.length > 1
-      ? (fileState.samples[fileState.samples.length - 1].timestamp - fileState.samples[0].timestamp) /
+      ? (fileState.samples[fileState.samples.length - 1].timestamp -
+          fileState.samples[0].timestamp) /
         1000
       : 0;
   const startedAt = fileState?.startedAt != null ? new Date(fileState.startedAt) : null;
@@ -385,8 +397,9 @@ export default function Test() {
                 Upload a local JSON file and inspect the acceleration chart
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60 md:text-base">
-                Drop in a file with a `samples` array from the sensor debug export, and the page will
-                render the three acceleration axes as a chart similar to the mobile test screen.
+                Drop in a file with a `samples` array from the sensor debug export, and the page
+                will render the three acceleration axes as a chart similar to the mobile test
+                screen.
               </p>
             </div>
 
@@ -472,7 +485,9 @@ export default function Test() {
                   max={4}
                   step={1}
                   value={smoothingLevel}
-                  onChange={(event) => setSmoothingLevel(Number(event.target.value) as SmoothingLevel)}
+                  onChange={(event) =>
+                    setSmoothingLevel(Number(event.target.value) as SmoothingLevel)
+                  }
                   className="mt-4 w-full accent-emerald-400"
                   aria-label="Smoothing strength"
                 />
@@ -503,7 +518,9 @@ export default function Test() {
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-white/40">Samples</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{formatInteger(sampleCount)}</p>
+                  <p className="mt-2 text-sm font-semibold text-white">
+                    {formatInteger(sampleCount)}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-white/40">Duration</p>
@@ -591,13 +608,17 @@ export default function Test() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">Analysis samples</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+                    Analysis samples
+                  </p>
                   <p className="mt-2 text-sm font-semibold text-white">
                     {formatInteger(fileState.analysis.sampleCount)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">Analysis duration</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+                    Analysis duration
+                  </p>
                   <p className="mt-2 text-sm font-semibold text-white">
                     {formatRoundedDecimal(fileState.analysis.durationMs / 1000, 1)} s
                   </p>

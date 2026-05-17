@@ -58,11 +58,10 @@ function sameVector(
   return a?.x === b?.x && a?.y === b?.y && a?.z === b?.z;
 }
 
-function sameDevice(
-  a: WitMotionDevice | null,
-  b: WitMotionDevice | null
-) {
-  return a?.id === b?.id && a?.name === b?.name && a?.localName === b?.localName && a?.rssi === b?.rssi;
+function sameDevice(a: WitMotionDevice | null, b: WitMotionDevice | null) {
+  return (
+    a?.id === b?.id && a?.name === b?.name && a?.localName === b?.localName && a?.rssi === b?.rssi
+  );
 }
 
 function sameLiveData(a: WitMotionState['liveData'], b: WitMotionState['liveData']) {
@@ -168,7 +167,9 @@ class WitMotionClient implements WitMotionActionApi {
     const normalized = cloneState({
       ...this.state,
       ...next,
-      connectedDevice: next.connectedDevice ? { ...next.connectedDevice } : next.connectedDevice ?? null,
+      connectedDevice: next.connectedDevice
+        ? { ...next.connectedDevice }
+        : (next.connectedDevice ?? null),
       discoveredDevices:
         next.discoveredDevices?.map((device) => ({ ...device })) ?? this.state.discoveredDevices,
     });
@@ -223,7 +224,9 @@ class WitMotionClient implements WitMotionActionApi {
       string,
       string
     >;
-    return permissions.every((permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED);
+    return permissions.every(
+      (permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED
+    );
   };
 
   startScan = async (options: WitMotionScanOptions = {}) => {
@@ -247,7 +250,8 @@ class WitMotionClient implements WitMotionActionApi {
       return connected;
     }
 
-    const fallback = typeof deviceOrId === 'string' ? { id: deviceOrId, name: deviceOrId } : deviceOrId;
+    const fallback =
+      typeof deviceOrId === 'string' ? { id: deviceOrId, name: deviceOrId } : deviceOrId;
     this.setState({
       status: 'connected',
       isConnected: true,

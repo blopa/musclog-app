@@ -37,13 +37,14 @@ export interface RepAnalysisSummary {
 // When trimming occurs the rep height threshold adapts to 2 × medH × 0.45
 // (median half-amplitude of the remaining cluster). When no trimming occurs the
 // original signalRange × 0.45 threshold is used. For cable or stack machines
-// where x/y barely move, we fall back to accel.z peaks.
+// where x/y barely move, we fall back to accel.z peaks. A peak-cluster
+// cross-check on all signal axes corrects the rare case where a re-rack or
+// stutter TP creates exactly one spurious extra triplet.
 const REP_ANGLE_SMOOTH_ALPHA = 0.15;
 const REP_TURNING_POINT_MIN_DELTA_FRACTION = 0.15;
 const REP_HEIGHT_THRESHOLD_FRACTION = 0.45;
 const REP_PEAK_CLUSTER_THRESHOLD_FRACTION = 0.35;
 const REP_PEAK_CLUSTER_GAP_QUANTILE = 0.8;
-const REP_PEAK_CLUSTER_MIN_SCORE = 0.18;
 const REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG = 5;
 const REP_ACCEL_Z_SMOOTH_ALPHA = 0.15;
 const REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION = 0.3;
@@ -110,12 +111,12 @@ function collectTurningPoints(
   values: number[],
   timestamps: number[],
   minDelta: number
-): Array<[number, number]> {
+): [number, number][] {
   if (values.length < 3) {
     return [];
   }
 
-  const turningPoints: Array<[number, number]> = [];
+  const turningPoints: [number, number][] = [];
   let trend = 0;
   let lastAcceptedValue = values[0];
 
@@ -154,7 +155,7 @@ function collectPeakClusterCandidate(
   }
 
   const peakThreshold = signalRange * REP_PEAK_CLUSTER_THRESHOLD_FRACTION;
-  const peaks: Array<[number, number]> = [];
+  const peaks: [number, number][] = [];
 
   for (let i = 1; i < centered.length - 1; i++) {
     const isPeak = centered[i] > centered[i - 1] && centered[i] >= centered[i + 1];
@@ -204,8 +205,7 @@ function collectPeakClusterCandidate(
     clusterGaps.push(bestCluster[i][0] - bestCluster[i - 1][0]);
   }
 
-  const meanGap =
-    clusterGaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, clusterGaps.length);
+  const meanGap = clusterGaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, clusterGaps.length);
   const gapStdDev = Math.sqrt(
     clusterGaps.reduce((sum, gap) => sum + (gap - meanGap) * (gap - meanGap), 0) /
       Math.max(1, clusterGaps.length)
@@ -218,15 +218,12 @@ function collectPeakClusterCandidate(
   return { count: bestCluster.length, score };
 }
 
-function filterCloseTurningPoints(
-  tps: Array<[number, number]>,
-  minGapMs: number
-): Array<[number, number]> {
+function filterCloseTurningPoints(tps: [number, number][], minGapMs: number): [number, number][] {
   if (tps.length === 0) {
     return [];
   }
 
-  const filtered: Array<[number, number]> = [tps[0]];
+  const filtered: [number, number][] = [tps[0]];
 
   for (let i = 1; i < tps.length; i++) {
     const [prevTs, prevVal] = filtered[filtered.length - 1];
@@ -255,19 +252,18 @@ function filterCloseTurningPoints(
 // the trailing TP if its adjacent half-amplitude is above the IQR fence of all
 // half-amplitudes in the remaining cluster (e.g. re-racking the bar).
 function trimBoundaryTurningPoints(
-  tps: Array<[number, number]>,
+  tps: [number, number][],
   tpMedian: number,
   medH: number,
   signalRange: number
-): Array<[number, number]> {
+): [number, number][] {
   if (tps.length < 4) {
     return tps;
   }
 
   // Leading trim: direction-based
   let start = 0;
-  const firstOppositeToMedian =
-    (tps[0][1] > 0 && tpMedian < 0) || (tps[0][1] < 0 && tpMedian > 0);
+  const firstOppositeToMedian = (tps[0][1] > 0 && tpMedian < 0) || (tps[0][1] < 0 && tpMedian > 0);
 
   if (firstOppositeToMedian) {
     while (
@@ -349,8 +345,13 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
 
   for (const sample of samples) {
     for (const axis of axes) {
-      if (sample.angle[axis] < mins[axis]) mins[axis] = sample.angle[axis];
-      if (sample.angle[axis] > maxs[axis]) maxs[axis] = sample.angle[axis];
+      if (sample.angle[axis] < mins[axis]) {
+        mins[axis] = sample.angle[axis];
+      }
+
+      if (sample.angle[axis] > maxs[axis]) {
+        maxs[axis] = sample.angle[axis];
+      }
     }
   }
 
@@ -392,8 +393,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     for (let i = 0; i < trimmedTurningPoints.length - 1; i++) {
       trimmedHalfAmps.push(Math.abs(trimmedTurningPoints[i + 1][1] - trimmedTurningPoints[i][1]));
     }
-    const trimmedMedH =
-      trimmedHalfAmps.length > 0 ? median(trimmedHalfAmps) : signalRange / 4;
+    const trimmedMedH = trimmedHalfAmps.length > 0 ? median(trimmedHalfAmps) : signalRange / 4;
     repHeightThreshold = 2 * trimmedMedH * REP_HEIGHT_THRESHOLD_FRACTION;
   } else {
     repHeightThreshold = signalRange * REP_HEIGHT_THRESHOLD_FRACTION;
@@ -419,7 +419,7 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     }
   }
 
-  const peakClusterCandidates: Array<{ count: number; score: number }> = [];
+  const peakClusterCandidates: { count: number; score: number }[] = [];
 
   for (const axis of axes) {
     const angleCandidate = collectPeakClusterCandidate(
@@ -441,24 +441,18 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     }
   }
 
-  const sameRangeCandidates = peakClusterCandidates.filter(
-    (candidate) => Math.abs(candidate.count - repCount) <= 1
+  // The TP method overcounts by exactly 1 when a setup/re-rack motion creates a
+  // spurious triplet at the boundary. A peak cluster with count = repCount − 1
+  // is the signal that this happened — correct it, then stop. Never correct
+  // upward here; the trimBoundaryTurningPoints adaptive threshold already handles
+  // exercises where AHRS drift compresses apparent rep amplitude.
+  const downByOneCandidates = peakClusterCandidates.filter(
+    (candidate) => candidate.count === repCount - 1
   );
-  if (sameRangeCandidates.length > 0) {
-    sameRangeCandidates.sort((a, b) => b.score - a.score);
-    repCount = sameRangeCandidates[0].count;
-  } else if (repCount <= 11) {
-    const upwardCandidates = peakClusterCandidates.filter(
-      (candidate) =>
-        candidate.count > repCount &&
-        candidate.count - repCount <= 3 &&
-        candidate.score >= REP_PEAK_CLUSTER_MIN_SCORE
-    );
 
-    if (upwardCandidates.length > 0) {
-      upwardCandidates.sort((a, b) => b.score - a.score);
-      repCount = upwardCandidates[0].count;
-    }
+  if (downByOneCandidates.length > 0) {
+    downByOneCandidates.sort((a, b) => b.score - a.score);
+    repCount = downByOneCandidates[0].count;
   }
 
   if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {

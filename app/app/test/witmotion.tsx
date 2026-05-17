@@ -34,7 +34,7 @@ const RECONNECT_GAP_S = 2.0;
 
 // High-pass filter coefficients — alpha = tau / (tau + dt)
 const HPF_ALPHA_ACCEL = 1.0 / (1.0 + SENSOR_DT_S); // tau=1s, cutoff≈0.16Hz
-const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S);   // tau=0.5s, cutoff≈0.32Hz
+const HPF_ALPHA_VEL = 0.5 / (0.5 + SENSOR_DT_S); // tau=0.5s, cutoff≈0.32Hz
 
 // Zero Velocity Update — forces velocity to 0 when device is truly stationary
 const ZVU_ACCEL_THRESH_G = 0.05;
@@ -92,7 +92,11 @@ function joinUri(baseUri: string, childName: string): string {
   return `${baseUri.replace(/\/?$/, '/')}${childName}`;
 }
 
-function buildDebugMotionFileName(startedAtMs: number, stoppedAtMs: number, sampleCount: number): string {
+function buildDebugMotionFileName(
+  startedAtMs: number,
+  stoppedAtMs: number,
+  sampleCount: number
+): string {
   const startedStamp = new Date(startedAtMs).toISOString().replace(/[:.]/g, '-');
   const stoppedStamp = new Date(stoppedAtMs).toISOString().replace(/[:.]/g, '-');
   const randomSuffix = Math.random().toString(36).slice(2, 8);
@@ -191,7 +195,6 @@ function buildDebugMotionFile(
   };
 }
 
-
 interface ChartProps {
   data: number[];
   yRange: number;
@@ -258,7 +261,14 @@ function SignedChart({ data, yRange, unitLabel, color = '#4ade80', zeroLabel }: 
         {labels.map(([val, label]) => {
           const ly = midY - (val / yRange) * (innerH / 2);
           return (
-            <SvgText key={label} x={PAD_LEFT - 4} y={ly + 4} fontSize={9} fill="#888" textAnchor="end">
+            <SvgText
+              key={label}
+              x={PAD_LEFT - 4}
+              y={ly + 4}
+              fontSize={9}
+              fill="#888"
+              textAnchor="end"
+            >
               {label}
             </SvgText>
           );
@@ -317,7 +327,14 @@ function RangeChart({ series, minY, maxY }: RangeChartProps) {
           const clamped = Math.max(minY, Math.min(maxY, tick));
           const y = PAD_TOP + ((maxY - clamped) / span) * innerH;
           return (
-            <SvgText key={`${tick}-label`} x={PAD_LEFT - 4} y={y + 4} fontSize={9} fill="#888" textAnchor="end">
+            <SvgText
+              key={`${tick}-label`}
+              x={PAD_LEFT - 4}
+              y={y + 4}
+              fontSize={9}
+              fill="#888"
+              textAnchor="end"
+            >
               {tick.toFixed(tick === 0 || tick === 1 ? 0 : 1)}
             </SvgText>
           );
@@ -335,7 +352,13 @@ function RangeChart({ series, minY, maxY }: RangeChartProps) {
                   .join(' ');
 
           return points ? (
-            <Polyline key={item.key} points={points} fill="none" stroke={item.color} strokeWidth={1.5} />
+            <Polyline
+              key={item.key}
+              points={points}
+              fill="none"
+              stroke={item.color}
+              strokeWidth={1.5}
+            />
           ) : null;
         })}
       </Svg>
@@ -764,14 +787,19 @@ export default function WitMotionTestScreen() {
             <View className="mb-3 flex-row items-center justify-between">
               <View>
                 <Text className="text-lg font-bold text-text-primary">Rep Recorder</Text>
-                <Text className="text-xs text-text-tertiary">Record a set, then analyze it when you stop</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Record a set, then analyze it when you stop
+                </Text>
               </View>
               <Button label="Clear" onPress={handleResetReps} size="sm" variant="secondary" />
             </View>
 
             {/* Recording controls + live signal readout */}
             <View className="mb-3 flex-row items-center gap-3">
-              <View className="rounded-full px-3 py-1" style={{ backgroundColor: recordingColor + '33' }}>
+              <View
+                className="rounded-full px-3 py-1"
+                style={{ backgroundColor: recordingColor + '33' }}
+              >
                 <Text className="text-sm font-bold" style={{ color: recordingColor }}>
                   {recordingLabel}
                 </Text>
@@ -787,31 +815,39 @@ export default function WitMotionTestScreen() {
                 onPress={() => void handleStartRecording()}
                 size="sm"
                 variant={recordingStatus === 'recording' ? 'secondary' : 'accent'}
-                disabled={recordingStatus === 'recording' || isSavingDebugData || isSharingDebugData}
+                disabled={
+                  recordingStatus === 'recording' || isSavingDebugData || isSharingDebugData
+                }
               />
               <Button
                 label="Stop"
                 onPress={() => void handleStopRecording()}
                 size="sm"
                 variant="secondary"
-                disabled={recordingStatus !== 'recording' || isSavingDebugData || isSharingDebugData}
+                disabled={
+                  recordingStatus !== 'recording' || isSavingDebugData || isSharingDebugData
+                }
               />
             </View>
             <Text className="mb-1 text-xs text-text-tertiary">
               Debug storage: <Text className="font-bold text-text-primary">{debugDataStatus}</Text>
             </Text>
             <Text className="mb-4 text-xs text-text-tertiary">
-              Saved sessions: <Text className="font-bold text-text-primary">{storedDebugFiles.length}</Text>
+              Saved sessions:{' '}
+              <Text className="font-bold text-text-primary">{storedDebugFiles.length}</Text>
             </Text>
 
             {/* Big rep number */}
-            <Text className="text-center font-bold text-text-primary" style={{ fontSize: 96, lineHeight: 100 }}>
+            <Text
+              className="text-center font-bold text-text-primary"
+              style={{ fontSize: 96, lineHeight: 100 }}
+            >
               {repCount}
             </Text>
-            <Text className="mb-1 text-center text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
-            <Text className="text-center text-xs text-text-tertiary">
-              {recordingFooterText}
+            <Text className="mb-1 text-center text-xs uppercase tracking-widest text-text-tertiary">
+              reps
             </Text>
+            <Text className="text-center text-xs text-text-tertiary">{recordingFooterText}</Text>
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
@@ -820,11 +856,13 @@ export default function WitMotionTestScreen() {
             </Text>
             <Text className="text-sm text-text-primary">Bluetooth: {String(wit.bleState)}</Text>
             <Text className="text-sm text-text-primary">Mode: {wit.status}</Text>
-            <Text className="text-sm text-text-primary">Scanning: {wit.isScanning ? 'yes' : 'no'}</Text>
+            <Text className="text-sm text-text-primary">
+              Scanning: {wit.isScanning ? 'yes' : 'no'}
+            </Text>
             <Text className="text-sm text-text-primary">
               Connected: {wit.connectedDevice?.name ?? 'no device'}
             </Text>
-            {wit.error ? <Text className="mt-2 text-sm text-status-error">{wit.error}</Text> : null}
+            {wit.error ? <Text className="text-status-error mt-2 text-sm">{wit.error}</Text> : null}
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
@@ -844,7 +882,12 @@ export default function WitMotionTestScreen() {
                 variant={wit.isScanning ? 'secondary' : 'accent'}
               />
               {wit.connectedDevice ? (
-                <Button label="Disconnect" onPress={() => void wit.disconnect()} size="sm" variant="secondary" />
+                <Button
+                  label="Disconnect"
+                  onPress={() => void wit.disconnect()}
+                  size="sm"
+                  variant="secondary"
+                />
               ) : null}
             </View>
 
@@ -882,11 +925,12 @@ export default function WitMotionTestScreen() {
               {valueOrDash(wit.liveData.angle?.z)}
             </Text>
             <Text className="text-sm text-text-primary">
-              Magnetic: {valueOrDash(wit.liveData.magnetic?.x)} / {valueOrDash(wit.liveData.magnetic?.y)} /{' '}
-              {valueOrDash(wit.liveData.magnetic?.z)}
+              Magnetic: {valueOrDash(wit.liveData.magnetic?.x)} /{' '}
+              {valueOrDash(wit.liveData.magnetic?.y)} / {valueOrDash(wit.liveData.magnetic?.z)}
             </Text>
             <Text className="text-sm text-text-primary">
-              Battery: {valueOrDash(wit.liveData.batteryPercent, 0)}% ({valueOrDash(wit.liveData.batteryVoltage)} V)
+              Battery: {valueOrDash(wit.liveData.batteryPercent, 0)}% (
+              {valueOrDash(wit.liveData.batteryVoltage)} V)
             </Text>
             <Text className="text-xs text-text-tertiary">Packets received: {wit.packetCount}</Text>
           </View>
@@ -909,10 +953,18 @@ export default function WitMotionTestScreen() {
                 : '  (no anchor set)'}
             </Text>
             {angleData.length > 1 ? (
-              <SignedChart data={angleData} yRange={45} unitLabel="°" color="#f59e0b" zeroLabel="anchor" />
+              <SignedChart
+                data={angleData}
+                yRange={45}
+                unitLabel="°"
+                color="#f59e0b"
+                zeroLabel="anchor"
+              />
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
-                <Text className="text-xs text-text-tertiary">Press Set Anchor then tilt the device</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Press Set Anchor then tilt the device
+                </Text>
               </View>
             )}
           </View>
@@ -941,7 +993,10 @@ export default function WitMotionTestScreen() {
                     { key: 'z', label: 'AccZ', color: '#f59e0b', value: wit.liveData.accel?.z },
                   ].map((item) => (
                     <View key={item.key} className="flex-row items-center gap-2">
-                      <View className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <View
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
                       <Text className="text-xs text-text-secondary">
                         {item.label} · {valueOrDash(item.value)}
                       </Text>
@@ -951,7 +1006,9 @@ export default function WitMotionTestScreen() {
               </>
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
-                <Text className="text-xs text-text-tertiary">Connect a device to see raw accel</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Connect a device to see raw accel
+                </Text>
               </View>
             )}
           </View>
@@ -962,7 +1019,13 @@ export default function WitMotionTestScreen() {
               |mag − 1g| · peak when &gt;{REP_PEAK_THRESHOLD_G} g · now: {liveFeature.toFixed(3)} g
             </Text>
             {smoothData.length > 1 ? (
-              <SignedChart data={smoothData} yRange={0.5} unitLabel="g" color="#f97316" zeroLabel="0g" />
+              <SignedChart
+                data={smoothData}
+                yRange={0.5}
+                unitLabel="g"
+                color="#f97316"
+                zeroLabel="0g"
+              />
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
@@ -974,7 +1037,8 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Vertical velocity</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
-              HPF-integrated acceleration · + = up · − = down · Velocity: {(velocityMs * 100).toFixed(1)} cm/s
+              HPF-integrated acceleration · + = up · − = down · Velocity:{' '}
+              {(velocityMs * 100).toFixed(1)} cm/s
             </Text>
             {velData.length > 1 ? (
               <SignedChart data={velData} yRange={80} unitLabel="cm/s" color="#4ade80" />
@@ -996,10 +1060,18 @@ export default function WitMotionTestScreen() {
               </View>
             </View>
             {posData.length > 1 ? (
-              <SignedChart data={posData} yRange={50} unitLabel="cm" color="#60a5fa" zeroLabel="anchor" />
+              <SignedChart
+                data={posData}
+                yRange={50}
+                unitLabel="cm"
+                color="#60a5fa"
+                zeroLabel="anchor"
+              />
             ) : (
               <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
-                <Text className="text-xs text-text-tertiary">Press Set Anchor then move the device</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Press Set Anchor then move the device
+                </Text>
               </View>
             )}
           </View>
@@ -1007,8 +1079,18 @@ export default function WitMotionTestScreen() {
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-3 font-bold text-text-primary">Commands</Text>
             <View className="flex-row flex-wrap gap-2">
-              <Button label="Reset" onPress={() => void wit.reset()} size="sm" variant="secondary" />
-              <Button label="Angle 0" onPress={() => void wit.setAngleZero()} size="sm" variant="secondary" />
+              <Button
+                label="Reset"
+                onPress={() => void wit.reset()}
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                label="Angle 0"
+                onPress={() => void wit.setAngleZero()}
+                size="sm"
+                variant="secondary"
+              />
               <Button
                 label="Mag start"
                 onPress={() => void wit.startMagCalibration()}
@@ -1041,7 +1123,8 @@ export default function WitMotionTestScreen() {
               <View className="flex-1">
                 <Text className="font-bold text-text-primary">Saved debug files</Text>
                 <Text className="text-xs text-text-tertiary">
-                  Every Stop writes a new local JSON file so you can review, share, or delete old sessions.
+                  Every Stop writes a new local JSON file so you can review, share, or delete old
+                  sessions.
                 </Text>
               </View>
               <Button
@@ -1058,10 +1141,15 @@ export default function WitMotionTestScreen() {
                 {storedDebugFiles.map((file) => {
                   const savedAtLabel = formatDebugDateTime(file.stoppedAt ?? file.startedAt);
                   const repLabel = file.analysis ? `${file.analysis.repCount} reps` : 'No analysis';
-                  const durationSeconds = file.analysis ? Math.max(0, file.analysis.durationMs / 1000) : null;
+                  const durationSeconds = file.analysis
+                    ? Math.max(0, file.analysis.durationMs / 1000)
+                    : null;
 
                   return (
-                    <View key={file.uri} className="rounded-lg border border-border-light bg-bg-primary p-3">
+                    <View
+                      key={file.uri}
+                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                    >
                       <View className="mb-3">
                         <Text className="font-medium text-text-primary" numberOfLines={1}>
                           {file.fileName}
