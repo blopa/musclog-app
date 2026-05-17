@@ -302,6 +302,42 @@ function trimBoundaryTurningPoints(
   return tps.slice(start, end);
 }
 
+// Removes turning points whose value falls strictly between their predecessor
+// and successor — these are noise blips within a monotone excursion (e.g. a
+// brief stall mid-rep that flips the trend without a meaningful reversal).
+// Iterates until no more monotone TPs remain (cascading removals are rare but
+// possible when consecutive noise blips are adjacent).
+function removeMonotoneTurningPoints(tps: [number, number][]): [number, number][] {
+  let current = tps;
+
+  for (;;) {
+    const filtered: [number, number][] = [];
+
+    for (let i = 0; i < current.length; i++) {
+      if (filtered.length === 0 || i === current.length - 1) {
+        filtered.push(current[i]);
+        continue;
+      }
+
+      const prevVal = filtered[filtered.length - 1][1];
+      const currVal = current[i][1];
+      const nextVal = current[i + 1][1];
+      const isBetween =
+        (prevVal < currVal && currVal < nextVal) || (prevVal > currVal && currVal > nextVal);
+
+      if (!isBetween) {
+        filtered.push(current[i]);
+      }
+    }
+
+    if (filtered.length === current.length) {
+      return current;
+    }
+
+    current = filtered;
+  }
+}
+
 function findPositivePeakTimestamps(
   values: number[],
   timestamps: number[],
@@ -366,12 +402,29 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   const smoothed = smoothEma(rawValues, REP_ANGLE_SMOOTH_ALPHA);
   const baselineWindow = Math.min(20, smoothed.length);
   const baseline = floorMedian(smoothed.slice(0, baselineWindow));
-  const centered = smoothed.map((value) => value - baseline);
+  const centeredRaw = smoothed.map((value) => value - baseline);
+  const signalRangeRaw = Math.max(...centeredRaw) - Math.min(...centeredRaw);
+
+  // When gyro drift is dominant (start/end differ by ≥ 65 % of signal range),
+  // linear detrend removes the accumulated error before turning-point analysis.
+  const driftWindowSize = Math.min(20, Math.floor(centeredRaw.length * 0.05));
+  const startMean =
+    centeredRaw.slice(0, driftWindowSize).reduce((s, v) => s + v, 0) / driftWindowSize;
+  const endMean =
+    centeredRaw.slice(-driftWindowSize).reduce((s, v) => s + v, 0) / driftWindowSize;
+  const driftRatio = signalRangeRaw > 0 ? Math.abs(endMean - startMean) / signalRangeRaw : 0;
+  const driftActive = driftRatio >= 0.65;
+  const centered = driftActive ? detrendLinear(centeredRaw) : centeredRaw;
   const signalRange = Math.max(...centered) - Math.min(...centered);
   const minTurningPointDelta = signalRange * REP_TURNING_POINT_MIN_DELTA_FRACTION;
 
   const rawTurningPoints = collectTurningPoints(centered, timestamps, minTurningPointDelta);
-  const filteredTurningPoints = filterCloseTurningPoints(rawTurningPoints, 300);
+  const closeTrimmedTurningPoints = filterCloseTurningPoints(rawTurningPoints, 300);
+  // Monotone TP cleanup: only needed for detrended signals where gyro-drift
+  // correction can leave sub-amplitude noise peaks inside a rep's excursion.
+  const filteredTurningPoints = driftActive
+    ? removeMonotoneTurningPoints(closeTrimmedTurningPoints)
+    : closeTrimmedTurningPoints;
 
   // Pre-compute cluster characteristics from all filtered TPs
   const allHalfAmps: number[] = [];
