@@ -117,9 +117,21 @@ export function FoodNutritionSectionCard({
       (nutritionalData.potassium ?? 0) > 0 ||
       (nutritionalData.magnesium ?? 0) > 0 ||
       (nutritionalData.zinc ?? 0) > 0);
-  const hasExpandableNutritionContent =
-    showAdditionalNutrition ||
-    (nutritionQuality != null && hasNutritionQualityData(nutritionQuality));
+  const hasQualityData = nutritionQuality != null && hasNutritionQualityData(nutritionQuality);
+  const hasExpandableNutritionContent = showAdditionalNutrition || hasQualityData;
+
+  const microCount = [
+    nutritionalData.fiber > 0,
+    (nutritionalData.sugar ?? 0) > 0,
+    nutritionalData.saturatedFat > 0,
+    nutritionalData.sodium > 0,
+    (nutritionalData.alcohol ?? 0) > 0,
+    (nutritionalData.potassium ?? 0) > 0,
+    (nutritionalData.magnesium ?? 0) > 0,
+    (nutritionalData.zinc ?? 0) > 0,
+  ].filter(Boolean).length;
+
+  const effectivelyUseAccordion = useQualityAccordion && (hasQualityData || microCount > 2);
 
   const showLoadingOnly = isLoadingDetails && (mode === 'externalProduct' || mode === null);
 
@@ -242,7 +254,7 @@ export function FoodNutritionSectionCard({
       <View>
         <View
           style={
-            useQualityAccordion && !nutritionExpanded
+            effectivelyUseAccordion && !nutritionExpanded
               ? { maxHeight: 110, overflow: 'hidden' }
               : undefined
           }
@@ -414,7 +426,7 @@ export function FoodNutritionSectionCard({
           ) : null}
         </View>
 
-        {useQualityAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
+        {effectivelyUseAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
           <>
             <LinearGradient
               colors={[
