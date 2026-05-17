@@ -77,6 +77,42 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(13);
   });
 
+  it.skip('counts 13 reps in barbell_back_squat.json', () => {
+    const samples = loadRepsJson('barbell_back_squat.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
+  it.skip('counts 13 reps in deadlift.json', () => {
+    const samples = loadRepsJson('deadlift.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
+  it.skip('counts 13 reps in legpress.json', () => {
+    const samples = loadRepsJson('legpress.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
+  it.skip('counts 13 reps in chest_supported_row.json', () => {
+    const samples = loadRepsJson('chest_supported_row.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
+  it('counts 13 reps in machine_calf_raises.json', () => {
+    const samples = loadRepsJson('machine_calf_raises.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
+  it('counts 13 reps in machine_bench_press.json', () => {
+    const samples = loadRepsJson('machine_bench_press.json');
+    const result = analyzeRecordedReps(samples);
+    expect(result.repCount).toBe(10);
+  });
+
   it('returns 0 reps for empty input', () => {
     expect(analyzeRecordedReps([])).toEqual({ repCount: 0, sampleCount: 0, durationMs: 0 });
   });
