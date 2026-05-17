@@ -209,16 +209,27 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               continue;
             }
 
-            const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+            // if (key === 'name' && value === '249 LOW CARPE SUGAR 24g LOW PROTON SUGAR nu whip i') {
+            //   debugger;
+            // }
+
             let assignValue = value;
-            if (key.endsWith('_json') && typeof value === 'string' && value) {
-              try {
-                assignValue = JSON.parse(value);
-              } catch {
-                assignValue = null;
+            if (key.endsWith('_json')) {
+              // Some @json properties are named without the "_json" suffix (e.g. micros_json → micros),
+              // so camelCase(rawFieldName) misses the setter. Write _raw directly to avoid data loss.
+              if (typeof value === 'string' && value) {
+                try {
+                  assignValue = JSON.parse(value);
+                } catch {
+                  assignValue = null;
+                }
               }
+
+              rec._raw[key] = assignValue;
+              continue;
             }
 
+            const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
             (rec as any)[camel] = assignValue;
           }
         })
