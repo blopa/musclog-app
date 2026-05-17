@@ -1,0 +1,18 @@
+filename,rep_count,exercise,notes
+slow_reps.json,3,unknown,slow cadence
+normal_pace.json,10,unknown,normal cadence
+pushups.json,10,pushup,
+slow_fast_mixed.json,7,unknown,mixed cadence
+slow_fast_mixed_2.json,8,unknown,mixed cadence
+slow_fast_mixed_3.json,8,unknown,mixed cadence
+fast_paced.json,5,unknown,fast cadence
+standing_shoulder_barbell_press.json,5,barbell_shoulder_press,
+barbell_bicep_curls.json,13,barbell_bicep_curl,
+cable_lateral_raises.json,13,cable_lateral_raise,cable machine
+bench_press.json,13,bench_press,
+barbell_back_squat.json,10,barbell_back_squat,
+deadlift.json,10,deadlift,strong gyro drift
+legpress.json,10,leg_press,machine
+chest_supported_row.json,10,chest_supported_row,
+machine_calf_raises.json,10,machine_calf_raise,cable/stack machine — small range of motion
+machine_bench_press.json,10,machine_bench_press,

@@ -1,0 +1,23 @@
+Training summary
+========================================
+Recordings:   17
+Best model:   Random Forest
+LOOCV MAE:    2.18
+Exact match:  4/17 (24%)
+
+Feature order for inference (input array index → name):
+   0: duration_ms
+   1: sample_rate_hz
+   2: dominant_range_deg
+   3: nondominant_range_deg
+   4: drift_ratio
+   5: peak_count
+   6: valley_count
+   7: median_half_amp_deg
+   8: std_half_amp_deg
+   9: dominant_freq_hz
+  10: freq_est_reps
+  11: zero_crossing_count
+  12: accel_z_range
+  13: accel_z_peak_count
+  14: is_angle_flat

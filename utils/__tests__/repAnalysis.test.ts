@@ -5,7 +5,7 @@ import type { MotionSample } from '@/utils/repAnalysis';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
 
 function loadRepsJson(fileName: string = 'slow_reps.json'): MotionSample[] {
-  const filePath = join(__dirname, `../../data/dev/reps/${fileName}`);
+  const filePath = join(__dirname, `../../training-data/recordings/${fileName}`);
   const raw = JSON.parse(readFileSync(filePath, 'utf-8')) as { samples: MotionSample[] };
   return raw.samples;
 }

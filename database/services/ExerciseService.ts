@@ -14,10 +14,24 @@ import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 import { MuscleService } from './MuscleService';
 
+const EXERCISE_JSON_MUSCLE_GROUPS = [
+  'abdomen',
+  'arms',
+  'back',
+  'chest',
+  'core',
+  'full_body',
+  'glutes',
+  'legs',
+  'shoulders',
+] as const;
+
+type ExerciseJsonMuscleGroup = (typeof EXERCISE_JSON_MUSCLE_GROUPS)[number];
+
 interface ExerciseJsonData {
   name: string;
   description: string;
-  muscleGroup: string;
+  muscleGroup: ExerciseJsonMuscleGroup;
   type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
   targetMuscles?: string[];
   loadMultiplier?: number;
@@ -36,7 +50,7 @@ function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): Exercise
     result.push({
       name: localeEntry.name,
       description: localeEntry.description,
-      muscleGroup: data.muscleGroup,
+      muscleGroup: data.muscleGroup as ExerciseJsonMuscleGroup,
       type: data.type as ExerciseJsonData['type'],
       targetMuscles: data.targetMuscles,
       loadMultiplier: data.loadMultiplier,
