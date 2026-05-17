@@ -220,7 +220,7 @@ function MyScreen() {
       {/* Your screen content */}
 
       {/* Add debug info (only in development) */}
-      {__DEV__ && <ThemeDebugInfo />}
+      {isProduction() && <ThemeDebugInfo />}
     </View>
   );
 }

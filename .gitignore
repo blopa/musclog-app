@@ -18,6 +18,10 @@ public/musclog-app/
 *.p12
 *.key
 *.mobileprovision
+modules/witmotion-ble/android/build/
+modules/witmotion-ble/android/.gradle/
+**/android/build/
+**/.gradle/
 
 # Metro
 .metro-health-check*

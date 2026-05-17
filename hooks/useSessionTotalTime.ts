@@ -13,9 +13,11 @@ type UseSessionTotalTimeProps = {
   initialTime?: Time;
 };
 
+const DEFAULT_INITIAL_TIME: Time = { hours: 0, minutes: 0, seconds: 0 };
+
 export function useSessionTotalTime({
   startTime,
-  initialTime = { hours: 0, minutes: 0, seconds: 0 },
+  initialTime = DEFAULT_INITIAL_TIME,
 }: UseSessionTotalTimeProps) {
   const [time, setTime] = useState(initialTime);
 
@@ -24,7 +26,7 @@ export function useSessionTotalTime({
       return;
     }
 
-    if (startTime) {
+    if (startTime != null) {
       const updateTime = () => {
         const now = Date.now();
         const elapsedMs = now - startTime;
@@ -41,30 +43,32 @@ export function useSessionTotalTime({
       // Then update every second
       const interval = setInterval(updateTime, 1000);
       return () => clearInterval(interval);
-    } else {
-      // Fallback to incrementing timer if no startTime provided
-      const interval = setInterval(() => {
-        setTime((prev) => {
-          let newSeconds = prev.seconds + 1;
-          let newMinutes = prev.minutes;
-          let newHours = prev.hours;
-
-          if (newSeconds >= 60) {
-            newSeconds = 0;
-            newMinutes += 1;
-          }
-          if (newMinutes >= 60) {
-            newMinutes = 0;
-            newHours += 1;
-          }
-
-          return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
     }
-  }, [startTime]);
+
+    setTime(initialTime);
+
+    // Fallback to incrementing timer if no startTime provided
+    const interval = setInterval(() => {
+      setTime((prev) => {
+        let newSeconds = prev.seconds + 1;
+        let newMinutes = prev.minutes;
+        let newHours = prev.hours;
+
+        if (newSeconds >= 60) {
+          newSeconds = 0;
+          newMinutes += 1;
+        }
+        if (newMinutes >= 60) {
+          newMinutes = 0;
+          newHours += 1;
+        }
+
+        return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTime, initialTime.hours, initialTime.minutes, initialTime.seconds]);
 
   return time;
 }

@@ -352,7 +352,7 @@ function SyncButton() {
 
 ```typescript
 // In development, log all errors
-if (__DEV__) {
+if (isProduction()) {
   const originalError = console.error;
   console.error = (...args) => {
     if (args[0] instanceof HealthConnectError) {
@@ -377,7 +377,7 @@ import { healthDataSyncService } from './services/healthDataSync';
 import { healthConnectService } from './services/healthConnect';
 
 // Add to global for debugging
-if (__DEV__) {
+if (isProduction()) {
   global.healthConnect = {
     service: healthConnectService,
     syncService: healthDataSyncService,
