@@ -38,6 +38,9 @@ export interface RepAnalysisSummary {
 //   on consecutive half-amplitudes trims the trailing TP when Otsu detects a
 //   bimodal distribution (outlier re-rack amplitude vs regular exercise range).
 //
+// TODO: there's a lot of magic here and stuff based specifically for my weight lifting style, like REP_ACCEL_Z_DOUBLET_GAP_MS
+// consider in the future to train a small model based on data from different lifters
+//
 // When trimming occurs the rep height threshold adapts to 2 × medH × 0.45.
 // For cable/stack machines where x/y barely move, we fall back to accel.z peaks.
 // A peak-cluster cross-check corrects the rare case where a re-rack or stutter
@@ -51,7 +54,10 @@ const REP_PEAK_CLUSTER_SG_POLYNOMIAL = 3;
 const REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG = 5;
 const REP_ACCEL_Z_SMOOTH_ALPHA = 0.15;
 const REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION = 0.3;
+const REP_ACCEL_Z_LOOSE_PEAK_THRESHOLD_FRACTION = 0.2;
 const REP_ACCEL_Z_MIN_PEAK_GAP_MS = 100;
+// Peaks within this gap in the loose pass are doublets (noise bounce), not reps.
+const REP_ACCEL_Z_DOUBLET_GAP_MS = 500;
 // When signalRange / (2 × medH) is below this value, medH is considered a
 // reliable proxy for the exercise half-amplitude, enabling IQR trailing trim.
 const REP_MEDH_REPRESENTATIVE_RATIO = 2;
@@ -296,15 +302,15 @@ function trimBoundaryTurningPoints(
   return tps.slice(start, end);
 }
 
-function countPositivePeaks(
+function findPositivePeakTimestamps(
   values: number[],
   timestamps: number[],
   smoothAlpha: number,
   thresholdFraction: number,
   minPeakGapMs: number
-): number {
+): number[] {
   if (values.length < 3) {
-    return 0;
+    return [];
   }
 
   const smoothed = smoothEma(values, smoothAlpha);
@@ -314,7 +320,7 @@ function countPositivePeaks(
   const signalRange = Math.max(...centered) - Math.min(...centered);
   const peakThreshold = signalRange * thresholdFraction;
 
-  let count = 0;
+  const peakTimestamps: number[] = [];
   let lastPeakMs: number | null = null;
 
   for (let i = 1; i < centered.length - 1; i++) {
@@ -322,12 +328,22 @@ function countPositivePeaks(
     const gapMs = lastPeakMs === null ? Infinity : timestamps[i] - lastPeakMs;
 
     if (isPeak && centered[i] > peakThreshold && gapMs >= minPeakGapMs) {
-      count++;
+      peakTimestamps.push(timestamps[i]);
       lastPeakMs = timestamps[i];
     }
   }
 
-  return count;
+  return peakTimestamps;
+}
+
+function countPositivePeaks(
+  values: number[],
+  timestamps: number[],
+  smoothAlpha: number,
+  thresholdFraction: number,
+  minPeakGapMs: number
+): number {
+  return findPositivePeakTimestamps(values, timestamps, smoothAlpha, thresholdFraction, minPeakGapMs).length;
 }
 
 export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary {
@@ -476,13 +492,32 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
   );
 
   if (angleFlatRangeDeg <= REP_CABLE_FLAT_ANGLE_RANGE_THRESHOLD_DEG) {
-    const accelZRepCount = countPositivePeaks(
-      samples.map((sample) => sample.accel.z),
+    const accelZValues = samples.map((sample) => sample.accel.z);
+    const strictPeakTs = findPositivePeakTimestamps(
+      accelZValues,
       timestamps,
       REP_ACCEL_Z_SMOOTH_ALPHA,
       REP_ACCEL_Z_PEAK_THRESHOLD_FRACTION,
       REP_ACCEL_Z_MIN_PEAK_GAP_MS
     );
+    const loosePeakTs = findPositivePeakTimestamps(
+      accelZValues,
+      timestamps,
+      REP_ACCEL_Z_SMOOTH_ALPHA,
+      REP_ACCEL_Z_LOOSE_PEAK_THRESHOLD_FRACTION,
+      REP_ACCEL_Z_MIN_PEAK_GAP_MS
+    );
+
+    // Prefer the loose count when it finds more peaks that are all well-spaced.
+    // If any consecutive pair is suspiciously close (doublet bounce from a lower
+    // threshold), the loose pass is over-sensitive — fall back to the strict count.
+    const hasDoublets = loosePeakTs.some(
+      (t, i) => i > 0 && t - loosePeakTs[i - 1] < REP_ACCEL_Z_DOUBLET_GAP_MS
+    );
+    const accelZRepCount =
+      !hasDoublets && loosePeakTs.length > strictPeakTs.length
+        ? loosePeakTs.length
+        : strictPeakTs.length;
 
     if (accelZRepCount > repCount) {
       repCount = accelZRepCount;

@@ -83,7 +83,7 @@ describe('analyzeRecordedReps', () => {
     expect(result.repCount).toBe(10);
   });
 
-  it.skip('counts 10 reps in deadlift.json', () => {
+  it('counts 10 reps in deadlift.json', () => {
     const samples = loadRepsJson('deadlift.json');
     const result = analyzeRecordedReps(samples);
     expect(result.repCount).toBe(10);
