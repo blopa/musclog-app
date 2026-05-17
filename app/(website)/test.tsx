@@ -6,6 +6,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { isProduction } from '@/utils/app';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
 
 export interface Vector3D {
@@ -329,6 +330,10 @@ export default function Test() {
     [handleFile]
   );
 
+  if (isProduction()) {
+    return null;
+  }
+
   const sampleCount = fileState?.samples.length ?? 0;
   const durationSeconds =
     fileState?.samples.length != null && fileState.samples.length > 1
@@ -336,10 +341,12 @@ export default function Test() {
           fileState.samples[0].timestamp) /
         1000
       : 0;
+
   const startedAt = fileState?.startedAt != null ? new Date(fileState.startedAt) : null;
   const stoppedAt = fileState?.stoppedAt != null ? new Date(fileState.stoppedAt) : null;
   const fileLabel = fileState?.fileName ?? 'No file loaded yet';
   const visibleAxisCount = activeAxes.length;
+
   let chartBody: React.ReactNode;
   if (displayRows.length > 1 && visibleAxisCount > 0 && extents != null) {
     chartBody = (
