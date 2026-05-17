@@ -39,6 +39,11 @@
  *  31  type_unknown
  */
 
+import mlMax from 'ml-array-max';
+import mlMin from 'ml-array-min';
+import { FFT } from 'ml-fft';
+import { median, standardDeviation } from 'simple-statistics';
+
 const SMOOTH_ALPHA = 0.15;
 const PEAK_THRESHOLD_FRAC = 0.3;
 const MIN_PEAK_GAP_MS = 300;
@@ -92,44 +97,10 @@ function smoothEma(values: number[], alpha: number): number[] {
   return out;
 }
 
-function arrayMin(a: number[]): number {
-  let m = a[0];
-  for (let i = 1; i < a.length; i++) {
-    if (a[i] < m) {
-      m = a[i];
-    }
-  }
-  return m;
-}
-
-function arrayMax(a: number[]): number {
-  let m = a[0];
-  for (let i = 1; i < a.length; i++) {
-    if (a[i] > m) {
-      m = a[i];
-    }
-  }
-  return m;
-}
-
-function median(sorted: number[]): number {
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-}
-
-function stdDev(values: number[]): number {
-  if (values.length === 0) {
-    return 0;
-  }
-  const mean = values.reduce((s, v) => s + v, 0) / values.length;
-  const variance = values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length;
-  return Math.sqrt(variance);
-}
-
 /**
- * Simple peak finder: returns indices of local maxima in `signal` that
- * exceed `minHeight` and are at least `minDistance` samples apart.
- * Mirrors scipy.signal.find_peaks behaviour closely enough for feature extraction.
+ * Local-maxima peak finder: returns indices of peaks above minHeight that
+ * are at least minDistance samples apart (keeps the taller one when two peaks
+ * are too close). Mirrors scipy.signal.find_peaks for our use case.
  */
 function findPeaks(signal: number[], minHeight: number, minDistance: number): number[] {
   const peaks: number[] = [];
@@ -145,73 +116,42 @@ function findPeaks(signal: number[], minHeight: number, minDistance: number): nu
   return peaks;
 }
 
-/**
- * Real FFT magnitude (Cooley-Tukey, power-of-two via zero-padding).
- * Returns [frequencies_hz, magnitudes] for the positive half of the spectrum.
- */
-function realFft(signal: number[], sampleRateHz: number): [number[], number[]] {
+function dominantFrequencyHz(
+  signal: number[],
+  sampleRateHz: number,
+  fMin: number,
+  fMax: number
+): number {
   const n = signal.length;
-  // Zero-pad to next power of two
   let size = 1;
   while (size < n) {
     size <<= 1;
   }
 
-  // Build complex array [re, im, re, im, ...]
-  const buf = new Float64Array(size * 2);
+  const re = new Array<number>(size).fill(0);
+  const im = new Array<number>(size).fill(0);
   for (let i = 0; i < n; i++) {
-    buf[i * 2] = signal[i];
+    re[i] = signal[i];
   }
 
-  // Cooley-Tukey iterative FFT (in-place, decimation-in-time)
-  // Bit-reversal permutation
-  for (let i = 1, j = 0; i < size; i++) {
-    let bit = size >> 1;
-    for (; j & bit; bit >>= 1) {
-      j ^= bit;
-    }
-    j ^= bit;
-    if (i < j) {
-      let tmp = buf[i * 2];
-      buf[i * 2] = buf[j * 2];
-      buf[j * 2] = tmp;
-      tmp = buf[i * 2 + 1];
-      buf[i * 2 + 1] = buf[j * 2 + 1];
-      buf[j * 2 + 1] = tmp;
-    }
-  }
-  // Butterfly stages
-  for (let len = 2; len <= size; len <<= 1) {
-    const ang = (-2 * Math.PI) / len;
-    const wRe = Math.cos(ang);
-    const wIm = Math.sin(ang);
-    for (let i = 0; i < size; i += len) {
-      let curRe = 1,
-        curIm = 0;
-      for (let j = 0; j < len / 2; j++) {
-        const uRe = buf[(i + j) * 2];
-        const uIm = buf[(i + j) * 2 + 1];
-        const vRe = buf[(i + j + len / 2) * 2] * curRe - buf[(i + j + len / 2) * 2 + 1] * curIm;
-        const vIm = buf[(i + j + len / 2) * 2] * curIm + buf[(i + j + len / 2) * 2 + 1] * curRe;
-        buf[(i + j) * 2] = uRe + vRe;
-        buf[(i + j) * 2 + 1] = uIm + vIm;
-        buf[(i + j + len / 2) * 2] = uRe - vRe;
-        buf[(i + j + len / 2) * 2 + 1] = uIm - vIm;
-        const nextRe = curRe * wRe - curIm * wIm;
-        curIm = curRe * wIm + curIm * wRe;
-        curRe = nextRe;
-      }
-    }
-  }
+  FFT.init(size);
+  FFT.fft(re, im, 1);
 
+  let bestMag = -1;
+  let bestFreq = 0;
   const halfLen = size / 2 + 1;
-  const freqs: number[] = [];
-  const mags: number[] = [];
   for (let k = 0; k < halfLen; k++) {
-    freqs.push((k * sampleRateHz) / size);
-    mags.push(Math.sqrt(buf[k * 2] ** 2 + buf[k * 2 + 1] ** 2));
+    const freq = (k * sampleRateHz) / size;
+    if (freq < fMin || freq > fMax) {
+      continue;
+    }
+    const mag = Math.sqrt(re[k] ** 2 + im[k] ** 2);
+    if (mag > bestMag) {
+      bestMag = mag;
+      bestFreq = freq;
+    }
   }
-  return [freqs, mags];
+  return bestFreq;
 }
 
 export function extractRepCountingFeatures(
@@ -232,28 +172,26 @@ export function extractRepCountingFeatures(
   const durationS = durationMs / 1000;
   const sampleRate = durationS > 0 ? n / durationS : 0;
 
-  // Dominant angle axis
-  const rx = arrayMax(angX) - arrayMin(angX);
-  const ry = arrayMax(angY) - arrayMin(angY);
+  // Dominant angle axis (whichever has the larger range)
+  const rx = mlMax(angX) - mlMin(angX);
+  const ry = mlMax(angY) - mlMin(angY);
   const dominantRaw = rx >= ry ? angX : angY;
   const dominantRange = Math.max(rx, ry);
   const nondominantRange = Math.min(rx, ry);
 
-  // EMA smooth → subtract baseline from first 20 samples
+  // EMA smooth → subtract median of first 20 samples as baseline
   const smoothed = smoothEma(dominantRaw, SMOOTH_ALPHA);
-  const baselineWindow = smoothed.slice(0, Math.min(20, n)).sort((a, b) => a - b);
-  const baseline = median(baselineWindow);
+  const baseline = median(smoothed.slice(0, Math.min(20, n)));
   const centered = smoothed.map((v) => v - baseline);
-  const centeredMin = arrayMin(centered);
-  const centeredMax = arrayMax(centered);
+  const centeredMin = mlMin(centered);
+  const centeredMax = mlMax(centered);
   const signalRange = centeredMax - centeredMin;
 
-  // Gyro drift
-  const window = Math.max(1, Math.min(20, Math.floor(n * 0.05)));
-  const startMean = centered.slice(0, window).reduce((s, v) => s + v, 0) / window;
-  const endMean = centered.slice(-window).reduce((s, v) => s + v, 0) / window;
-  const drift = Math.abs(endMean - startMean);
-  const driftRatio = signalRange > 0 ? drift / signalRange : 0;
+  // Gyro drift: compare start vs end window means
+  const win = Math.max(1, Math.min(20, Math.floor(n * 0.05)));
+  const startMean = centered.slice(0, win).reduce((s, v) => s + v, 0) / win;
+  const endMean = centered.slice(-win).reduce((s, v) => s + v, 0) / win;
+  const driftRatio = signalRange > 0 ? Math.abs(endMean - startMean) / signalRange : 0;
 
   // Peak / valley detection
   let peakCount = 0;
@@ -266,9 +204,12 @@ export function extractRepCountingFeatures(
     const pkMinH = centeredMin + signalRange * PEAK_THRESHOLD_FRAC;
     const vlMinH = -centeredMax + signalRange * PEAK_THRESHOLD_FRAC;
 
-    const negCentered = centered.map((v) => -v);
     const peaks = findPeaks(centered, pkMinH, minGap);
-    const valleys = findPeaks(negCentered, vlMinH, minGap);
+    const valleys = findPeaks(
+      centered.map((v) => -v),
+      vlMinH,
+      minGap
+    );
 
     peakCount = peaks.length;
     valleyCount = valleys.length;
@@ -277,27 +218,18 @@ export function extractRepCountingFeatures(
       const pairs = Math.min(peakCount, valleyCount);
       const halfAmps = Array.from({ length: pairs }, (_, i) =>
         Math.abs(centered[peaks[i]] - centered[valleys[i]])
-      ).sort((a, b) => a - b);
+      );
       medianHalfAmp = median(halfAmps);
-      stdHalfAmp = stdDev(halfAmps);
+      stdHalfAmp = halfAmps.length > 1 ? standardDeviation(halfAmps) : 0;
     }
   }
 
-  // FFT dominant frequency
-  let dominantFreqHz = 0;
-  let freqEstReps = 0;
-
-  if (n > 10 && sampleRate > 0) {
-    const [freqs, mags] = realFft(centered, sampleRate);
-    let bestMag = -1;
-    for (let k = 0; k < freqs.length; k++) {
-      if (freqs[k] >= FFT_MIN_HZ && freqs[k] <= FFT_MAX_HZ && mags[k] > bestMag) {
-        bestMag = mags[k];
-        dominantFreqHz = freqs[k];
-      }
-    }
-    freqEstReps = dominantFreqHz * durationS;
-  }
+  // FFT dominant frequency (0.2–3 Hz human movement range)
+  const dominantFreqHz =
+    n > 10 && sampleRate > 0
+      ? dominantFrequencyHz(centered, sampleRate, FFT_MIN_HZ, FFT_MAX_HZ)
+      : 0;
+  const freqEstReps = dominantFreqHz * durationS;
 
   // Zero crossings
   let zeroCrossingCount = 0;
@@ -307,22 +239,19 @@ export function extractRepCountingFeatures(
     }
   }
 
-  // Accel Z
+  // Accel Z (vertical axis — key for cable/stack machines)
   const azSmoothed = smoothEma(az, SMOOTH_ALPHA);
-  const azBaselineWindow = azSmoothed.slice(0, Math.min(20, n)).sort((a, b) => a - b);
-  const azBaseline = median(azBaselineWindow);
+  const azBaseline = median(azSmoothed.slice(0, Math.min(20, n)));
   const azCentered = azSmoothed.map((v) => v - azBaseline);
-  const azRange = arrayMax(az) - arrayMin(az);
-  const azSigRange = arrayMax(azCentered) - arrayMin(azCentered);
+  const azRange = mlMax(az) - mlMin(az);
+  const azSigRange = mlMax(azCentered) - mlMin(azCentered);
   let azPeakCount = 0;
 
   if (azSigRange > 0) {
-    const azPkMin = arrayMin(azCentered) + azSigRange * PEAK_THRESHOLD_FRAC;
+    const azPkMin = mlMin(azCentered) + azSigRange * PEAK_THRESHOLD_FRAC;
     const azGap = Math.max(1, Math.round(sampleRate * 0.1));
     azPeakCount = findPeaks(azCentered, azPkMin, azGap).length;
   }
-
-  const isAngleFlat = dominantRange <= 5.0 ? 1 : 0;
 
   // Categorical one-hot encoding
   const mg = (MUSCLE_GROUPS as readonly string[]).includes(metadata.muscleGroup ?? '')
@@ -331,9 +260,6 @@ export function extractRepCountingFeatures(
   const et = (EXERCISE_TYPES as readonly string[]).includes(metadata.exerciseType ?? '')
     ? (metadata.exerciseType as ExerciseType)
     : 'unknown';
-
-  const muscleOneHot = MUSCLE_GROUPS.map((g) => (g === mg ? 1 : 0));
-  const typeOneHot = EXERCISE_TYPES.map((t) => (t === et ? 1 : 0));
 
   return [
     durationMs,
@@ -350,8 +276,8 @@ export function extractRepCountingFeatures(
     zeroCrossingCount,
     azRange,
     azPeakCount,
-    isAngleFlat,
-    ...muscleOneHot,
-    ...typeOneHot,
+    dominantRange <= 5.0 ? 1 : 0,
+    ...MUSCLE_GROUPS.map((g) => (g === mg ? 1 : 0)),
+    ...EXERCISE_TYPES.map((t) => (t === et ? 1 : 0)),
   ];
 }
