@@ -74,7 +74,7 @@
             ]
           },
           "gradleProperties": {
-            "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=3g -Dkotlin.daemon.jvm.options=-Xmx2g",
+            "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=4g -Dkotlin.daemon.jvm.options=-Xmx3g",
             "org.gradle.parallel": "false"
           }
         }
