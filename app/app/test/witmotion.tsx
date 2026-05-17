@@ -68,6 +68,74 @@ interface StoredDebugMotionFile extends DebugMotionFile {
   sortTimestampMs: number;
 }
 
+type MutableRef<T> = {
+  current: T;
+};
+
+function pushCapped<T>(buffer: T[], value: T, maxLength: number) {
+  buffer.push(value);
+  if (buffer.length > maxLength) {
+    buffer.splice(0, buffer.length - maxLength);
+  }
+}
+
+function resetLiveBuffers(
+  refs: MutableRef<number[]>[],
+  rawAccelRef: MutableRef<{ x: number[]; y: number[]; z: number[] }>
+) {
+  for (const ref of refs) {
+    ref.current = [];
+  }
+
+  rawAccelRef.current = { x: [], y: [], z: [] };
+}
+
+function resetRecordingState(
+  integRef: MutableRef<{
+    prevAVert: number;
+    hpfAccel: number;
+    rawVel: number;
+    prevRawVel: number;
+    hpfVel: number;
+    position: number;
+    lastTs: number | null;
+    chartTick: number;
+    stillCount: number;
+  }>,
+  liveFeatureRef: MutableRef<{
+    smoothMag: number;
+    baseline: number;
+    initialized: boolean;
+  }>,
+  anchorAngleRef: MutableRef<{ x: number; y: number; z: number } | null>,
+  currentAngleRef: MutableRef<{ x: number; y: number; z: number } | null>,
+  smoothBufRef: MutableRef<number[]>,
+  velBufRef: MutableRef<number[]>,
+  posBufRef: MutableRef<number[]>,
+  angleBufRef: MutableRef<number[]>,
+  rawAccelBufRef: MutableRef<{ x: number[]; y: number[]; z: number[] }>
+) {
+  const integ = integRef.current;
+  integ.prevAVert = 0;
+  integ.hpfAccel = 0;
+  integ.rawVel = 0;
+  integ.prevRawVel = 0;
+  integ.hpfVel = 0;
+  integ.position = 0;
+  integ.lastTs = null;
+  integ.chartTick = 0;
+  integ.stillCount = 0;
+
+  anchorAngleRef.current = currentAngleRef.current ? { ...currentAngleRef.current } : null;
+  smoothBufRef.current = [];
+  resetLiveBuffers([velBufRef, posBufRef, angleBufRef], rawAccelBufRef);
+  liveFeatureRef.current = {
+    smoothMag: 0,
+    baseline: 0,
+    initialized: false,
+  };
+}
+
 /**
  * Projects body-frame accel onto world-frame vertical using ZYX Euler angles
  * from the sensor's AHRS output. Yaw cancels for the vertical axis.
@@ -521,45 +589,24 @@ export default function WitMotionTestScreen() {
         integ.chartTick = (integ.chartTick + 1) % 5;
         if (integ.chartTick === 0) {
           const raw = rawAccelBufRef.current;
-          raw.x.push(accel.x);
-          raw.y.push(accel.y);
-          raw.z.push(accel.z);
-          if (raw.x.length > CHART_MAX_POINTS) {
-            raw.x.splice(0, raw.x.length - CHART_MAX_POINTS);
-          }
-          if (raw.y.length > CHART_MAX_POINTS) {
-            raw.y.splice(0, raw.y.length - CHART_MAX_POINTS);
-          }
-          if (raw.z.length > CHART_MAX_POINTS) {
-            raw.z.splice(0, raw.z.length - CHART_MAX_POINTS);
-          }
+          pushCapped(raw.x, accel.x, CHART_MAX_POINTS);
+          pushCapped(raw.y, accel.y, CHART_MAX_POINTS);
+          pushCapped(raw.z, accel.z, CHART_MAX_POINTS);
 
           const vel2 = velBufRef.current;
-          vel2.push(integ.hpfVel * 100); // m/s → cm/s
-          if (vel2.length > CHART_MAX_POINTS) {
-            vel2.splice(0, vel2.length - CHART_MAX_POINTS);
-          }
+          pushCapped(vel2, integ.hpfVel * 100, CHART_MAX_POINTS); // m/s → cm/s
 
           const pos = posBufRef.current;
-          pos.push(integ.position * 100); // m → cm
-          if (pos.length > CHART_MAX_POINTS) {
-            pos.splice(0, pos.length - CHART_MAX_POINTS);
-          }
+          pushCapped(pos, integ.position * 100, CHART_MAX_POINTS); // m → cm
 
           const anchor = anchorAngleRef.current;
           const aDelta = anchor !== null ? angle.y - anchor.y : 0;
           const ang = angleBufRef.current;
-          ang.push(aDelta);
-          if (ang.length > CHART_MAX_POINTS) {
-            ang.splice(0, ang.length - CHART_MAX_POINTS);
-          }
+          pushCapped(ang, aDelta, CHART_MAX_POINTS);
 
           // fastEMA − slowEMA — the feature the rep counter actually reads
           const sm = smoothBufRef.current;
-          sm.push(adaptiveFeature);
-          if (sm.length > CHART_MAX_POINTS) {
-            sm.splice(0, sm.length - CHART_MAX_POINTS);
-          }
+          pushCapped(sm, adaptiveFeature, CHART_MAX_POINTS);
         }
       }
     });
@@ -622,32 +669,23 @@ export default function WitMotionTestScreen() {
     setRawAccelData({ x: [], y: [], z: [] });
     setSmoothData([]);
 
-    const integ = integRef.current;
-    integ.prevAVert = 0;
-    integ.hpfAccel = 0;
-    integ.rawVel = 0;
-    integ.prevRawVel = 0;
-    integ.hpfVel = 0;
-    integ.position = 0;
-    integ.lastTs = null;
-    integ.chartTick = 0;
-    integ.stillCount = 0;
-
-    velBufRef.current = [];
-    posBufRef.current = [];
-    angleBufRef.current = [];
-    rawAccelBufRef.current = { x: [], y: [], z: [] };
-    smoothBufRef.current = [];
-    liveFeatureRef.current = {
-      smoothMag: 0,
-      baseline: 0,
-      initialized: false,
-    };
+    resetRecordingState(
+      integRef,
+      liveFeatureRef,
+      anchorAngleRef,
+      currentAngleRef,
+      smoothBufRef,
+      velBufRef,
+      posBufRef,
+      angleBufRef,
+      rawAccelBufRef
+    );
   }, []);
 
   const handleStopRecording = useCallback(async () => {
     recordingActiveRef.current = false;
-    const samples = recordedMotionRef.current;
+    const samples = [...recordedMotionRef.current];
+    recordedMotionRef.current = [];
     const summary = analyzeRecordedReps(samples);
     setAnalysisSummary(summary);
     setRecordingStatus('analyzed');
@@ -675,6 +713,7 @@ export default function WitMotionTestScreen() {
       setIsSavingDebugData(false);
     }
     recordingStartedAtRef.current = null;
+    recordedMotionRef.current = [];
   }, [refreshStoredDebugFiles]);
 
   const handleShareDebugFile = useCallback(
@@ -716,21 +755,17 @@ export default function WitMotionTestScreen() {
   );
 
   const handleSetAnchor = useCallback(() => {
-    const integ = integRef.current;
-    integ.prevAVert = 0;
-    integ.hpfAccel = 0;
-    integ.rawVel = 0;
-    integ.prevRawVel = 0;
-    integ.hpfVel = 0;
-    integ.position = 0;
-    integ.lastTs = null;
-    integ.chartTick = 0;
-    integ.stillCount = 0;
-    anchorAngleRef.current = currentAngleRef.current ? { ...currentAngleRef.current } : null;
-    velBufRef.current = [];
-    posBufRef.current = [];
-    angleBufRef.current = [];
-    rawAccelBufRef.current = { x: [], y: [], z: [] };
+    resetRecordingState(
+      integRef,
+      liveFeatureRef,
+      anchorAngleRef,
+      currentAngleRef,
+      smoothBufRef,
+      velBufRef,
+      posBufRef,
+      angleBufRef,
+      rawAccelBufRef
+    );
   }, []);
 
   const handleResetReps = useCallback(() => {
