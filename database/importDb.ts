@@ -210,7 +210,16 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             }
 
             const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
-            (rec as any)[camel] = value;
+            let assignValue = value;
+            if (key.endsWith('_json') && typeof value === 'string' && value) {
+              try {
+                assignValue = JSON.parse(value);
+              } catch {
+                assignValue = null;
+              }
+            }
+
+            (rec as any)[camel] = assignValue;
           }
         })
       );
