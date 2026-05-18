@@ -30,11 +30,9 @@ import { DownloadModal } from '@/components/website/WebsiteChrome';
 import homeScreenshot from '@/screenshots/phone/screenshot-1.png';
 import nutritionScreenshot from '@/screenshots/phone/screenshot-2.png';
 import workoutListScreenshot from '@/screenshots/phone/screenshot-3.png';
-import startNewWorkoutScreenshot from '@/screenshots/phone/screenshot-4.png';
 import progressChartsScreenshot from '@/screenshots/phone/screenshot-5.png';
 import localDataSettingsScreenshot from '@/screenshots/phone/screenshot-8.png';
-import createWorkoutScreenshot from '@/screenshots/phone/screenshot-9.png';
-import aiCoachChatScreenshot from '@/screenshots/phone/screenshot-10.png';
+import workoutWaitTimeScreenshot from '@/screenshots/phone/screenshot-10.png';
 import aiCoachChatScreenshot2 from '@/screenshots/phone/screenshot-13.png';
 import mealLoggingScreenshot from '@/screenshots/phone/screenshot-14.png';
 
@@ -295,8 +293,6 @@ export function ScreenshotShowcase() {
   const [isPaused, setIsPaused] = useState(false);
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
 
-  // TODO: check the translations JSON and make sure that they match what the screenshot is actually about
-  // you can check the name of the screenshot variable to know what the screenshot is about
   const slides = [
     {
       src: homeScreenshot,
@@ -305,22 +301,16 @@ export function ScreenshotShowcase() {
       alt: t('slides.home.alt'),
     },
     {
-      src: nutritionScreenshot,
-      title: t('slides.restTimer.title'),
-      description: t('slides.restTimer.description'),
-      alt: t('slides.restTimer.alt'),
+      src: aiCoachChatScreenshot2,
+      title: t('slides.chatCoach2.title'),
+      description: t('slides.chatCoach2.description'),
+      alt: t('slides.chatCoach2.alt'),
     },
     {
       src: workoutListScreenshot,
-      title: t('slides.logSet.title'),
-      description: t('slides.logSet.description'),
-      alt: t('slides.logSet.alt'),
-    },
-    {
-      src: startNewWorkoutScreenshot,
-      title: t('slides.completeSet.title'),
-      description: t('slides.completeSet.description'),
-      alt: t('slides.completeSet.alt'),
+      title: t('slides.workouts.title'),
+      description: t('slides.workouts.description'),
+      alt: t('slides.workouts.alt'),
     },
     {
       src: mealLoggingScreenshot,
@@ -329,34 +319,28 @@ export function ScreenshotShowcase() {
       alt: t('slides.mealLogging.alt'),
     },
     {
-      src: progressChartsScreenshot,
-      title: t('slides.chatCoach.title'),
-      description: t('slides.chatCoach.description'),
-      alt: t('slides.chatCoach.alt'),
-    },
-    {
-      src: localDataSettingsScreenshot,
-      title: t('slides.workouts.title'),
-      description: t('slides.workouts.description'),
-      alt: t('slides.workouts.alt'),
-    },
-    {
-      src: createWorkoutScreenshot,
-      title: t('slides.createWorkout.title'),
-      description: t('slides.createWorkout.description'),
-      alt: t('slides.createWorkout.alt'),
-    },
-    {
-      src: aiCoachChatScreenshot,
+      src: nutritionScreenshot,
       title: t('slides.today.title'),
       description: t('slides.today.description'),
       alt: t('slides.today.alt'),
     },
     {
-      src: aiCoachChatScreenshot2,
+      src: progressChartsScreenshot,
+      title: t('slides.bodyMetrics.title'),
+      description: t('slides.bodyMetrics.description'),
+      alt: t('slides.bodyMetrics.alt'),
+    },
+    {
+      src: localDataSettingsScreenshot,
       title: t('slides.settings.title'),
       description: t('slides.settings.description'),
       alt: t('slides.settings.alt'),
+    },
+    {
+      src: workoutWaitTimeScreenshot,
+      title: t('slides.createWorkout.title'),
+      description: t('slides.createWorkout.description'),
+      alt: t('slides.createWorkout.alt'),
     },
   ];
 

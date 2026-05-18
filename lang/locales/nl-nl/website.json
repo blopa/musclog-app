@@ -45,11 +45,6 @@
             "description": "Houd uw sets gaande met een gerichte aftelling.",
             "alt": "Screenshot van de rusttimer van Musclog"
           },
-          "logSet": {
-            "title": "Setlog",
-            "description": "Leg gewicht, herhalingen en partials vast op een strak liftscherm.",
-            "alt": "Screenshot van setlogging in Musclog"
-          },
           "mealLogging": {
             "title": "Maaltijdlog",
             "description": "Log maaltijden en porties met een voedingsgerichte workflow.",
@@ -92,11 +87,6 @@
           "description": "Een gerichte aftelling tussen sets.",
           "alt": "Screenshot van de Musclog rusttimer"
         },
-        "logSet": {
-          "title": "Setlog",
-          "description": "Leg gewicht, herhalingen en partials vast op een liftscherm.",
-          "alt": "Screenshot van setlogging in Musclog"
-        },
         "completeSet": {
           "title": "Set voltooid",
           "description": "Rond de set af en ga direct door naar de volgende actie.",
@@ -111,6 +101,11 @@
           "title": "Coach-chat",
           "description": "Vraag Loggy over macro's, training of maaltijdideeën.",
           "alt": "Screenshot van de coach-chat van Musclog"
+        },
+        "chatCoach2": {
+          "title": "Trainingadvies van coach",
+          "description": "Ontvang gepersonaliseerde oefensuggesties en hersteltips van je AI-coach.",
+          "alt": "Screenshot van trainingadvies van de coach van Musclog"
         },
         "bodyMetrics": {
           "title": "Lichaamsmetingen",
@@ -456,7 +451,10 @@
           "typesCollected": {
             "title": "Soorten verzamelde gegevens",
             "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
-            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
+            "items": [
+              "Voor- en achternaam",
+              "Gebruiksgegevens"
+            ]
           },
           "googleOAuth": {
             "title": "Google OAuth-gegevens",
@@ -972,7 +970,13 @@
               "question": "Hoe worden mijn dagelijkse macro's berekend?",
               "answer": "Macro-verdelingen zijn gebaseerd op fitnessdoel, met behulp van IOM AMDR-bereiken als kader en ISSN/ACSM sportspecifiek onderzoek voor verfijning.",
               "table": {
-                "head": ["Doel", "Koolhydraten", "Eiwit", "Vet", "Redenering"],
+                "head": [
+                  "Doel",
+                  "Koolhydraten",
+                  "Eiwit",
+                  "Vet",
+                  "Redenering"
+                ],
                 "rows": [
                   [
                     "Gewichtsverlies",
@@ -1083,18 +1087,42 @@
               "question": "Hoe worden eenherhalingsmaximum (1RM) schattingen berekend?",
               "answer": "Musclog berekent 1RM met een ensemble van zeven gepubliceerde formules en middelt hun uitkomsten. Middelen vermindert de systematische fout van elke afzonderlijke formule, die elk verschillende nauwkeurigheidsprofielen hebben over herhalingsbereiken.",
               "table": {
-                "head": ["Formule", "Vergelijking", "Beste Voor"],
+                "head": [
+                  "Formule",
+                  "Vergelijking",
+                  "Beste Voor"
+                ],
                 "rows": [
-                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; meest gebruikt"],
-                  ["Epley (1985)", "w × (1 + r / 30)", "Algemeen gebruik; licht conservatief"],
-                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Matige herhalingsbereiken"],
-                  ["Lombardi (1989)", "w × r^0,1", "Lage herhalingsbereiken"],
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 reps; meest gebruikt"
+                  ],
+                  [
+                    "Epley (1985)",
+                    "w × (1 + r / 30)",
+                    "Algemeen gebruik; licht conservatief"
+                  ],
+                  [
+                    "Lander (1985)",
+                    "w / (1,013 − 0,0267 × r)",
+                    "Matige herhalingsbereiken"
+                  ],
+                  [
+                    "Lombardi (1989)",
+                    "w × r^0,1",
+                    "Lage herhalingsbereiken"
+                  ],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0,522 + 0,419 × e^{−0,055r})",
                     "Breed herhalingsbereik; exponentieel model"
                   ],
-                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Lineair; conservatief"],
+                  [
+                    "O'Connor et al. (1989)",
+                    "w × (1 + 0,025 × r)",
+                    "Lineair; conservatief"
+                  ],
                   [
                     "Wathen (1994)",
                     "w / (0,488 + 0,539 × e^{−0,035r})",
@@ -1112,7 +1140,10 @@
                   "label": "Epley (1985)",
                   "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
                 },
-                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
                 {
                   "label": "Lombardi (1989)",
                   "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
@@ -1125,7 +1156,10 @@
                   "label": "O'Connor et al. (1989)",
                   "url": "https://www.vcalc.com/wiki/oconner-et-al"
                 },
-                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
               ]
             },
             {

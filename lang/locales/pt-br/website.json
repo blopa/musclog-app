@@ -45,11 +45,6 @@
             "description": "Mantenha suas séries fluindo com uma contagem regressiva focada.",
             "alt": "Captura do cronômetro de descanso do Musclog"
           },
-          "logSet": {
-            "title": "Registro de série",
-            "description": "Capture peso, repetições e parciais em uma tela limpa de levantamento.",
-            "alt": "Captura do registro de série do Musclog"
-          },
           "mealLogging": {
             "title": "Registro de refeições",
             "description": "Registre refeições e porções com um fluxo centrado em nutrição.",
@@ -92,11 +87,6 @@
           "description": "Uma contagem regressiva focada entre séries.",
           "alt": "Captura do cronômetro de descanso do Musclog"
         },
-        "logSet": {
-          "title": "Registro de série",
-          "description": "Capture peso, repetições e parciais em uma tela de levantamento.",
-          "alt": "Captura do registro de série do Musclog"
-        },
         "completeSet": {
           "title": "Série concluída",
           "description": "Finalize a série e siga direto para a próxima ação.",
@@ -111,6 +101,11 @@
           "title": "Chat com o coach",
           "description": "Pergunte ao Loggy sobre macros, treino ou ideias de refeições.",
           "alt": "Captura do chat com o coach do Musclog"
+        },
+        "chatCoach2": {
+          "title": "Conselho de treino do coach",
+          "description": "Receba sugestões de exercícios e dicas de recuperação do seu coach de IA.",
+          "alt": "Captura de conselho de treino do coach do Musclog"
         },
         "bodyMetrics": {
           "title": "Métricas corporais",
@@ -456,7 +451,10 @@
           "typesCollected": {
             "title": "Tipos de dados coletados",
             "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
-            "items": ["Nome e sobrenome", "Dados de uso"]
+            "items": [
+              "Nome e sobrenome",
+              "Dados de uso"
+            ]
           },
           "googleOAuth": {
             "title": "Dados do Google OAuth",
@@ -972,7 +970,13 @@
               "question": "Como meus macros diários são calculados?",
               "answer": "As divisões de macros são baseadas no objetivo de fitness, usando as faixas AMDR do IOM como estrutura e pesquisas específicas de esportes do ISSN/ACSM para refinamento.",
               "table": {
-                "head": ["Objetivo", "Carboidratos", "Proteína", "Gordura", "Justificativa"],
+                "head": [
+                  "Objetivo",
+                  "Carboidratos",
+                  "Proteína",
+                  "Gordura",
+                  "Justificativa"
+                ],
                 "rows": [
                   [
                     "Perda de Peso",
@@ -1083,22 +1087,42 @@
               "question": "Como as estimativas de uma repetição máxima (1RM) são calculadas?",
               "answer": "O Musclog calcula o 1RM usando um conjunto de sete fórmulas publicadas e faz a média dos resultados. A média reduz o erro sistemático de qualquer fórmula individual, que têm perfis de precisão diferentes em diferentes faixas de repetições.",
               "table": {
-                "head": ["Fórmula", "Equação", "Melhor Para"],
+                "head": [
+                  "Fórmula",
+                  "Equação",
+                  "Melhor Para"
+                ],
                 "rows": [
                   [
                     "Brzycki (1993)",
                     "w / (1,0278 − 0,0278 × r)",
                     "2–10 reps; a mais amplamente usada"
                   ],
-                  ["Epley (1985)", "w × (1 + r / 30)", "Uso geral; ligeiramente conservadora"],
-                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Faixas de repetições moderadas"],
-                  ["Lombardi (1989)", "w × r^0,1", "Faixas de poucas repetições"],
+                  [
+                    "Epley (1985)",
+                    "w × (1 + r / 30)",
+                    "Uso geral; ligeiramente conservadora"
+                  ],
+                  [
+                    "Lander (1985)",
+                    "w / (1,013 − 0,0267 × r)",
+                    "Faixas de repetições moderadas"
+                  ],
+                  [
+                    "Lombardi (1989)",
+                    "w × r^0,1",
+                    "Faixas de poucas repetições"
+                  ],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0,522 + 0,419 × e^{−0,055r})",
                     "Ampla faixa de reps; modelo exponencial"
                   ],
-                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Linear; conservadora"],
+                  [
+                    "O'Connor et al. (1989)",
+                    "w × (1 + 0,025 × r)",
+                    "Linear; conservadora"
+                  ],
                   [
                     "Wathen (1994)",
                     "w / (0,488 + 0,539 × e^{−0,035r})",
@@ -1116,7 +1140,10 @@
                   "label": "Epley (1985)",
                   "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
                 },
-                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
                 {
                   "label": "Lombardi (1989)",
                   "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
@@ -1129,7 +1156,10 @@
                   "label": "O'Connor et al. (1989)",
                   "url": "https://www.vcalc.com/wiki/oconner-et-al"
                 },
-                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
               ]
             },
             {
