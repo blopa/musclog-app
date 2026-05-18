@@ -13,7 +13,7 @@ export const schema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string' },
         { name: 'image_url', type: 'string', isOptional: true },
-        { name: 'muscle_group', type: 'string', isIndexed: true },
+        { name: 'muscle_group', type: 'string', isIndexed: true }, // muscleGroup from JSON
         { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight, etc
         { name: 'mechanic_type', type: 'string' }, // 'compound', 'isolation', etc
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
@@ -567,7 +567,7 @@ export const schema = appSchema({
 
     // Canonical muscle catalogue (seeded from bundled data)
     tableSchema({
-      name: 'muscles',
+      name: 'muscles', // targetMuscles from JSON
       columns: [
         { name: 'name', type: 'string', isIndexed: true }, // snake_case key, e.g. 'triceps'
         { name: 'muscle_group', type: 'string', isIndexed: true }, // e.g. 'arms', 'chest'
