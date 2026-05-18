@@ -337,14 +337,18 @@ async function cascadeMarkDeleted(
   }
 }
 
+// Returns the IDs that were actually successfully soft-deleted (may be fewer than
+// the input if individual deletions fail and roll back).
 async function softDeleteRootRecords(
   rootIds: string[],
   descriptor: TableGroupDescriptor
-): Promise<void> {
+): Promise<string[]> {
   const uniqueIds = [...new Set(rootIds)].filter(Boolean);
   if (uniqueIds.length === 0) {
-    return;
+    return [];
   }
+
+  const deletedIds: string[] = [];
 
   // One write transaction per root so each deletion is atomic: if anything
   // fails mid-tree the entire transaction rolls back, leaving that root's
@@ -365,11 +369,14 @@ async function softDeleteRootRecords(
 
         await writer.callWriter(() => rootRecord.markAsDeleted());
       });
+      deletedIds.push(rootId);
     } catch (error) {
       handleError(error, 'DatabaseRepairService.softDeleteRootRecords');
       // Log and continue — don't let one failed deletion abort the rest.
     }
   }
+
+  return deletedIds;
 }
 
 function allTablesInDescriptor(descriptor: TableGroupDescriptor): string[] {
@@ -437,8 +444,7 @@ async function runRepair(
       return result;
     }
 
-    await softDeleteRootRecords(rootIdsToDelete, descriptor);
-    result.deletedRootIds = rootIdsToDelete;
+    result.deletedRootIds = await softDeleteRootRecords(rootIdsToDelete, descriptor);
 
     result.reindexed = (await reindexTables(tables)) || result.reindexed;
 

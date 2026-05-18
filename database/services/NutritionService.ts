@@ -240,22 +240,20 @@ export class NutritionService {
       return log;
     } catch (error) {
       if (!repairAttempted) {
-        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
-          this.logFoodInternal(
-            foodId,
-            date,
-            mealType,
-            amount,
-            portionId,
-            externalId,
-            groupId,
-            loggedMealName,
-            true
-          )
-        );
-
-        if (repaired) {
-          return repaired;
+        // logFood reads from `foods` and `food_food_portions` before writing to
+        // `nutrition_logs`, so corruption in either group can cause this to fail.
+        // Repair both in parallel and retry if either had effect.
+        const [nutritionRepair, foodsRepair] = await Promise.all([
+          DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.nutritionLogs),
+          DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.foods),
+        ]);
+        const anyEffect =
+          (nutritionRepair.attempted && (nutritionRepair.reindexed || nutritionRepair.deletedRootIds.length > 0)) ||
+          (foodsRepair.attempted && (foodsRepair.reindexed || foodsRepair.deletedRootIds.length > 0));
+        if (anyEffect) {
+          return this.logFoodInternal(
+            foodId, date, mealType, amount, portionId, externalId, groupId, loggedMealName, true
+          );
         }
       }
       throw error;
