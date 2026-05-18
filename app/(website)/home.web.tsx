@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
 import Head from 'expo-router/head';
 import {
@@ -14,17 +13,12 @@ import {
   Shield,
   Smartphone,
   Sparkles,
+  X,
   TrendingUp,
 } from 'lucide-react-native';
+import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import homeScreenshot from '../../screenshots/phone/screenshot-1.png';
-import nutritionScreenshot from '../../screenshots/phone/screenshot-2.png';
-import workoutListScreenshot from '../../screenshots/phone/screenshot-3.png';
-import progressScreenshot from '../../screenshots/phone/screenshot-5.png';
-import restTimerScreenshot from '../../screenshots/phone/screenshot-10.png';
-import logSetScreenshot from '../../screenshots/phone/screenshot-11.png';
-import mealLoggingScreenshot from '../../screenshots/phone/screenshot-14.png';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
 import {
@@ -33,6 +27,19 @@ import {
   SectionBackground,
 } from '@/components/website/WebsiteBackgrounds';
 import { DownloadModal } from '@/components/website/WebsiteChrome';
+import homeScreenshot from '@/screenshots/phone/screenshot-1.png';
+import bodyMetricsScreenshot from '@/screenshots/phone/screenshot-10.png';
+import completeSetScreenshot from '@/screenshots/phone/screenshot-4.png';
+import createWorkoutScreenshot from '@/screenshots/phone/screenshot-9.png';
+import nutritionScreenshot from '@/screenshots/phone/screenshot-2.png';
+import settingsScreenshot from '@/screenshots/phone/screenshot-13.png';
+import todayScreenshot from '@/screenshots/phone/screenshot-7.png';
+import workoutListScreenshot from '@/screenshots/phone/screenshot-3.png';
+import progressScreenshot from '@/screenshots/phone/screenshot-5.png';
+import restTimerScreenshot from '@/screenshots/phone/screenshot-10.png';
+import logSetScreenshot from '@/screenshots/phone/screenshot-11.png';
+import workoutLibraryScreenshot from '@/screenshots/phone/screenshot-8.png';
+import mealLoggingScreenshot from '@/screenshots/phone/screenshot-14.png';
 
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
@@ -494,6 +501,371 @@ export function Features() {
   );
 }
 
+export function ScreenshotShowcase() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.screenshots' });
+  const [isPaused, setIsPaused] = useState(false);
+  const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+
+  const slides = [
+    {
+      src: homeScreenshot,
+      title: t('slides.home.title'),
+      description: t('slides.home.description'),
+      alt: t('slides.home.alt'),
+    },
+    {
+      src: nutritionScreenshot,
+      title: t('slides.restTimer.title'),
+      description: t('slides.restTimer.description'),
+      alt: t('slides.restTimer.alt'),
+    },
+    {
+      src: workoutListScreenshot,
+      title: t('slides.logSet.title'),
+      description: t('slides.logSet.description'),
+      alt: t('slides.logSet.alt'),
+    },
+    {
+      src: completeSetScreenshot,
+      title: t('slides.completeSet.title'),
+      description: t('slides.completeSet.description'),
+      alt: t('slides.completeSet.alt'),
+    },
+    {
+      src: mealLoggingScreenshot,
+      title: t('slides.mealLogging.title'),
+      description: t('slides.mealLogging.description'),
+      alt: t('slides.mealLogging.alt'),
+    },
+    {
+      src: progressScreenshot,
+      title: t('slides.chatCoach.title'),
+      description: t('slides.chatCoach.description'),
+      alt: t('slides.chatCoach.alt'),
+    },
+    {
+      src: bodyMetricsScreenshot,
+      title: t('slides.bodyMetrics.title'),
+      description: t('slides.bodyMetrics.description'),
+      alt: t('slides.bodyMetrics.alt'),
+    },
+    {
+      src: workoutLibraryScreenshot,
+      title: t('slides.workouts.title'),
+      description: t('slides.workouts.description'),
+      alt: t('slides.workouts.alt'),
+    },
+    {
+      src: createWorkoutScreenshot,
+      title: t('slides.createWorkout.title'),
+      description: t('slides.createWorkout.description'),
+      alt: t('slides.createWorkout.alt'),
+    },
+    {
+      src: todayScreenshot,
+      title: t('slides.today.title'),
+      description: t('slides.today.description'),
+      alt: t('slides.today.alt'),
+    },
+    {
+      src: settingsScreenshot,
+      title: t('slides.settings.title'),
+      description: t('slides.settings.description'),
+      alt: t('slides.settings.alt'),
+    },
+  ];
+
+  useEffect(() => {
+    if (activeModalIndex === null) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveModalIndex(null);
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setActiveModalIndex((currentIndex) => {
+          if (currentIndex === null) {
+            return currentIndex;
+          }
+
+          return (currentIndex - 1 + slides.length) % slides.length;
+        });
+      }
+
+      if (event.key === 'ArrowRight') {
+        setActiveModalIndex((currentIndex) => {
+          if (currentIndex === null) {
+            return currentIndex;
+          }
+
+          return (currentIndex + 1) % slides.length;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeModalIndex, slides.length]);
+
+  const isTrackPaused = isPaused || activeModalIndex !== null;
+
+  return (
+    <section className="relative overflow-hidden py-16 md:py-20">
+      <SectionBackground variant="dots" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[50%] h-[520px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.14) 0%, rgba(34,197,94,0.10) 34%, rgba(0,0,0,0) 74%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <style>{`
+        @keyframes musclog-screenshot-marquee {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(-50%, 0, 0); }
+        }
+      `}</style>
+
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <p className="text-xs font-bold uppercase tracking-[0.32em]" style={{ color: BRAND_GREEN_BRIGHT }}>
+              {t('eyebrow')}
+            </p>
+            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl">
+              {t('title')}
+            </h2>
+            <p className="text-balance text-base leading-7 md:text-lg" style={{ color: BODY_TEXT_SOFT }}>
+              {t('description')}
+            </p>
+          </div>
+
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur-sm">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: BRAND_GREEN_BRIGHT, boxShadow: '0 0 14px rgba(0,255,163,0.8)' }}
+            />
+            {t('hint')}
+          </div>
+        </div>
+
+        <div
+          className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(6,14,12,0.95)_0%,rgba(4,10,9,0.92)_100%)] p-4 shadow-[0_32px_90px_rgba(0,0,0,0.48)] md:p-6"
+          style={{ backdropFilter: 'blur(16px)' }}
+        >
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#050c0a] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#050c0a] to-transparent" />
+
+          <div
+            className="relative overflow-hidden py-2"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocusCapture={() => setIsPaused(true)}
+            onBlurCapture={() => setIsPaused(false)}
+          >
+            <div
+              className="flex w-max will-change-transform"
+              style={{
+                animation: 'musclog-screenshot-marquee 68s linear infinite',
+                animationPlayState: isTrackPaused ? 'paused' : 'running',
+              }}
+            >
+              {[0, 1].map((loopIndex) => (
+                <div key={loopIndex} className="flex shrink-0 gap-5 pr-5">
+                  {slides.map((slide, index) => (
+                    <button
+                      key={`${loopIndex}-${slide.alt}`}
+                      type="button"
+                      onClick={() => setActiveModalIndex(index)}
+                      aria-label={`${t('openSlide')} ${slide.title}`}
+                      className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
+                    >
+                      <div
+                        className="rounded-[2rem] border border-white/10 bg-black/35 p-2 shadow-[0_18px_48px_rgba(0,0,0,0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-white/20"
+                        style={{
+                          boxShadow:
+                            '0 18px 48px rgba(0,0,0,0.34), 0 0 0 1px rgba(255,255,255,0.02)',
+                        }}
+                      >
+                        <div className="overflow-hidden rounded-[1.5rem] bg-[#04110b]">
+                          <img
+                            src={slide.src}
+                            alt={slide.alt}
+                            className="aspect-[537/1165] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.015]"
+                            loading={loopIndex === 0 && index < 3 ? 'eager' : 'lazy'}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="px-1 pt-3">
+                        <p className="text-sm font-bold text-white">{slide.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-400">{slide.description}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {activeModalIndex !== null && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+              onClick={() => setActiveModalIndex(null)}
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('modalAriaLabel')}
+                className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,14,0.98)_0%,rgba(5,10,9,0.96)_100%)] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="flex items-start justify-between gap-4 border-b border-white/10 p-4 md:p-5">
+                  <div className="space-y-1">
+                    <p
+                      className="text-xs font-bold uppercase tracking-[0.3em]"
+                      style={{ color: BRAND_GREEN_BRIGHT }}
+                    >
+                      {t('modalEyebrow')}
+                    </p>
+                    <h3 className="text-xl font-extrabold text-white md:text-2xl">
+                      {slides[activeModalIndex].title}
+                    </h3>
+                    <p className="max-w-2xl text-sm leading-6 text-slate-400">
+                      {slides[activeModalIndex].description}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveModalIndex(null)}
+                    aria-label={t('close')}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="grid gap-0 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+                  <div className="relative bg-black/30 p-4 md:p-6">
+                    <div className="flex items-center justify-between pb-4">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActiveModalIndex(
+                            (currentIndex) =>
+                              (currentIndex === null
+                                ? 0
+                                : (currentIndex - 1 + slides.length) % slides.length)
+                          )
+                        }
+                        aria-label={t('previous')}
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                      >
+                        <ArrowRight className="h-4 w-4 rotate-180" />
+                      </button>
+
+                      <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/70">
+                        {activeModalIndex + 1} / {slides.length}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActiveModalIndex((currentIndex) =>
+                            currentIndex === null ? 0 : (currentIndex + 1) % slides.length
+                          )
+                        }
+                        aria-label={t('next')}
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#04110b] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+                      <img
+                        src={slides[activeModalIndex].src}
+                        alt={slides[activeModalIndex].alt}
+                        className="h-auto w-full"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/10 bg-white/[0.03] p-4 md:border-l md:border-t-0 md:p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <p
+                          className="text-xs font-bold uppercase tracking-[0.28em]"
+                          style={{ color: BRAND_GREEN_BRIGHT }}
+                        >
+                          {t('modalDetails')}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-slate-300">
+                          {slides[activeModalIndex].description}
+                        </p>
+                      </div>
+
+                      <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                        <p className="text-sm font-semibold text-white">{slides[activeModalIndex].title}</p>
+                        <p className="mt-2 text-sm leading-6 text-slate-400">
+                          {t('modalHint')}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {slides.map((slide, index) => {
+                          const isActive = index === activeModalIndex;
+
+                          return (
+                            <button
+                              key={slide.alt}
+                              type="button"
+                              onClick={() => setActiveModalIndex(index)}
+                              aria-label={`${t('openSlide')} ${slide.title}`}
+                              className="overflow-hidden rounded-xl border transition-all"
+                              style={{
+                                borderColor: isActive ? BRAND_GREEN_BRIGHT : 'rgba(255,255,255,0.08)',
+                                boxShadow: isActive ? '0 0 0 1px rgba(0,255,163,0.24)' : 'none',
+                              }}
+                            >
+                              <img
+                                src={slide.src}
+                                alt={slide.alt}
+                                className="aspect-[537/1165] w-full object-cover object-top"
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </section>
+  );
+}
+
 export function Testimonial() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.testimonial' });
 
@@ -749,10 +1121,39 @@ export function Hero() {
 
           {/* Right Content - Phone Mockup with Screenshot */}
           <div className="flex justify-center lg:justify-end">
-            <div className="w-full max-w-[440px] space-y-6">
-              <HeroScreenshotCarousel />
-
+            <div className="relative w-full max-w-[420px]">
+              <div
+                className="absolute inset-0 rounded-full blur-[110px]"
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
+                  transform: 'translate(6%, 10%) scale(1.12)',
+                }}
+                aria-hidden="true"
+              />
               <div className="flex justify-center">
+                {/* Phone Frame */}
+                <div
+                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
+                  style={{
+                    borderColor: 'rgba(255,255,255,0.65)',
+                    boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
+                  }}
+                >
+                  <div className="overflow-hidden rounded-[2rem]">
+                    <img
+                      src="/images/app-screenshot.png"
+                      alt="Musclog app screenshot"
+                      width={320}
+                      height={640}
+                      className="h-auto w-full"
+                      style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-center">
                 <Link
                   href="/app"
                   className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-[#00ffa34d] bg-[#071813] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5"
@@ -786,6 +1187,7 @@ export default function Home() {
         <Hero />
         <Features />
         <FeatureGrid />
+        <ScreenshotShowcase />
         <Stats />
         <HowItWorks />
         <Testimonial />

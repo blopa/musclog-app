@@ -68,6 +68,77 @@
         }
       }
     },
+    "screenshots": {
+      "eyebrow": "Carrusel de capturas",
+      "title": "Mira Musclog en acción",
+      "description": "Una vista lenta de pantallas reales de la app. Pasa el cursor para pausar y haz clic en cualquier tarjeta para abrirla más grande.",
+      "hint": "Pasa el cursor para pausar, haz clic para ampliar",
+      "openSlide": "Abrir captura",
+      "modalAriaLabel": "Vista previa de capturas de Musclog",
+      "modalEyebrow": "Vista previa de capturas",
+      "modalDetails": "Lo que estás viendo",
+      "modalHint": "Usa las flechas o las miniaturas para explorar el carrusel.",
+      "close": "Cerrar",
+      "previous": "Captura anterior",
+      "next": "Siguiente captura",
+      "slides": {
+        "home": {
+          "title": "Resumen principal",
+          "description": "Panel diario, alimentos recientes y accesos rápidos al entrenamiento en un solo lugar.",
+          "alt": "Captura del resumen principal de Musclog"
+        },
+        "restTimer": {
+          "title": "Temporizador de descanso",
+          "description": "Una cuenta regresiva enfocada entre series.",
+          "alt": "Captura del temporizador de descanso de Musclog"
+        },
+        "logSet": {
+          "title": "Registro de serie",
+          "description": "Captura peso, repeticiones y parciales en una pantalla de levantamiento.",
+          "alt": "Captura del registro de serie de Musclog"
+        },
+        "completeSet": {
+          "title": "Serie completada",
+          "description": "Termina la serie y pasa directamente a la siguiente acción.",
+          "alt": "Captura de serie completada de Musclog"
+        },
+        "mealLogging": {
+          "title": "Registro de comidas",
+          "description": "Registra comidas y porciones con un flujo centrado en la nutrición.",
+          "alt": "Captura del registro de comidas de Musclog"
+        },
+        "chatCoach": {
+          "title": "Chat con el coach",
+          "description": "Pregunta a Loggy sobre macros, entrenamiento o ideas de comidas.",
+          "alt": "Captura del chat con el coach de Musclog"
+        },
+        "bodyMetrics": {
+          "title": "Métricas corporales",
+          "description": "Revisa tendencias de peso e información de composición corporal.",
+          "alt": "Captura de métricas corporales de Musclog"
+        },
+        "workouts": {
+          "title": "Biblioteca de entrenos",
+          "description": "Explora y lanza tus planes de entrenamiento desde un solo lugar.",
+          "alt": "Captura de la biblioteca de entrenamientos de Musclog"
+        },
+        "createWorkout": {
+          "title": "Crear entrenamiento",
+          "description": "Empieza una rutina desde cero o con IA.",
+          "alt": "Captura de crear entrenamiento en Musclog"
+        },
+        "today": {
+          "title": "Nutrición de hoy",
+          "description": "Consulta calorías y macros del día de un vistazo.",
+          "alt": "Captura de la nutrición de hoy de Musclog"
+        },
+        "settings": {
+          "title": "Ajustes de datos locales",
+          "description": "Gestiona exportaciones, importaciones y controles de datos locales.",
+          "alt": "Captura de ajustes de datos locales de Musclog"
+        }
+      }
+    },
     "features": {
       "title": "Construido para Rendimiento y Privacidad",
       "description": "Sin telemetría, sin rastreo, sin suscripción. Solo un motor potente para tu viaje de fitness.",

@@ -68,6 +68,77 @@
         }
       }
     },
+    "screenshots": {
+      "eyebrow": "Screenshotreeks",
+      "title": "Zie Musclog in beweging",
+      "description": "Een trage weergave van echte app-schermen. Beweeg erover om te pauzeren en klik op een kaart om deze groter te openen.",
+      "hint": "Beweeg om te pauzeren, klik om te vergroten",
+      "openSlide": "Screenshot openen",
+      "modalAriaLabel": "Musclog screenshotvoorbeeld",
+      "modalEyebrow": "Screenshotvoorbeeld",
+      "modalDetails": "Wat u ziet",
+      "modalHint": "Gebruik de pijlen of miniaturen om door de reeks te bladeren.",
+      "close": "Sluiten",
+      "previous": "Vorige screenshot",
+      "next": "Volgende screenshot",
+      "slides": {
+        "home": {
+          "title": "Overzicht",
+          "description": "Dagpaneel, recente voedingsmiddelen en snelle trainingssnelkoppelingen op één plek.",
+          "alt": "Screenshot van het Musclog-overzicht"
+        },
+        "restTimer": {
+          "title": "Rusttimer",
+          "description": "Een gerichte aftelling tussen sets.",
+          "alt": "Screenshot van de Musclog rusttimer"
+        },
+        "logSet": {
+          "title": "Setlog",
+          "description": "Leg gewicht, herhalingen en partials vast op een liftscherm.",
+          "alt": "Screenshot van setlogging in Musclog"
+        },
+        "completeSet": {
+          "title": "Set voltooid",
+          "description": "Rond de set af en ga direct door naar de volgende actie.",
+          "alt": "Screenshot van een voltooide set in Musclog"
+        },
+        "mealLogging": {
+          "title": "Maaltijdlog",
+          "description": "Log maaltijden en porties met een workflow die op voeding is gericht.",
+          "alt": "Screenshot van de maaltijdlog van Musclog"
+        },
+        "chatCoach": {
+          "title": "Coach-chat",
+          "description": "Vraag Loggy over macro's, training of maaltijdideeën.",
+          "alt": "Screenshot van de coach-chat van Musclog"
+        },
+        "bodyMetrics": {
+          "title": "Lichaamsmetingen",
+          "description": "Bekijk gewichtstrends en inzichten in lichaamssamenstelling.",
+          "alt": "Screenshot van lichaamsmetingen in Musclog"
+        },
+        "workouts": {
+          "title": "Workoutbibliotheek",
+          "description": "Blader door en start uw trainingsplannen op één plek.",
+          "alt": "Screenshot van de workoutbibliotheek van Musclog"
+        },
+        "createWorkout": {
+          "title": "Workout maken",
+          "description": "Begin een routine vanaf nul of met AI.",
+          "alt": "Screenshot van workout maken in Musclog"
+        },
+        "today": {
+          "title": "Voeding van vandaag",
+          "description": "Bekijk calorieën en macro's van vandaag in een oogopslag.",
+          "alt": "Screenshot van de voeding van vandaag in Musclog"
+        },
+        "settings": {
+          "title": "Lokale data-instellingen",
+          "description": "Beheer exports, imports en lokale datacontroles.",
+          "alt": "Screenshot van lokale data-instellingen in Musclog"
+        }
+      }
+    },
     "features": {
       "title": "Gebouwd voor Prestatie & Privacy",
       "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",

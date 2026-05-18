@@ -68,6 +68,77 @@
         }
       }
     },
+    "screenshots": {
+      "eyebrow": "Screenshot reel",
+      "title": "See Musclog in motion",
+      "description": "A slow scrolling preview of real app screens. Hover to pause and click any card to open it larger.",
+      "hint": "Hover to pause, click to zoom",
+      "openSlide": "Open screenshot",
+      "modalAriaLabel": "Musclog screenshot preview",
+      "modalEyebrow": "Screenshot preview",
+      "modalDetails": "What you're seeing",
+      "modalHint": "Use the arrows or thumbnails to browse the reel.",
+      "close": "Close",
+      "previous": "Previous screenshot",
+      "next": "Next screenshot",
+      "slides": {
+        "home": {
+          "title": "Home overview",
+          "description": "Daily dashboard, recent foods, and quick training shortcuts in one place.",
+          "alt": "Musclog home overview screenshot"
+        },
+        "restTimer": {
+          "title": "Rest timer",
+          "description": "A focused countdown between sets.",
+          "alt": "Musclog rest timer screenshot"
+        },
+        "logSet": {
+          "title": "Set logging",
+          "description": "Capture weight, reps, and partials on a lifting screen.",
+          "alt": "Musclog set logging screenshot"
+        },
+        "completeSet": {
+          "title": "Complete set",
+          "description": "Finish the set and move straight to the next action.",
+          "alt": "Musclog complete set screenshot"
+        },
+        "mealLogging": {
+          "title": "Meal logging",
+          "description": "Log meals and servings with a nutrition-first workflow.",
+          "alt": "Musclog meal logging screenshot"
+        },
+        "chatCoach": {
+          "title": "Coach chat",
+          "description": "Ask Loggy about macros, training, or meal ideas.",
+          "alt": "Musclog coach chat screenshot"
+        },
+        "bodyMetrics": {
+          "title": "Body metrics",
+          "description": "Review weight trends and body composition insights.",
+          "alt": "Musclog body metrics screenshot"
+        },
+        "workouts": {
+          "title": "Workout library",
+          "description": "Browse and launch your training plans from one place.",
+          "alt": "Musclog workout library screenshot"
+        },
+        "createWorkout": {
+          "title": "Create workout",
+          "description": "Start a routine from scratch or with AI.",
+          "alt": "Musclog create workout screenshot"
+        },
+        "today": {
+          "title": "Today's nutrition",
+          "description": "See calories and macros for the day at a glance.",
+          "alt": "Musclog today's nutrition screenshot"
+        },
+        "settings": {
+          "title": "Local data settings",
+          "description": "Manage exports, imports, and local data controls.",
+          "alt": "Musclog local data settings screenshot"
+        }
+      }
+    },
     "features": {
       "title": "Built for Performance & Privacy",
       "description": "No telemetry, no tracking, no subscription. Just a powerful engine for your fitness journey.",
