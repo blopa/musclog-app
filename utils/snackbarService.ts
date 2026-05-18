@@ -1,12 +1,16 @@
+export type SnackbarOptions = {
+  subtitle?: string;
+  action?: string;
+  onAction?: () => void;
+  secondaryAction?: string;
+  onSecondaryAction?: () => void;
+  duration?: number;
+};
+
 type ShowSnackbarFunction = (
   type: 'success' | 'error',
   message: string,
-  options?: {
-    subtitle?: string;
-    action?: string;
-    onAction?: () => void;
-    duration?: number;
-  }
+  options?: SnackbarOptions
 ) => void;
 
 let showSnackbarRef: ShowSnackbarFunction | null = null;
@@ -34,12 +38,7 @@ export function unregisterSnackbarService() {
 export function showSnackbar(
   type: 'success' | 'error',
   message: string,
-  options?: {
-    subtitle?: string;
-    action?: string;
-    onAction?: () => void;
-    duration?: number;
-  }
+  options?: SnackbarOptions
 ) {
   if (showSnackbarRef) {
     showSnackbarRef(type, message, options);

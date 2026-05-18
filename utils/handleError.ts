@@ -1,18 +1,13 @@
 import { isProduction } from '@/utils/app';
 
 import { captureException } from './sentry';
-import { showSnackbar } from './snackbarService';
+import { showSnackbar, type SnackbarOptions } from './snackbarService';
 
 type HandleErrorOptions = {
   sendToSentry?: boolean;
   showSnackbar?: boolean;
   snackbarMessage?: string;
-  snackbarOptions?: {
-    subtitle?: string;
-    action?: string;
-    onAction?: () => void;
-    duration?: number;
-  };
+  snackbarOptions?: SnackbarOptions;
   consoleMessage?: string;
 };
 

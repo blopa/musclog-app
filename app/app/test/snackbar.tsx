@@ -21,6 +21,20 @@ export default function SnackbarTestScreen() {
     });
   };
 
+  const triggerDualActionSnackbar = () => {
+    showSnackbar('success', 'Workout archived', {
+      subtitle: 'You can undo this within a few seconds.',
+      action: 'Undo',
+      onAction: () => {
+        console.log('Undo pressed');
+      },
+      secondaryAction: 'Dismiss',
+      onSecondaryAction: () => {
+        console.log('Dismiss pressed');
+      },
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
@@ -101,6 +115,32 @@ export default function SnackbarTestScreen() {
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Sync Error
+                </Text>
+                <ChevronLeft
+                  size={theme.iconSize.xl}
+                  color={theme.colors.text.tertiary}
+                  style={{ transform: [{ rotate: '180deg' }] }}
+                />
+              </Pressable>
+
+              {/* Dual Action Button */}
+              <Pressable
+                onPress={triggerDualActionSnackbar}
+                className="flex-row items-center gap-4 rounded-2xl p-6"
+                style={{
+                  backgroundColor: theme.colors.background.buttonCard,
+                }}
+              >
+                <View
+                  className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: theme.colors.status.success20,
+                  }}
+                >
+                  <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
+                </View>
+                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
+                  Simulate Dual Action
                 </Text>
                 <ChevronLeft
                   size={theme.iconSize.xl}
