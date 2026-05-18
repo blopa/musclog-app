@@ -21,6 +21,10 @@ export function useSessionTotalTime({
 }: UseSessionTotalTimeProps) {
   const [time, setTime] = useState(initialTime);
 
+  const ih = initialTime.hours;
+  const im = initialTime.minutes;
+  const is = initialTime.seconds;
+
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -34,7 +38,11 @@ export function useSessionTotalTime({
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
-        setTime({ hours, minutes, seconds });
+        setTime((prev) =>
+          prev.hours === hours && prev.minutes === minutes && prev.seconds === seconds
+            ? prev
+            : { hours, minutes, seconds }
+        );
       };
 
       // Update immediately
@@ -45,7 +53,7 @@ export function useSessionTotalTime({
       return () => clearInterval(interval);
     }
 
-    setTime(initialTime);
+    setTime({ hours: ih, minutes: im, seconds: is });
 
     // Fallback to incrementing timer if no startTime provided
     const interval = setInterval(() => {
@@ -68,7 +76,8 @@ export function useSessionTotalTime({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, initialTime.hours, initialTime.minutes, initialTime.seconds, initialTime]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startTime, ih, im, is]);
 
   return time;
 }
