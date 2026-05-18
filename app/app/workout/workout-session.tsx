@@ -976,9 +976,7 @@ export default function WorkoutSessionScreen() {
           <ErrorStateCard
             icon={Dumbbell}
             title={t('workoutSession.missingDataTitle')}
-            description={t(
-              'workoutSession.missingDataDescription'
-            )}
+            description={t('workoutSession.missingDataDescription')}
             buttonLabel={t('workoutSession.viewOverview')}
             onButtonPress={() => setIsWorkoutOverviewModalVisible(true)}
           />

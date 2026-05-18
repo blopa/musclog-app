@@ -3,9 +3,17 @@ import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
-import { DATABASE_NAME } from '@/constants/database';
+import {
+  type ChildSpec,
+  DATABASE_NAME,
+  REPAIR_DESCRIPTORS,
+  type TableGroupDescriptor,
+} from '@/constants/database';
 import { database } from '@/database/database-instance';
 import { handleError } from '@/utils/handleError';
+
+export type { ChildSpec, TableGroupDescriptor }; // TODO: is this necessary?
+export { REPAIR_DESCRIPTORS }; // TODO: is this necessary?
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,18 +25,6 @@ type IntegrityIssue = {
   rowId?: number;
 };
 
-export interface ChildSpec {
-  table: string;
-  /** Column in THIS table that points to the parent's `id`. */
-  fkColumn: string;
-  children?: ChildSpec[];
-}
-
-export interface TableGroupDescriptor {
-  rootTable: string;
-  children: ChildSpec[];
-}
-
 export interface DatabaseRepairResult {
   attempted: boolean;
   repaired: boolean;
@@ -36,63 +32,6 @@ export interface DatabaseRepairResult {
   deletedRootIds: string[];
   issues: IntegrityIssue[];
 }
-
-// ---------------------------------------------------------------------------
-// Descriptors for every table group in the app
-// ---------------------------------------------------------------------------
-
-export const REPAIR_DESCRIPTORS = {
-  workoutLogs: {
-    rootTable: 'workout_logs',
-    children: [
-      {
-        table: 'workout_log_exercises',
-        fkColumn: 'workout_log_id',
-        children: [{ table: 'workout_log_sets', fkColumn: 'log_exercise_id' }],
-      },
-    ],
-  },
-  workoutTemplates: {
-    rootTable: 'workout_templates',
-    children: [
-      {
-        table: 'workout_template_exercises',
-        fkColumn: 'template_id',
-        children: [{ table: 'workout_template_sets', fkColumn: 'template_exercise_id' }],
-      },
-      { table: 'schedules', fkColumn: 'template_id' },
-      // workout_logs reference template_id but are NOT cascade-deleted with templates
-    ],
-  },
-  nutritionLogs: {
-    rootTable: 'nutrition_logs',
-    // Leaf table — corrupt rows are soft-deleted directly, no children
-    children: [],
-  },
-  userMetrics: {
-    rootTable: 'user_metrics',
-    children: [{ table: 'user_metrics_notes', fkColumn: 'user_metric_id' }],
-  },
-  nutritionGoals: {
-    rootTable: 'nutrition_goals',
-    children: [{ table: 'nutrition_checkins', fkColumn: 'nutrition_goal_id' }],
-  },
-  savedForLater: {
-    rootTable: 'saved_for_later_groups',
-    children: [{ table: 'saved_for_later_items', fkColumn: 'group_id' }],
-  },
-  meals: {
-    rootTable: 'meals',
-    children: [
-      { table: 'meal_foods', fkColumn: 'meal_id' },
-      { table: 'meal_food_portions', fkColumn: 'meal_id' },
-    ],
-  },
-  foods: {
-    rootTable: 'foods',
-    children: [{ table: 'food_food_portions', fkColumn: 'food_id' }],
-  },
-} satisfies Record<string, TableGroupDescriptor>;
 
 // ---------------------------------------------------------------------------
 // Resolution chain — maps each table to the sequence of SQL lookups needed

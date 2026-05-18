@@ -22,7 +22,11 @@ import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import { DatabaseRepairService, REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import {
+  DatabaseRepairService,
+  REPAIR_DESCRIPTORS,
+  retryAfterRepair,
+} from './DatabaseRepairService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -248,11 +252,21 @@ export class NutritionService {
           DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.foods),
         ]);
         const anyEffect =
-          (nutritionRepair.attempted && (nutritionRepair.reindexed || nutritionRepair.deletedRootIds.length > 0)) ||
-          (foodsRepair.attempted && (foodsRepair.reindexed || foodsRepair.deletedRootIds.length > 0));
+          (nutritionRepair.attempted &&
+            (nutritionRepair.reindexed || nutritionRepair.deletedRootIds.length > 0)) ||
+          (foodsRepair.attempted &&
+            (foodsRepair.reindexed || foodsRepair.deletedRootIds.length > 0));
         if (anyEffect) {
           return this.logFoodInternal(
-            foodId, date, mealType, amount, portionId, externalId, groupId, loggedMealName, true
+            foodId,
+            date,
+            mealType,
+            amount,
+            portionId,
+            externalId,
+            groupId,
+            loggedMealName,
+            true
           );
         }
       }
@@ -556,7 +570,11 @@ export class NutritionService {
       triggerWidgetUpdate();
     } catch (error) {
       if (!repairAttempted) {
-        const repair = await DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.nutritionLogs);
+        const repair = await DatabaseRepairService.repairIfNeeded(
+          error,
+          REPAIR_DESCRIPTORS.nutritionLogs
+        );
+
         if (repair.attempted && (repair.reindexed || repair.deletedRootIds.length > 0)) {
           return this.deleteNutritionLogInternal(id, true);
         }

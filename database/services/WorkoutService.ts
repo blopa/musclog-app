@@ -21,11 +21,11 @@ import {
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
+import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
-import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
 
 export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
@@ -39,7 +39,10 @@ export class WorkoutService {
     error: unknown,
     retry: () => Promise<T>
   ): Promise<T | null> {
-    const repair = await DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.workoutLogs);
+    const repair = await DatabaseRepairService.repairIfNeeded(
+      error,
+      REPAIR_DESCRIPTORS.workoutLogs
+    );
 
     if (!repair.attempted || (!repair.reindexed && repair.deletedRootIds.length === 0)) {
       return null;
