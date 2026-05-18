@@ -265,7 +265,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // Phase 3: Populate the fresh database with the backup data.
   if (createOperations.length > 0) {
     await database.write(async () => {
-      await database.batch(...createOperations);
+      await database.batch(createOperations);
     });
   }
 
@@ -288,7 +288,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       const now = Date.now();
       await database.write(async () => {
         await database.batch(
-          ...workoutLogs.map((log: any) =>
+          workoutLogs.map((log: any) =>
             log.prepareUpdate((l: any) => {
               l.totalVolume = null;
               l.updatedAt = now;
