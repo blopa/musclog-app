@@ -32,5 +32,6 @@ export { SupplementService } from './SupplementService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
+export { WorkoutDatabaseRecoveryService } from './WorkoutDatabaseRecoveryService';
 export { type EnrichedWorkoutLogSet, WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';
