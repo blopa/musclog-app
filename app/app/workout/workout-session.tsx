@@ -975,12 +975,11 @@ export default function WorkoutSessionScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={Dumbbell}
-            title={t('workoutSession.missingDataTitle', 'Session Data Issue')}
+            title={t('workoutSession.missingDataTitle')}
             description={t(
-              'workoutSession.missingDataDescription',
-              'Could not load the current exercise. Check the overview or finish the session.'
+              'workoutSession.missingDataDescription'
             )}
-            buttonLabel={t('workoutSession.viewOverview', 'View Overview')}
+            buttonLabel={t('workoutSession.viewOverview')}
             onButtonPress={() => setIsWorkoutOverviewModalVisible(true)}
           />
         </View>
