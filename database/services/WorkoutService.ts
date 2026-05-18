@@ -56,7 +56,11 @@ export class WorkoutService {
   /**
    * Start a workout from a template (deep copy operation)
    */
-  static async startWorkoutFromTemplate(
+  static async startWorkoutFromTemplate(templateId: string): Promise<WorkoutLog> {
+    return this.startWorkoutFromTemplateInternal(templateId);
+  }
+
+  private static async startWorkoutFromTemplateInternal(
     templateId: string,
     repairAttempted = false
   ): Promise<WorkoutLog> {
@@ -96,7 +100,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.startWorkoutFromTemplate(templateId, true)
+          this.startWorkoutFromTemplateInternal(templateId, true)
         );
 
         if (repaired) {
@@ -116,6 +120,13 @@ export class WorkoutService {
    * and sets it as the active workout.
    */
   static async startFreeWorkout(
+    workoutName: string = 'Free Training',
+    externalId?: string
+  ): Promise<WorkoutLog> {
+    return this.startFreeWorkoutInternal(workoutName, externalId);
+  }
+
+  private static async startFreeWorkoutInternal(
     workoutName: string = 'Free Training',
     externalId?: string,
     repairAttempted = false
@@ -160,7 +171,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.startFreeWorkout(workoutName, externalId, true)
+          this.startFreeWorkoutInternal(workoutName, externalId, true)
         );
 
         if (repaired) {
@@ -179,7 +190,13 @@ export class WorkoutService {
    * Get the currently active workout (not completed)
    * Uses AsyncStorage to track the active workout
    */
-  static async getActiveWorkout(repairAttempted = false): Promise<WorkoutLog | null> {
+  static async getActiveWorkout(): Promise<WorkoutLog | null> {
+    return this.getActiveWorkoutInternal();
+  }
+
+  private static async getActiveWorkoutInternal(
+    repairAttempted = false
+  ): Promise<WorkoutLog | null> {
     const activeWorkoutLogId = await getActiveWorkoutLogId();
     if (!activeWorkoutLogId) {
       return null;
@@ -199,7 +216,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getActiveWorkout(true)
+          this.getActiveWorkoutInternal(true)
         );
 
         if (repaired !== null) {
@@ -217,6 +234,14 @@ export class WorkoutService {
    * Get workout history with optional timeframe and pagination
    */
   static async getWorkoutHistory(
+    timeframe?: { startDate: number; endDate: number },
+    limit?: number,
+    offset?: number
+  ): Promise<WorkoutLog[]> {
+    return this.getWorkoutHistoryInternal(timeframe, limit, offset);
+  }
+
+  private static async getWorkoutHistoryInternal(
     timeframe?: { startDate: number; endDate: number },
     limit?: number,
     offset?: number,
@@ -253,7 +278,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getWorkoutHistory(timeframe, limit, offset, true)
+          this.getWorkoutHistoryInternal(timeframe, limit, offset, true)
         );
         if (repaired) {
           return repaired;
@@ -269,6 +294,13 @@ export class WorkoutService {
    * Ordered by started_at desc (most recent first).
    */
   static async getWorkoutLogsByWorkoutName(
+    workoutName: string,
+    limit?: number
+  ): Promise<WorkoutLog[]> {
+    return this.getWorkoutLogsByWorkoutNameInternal(workoutName, limit);
+  }
+
+  private static async getWorkoutLogsByWorkoutNameInternal(
     workoutName: string,
     limit?: number,
     repairAttempted = false
@@ -291,7 +323,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getWorkoutLogsByWorkoutName(workoutName, limit, true)
+          this.getWorkoutLogsByWorkoutNameInternal(workoutName, limit, true)
         );
         if (repaired) {
           return repaired;
@@ -607,7 +639,16 @@ export class WorkoutService {
    * Get workout log with all sets and exercise details.
    * Returns enriched sets with exerciseId, groupId, and notes denormalized from WorkoutLogExercise.
    */
-  static async getWorkoutWithDetails(
+  static async getWorkoutWithDetails(workoutLogId: string): Promise<{
+    workoutLog: WorkoutLog;
+    sets: EnrichedWorkoutLogSet[];
+    exercises: Exercise[];
+    logExercises: WorkoutLogExercise[];
+  }> {
+    return this.getWorkoutWithDetailsInternal(workoutLogId);
+  }
+
+  private static async getWorkoutWithDetailsInternal(
     workoutLogId: string,
     repairAttempted = false
   ): Promise<{
@@ -673,7 +714,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getWorkoutWithDetails(workoutLogId, true)
+          this.getWorkoutWithDetailsInternal(workoutLogId, true)
         );
 
         if (repaired) {

@@ -75,7 +75,8 @@ function parseIntegrityIssue(table: string, message: string): IntegrityIssue {
   };
 }
 
-async function openRawDatabase(): Promise<SQLiteDatabase | null> {
+// openDatabaseSync is synchronous; no async wrapper needed.
+function openRawDatabase(): SQLiteDatabase | null {
   if (Platform.OS === 'web') {
     return null;
   }
@@ -93,45 +94,34 @@ async function openRawDatabase(): Promise<SQLiteDatabase | null> {
   }
 }
 
-async function collectIntegrityIssues(): Promise<IntegrityIssue[]> {
-  const db = await openRawDatabase();
-  if (!db) {
-    return [];
-  }
-
+// Runs a single full integrity_check (PRAGMA integrity_check(N) accepts only an integer,
+// not a table name) and filters results to issues that name a workout table.
+async function collectIntegrityIssues(db: SQLiteDatabase): Promise<IntegrityIssue[]> {
   try {
+    const rows = (await db.getAllAsync('PRAGMA integrity_check;')) as Record<string, unknown>[];
     const issues: IntegrityIssue[] = [];
 
-    for (const table of WORKOUT_TABLES) {
-      try {
-        const rows = (await db.getAllAsync(`PRAGMA integrity_check(${table});`)) as Record<
-          string,
-          unknown
-        >[];
+    for (const row of rows) {
+      const message = readSingleColumnValue(row);
+      if (!message || message === 'ok') {
+        continue;
+      }
 
-        for (const row of rows) {
-          const message = readSingleColumnValue(row);
-          if (!message || message === 'ok') {
-            continue;
-          }
-
-          issues.push(parseIntegrityIssue(table, message));
-        }
-      } catch (error) {
-        issues.push({
-          table,
-          message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
-        });
+      const matchedTable = WORKOUT_TABLES.find((t) => message.includes(t));
+      if (matchedTable) {
+        issues.push(parseIntegrityIssue(matchedTable, message));
       }
     }
 
     return issues;
-  } finally {
-    try {
-      db.closeSync();
-    } catch {
-      // best effort
-    }
+  } catch (error) {
+    // If the PRAGMA itself errors the DB state is unknowable; treat as an issue.
+    return [
+      {
+        table: WORKOUT_TABLES[0],
+        message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      },
+    ];
   }
 }
 
@@ -148,80 +138,70 @@ async function querySingleValue(
   }
 }
 
-async function resolveWorkoutIdsFromIssues(issues: IntegrityIssue[]): Promise<string[]> {
-  const db = await openRawDatabase();
-  if (!db) {
-    return [];
-  }
+async function resolveWorkoutIdsFromIssues(
+  db: SQLiteDatabase,
+  issues: IntegrityIssue[]
+): Promise<string[]> {
+  const workoutIds = new Set<string>();
 
-  try {
-    const workoutIds = new Set<string>();
-
-    for (const issue of issues) {
-      if (issue.rowId == null) {
-        continue;
-      }
-
-      if (issue.table === 'workout_logs') {
-        const workoutId = await querySingleValue(
-          db,
-          'SELECT id FROM workout_logs WHERE rowid = ? LIMIT 1',
-          [issue.rowId]
-        );
-        if (workoutId) {
-          workoutIds.add(workoutId);
-        }
-        continue;
-      }
-
-      if (issue.table === 'workout_log_exercises') {
-        const workoutId = await querySingleValue(
-          db,
-          'SELECT workout_log_id FROM workout_log_exercises WHERE rowid = ? LIMIT 1',
-          [issue.rowId]
-        );
-        if (workoutId) {
-          workoutIds.add(workoutId);
-        }
-        continue;
-      }
-
-      if (issue.table === 'workout_log_sets') {
-        const logExerciseId = await querySingleValue(
-          db,
-          'SELECT log_exercise_id FROM workout_log_sets WHERE rowid = ? LIMIT 1',
-          [issue.rowId]
-        );
-        if (!logExerciseId) {
-          continue;
-        }
-
-        const workoutId =
-          (await querySingleValue(
-            db,
-            'SELECT workout_log_id FROM workout_log_exercises WHERE id = ? LIMIT 1',
-            [logExerciseId]
-          )) ??
-          (await querySingleValue(
-            db,
-            'SELECT workout_log_id FROM workout_log_exercises WHERE rowid = (SELECT rowid FROM workout_log_exercises WHERE id = ? LIMIT 1) LIMIT 1',
-            [logExerciseId]
-          ));
-
-        if (workoutId) {
-          workoutIds.add(workoutId);
-        }
-      }
+  for (const issue of issues) {
+    if (issue.rowId == null) {
+      continue;
     }
 
-    return [...workoutIds];
-  } finally {
-    try {
-      db.closeSync();
-    } catch {
-      // best effort
+    if (issue.table === 'workout_logs') {
+      const workoutId = await querySingleValue(
+        db,
+        'SELECT id FROM workout_logs WHERE rowid = ? LIMIT 1',
+        [issue.rowId]
+      );
+      if (workoutId) {
+        workoutIds.add(workoutId);
+      }
+      continue;
+    }
+
+    if (issue.table === 'workout_log_exercises') {
+      const workoutId = await querySingleValue(
+        db,
+        'SELECT workout_log_id FROM workout_log_exercises WHERE rowid = ? LIMIT 1',
+        [issue.rowId]
+      );
+      if (workoutId) {
+        workoutIds.add(workoutId);
+      }
+      continue;
+    }
+
+    if (issue.table === 'workout_log_sets') {
+      const logExerciseId = await querySingleValue(
+        db,
+        'SELECT log_exercise_id FROM workout_log_sets WHERE rowid = ? LIMIT 1',
+        [issue.rowId]
+      );
+      if (!logExerciseId) {
+        continue;
+      }
+
+      const workoutId =
+        (await querySingleValue(
+          db,
+          'SELECT workout_log_id FROM workout_log_exercises WHERE id = ? LIMIT 1',
+          [logExerciseId]
+        )) ??
+        (await querySingleValue(
+          db,
+          'SELECT workout_log_id FROM workout_log_exercises WHERE rowid = (SELECT rowid FROM workout_log_exercises WHERE id = ? LIMIT 1) LIMIT 1',
+          [logExerciseId]
+        ));
+
+      if (workoutId) {
+        workoutIds.add(workoutId);
+      }
     }
   }
+
+  return [...workoutIds];
 }
 
 async function reindexWorkoutTables(): Promise<boolean> {
@@ -273,7 +253,7 @@ async function softDeleteWorkoutLogs(workoutIds: string[]): Promise<void> {
         }
       } catch (error) {
         handleError(error, 'WorkoutDatabaseRecoveryService.softDeleteWorkoutLogs');
-        throw error;
+        // Log and continue — don't let one failed deletion abort the rest.
       }
     }
   });
@@ -293,37 +273,48 @@ async function repairWorkoutDatabase(error: unknown): Promise<WorkoutDatabaseRep
     return result;
   }
 
-  const initialIssues = await collectIntegrityIssues();
-  result.issues = initialIssues;
-
-  // First, try the safest fix: rebuild the workout-related indexes.
-  result.reindexed = await reindexWorkoutTables();
-
-  const postReindexIssues = await collectIntegrityIssues();
-  if (postReindexIssues.length === 0) {
-    result.repaired = true;
+  // Open a single raw connection for all PRAGMA reads; close it in the finally block.
+  const db = openRawDatabase();
+  if (!db) {
     return result;
   }
 
-  const workoutIdsToDelete = await resolveWorkoutIdsFromIssues(
-    postReindexIssues.length > 0 ? postReindexIssues : initialIssues
-  );
+  try {
+    const initialIssues = await collectIntegrityIssues(db);
+    result.issues = initialIssues;
 
-  if (workoutIdsToDelete.length === 0) {
+    result.reindexed = await reindexWorkoutTables();
+
+    const postReindexIssues = await collectIntegrityIssues(db);
+    if (postReindexIssues.length === 0) {
+      result.repaired = true;
+      return result;
+    }
+
+    // postReindexIssues.length > 0 is guaranteed here; no fallback to initialIssues needed.
+    const workoutIdsToDelete = await resolveWorkoutIdsFromIssues(db, postReindexIssues);
+
+    if (workoutIdsToDelete.length === 0) {
+      return result;
+    }
+
+    await softDeleteWorkoutLogs(workoutIdsToDelete);
+    result.deletedWorkoutIds = workoutIdsToDelete;
+
+    result.reindexed = (await reindexWorkoutTables()) || result.reindexed;
+
+    const finalIssues = await collectIntegrityIssues(db);
+    result.repaired = finalIssues.length === 0;
+    result.issues = finalIssues.length > 0 ? finalIssues : postReindexIssues;
+
     return result;
+  } finally {
+    try {
+      db.closeSync();
+    } catch {
+      // best effort
+    }
   }
-
-  await softDeleteWorkoutLogs(workoutIdsToDelete);
-  result.deletedWorkoutIds = workoutIdsToDelete;
-
-  // Rebuild the indexes again after removing the offending workout rows.
-  result.reindexed = (await reindexWorkoutTables()) || result.reindexed;
-
-  const finalIssues = await collectIntegrityIssues();
-  result.repaired = finalIssues.length === 0;
-  result.issues = finalIssues.length > 0 ? finalIssues : postReindexIssues;
-
-  return result;
 }
 
 export class WorkoutDatabaseRecoveryService {
