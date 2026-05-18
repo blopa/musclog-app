@@ -423,13 +423,19 @@ export function ScreenshotShowcase() {
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">
-            <p className="text-xs font-bold uppercase tracking-[0.32em]" style={{ color: BRAND_GREEN_BRIGHT }}>
+            <p
+              className="text-xs font-bold uppercase tracking-[0.32em]"
+              style={{ color: BRAND_GREEN_BRIGHT }}
+            >
               {t('eyebrow')}
             </p>
             <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl">
               {t('title')}
             </h2>
-            <p className="text-balance text-base leading-7 md:text-lg" style={{ color: BODY_TEXT_SOFT }}>
+            <p
+              className="text-balance text-base leading-7 md:text-lg"
+              style={{ color: BODY_TEXT_SOFT }}
+            >
               {t('description')}
             </p>
           </div>
@@ -437,7 +443,10 @@ export function ScreenshotShowcase() {
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur-sm">
             <span
               className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: BRAND_GREEN_BRIGHT, boxShadow: '0 0 14px rgba(0,255,163,0.8)' }}
+              style={{
+                backgroundColor: BRAND_GREEN_BRIGHT,
+                boxShadow: '0 0 14px rgba(0,255,163,0.8)',
+              }}
             />
             {t('hint')}
           </div>
@@ -576,17 +585,16 @@ export function ScreenshotShowcase() {
                   </button>
                 </div>
 
-                <div className="grid min-h-0 flex-1 gap-0 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+                <div className="grid min-h-0 flex-1 gap-0 overflow-y-auto lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:overflow-hidden">
                   <div className="relative flex min-h-0 flex-col bg-black/30 p-4 md:p-6">
                     <div className="flex items-center justify-between pb-4">
                       <button
                         type="button"
                         onClick={() =>
-                          setActiveModalIndex(
-                            (currentIndex) =>
-                              (currentIndex === null
-                                ? 0
-                                : (currentIndex - 1 + slides.length) % slides.length)
+                          setActiveModalIndex((currentIndex) =>
+                            currentIndex === null
+                              ? 0
+                              : (currentIndex - 1 + slides.length) % slides.length
                           )
                         }
                         aria-label={t('previous')}
@@ -634,7 +642,9 @@ export function ScreenshotShowcase() {
                       </div>
 
                       <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
-                        <p className="text-sm font-semibold text-white">{slides[activeModalIndex].title}</p>
+                        <p className="text-sm font-semibold text-white">
+                          {slides[activeModalIndex].title}
+                        </p>
                         <p className="mt-2 text-sm leading-6 text-slate-400">
                           {slides[activeModalIndex].description}
                         </p>
@@ -652,7 +662,9 @@ export function ScreenshotShowcase() {
                               aria-label={`${t('openSlide')} ${slide.title}`}
                               className="overflow-hidden rounded-xl border transition-all"
                               style={{
-                                borderColor: isActive ? BRAND_GREEN_BRIGHT : 'rgba(255,255,255,0.08)',
+                                borderColor: isActive
+                                  ? BRAND_GREEN_BRIGHT
+                                  : 'rgba(255,255,255,0.08)',
                                 boxShadow: isActive ? '0 0 0 1px rgba(0,255,163,0.24)' : 'none',
                               }}
                             >
