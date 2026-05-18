@@ -353,7 +353,8 @@
       "removeButton": "Remove",
       "removeConfirm": "Remove {{name}} from saved sensors?",
       "lastConnected": "Last connected {{time}}",
-      "neverConnected": "Never connected"
+      "neverConnected": "Never connected",
+      "permissionDenied": "Bluetooth permission denied. Please allow Bluetooth access to scan for sensors."
     }
   }
 }

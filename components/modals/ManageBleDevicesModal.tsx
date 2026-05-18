@@ -1,4 +1,4 @@
-import { Bluetooth, BluetoothOff } from 'lucide-react-native';
+import { AlertCircle, Bluetooth, BluetoothOff } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TextInput, View } from 'react-native';
@@ -31,6 +31,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
   const [renameValue, setRenameValue] = useState('');
   const [confirmRemoveDevice, setConfirmRemoveDevice] = useState<BleDevice | null>(null);
   const [isConfirmRemoveVisible, setConfirmRemoveVisible] = useSubModalVisibility(visible);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   const refreshSaved = useCallback(async () => {
     const devices = await BleDeviceService.getAll();
@@ -114,6 +115,22 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
     setConfirmRemoveDevice(null);
     await refreshSaved();
   }, [confirmRemoveDevice, wit, refreshSaved, setConfirmRemoveVisible]);
+
+  const handleScanPress = useCallback(async () => {
+    if (wit.isScanning) {
+      wit.stopScan();
+      return;
+    }
+
+    setPermissionDenied(false);
+    const granted = await wit.requestPermissions();
+    if (!granted) {
+      setPermissionDenied(true);
+      return;
+    }
+
+    await wit.startScan({ autoConnect: false });
+  }, [wit]);
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.bleDevices.title')}>
@@ -275,14 +292,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
             variant={wit.isScanning ? 'secondary' : 'accent'}
             width="full"
             loading={wit.isScanning}
-            onPress={() => {
-              if (wit.isScanning) {
-                wit.stopScan();
-                return;
-              }
-
-              void wit.startScan({ autoConnect: false });
-            }}
+            onPress={handleScanPress}
           />
 
           {unsavedDiscovered.length > 0 ? (
@@ -309,7 +319,19 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
             </View>
           ) : null}
 
-          {wit.error ? <Text className="text-status-error mt-3 text-sm">{wit.error}</Text> : null}
+          {permissionDenied || wit.error ? (
+            <View
+              className="mt-3 flex-row items-center gap-3 rounded-xl p-3"
+              style={{ backgroundColor: theme.colors.status.error + '1A' }}
+            >
+              <AlertCircle size={theme.iconSize.md} color={theme.colors.status.error} />
+              <Text className="flex-1 text-sm" style={{ color: theme.colors.status.error }}>
+                {permissionDenied
+                  ? t('settings.bleDevices.permissionDenied')
+                  : wit.error}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
 
