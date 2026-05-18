@@ -3,7 +3,7 @@
     "exerciseIndex": 1,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
@@ -11,7 +11,7 @@
     "exerciseIndex": 2,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.9
   },
@@ -19,7 +19,7 @@
     "exerciseIndex": 3,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
@@ -27,7 +27,7 @@
     "exerciseIndex": 4,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
@@ -35,7 +35,7 @@
     "exerciseIndex": 5,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
     "loadMultiplier": 1.8
   },
@@ -43,7 +43,7 @@
     "exerciseIndex": 6,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
@@ -51,7 +51,7 @@
     "exerciseIndex": 7,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.5
   },
@@ -59,7 +59,7 @@
     "exerciseIndex": 8,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.4
   },
@@ -67,7 +67,7 @@
     "exerciseIndex": 9,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.4
   },
@@ -75,7 +75,7 @@
     "exerciseIndex": 10,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 3.5
   },
@@ -83,7 +83,7 @@
     "exerciseIndex": 11,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0.7
   },
@@ -91,7 +91,7 @@
     "exerciseIndex": 12,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
@@ -99,23 +99,23 @@
     "exerciseIndex": 13,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
     "loadMultiplier": 0.7
   },
   {
     "exerciseIndex": 14,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.35
   },
   {
     "exerciseIndex": 15,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.25
   },
@@ -123,55 +123,55 @@
     "exerciseIndex": 16,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 17,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid"],
     "loadMultiplier": 0.1
   },
   {
     "exerciseIndex": 18,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["anterior_deltoid"],
     "loadMultiplier": 0.08
   },
   {
     "exerciseIndex": 19,
     "muscleGroup": "legs",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
     "exerciseIndex": 20,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
     "exerciseIndex": 21,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
   {
     "exerciseIndex": 22,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.35
   },
@@ -179,7 +179,7 @@
     "exerciseIndex": 23,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
@@ -187,7 +187,7 @@
     "exerciseIndex": 24,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.3
   },
@@ -195,7 +195,7 @@
     "exerciseIndex": 25,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
     "loadMultiplier": 0.9
   },
@@ -203,7 +203,7 @@
     "exerciseIndex": 26,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
     "loadMultiplier": 0.8
   },
@@ -211,15 +211,15 @@
     "exerciseIndex": 27,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 28,
     "muscleGroup": "chest",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
@@ -227,7 +227,7 @@
     "exerciseIndex": 29,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
@@ -235,7 +235,7 @@
     "exerciseIndex": 30,
     "muscleGroup": "shoulders",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
@@ -243,31 +243,31 @@
     "exerciseIndex": 31,
     "muscleGroup": "shoulders",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.5
   },
   {
     "exerciseIndex": 32,
     "muscleGroup": "chest",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
     "exerciseIndex": 33,
     "muscleGroup": "legs",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 0.8
   },
   {
     "exerciseIndex": 34,
     "muscleGroup": "legs",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
@@ -275,7 +275,7 @@
     "exerciseIndex": 35,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 1
   },
@@ -283,7 +283,7 @@
     "exerciseIndex": 36,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
@@ -291,15 +291,15 @@
     "exerciseIndex": 37,
     "muscleGroup": "glutes",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 1.4
   },
   {
     "exerciseIndex": 38,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
@@ -307,7 +307,7 @@
     "exerciseIndex": 39,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.25
   },
@@ -315,7 +315,7 @@
     "exerciseIndex": 40,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
@@ -323,7 +323,7 @@
     "exerciseIndex": 41,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 1.5
   },
@@ -331,7 +331,7 @@
     "exerciseIndex": 42,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
@@ -339,7 +339,7 @@
     "exerciseIndex": 43,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.5
   },
@@ -347,7 +347,7 @@
     "exerciseIndex": 44,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
     "loadMultiplier": 0.4
   },
@@ -355,7 +355,7 @@
     "exerciseIndex": 45,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.4
   },
@@ -363,7 +363,7 @@
     "exerciseIndex": 46,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
     "loadMultiplier": 1.8
   },
@@ -371,7 +371,7 @@
     "exerciseIndex": 47,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
     "loadMultiplier": 0.6
   },
@@ -379,23 +379,23 @@
     "exerciseIndex": 48,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6
   },
   {
     "exerciseIndex": 49,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.3
   },
   {
     "exerciseIndex": 50,
     "muscleGroup": "chest",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
@@ -403,7 +403,7 @@
     "exerciseIndex": 51,
     "muscleGroup": "arms",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
@@ -411,7 +411,7 @@
     "exerciseIndex": 52,
     "muscleGroup": "chest",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
@@ -419,7 +419,7 @@
     "exerciseIndex": 53,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
     "loadMultiplier": 0
   },
@@ -427,7 +427,7 @@
     "exerciseIndex": 54,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -440,7 +440,7 @@
     "exerciseIndex": 55,
     "muscleGroup": "abdomen",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -448,7 +448,7 @@
     "exerciseIndex": 56,
     "muscleGroup": "full_body",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
     "loadMultiplier": 0
   },
@@ -456,7 +456,7 @@
     "exerciseIndex": 57,
     "muscleGroup": "full_body",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -479,7 +479,7 @@
     "exerciseIndex": 59,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
     "loadMultiplier": 0.2
   },
@@ -487,7 +487,7 @@
     "exerciseIndex": 60,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
     "loadMultiplier": 0.6
   },
@@ -495,7 +495,7 @@
     "exerciseIndex": 61,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
     "loadMultiplier": 0.7
   },
@@ -503,7 +503,7 @@
     "exerciseIndex": 62,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
     "loadMultiplier": 0.9
   },
@@ -511,7 +511,7 @@
     "exerciseIndex": 63,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
     "loadMultiplier": 0
   },
@@ -519,7 +519,7 @@
     "exerciseIndex": 64,
     "muscleGroup": "abdomen",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.5
   },
@@ -527,7 +527,7 @@
     "exerciseIndex": 65,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
     "loadMultiplier": 0.8
   },
@@ -535,15 +535,15 @@
     "exerciseIndex": 66,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
     "loadMultiplier": 0.8
   },
   {
     "exerciseIndex": 67,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.3
   },
@@ -551,15 +551,15 @@
     "exerciseIndex": 68,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 69,
     "muscleGroup": "core",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": [
       "rectus_abdominis",
       "internal_obliques",
@@ -572,7 +572,7 @@
     "exerciseIndex": 70,
     "muscleGroup": "abdomen",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -580,7 +580,7 @@
     "exerciseIndex": 71,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
     "loadMultiplier": 0.5
   },
@@ -588,15 +588,15 @@
     "exerciseIndex": 72,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
     "loadMultiplier": 0.6
   },
   {
     "exerciseIndex": 73,
     "muscleGroup": "legs",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
@@ -604,7 +604,7 @@
     "exerciseIndex": 74,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["calves", "glutes", "quadriceps"],
     "loadMultiplier": 0
   },
@@ -612,7 +612,7 @@
     "exerciseIndex": 75,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -620,7 +620,7 @@
     "exerciseIndex": 76,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -628,7 +628,7 @@
     "exerciseIndex": 77,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
     "loadMultiplier": 0
   },
@@ -636,7 +636,7 @@
     "exerciseIndex": 78,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -644,7 +644,7 @@
     "exerciseIndex": 79,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -659,7 +659,7 @@
     "exerciseIndex": 80,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
@@ -667,7 +667,7 @@
     "exerciseIndex": 81,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -682,7 +682,7 @@
     "exerciseIndex": 82,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -697,7 +697,7 @@
     "exerciseIndex": 83,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
-    "mechanicType": "other",
+    "mechanicType": "cardio",
     "targetMuscles": [
       "rectus_abdominis",
       "external_obliques",
@@ -712,7 +712,7 @@
     "exerciseIndex": 84,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
@@ -720,15 +720,15 @@
     "exerciseIndex": 85,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
     "exerciseIndex": 86,
     "muscleGroup": "back",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
     "loadMultiplier": 0.3
   },
@@ -736,7 +736,7 @@
     "exerciseIndex": 87,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
     "loadMultiplier": 0.3
   },
@@ -744,31 +744,31 @@
     "exerciseIndex": 88,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.8
   },
   {
     "exerciseIndex": 89,
     "muscleGroup": "chest",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
     "exerciseIndex": 90,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0.08
   },
   {
     "exerciseIndex": 91,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid", "traps"],
     "loadMultiplier": 0.1
   },
@@ -776,15 +776,15 @@
     "exerciseIndex": 92,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 93,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["traps"],
     "loadMultiplier": 0.5
   },
@@ -792,7 +792,7 @@
     "exerciseIndex": 94,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "calves"],
     "loadMultiplier": 0.4
   },
@@ -800,7 +800,7 @@
     "exerciseIndex": 95,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
     "loadMultiplier": 0.7
   },
@@ -808,15 +808,15 @@
     "exerciseIndex": 96,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
     "loadMultiplier": 1
   },
   {
     "exerciseIndex": 97,
     "muscleGroup": "legs",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -824,7 +824,7 @@
     "exerciseIndex": 98,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
     "loadMultiplier": 1.4
   },
@@ -832,7 +832,7 @@
     "exerciseIndex": 99,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 0.3
   },
@@ -840,7 +840,7 @@
     "exerciseIndex": 100,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -848,7 +848,7 @@
     "exerciseIndex": 101,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -856,7 +856,7 @@
     "exerciseIndex": 102,
     "muscleGroup": "abdomen",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -864,7 +864,7 @@
     "exerciseIndex": 103,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
     "loadMultiplier": 0
   },
@@ -872,7 +872,7 @@
     "exerciseIndex": 104,
     "muscleGroup": "shoulders",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0
   },
@@ -880,63 +880,63 @@
     "exerciseIndex": 105,
     "muscleGroup": "abdomen",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 106,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
     "exerciseIndex": 107,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.22
   },
   {
     "exerciseIndex": 108,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
     "exerciseIndex": 109,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
     "exerciseIndex": 110,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
   {
     "exerciseIndex": 111,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.26
   },
   {
     "exerciseIndex": 112,
     "muscleGroup": "glutes",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.2
   },
@@ -944,15 +944,15 @@
     "exerciseIndex": 113,
     "muscleGroup": "glutes",
     "equipmentType": "plate_machine",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.45
   },
   {
     "exerciseIndex": 114,
     "muscleGroup": "glutes",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.12
   },
@@ -960,7 +960,7 @@
     "exerciseIndex": 115,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
@@ -968,15 +968,15 @@
     "exerciseIndex": 116,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
     "exerciseIndex": 117,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.22
   },
@@ -984,7 +984,7 @@
     "exerciseIndex": 118,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
@@ -992,7 +992,7 @@
     "exerciseIndex": 119,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
@@ -1000,7 +1000,7 @@
     "exerciseIndex": 120,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
@@ -1008,7 +1008,7 @@
     "exerciseIndex": 121,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "anterior_deltoid",
       "lateral_deltoid",
@@ -1022,7 +1022,7 @@
     "exerciseIndex": 122,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
     "loadMultiplier": 0.55
   },
@@ -1030,15 +1030,15 @@
     "exerciseIndex": 123,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
   {
     "exerciseIndex": 124,
     "muscleGroup": "back",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["lats", "teres_major", "triceps"],
     "loadMultiplier": 0.3
   },
@@ -1046,7 +1046,7 @@
     "exerciseIndex": 125,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
     "loadMultiplier": 0.5
   },
@@ -1054,7 +1054,7 @@
     "exerciseIndex": 126,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
     "loadMultiplier": 1.45
   },
@@ -1062,7 +1062,7 @@
     "exerciseIndex": 127,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "traps",
       "erector_spinae",
@@ -1078,7 +1078,7 @@
     "exerciseIndex": 128,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
     "loadMultiplier": 0.85
   },
@@ -1086,7 +1086,7 @@
     "exerciseIndex": 129,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
@@ -1094,7 +1094,7 @@
     "exerciseIndex": 130,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
@@ -1102,7 +1102,7 @@
     "exerciseIndex": 131,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 0
   },
@@ -1110,7 +1110,7 @@
     "exerciseIndex": 132,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
@@ -1118,7 +1118,7 @@
     "exerciseIndex": 133,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes"],
     "loadMultiplier": 0
   },
@@ -1126,7 +1126,7 @@
     "exerciseIndex": 134,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 0
   },
@@ -1134,7 +1134,7 @@
     "exerciseIndex": 135,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
     "loadMultiplier": 0.85
   },
@@ -1142,47 +1142,47 @@
     "exerciseIndex": 136,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
     "loadMultiplier": 0
   },
   {
     "exerciseIndex": 137,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.42
   },
   {
     "exerciseIndex": 138,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.4
   },
   {
     "exerciseIndex": 139,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
     "exerciseIndex": 140,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis", "forearms"],
     "loadMultiplier": 0.2
   },
   {
     "exerciseIndex": 141,
     "muscleGroup": "arms",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
@@ -1190,7 +1190,7 @@
     "exerciseIndex": 142,
     "muscleGroup": "chest",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
@@ -1198,7 +1198,7 @@
     "exerciseIndex": 143,
     "muscleGroup": "arms",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0
   },
@@ -1206,7 +1206,7 @@
     "exerciseIndex": 144,
     "muscleGroup": "abdomen",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -1214,7 +1214,7 @@
     "exerciseIndex": 145,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
@@ -1222,7 +1222,7 @@
     "exerciseIndex": 146,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -1235,7 +1235,7 @@
     "exerciseIndex": 147,
     "muscleGroup": "core",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -1248,16 +1248,16 @@
   {
     "exerciseIndex": 148,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.12
   },
   {
     "exerciseIndex": 149,
     "muscleGroup": "shoulders",
-    "equipmentType": "isolation",
-    "mechanicType": "other",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
     "targetMuscles": ["traps", "forearms"],
     "loadMultiplier": 0.85
   },
@@ -1265,7 +1265,7 @@
     "exerciseIndex": 150,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.85
   },
@@ -1273,7 +1273,7 @@
     "exerciseIndex": 151,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "glutes",
       "hamstrings",
@@ -1289,7 +1289,7 @@
     "exerciseIndex": 152,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.6
   },
@@ -1297,7 +1297,7 @@
     "exerciseIndex": 153,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.55
   },
@@ -1305,7 +1305,7 @@
     "exerciseIndex": 154,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.5
   },
@@ -1313,7 +1313,7 @@
     "exerciseIndex": 155,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.75
   },
@@ -1321,7 +1321,7 @@
     "exerciseIndex": 156,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.6
   },
@@ -1329,7 +1329,7 @@
     "exerciseIndex": 157,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.7
   },
@@ -1337,7 +1337,7 @@
     "exerciseIndex": 158,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.75
   },
@@ -1345,7 +1345,7 @@
     "exerciseIndex": 159,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.5
   },
@@ -1353,7 +1353,7 @@
     "exerciseIndex": 160,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "quadriceps",
       "glutes",
@@ -1369,7 +1369,7 @@
     "exerciseIndex": 161,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.5
   },
@@ -1377,7 +1377,7 @@
     "exerciseIndex": 162,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.45
   },
@@ -1385,7 +1385,7 @@
     "exerciseIndex": 163,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
     "loadMultiplier": 1.1
   },
@@ -1393,7 +1393,7 @@
     "exerciseIndex": 164,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
     "loadMultiplier": 0.9
   },
@@ -1401,7 +1401,7 @@
     "exerciseIndex": 165,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
     "loadMultiplier": 0.6
   },
@@ -1409,7 +1409,7 @@
     "exerciseIndex": 166,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 0.9
   },
@@ -1417,7 +1417,7 @@
     "exerciseIndex": 167,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1
   },
@@ -1425,7 +1425,7 @@
     "exerciseIndex": 168,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
     "loadMultiplier": 0.95
   },
@@ -1433,7 +1433,7 @@
     "exerciseIndex": 169,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
     "loadMultiplier": 1
   },
@@ -1441,7 +1441,7 @@
     "exerciseIndex": 170,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.85
   },
@@ -1449,7 +1449,7 @@
     "exerciseIndex": 171,
     "muscleGroup": "chest",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.85
   },
@@ -1457,7 +1457,7 @@
     "exerciseIndex": 172,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "quadriceps",
       "glutes",
@@ -1473,7 +1473,7 @@
     "exerciseIndex": 173,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
     "loadMultiplier": 1.6
   },
@@ -1481,7 +1481,7 @@
     "exerciseIndex": 174,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
     "loadMultiplier": 0.35
   },
@@ -1489,7 +1489,7 @@
     "exerciseIndex": 175,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "glutes",
       "hamstrings",
@@ -1505,7 +1505,7 @@
     "exerciseIndex": 176,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
     "loadMultiplier": 0.3
   },
@@ -1513,7 +1513,7 @@
     "exerciseIndex": 177,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
     "loadMultiplier": 0.25
   },
@@ -1521,7 +1521,7 @@
     "exerciseIndex": 178,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.35
   },
@@ -1529,7 +1529,7 @@
     "exerciseIndex": 179,
     "muscleGroup": "legs",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
     "loadMultiplier": 0.35
   },
@@ -1537,7 +1537,7 @@
     "exerciseIndex": 180,
     "muscleGroup": "back",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
     "loadMultiplier": 0.25
   },
@@ -1545,7 +1545,7 @@
     "exerciseIndex": 181,
     "muscleGroup": "full_body",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
     "loadMultiplier": 0.25
   },
@@ -1553,7 +1553,7 @@
     "exerciseIndex": 182,
     "muscleGroup": "shoulders",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.2
   },
@@ -1561,7 +1561,7 @@
     "exerciseIndex": 183,
     "muscleGroup": "core",
     "equipmentType": "other",
-    "mechanicType": "other",
+    "mechanicType": "compound",
     "targetMuscles": [
       "transverse_abdominis",
       "external_obliques",
