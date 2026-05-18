@@ -14,8 +14,8 @@ export const schema = appSchema({
         { name: 'description', type: 'string' },
         { name: 'image_url', type: 'string', isOptional: true },
         { name: 'muscle_group', type: 'string', isIndexed: true },
-        { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight
-        { name: 'mechanic_type', type: 'string' }, // 'compound' or 'isolation'
+        { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight, etc
+        { name: 'mechanic_type', type: 'string' }, // 'compound', 'isolation', etc
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
         { name: 'load_multiplier', type: 'number' }, // Load multiplier for volume calculations
         { name: 'order_index', type: 'number', isOptional: true }, // JSON order for app exercises
