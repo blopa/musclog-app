@@ -2,46 +2,54 @@
 /* eslint-disable no-undef */
 
 /**
- * Copies assets/phone-wrapper.png and assets/download-qrcode.png
- * → public/musclog-app/images/ so dev and export serve them at /musclog-app/images/...
- * (matches experiments.baseUrl).
+ * Copies static website images into public/ so dev and export serve them at /images/...
+ * and /musclog-app/images/... when experiments.baseUrl is set.
  * The public/musclog-app folder is gitignored; run via prestart or before web/export.
  */
 const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const destDir = path.join(root, 'public', 'musclog-app', 'images');
-
-const filesToSync = [
-  {
-    src: path.join(root, 'assets', 'phone-wrapper.png'),
-    dest: path.join(destDir, 'phone-wrapper.png'),
-  },
-  {
-    src: path.join(root, 'assets', 'download-qrcode.png'),
-    dest: path.join(destDir, 'download-qrcode.png'),
-  },
-  {
-    src: path.join(root, 'assets', 'app-screenshot.png'),
-    dest: path.join(destDir, 'app-screenshot.png'),
-  },
-  {
-    src: path.join(root, 'assets', 'user-avatar.jpg'),
-    dest: path.join(destDir, 'user-avatar.jpg'),
-  },
+const publicImageDirs = [
+  path.join(root, 'public', 'images'),
+  path.join(root, 'public', 'musclog-app', 'images'),
 ];
 
-function main() {
-  fs.mkdirSync(destDir, { recursive: true });
+const staticFiles = [
+  { src: path.join(root, 'assets', 'phone-wrapper.png'), destName: 'phone-wrapper.png' },
+  { src: path.join(root, 'assets', 'download-qrcode.png'), destName: 'download-qrcode.png' },
+  { src: path.join(root, 'assets', 'app-screenshot.png'), destName: 'app-screenshot.png' },
+  { src: path.join(root, 'assets', 'user-avatar.jpg'), destName: 'user-avatar.jpg' },
+];
 
-  filesToSync.forEach(({ src, dest }) => {
+const screenshotDir = path.join(root, 'screenshots', 'phone');
+const screenshotFiles = fs.existsSync(screenshotDir)
+  ? fs
+      .readdirSync(screenshotDir)
+      .filter((file) => file.endsWith('.png'))
+      .map((file) => ({
+        src: path.join(screenshotDir, file),
+        destName: path.join('phone', file),
+      }))
+  : [];
+
+const filesToSync = staticFiles.concat(screenshotFiles);
+
+function main() {
+  publicImageDirs.forEach((dir) => fs.mkdirSync(dir, { recursive: true }));
+
+  filesToSync.forEach(({ src, destName }) => {
     if (!fs.existsSync(src)) {
       console.warn('[sync-web-phone-frame] Skip: source not found:', src);
       return;
     }
-    fs.copyFileSync(src, dest);
-    console.log('[sync-web-phone-frame]', path.relative(root, dest));
+
+    publicImageDirs.forEach((destDir) => {
+      const dest = path.join(destDir, destName);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.copyFileSync(src, dest);
+      console.log('[sync-web-phone-frame]', path.relative(root, dest));
+    });
   });
 }
 

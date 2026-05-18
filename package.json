@@ -218,8 +218,15 @@
       "reactNativeDirectoryCheck": {
         "exclude": [
           "@nozbe/watermelondb",
-          "@nozbe/simdjson"
-        ]
+          "@nozbe/simdjson",
+          "@react-native-ml-kit/barcode-scanning",
+          "rn-mlkit-ocr",
+          "@musclog/witmotion-ble",
+          "expo-image-crop-tool",
+          "react-native-barcodes-detector",
+          "@gutenye/ocr-react-native"
+        ],
+        "listUnknownPackages": false
       }
     }
   }

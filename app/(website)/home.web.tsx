@@ -27,19 +27,35 @@ import {
   SectionBackground,
 } from '@/components/website/WebsiteBackgrounds';
 import { DownloadModal } from '@/components/website/WebsiteChrome';
-import homeScreenshot from '@/screenshots/phone/screenshot-1.png';
-import nutritionScreenshot from '@/screenshots/phone/screenshot-2.png';
-import workoutListScreenshot from '@/screenshots/phone/screenshot-3.png';
-import progressChartsScreenshot from '@/screenshots/phone/screenshot-5.png';
-import localDataSettingsScreenshot from '@/screenshots/phone/screenshot-8.png';
-import workoutWaitTimeScreenshot from '@/screenshots/phone/screenshot-10.png';
-import aiCoachChatScreenshot2 from '@/screenshots/phone/screenshot-13.png';
-import mealLoggingScreenshot from '@/screenshots/phone/screenshot-14.png';
 
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT = '#D1D5DB';
 const BODY_TEXT_SOFT = '#9CA3AF';
+
+function withExpoBaseUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  const base = process.env.EXPO_BASE_URL;
+  if (base == null || base === '') {
+    return path;
+  }
+
+  const basePath = String(base).replace(/^\/+|\/+$/g, '');
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
+    return normalized;
+  }
+
+  return `/${basePath}${normalized}`;
+}
+
+const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
+const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
+const HERO_APP_SCREENSHOT = STATIC_IMAGE('app-screenshot.png');
+const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
 
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
@@ -296,52 +312,52 @@ export function ScreenshotShowcase() {
 
   const slides = [
     {
-      src: homeScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-1.png'),
       title: t('slides.home.title'),
       description: t('slides.home.description'),
       alt: t('slides.home.alt'),
     },
     {
-      src: aiCoachChatScreenshot2,
+      src: PHONE_SCREENSHOT('screenshot-13.png'),
       title: t('slides.chatCoach2.title'),
       description: t('slides.chatCoach2.description'),
       alt: t('slides.chatCoach2.alt'),
     },
     {
-      src: workoutListScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-3.png'),
       title: t('slides.workouts.title'),
       description: t('slides.workouts.description'),
       alt: t('slides.workouts.alt'),
     },
     {
-      src: mealLoggingScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-14.png'),
       title: t('slides.mealLogging.title'),
       description: t('slides.mealLogging.description'),
       alt: t('slides.mealLogging.alt'),
     },
     {
-      src: nutritionScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-2.png'),
       title: t('slides.today.title'),
       description: t('slides.today.description'),
       alt: t('slides.today.alt'),
     },
     {
-      src: progressChartsScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-5.png'),
       title: t('slides.bodyMetrics.title'),
       description: t('slides.bodyMetrics.description'),
       alt: t('slides.bodyMetrics.alt'),
     },
     {
-      src: localDataSettingsScreenshot,
+      src: PHONE_SCREENSHOT('screenshot-8.png'),
       title: t('slides.settings.title'),
       description: t('slides.settings.description'),
       alt: t('slides.settings.alt'),
     },
     {
-      src: workoutWaitTimeScreenshot,
-      title: t('slides.createWorkout.title'),
-      description: t('slides.createWorkout.description'),
-      alt: t('slides.createWorkout.alt'),
+      src: PHONE_SCREENSHOT('screenshot-10.png'),
+      title: t('slides.restTimer.title'),
+      description: t('slides.restTimer.description'),
+      alt: t('slides.restTimer.alt'),
     },
   ];
 
@@ -712,7 +728,7 @@ export function Testimonial() {
           <div className="flex flex-col items-center gap-3">
             <div className="bg-secondary border-primary/30 h-14 w-14 overflow-hidden rounded-full border-2">
               <img
-                src="/images/user-avatar.jpg"
+                src={HERO_AVATAR}
                 alt={t('author')}
                 width={56}
                 height={56}
@@ -965,7 +981,7 @@ export function Hero() {
                 >
                   <div className="overflow-hidden rounded-[2rem]">
                     <img
-                      src="/images/app-screenshot.png"
+                      src={HERO_APP_SCREENSHOT}
                       alt="Musclog app screenshot"
                       width={320}
                       height={640}

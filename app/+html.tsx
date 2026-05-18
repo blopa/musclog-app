@@ -11,9 +11,9 @@ import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
  * Root HTML runs only in Node (static render). Use `public/` static files
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
  *
- * With experiments.baseUrl `/musclog-app`, the frame must be served at
- * `/musclog-app/images/...`. `scripts/sync-web-phone-frame.js` copies from
- * `assets/phone-wrapper.png` into `public/musclog-app/images/` (gitignored).
+ * With experiments.baseUrl `/musclog-app`, the images must be served at
+ * `/musclog-app/images/...`. `scripts/sync-web-phone-frame.js` copies the
+ * website images into both `public/images/` and `public/musclog-app/images/`.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
 const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
