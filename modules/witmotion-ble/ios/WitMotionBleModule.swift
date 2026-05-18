@@ -350,6 +350,20 @@ final class WitMotionBleManager: NSObject {
   // MARK: Connect / Disconnect
 
   func connect(deviceId: String) throws -> [String: Any?] {
+    // 1. Check in-memory cache (device discovered in this app session)
+    if discoveredMap[deviceId] == nil {
+      // 2. Ensure CBCentralManager is initialised so we can query CoreBluetooth's cache
+      if central == nil {
+        central = CBCentralManager(delegate: self, queue: q)
+      }
+      // 3. Ask CoreBluetooth for a peripheral it already knows (survives app restarts —
+      //    iOS peripheral UUIDs are stable per-app per-device)
+      if let uuid = UUID(uuidString: deviceId),
+         let known = central?.retrievePeripherals(withIdentifiers: [uuid]).first {
+        discoveredMap[deviceId] = known
+      }
+    }
+
     guard let p = discoveredMap[deviceId] else {
       throw NSError(
         domain: "WitMotionBle", code: 1,

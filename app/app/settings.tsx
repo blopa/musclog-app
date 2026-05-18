@@ -12,6 +12,7 @@ import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
+import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
@@ -38,6 +39,7 @@ export default function SettingsScreen() {
   const [isAppBehaviorSettingsVisible, setAppBehaviorSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
+  const [isBleDevicesVisible, setBleDevicesVisible] = useState(false);
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
     await SettingsService.setGoogleGeminiApiKey(value);
@@ -232,6 +234,26 @@ export default function SettingsScreen() {
             }
           />
 
+          <SettingsCard
+            icon={
+              <MaterialIcons
+                name="bluetooth"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.bleDevices.title')}
+            subtitle={t('settings.bleDevices.subtitle')}
+            onPress={() => setBleDevicesVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
+
           <LegalLinksCard />
           <View style={{ height: theme.size['8'] }} />
         </AnimatedContent>
@@ -274,6 +296,10 @@ export default function SettingsScreen() {
       <NotificationsSettingsModal
         visible={isNotificationsSettingsVisible}
         onClose={() => setNotificationsSettingsVisible(false)}
+      />
+      <ManageBleDevicesModal
+        visible={isBleDevicesVisible}
+        onClose={() => setBleDevicesVisible(false)}
       />
     </MasterLayout>
   );

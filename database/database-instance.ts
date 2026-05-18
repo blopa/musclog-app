@@ -10,6 +10,7 @@ import { Database } from '@nozbe/watermelondb';
 import adapter from './adapter';
 // Import all models
 import AiCustomPrompt from './models/AiCustomPrompt';
+import BleDevice from './models/BleDevice';
 import ChatMessage from './models/ChatMessage';
 import DebugDump from './models/DebugDump';
 import Exercise from './models/Exercise';
@@ -48,6 +49,7 @@ export const database = new Database({
   adapter,
   modelClasses: [
     AiCustomPrompt,
+    BleDevice,
     Exercise,
     ExerciseGoal,
     ExerciseMuscle,
