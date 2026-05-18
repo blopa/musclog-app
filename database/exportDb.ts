@@ -10,6 +10,7 @@ import {
   RESTORE_ORDER,
   SETTINGS_EXCLUDED_TYPES,
 } from '@/constants/exportImport';
+import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
 import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
@@ -62,6 +63,7 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
 
   const dbData: ExportDump = {
     _exportVersion: CURRENT_DATABASE_VERSION,
+    _exportPlatform: getExportPlatform(),
   };
 
   for (const tableName of RESTORE_ORDER) {

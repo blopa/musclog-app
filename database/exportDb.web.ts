@@ -7,6 +7,7 @@ import {
   RESTORE_ORDER,
   SETTINGS_EXCLUDED_TYPES,
 } from '@/constants/exportImport';
+import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
 import { database } from './database-instance';
@@ -35,6 +36,7 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
 export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   const dbData: ExportDump = {
     _exportVersion: CURRENT_DATABASE_VERSION,
+    _exportPlatform: getExportPlatform(),
   };
 
   for (const tableName of RESTORE_ORDER) {

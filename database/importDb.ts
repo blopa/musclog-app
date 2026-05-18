@@ -6,6 +6,7 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
+import { getExportPlatform, isSameExportPlatform } from '@/constants/platform';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
@@ -67,6 +68,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   const dbData: ExportDump = validationResult.data as ExportDump;
+  const importBleDevices = isSameExportPlatform(dbData._exportPlatform, getExportPlatform());
 
   // Only clear AsyncStorage if the imported data contains async storage data
   const asyncStorageData = dbData._async_storage_;
@@ -95,6 +97,10 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   const createOperations: any[] = [];
 
   for (const tableName of RESTORE_ORDER) {
+    if (tableName === 'ble_devices' && !importBleDevices) {
+      continue;
+    }
+
     const collection = database.get(tableName as any);
 
     // Access table data using type assertion since tableName is dynamic

@@ -5,6 +5,8 @@
 
 import { z } from 'zod';
 
+import { EXPORT_PLATFORMS } from '@/constants/platform';
+
 import { schema as watermelonSchema } from './schema';
 
 // Mapping from WatermelonDB column types to Zod types
@@ -178,6 +180,7 @@ export function generateExportValidationSchema(): z.ZodObject<Record<string, z.Z
   return z
     .object({
       _exportVersion: z.number().int().min(1).max(100),
+      _exportPlatform: z.enum(EXPORT_PLATFORMS).optional(),
       ...tableSchemas,
       _async_storage_: z.record(z.string(), z.string().nullable().optional()).optional(),
     })
