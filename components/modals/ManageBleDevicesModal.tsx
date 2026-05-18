@@ -12,6 +12,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { WitMotionDevice } from '@/modules/witmotion-ble';
 import { useWitMotion } from '@/modules/witmotion-ble';
 
+import { BleDevicePreviewModal } from './BleDevicePreviewModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -31,6 +32,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
   const [renameValue, setRenameValue] = useState('');
   const [confirmRemoveDevice, setConfirmRemoveDevice] = useState<BleDevice | null>(null);
   const [isConfirmRemoveVisible, setConfirmRemoveVisible] = useSubModalVisibility(visible);
+  const [isPreviewVisible, setPreviewVisible] = useSubModalVisibility(visible);
   const [permissionDenied, setPermissionDenied] = useState(false);
 
   const refreshSaved = useCallback(async () => {
@@ -238,12 +240,20 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
                       <View className="flex-row flex-wrap gap-2">
                         {isConnected ? (
-                          <Button
-                            label={t('settings.bleDevices.disconnectButton')}
-                            size="xs"
-                            variant="secondary"
-                            onPress={() => void handleDisconnect()}
-                          />
+                          <>
+                            <Button
+                              label={t('settings.bleDevices.disconnectButton')}
+                              size="xs"
+                              variant="secondary"
+                              onPress={() => void handleDisconnect()}
+                            />
+                            <Button
+                              label={t('settings.bleDevices.previewDataButton')}
+                              size="xs"
+                              variant="secondary"
+                              onPress={() => setPreviewVisible(true)}
+                            />
+                          </>
                         ) : (
                           <Button
                             label={connectLabel}
@@ -326,9 +336,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
             >
               <AlertCircle size={theme.iconSize.md} color={theme.colors.status.error} />
               <Text className="flex-1 text-sm" style={{ color: theme.colors.status.error }}>
-                {permissionDenied
-                  ? t('settings.bleDevices.permissionDenied')
-                  : wit.error}
+                {permissionDenied ? t('settings.bleDevices.permissionDenied') : wit.error}
               </Text>
             </View>
           ) : null}
@@ -345,6 +353,8 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
         })}
         confirmLabel={t('settings.bleDevices.removeButton')}
       />
+
+      <BleDevicePreviewModal visible={isPreviewVisible} onClose={() => setPreviewVisible(false)} />
     </FullScreenModal>
   );
 }

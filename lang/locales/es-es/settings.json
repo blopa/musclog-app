@@ -354,7 +354,14 @@
       "removeConfirm": "Remove {{name}} from saved sensors?",
       "lastConnected": "Last connected {{time}}",
       "neverConnected": "Never connected",
-      "permissionDenied": "Bluetooth permission denied. Please allow Bluetooth access to scan for sensors."
+      "permissionDenied": "Bluetooth permission denied. Please allow Bluetooth access to scan for sensors.",
+      "previewDataButton": "Preview Data",
+      "previewTitle": "Sensor Preview",
+      "previewAngle": "Angle",
+      "previewAccel": "Accel",
+      "previewGyro": "Gyro",
+      "previewWaiting": "Waiting for data...",
+      "previewDisconnected": "Sensor not connected"
     }
   }
 }
