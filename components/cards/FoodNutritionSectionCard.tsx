@@ -13,7 +13,7 @@ import { blurFilter } from '@/utils/blurFilter';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
-import { hasNutritionQualityData } from './nutritionQuality';
+import { hasNutritionQualityData, type NutritionQualityInput } from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
@@ -47,13 +47,6 @@ export type FoodDetailsNutritionSectionMode =
   | 'externalProduct'
   | null;
 
-type NutritionQuality = {
-  nutriScore?: string;
-  ecoScore?: string;
-  novaGroup?: number;
-  labels?: FoodLabels;
-};
-
 type FoodNutritionSectionProps = {
   food: FoodData;
   canEdit: boolean;
@@ -76,7 +69,7 @@ type FoodNutritionSectionProps = {
   showName?: boolean;
   useQualityAccordion?: boolean;
   ingredients?: MealIngredient[];
-  nutritionQuality?: NutritionQuality;
+  nutritionQuality?: NutritionQualityInput;
 };
 
 export function FoodNutritionSectionCard({

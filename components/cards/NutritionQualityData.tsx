@@ -6,13 +6,18 @@ import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import type { FoodLabels } from '@/database/models/Food';
 import { useTheme } from '@/hooks/useTheme';
 
-import { hasNutritionQualityData } from './nutritionQuality';
+import {
+  hasNutritionQualityData,
+  normalizeNutritionQualityScore,
+  type NutritionQualityInput,
+  type NutritionQualityScore,
+} from './nutritionQuality';
 
 type NutritionQualityDataProps = {
-  nutriScore?: string;
-  ecoScore?: string;
+  nutriScore?: NutritionQualityInput['nutriScore'];
+  ecoScore?: NutritionQualityInput['ecoScore'];
   novaGroup?: number;
-  labels?: FoodLabels;
+  labels?: NutritionQualityInput['labels'];
 };
 
 // iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView wins correctly.
@@ -41,7 +46,7 @@ const LABEL_KEYS: { key: keyof FoodLabels; translationKey: string }[] = [
   { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
 ];
 
-function ScoreCard({ label, score }: { label: string; score: string }) {
+function ScoreCard({ label, score }: { label: string; score: NutritionQualityScore }) {
   const theme = useTheme();
   const colors = GRADE_COLORS[score.toLowerCase()] ?? { bg: '#6B8070', text: '#ffffff' };
 
@@ -192,8 +197,10 @@ export function NutritionQualityData({
 }: NutritionQualityDataProps) {
   const { t } = useTranslation();
 
+  const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
+  const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
   const activeLabels = LABEL_KEYS.filter(({ key }) => labels?.[key] === true);
-  const hasScores = !!nutriScore || !!ecoScore;
+  const hasScores = normalizedNutriScore != null || normalizedEcoScore != null;
   const hasData = hasNutritionQualityData({ nutriScore, ecoScore, novaGroup, labels });
 
   if (!hasData) {
@@ -211,10 +218,12 @@ export function NutritionQualityData({
     <View className="mt-3 gap-3">
       {hasScores ? (
         <View className="flex-row gap-3">
-          {nutriScore ? (
-            <ScoreCard label={t('food.logDetails.nutriScore')} score={nutriScore} />
+          {normalizedNutriScore ? (
+            <ScoreCard label={t('food.logDetails.nutriScore')} score={normalizedNutriScore} />
           ) : null}
-          {ecoScore ? <ScoreCard label={t('food.logDetails.ecoScore')} score={ecoScore} /> : null}
+          {normalizedEcoScore ? (
+            <ScoreCard label={t('food.logDetails.ecoScore')} score={normalizedEcoScore} />
+          ) : null}
         </View>
       ) : null}
 

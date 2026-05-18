@@ -60,6 +60,8 @@ export interface FoodLabels {
   vegetarian?: boolean;
   palmOilFree?: boolean;
   fairTrade?: boolean;
+  highProtein?: boolean;
+  highFiber?: boolean;
 }
 
 export default class Food extends Model {
