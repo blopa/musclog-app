@@ -7,7 +7,6 @@ export default class BleDevice extends Model {
   @field('device_id') deviceId!: string;
   @field('name') name!: string;
   @field('nickname') nickname?: string;
-  @field('platform') platform!: string;
   @field('last_connected_at') lastConnectedAt?: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

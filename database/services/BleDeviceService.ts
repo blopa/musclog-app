@@ -1,5 +1,4 @@
 import { Q } from '@nozbe/watermelondb';
-import { Platform } from 'react-native';
 
 import { database } from '@/database/database-instance';
 import BleDevice from '@/database/models/BleDevice';
@@ -32,7 +31,6 @@ export class BleDeviceService {
       return database.get<BleDevice>('ble_devices').create((record) => {
         record.deviceId = device.id;
         record.name = device.name;
-        record.platform = Platform.OS;
         record.createdAt = now;
         record.updatedAt = now;
       });

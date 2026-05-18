@@ -9,7 +9,6 @@ const migrationV17 = {
         { name: 'device_id', type: 'string', isIndexed: true },
         { name: 'name', type: 'string' },
         { name: 'nickname', type: 'string', isOptional: true },
-        { name: 'platform', type: 'string' },
         { name: 'last_connected_at', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
