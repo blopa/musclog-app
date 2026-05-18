@@ -51,7 +51,7 @@ function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): Exercise
       name: localeEntry.name,
       description: localeEntry.description,
       muscleGroup: data.muscleGroup as ExerciseJsonMuscleGroup,
-      type: data.type as ExerciseJsonData['type'],
+      type: data.equipmentType as ExerciseJsonData['type'],
       targetMuscles: data.targetMuscles,
       loadMultiplier: data.loadMultiplier,
     });
@@ -409,6 +409,7 @@ export class ExerciseService {
     let mechanicType: MechanicType = 'compound';
     let equipmentType: EquipmentType;
 
+    // TODO: update this to use mechanicType and equipmentType from the JSON file
     switch (type) {
       case 'compound':
         mechanicType = 'compound';
@@ -422,7 +423,7 @@ export class ExerciseService {
         break;
       case 'machine':
         mechanicType = 'compound'; // Machine exercises can be compound or isolation, default to compound
-        equipmentType = 'machine';
+        equipmentType = 'plate_machine';
         break;
       case 'bodyweight':
         mechanicType = 'compound'; // Bodyweight exercises can be compound or isolation, default to compound

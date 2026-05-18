@@ -25,13 +25,22 @@ export type EquipmentType =
   | 'dumbbell'
   | 'barbell'
   | 'bodyweight'
-  | 'machine'
+  | 'plate_machine'
   | 'cable'
   | 'kettlebell'
+  | 'smith_machine'
+  | 'cardio'
   | 'resistance_band'
   | 'other';
 
-export type MechanicType = 'compound' | 'isolation';
+export type MechanicType =
+  | 'compound'
+  | 'isolation'
+  | 'cardio'
+  | 'mobility'
+  | 'stretching'
+  | 'plyometric'
+  | 'other';
 
 export type ExerciseSource = 'app' | 'user';
 
