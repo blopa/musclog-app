@@ -225,10 +225,15 @@ async function collectIntegrityIssues(
       }
 
       const matchedTable = [...watchedTables].find((t) => message.includes(t));
-      // Attribute unmatched issues to the root table — no rowId, so
-      // resolveRootIdsFromIssues will skip them, but their presence still
-      // signals that reindex / soft-delete should be attempted.
-      issues.push(parseIntegrityIssue(matchedTable ?? rootTable, message));
+      if (matchedTable) {
+        // Known table — extract rowId so the resolver can walk up the chain.
+        issues.push(parseIntegrityIssue(matchedTable, message));
+      } else {
+        // Table name not in the message (page-level or index-only report).
+        // Include without a rowId: the resolver will skip it, but its presence
+        // keeps postReindexIssues.length > 0 so repair still proceeds.
+        issues.push({ table: rootTable, message });
+      }
     }
 
     return issues;
