@@ -204,9 +204,15 @@ function parseIntegrityIssue(table: string, message: string): IntegrityIssue {
 // Runs a single full PRAGMA integrity_check and filters to issues that mention
 // one of the watched tables. PRAGMA integrity_check(N) only accepts an integer;
 // table-name arguments are not valid SQLite syntax.
+//
+// SQLite sometimes reports corruption via page numbers or index names that don't
+// directly contain the table name (e.g. "on page 42" with no table reference).
+// Those rows are still returned — attributed to the root table with no rowId —
+// so the caller knows repair is needed even if we can't resolve a specific record.
 async function collectIntegrityIssues(
   db: SQLiteDatabase,
-  watchedTables: ReadonlySet<string>
+  watchedTables: ReadonlySet<string>,
+  rootTable: string
 ): Promise<IntegrityIssue[]> {
   try {
     const rows = (await db.getAllAsync('PRAGMA integrity_check;')) as Record<string, unknown>[];
@@ -219,9 +225,10 @@ async function collectIntegrityIssues(
       }
 
       const matchedTable = [...watchedTables].find((t) => message.includes(t));
-      if (matchedTable) {
-        issues.push(parseIntegrityIssue(matchedTable, message));
-      }
+      // Attribute unmatched issues to the root table — no rowId, so
+      // resolveRootIdsFromIssues will skip them, but their presence still
+      // signals that reindex / soft-delete should be attempted.
+      issues.push(parseIntegrityIssue(matchedTable ?? rootTable, message));
     }
 
     return issues;
@@ -229,7 +236,7 @@ async function collectIntegrityIssues(
     // If the PRAGMA itself errors, the DB state is unknowable — treat as an issue.
     return [
       {
-        table: [...watchedTables][0] ?? 'unknown',
+        table: rootTable,
         message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
       },
     ];
@@ -334,9 +341,12 @@ async function softDeleteRootRecords(
     return;
   }
 
-  await database.write(async (writer) => {
-    for (const rootId of uniqueIds) {
-      try {
+  // One write transaction per root so each deletion is atomic: if anything
+  // fails mid-tree the entire transaction rolls back, leaving that root's
+  // graph untouched rather than in a partially-deleted state.
+  for (const rootId of uniqueIds) {
+    try {
+      await database.write(async (writer) => {
         const rootRecord = await database.get<Model>(descriptor.rootTable).find(rootId);
 
         for (const childSpec of descriptor.children) {
@@ -349,12 +359,12 @@ async function softDeleteRootRecords(
         }
 
         await writer.callWriter(() => rootRecord.markAsDeleted());
-      } catch (error) {
-        handleError(error, 'DatabaseRepairService.softDeleteRootRecords');
-        // Log and continue — don't let one failed deletion abort the rest.
-      }
+      });
+    } catch (error) {
+      handleError(error, 'DatabaseRepairService.softDeleteRootRecords');
+      // Log and continue — don't let one failed deletion abort the rest.
     }
-  });
+  }
 }
 
 function allTablesInDescriptor(descriptor: TableGroupDescriptor): string[] {
@@ -404,12 +414,12 @@ async function runRepair(
   const chains = buildResolutionChains(descriptor);
 
   try {
-    const initialIssues = await collectIntegrityIssues(db, watchedTables);
+    const initialIssues = await collectIntegrityIssues(db, watchedTables, descriptor.rootTable);
     result.issues = initialIssues;
 
     result.reindexed = await reindexTables(tables);
 
-    const postReindexIssues = await collectIntegrityIssues(db, watchedTables);
+    const postReindexIssues = await collectIntegrityIssues(db, watchedTables, descriptor.rootTable);
     if (postReindexIssues.length === 0) {
       result.repaired = true;
       return result;
@@ -427,7 +437,7 @@ async function runRepair(
 
     result.reindexed = (await reindexTables(tables)) || result.reindexed;
 
-    const finalIssues = await collectIntegrityIssues(db, watchedTables);
+    const finalIssues = await collectIntegrityIssues(db, watchedTables, descriptor.rootTable);
     result.repaired = finalIssues.length === 0;
     result.issues = finalIssues.length > 0 ? finalIssues : postReindexIssues;
 
