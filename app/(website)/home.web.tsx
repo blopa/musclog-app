@@ -292,6 +292,7 @@ export function ScreenshotShowcase() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.screenshots' });
   const [isPaused, setIsPaused] = useState(false);
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+  const [isMobileModal, setIsMobileModal] = useState(false);
 
   const slides = [
     {
@@ -386,6 +387,17 @@ export function ScreenshotShowcase() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [activeModalIndex, slides.length]);
+
+  useEffect(() => {
+    const updateIsMobileModal = () => {
+      setIsMobileModal(window.innerWidth < 768);
+    };
+
+    updateIsMobileModal();
+    window.addEventListener('resize', updateIsMobileModal);
+
+    return () => window.removeEventListener('resize', updateIsMobileModal);
+  }, []);
 
   const isTrackPaused = isPaused || activeModalIndex !== null;
 
@@ -492,7 +504,40 @@ export function ScreenshotShowcase() {
         </div>
       </div>
 
-      {activeModalIndex !== null && typeof document !== 'undefined'
+      {activeModalIndex !== null && isMobileModal && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/90 p-3 backdrop-blur-md"
+              onClick={() => setActiveModalIndex(null)}
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('modalAriaLabel')}
+                className="relative flex h-full w-full items-center justify-center"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setActiveModalIndex(null)}
+                  aria-label={t('close')}
+                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+
+                <img
+                  src={slides[activeModalIndex].src}
+                  alt={slides[activeModalIndex].alt}
+                  className="max-h-[calc(100dvh-1.5rem)] w-full max-w-[calc(100vw-1.5rem)] object-contain"
+                />
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+
+      {activeModalIndex !== null && !isMobileModal && typeof document !== 'undefined'
         ? createPortal(
             <div
               className="fixed inset-0 z-[220] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
@@ -586,15 +631,12 @@ export function ScreenshotShowcase() {
                         >
                           {t('modalDetails')}
                         </p>
-                        <p className="mt-2 text-sm leading-6 text-slate-300">
-                          {slides[activeModalIndex].description}
-                        </p>
                       </div>
 
                       <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
                         <p className="text-sm font-semibold text-white">{slides[activeModalIndex].title}</p>
                         <p className="mt-2 text-sm leading-6 text-slate-400">
-                          {t('modalHint')}
+                          {slides[activeModalIndex].description}
                         </p>
                       </div>
 
