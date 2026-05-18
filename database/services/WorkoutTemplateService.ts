@@ -21,7 +21,7 @@ import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { DatabaseRepairService, REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
@@ -1246,12 +1246,9 @@ export class WorkoutTemplateService {
       });
     } catch (error) {
       if (!repairAttempted) {
-        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.workoutTemplates, () =>
-          this.deleteTemplateInternal(id, true)
-        );
-
-        if (repaired !== null) {
-          return repaired;
+        const repair = await DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.workoutTemplates);
+        if (repair.attempted && (repair.reindexed || repair.deletedRootIds.length > 0)) {
+          return this.deleteTemplateInternal(id, true);
         }
       }
       throw error;

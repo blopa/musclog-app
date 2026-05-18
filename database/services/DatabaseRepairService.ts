@@ -510,23 +510,24 @@ export class DatabaseRepairService {
 /**
  * Convenience wrapper used by service catch blocks.
  * Attempts repair; if something was fixed, retries the operation once.
- * Returns null if repair had no effect or the retry also failed.
+ * Returns `undefined` if repair had no effect or the retry also failed,
+ * so callers can safely check `repaired !== undefined` even when T includes null.
  */
 export async function retryAfterRepair<T>(
   error: unknown,
   descriptor: TableGroupDescriptor,
   retry: () => Promise<T>
-): Promise<T | null> {
+): Promise<T | undefined> {
   const repair = await DatabaseRepairService.repairIfNeeded(error, descriptor);
 
   if (!repair.attempted || (!repair.reindexed && repair.deletedRootIds.length === 0)) {
-    return null;
+    return undefined;
   }
 
   try {
     return await retry();
   } catch (retryError) {
     handleError(retryError, 'DatabaseRepairService.retryAfterRepair');
-    return null;
+    return undefined;
   }
 }

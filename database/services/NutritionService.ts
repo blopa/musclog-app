@@ -22,7 +22,7 @@ import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { DatabaseRepairService, REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -558,12 +558,9 @@ export class NutritionService {
       triggerWidgetUpdate();
     } catch (error) {
       if (!repairAttempted) {
-        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
-          this.deleteNutritionLogInternal(id, true)
-        );
-
-        if (repaired !== null) {
-          return repaired;
+        const repair = await DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.nutritionLogs);
+        if (repair.attempted && (repair.reindexed || repair.deletedRootIds.length > 0)) {
+          return this.deleteNutritionLogInternal(id, true);
         }
       }
       throw error;
