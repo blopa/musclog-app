@@ -1,7 +1,6 @@
 export { witMotionClient } from './src/client';
 export * from './src/constants';
 export { useWitMotion, useWitMotionDevice, useWitMotionScanner } from './src/hooks';
-export * from './src/parser';
 export type {
   WitMotionActionApi,
   WitMotionConnectionStatus,

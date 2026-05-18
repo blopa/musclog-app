@@ -1,15 +1,27 @@
 import { LegacyEventEmitter, requireOptionalNativeModule } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import { createEmptyLiveData } from './parser';
 import type {
   WitMotionActionApi,
   WitMotionDataBatch,
   WitMotionDevice,
+  WitMotionLiveData,
   WitMotionNativeModule,
   WitMotionScanOptions,
   WitMotionState,
 } from './types';
+
+function createEmptyLiveData(): WitMotionLiveData {
+  return {
+    accel: null,
+    gyro: null,
+    angle: null,
+    magnetic: null,
+    batteryVoltage: null,
+    batteryPercent: null,
+    updatedAt: null,
+  };
+}
 
 const DEFAULT_STATE: WitMotionState = {
   status: 'idle',
