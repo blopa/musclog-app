@@ -155,6 +155,7 @@ export default class Food extends Model {
         palmOilFree: typeof data.palmOilFree === 'boolean' ? data.palmOilFree : undefined,
         fairTrade: typeof data.fairTrade === 'boolean' ? data.fairTrade : undefined,
         highProtein: typeof data.highProtein === 'boolean' ? data.highProtein : undefined,
+        highFiber: typeof data.highFiber === 'boolean' ? data.highFiber : undefined,
       };
     }
 

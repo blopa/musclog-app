@@ -27,7 +27,8 @@
       "labelVegetarian": "Vegetariano",
       "labelPalmOilFree": "Sem óleo de palma",
       "labelFairTrade": "Comércio justo",
-      "labelHighProtein": "Alta proteína"
+      "labelHighProtein": "Alta proteína",
+      "labelHighFiber": "Alta fibra"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Tem certeza de que deseja excluir este alimento? Esta ação não pode ser desfeita.",

@@ -1,5 +1,6 @@
 import {
   hasNutritionQualityData,
+  isHighFiberFood,
   isHighProteinFood,
   normalizeNutritionQualityScore,
 } from '@/components/cards/nutritionQuality';
@@ -21,6 +22,7 @@ describe('nutritionQuality helpers', () => {
     expect(hasNutritionQualityData({ novaGroup: 4 })).toBe(true);
     expect(hasNutritionQualityData({ labels: { vegan: true } as any })).toBe(true);
     expect(hasNutritionQualityData({ labels: { highProtein: true } as any })).toBe(true);
+    expect(hasNutritionQualityData({ labels: { highFiber: true } as any })).toBe(true);
   });
 
   it('returns false when only unknown score values are present', () => {
@@ -33,5 +35,11 @@ describe('nutritionQuality helpers', () => {
     expect(isHighProteinFood(20, 200)).toBe(true);
     expect(isHighProteinFood(20, 201)).toBe(false);
     expect(isHighProteinFood(0, 200)).toBe(false);
+  });
+
+  it('marks food as high fiber using the shared fiber helper', () => {
+    expect(isHighFiberFood(20, 10, 100)).toBe(true);
+    expect(isHighFiberFood(20, 10, 400)).toBe(false);
+    expect(isHighFiberFood(20, 0, 100)).toBe(false);
   });
 });

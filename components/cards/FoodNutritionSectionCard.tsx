@@ -14,6 +14,7 @@ import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
 import {
   hasNutritionQualityData,
+  isHighFiberFood,
   isHighProteinFood,
   type NutritionQualityInput,
 } from './nutritionQuality';
@@ -105,6 +106,12 @@ export function FoodNutritionSectionCard({
 
   const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
   const highProtein = isHighProteinFood(protein ?? food.protein, food.calories);
+  const highFiber = isHighFiberFood(food.carbs, nutritionalData.fiber ?? 0, food.calories);
+  const resolvedLabels = {
+    ...nutritionQuality?.labels,
+    highProtein: nutritionQuality?.labels?.highProtein === true || highProtein,
+    highFiber: nutritionQuality?.labels?.highFiber === true || highFiber,
+  };
 
   const showAdditionalNutrition =
     mode !== 'meal' &&
@@ -117,7 +124,13 @@ export function FoodNutritionSectionCard({
       (nutritionalData.magnesium ?? 0) > 0 ||
       (nutritionalData.zinc ?? 0) > 0);
   const hasQualityData =
-    (nutritionQuality != null && hasNutritionQualityData(nutritionQuality)) || highProtein;
+    (nutritionQuality != null &&
+      hasNutritionQualityData({
+        ...nutritionQuality,
+        labels: resolvedLabels,
+      })) ||
+    highProtein ||
+    highFiber;
   const hasExpandableNutritionContent = showAdditionalNutrition || hasQualityData;
 
   const microCount = [
@@ -259,13 +272,15 @@ export function FoodNutritionSectionCard({
               : undefined
           }
         >
-          {nutritionQuality || highProtein ? (
+          {nutritionQuality || highProtein || highFiber ? (
             <NutritionQualityData
               nutriScore={nutritionQuality?.nutriScore}
               ecoScore={nutritionQuality?.ecoScore}
               novaGroup={nutritionQuality?.novaGroup}
-              labels={nutritionQuality?.labels}
+              labels={resolvedLabels}
               protein={protein ?? food.protein}
+              carbs={food.carbs}
+              fiber={nutritionalData.fiber}
               calories={food.calories}
             />
           ) : null}

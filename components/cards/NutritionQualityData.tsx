@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import {
   hasNutritionQualityData,
+  isHighFiberFood,
   isHighProteinFood,
   normalizeNutritionQualityScore,
   type NutritionQualityInput,
@@ -20,6 +21,8 @@ type NutritionQualityDataProps = {
   novaGroup?: number;
   labels?: NutritionQualityInput['labels'];
   protein?: number;
+  carbs?: number;
+  fiber?: number;
   calories?: number;
 };
 
@@ -48,6 +51,7 @@ const LABEL_KEYS: { key: keyof FoodLabels; translationKey: string }[] = [
   { key: 'palmOilFree', translationKey: 'food.logDetails.labelPalmOilFree' },
   { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
   { key: 'highProtein', translationKey: 'food.logDetails.labelHighProtein' },
+  { key: 'highFiber', translationKey: 'food.logDetails.labelHighFiber' },
 ];
 
 function ScoreCard({ label, score }: { label: string; score: NutritionQualityScore }) {
@@ -199,6 +203,8 @@ export function NutritionQualityData({
   novaGroup,
   labels,
   protein,
+  carbs,
+  fiber,
   calories,
 }: NutritionQualityDataProps) {
   const { t } = useTranslation();
@@ -206,9 +212,12 @@ export function NutritionQualityData({
   const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
   const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
   const computedHighProtein = protein != null && calories != null && isHighProteinFood(protein, calories);
+  const computedHighFiber =
+    carbs != null && fiber != null && calories != null && isHighFiberFood(carbs, fiber, calories);
   const resolvedLabels = {
     ...labels,
     highProtein: labels?.highProtein === true || computedHighProtein,
+    highFiber: labels?.highFiber === true || computedHighFiber,
   };
   const activeLabels = LABEL_KEYS.filter(({ key }) => resolvedLabels?.[key] === true);
   const hasScores = normalizedNutriScore != null || normalizedEcoScore != null;

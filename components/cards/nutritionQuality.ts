@@ -32,7 +32,7 @@ export function isHighProteinFood(protein: number, calories: number): boolean {
   return protein > 0 && calories > 0 && protein * 10 >= calories;
 }
 
-function isHighFiberFood(totalCarbs: number, dietaryFiber: number, calories: number) {
+export function isHighFiberFood(totalCarbs: number, dietaryFiber: number, calories: number) {
   // 1. Presence Check: Must contain at least *some* fiber.
   // (This also prevents division by zero in the ratio check below).
   if (dietaryFiber <= 0) {
