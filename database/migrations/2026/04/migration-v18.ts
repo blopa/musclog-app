@@ -19,6 +19,25 @@ const dataUpdateSteps = exercisesData.map((ex) =>
   )
 );
 
+// Rebuild exercise_muscles from the JSON's targetMuscles arrays.
+// muscle_id is resolved by name via subquery — if the muscles catalogue hasn't been
+// seeded yet (fresh install migration order), the SELECT returns nothing and the
+// INSERT is a no-op. backfillExerciseMuscles() handles that case during app seeding.
+const exerciseMuscleSteps = [
+  // Wipe existing app exercise links; Phase 1 updated exercise_id references but we
+  // do a full rebuild from the canonical JSON for a clean slate.
+  unsafeExecuteSql(
+    "DELETE FROM exercise_muscles WHERE exercise_id IN (SELECT id FROM exercises WHERE source = 'app');"
+  ),
+  ...exercisesData.flatMap((ex) =>
+    (ex.targetMuscles ?? []).map((muscleName) =>
+      unsafeExecuteSql(
+        `INSERT INTO exercise_muscles (id, exercise_id, muscle_id, role, created_at, updated_at, _status, _changed) SELECT lower(hex(randomblob(16))), '${ex.exerciseIndex}', id, 'primary', ${now}, ${now}, 'created', '' FROM muscles WHERE name = '${esc(muscleName)}' AND deleted_at IS NULL;`
+      )
+    )
+  ),
+];
+
 const migrationV18 = {
   toVersion: 18,
   steps: [
@@ -52,6 +71,9 @@ const migrationV18 = {
     // exerciseIndex in the JSON == the new sequential id assigned above.
     // Updates: muscle_group, equipment_type, mechanic_type, load_multiplier, order_index.
     ...dataUpdateSteps,
+
+    // --- Phase 3: Rebuild exercise_muscles pivot from exercisesData.json targetMuscles ---
+    ...exerciseMuscleSteps,
   ],
 };
 
