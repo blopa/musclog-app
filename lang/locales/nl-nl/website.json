@@ -21,7 +21,52 @@
       "demoEyebrow": "Directe preview",
       "demoTitle": "Probeer de webdemo",
       "demoDescription": "Open een browserpreview van de app en verken de ervaring voordat u downloadt.",
-      "demoButton": "Open webdemo"
+      "demoButton": "Open webdemo",
+      "carousel": {
+        "eyebrow": "App-voorvertoning",
+        "title": "Een snelle blik in Musclog",
+        "description": "Veeg door een paar echte schermen van de app om de voedings-, trainings- en voortgangsflows in actie te zien.",
+        "prev": "Vorige screenshot",
+        "next": "Volgende screenshot",
+        "goToSlide": "Toon screenshot {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Voedingsdashboard",
+            "description": "Volg calorieën, macro's en snelle acties in één oogopslag.",
+            "alt": "Screenshot van het voedingsdashboard van Musclog"
+          },
+          "home": {
+            "title": "Overzicht",
+            "description": "Bekijk uw dag, recente voedingsmiddelen en trainingssnelkoppelingen op één plek.",
+            "alt": "Screenshot van het overzicht van Musclog"
+          },
+          "restTimer": {
+            "title": "Rusttimer",
+            "description": "Houd uw sets gaande met een gerichte aftelling.",
+            "alt": "Screenshot van de rusttimer van Musclog"
+          },
+          "logSet": {
+            "title": "Setlog",
+            "description": "Leg gewicht, herhalingen en partials vast op een strak liftscherm.",
+            "alt": "Screenshot van setlogging in Musclog"
+          },
+          "mealLogging": {
+            "title": "Maaltijdlog",
+            "description": "Log maaltijden en porties met een voedingsgerichte workflow.",
+            "alt": "Screenshot van de maaltijdlog van Musclog"
+          },
+          "progress": {
+            "title": "Voortgangsinzichten",
+            "description": "Bekijk lichaamsmetingen en trends die verandering makkelijker zichtbaar maken.",
+            "alt": "Screenshot van de voortgangsinzichten van Musclog"
+          },
+          "workouts": {
+            "title": "Workoutbibliotheek",
+            "description": "Blader door en start uw trainingsplannen op één plek.",
+            "alt": "Screenshot van de workoutbibliotheek van Musclog"
+          }
+        }
+      }
     },
     "features": {
       "title": "Gebouwd voor Prestatie & Privacy",

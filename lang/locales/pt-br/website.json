@@ -21,7 +21,52 @@
       "demoEyebrow": "Prévia instantânea",
       "demoTitle": "Experimente a demo web",
       "demoDescription": "Abra uma prévia do app no navegador e explore a experiência antes de baixar.",
-      "demoButton": "Abrir demo web"
+      "demoButton": "Abrir demo web",
+      "carousel": {
+        "eyebrow": "Prévia do app",
+        "title": "Uma olhada rápida dentro do Musclog",
+        "description": "Passe por algumas telas reais do app para ver os fluxos de nutrição, treino e progresso em ação.",
+        "prev": "Captura anterior",
+        "next": "Próxima captura",
+        "goToSlide": "Mostrar captura {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Painel de nutrição",
+            "description": "Acompanhe calorias, macros e ações rápidas de relance.",
+            "alt": "Captura do painel de nutrição do Musclog"
+          },
+          "home": {
+            "title": "Visão geral",
+            "description": "Veja seu dia, alimentos recentes e atalhos de treino em um só lugar.",
+            "alt": "Captura da visão geral do Musclog"
+          },
+          "restTimer": {
+            "title": "Cronômetro de descanso",
+            "description": "Mantenha suas séries fluindo com uma contagem regressiva focada.",
+            "alt": "Captura do cronômetro de descanso do Musclog"
+          },
+          "logSet": {
+            "title": "Registro de série",
+            "description": "Capture peso, repetições e parciais em uma tela limpa de levantamento.",
+            "alt": "Captura do registro de série do Musclog"
+          },
+          "mealLogging": {
+            "title": "Registro de refeições",
+            "description": "Registre refeições e porções com um fluxo centrado em nutrição.",
+            "alt": "Captura do registro de refeições do Musclog"
+          },
+          "progress": {
+            "title": "Insights de progresso",
+            "description": "Revise métricas corporais e tendências que tornam a mudança mais fácil de perceber.",
+            "alt": "Captura dos insights de progresso do Musclog"
+          },
+          "workouts": {
+            "title": "Biblioteca de treinos",
+            "description": "Navegue e inicie seus planos de treino em um só lugar.",
+            "alt": "Captura da biblioteca de treinos do Musclog"
+          }
+        }
+      }
     },
     "features": {
       "title": "Construído para Performance e Privacidade",

@@ -21,7 +21,52 @@
       "demoEyebrow": "Instant preview",
       "demoTitle": "Try the web demo",
       "demoDescription": "Open a browser-based preview of the app and explore the experience before downloading.",
-      "demoButton": "Open web demo"
+      "demoButton": "Open web demo",
+      "carousel": {
+        "eyebrow": "App preview",
+        "title": "A quick look inside Musclog",
+        "description": "Swipe through a few real screens from the app to see the nutrition, workout, and progress flows in action.",
+        "prev": "Previous screenshot",
+        "next": "Next screenshot",
+        "goToSlide": "Show screenshot {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Nutrition dashboard",
+            "description": "Track calories, macros, and quick actions at a glance.",
+            "alt": "Musclog nutrition dashboard screenshot"
+          },
+          "home": {
+            "title": "Home overview",
+            "description": "See your day, recent foods, and training shortcuts in one place.",
+            "alt": "Musclog home overview screenshot"
+          },
+          "restTimer": {
+            "title": "Rest timer",
+            "description": "Keep your sets moving with a focused rest countdown.",
+            "alt": "Musclog rest timer screenshot"
+          },
+          "logSet": {
+            "title": "Set logging",
+            "description": "Capture weight, reps, and partials on a clean lifting screen.",
+            "alt": "Musclog set logging screenshot"
+          },
+          "mealLogging": {
+            "title": "Meal logging",
+            "description": "Log meals and servings with a nutrition-first workflow.",
+            "alt": "Musclog meal logging screenshot"
+          },
+          "progress": {
+            "title": "Progress insights",
+            "description": "Review body metrics and trends that make change easier to spot.",
+            "alt": "Musclog progress insights screenshot"
+          },
+          "workouts": {
+            "title": "Workout library",
+            "description": "Browse and launch your training plans from one place.",
+            "alt": "Musclog workout library screenshot"
+          }
+        }
+      }
     },
     "features": {
       "title": "Built for Performance & Privacy",

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
 import Head from 'expo-router/head';
 import {
@@ -17,6 +18,14 @@ import {
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import homeScreenshot from '../../screenshots/phone/screenshot-1.png';
+import nutritionScreenshot from '../../screenshots/phone/screenshot-2.png';
+import workoutListScreenshot from '../../screenshots/phone/screenshot-3.png';
+import progressScreenshot from '../../screenshots/phone/screenshot-5.png';
+import restTimerScreenshot from '../../screenshots/phone/screenshot-10.png';
+import logSetScreenshot from '../../screenshots/phone/screenshot-11.png';
+import mealLoggingScreenshot from '../../screenshots/phone/screenshot-14.png';
+
 import { StoreButtons } from '@/components/website/StoreButtons';
 import {
   DotPattern,
@@ -29,6 +38,193 @@ const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT = '#D1D5DB';
 const BODY_TEXT_SOFT = '#9CA3AF';
+const HERO_CAROUSEL_INTERVAL_MS = 5200;
+const HERO_SCREENSHOT_COUNT = 7;
+
+function HeroScreenshotCarousel() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.hero.carousel' });
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const slides = [
+    {
+      src: nutritionScreenshot,
+      title: t('slides.nutrition.title'),
+      description: t('slides.nutrition.description'),
+      alt: t('slides.nutrition.alt'),
+    },
+    {
+      src: homeScreenshot,
+      title: t('slides.home.title'),
+      description: t('slides.home.description'),
+      alt: t('slides.home.alt'),
+    },
+    {
+      src: restTimerScreenshot,
+      title: t('slides.restTimer.title'),
+      description: t('slides.restTimer.description'),
+      alt: t('slides.restTimer.alt'),
+    },
+    {
+      src: logSetScreenshot,
+      title: t('slides.logSet.title'),
+      description: t('slides.logSet.description'),
+      alt: t('slides.logSet.alt'),
+    },
+    {
+      src: mealLoggingScreenshot,
+      title: t('slides.mealLogging.title'),
+      description: t('slides.mealLogging.description'),
+      alt: t('slides.mealLogging.alt'),
+    },
+    {
+      src: progressScreenshot,
+      title: t('slides.progress.title'),
+      description: t('slides.progress.description'),
+      alt: t('slides.progress.alt'),
+    },
+    {
+      src: workoutListScreenshot,
+      title: t('slides.workouts.title'),
+      description: t('slides.workouts.description'),
+      alt: t('slides.workouts.alt'),
+    },
+  ];
+
+  useEffect(() => {
+    if (HERO_SCREENSHOT_COUNT <= 1) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % HERO_SCREENSHOT_COUNT);
+    }, HERO_CAROUSEL_INTERVAL_MS);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const activeSlide = slides[activeIndex];
+
+  return (
+    <div
+      className="relative w-full max-w-[440px]"
+      aria-roledescription="carousel"
+      aria-label={t('title')}
+    >
+      <div
+        className="pointer-events-none absolute inset-0 rounded-[2.5rem] blur-[120px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.10) 34%, rgba(0,0,0,0) 74%)',
+          transform: 'translate(4%, 8%) scale(1.1)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div
+        className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-black/35 p-4 shadow-2xl"
+        style={{
+          backdropFilter: 'blur(16px)',
+          boxShadow: '0 24px 70px rgba(0, 0, 0, 0.45)',
+        }}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="space-y-2">
+            <p
+              className="text-xs font-bold uppercase tracking-[0.32em]"
+              style={{ color: BRAND_GREEN_BRIGHT }}
+            >
+              {t('eyebrow')}
+            </p>
+            <h2 className="text-2xl font-extrabold text-white md:text-[1.75rem]">{t('title')}</h2>
+            <p className="max-w-md text-sm leading-6" style={{ color: BODY_TEXT }}>
+              {t('description')}
+            </p>
+          </div>
+          <div className="hidden shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white/70 sm:inline-flex">
+            {activeIndex + 1}/{slides.length}
+          </div>
+        </div>
+
+        <div className="relative mt-4">
+          <div
+            className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_top,rgba(0,255,163,0.20),rgba(0,0,0,0)_55%)]"
+            aria-hidden="true"
+          />
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#04110b] shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
+            <div className="relative aspect-[537/1165]">
+              <div
+                className="flex h-full transition-transform duration-700 ease-out"
+                style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+              >
+                {slides.map((slide, index) => (
+                  <div key={slide.alt} className="relative h-full w-full shrink-0">
+                    <img
+                      src={slide.src}
+                      alt={slide.alt}
+                      className="h-full w-full object-cover object-top"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setActiveIndex((currentIndex) => (currentIndex - 1 + slides.length) % slides.length)
+              }
+              aria-label={t('prev')}
+              className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white transition-colors hover:border-white/20 hover:bg-black/65"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveIndex((currentIndex) => (currentIndex + 1) % slides.length)}
+              aria-label={t('next')}
+              className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/45 text-white transition-colors hover:border-white/20 hover:bg-black/65"
+            >
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <p className="text-lg font-bold text-white md:text-xl">{activeSlide.title}</p>
+            <p className="max-w-md text-sm leading-6" style={{ color: BODY_TEXT_SOFT }}>
+              {activeSlide.description}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 pt-1">
+            {slides.map((slide, index) => {
+              const isActive = index === activeIndex;
+
+              return (
+                <button
+                  key={slide.alt}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-label={t('goToSlide', { index: index + 1 })}
+                  aria-pressed={isActive}
+                  className="h-2.5 rounded-full transition-all duration-300"
+                  style={{
+                    width: isActive ? '2rem' : '0.65rem',
+                    backgroundColor: isActive ? BRAND_GREEN_BRIGHT : 'rgba(255, 255, 255, 0.25)',
+                    boxShadow: isActive ? '0 0 16px rgba(0,255,163,0.38)' : 'none',
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function GlowOrb({
   className = '',
@@ -553,39 +749,10 @@ export function Hero() {
 
           {/* Right Content - Phone Mockup with Screenshot */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[420px]">
-              <div
-                className="absolute inset-0 rounded-full blur-[110px]"
-                style={{
-                  background:
-                    'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
-                  transform: 'translate(6%, 10%) scale(1.12)',
-                }}
-                aria-hidden="true"
-              />
-              <div className="flex justify-center">
-                {/* Phone Frame */}
-                <div
-                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
-                  style={{
-                    borderColor: 'rgba(255,255,255,0.65)',
-                    boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
-                  }}
-                >
-                  <div className="overflow-hidden rounded-[2rem]">
-                    <img
-                      src="/images/app-screenshot.png"
-                      alt="Musclog app screenshot"
-                      width={320}
-                      height={640}
-                      className="h-auto w-full"
-                      style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="w-full max-w-[440px] space-y-6">
+              <HeroScreenshotCarousel />
 
-              <div className="mt-6 flex justify-center">
+              <div className="flex justify-center">
                 <Link
                   href="/app"
                   className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-[#00ffa34d] bg-[#071813] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5"
