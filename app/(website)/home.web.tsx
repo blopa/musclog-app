@@ -13,11 +13,11 @@ import {
   Shield,
   Smartphone,
   Sparkles,
-  X,
   TrendingUp,
+  X,
 } from 'lucide-react-native';
-import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
@@ -28,17 +28,17 @@ import {
 } from '@/components/website/WebsiteBackgrounds';
 import { DownloadModal } from '@/components/website/WebsiteChrome';
 import homeScreenshot from '@/screenshots/phone/screenshot-1.png';
-import bodyMetricsScreenshot from '@/screenshots/phone/screenshot-10.png';
-import completeSetScreenshot from '@/screenshots/phone/screenshot-4.png';
-import createWorkoutScreenshot from '@/screenshots/phone/screenshot-9.png';
 import nutritionScreenshot from '@/screenshots/phone/screenshot-2.png';
-import settingsScreenshot from '@/screenshots/phone/screenshot-13.png';
-import todayScreenshot from '@/screenshots/phone/screenshot-7.png';
 import workoutListScreenshot from '@/screenshots/phone/screenshot-3.png';
+import completeSetScreenshot from '@/screenshots/phone/screenshot-4.png';
 import progressScreenshot from '@/screenshots/phone/screenshot-5.png';
+import todayScreenshot from '@/screenshots/phone/screenshot-7.png';
+import workoutLibraryScreenshot from '@/screenshots/phone/screenshot-8.png';
+import createWorkoutScreenshot from '@/screenshots/phone/screenshot-9.png';
+import bodyMetricsScreenshot from '@/screenshots/phone/screenshot-10.png';
 import restTimerScreenshot from '@/screenshots/phone/screenshot-10.png';
 import logSetScreenshot from '@/screenshots/phone/screenshot-11.png';
-import workoutLibraryScreenshot from '@/screenshots/phone/screenshot-8.png';
+import settingsScreenshot from '@/screenshots/phone/screenshot-13.png';
 import mealLoggingScreenshot from '@/screenshots/phone/screenshot-14.png';
 
 const BRAND_GREEN = '#22C55E';
@@ -733,7 +733,7 @@ export function ScreenshotShowcase() {
                 role="dialog"
                 aria-modal="true"
                 aria-label={t('modalAriaLabel')}
-                className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,14,0.98)_0%,rgba(5,10,9,0.96)_100%)] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,14,0.98)_0%,rgba(5,10,9,0.96)_100%)] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 p-4 md:p-5">
@@ -762,8 +762,8 @@ export function ScreenshotShowcase() {
                   </button>
                 </div>
 
-                <div className="grid gap-0 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
-                  <div className="relative bg-black/30 p-4 md:p-6">
+                <div className="grid min-h-0 flex-1 gap-0 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+                  <div className="relative flex min-h-0 flex-col bg-black/30 p-4 md:p-6">
                     <div className="flex items-center justify-between pb-4">
                       <button
                         type="button"
@@ -799,16 +799,16 @@ export function ScreenshotShowcase() {
                       </button>
                     </div>
 
-                    <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#04110b] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#04110b] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
                       <img
                         src={slides[activeModalIndex].src}
                         alt={slides[activeModalIndex].alt}
-                        className="h-auto w-full"
+                        className="h-auto max-h-[72vh] w-full max-w-[32rem] object-contain"
                       />
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 bg-white/[0.03] p-4 md:border-l md:border-t-0 md:p-6">
+                  <div className="border-t border-white/10 bg-white/[0.03] p-4 md:border-l md:border-t-0 md:p-6 lg:overflow-y-auto">
                     <div className="space-y-4">
                       <div>
                         <p
