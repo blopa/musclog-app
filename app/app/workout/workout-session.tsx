@@ -307,7 +307,8 @@ export default function WorkoutSessionScreen() {
   const trackingStartedAtRef = useRef<number | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
   const hasAttemptedAutoConnect = useRef(false);
-  const wasConnectedRef = useRef(false);
+  // Initialize to current state so remounts while connected don't re-show the snackbar.
+  const wasConnectedRef = useRef(wit.isConnected);
 
   // Load dismissed insights from storage
   useEffect(() => {
