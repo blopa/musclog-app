@@ -8,6 +8,8 @@ import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
 import { handleError } from '@/utils/handleError';
 
+import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+
 export class UserMetricService {
   /**
    * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
@@ -44,17 +46,37 @@ export class UserMetricService {
    * the most recently updated record wins when dates tie).
    */
   static async getLatest(type: UserMetricType | string): Promise<UserMetric | null> {
-    const metrics = await database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', type),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('date', Q.desc),
-        Q.sortBy('updated_at', Q.desc),
-        Q.take(1)
-      )
-      .fetch();
-    return metrics[0] ?? null;
+    return this.getLatestInternal(type);
+  }
+
+  private static async getLatestInternal(
+    type: UserMetricType | string,
+    repairAttempted = false
+  ): Promise<UserMetric | null> {
+    try {
+      const metrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(
+          Q.where('type', type),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc),
+          Q.sortBy('updated_at', Q.desc),
+          Q.take(1)
+        )
+        .fetch();
+      return metrics[0] ?? null;
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.userMetrics, () =>
+          this.getLatestInternal(type, true)
+        );
+
+        if (repaired !== undefined) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -88,29 +110,52 @@ export class UserMetricService {
     limit?: number,
     offset?: number
   ): Promise<UserMetric[]> {
-    let query = database
-      .get<UserMetric>('user_metrics')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc));
+    return this.getMetricsHistoryInternal(type, dateRange, limit, offset);
+  }
 
-    if (type) {
-      query = query.extend(Q.where('type', type));
-    }
+  private static async getMetricsHistoryInternal(
+    type?: UserMetricType | string,
+    dateRange?: { startDate: number; endDate: number },
+    limit?: number,
+    offset?: number,
+    repairAttempted = false
+  ): Promise<UserMetric[]> {
+    try {
+      let query = database
+        .get<UserMetric>('user_metrics')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc));
 
-    if (dateRange) {
-      query = query.extend(
-        Q.where('date', Q.gte(dateRange.startDate)),
-        Q.where('date', Q.lte(dateRange.endDate))
-      );
-    }
-
-    if (limit !== undefined && limit > 0) {
-      if (offset !== undefined && offset > 0) {
-        query = query.extend(Q.skip(offset), Q.take(limit));
-      } else {
-        query = query.extend(Q.take(limit));
+      if (type) {
+        query = query.extend(Q.where('type', type));
       }
+
+      if (dateRange) {
+        query = query.extend(
+          Q.where('date', Q.gte(dateRange.startDate)),
+          Q.where('date', Q.lte(dateRange.endDate))
+        );
+      }
+
+      if (limit !== undefined && limit > 0) {
+        if (offset !== undefined && offset > 0) {
+          query = query.extend(Q.skip(offset), Q.take(limit));
+        } else {
+          query = query.extend(Q.take(limit));
+        }
+      }
+      return await query.fetch();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.userMetrics, () =>
+          this.getMetricsHistoryInternal(type, dateRange, limit, offset, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
     }
-    return await query.fetch();
   }
 
   /**
@@ -126,56 +171,85 @@ export class UserMetricService {
     externalId?: string;
     supplementId?: string;
   }): Promise<UserMetric> {
-    const encrypted = await encryptUserMetricFields({
-      value: plain.value,
-      unit: plain.unit,
-      date: plain.date,
-    });
+    return this.createMetricInternal(plain);
+  }
 
-    const metric = await database.write(async () => {
-      const newMetric = await database.get<UserMetric>('user_metrics').create((record) => {
-        record.type = plain.type as UserMetricType;
-        record.externalId = plain.externalId;
-        record.supplementId = plain.supplementId;
-        record.valueRaw = encrypted.value;
-        record.unitRaw = encrypted.unit;
-        record.date = plain.date;
-        record.timezone = plain.timezone;
-        record.createdAt = Date.now();
-        record.updatedAt = Date.now();
-      });
-
-      // Add note if provided - within the same transaction
-      if (plain.note && plain.note.trim()) {
-        await newMetric.setNote(plain.note.trim());
-      }
-
-      return newMetric;
-    });
-
-    // Health Connect / Apple Health (user-entered only — health-sourced records
-    // already have externalId set and must not be written back to avoid an echo loop).
-    if ((Platform.OS === 'android' || Platform.OS === 'ios') && !plain.externalId) {
-      const hcId = await writeUserMetricToHealthConnect({
-        metricId: metric.id,
-        type: plain.type,
+  private static async createMetricInternal(
+    plain: {
+      type: UserMetricType | string;
+      value: number;
+      unit?: string;
+      note?: string;
+      date: number;
+      timezone: string;
+      externalId?: string;
+      supplementId?: string;
+    },
+    repairAttempted = false
+  ): Promise<UserMetric> {
+    try {
+      const encrypted = await encryptUserMetricFields({
         value: plain.value,
+        unit: plain.unit,
         date: plain.date,
-        timezone: plain.timezone,
-      }).catch((err) => {
-        handleError(err, 'UserMetricService.saveUserMetric.healthConnect');
       });
 
-      if (hcId) {
-        await database.write(async () => {
-          await metric.update((record) => {
-            record.externalId = hcId;
-          });
+      const metric = await database.write(async () => {
+        const newMetric = await database.get<UserMetric>('user_metrics').create((record) => {
+          record.type = plain.type as UserMetricType;
+          record.externalId = plain.externalId;
+          record.supplementId = plain.supplementId;
+          record.valueRaw = encrypted.value;
+          record.unitRaw = encrypted.unit;
+          record.date = plain.date;
+          record.timezone = plain.timezone;
+          record.createdAt = Date.now();
+          record.updatedAt = Date.now();
         });
-      }
-    }
 
-    return metric;
+        // Add note if provided - within the same transaction
+        if (plain.note && plain.note.trim()) {
+          await newMetric.setNote(plain.note.trim());
+        }
+
+        return newMetric;
+      });
+
+      // Health Connect / Apple Health (user-entered only — health-sourced records
+      // already have externalId set and must not be written back to avoid an echo loop).
+      if ((Platform.OS === 'android' || Platform.OS === 'ios') && !plain.externalId) {
+        const hcId = await writeUserMetricToHealthConnect({
+          metricId: metric.id,
+          type: plain.type,
+          value: plain.value,
+          date: plain.date,
+          timezone: plain.timezone,
+        }).catch((err) => {
+          handleError(err, 'UserMetricService.saveUserMetric.healthConnect');
+        });
+
+        if (hcId) {
+          await database.write(async () => {
+            await metric.update((record) => {
+              record.externalId = hcId;
+            });
+          });
+        }
+      }
+
+      return metric;
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.userMetrics, () =>
+          this.createMetricInternal(plain, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**

@@ -10,6 +10,7 @@ import {
 } from '@/utils/nutritionGoalHelpers';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 import { NutritionCheckinService } from './NutritionCheckinService';
 
 function triggerWidgetUpdate(): void {
@@ -47,15 +48,33 @@ export class NutritionGoalService {
    * If multiple exist, returns the most recently created one.
    */
   static async getCurrent(): Promise<NutritionGoal | null> {
-    const rows = await database
-      .get<NutritionGoal>('nutrition_goals')
-      .query(
-        Q.where('effective_until', Q.eq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('created_at', Q.desc)
-      )
-      .fetch();
-    return rows.length > 0 ? rows[0] : null;
+    return this.getCurrentInternal();
+  }
+
+  private static async getCurrentInternal(repairAttempted = false): Promise<NutritionGoal | null> {
+    try {
+      const rows = await database
+        .get<NutritionGoal>('nutrition_goals')
+        .query(
+          Q.where('effective_until', Q.eq(null)),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('created_at', Q.desc)
+        )
+        .fetch();
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionGoals, () =>
+          this.getCurrentInternal(true)
+        );
+
+        if (repaired !== undefined) {
+          return repaired;
+        }
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -65,19 +84,42 @@ export class NutritionGoalService {
    * Returns the latest such goal by created_at, or null if none.
    */
   static async getGoalForDate(date: Date): Promise<NutritionGoal | null> {
-    const endOfDayTs = endOfDay(date).getTime();
-    const rows = await database
-      .get<NutritionGoal>('nutrition_goals')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('created_at', Q.lte(endOfDayTs)),
-        Q.sortBy('created_at', Q.desc)
-      )
-      .fetch();
-    const active = rows.find(
-      (r) => r.effectiveUntil == null || (r.effectiveUntil != null && r.effectiveUntil > endOfDayTs)
-    );
-    return active ?? null;
+    return this.getGoalForDateInternal(date);
+  }
+
+  private static async getGoalForDateInternal(
+    date: Date,
+    repairAttempted = false
+  ): Promise<NutritionGoal | null> {
+    try {
+      const endOfDayTs = endOfDay(date).getTime();
+      const rows = await database
+        .get<NutritionGoal>('nutrition_goals')
+        .query(
+          Q.where('deleted_at', Q.eq(null)),
+          Q.where('created_at', Q.lte(endOfDayTs)),
+          Q.sortBy('created_at', Q.desc)
+        )
+        .fetch();
+      const active = rows.find(
+        (r) =>
+          r.effectiveUntil == null || (r.effectiveUntil != null && r.effectiveUntil > endOfDayTs)
+      );
+
+      return active ?? null;
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionGoals, () =>
+          this.getGoalForDateInternal(date, true)
+        );
+
+        if (repaired !== undefined) {
+          return repaired;
+        }
+      }
+
+      throw error;
+    }
   }
 
   /**

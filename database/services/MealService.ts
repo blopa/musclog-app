@@ -5,6 +5,8 @@ import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import { handleError } from '@/utils/handleError';
 
+import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+
 export class MealService {
   private static validateMealFoodItems(
     foodItems: {
@@ -113,10 +115,26 @@ export class MealService {
    * Get all meals (non-deleted)
    */
   static async getAllMeals(): Promise<Meal[]> {
-    return await database
-      .get<Meal>('meals')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    return this.getAllMealsInternal();
+  }
+
+  private static async getAllMealsInternal(repairAttempted = false): Promise<Meal[]> {
+    try {
+      return await database
+        .get<Meal>('meals')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.meals, () =>
+          this.getAllMealsInternal(true)
+        );
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -176,6 +194,13 @@ export class MealService {
   }
 
   static async getMealWithFoods(mealId: string): Promise<{ meal: Meal; foods: MealFood[] } | null> {
+    return this.getMealWithFoodsInternal(mealId);
+  }
+
+  private static async getMealWithFoodsInternal(
+    mealId: string,
+    repairAttempted = false
+  ): Promise<{ meal: Meal; foods: MealFood[] } | null> {
     try {
       const meal = await database.get<Meal>('meals').find(mealId);
 
@@ -188,6 +213,15 @@ export class MealService {
 
       return { meal, foods };
     } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.meals, () =>
+          this.getMealWithFoodsInternal(mealId, true)
+        );
+
+        if (repaired !== undefined) {
+          return repaired;
+        }
+      }
       await handleError(error, 'MealService.getMealWithFoods', {
         showSnackbar: false,
       });
