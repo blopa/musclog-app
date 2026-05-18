@@ -26,7 +26,8 @@
       "labelVegan": "Veganistisch",
       "labelVegetarian": "Vegetarisch",
       "labelPalmOilFree": "Palmolie-vrij",
-      "labelFairTrade": "Eerlijke handel"
+      "labelFairTrade": "Eerlijke handel",
+      "labelHighProtein": "Eiwitrijk"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Weet je zeker dat je dit voedingsmiddel wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",

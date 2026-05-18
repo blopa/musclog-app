@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import type { FoodLabels } from '@/database/models/Food';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
@@ -13,7 +12,11 @@ import { blurFilter } from '@/utils/blurFilter';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
-import { hasNutritionQualityData, type NutritionQualityInput } from './nutritionQuality';
+import {
+  hasNutritionQualityData,
+  isHighProteinFood,
+  type NutritionQualityInput,
+} from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
@@ -57,6 +60,7 @@ type FoodNutritionSectionProps = {
   servingSize: number;
   servingBasis?: 'per_100g' | 'per_serving';
   isLoadingDetails: boolean;
+  protein?: number;
   onTryAnotherSource?: () => void;
   isRefetchingSource?: boolean;
   /** After alternate sources were tried with no usable data — show edit-only message, no "try another" link. */
@@ -81,6 +85,7 @@ export function FoodNutritionSectionCard({
   servingSize,
   servingBasis = 'per_100g',
   isLoadingDetails,
+  protein,
   showIncompleteWarning = false,
   onTryAnotherSource,
   isRefetchingSource = false,
@@ -99,6 +104,7 @@ export function FoodNutritionSectionCard({
   const [nutritionExpanded, setNutritionExpanded] = useState(false);
 
   const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
+  const highProtein = isHighProteinFood(protein ?? food.protein, food.calories);
 
   const showAdditionalNutrition =
     mode !== 'meal' &&
@@ -110,7 +116,8 @@ export function FoodNutritionSectionCard({
       (nutritionalData.potassium ?? 0) > 0 ||
       (nutritionalData.magnesium ?? 0) > 0 ||
       (nutritionalData.zinc ?? 0) > 0);
-  const hasQualityData = nutritionQuality != null && hasNutritionQualityData(nutritionQuality);
+  const hasQualityData =
+    (nutritionQuality != null && hasNutritionQualityData(nutritionQuality)) || highProtein;
   const hasExpandableNutritionContent = showAdditionalNutrition || hasQualityData;
 
   const microCount = [
@@ -252,12 +259,14 @@ export function FoodNutritionSectionCard({
               : undefined
           }
         >
-          {nutritionQuality ? (
+          {nutritionQuality || highProtein ? (
             <NutritionQualityData
-              nutriScore={nutritionQuality.nutriScore}
-              ecoScore={nutritionQuality.ecoScore}
-              novaGroup={nutritionQuality.novaGroup}
-              labels={nutritionQuality.labels}
+              nutriScore={nutritionQuality?.nutriScore}
+              ecoScore={nutritionQuality?.ecoScore}
+              novaGroup={nutritionQuality?.novaGroup}
+              labels={nutritionQuality?.labels}
+              protein={protein ?? food.protein}
+              calories={food.calories}
             />
           ) : null}
 

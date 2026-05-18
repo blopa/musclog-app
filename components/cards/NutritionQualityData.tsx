@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import {
   hasNutritionQualityData,
+  isHighProteinFood,
   normalizeNutritionQualityScore,
   type NutritionQualityInput,
   type NutritionQualityScore,
@@ -18,6 +19,8 @@ type NutritionQualityDataProps = {
   ecoScore?: NutritionQualityInput['ecoScore'];
   novaGroup?: number;
   labels?: NutritionQualityInput['labels'];
+  protein?: number;
+  calories?: number;
 };
 
 // iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView wins correctly.
@@ -44,6 +47,7 @@ const LABEL_KEYS: { key: keyof FoodLabels; translationKey: string }[] = [
   { key: 'vegetarian', translationKey: 'food.logDetails.labelVegetarian' },
   { key: 'palmOilFree', translationKey: 'food.logDetails.labelPalmOilFree' },
   { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
+  { key: 'highProtein', translationKey: 'food.logDetails.labelHighProtein' },
 ];
 
 function ScoreCard({ label, score }: { label: string; score: NutritionQualityScore }) {
@@ -194,14 +198,26 @@ export function NutritionQualityData({
   ecoScore,
   novaGroup,
   labels,
+  protein,
+  calories,
 }: NutritionQualityDataProps) {
   const { t } = useTranslation();
 
   const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
   const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
-  const activeLabels = LABEL_KEYS.filter(({ key }) => labels?.[key] === true);
+  const computedHighProtein = protein != null && calories != null && isHighProteinFood(protein, calories);
+  const resolvedLabels = {
+    ...labels,
+    highProtein: labels?.highProtein === true || computedHighProtein,
+  };
+  const activeLabels = LABEL_KEYS.filter(({ key }) => resolvedLabels?.[key] === true);
   const hasScores = normalizedNutriScore != null || normalizedEcoScore != null;
-  const hasData = hasNutritionQualityData({ nutriScore, ecoScore, novaGroup, labels });
+  const hasData = hasNutritionQualityData({
+    nutriScore,
+    ecoScore,
+    novaGroup,
+    labels: resolvedLabels,
+  });
 
   if (!hasData) {
     return null;

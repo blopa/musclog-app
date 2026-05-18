@@ -184,7 +184,13 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
           showName={false}
-          nutritionQuality={{ nutriScore, ecoScore, novaGroup, labels: food?.labels }}
+          nutritionQuality={{
+            nutriScore,
+            ecoScore,
+            novaGroup,
+            labels: food?.labels,
+          }}
+          protein={per100gProtein}
         />
       </ScrollView>
     </FullScreenModal>

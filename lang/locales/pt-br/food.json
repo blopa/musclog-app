@@ -26,7 +26,8 @@
       "labelVegan": "Vegano",
       "labelVegetarian": "Vegetariano",
       "labelPalmOilFree": "Sem óleo de palma",
-      "labelFairTrade": "Comércio justo"
+      "labelFairTrade": "Comércio justo",
+      "labelHighProtein": "Alta proteína"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Tem certeza de que deseja excluir este alimento? Esta ação não pode ser desfeita.",
