@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.7.11",
+  "version": "2.7.12",
   "engines": {
     "node": "24.x"
   },
@@ -99,7 +99,7 @@
     "classnames": "2.5.1",
     "convert": "^7.0.0",
     "crypto-js": "^4.2.0",
-    "date-fns": "4.1.0",
+    "date-fns": "4.2.1",
     "dotenv": "17.4.2",
     "embla-carousel-react": "8.6.0",
     "expo": "~55.0.24",
