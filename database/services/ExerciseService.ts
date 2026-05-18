@@ -455,7 +455,10 @@ export class ExerciseService {
       const exercisesToCreate = filteredData.map((exerciseData) => {
         const jsonIndex = exercisesJson.indexOf(exerciseData);
         const mechanicType = exerciseData.mechanicType;
-        const equipmentType = this.inferEquipmentFromName(exerciseData.name, exerciseData.equipmentType);
+        const equipmentType = this.inferEquipmentFromName(
+          exerciseData.name,
+          exerciseData.equipmentType
+        );
 
         return database.get<Exercise>('exercises').prepareCreate((exercise) => {
           exercise.name = exerciseData.name;
