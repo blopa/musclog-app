@@ -913,5 +913,10 @@
     "name": "Suitcase Carry",
     "description": "A core exercise holding a dumbbell or kettlebell at one side while walking, resisting lateral flexion.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Seated Chest Press Machine",
+    "description": "A seated chest press exercise performed on a machine.",
+    "exerciseIndex": 184
   }
 ]
