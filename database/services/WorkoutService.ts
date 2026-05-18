@@ -25,7 +25,7 @@ import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
-import { WorkoutDatabaseRecoveryService } from './WorkoutDatabaseRecoveryService';
+import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
 
 export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   exerciseId: string;
@@ -39,10 +39,17 @@ export class WorkoutService {
     error: unknown,
     retry: () => Promise<T>
   ): Promise<T | null> {
-    const repair = await WorkoutDatabaseRecoveryService.repairIfNeeded(error);
+    const repair = await DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.workoutLogs);
 
-    if (!repair.attempted || (!repair.reindexed && repair.deletedWorkoutIds.length === 0)) {
+    if (!repair.attempted || (!repair.reindexed && repair.deletedRootIds.length === 0)) {
       return null;
+    }
+
+    if (repair.deletedRootIds.length > 0) {
+      const activeId = await getActiveWorkoutLogId();
+      if (activeId && repair.deletedRootIds.includes(activeId)) {
+        await clearActiveWorkoutLogId();
+      }
     }
 
     try {
