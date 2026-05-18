@@ -34,6 +34,14 @@
     "lowFuelingMessage": "You've consumed only {{carbs}}g of carbs in the last {{hours}} hours. Glycogen stores might be low. For future sessions, aim for more carbs pre-workout. A quick snack now might still help your performance.",
     "fullyFueledMessage": "You've consumed {{carbs}}g of carbs in the last {{hours}} hours. You are fully fueled and ready to crush it!",
     "missingDataTitle": "Session Data Issue",
-    "viewOverview": "View Overview"
+    "viewOverview": "View Overview",
+    "startTracking": "Start Tracking",
+    "stopTracking": "Stop Tracking",
+    "tracking": "Tracking",
+    "trackingSaved": "Tracking saved ({{count}} samples)",
+    "sensorConnected": "Connected to {{name}}",
+    "sensorDisconnectedTracking": "Sensor disconnected — tracking data discarded",
+    "sensorDisconnected": "Sensor disconnected",
+    "disconnect": "Disconnect"
   }
 }

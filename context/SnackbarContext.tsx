@@ -22,11 +22,7 @@ import {
 import { useWebBottomDockLayerStyle } from '@/utils/webPhoneFrame';
 
 type SnackbarContextType = {
-  showSnackbar: (
-    type: 'success' | 'error',
-    message: string,
-    options?: SnackbarOptions
-  ) => void;
+  showSnackbar: (type: 'success' | 'error', message: string, options?: SnackbarOptions) => void;
   dismissSnackbar: (id: number) => void;
 };
 
@@ -39,11 +35,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   const theme = useTheme();
 
   const showSnackbar = useCallback(
-    (
-      type: 'success' | 'error',
-      message: string,
-      options?: SnackbarOptions
-    ) => {
+    (type: 'success' | 'error', message: string, options?: SnackbarOptions) => {
       const id = Date.now();
       const duration = options?.duration ?? 2000;
 

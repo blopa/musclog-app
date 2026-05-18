@@ -1,0 +1,17 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Datos del Sensor",
+    "title": "Archivos BLE de Entrenamiento",
+    "subtitle": "Gestiona grabaciones de movimiento del sensor de tus series de entrenamiento",
+    "modalTitle": "Archivos BLE de Entrenamiento",
+    "noFiles": "Aún no hay grabaciones del sensor",
+    "noFilesHint": "Empieza a rastrear una serie durante un entrenamiento para crear grabaciones",
+    "refresh": "Actualizar",
+    "share": "Compartir",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "Eliminar Grabación",
+    "deleteConfirmMessage": "Esto eliminará permanentemente la grabación de {{name}}.",
+    "samples": "{{count}} muestras",
+    "setLabel": "Serie {{number}}"
+  }
+}

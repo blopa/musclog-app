@@ -1,0 +1,17 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Sensorgegevens",
+    "title": "BLE Trainingsbestanden",
+    "subtitle": "Beheer sensorbeweging-opnames van je trainingssets",
+    "modalTitle": "BLE Trainingsbestanden",
+    "noFiles": "Nog geen sensoropnames",
+    "noFilesHint": "Start tracking van een set tijdens een training om opnames te maken",
+    "refresh": "Vernieuwen",
+    "share": "Delen",
+    "delete": "Verwijderen",
+    "deleteConfirmTitle": "Opname verwijderen",
+    "deleteConfirmMessage": "Dit verwijdert de opname van {{name}} permanent.",
+    "samples": "{{count}} samples",
+    "setLabel": "Set {{number}}"
+  }
+}

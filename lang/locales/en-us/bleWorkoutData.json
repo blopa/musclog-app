@@ -1,0 +1,17 @@
+{
+  "bleWorkoutData": {
+    "sectionTitle": "Sensor Data",
+    "title": "BLE Workout Files",
+    "subtitle": "Manage sensor motion recordings from your workout sets",
+    "modalTitle": "BLE Workout Files",
+    "noFiles": "No sensor recordings yet",
+    "noFilesHint": "Start tracking a set during a workout to create recordings",
+    "refresh": "Refresh",
+    "share": "Share",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete Recording",
+    "deleteConfirmMessage": "This will permanently delete the recording for {{name}}.",
+    "samples": "{{count}} samples",
+    "setLabel": "Set {{number}}"
+  }
+}
