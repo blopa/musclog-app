@@ -211,34 +211,38 @@ class WitMotionClient implements WitMotionActionApi {
   getSnapshot = () => this.state;
 
   requestPermissions = async () => {
-    if (nativeModule) {
-      return nativeModule.requestPermissions();
-    }
-
     if (Platform.OS === 'web') {
       return true;
     }
 
-    const { PermissionsAndroid } = await import('react-native');
-    const permissions: string[] = [];
-    const androidVersion = Number(Platform.Version);
+    if (Platform.OS === 'android') {
+      const { PermissionsAndroid } = await import('react-native');
+      const permissions: string[] = [];
+      const androidVersion = Number(Platform.Version);
 
-    if (androidVersion >= 31) {
-      permissions.push(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+      if (androidVersion >= 31) {
+        permissions.push(
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+        );
+      } else {
+        permissions.push(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      }
+
+      const result = (await PermissionsAndroid.requestMultiple(permissions as any)) as Record<
+        string,
+        string
+      >;
+      return permissions.every(
+        (permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED
       );
-    } else {
-      permissions.push(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
     }
 
-    const result = (await PermissionsAndroid.requestMultiple(permissions as any)) as Record<
-      string,
-      string
-    >;
-    return permissions.every(
-      (permission) => result[permission] === PermissionsAndroid.RESULTS.GRANTED
-    );
+    if (nativeModule) {
+      return nativeModule.requestPermissions();
+    }
+
+    return false;
   };
 
   startScan = async (options: WitMotionScanOptions = {}) => {
