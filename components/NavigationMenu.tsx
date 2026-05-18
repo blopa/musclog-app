@@ -7,7 +7,6 @@ import {
   ClipboardCheck,
   Dumbbell,
   Home,
-  MessageSquare,
   Settings,
   User,
   UtensilsCrossed,
@@ -17,10 +16,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
 import type { NavItemKey } from '@/constants/settings';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
-import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { addOpacityToHex } from '@/theme';
 
 type NavigationMenuProps = {
@@ -38,7 +37,6 @@ export const NavigationMenu = memo(function NavigationMenu({
   const pathname = usePathname();
   const { rawSlots, isCycleActive } = useNavigationItems();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
-  const unreadChatMessages = useUnreadChatMessages();
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
   const insets = useSafeAreaInsets();
@@ -160,23 +158,11 @@ export const NavigationMenu = memo(function NavigationMenu({
               onPress={onCoachPress}
             >
               <View className="h-10 w-16 items-center justify-center rounded-lg">
-                <View className="relative">
-                  <MessageSquare
-                    size={theme.iconSize.md}
-                    color={theme.colors.text.tertiary}
-                    strokeWidth={theme.borderWidth.medium}
-                  />
-                  {unreadChatMessages > 0 ? (
-                    <View
-                      className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
-                      style={{ minWidth: 14, minHeight: 14 }}
-                    >
-                      <Text className="text-[10px] font-bold leading-none text-white">
-                        {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
+                <CoachUnreadBadgeIcon
+                  color={theme.colors.text.tertiary}
+                  size={theme.iconSize.md}
+                  strokeWidth={theme.borderWidth.medium}
+                />
               </View>
               <Text className="text-xs font-medium text-text-tertiary">
                 {t('home.navigation.coach')}
@@ -312,7 +298,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           return null;
       }
     },
-    [isPathActive, isFoodActive, isCycleActive, unreadChatMessages, onCoachPress, router, t, theme]
+    [isPathActive, isFoodActive, isCycleActive, onCoachPress, router, t, theme]
   );
 
   const homeActive = isPathActive('/');

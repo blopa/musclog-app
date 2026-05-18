@@ -5,7 +5,6 @@ import {
   Calendar,
   ClipboardCheck,
   Dumbbell,
-  MessageSquare,
   Settings,
   User,
   UtensilsCrossed,
@@ -25,6 +24,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
 import { Modal } from '@/components/theme/Modal';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
@@ -87,7 +87,7 @@ export function UserMenuModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { rawSlots, isAiConfigured, isCycleActive } = useNavigationItems();
+  const { rawSlots, isCycleActive } = useNavigationItems();
 
   const isInNav = (item: string) =>
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
@@ -288,7 +288,11 @@ export function UserMenuModal({
               {!isInNav('coach') && onCoachPress ? (
                 <MenuItem
                   icon={
-                    <MessageSquare size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                    <CoachUnreadBadgeIcon
+                      color={theme.colors.text.secondary}
+                      size={theme.iconSize.md}
+                      strokeWidth={theme.borderWidth.medium}
+                    />
                   }
                   label={t('userMenu.coach')}
                   isLoading={loadingItem === 'coach'}

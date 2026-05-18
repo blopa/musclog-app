@@ -211,7 +211,8 @@ export function NutritionQualityData({
 
   const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
   const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
-  const computedHighProtein = protein != null && calories != null && isHighProteinFood(protein, calories);
+  const computedHighProtein =
+    protein != null && calories != null && isHighProteinFood(protein, calories);
   const computedHighFiber =
     carbs != null && fiber != null && calories != null && isHighFiberFood(carbs, fiber, calories);
   const resolvedLabels = {
