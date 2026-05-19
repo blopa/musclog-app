@@ -192,7 +192,9 @@ export async function transformWorkoutToDetailData(
   locale: Locale,
   theme: Theme,
   /** `Intl` / `formatApp*` locale string (e.g. i18n.resolvedLanguage), not date-fns Locale */
-  appNumberLocale: string
+  appNumberLocale: string,
+  /** exercise_order-sorted list of exerciseIds from workout_log_exercises */
+  orderedExerciseIds?: string[]
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -232,7 +234,15 @@ export async function transformWorkoutToDetailData(
     });
   });
 
-  const workoutExercises: WorkoutExercise[] = Array.from(setsByExercise.entries()).map(
+  const exerciseEntries = orderedExerciseIds
+    ? [...setsByExercise.entries()].sort(
+        (a, b) =>
+          (orderedExerciseIds.indexOf(a[0]) + 1 || Infinity) -
+          (orderedExerciseIds.indexOf(b[0]) + 1 || Infinity)
+      )
+    : [...setsByExercise.entries()];
+
+  const workoutExercises: WorkoutExercise[] = exerciseEntries.map(
     ([exerciseId, exerciseSets]) => {
       const exercise = exerciseMap.get(exerciseId);
       if (!exercise) {

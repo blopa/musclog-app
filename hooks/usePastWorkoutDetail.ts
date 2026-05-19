@@ -132,7 +132,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
               units,
               dateFnsLocale,
               theme,
-              appNumberLocale
+              appNumberLocale,
+              logExs.map((le) => le.exerciseId)
             )
           ).pipe(
             map((transformed) => ({
@@ -204,7 +205,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           units,
           dateFnsLocale,
           theme,
-          appNumberLocale
+          appNumberLocale,
+          logExs.map((le) => le.exerciseId)
         );
       })
       .then(setWorkout)
