@@ -248,6 +248,7 @@
       "progress": "Progreso",
       "github": "GitHub",
       "download": "Descargar Ahora",
+      "exercises": "Ejercicios",
       "language": "Idioma"
     },
     "progress": {
@@ -805,6 +806,21 @@
         "maintenance": "MANTENIMIENTO",
         "calorieSurplus": "SUPERÁVIT CALÓRICO",
         "calorieDeficit": "DÉFICIT CALÓRICO"
+      }
+    },
+    "exercises": {
+      "eyebrow": "BIBLIOTECA DE EJERCICIOS",
+      "pageTitle": "Explora Cada Ejercicio",
+      "pageDescription": "Navega nuestra colección completa de ejercicios — filtra por grupo muscular, tipo o busca por nombre.",
+      "searchPlaceholder": "Buscar ejercicios...",
+      "filterAll": "Todos",
+      "clearFilters": "Limpiar filtros",
+      "noResults": "Ningún ejercicio coincide con tus filtros.",
+      "showing": "Mostrando {{count}} ejercicios",
+      "stat": {
+        "exercises": "Ejercicios",
+        "muscleGroups": "Grupos Musculares",
+        "equipment": "Tipos de Equipo"
       }
     },
     "faq": {

@@ -248,6 +248,7 @@
       "progress": "Progress",
       "github": "GitHub",
       "download": "Download Now",
+      "exercises": "Exercises",
       "language": "Language"
     },
     "progress": {
@@ -805,6 +806,21 @@
         "maintenance": "MAINTENANCE",
         "calorieSurplus": "CALORIE SURPLUS",
         "calorieDeficit": "CALORIE DEFICIT"
+      }
+    },
+    "exercises": {
+      "eyebrow": "EXERCISE LIBRARY",
+      "pageTitle": "Explore Every Exercise",
+      "pageDescription": "Browse our full collection of exercises — filter by muscle group, mechanic, or search by name.",
+      "searchPlaceholder": "Search exercises...",
+      "filterAll": "All",
+      "clearFilters": "Clear filters",
+      "noResults": "No exercises match your filters.",
+      "showing": "Showing {{count}} exercises",
+      "stat": {
+        "exercises": "Exercises",
+        "muscleGroups": "Muscle Groups",
+        "equipment": "Equipment Types"
       }
     },
     "faq": {

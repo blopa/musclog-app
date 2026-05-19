@@ -248,6 +248,7 @@
       "progress": "Прогресс",
       "github": "GitHub",
       "download": "Скачать Сейчас",
+      "exercises": "Упражнения",
       "language": "Язык"
     },
     "progress": {
@@ -805,6 +806,21 @@
         "maintenance": "ПОДДЕРЖАНИЕ",
         "calorieSurplus": "ПРОФИЦИТ КАЛОРИЙ",
         "calorieDeficit": "ДЕФИЦИТ КАЛОРИЙ"
+      }
+    },
+    "exercises": {
+      "eyebrow": "БИБЛИОТЕКА УПРАЖНЕНИЙ",
+      "pageTitle": "Изучите Каждое Упражнение",
+      "pageDescription": "Просматривайте нашу полную коллекцию упражнений — фильтруйте по группе мышц, типу или ищите по названию.",
+      "searchPlaceholder": "Поиск упражнений...",
+      "filterAll": "Все",
+      "clearFilters": "Сбросить фильтры",
+      "noResults": "Упражнения не найдены.",
+      "showing": "Показано {{count}} упражнений",
+      "stat": {
+        "exercises": "Упражнений",
+        "muscleGroups": "Группы мышц",
+        "equipment": "Типы оборудования"
       }
     },
     "faq": {

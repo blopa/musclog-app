@@ -340,6 +340,13 @@ export function Header() {
             Calculator
           </Link>
           <Link
+            href="/exercises"
+            className="text-sm transition-colors hover:text-[#22C55E]"
+            style={{ color: '#F3F4F6' }}
+          >
+            {t('exercises')}
+          </Link>
+          <Link
             href="/progress"
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
@@ -396,6 +403,7 @@ export function Footer() {
     { text: t('privacyPolicy'), href: '/privacy' },
     { text: t('terms'), href: '/terms' },
     { text: t('contact'), href: '/contact' },
+    { text: navT('exercises'), href: '/exercises' },
     { text: 'FAQ', href: '/faq' },
     { text: t('license'), href: 'https://github.com/blopa/musclog-app/blob/main/LICENSE' },
     { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
@@ -425,6 +433,13 @@ export function Footer() {
             style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
           >
             Calculator
+          </Link>
+          <Link
+            href="/exercises"
+            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
+            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            {navT('exercises')}
           </Link>
           <Link
             href="/progress"

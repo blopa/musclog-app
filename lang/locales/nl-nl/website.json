@@ -248,6 +248,7 @@
       "progress": "Voortgang",
       "github": "GitHub",
       "download": "Nu Downloaden",
+      "exercises": "Oefeningen",
       "language": "Taal"
     },
     "progress": {
@@ -805,6 +806,21 @@
         "maintenance": "ONDERHOUD",
         "calorieSurplus": "CALORIE-OVERSCHOT",
         "calorieDeficit": "CALORIETEKORT"
+      }
+    },
+    "exercises": {
+      "eyebrow": "OEFENINGEN BIBLIOTHEEK",
+      "pageTitle": "Verken Elke Oefening",
+      "pageDescription": "Blader door onze volledige collectie oefeningen — filter op spiergroep, type of zoek op naam.",
+      "searchPlaceholder": "Zoek oefeningen...",
+      "filterAll": "Alle",
+      "clearFilters": "Filters wissen",
+      "noResults": "Geen oefeningen komen overeen met je filters.",
+      "showing": "{{count}} oefeningen weergegeven",
+      "stat": {
+        "exercises": "Oefeningen",
+        "muscleGroups": "Spiergroepen",
+        "equipment": "Uitrustingstypen"
       }
     },
     "faq": {

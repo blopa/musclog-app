@@ -33,7 +33,18 @@ const screenshotFiles = fs.existsSync(screenshotDir)
       }))
   : [];
 
-const filesToSync = staticFiles.concat(screenshotFiles);
+const exercisesDir = path.join(root, 'assets', 'exercises');
+const exerciseFiles = fs.existsSync(exercisesDir)
+  ? fs
+      .readdirSync(exercisesDir)
+      .filter((file) => file.endsWith('.png') || file.endsWith('.jpg'))
+      .map((file) => ({
+        src: path.join(exercisesDir, file),
+        destName: path.join('exercises', file),
+      }))
+  : [];
+
+const filesToSync = staticFiles.concat(screenshotFiles).concat(exerciseFiles);
 
 function main() {
   publicImageDirs.forEach((dir) => fs.mkdirSync(dir, { recursive: true }));
