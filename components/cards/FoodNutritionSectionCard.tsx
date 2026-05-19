@@ -106,7 +106,7 @@ export function FoodNutritionSectionCard({
 
   const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
   const highProtein = isHighProteinFood(protein ?? food.protein, food.calories);
-  const highFiber = isHighFiberFood(food.carbs, nutritionalData.fiber ?? 0, food.calories);
+  const highFiber = isHighFiberFood(food.carbs, (nutritionalData.fiber ?? 0) * scaleFactor, food.calories);
   const resolvedLabels = {
     ...nutritionQuality?.labels,
     highProtein: nutritionQuality?.labels?.highProtein === true || highProtein,
