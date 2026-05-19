@@ -1762,5 +1762,131 @@
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9,
     "__exerciseName": "Seated Chest Press Machine"
+  },
+  {
+    "exerciseIndex": 185,
+    "muscleGroup": "chest",
+    "equipmentType": "dumbbell",
+    "mechanicType": "compound",
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
+    "loadMultiplier": 0.3,
+    "__exerciseName": "Flat Dumbbell Bench Press"
+  },
+  {
+    "exerciseIndex": 186,
+    "muscleGroup": "glutes",
+    "equipmentType": "plate_machine",
+    "mechanicType": "compound",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
+    "loadMultiplier": 1.4,
+    "__exerciseName": "Hip Thrust Machine"
+  },
+  {
+    "exerciseIndex": 187,
+    "muscleGroup": "legs",
+    "equipmentType": "plate_machine",
+    "mechanicType": "isolation",
+    "targetMuscles": ["quadriceps"],
+    "loadMultiplier": 0.5,
+    "__exerciseName": "Unilateral Leg Extension Machine"
+  },
+  {
+    "exerciseIndex": 188,
+    "muscleGroup": "legs",
+    "equipmentType": "plate_machine",
+    "mechanicType": "isolation",
+    "targetMuscles": ["hamstrings"],
+    "loadMultiplier": 0.4,
+    "__exerciseName": "Unilateral Leg Curl Machine"
+  },
+  {
+    "exerciseIndex": 189,
+    "muscleGroup": "core",
+    "equipmentType": "plate_machine",
+    "mechanicType": "isolation",
+    "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis"],
+    "loadMultiplier": 0.4,
+    "__exerciseName": "Oblique Crunch Machine"
+  },
+  {
+    "exerciseIndex": 190,
+    "muscleGroup": "back",
+    "equipmentType": "plate_machine",
+    "mechanicType": "compound",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
+    "loadMultiplier": 0.75,
+    "__exerciseName": "Unilateral Row Machine"
+  },
+  {
+    "exerciseIndex": 191,
+    "muscleGroup": "back",
+    "equipmentType": "plate_machine",
+    "mechanicType": "compound",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "posterior_deltoid"],
+    "loadMultiplier": 0.75,
+    "__exerciseName": "Unilateral High Row Machine"
+  },
+  {
+    "exerciseIndex": 192,
+    "muscleGroup": "shoulders",
+    "equipmentType": "plate_machine",
+    "mechanicType": "compound",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.55,
+    "__exerciseName": "Unilateral Shoulder Press Machine"
+  },
+  {
+    "exerciseIndex": 193,
+    "muscleGroup": "legs",
+    "equipmentType": "plate_machine",
+    "mechanicType": "compound",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 1.5,
+    "__exerciseName": "Belt Squat Machine"
+  },
+  {
+    "exerciseIndex": 194,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["hamstrings", "quadriceps"],
+    "loadMultiplier": 0.5,
+    "__exerciseName": "Hamstring Curl Machine"
+  },
+  {
+    "exerciseIndex": 195,
+    "muscleGroup": "legs",
+    "equipmentType": "cardio",
+    "mechanicType": "cardio",
+    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "loadMultiplier": 0,
+    "__exerciseName": "Treadmill"
+  },
+  {
+    "exerciseIndex": 196,
+    "muscleGroup": "full_body",
+    "equipmentType": "medicine_ball",
+    "mechanicType": "plyometric",
+    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "core"],
+    "loadMultiplier": 0,
+    "__exerciseName": "Medicine Ball Slam"
+  },
+  {
+    "exerciseIndex": 197,
+    "muscleGroup": "core",
+    "equipmentType": "other",
+    "mechanicType": "isolation",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0,
+    "__exerciseName": "Swiss Ball Crunch"
+  },
+  {
+    "exerciseIndex": 198,
+    "muscleGroup": "legs",
+    "equipmentType": "other",
+    "mechanicType": "compound",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves", "core"],
+    "loadMultiplier": 0,
+    "__exerciseName": "Bosu Ball Squat"
   }
 ]

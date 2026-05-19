@@ -918,5 +918,75 @@
     "name": "Máquina de press de pecho sentado",
     "description": "Un ejercicio de press de pecho sentado realizado en una máquina.",
     "exerciseIndex": 184
+  },
+  {
+    "name": "Press de banca plano con mancuernas",
+    "description": "Un press de pecho horizontal realizado en un banco plano con mancuernas, permitiendo que cada brazo se mueva de forma independiente.",
+    "exerciseIndex": 185
+  },
+  {
+    "name": "Máquina de hip thrust",
+    "description": "Un movimiento centrado en los glúteos que eleva la cadera contra una resistencia fija.",
+    "exerciseIndex": 186
+  },
+  {
+    "name": "Máquina unilateral de extensión de piernas",
+    "description": "Una extensión de piernas a una sola pierna que aísla un cuádriceps cada vez.",
+    "exerciseIndex": 187
+  },
+  {
+    "name": "Máquina unilateral de curl femoral",
+    "description": "Un curl femoral a una sola pierna que aísla un isquiotibial cada vez.",
+    "exerciseIndex": 188
+  },
+  {
+    "name": "Máquina de crunch oblicuo",
+    "description": "Un crunch en máquina que rota o inclina el torso para enfatizar los oblicuos.",
+    "exerciseIndex": 189
+  },
+  {
+    "name": "Máquina unilateral de remo",
+    "description": "Una máquina de remo con un solo brazo para entrenar cada lado de la espalda por separado.",
+    "exerciseIndex": 190
+  },
+  {
+    "name": "Máquina unilateral de remo alto",
+    "description": "Una máquina de remo alto con un solo brazo que enfatiza la parte alta de la espalda y los deltoides posteriores.",
+    "exerciseIndex": 191
+  },
+  {
+    "name": "Máquina unilateral de press de hombros",
+    "description": "Una máquina de press de hombros con un solo brazo para un empuje controlado por lados.",
+    "exerciseIndex": 192
+  },
+  {
+    "name": "Máquina de belt squat",
+    "description": "Una variante de sentadilla que carga la cadera con un cinturón en lugar de apoyar la barra sobre los hombros.",
+    "exerciseIndex": 193
+  },
+  {
+    "name": "Máquina de curl femoral",
+    "description": "Una máquina de doble función que cambia entre curl femoral y extensión de piernas.",
+    "exerciseIndex": 194
+  },
+  {
+    "name": "Cinta de correr",
+    "description": "Una máquina de cardio para caminar, trotar o correr sobre una cinta móvil.",
+    "exerciseIndex": 195
+  },
+  {
+    "name": "Golpe con balón medicinal",
+    "description": "Un movimiento explosivo de lanzamiento al suelo que trabaja el core, los hombros y las caderas.",
+    "exerciseIndex": 196
+  },
+  {
+    "name": "Crunch en swiss ball",
+    "description": "Un crunch realizado sobre una pelota de estabilidad para aumentar el rango de movimiento y la demanda del core.",
+    "exerciseIndex": 197
+  },
+  {
+    "name": "Sentadilla en bosu",
+    "description": "Una sentadilla realizada sobre la superficie inestable de un bosu para desafiar el equilibrio y el control.",
+    "exerciseIndex": 198
   }
 ]

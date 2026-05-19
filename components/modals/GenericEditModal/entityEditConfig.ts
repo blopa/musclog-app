@@ -64,6 +64,7 @@ const EQUIPMENT_TYPES = [
   'kettlebell',
   'cardio',
   'smith_machine',
+  'medicine_ball',
   'pneumatic_machine',
   'resistance_band',
   'other',

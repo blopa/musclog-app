@@ -90,6 +90,7 @@ const EQUIPMENT_TYPES = [
   'pneumatic_machine',
   'resistance_band',
   'smith_machine',
+  'medicine_ball',
   'unknown',
 ] as const;
 

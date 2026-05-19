@@ -918,5 +918,75 @@
     "name": "Seated Chest Press Machine",
     "description": "A seated chest press exercise performed on a machine.",
     "exerciseIndex": 184
+  },
+  {
+    "name": "Flat Dumbbell Bench Press",
+    "description": "A horizontal chest press performed on a flat bench with dumbbells, allowing each arm to move independently.",
+    "exerciseIndex": 185
+  },
+  {
+    "name": "Hip Thrust Machine",
+    "description": "A glute-focused machine movement that drives the hips upward against a fixed resistance.",
+    "exerciseIndex": 186
+  },
+  {
+    "name": "Unilateral Leg Extension Machine",
+    "description": "A single-leg leg extension that isolates one quadriceps at a time.",
+    "exerciseIndex": 187
+  },
+  {
+    "name": "Unilateral Leg Curl Machine",
+    "description": "A single-leg leg curl that isolates one hamstring at a time.",
+    "exerciseIndex": 188
+  },
+  {
+    "name": "Oblique Crunch Machine",
+    "description": "A machine crunch that rotates or biases the torso to emphasize the obliques.",
+    "exerciseIndex": 189
+  },
+  {
+    "name": "Unilateral Row Machine",
+    "description": "A single-arm row machine that lets you train each side of the back independently.",
+    "exerciseIndex": 190
+  },
+  {
+    "name": "Unilateral High Row Machine",
+    "description": "A single-arm high row machine that emphasizes the upper back and rear delts.",
+    "exerciseIndex": 191
+  },
+  {
+    "name": "Unilateral Shoulder Press Machine",
+    "description": "A single-arm shoulder press machine for controlled overhead pressing on one side at a time.",
+    "exerciseIndex": 192
+  },
+  {
+    "name": "Belt Squat Machine",
+    "description": "A squat variation that loads the hips through a belt instead of placing the bar on the shoulders.",
+    "exerciseIndex": 193
+  },
+  {
+    "name": "Hamstring Curl Machine",
+    "description": "A dual-purpose machine that switches between hamstring curls and leg extensions.",
+    "exerciseIndex": 194
+  },
+  {
+    "name": "Treadmill",
+    "description": "A cardio machine for walking, jogging, or running on a moving belt.",
+    "exerciseIndex": 195
+  },
+  {
+    "name": "Medicine Ball Slam",
+    "description": "A powerful throw-down movement that trains the core, shoulders, and hips explosively.",
+    "exerciseIndex": 196
+  },
+  {
+    "name": "Swiss Ball Crunch",
+    "description": "A crunch performed on a stability ball to increase range of motion and core demand.",
+    "exerciseIndex": 197
+  },
+  {
+    "name": "Bosu Ball Squat",
+    "description": "A squat performed on an unstable bosu ball surface to challenge balance and control.",
+    "exerciseIndex": 198
   }
 ]
