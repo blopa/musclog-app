@@ -429,7 +429,7 @@ export default function SmartCameraModal({
 
   // Request camera permission on mount
   useEffect(() => {
-    if (!permission) {
+    if (!permission?.granted) {
       requestPermission();
     }
   }, [permission, requestPermission]);
