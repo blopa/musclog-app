@@ -1,4 +1,3 @@
-import { EXERCISE_TYPES } from '@/constants/exercises';
 import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
@@ -34,7 +33,7 @@ export function calculateSetVolume(
   equipmentType: string | undefined,
   bodyWeightKg: number
 ): number {
-  const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  const added = equipmentType === 'bodyweight' ? bodyWeightKg || 0 : 0;
   return roundToDecimalPlaces(calculateAverage1RM(weight + added, reps, repsInReserve ?? 0));
 }
 
@@ -46,7 +45,7 @@ export function calculateExerciseVolume(
   exercise: ExerciseVolumeData,
   bodyWeightKg: number
 ): number {
-  const added = exercise.equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  const added = exercise.equipmentType === 'bodyweight' ? bodyWeightKg || 0 : 0;
   let total = 0;
   for (const set of sets) {
     const rir = set.repsInReserve ?? 0;
@@ -72,8 +71,7 @@ export function calculateWorkoutVolume(
   let totalVolume = 0;
 
   for (const { exercise, sets } of exercises) {
-    const addedWeight =
-      exercise?.equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+    const addedWeight = exercise?.equipmentType === 'bodyweight' ? bodyWeightKg || 0 : 0;
 
     for (const set of sets) {
       const rir = set.repsInReserve ?? 0;
@@ -283,7 +281,7 @@ export function calculateEstimated1RMForSet(
   equipmentType: string | undefined,
   bodyWeightKg: number
 ): number {
-  const added = equipmentType === EXERCISE_TYPES.BODY_WEIGHT ? bodyWeightKg || 0 : 0;
+  const added = equipmentType === 'bodyweight' ? bodyWeightKg || 0 : 0;
   return calculateAverage1RM(weight + added, reps, repsInReserve ?? 0);
 }
 

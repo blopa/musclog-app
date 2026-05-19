@@ -62,9 +62,14 @@ MUSCLE_GROUPS = sorted([
     "abdomen", "arms", "back", "chest", "core",
     "full_body", "glutes", "legs", "shoulders", "unknown",
 ])
-EXERCISE_TYPES = sorted([
-    "bodyweight", "cardio", "compound", "isolation",
-    "machine", "plyometric", "unknown",
+EQUIPMENT_TYPES = sorted([
+    "barbell", "bodyweight", "cable", "cardio", "dumbbell", "kettlebell",
+    "other", "plate_machine", "pneumatic_machine", "resistance_band",
+    "smith_machine", "unknown",
+])
+MECHANIC_TYPES = sorted([
+    "cardio", "compound", "isolation", "mobility", "other",
+    "plyometric", "stretching", "unknown",
 ])
 
 # ---------------------------------------------------------------------------
@@ -89,8 +94,9 @@ _SIGNAL_FEATURES = [
     "is_angle_flat",         # 1 if angle barely moves (cable/stack machine indicator)
 ]
 _CATEGORICAL_FEATURES = (
-    [f"muscle_{g}" for g in MUSCLE_GROUPS]   # one-hot: muscle group
-    + [f"type_{t}" for t in EXERCISE_TYPES]  # one-hot: exercise type
+    [f"muscle_{g}" for g in MUSCLE_GROUPS]      # one-hot: muscle group
+    + [f"equip_{t}" for t in EQUIPMENT_TYPES]   # one-hot: equipment type
+    + [f"mechanic_{t}" for t in MECHANIC_TYPES] # one-hot: mechanic type
 )
 FEATURE_COLS = _SIGNAL_FEATURES + _CATEGORICAL_FEATURES
 
@@ -236,15 +242,22 @@ def build_dataset() -> pd.DataFrame:
             # One-hot encode categorical metadata.
             # Falls back to "unknown" when the column is missing or blank.
             mg = str(row.get("muscle_group", "unknown") or "unknown").strip().lower()
-            et = str(row.get("exercise_type", "unknown") or "unknown").strip().lower()
+            eq = str(row.get("equipment_type", "unknown") or "unknown").strip().lower()
+            mt = str(row.get("mechanic_type", "unknown") or "unknown").strip().lower()
+
             if mg not in MUSCLE_GROUPS:
                 mg = "unknown"
-            if et not in EXERCISE_TYPES:
-                et = "unknown"
+            if eq not in EQUIPMENT_TYPES:
+                eq = "unknown"
+            if mt not in MECHANIC_TYPES:
+                mt = "unknown"
+
             for g in MUSCLE_GROUPS:
                 feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
-            for t in EXERCISE_TYPES:
-                feats[f"type_{t}"] = 1.0 if et == t else 0.0
+            for t in EQUIPMENT_TYPES:
+                feats[f"equip_{t}"] = 1.0 if eq == t else 0.0
+            for t in MECHANIC_TYPES:
+                feats[f"mechanic_{t}"] = 1.0 if mt == t else 0.0
 
             feats["filename"]  = row["filename"]
             feats["rep_count"] = int(row["rep_count"])
@@ -306,14 +319,17 @@ def main():
 
     # ── Categorical coverage report ─────────────────────────────────────────
     n_known_mg = int((df["muscle_unknown"] == 0).sum())
-    n_known_et = int((df["type_unknown"]   == 0).sum())
+    n_known_eq = int((df["equip_unknown"]  == 0).sum())
+    n_known_mt = int((df["mechanic_unknown"] == 0).sum())
     print(f"  muscle_group labeled: {n_known_mg}/{len(df)}  "
           f"({'%.0f' % (100*n_known_mg/len(df))}%)")
-    print(f"  exercise_type labeled: {n_known_et}/{len(df)}  "
-          f"({'%.0f' % (100*n_known_et/len(df))}%)")
-    if n_known_mg < len(df) * 0.7 or n_known_et < len(df) * 0.7:
+    print(f"  equipment_type labeled: {n_known_eq}/{len(df)}  "
+          f"({'%.0f' % (100*n_known_eq/len(df))}%)")
+    print(f"  mechanic_type labeled: {n_known_mt}/{len(df)}  "
+          f"({'%.0f' % (100*n_known_mt/len(df))}%)")
+    if n_known_mg < len(df) * 0.7 or n_known_eq < len(df) * 0.7 or n_known_mt < len(df) * 0.7:
         print("  NOTE: fewer than 70% of recordings have categorical labels.")
-        print("        Fill in muscle_group / exercise_type in labels.csv as you")
+        print("        Fill in metadata in labels.csv as you")
         print("        add more recordings — the model will improve noticeably.\n")
 
     df.to_csv(OUTPUT_DIR / "features.csv", index=False)

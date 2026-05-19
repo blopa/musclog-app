@@ -163,11 +163,13 @@
     "equipmentTypes": {
       "medicine_ball": "Medicine Ball",
       "smith_machine": "Smith Machine",
+      "pneumatic_machine": "Pneumatic Machine",
+      "plate_machine": "Plate Loaded Machine",
       "dumbbell": "Dumbbell",
       "barbell": "Barbell",
       "bodyweight": "Bodyweight",
       "machine": "Machine",
-      "cable": "Cable",
+      "cable": "Cable / Pin-Loaded",
       "kettlebell": "Kettlebell",
       "resistance_band": "Resistance Band",
       "other": "Other",
@@ -176,7 +178,10 @@
         "barbell": "Long bar with weights",
         "bodyweight": "No equipment needed",
         "machine": "Gym exercise machine",
-        "cable": "Cable pulley system",
+        "cable": "Machines with a built-in weight stack and a pin. They have constant resistance and often produce a sharp accelerometer spike (a \"clank\") if the weights touch down at the bottom of the rep.",
+        "plate_machine": "Machines where you load physical weight plates onto a peg (like a classic 45-degree leg press). They operate on a fixed arc or lever, creating very smooth, predictable motion curves.",
+        "smith_machine": "A barbell locked onto vertical or slightly angled guide rods. Because the bar cannot sway forward, backward, left, or right, the gyroscope data will show almost zero horizontal wobble compared to a free-weight barbell.",
+        "pneumatic_machine": "Cable machines driven by air compressors (like Keiser) or digital motors (like Tonal). They have zero momentum—if you stop pushing, the weight stops moving—resulting in very distinct acceleration and deceleration patterns.",
         "kettlebell": "Ball-shaped weight with handle",
         "resistance_band": "Elastic resistance bands",
         "other": "Other equipment"
@@ -184,7 +189,12 @@
     },
     "mechanicTypes": {
       "compound": "Compound",
-      "isolation": "Isolation"
+      "isolation": "Isolation",
+      "cardio": "Cardio",
+      "mobility": "Mobility",
+      "stretching": "Stretching",
+      "plyometric": "Plyometric",
+      "other": "Other"
     },
     "units": {
       "kg": "kg",

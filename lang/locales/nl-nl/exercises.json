@@ -163,11 +163,13 @@
     "equipmentTypes": {
       "medicine_ball": "Medicijnbal",
       "smith_machine": "Smith-machine",
+      "pneumatic_machine": "Pneumatische Machine",
+      "plate_machine": "Schijf-geladen Machine",
       "dumbbell": "Dumbbell",
       "barbell": "Barbell",
       "bodyweight": "Lichaamsgewicht",
       "machine": "Machine",
-      "cable": "Kabel",
+      "cable": "Kabel / Gewichtsblok",
       "kettlebell": "Kettlebell",
       "resistance_band": "Weerstandsband",
       "other": "Overig",
@@ -176,7 +178,10 @@
         "barbell": "Lange stang met gewichten",
         "bodyweight": "Geen apparatuur nodig",
         "machine": "Fitnessapparaat",
-        "cable": "Kabelkatrolsysteem",
+        "cable": "Machines met een ingebouwde gewichtstapel en een pin. Ze hebben een constante weerstand en produceren vaak een scherpe versnellingspiek (een 'klap') als de gewichten de bodem raken aan het einde van de herhaling.",
+        "plate_machine": "Machines waarbij je fysieke gewichtsschijven op een stang laadt (zoals een klassieke 45-graden leg press). Ze werken op een vaste boog of hefboom, wat resulteert in zeer soepele, voorspelbare bewegingscurven.",
+        "smith_machine": "Een halterstang die vastzit aan verticale of licht schuine geleidestangen. Omdat de stang niet naar voren, achteren, links of rechts kan zwaaien, vertonen de gyroscoopgegevens vrijwel geen horizontale wiebeling vergeleken met een losse halterstang.",
+        "pneumatic_machine": "Kabelmachines aangedreven door luchtcompressoren (zoals Keiser) of digitale motoren (zoals Tonal). Ze hebben nul momentum—als je stopt met duwen, stopt het gewicht met bewegen—wat resulteert in zeer duidelijke versnellings- en vertragingspatronen.",
         "kettlebell": "Bolvormig gewicht met handvat",
         "resistance_band": "Elastische weerstandsbanden",
         "other": "Andere apparatuur"
@@ -184,7 +189,12 @@
     },
     "mechanicTypes": {
       "compound": "Compound",
-      "isolation": "Isolatie"
+      "isolation": "Isolatie",
+      "cardio": "Cardio",
+      "mobility": "Mobiliteit",
+      "stretching": "Stretching",
+      "plyometric": "Plyometrisch",
+      "other": "Overig"
     },
     "units": {
       "kg": "kg",
