@@ -18,6 +18,8 @@
 const fs = require('fs');
 const path = require('path');
 
+require('dotenv/config');
+
 // --- Configuration ---
 const EXERCISES_JSON_PATH = path.join(__dirname, '..', 'data', 'exercisesEnUS.json');
 const EXERCISES_ASSETS_DIR = path.join(__dirname, '..', 'assets', 'exercises');
