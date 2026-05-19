@@ -501,6 +501,7 @@ export default function WorkoutSessionScreen() {
         equipmentType: currentSetData.exercise.equipmentType ?? '',
         mechanicType: currentSetData.exercise.mechanicType ?? '',
         setNumber: currentSetData.setNumber,
+        reps,
         deviceId: wit.connectedDevice.id,
         deviceDisplayName: wit.connectedDevice.name,
         startedAt: new Date(startedAt ?? Date.now()).toISOString(),
@@ -512,7 +513,7 @@ export default function WorkoutSessionScreen() {
     } catch (err) {
       handleError(err, 'workout-session.stopTrackingAndSave');
     }
-  }, [currentSetData, workoutLog, wit.connectedDevice, showSnackbar, t]);
+  }, [currentSetData, workoutLog, reps, wit.connectedDevice, showSnackbar, t]);
 
   const handleStartTracking = useCallback(() => {
     samplesRef.current = [];

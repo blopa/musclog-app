@@ -25,6 +25,7 @@ export interface BleWorkoutFile {
   equipmentType: string;
   mechanicType: string;
   setNumber: number;
+  reps?: number;
   deviceId: string;
   deviceDisplayName: string;
   startedAt: string;
