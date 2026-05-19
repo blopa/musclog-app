@@ -75,8 +75,12 @@ import {
   getDismissedInsights,
   setInsightDismissed,
 } from '@/utils/activeWorkoutStorage';
-import type { BleWorkoutSample } from '@/utils/bleWorkoutDataStorage';
-import { saveBleWorkoutFile } from '@/utils/bleWorkoutDataStorage';
+import {
+  appendBleWorkoutSamplesToNdjsonFile,
+  type BleWorkoutSample,
+  createBleWorkoutTrackingTempFile,
+  saveBleWorkoutFile,
+} from '@/utils/bleWorkoutDataStorage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -87,6 +91,7 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { generateUUID } from '@/utils/uuid';
 import { formatDuration } from '@/utils/workout';
 
 // Helper function to get hormonal insight text based on current phase
@@ -308,7 +313,10 @@ export default function WorkoutSessionScreen() {
   const [isTracking, setIsTracking] = useState(false);
   const [isTrackingBlinkOn, setIsTrackingBlinkOn] = useState(true);
   const isTrackingRef = useRef(false);
-  const samplesRef = useRef<BleWorkoutSample[]>([]);
+  const trackingTempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(
+    null
+  );
+  const trackingSampleCountRef = useRef(0);
   const trackingStartedAtRef = useRef<number | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
   const hasAttemptedAutoConnect = useRef(false);
@@ -458,6 +466,28 @@ export default function WorkoutSessionScreen() {
     return done === logSets.length;
   }, []);
 
+  const clearTrackingTempFile = useCallback(() => {
+    const tempFile = trackingTempFileRef.current;
+    trackingTempFileRef.current = null;
+
+    if (!tempFile) {
+      return;
+    }
+
+    try {
+      tempFile.parentDirectory.delete();
+      return;
+    } catch {
+      // Fall through and try deleting the file itself.
+    }
+
+    try {
+      tempFile.delete();
+    } catch {
+      // Best-effort cleanup only.
+    }
+  }, []);
+
   // Stop tracking and discard data (used on disconnect and set/workout transitions).
   const discardTracking = useCallback(() => {
     if (!isTrackingRef.current) {
@@ -468,9 +498,10 @@ export default function WorkoutSessionScreen() {
     isTrackingRef.current = false;
     unsubscribeBatchRef.current?.();
     unsubscribeBatchRef.current = null;
-    samplesRef.current = [];
+    trackingSampleCountRef.current = 0;
     trackingStartedAtRef.current = null;
-  }, []);
+    clearTrackingTempFile();
+  }, [clearTrackingTempFile]);
 
   // Stop tracking and save the collected data to a local JSON file.
   const stopTrackingAndSave = useCallback(async () => {
@@ -478,17 +509,19 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
-    const samples = samplesRef.current.slice();
+    const sampleCount = trackingSampleCountRef.current;
+    const tempFile = trackingTempFileRef.current;
     const startedAt = trackingStartedAtRef.current;
 
     setIsTracking(false);
     isTrackingRef.current = false;
     unsubscribeBatchRef.current?.();
     unsubscribeBatchRef.current = null;
-    samplesRef.current = [];
+    trackingSampleCountRef.current = 0;
     trackingStartedAtRef.current = null;
 
-    if (samples.length === 0 || !currentSetData || !workoutLog || !wit.connectedDevice) {
+    if (sampleCount === 0 || !tempFile || !currentSetData || !workoutLog || !wit.connectedDevice) {
+      clearTrackingTempFile();
       return;
     }
 
@@ -506,35 +539,56 @@ export default function WorkoutSessionScreen() {
         deviceDisplayName: wit.connectedDevice.name,
         startedAt: new Date(startedAt ?? Date.now()).toISOString(),
         stoppedAt: new Date().toISOString(),
-        sampleCount: samples.length,
-        samples,
+        sampleCount,
+        samplesFile: tempFile,
       });
-      showSnackbar('success', t('workoutSession.trackingSaved', { count: samples.length }));
+      trackingTempFileRef.current = null;
+      showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
     } catch (err) {
       handleError(err, 'workout-session.stopTrackingAndSave');
     }
-  }, [currentSetData, workoutLog, reps, wit.connectedDevice, showSnackbar, t]);
+  }, [clearTrackingTempFile, currentSetData, workoutLog, reps, wit.connectedDevice, showSnackbar, t]);
 
   const handleStartTracking = useCallback(() => {
-    samplesRef.current = [];
-    trackingStartedAtRef.current = Date.now();
-    setIsTracking(true);
-    isTrackingRef.current = true;
+    if (isTrackingRef.current) {
+      return;
+    }
 
-    unsubscribeBatchRef.current?.();
-    unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
-      for (const packet of batch.packets) {
-        if (packet.kind === 'motion') {
-          samplesRef.current.push({
-            timestamp: packet.timestamp,
-            accel: { ...packet.accel },
-            gyro: { ...packet.gyro },
-            angle: { ...packet.angle },
-          });
+    try {
+      clearTrackingTempFile();
+      const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
+      trackingTempFileRef.current = tempFile;
+      trackingSampleCountRef.current = 0;
+      trackingStartedAtRef.current = Date.now();
+      setIsTracking(true);
+      isTrackingRef.current = true;
+
+      unsubscribeBatchRef.current?.();
+      unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
+        const samples: BleWorkoutSample[] = [];
+
+        for (const packet of batch.packets) {
+          if (packet.kind === 'motion') {
+            samples.push({
+              timestamp: packet.timestamp,
+              accel: { ...packet.accel },
+              gyro: { ...packet.gyro },
+              angle: { ...packet.angle },
+            });
+          }
         }
-      }
-    });
-  }, []);
+
+        if (samples.length === 0) {
+          return;
+        }
+
+        trackingSampleCountRef.current += samples.length;
+        appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
+      });
+    } catch (err) {
+      handleError(err, 'workout-session.handleStartTracking');
+    }
+  }, [clearTrackingTempFile]);
 
   // Auto-connect to the most recently connected saved device when the workout starts.
   useEffect(() => {

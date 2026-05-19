@@ -1,3 +1,4 @@
+import { Directory, File } from 'expo-file-system';
 import {
   cacheDirectory,
   deleteAsync,
@@ -7,6 +8,7 @@ import {
   readDirectoryAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
+import * as ndjson from 'ndjson';
 
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 
@@ -34,6 +36,11 @@ export interface BleWorkoutFile {
   samples: BleWorkoutSample[];
 }
 
+export type BleWorkoutFileInput = Omit<BleWorkoutFile, 'samples'> & {
+  samples?: BleWorkoutSample[];
+  samplesFile?: File;
+};
+
 export interface StoredBleWorkoutFile extends BleWorkoutFile {
   uri: string;
   fileName: string;
@@ -41,6 +48,13 @@ export interface StoredBleWorkoutFile extends BleWorkoutFile {
 }
 
 const BLE_WORKOUT_DATA_DIR = 'ble-workout-data';
+const BLE_WORKOUT_TRACKING_DIR = 'ble-workout-tracking';
+const NDJSON_DECODER = new TextDecoder();
+
+function getTrackingDirectoryUri(): string | null {
+  const base = cacheDirectory ?? documentDirectory;
+  return base ? `${base}${BLE_WORKOUT_TRACKING_DIR}/` : null;
+}
 
 function slugify(s: string): string {
   return s
@@ -59,6 +73,150 @@ function randomSuffix(length: number): string {
 function getDataDirectoryUri(): string | null {
   const base = documentDirectory ?? cacheDirectory;
   return base ? `${base}${BLE_WORKOUT_DATA_DIR}/` : null;
+}
+
+function buildMetadataHeader(data: Omit<BleWorkoutFile, 'samples'>): string {
+  const lines = [
+    '{',
+    `  "version": ${data.version},`,
+    `  "workoutLogId": ${JSON.stringify(data.workoutLogId)},`,
+    `  "exerciseName": ${JSON.stringify(data.exerciseName)},`,
+    `  "muscleGroup": ${JSON.stringify(data.muscleGroup)},`,
+    `  "equipmentType": ${JSON.stringify(data.equipmentType)},`,
+    `  "mechanicType": ${JSON.stringify(data.mechanicType)},`,
+    `  "setNumber": ${data.setNumber},`,
+  ];
+
+  if (data.reps != null) {
+    lines.push(`  "reps": ${data.reps},`);
+  }
+
+  lines.push(
+    `  "deviceId": ${JSON.stringify(data.deviceId)},`,
+    `  "deviceDisplayName": ${JSON.stringify(data.deviceDisplayName)},`,
+    `  "startedAt": ${JSON.stringify(data.startedAt)},`,
+    `  "stoppedAt": ${JSON.stringify(data.stoppedAt)},`,
+    `  "sampleCount": ${data.sampleCount},`,
+    `  "samples": [`
+  );
+
+  return `${lines.join('\n')}\n`;
+}
+
+function getTrackingDirectoryFile(sessionId: string): Directory | null {
+  const dirUri = getTrackingDirectoryUri();
+  if (!dirUri) {
+    return null;
+  }
+
+  return new Directory(dirUri, sessionId);
+}
+
+export function createBleWorkoutTrackingTempFile(sessionId: string): File {
+  const dir = getTrackingDirectoryFile(sessionId);
+  if (!dir) {
+    throw new Error('BLE workout tracking directory unavailable');
+  }
+
+  dir.create({ intermediates: true, idempotent: true });
+
+  const tempFile = new File(dir, 'samples.ndjson');
+  tempFile.write('', { append: false });
+  return tempFile;
+}
+
+function serializeSamplesAsNdjson(samples: BleWorkoutSample[]): string {
+  if (samples.length === 0) {
+    return '';
+  }
+
+  const serializer = ndjson.stringify();
+  let output = '';
+
+  serializer.on('data', (chunk: unknown) => {
+    if (typeof chunk === 'string') {
+      output += chunk;
+      return;
+    }
+
+    if (chunk instanceof Uint8Array) {
+      output += NDJSON_DECODER.decode(chunk);
+      return;
+    }
+
+    output += String(chunk);
+  });
+
+  for (const sample of samples) {
+    serializer.write(sample);
+  }
+
+  serializer.end();
+  return output;
+}
+
+export function appendBleWorkoutSamplesToNdjsonFile(
+  file: File,
+  samples: BleWorkoutSample[]
+): void {
+  if (samples.length === 0) {
+    return;
+  }
+
+  const ndjsonText = serializeSamplesAsNdjson(samples);
+  file.write(ndjsonText, { append: true });
+}
+
+function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): void {
+  const handle = sourceFile.open();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let wroteAnySample = false;
+
+  const flushBuffer = (isFinal = false) => {
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? '';
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) {
+        continue;
+      }
+
+      destinationFile.write(`${wroteAnySample ? ',\n' : ''}  ${line}`, { append: true });
+      wroteAnySample = true;
+    }
+
+    if (isFinal) {
+      const finalLine = buffer.trim();
+      if (finalLine) {
+        destinationFile.write(`${wroteAnySample ? ',\n' : ''}  ${finalLine}`, { append: true });
+        wroteAnySample = true;
+      }
+      buffer = '';
+    }
+  };
+
+  try {
+    while (true) {
+      const bytes = handle.readBytes(8192);
+      if (bytes.length === 0) {
+        break;
+      }
+
+      buffer += decoder.decode(bytes, { stream: true });
+      flushBuffer();
+    }
+
+    buffer += decoder.decode();
+    flushBuffer(true);
+  } finally {
+    handle.close();
+  }
+
+  if (wroteAnySample) {
+    destinationFile.write('\n', { append: true });
+  }
 }
 
 export async function ensureBleWorkoutDataDir(): Promise<string | null> {
@@ -82,7 +240,7 @@ export function buildBleWorkoutFileName(
   return `ble_${slug}_set${setNumber}_${ts}_${suffix}.json`;
 }
 
-export async function saveBleWorkoutFile(data: BleWorkoutFile): Promise<string> {
+export async function saveBleWorkoutFile(data: BleWorkoutFileInput): Promise<string> {
   const dir = await ensureBleWorkoutDataDir();
   if (!dir) {
     throw new Error('BLE workout data directory unavailable');
@@ -93,6 +251,25 @@ export async function saveBleWorkoutFile(data: BleWorkoutFile): Promise<string> 
     data.setNumber,
     Date.parse(data.startedAt)
   );
+
+  if (data.samplesFile) {
+    const outputFile = new File(dir, fileName);
+    outputFile.write(buildMetadataHeader(data), { append: false });
+    appendNdjsonFileToJsonArray(data.samplesFile, outputFile);
+    outputFile.write('  ]\n}\n', { append: true });
+
+    try {
+      data.samplesFile.parentDirectory.delete();
+    } catch {
+      try {
+        data.samplesFile.delete();
+      } catch {
+        // Best-effort cleanup only.
+      }
+    }
+
+    return outputFile.uri;
+  }
 
   const uri = `${dir}${fileName}`;
   await writeAsStringAsync(uri, JSON.stringify(data, null, 2));
