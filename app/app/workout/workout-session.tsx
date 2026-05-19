@@ -311,6 +311,7 @@ export default function WorkoutSessionScreen() {
   const wit = useWitMotion();
   const { showSnackbar } = useSnackbar();
   const [isTracking, setIsTracking] = useState(false);
+  const [isStopTrackingSaving, setIsStopTrackingSaving] = useState(false);
   const [isTrackingBlinkOn, setIsTrackingBlinkOn] = useState(true);
   const isTrackingRef = useRef(false);
   const trackingTempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(
@@ -1289,7 +1290,7 @@ export default function WorkoutSessionScreen() {
             {/* Sensor tracking row — only visible when a BLE device is connected */}
             {wit.isConnected ? (
               <View className="mb-4 gap-3">
-                {isTracking ? (
+                {isTracking || isStopTrackingSaving ? (
                   <Button
                     label={t('workoutSession.stopTracking')}
                     icon={
@@ -1303,7 +1304,16 @@ export default function WorkoutSessionScreen() {
                     size="md"
                     width="full"
                     variant="secondary"
-                    onPress={() => void stopTrackingAndSave()}
+                    loading={isStopTrackingSaving}
+                    disabled={isStopTrackingSaving}
+                    onPress={async () => {
+                      setIsStopTrackingSaving(true);
+                      try {
+                        await stopTrackingAndSave();
+                      } finally {
+                        setIsStopTrackingSaving(false);
+                      }
+                    }}
                   />
                 ) : (
                   <Button
