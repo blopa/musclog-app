@@ -122,7 +122,7 @@ function getDateFnsLocales(callback) {
     }
 
     const localeExports = {};
-    const regex = /export \* from "\.\/locale\/([a-zA-Z-]+)\.js";/g;
+    const regex = /export \* from "\.\/locale\/([a-zA-Z-]+)\.ts";/g;
     let match;
 
     while ((match = regex.exec(data)) !== null) {

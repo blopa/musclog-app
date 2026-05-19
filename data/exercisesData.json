@@ -13,7 +13,7 @@
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.9,
     "__exerciseName": "Inclined Bench Press"
   },
@@ -37,7 +37,7 @@
   },
   {
     "exerciseIndex": 5,
-    "muscleGroup": "back",
+    "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
@@ -48,7 +48,7 @@
     "exerciseIndex": 6,
     "muscleGroup": "chest",
     "equipmentType": "cable",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.5,
     "__exerciseName": "Pec Fly Machine"
@@ -57,7 +57,7 @@
     "exerciseIndex": 7,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.5,
     "__exerciseName": "Leg Extension Machine"
@@ -94,7 +94,7 @@
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
+    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
     "loadMultiplier": 0.7,
     "__exerciseName": "Lat Pulldown"
   },
@@ -103,7 +103,7 @@
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
+    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
     "loadMultiplier": 0,
     "__exerciseName": "Pull-Up"
   },
@@ -138,7 +138,7 @@
     "exerciseIndex": 16,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4,
     "__exerciseName": "Leg Curl Machine"
@@ -229,7 +229,7 @@
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
     "loadMultiplier": 0.8,
     "__exerciseName": "Bent Over Row"
   },
@@ -256,7 +256,7 @@
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.3,
     "__exerciseName": "Incline Dumbbell Press"
   },
@@ -273,7 +273,7 @@
     "exerciseIndex": 31,
     "muscleGroup": "shoulders",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.5,
     "__exerciseName": "Reverse Pec Deck Fly"
@@ -417,7 +417,7 @@
     "exerciseIndex": 47,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
     "loadMultiplier": 0.6,
     "__exerciseName": "Hip Abduction Machine"
@@ -426,7 +426,7 @@
     "exerciseIndex": 48,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["adductors"],
     "loadMultiplier": 0.6,
     "__exerciseName": "Hip Adduction Machine"
@@ -582,7 +582,7 @@
     "exerciseIndex": 64,
     "muscleGroup": "abdomen",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.5,
     "__exerciseName": "Crunch Machine"
@@ -822,7 +822,7 @@
     "exerciseIndex": 87,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
     "loadMultiplier": 0.3,
     "__exerciseName": "Dumbbell Pullover"
@@ -840,7 +840,7 @@
     "exerciseIndex": 89,
     "muscleGroup": "chest",
     "equipmentType": "cable",
-    "mechanicType": "isolation",
+    "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.3,
     "__exerciseName": "Cable Chest Press"
@@ -885,7 +885,7 @@
     "exerciseIndex": 94,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "calves"],
     "loadMultiplier": 0.4,
     "__exerciseName": "Lying Leg Curl"
@@ -984,7 +984,7 @@
     "exerciseIndex": 105,
     "muscleGroup": "abdomen",
     "equipmentType": "cable",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.4,
     "__exerciseName": "Cable Crunch"
@@ -1056,7 +1056,7 @@
     "exerciseIndex": 113,
     "muscleGroup": "glutes",
     "equipmentType": "plate_machine",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.45,
     "__exerciseName": "Glute Kickback Machine"
@@ -1074,7 +1074,7 @@
     "exerciseIndex": 115,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0,
     "__exerciseName": "Bodyweight Quadruped Glute Kickback"
@@ -1083,7 +1083,7 @@
     "exerciseIndex": 116,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0,
     "__exerciseName": "Standing Bodyweight Glute Kickback"
@@ -1153,7 +1153,7 @@
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
+    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "traps"],
     "loadMultiplier": 0,
     "__exerciseName": "Chin-Up"
   },
@@ -1250,7 +1250,7 @@
     "exerciseIndex": 133,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
-    "mechanicType": "compound",
+    "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "glutes"],
     "loadMultiplier": 0,
     "__exerciseName": "Nordic Hamstring Curl"
