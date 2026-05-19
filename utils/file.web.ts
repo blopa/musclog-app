@@ -3,7 +3,6 @@ import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
 import { getWebBackupContent } from '@/database/preMigrationBackup';
-import { reloadApp } from '@/utils/app';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -84,9 +83,6 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
         await restoreDatabase(dbDump, decryptionPhrase);
         await new Promise((resolve) => setTimeout(resolve, 50));
         resolve();
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        await reloadApp();
-        await new Promise((resolve) => setTimeout(resolve, 50));
       } catch (error) {
         reject(error);
       }

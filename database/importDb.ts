@@ -1,4 +1,6 @@
+import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
 import {
@@ -7,6 +9,7 @@ import {
   ONBOARDING_VERSION,
 } from '@/constants/misc';
 import { getExportPlatform, isSameExportPlatform } from '@/constants/platform';
+import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
@@ -91,6 +94,18 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       return undefined;
     }
   };
+
+  // Capture the current unit_system value before wiping the database.
+  // Backups from Android users who never explicitly changed units won't include a
+  // unit_system row (setUnits() is only called on explicit change). Without this
+  // snapshot, the app falls back to getDefaultUnits() after import, which returns
+  // 'imperial' for US-locale browsers even when the user was on metric.
+  const preWipeUnitsRows = await database
+    .get('settings')
+    .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+  const preWipeUnitsValue: string =
+    preWipeUnitsRows.length > 0 ? (preWipeUnitsRows[0] as any).value : '0';
 
   // Phase 1: Prepare create operations.
   // Reads and async encryption happen here so the write blocks stay synchronous-safe.
@@ -246,6 +261,24 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
+  // If the backup doesn't include an active unit_system row, inject one using the
+  // pre-wipe value so the app doesn't silently switch units after import.
+  const settingsRows = Array.isArray((dbData as any).settings) ? (dbData as any).settings : [];
+  const backupHasUnitSystem = settingsRows.some(
+    (row: any) => row.type === UNITS_SETTING_TYPE && row.deleted_at == null
+  );
+  if (!backupHasUnitSystem) {
+    const now = Date.now();
+    createOperations.push(
+      database.get('settings').prepareCreate((rec: any) => {
+        rec.type = UNITS_SETTING_TYPE;
+        rec.value = preWipeUnitsValue;
+        rec.createdAt = now;
+        rec.updatedAt = now;
+      })
+    );
+  }
+
   // Phase 1.5: Create a pre-restore backup of the current database.
   await createPreRestoreBackup();
 
@@ -316,6 +349,18 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       // TODO: we might not want to force it to be the current version
       [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
     ]);
+  }
+
+  // On web, force Loki to persist to IndexedDB before triggering a page reload.
+  // LokiJS autosaves every 500ms; if the reload fires before the first autosave
+  // the just-imported data disappears from IDB and the app boots with an empty DB.
+  if (Platform.OS === 'web') {
+    const loki = (database.adapter as any)._driver?.loki;
+    if (loki) {
+      await new Promise<void>((resolve) => {
+        loki.saveDatabase(() => resolve());
+      });
+    }
   }
 
   // Reload the app after importing is complete
