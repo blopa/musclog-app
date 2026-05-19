@@ -1,7 +1,7 @@
 'use client';
 
 import Head from 'expo-router/head';
-import { Dumbbell, Search, X } from 'lucide-react-native';
+import { Dumbbell, Info, Search, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,6 +54,11 @@ function getLocalizedName(exerciseIndex: number, locale: string, fallback: strin
     return map?.[exerciseIndex]?.name ?? EN_US_NAMES?.[exerciseIndex]?.name ?? fallback;
 }
 
+function getLocalizedDescription(exerciseIndex: number, locale: string): string {
+    const map = LOCALE_NAMES[locale] ?? EN_US_NAMES;
+    return map?.[exerciseIndex]?.description ?? EN_US_NAMES?.[exerciseIndex]?.description ?? '';
+}
+
 const MUSCLE_GROUPS = [
     'chest',
     'back',
@@ -104,6 +109,7 @@ interface ExerciseCardProps {
     equipmentLabel: string;
     mechanicLabel: string;
     targetMuscleLabels: string[];
+    description: string;
 }
 
 function ExerciseCard({
@@ -113,8 +119,10 @@ function ExerciseCard({
     equipmentLabel,
     mechanicLabel,
     targetMuscleLabels,
+    description,
 }: ExerciseCardProps) {
     const [imgError, setImgError] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     const muscleColor = MUSCLE_GROUP_COLORS[exercise.muscleGroup] ?? {
         bg: 'rgba(255,255,255,0.08)',
         text: '#D1D5DB',
@@ -152,11 +160,62 @@ function ExerciseCard({
 
                 {/* Muscle group badge */}
                 <div
-                    className="absolute left-2 top-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-                    style={{ backgroundColor: muscleColor.bg, color: muscleColor.text }}
+                    className="absolute left-2 top-2 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                    style={{
+                        backgroundColor: 'rgba(0,0,0,0.70)',
+                        color: muscleColor.text,
+                        border: `1px solid ${muscleColor.active}`,
+                        backdropFilter: 'blur(6px)',
+                    }}
                 >
                     {muscleGroupLabel}
                 </div>
+
+                {/* Info button */}
+                {description ? (
+                    <button
+                        type="button"
+                        onClick={() => setShowInfo(true)}
+                        className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full transition-opacity hover:opacity-100"
+                        style={{
+                            backgroundColor: 'rgba(0,0,0,0.60)',
+                            border: '1px solid rgba(255,255,255,0.18)',
+                            backdropFilter: 'blur(6px)',
+                            opacity: 0.7,
+                        }}
+                        aria-label="Exercise info"
+                    >
+                        <Info className="h-3.5 w-3.5" color="#D1D5DB" />
+                    </button>
+                ) : null}
+
+                {/* Description overlay */}
+                {showInfo && description ? (
+                    <div
+                        className="absolute inset-0 z-10 flex flex-col p-4"
+                        style={{ backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)' }}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setShowInfo(false)}
+                            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full transition-opacity hover:opacity-100"
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.10)',
+                                border: '1px solid rgba(255,255,255,0.18)',
+                                opacity: 0.8,
+                            }}
+                            aria-label="Close"
+                        >
+                            <X className="h-3.5 w-3.5" color="#D1D5DB" />
+                        </button>
+                        <p
+                            className="mt-4 overflow-auto text-xs leading-relaxed"
+                            style={{ color: BODY_TEXT }}
+                        >
+                            {description}
+                        </p>
+                    </div>
+                ) : null}
             </div>
 
             {/* Content */}
@@ -507,6 +566,10 @@ export default function ExercisesPage() {
                                                 ex.exerciseIndex,
                                                 locale,
                                                 ex.__exerciseName
+                                            )}
+                                            description={getLocalizedDescription(
+                                                ex.exerciseIndex,
+                                                locale
                                             )}
                                             muscleGroupLabel={getMuscleGroupLabel(ex.muscleGroup)}
                                             equipmentLabel={getEquipmentLabel(ex.equipmentType)}
