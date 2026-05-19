@@ -1,9 +1,9 @@
 Training summary
 ========================================
-Recordings:   12
-Best model:   Gradient Boosting
-LOOCV MAE:    1.00
-Exact match:  6/12 (50%)
+Recordings:   17
+Best model:   Random Forest
+LOOCV MAE:    1.35
+Exact match:  7/17 (41%)
 
 Feature order for inference (input array index → name):
    0: duration_ms
