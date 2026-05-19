@@ -13,10 +13,10 @@ import migrationV11 from '@/database/migrations/2026/04/migration-v11';
 import migrationV12 from '@/database/migrations/2026/04/migration-v12';
 import migrationV13 from '@/database/migrations/2026/04/migration-v13';
 import migrationV14 from '@/database/migrations/2026/04/migration-v14';
-import migrationV15 from '@/database/migrations/2026/04/migration-v15';
-import migrationV16 from '@/database/migrations/2026/04/migration-v16';
-import migrationV17 from '@/database/migrations/2026/04/migration-v17';
-import migrationV18 from '@/database/migrations/2026/04/migration-v18';
+import migrationV15 from '@/database/migrations/2026/05/migration-v15';
+import migrationV16 from '@/database/migrations/2026/05/migration-v16';
+import migrationV17 from '@/database/migrations/2026/05/migration-v17';
+import migrationV18 from '@/database/migrations/2026/05/migration-v18';
 
 export const migrations = schemaMigrations({
   migrations: [
