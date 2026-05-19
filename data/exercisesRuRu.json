@@ -2,921 +2,2497 @@
   {
     "name": "Жим лёжа",
     "description": "Упражнение для груди, при котором вы жмёте штангу вверх, лёжа на скамье.",
-    "exerciseIndex": 1
+    "exerciseIndex": 1,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Жим лёжа на наклонной скамье",
     "description": "Вариация жима лёжа, выполняемая на наклонной скамье для акцента на верхнюю часть груди.",
-    "exerciseIndex": 2
+    "exerciseIndex": 2,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Жим лёжа на скамье с отрицательным наклоном",
     "description": "Вариация жима лёжа, выполняемая на скамье с отрицательным наклоном для акцента на нижнюю часть груди.",
-    "exerciseIndex": 3
+    "exerciseIndex": 3,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 1.1
   },
   {
     "name": "Жим штанги стоя",
     "description": "Упражнение для плеч, при котором вы жмёте вес над головой стоя или сидя.",
-    "exerciseIndex": 4
+    "exerciseIndex": 4,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Становая тяга",
     "description": "Упражнение для всего тела, при котором вы поднимаете штангу с земли в положение стоя.",
-    "exerciseIndex": 5
+    "exerciseIndex": 5,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "quadriceps",
+      "forearms"
+    ],
+    "loadMultiplier": 1.8
   },
   {
     "name": "Сведение рук в тренажёре бабочка",
     "description": "Упражнение в тренажёре, изолирующее мышцы груди, имитируя движение сведения рук.",
-    "exerciseIndex": 6
+    "exerciseIndex": 6,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Разгибание ног в тренажёре",
     "description": "Упражнение в тренажёре, направленное на квадрицепсы путём разгибания ног из сидячего положения.",
-    "exerciseIndex": 7
+    "exerciseIndex": 7,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "quadriceps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Приседания",
     "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело, а затем встаёте.",
-    "exerciseIndex": 8
+    "exerciseIndex": 8,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Приседания со штангой на плечах",
     "description": "Упражнение для нижней части тела, при котором вы сгибаете колени и бёдра, опуская тело со штангой на верхней части спины, а затем встаёте.",
-    "exerciseIndex": 9
+    "exerciseIndex": 9,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Жим ногами в тренажёре",
     "description": "Упражнение в тренажёре, при котором вы отталкиваете вес от себя ногами.",
-    "exerciseIndex": 10
+    "exerciseIndex": 10,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 3.5
   },
   {
     "name": "Тяга верхнего блока",
     "description": "Упражнение в тренажёре, направленное на верхнюю часть спины путём тяги перекладины к груди.",
-    "exerciseIndex": 11
+    "exerciseIndex": 11,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Подтягивания",
     "description": "Упражнение для верхней части тела, при котором вы поднимаете тело к перекладине, используя мышцы спины и рук.",
-    "exerciseIndex": 12
+    "exerciseIndex": 12,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Тяга к поясу сидя",
     "description": "Упражнение в тренажёре, направленное на мышцы спины путём тяги ручки к корпусу в сидячем положении.",
-    "exerciseIndex": 13
+    "exerciseIndex": 13,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Сгибание рук с гантелями",
     "description": "Упражнение для рук, направленное на бицепсы путём подъёма веса к плечу.",
-    "exerciseIndex": 14
+    "exerciseIndex": 14,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Разгибание рук за головой",
     "description": "Упражнение для рук, направленное на трицепсы путём разгибания руки в локте.",
-    "exerciseIndex": 15
+    "exerciseIndex": 15,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Сгибание ног лёжа в тренажёре",
     "description": "Упражнение в тренажёре, направленное на бицепсы бедра путём сгибания ног к ягодицам.",
-    "exerciseIndex": 16
+    "exerciseIndex": 16,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Подъёмы гантелей в стороны",
     "description": "Упражнение для плеч, при котором вы поднимаете гантели в стороны от тела.",
-    "exerciseIndex": 17
+    "exerciseIndex": 17,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "lateral_deltoid"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Подъёмы гантелей перед собой",
     "description": "Упражнение для плеч, при котором вы поднимаете гантели перед собой.",
-    "exerciseIndex": 18
+    "exerciseIndex": 18,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.08
   },
   {
     "name": "Подъёмы на носки",
     "description": "Упражнение для нижней части тела, направленное на икроножные мышцы путём подъёма пяток от пола.",
-    "exerciseIndex": 19
+    "exerciseIndex": 19,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Сгибание рук молотком",
     "description": "Упражнение для рук, похожее на сгибание рук, но с нейтральным хватом.",
-    "exerciseIndex": 20
+    "exerciseIndex": 20,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.18
   },
   {
     "name": "Сгибание рук на скамье Скотта",
     "description": "Вариация сгибания рук, выполняемая на скамье Скотта для изоляции бицепсов.",
-    "exerciseIndex": 21
+    "exerciseIndex": 21,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Разгибание рук в тренажёре с нижнего блока",
     "description": "Упражнение для рук, направленное на трицепсы путём нажима на канатную рукоять вниз.",
-    "exerciseIndex": 22
+    "exerciseIndex": 22,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Жим груди в тренажёре",
     "description": "Упражнение в тренажёре, имитирующее жим лёжа.",
-    "exerciseIndex": 23
+    "exerciseIndex": 23,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Приседания в тренажёре Смита",
     "description": "Вариация приседаний в тренажёре Смита для дополнительной стабильности.",
-    "exerciseIndex": 24
+    "exerciseIndex": 24,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 1.3
   },
   {
     "name": "Тяга Т-грифа",
     "description": "Упражнение для спины, при котором вы тянете Т-гриф к корпусу.",
-    "exerciseIndex": 25
+    "exerciseIndex": 25,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Тяга в наклоне",
     "description": "Упражнение для спины, при котором вы наклоняетесь в поясе и тянете вес к корпусу.",
-    "exerciseIndex": 26
+    "exerciseIndex": 26,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Тяга к подбородку",
     "description": "Упражнение для плеч, при котором вы тянете вес вверх вдоль передней части тела.",
-    "exerciseIndex": 27
+    "exerciseIndex": 27,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "upper_traps",
+      "lateral_deltoid"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Разведение гантелей лёжа",
     "description": "Упражнение для груди, при котором вы опускаете и поднимаете гантели в стороны, лёжа на скамье.",
-    "exerciseIndex": 28
+    "exerciseIndex": 28,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.15
   },
   {
     "name": "Жим гантелей на наклонной скамье",
     "description": "Упражнение для груди, похожее на жим на наклонной скамье, но с гантелями.",
-    "exerciseIndex": 29
+    "exerciseIndex": 29,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Жим плечами в тренажёре",
     "description": "Упражнение для плеч в тренажёре, имитирующее жим над головой.",
-    "exerciseIndex": 30
+    "exerciseIndex": 30,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Обратное разведение в тренажёре бабочка",
     "description": "Упражнение в тренажёре, направленное на задние дельты, имитируя движение обратного разведения.",
-    "exerciseIndex": 31
+    "exerciseIndex": 31,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Сведение рук в кроссовере",
     "description": "Упражнение для груди, направленное на внутреннюю часть груди путём сведения тросов через тело.",
-    "exerciseIndex": 32
+    "exerciseIndex": 32,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Подъёмы на носки сидя",
     "description": "Упражнение для икроножных мышц, выполняемое сидя, направленное на мышцу камбаловидную.",
-    "exerciseIndex": 33
+    "exerciseIndex": 33,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Подъёмы на носки стоя",
     "description": "Упражнение для икроножных мышц, выполняемое стоя, направленное на икроножную мышцу.",
-    "exerciseIndex": 34
+    "exerciseIndex": 34,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Румынская становая тяга",
     "description": "Вариация становой тяги, направленная на бицепсы бедра и ягодицы.",
-    "exerciseIndex": 35
+    "exerciseIndex": 35,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Мостик для ягодиц",
     "description": "Упражнение для нижней части тела, направленное на ягодицы путём подъёма бёдер от пола, лёжа на спине.",
-    "exerciseIndex": 36
+    "exerciseIndex": 36,
+    "muscleGroup": "glutes",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Тяга ягодиц",
     "description": "Упражнение для нижней части тела, направленное на ягодицы путём подъёма бёдер от пола с опорой плечами на скамью.",
-    "exerciseIndex": 37
+    "exerciseIndex": 37,
+    "muscleGroup": "glutes",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Сгибание рук в кроссовере",
     "description": "Упражнение для рук, направленное на бицепсы путём сгибания рук с насадкой на тросе.",
-    "exerciseIndex": 38
+    "exerciseIndex": 38,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Жим гантелей плечами",
     "description": "Упражнение для плеч, при котором вы жмёте гантели над головой.",
-    "exerciseIndex": 39
+    "exerciseIndex": 39,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Жим лёжа в тренажёре Смита",
     "description": "Вариация жима лёжа в тренажёре Смита для дополнительной стабильности.",
-    "exerciseIndex": 40
+    "exerciseIndex": 40,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Приседания в тренажёре Хакка",
     "description": "Вариация приседаний в тренажёре Хакка для акцента на квадрицепсы.",
-    "exerciseIndex": 41
+    "exerciseIndex": 41,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 1.5
   },
   {
     "name": "Обратные выпады",
     "description": "Упражнение для нижней части тела, при котором вы делаете шаг назад в выпад.",
-    "exerciseIndex": 42
+    "exerciseIndex": 42,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Шаги на платформу",
     "description": "Упражнение для нижней части тела, при котором вы заходите ногой на возвышенную платформу.",
-    "exerciseIndex": 43
+    "exerciseIndex": 43,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Махи гирей",
     "description": "Упражнение для всего тела, при котором вы раскачиваете гирю между ног и до уровня плеч.",
-    "exerciseIndex": 44
+    "exerciseIndex": 44,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Приседания с гирей у груди",
     "description": "Вариация приседаний, выполняемая с удержанием веса перед грудью.",
-    "exerciseIndex": 45
+    "exerciseIndex": 45,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Становая тяга сумо",
     "description": "Вариация становой тяги с широкой постановкой ног, направленная на внутреннюю поверхность бёдер и ягодицы.",
-    "exerciseIndex": 46
+    "exerciseIndex": 46,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "adductors",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.8
   },
   {
     "name": "Отведение бёдер в тренажёре",
     "description": "Упражнение в тренажёре, направленное на внешнюю поверхность бёдер путём разведения ног.",
-    "exerciseIndex": 47
+    "exerciseIndex": 47,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "abductors",
+      "gluteus_medius",
+      "gluteus_minimus"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Приведение бёдер в тренажёре",
     "description": "Упражнение в тренажёре, направленное на внутреннюю поверхность бёдер путём сведения ног.",
-    "exerciseIndex": 48
+    "exerciseIndex": 48,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "adductors"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Тяга к лицу в кроссовере",
     "description": "Упражнение для плеч, направленное на задние дельты путём тяги насадки на тросе к лицу.",
-    "exerciseIndex": 49
+    "exerciseIndex": 49,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Разведение гантелей на наклонной скамье",
     "description": "Упражнение для груди, выполняемое на наклонной скамье, направленное на верхнюю часть груди.",
-    "exerciseIndex": 50
+    "exerciseIndex": 50,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.15
   },
   {
     "name": "Отжимания на брусьях",
     "description": "Упражнение для груди и трицепсов, при котором вы опускаете и поднимаете тело, используя параллельные брусья.",
-    "exerciseIndex": 51
+    "exerciseIndex": 51,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Отжимания",
     "description": "Упражнение для груди, плеч и трицепсов, при котором вы отжимаетесь от пола.",
-    "exerciseIndex": 52
+    "exerciseIndex": 52,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Планка",
     "description": "Упражнение для кора, при котором вы удерживаете положение отжимания в течение заданного времени.",
-    "exerciseIndex": 53
+    "exerciseIndex": 53,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Русский поворот",
     "description": "Упражнение для косых мышц, при котором вы поворачиваете корпус из стороны в сторону, удерживая вес.",
-    "exerciseIndex": 54
+    "exerciseIndex": 54,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Подъём ног в висе",
     "description": "Упражнение для пресса, при котором вы поднимаете ноги, вис на перекладине.",
-    "exerciseIndex": 55
+    "exerciseIndex": 55,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Горный альпинист",
     "description": "Упражнение для всего тела, при котором вы имитируете бег, находясь в положении планки.",
-    "exerciseIndex": 56
+    "exerciseIndex": 56,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "hip_flexors",
+      "shoulders",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Бёрпи",
     "description": "Упражнение для всего тела, включающее приседание, прыжок и отжимание.",
-    "exerciseIndex": 57
+    "exerciseIndex": 57,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "rectus_abdominis",
+      "triceps",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Прыжки на ящик",
     "description": "Плиометрическое упражнение для нижней части тела, при котором вы прыгаете на возвышенную платформу.",
-    "exerciseIndex": 58
+    "exerciseIndex": 58,
+    "muscleGroup": "legs",
+    "type": "plyometric",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Турецкое вставание",
     "description": "Упражнение для всего тела, при котором вы переходите из положения лёжа в положение стоя, удерживая вес над головой.",
-    "exerciseIndex": 59
+    "exerciseIndex": 59,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings",
+      "rectus_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Прогулка фермера",
     "description": "Упражнение, при котором вы идёте, держа тяжёлые грузы в каждой руке.",
-    "exerciseIndex": 60
+    "exerciseIndex": 60,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "forearms",
+      "glutes",
+      "quadriceps",
+      "calves",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Рывок",
     "description": "Олимпийское упражнение, при котором вы поднимаете штангу с земли над головой одним движением.",
-    "exerciseIndex": 61
+    "exerciseIndex": 61,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Толчок",
     "description": "Олимпийское упражнение, при котором вы поднимаете штангу с земли к плечам, а затем над головой.",
-    "exerciseIndex": 62
+    "exerciseIndex": 62,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Канаты для боя",
     "description": "Упражнение, при котором вы создаёте волны с тяжёлыми канатами для развития силы и выносливости.",
-    "exerciseIndex": 63
+    "exerciseIndex": 63,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "biceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Тренажёр для скручиваний",
     "description": "Упражнение в тренажёре, направленное на мышцы пресса, имитируя движение скручивания.",
-    "exerciseIndex": 64
+    "exerciseIndex": 64,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Тяга в тренажёре с упором в грудь",
     "description": "Упражнение для спины в тренажёре, при котором вы тянете с упором груди в подушку, направленное на верхнюю и среднюю части спины.",
-    "exerciseIndex": 65
+    "exerciseIndex": 65,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "traps",
+      "lats",
+      "biceps"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Тяга штанги в наклоне",
     "description": "Упражнение для спины, при котором вы тянете штангу к корпусу, находясь в наклоне.",
-    "exerciseIndex": 66
+    "exerciseIndex": 66,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "erector_spinae",
+      "biceps"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Разгибание рук лёжа",
     "description": "Упражнение для трицепсов, при котором вы опускаете штангу к лбу и возвращаете обратно.",
-    "exerciseIndex": 67
+    "exerciseIndex": 67,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Болгарские сплит-приседания",
     "description": "Упражнение для нижней части тела, при котором вы выполняете приседание на одной ноге с задней ногой на скамье.",
-    "exerciseIndex": 68
+    "exerciseIndex": 68,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Жим Паллоффа",
     "description": "Упражнение для кора, при котором вы отжимаете трос или эспандер от тела, сопротивляясь вращению.",
-    "exerciseIndex": 69
+    "exerciseIndex": 69,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "internal_obliques",
+      "external_obliques",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Подъём колен в висе",
     "description": "Упражнение для пресса, при котором вы поднимаете колени к груди, вис на перекладине.",
-    "exerciseIndex": 70
+    "exerciseIndex": 70,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Жим с земли",
     "description": "Упражнение для плеч, при котором вы жмёте штангу, закреплённую одним концом в земле.",
-    "exerciseIndex": 71
+    "exerciseIndex": 71,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "upper_traps",
+      "triceps",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Тяга с земли",
     "description": "Упражнение для спины, при котором вы тянете штангу, закреплённую одним концом в земле, к корпусу.",
-    "exerciseIndex": 72
+    "exerciseIndex": 72,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Подъёмы на носки в наклоне",
     "description": "Упражнение для икроножных мышц, при котором вы поднимаете пятки, находясь в наклоне с весом на пояснице.",
-    "exerciseIndex": 73
+    "exerciseIndex": 73,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Прыжки на скакалке",
     "description": "Кардиоупражнение, при котором вы перепрыгиваете через скакалку, проходящую под ногами и над головой.",
-    "exerciseIndex": 74
+    "exerciseIndex": 74,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "calves",
+      "glutes",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Бег",
     "description": "Кардиоупражнение, при котором вы бегаете трусцой или спринтуете на дистанцию.",
-    "exerciseIndex": 75
+    "exerciseIndex": 75,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Велосипед",
     "description": "Кардиоупражнение, при котором вы катаетесь на велосипеде, стационарном или обычном.",
-    "exerciseIndex": 76
+    "exerciseIndex": 76,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Гребной тренажёр",
     "description": "Кардиоупражнение, имитирующее действие гребли на лодке, с использованием тренажёра.",
-    "exerciseIndex": 77
+    "exerciseIndex": 77,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Эллиптический тренажёр",
     "description": "Кардиоупражнение на тренажёре, имитирующее ходьбу или бег без чрезмерной нагрузки на суставы.",
-    "exerciseIndex": 78
+    "exerciseIndex": 78,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Высокоинтенсивный интервальный тренинг (ВИИТ)",
     "description": "Форма кардиотренировки, чередующая короткие периоды интенсивной анаэробной нагрузки с менее интенсивными периодами восстановления.",
-    "exerciseIndex": 79
+    "exerciseIndex": 79,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Степпер",
     "description": "Кардиоупражнение на тренажёре, имитирующее движение подъёма по лестнице.",
-    "exerciseIndex": 80
+    "exerciseIndex": 80,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Аэробика",
     "description": "Форма кардиотренировки, включающая ритмические упражнения, часто выполняемые под музыку.",
-    "exerciseIndex": 81
+    "exerciseIndex": 81,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Танцевальное кардио",
     "description": "Кардиоупражнение, включающее различные танцевальные движения и комбинации для повышения частоты сердечных сокращений.",
-    "exerciseIndex": 82
+    "exerciseIndex": 82,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Теневой бокс",
     "description": "Кардиоупражнение, при котором вы наносите удары по воздуху для повышения частоты сердечных сокращений и улучшения сердечно-сосудистой выносливости.",
-    "exerciseIndex": 83
+    "exerciseIndex": 83,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "external_obliques",
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "biceps",
+      "triceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Тяга верхнего блока узким хватом",
     "description": "Вариация тяги верхнего блока с узким хватом для акцента на внутренние мышцы спины.",
-    "exerciseIndex": 84
+    "exerciseIndex": 84,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Тяга верхнего блока супинированным хватом",
     "description": "Вариация тяги верхнего блока с супинированным хватом для акцента на бицепсы и верхнюю часть спины.",
-    "exerciseIndex": 85
+    "exerciseIndex": 85,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Пуловер в кроссовере",
     "description": "Упражнение для спины, при котором вы тянете перекладину сверху вниз к бёдрам, фокусируясь на широчайших мышцах.",
-    "exerciseIndex": 86
+    "exerciseIndex": 86,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Пуловер с гантелью",
     "description": "Универсальное упражнение для груди и широчайших мышц путём опускания и подъёма гантели за головой, лёжа на скамье.",
-    "exerciseIndex": 87
+    "exerciseIndex": 87,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "lats",
+      "teres_major"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Жим лёжа обратным хватом",
     "description": "Вариация жима лёжа с обратным хватом для акцента на верхнюю часть груди и трицепсы.",
-    "exerciseIndex": 88
+    "exerciseIndex": 88,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Жим груди в кроссовере",
     "description": "Упражнение для груди, при котором вы жмёте насадку на тросе вперёд, похоже на жим лёжа, но с постоянным напряжением.",
-    "exerciseIndex": 89
+    "exerciseIndex": 89,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Подъём рук перед собой в кроссовере",
     "description": "Упражнение для плеч, при котором вы поднимаете насадку на тросе перед собой, направленное на передние дельты.",
-    "exerciseIndex": 90
+    "exerciseIndex": 90,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.08
   },
   {
     "name": "Подъём рук в стороны в кроссовере",
     "description": "Упражнение для плеч, при котором вы поднимаете насадку на тросе в сторону, направленное на средние дельты.",
-    "exerciseIndex": 91
+    "exerciseIndex": 91,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "lateral_deltoid",
+      "traps"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Тяга гантели к поясу одной рукой",
     "description": "Упражнение для спины, при котором вы тянете гантель к корпусу в наклоне, фокусируясь на каждой стороне отдельно.",
-    "exerciseIndex": 92
+    "exerciseIndex": 92,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Шраги с гантелями",
     "description": "Упражнение для плеч, направленное на трапеции путём поднятия плеч, держа гантели.",
-    "exerciseIndex": 93
+    "exerciseIndex": 93,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Сгибание ног лёжа в тренажёре",
     "description": "Упражнение в тренажёре, направленное на бицепсы бедра путём сгибания ног к ягодицам, лёжа лицом вниз.",
-    "exerciseIndex": 94
+    "exerciseIndex": 94,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Доброе утро",
     "description": "Упражнение для нижней части тела, при котором вы наклоняете корпус вперёд в бёдрах, направленное на бицепсы бедра и ягодицы.",
-    "exerciseIndex": 95
+    "exerciseIndex": 95,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "adductors"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Приседания Зерхера",
     "description": "Вариация приседаний, при котором вы держите штангу в сгибе локтей, акцентируя квадрицепсы и кор.",
-    "exerciseIndex": 96
+    "exerciseIndex": 96,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Сисси-приседания",
     "description": "Вариация приседаний с фокусом на квадрицепсы, выполняемая на скамье для сисси-приседаний или с наклоном назад на носках.",
-    "exerciseIndex": 97
+    "exerciseIndex": 97,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "quadriceps",
+      "rectus_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Становая тяга Джефферсона",
     "description": "Вариация становой тяги, при которой вы стоите над штангой, фокусируясь на квадрицепсы, ягодицы и кор.",
-    "exerciseIndex": 98
+    "exerciseIndex": 98,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "adductors",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Приседания козака",
     "description": "Упражнение для нижней части тела, при котором вы выполняете глубокий боковой выпад, направленное на внутреннюю поверхность бёдер и ягодицы.",
-    "exerciseIndex": 99
+    "exerciseIndex": 99,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "adductors",
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Флаг дракона",
     "description": "Продвинутое упражнение для кора, при котором вы опускаете и поднимаете тело прямой линией, лёжа на скамье.",
-    "exerciseIndex": 100
+    "exerciseIndex": 100,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Удержание полого тела",
     "description": "Упражнение для кора, при котором вы удерживаете полое положение, прижимая поясницу к полу и вытягивая руки и ноги.",
-    "exerciseIndex": 101
+    "exerciseIndex": 101,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Обратное скручивание",
     "description": "Упражнение для пресса, при котором вы подтягиваете бёдра к груди, фокусируясь на нижнем прессе.",
-    "exerciseIndex": 102
+    "exerciseIndex": 102,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Выкаты на ролике для пресса",
     "description": "Упражнение для кора, при котором вы выкатываете ролик для пресса от тела, сохраняя стабильное положение кора.",
-    "exerciseIndex": 103
+    "exerciseIndex": 103,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Отжимания в пике",
     "description": "Упражнение для плеч, при котором вы выполняете отжимание в положении пика, акцентируя плечи.",
-    "exerciseIndex": 104
+    "exerciseIndex": 104,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Скручивания в кроссовере",
     "description": "Упражнение для пресса, при котором вы выполняете движение скручивания с насадкой на тросе для дополнительного сопротивления.",
-    "exerciseIndex": 105
+    "exerciseIndex": 105,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Разгибание руки с гантелью назад",
     "description": "Изолирующее упражнение для трицепсов, при котором вы наклоняетесь вперёд, удерживая плечо неподвижным, и разгибаете локоть, отводя гантель назад.",
-    "exerciseIndex": 106
+    "exerciseIndex": 106,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Разгибание рук с гантелями назад двумя руками",
     "description": "Вариация разгибания рук назад с гантелью в каждой руке с тем же шаблоном разгибания локтей в наклоне.",
-    "exerciseIndex": 107
+    "exerciseIndex": 107,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Разгибание рук с гантелями назад сидя в наклоне",
     "description": "Разгибание рук назад, выполняемое сидя с наклоном вперёд для поддержки корпуса и изоляции разгибания локтей.",
-    "exerciseIndex": 108
+    "exerciseIndex": 108,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Разгибание рук с гантелями назад на наклонной скамье",
     "description": "Разгибание рук назад, выполняемое лицом вниз на наклонной скамье для фиксации груди и уменьшения импульса.",
-    "exerciseIndex": 109
+    "exerciseIndex": 109,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Разгибание рук назад в кроссовере",
     "description": "Разгибание рук назад с нижнего блока, удерживая плечо параллельно полу при разгибании против направления тяги.",
-    "exerciseIndex": 110
+    "exerciseIndex": 110,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.28
   },
   {
     "name": "Разгибание рук назад в кроссовере с верхнего блока",
     "description": "Разгибание рук назад с верхнего блока, угол тяги по-другому нагружает длинную головку трицепса.",
-    "exerciseIndex": 111
+    "exerciseIndex": 111,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.26
   },
   {
     "name": "Отведение ноги назад в кроссовере",
     "description": "Упражнение на разгибание бедра, при котором вы отводите рабочую ногу назад против низкого блока, закреплённого на лодыжке.",
-    "exerciseIndex": 112
+    "exerciseIndex": 112,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Отведение ноги назад в тренажёре",
     "description": "Машинное отведение ноги назад, нагружающее разгибание ягодицы через мягкую накладку или платформу.",
-    "exerciseIndex": 113
+    "exerciseIndex": 113,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.45
   },
   {
     "name": "Отведение ноги назад с резинкой",
     "description": "Отведение ноги назад с резинкой, закреплённой низко или на петлях вокруг стоп для разгибания бедра.",
-    "exerciseIndex": 114
+    "exerciseIndex": 114,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.12
   },
   {
     "name": "Отведение ноги назад с опорой на четвереньки",
     "description": "Отведение ноги назад с опорой на руки и колени, отводя бедро прямо назад с контролируемым сокращением в верхней точке.",
-    "exerciseIndex": 115
+    "exerciseIndex": 115,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Отведение ноги назад стоя",
     "description": "Стоячее отведение ноги назад, отводя ногу за тело без оборудования, часто с небольшим наклоном вперёд для баланса.",
-    "exerciseIndex": 116
+    "exerciseIndex": 116,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Концентрированное сгибание рук",
     "description": "Сгибание рук сидя с упором локтя внутренней частью бедра, поднимая гантель к плечу строгой дугой.",
-    "exerciseIndex": 117
+    "exerciseIndex": 117,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Жим гантелей лёжа",
     "description": "Горизонтальный жим лёжа с гантелями, позволяющий независимую траекторию рук и глубокое растяжение в нижней точке.",
-    "exerciseIndex": 118
+    "exerciseIndex": 118,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Жим гантелей лёжа на скамье с отрицательным наклоном",
     "description": "Жим гантелей лёжа на скамье с отрицательным наклоном для акцента на нижнюю часть груди с нейтральной или угловой траекторией рук.",
-    "exerciseIndex": 119
+    "exerciseIndex": 119,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.32
   },
   {
     "name": "Жим лёжа узким хватом",
     "description": "Жим лёжа с более узким хватом для переноса большей нагрузки на трицепсы при сохранении работы груди и передних дельт.",
-    "exerciseIndex": 120
+    "exerciseIndex": 120,
+    "muscleGroup": "arms",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Жим Арнольда",
     "description": "Жим гантелей сидя или стоя с вращением от ладоней к себе внизу до ладоней от себя над головой, задействующий все головки дельт.",
-    "exerciseIndex": 121
+    "exerciseIndex": 121,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "posterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Толчковый жим",
     "description": "Жим над головой с небольшим приседанием и усилием ног для ускорения штанги, позволяющий работать с большими весами, чем строгий жим.",
-    "exerciseIndex": 122
+    "exerciseIndex": 122,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 0.55
   },
   {
     "name": "Подтягивания обратным хватом",
     "description": "Подтягивания с обратным хватом, увеличивающие вовлечение бицепсов и брахиалиса при работе широчайших и верхней части спины.",
-    "exerciseIndex": 123
+    "exerciseIndex": 123,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "brachialis",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Пуловер с прямыми руками",
     "description": "Движение на блоках с почти прямыми локтями, опуская перекладину к бёдрам для изоляции широчайших и разгибания плеча.",
-    "exerciseIndex": 124
+    "exerciseIndex": 124,
+    "muscleGroup": "back",
+    "type": "isolation",
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Румынская становая тяга с гантелями",
     "description": "Становая тяга в наклоне с гантелями, акцентирующая бицепсы бедра и ягодицы с меньшей нагрузкой на поясницу, чем со штангой.",
-    "exerciseIndex": 125
+    "exerciseIndex": 125,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Становая тяга в трэп-баре",
     "description": "Становая тяга с использованием трэп-бара с нейтральным хватом и более высокими ручками, часто позволяющая более вертикальное положение корпуса.",
-    "exerciseIndex": 126
+    "exerciseIndex": 126,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 1.45
   },
   {
     "name": "Тяга с упоров",
     "description": "Частичная становая тяга с упоров или блоков ниже колена, перегружающая верхнюю часть спины, трапеции и хват с уменьшенным диапазоном ног.",
-    "exerciseIndex": 127
+    "exerciseIndex": 127,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "erector_spinae",
+      "rhomboids",
+      "lats",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
+    "loadMultiplier": 1.3
   },
   {
     "name": "Приседания со штангой на груди",
     "description": "Приседания со штангой на передних дельтах, требующие вертикального положения корпуса и сильного акцента на квадрицепсы и кор.",
-    "exerciseIndex": 128
+    "exerciseIndex": 128,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Выпады шагом",
     "description": "Динамический шаблон выпадов с чередующимися шагами вперёд, развивающий одноногую силу, баланс и стабильность бёдра и колена под нагрузкой.",
-    "exerciseIndex": 129
+    "exerciseIndex": 129,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Выпады вперёд",
     "description": "Вариация сплит-приседания с шагом вперёд в глубокий выпад и возвратом, сильно нагружающая переднюю ногу через разгибание колена и бедра.",
-    "exerciseIndex": 130
+    "exerciseIndex": 130,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Статическое приседание у стены",
     "description": "Изометрическое удержание со спиной у стены и бёдрами параллельно полу, развивающее выносливость квадрицепсов и силу воли.",
-    "exerciseIndex": 131
+    "exerciseIndex": 131,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Приседания на одной ноге",
     "description": "Одноногие приседания в полную глубину с вытянутой нерабочей ногой, требующие подвижности, баланса и односторонней силы ног.",
-    "exerciseIndex": 132
+    "exerciseIndex": 132,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Гаммерный подъём нордик",
     "description": "Упражнение для бицепсов бедра с партнёром или фиксацией, опускание тела с колен с разогнутыми бёдрами, акцентирующее эксцентрическую силу.",
-    "exerciseIndex": 133
+    "exerciseIndex": 133,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Подъём ягодиц-бедра",
     "description": "Движение на тренажёре ягодиц-бедра, комбинирующее разгибание бедра и сгибание колена для сильной нагрузки бицепсов бедра, ягодиц и поясницы.",
-    "exerciseIndex": 134
+    "exerciseIndex": 134,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Тяга Пендлей",
     "description": "Тяга штанги в наклоне, при которой каждое повторение начинается с мёртвой остановки на полу, приоритизируя взрывную силу верхней части спины.",
-    "exerciseIndex": 135
+    "exerciseIndex": 135,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Горизонтальная тяга",
     "description": "Горизонтальная тяга под фиксированной перекладиной или кольцами с прямым телом, сложность регулируется положением ног и высотой.",
-    "exerciseIndex": 136
+    "exerciseIndex": 136,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps",
+      "posterior_deltoid"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Сгибание рук со штангой",
     "description": "Стоячее сгибание рук с хватом на ширине плеч подхватом, позволяющее использовать большие веса, чем большинство вариантов с гантелями.",
-    "exerciseIndex": 137
+    "exerciseIndex": 137,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Сгибание рук с EZ-штангой",
     "description": "Сгибание рук со штангой с использованием EZ-штанги для уменьшения нагрузки на запястья при работе бицепсов и брахиалиса.",
-    "exerciseIndex": 138
+    "exerciseIndex": 138,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Сгибание рук с гантелями на наклонной скамье",
     "description": "Сгибание рук на наклонной скамье с отведёнными назад руками, растягивая длинную головку бицепса через большой диапазон движения.",
-    "exerciseIndex": 139
+    "exerciseIndex": 139,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.18
   },
   {
     "name": "Сгибание Зоттмана",
     "description": "Сгибание рук с гантелями с супинацией на подъёме и поворотом в хват сверху для медленного опускания для работы брахиорадиалиса и разгибателей.",
-    "exerciseIndex": 140
+    "exerciseIndex": 140,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis",
+      "forearms"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Разгибание рук в кроссовере над головой",
     "description": "Разгибание трицепсов с тросом, проходящим над головой, неподвижные локти, разгибание предплечий для выравнивания с высоким направлением тяги.",
-    "exerciseIndex": 141
+    "exerciseIndex": 141,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.28
   },
   {
     "name": "Отжимания ромбиком",
     "description": "Отжимания с близко поставленными руками, образующими ромб, увеличивающие нагрузку на трицепсы при сохранении работы груди и плеч.",
-    "exerciseIndex": 142
+    "exerciseIndex": 142,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Отжимания на скамье",
     "description": "Отжимания для трицепсов с руками на скамье сзади и ногами на полу или возвышении, опуская бёдра сгибанием локтей.",
-    "exerciseIndex": 143
+    "exerciseIndex": 143,
+    "muscleGroup": "arms",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "anterior_deltoid",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Подъём ног лёжа",
     "description": "Упражнение для пресса лёжа на спине или на скамье, поднимая прямые или согнутые ноги к потолку с контролируемым сгибанием бедра.",
-    "exerciseIndex": 144
+    "exerciseIndex": 144,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Мёртвый жук",
     "description": "Упражнение для кора лёжа на спине с чередованием вытягивания противоположной руки и ноги при прижатой пояснице к полу для контроля анти-разгибания.",
-    "exerciseIndex": 145
+    "exerciseIndex": 145,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Боковая планка",
     "description": "Боковое изометрическое удержание на одном предплечье и боковой части стопы, сопротивление боковому сгибу и развитие выносливости косых мышц.",
-    "exerciseIndex": 146
+    "exerciseIndex": 146,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "transverse_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Дровосек в кроссовере",
     "description": "Диагональное движение с тросом сверху вниз или снизу вверх через тело, развивающее вращательную силу и силу косых мышц.",
-    "exerciseIndex": 147
+    "exerciseIndex": 147,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Разведение рук с гантелями в наклоне",
     "description": "Разведение рук в наклоне с гантелями, поднимая руки в стороны с небольшим сгибом локтей для акцента на задние дельты и ромбовидные мышцы.",
-    "exerciseIndex": 148
+    "exerciseIndex": 148,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.12
   },
   {
     "name": "Шраги со штангой",
     "description": "Тяжёлое упражнение для верхней части трапеций с поднятием плеч прямо вверх против штанги, удерживаемой спереди или сзади тела.",
-    "exerciseIndex": 149
+    "exerciseIndex": 149,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Рывковая тяга",
     "description": "Взрывное олимпийское упражнение с подтягиванием штанги с земли к плечам одним движением, развивающее бёдра, спину и силу фиксации.",
-    "exerciseIndex": 150
+    "exerciseIndex": 150,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Тяга и жим",
     "description": "Комплексное упражнение, комбинирующее рывковую тягу к плечам с последующим жимом над головой, задействующее всё тело.",
-    "exerciseIndex": 151
+    "exerciseIndex": 151,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.65
   },
   {
     "name": "Рывок из виса",
     "description": "Олимпийское упражнение с началом со штангой на уровне бёдер, взрывное подтягивание к плечам в положение фронтального стойки.",
-    "exerciseIndex": 152
+    "exerciseIndex": 152,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Мощный рывок",
     "description": "Взрывное олимпийское упражнение с подтягиванием штанги с земли над головой одним движением с фиксацией в частичном приседании.",
-    "exerciseIndex": 153
+    "exerciseIndex": 153,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.55
   },
   {
     "name": "Рывок из виса",
     "description": "Олимпийское упражнение с началом со штангой на уровне бёдер, взрывное подтягивание над головой одним движением.",
-    "exerciseIndex": 154
+    "exerciseIndex": 154,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Приседание с толчком",
     "description": "Полный олимпийский толчок, при котором спортсмен опускается в глубокое приседание для фиксации штанги на плечах.",
-    "exerciseIndex": 155
+    "exerciseIndex": 155,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.75
   },
   {
     "name": "Приседание с рывком",
     "description": "Полный рывок, при котором спортсмен опускается в глубокое приседание для фиксации штанги над головой.",
-    "exerciseIndex": 156
+    "exerciseIndex": 156,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Толчковый рывок",
     "description": "Взрывное надголовное поднятие с начала с плеч, используя приседание и толчок с быстрым опусканием под штангу.",
-    "exerciseIndex": 157
+    "exerciseIndex": 157,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Толчок с расстановкой ног",
     "description": "Соревновательное олимпийское упражнение с опусканием в расстановку ног для фиксации штанги над головой.",
-    "exerciseIndex": 158
+    "exerciseIndex": 158,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.75
   },
   {
     "name": "Трастер",
     "description": "Комплексное движение, комбинирующее фронтальное приседание с жимом над головой одним непрерывным движением.",
-    "exerciseIndex": 159
+    "exerciseIndex": 159,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Приседание с штангой над головой",
     "description": "Приседания со штангой, удерживаемой над головой, требующие исключительной подвижности плеч, стабильности и силы кора.",
-    "exerciseIndex": 160
+    "exerciseIndex": 160,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "traps",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Балансировка в рывке",
     "description": "Олимпийское упражнение с началом со штангой за шеей, опускание в приседание с одновременным жимом штанги над головой.",
-    "exerciseIndex": 161
+    "exerciseIndex": 161,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Мышечный рывок",
     "description": "Вариация рывка с подтягиванием штанги над головой без опускания под неё в положение приседания.",
-    "exerciseIndex": 162
+    "exerciseIndex": 162,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.45
   },
   {
     "name": "Тяга в толчке",
     "description": "Первое и второе движение толчка до полного разгибания без фиксации штанги, фокусируясь на взрывной силе.",
-    "exerciseIndex": 163
+    "exerciseIndex": 163,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.1
   },
   {
     "name": "Тяга в рывке",
     "description": "Первое и второе движение рывка до полного разгибания без фиксации штанги, фокусируясь на взрывном тройном разгибании.",
-    "exerciseIndex": 164
+    "exerciseIndex": 164,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Высокая тяга",
     "description": "Взрывная тяга с пола или из виса, доведение штанги до уровня груди с высокими локтями.",
-    "exerciseIndex": 165
+    "exerciseIndex": 165,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "shoulders",
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Приседания с паузой",
     "description": "Приседания со штангой на плечах с паузой внизу для устранения рефлекса растяжения и развития силы из ямы.",
-    "exerciseIndex": 166
+    "exerciseIndex": 166,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Приседания с упоров",
     "description": "Приседания с началом с упоров на различной высоте, устраняющие эксцентрическую фазу для развития концентрической силы.",
-    "exerciseIndex": 167
+    "exerciseIndex": 167,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Приседания на ящик",
     "description": "Приседания на ящик или скамью, позволяющие сесть назад и развивать вовлечение задней цепи.",
-    "exerciseIndex": 168
+    "exerciseIndex": 168,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.95
   },
   {
     "name": "Приседания со штангой в тренажёре безопасности",
     "description": "Приседания со штангой в тренажёре безопасности для уменьшения нагрузки на плечи и акцента на верхнюю часть спины и квадрицепсы.",
-    "exerciseIndex": 169
+    "exerciseIndex": 169,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "upper_traps"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Жим лёжа с паузой",
     "description": "Жим лёжа с паузой на груди для устранения импульса и развития взрывной силы жима из мёртвой точки.",
-    "exerciseIndex": 170
+    "exerciseIndex": 170,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Жим лёжа на полу",
     "description": "Жим лёжа, выполняемый лёжа на полу с вытянутыми ногами, ограничивающий диапазон движения и акцентирующий силу замка.",
-    "exerciseIndex": 171
+    "exerciseIndex": 171,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Становая тяга с дефицита",
     "description": "Становая тяга, выполняемая стоя на возвышенной платформе для увеличения диапазона движения и ножной тяги от пола.",
-    "exerciseIndex": 172
+    "exerciseIndex": 172,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "lats",
+      "forearms"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Тяга с блоков",
     "description": "Становая тяга с возвышенных блоков или упоров, уменьшающая диапазон движения для перегрузки фазы замка.",
-    "exerciseIndex": 173
+    "exerciseIndex": 173,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "lats",
+      "erector_spinae",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
+    "loadMultiplier": 1.6
   },
   {
     "name": "Рывок гирей одной рукой",
     "description": "Взрывное одноручное поднятие гири размахом от между ног над голову одним плавным движением.",
-    "exerciseIndex": 174
+    "exerciseIndex": 174,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Толчок и жим гирей",
     "description": "Комплексное движение с размахом гири к плечу в положение стойки, а затем жим над головой.",
-    "exerciseIndex": 175
+    "exerciseIndex": 175,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "triceps",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Рывок гантелей",
     "description": "Взрывное одноручное поднятие гантели с пола над головой одним движением.",
-    "exerciseIndex": 176
+    "exerciseIndex": 176,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Жим гантелей одной рукой",
     "description": "Жим над головой одной гантелью, вовлекающий кор для стабильности и сопротивления вращению.",
-    "exerciseIndex": 177
+    "exerciseIndex": 177,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Шаги на платформу с гантелями",
     "description": "Упражнение для нижней части тела с заходом на возвышенную платформу, держа гантели по бокам.",
-    "exerciseIndex": 178
+    "exerciseIndex": 178,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Одноногая румынская становая тяга",
     "description": "Одностороннее упражнение в наклоне с балансированием на одной ноге при опускании гантелей к полу.",
-    "exerciseIndex": 179
+    "exerciseIndex": 179,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Гребля Ренегат",
     "description": "Тяга в положении планки с гантелями, чередуя руки при сохранении стабильности кора.",
-    "exerciseIndex": 180
+    "exerciseIndex": 180,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Трастер с гантелями",
     "description": "Комбинация фронтального приседания с гантелями и жима над головой одним непрерывным движением.",
-    "exerciseIndex": 181
+    "exerciseIndex": 181,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Удержание официанта",
     "description": "Упражнение для стабильности кора с удержанием одной гантели или гири над головой во время ходьбы.",
-    "exerciseIndex": 182
+    "exerciseIndex": 182,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "triceps",
+      "traps",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Удержание чемодана",
     "description": "Упражнение для кора с удержанием гантели или гири с одной стороны во время ходьбы, сопротивление боковому сгибу.",
-    "exerciseIndex": 183
+    "exerciseIndex": 183,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "transverse_abdominis",
+      "external_obliques",
+      "internal_obliques",
+      "quadratus_lumborum",
+      "forearms"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Тренажер для жима от груди сидя",
     "description": "Упражнение для жима от груди сидя, выполняемое в тренажере.",
-    "exerciseIndex": 184
+    "exerciseIndex": 184,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   }
 ]

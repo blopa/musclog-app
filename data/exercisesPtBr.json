@@ -2,921 +2,2497 @@
   {
     "name": "Supino Reto",
     "description": "Exercício para o peitoral onde você empurra uma barra para cima enquanto deita em um banco.",
-    "exerciseIndex": 1
+    "exerciseIndex": 1,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Supino Inclinado",
     "description": "Variação do supino realizada em um banco inclinado para trabalhar a parte superior do peitoral.",
-    "exerciseIndex": 2
+    "exerciseIndex": 2,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Supino Declinado",
     "description": "Variação do supino realizada em um banco declinado para trabalhar a parte inferior do peitoral.",
-    "exerciseIndex": 3
+    "exerciseIndex": 3,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 1.1
   },
   {
     "name": "Desenvolvimento Frontal",
     "description": "Exercício para ombros onde você empurra um peso acima da cabeça em pé ou sentado.",
-    "exerciseIndex": 4
+    "exerciseIndex": 4,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Levantamento Terra",
     "description": "Exercício para o corpo todo que envolve levantar uma barra do chão até a posição ereta.",
-    "exerciseIndex": 5
+    "exerciseIndex": 5,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "quadriceps",
+      "forearms"
+    ],
+    "loadMultiplier": 1.8
   },
   {
     "name": "Máquina de Crucifix",
     "description": "Exercício de máquina que isola os músculos peitorais imitando o movimento de um crucifixo.",
-    "exerciseIndex": 6
+    "exerciseIndex": 6,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Extensora",
     "description": "Exercício de máquina que trabalha o quadríceps estendendo as pernas na posição sentada.",
-    "exerciseIndex": 7
+    "exerciseIndex": 7,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "quadriceps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Agachamento",
     "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo e depois volta a ficar de pé.",
-    "exerciseIndex": 8
+    "exerciseIndex": 8,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Agachamento com Barra",
     "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo, com uma barra apoiada na parte superior das costas, e depois volta a ficar de pé.",
-    "exerciseIndex": 9
+    "exerciseIndex": 9,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Leg Press",
     "description": "Exercício de máquina onde você empurra um peso para longe usando as pernas.",
-    "exerciseIndex": 10
+    "exerciseIndex": 10,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 3.5
   },
   {
     "name": "Puxada Alta",
     "description": "Exercício de máquina que trabalha a parte superior das costas puxando uma barra em direção ao peito.",
-    "exerciseIndex": 11
+    "exerciseIndex": 11,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Barra Fixa",
     "description": "Exercício para a parte superior do corpo onde você eleva o corpo até uma barra usando os músculos das costas e dos braços.",
-    "exerciseIndex": 12
+    "exerciseIndex": 12,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Remada Sentado",
     "description": "Exercício de máquina que trabalha os músculos das costas puxando uma alça em direção ao tronco na posição sentada.",
-    "exerciseIndex": 13
+    "exerciseIndex": 13,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Rosca Direta",
     "description": "Exercício para os braços que trabalha o bíceps levantando um peso em direção ao ombro.",
-    "exerciseIndex": 14
+    "exerciseIndex": 14,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Tríceps Francês",
     "description": "Exercício para os braços que trabalha o tríceps estendendo o braço no cotovelo.",
-    "exerciseIndex": 15
+    "exerciseIndex": 15,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Flexora",
     "description": "Exercício de máquina que trabalha os isquiotibiais flexionando as pernas em direção aos glúteos.",
-    "exerciseIndex": 16
+    "exerciseIndex": 16,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Elevação Lateral",
     "description": "Exercício para ombros onde você eleva pesos para o lado do corpo.",
-    "exerciseIndex": 17
+    "exerciseIndex": 17,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "lateral_deltoid"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Elevação Frontal",
     "description": "Exercício para ombros onde você eleva pesos à frente do corpo.",
-    "exerciseIndex": 18
+    "exerciseIndex": 18,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.08
   },
   {
     "name": "Panturrilha em Pé",
     "description": "Exercício para o corpo inferior que trabalha a panturrilha elevando os calcanhares do chão.",
-    "exerciseIndex": 19
+    "exerciseIndex": 19,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Rosca Martelo",
     "description": "Exercício para os braços semelhante à rosca direta, mas com pegada neutra.",
-    "exerciseIndex": 20
+    "exerciseIndex": 20,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.18
   },
   {
     "name": "Rosca Scott",
     "description": "Variação da rosca direta realizada em um banco Scott para isolar o bíceps.",
-    "exerciseIndex": 21
+    "exerciseIndex": 21,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Puxada Tríceps no Cabo",
     "description": "Exercício para os braços que trabalha o tríceps empurrando um acessório de cabo para baixo.",
-    "exerciseIndex": 22
+    "exerciseIndex": 22,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Máquina de Supino",
     "description": "Exercício de máquina que imita o supino.",
-    "exerciseIndex": 23
+    "exerciseIndex": 23,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Agachamento no Smith",
     "description": "Variação do agachamento realizada no Smith para maior estabilidade.",
-    "exerciseIndex": 24
+    "exerciseIndex": 24,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 1.3
   },
   {
     "name": "Remada Cavalinho",
     "description": "Exercício para as costas onde você puxa uma barra T em direção ao tronco.",
-    "exerciseIndex": 25
+    "exerciseIndex": 25,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Remada Curvada",
     "description": "Exercício para as costas onde você inclina o tronco e puxa um peso em direção ao corpo.",
-    "exerciseIndex": 26
+    "exerciseIndex": 26,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Remada Alta",
     "description": "Exercício para ombros onde você puxa um peso para cima ao longo da frente do corpo.",
-    "exerciseIndex": 27
+    "exerciseIndex": 27,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "upper_traps",
+      "lateral_deltoid"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Crucifixo com Halteres",
     "description": "Exercício para o peitoral onde você abre e fecha halteres para os lados enquanto deita em um banco.",
-    "exerciseIndex": 28
+    "exerciseIndex": 28,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.15
   },
   {
     "name": "Supino Inclinado com Halteres",
     "description": "Exercício para o peitoral semelhante ao supino inclinado, mas usando halteres.",
-    "exerciseIndex": 29
+    "exerciseIndex": 29,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Desenvolvimento na Máquina",
     "description": "Exercício para ombros realizado em uma máquina que imita o desenvolvimento frontal.",
-    "exerciseIndex": 30
+    "exerciseIndex": 30,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Crucifixo Inverso no Peck Deck",
     "description": "Exercício de máquina que trabalha os deltoides posteriores imitando o movimento de um crucifixo inverso.",
-    "exerciseIndex": 31
+    "exerciseIndex": 31,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Crossover",
     "description": "Exercício para o peitoral que trabalha a parte interna do peitoral puxando cabos cruzando o corpo.",
-    "exerciseIndex": 32
+    "exerciseIndex": 32,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Panturrilha Sentado",
     "description": "Exercício para a panturrilha realizado na posição sentada, trabalhando o músculo sóleo.",
-    "exerciseIndex": 33
+    "exerciseIndex": 33,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Panturrilha em Pé",
     "description": "Exercício para a panturrilha realizado em pé, trabalhando o músculo gastrocnêmio.",
-    "exerciseIndex": 34
+    "exerciseIndex": 34,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Levantamento Terra Romeno",
     "description": "Variação do levantamento terra que trabalha os isquiotibiais e glúteos.",
-    "exerciseIndex": 35
+    "exerciseIndex": 35,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Ponte de Glúteos",
     "description": "Exercício para o corpo inferior que trabalha os glúteos elevando o quadril do chão enquanto deita de costas.",
-    "exerciseIndex": 36
+    "exerciseIndex": 36,
+    "muscleGroup": "glutes",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Empurrada de Quadril",
     "description": "Exercício para o corpo inferior que trabalha os glúteos elevando o quadril do chão com os ombros apoiados em um banco.",
-    "exerciseIndex": 37
+    "exerciseIndex": 37,
+    "muscleGroup": "glutes",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Rosca Direta no Cabo",
     "description": "Exercício para os braços que trabalha o bíceps flexionando um acessório de cabo.",
-    "exerciseIndex": 38
+    "exerciseIndex": 38,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Desenvolvimento com Halteres",
     "description": "Exercício para ombros onde você empurra halteres acima da cabeça.",
-    "exerciseIndex": 39
+    "exerciseIndex": 39,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Supino no Smith",
     "description": "Variação do supino realizada no Smith para maior estabilidade.",
-    "exerciseIndex": 40
+    "exerciseIndex": 40,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Hack Squat",
     "description": "Variação do agachamento realizada na máquina hack squat para trabalhar o quadríceps.",
-    "exerciseIndex": 41
+    "exerciseIndex": 41,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 1.5
   },
   {
     "name": "Avanço para Trás",
     "description": "Exercício para o corpo inferior onde você dá um passo para trás em posição de avanço.",
-    "exerciseIndex": 42
+    "exerciseIndex": 42,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Subida no Banco",
     "description": "Exercício para o corpo inferior onde você sobe em uma plataforma elevada.",
-    "exerciseIndex": 43
+    "exerciseIndex": 43,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Swing com Kettlebell",
     "description": "Exercício para o corpo todo que envolve balançar um kettlebell entre as pernas e até a altura dos ombros.",
-    "exerciseIndex": 44
+    "exerciseIndex": 44,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Agachamento Goblet",
     "description": "Variação do agachamento realizada segurando um peso à frente do peito.",
-    "exerciseIndex": 45
+    "exerciseIndex": 45,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Levantamento Terra Sumô",
     "description": "Variação do levantamento terra com stance aberto que trabalha a parte interna das coxas e glúteos.",
-    "exerciseIndex": 46
+    "exerciseIndex": 46,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "adductors",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.8
   },
   {
     "name": "Máquina de Abdução do Quadril",
     "description": "Exercício de máquina que trabalha a parte externa das coxas abrindo as pernas.",
-    "exerciseIndex": 47
+    "exerciseIndex": 47,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "abductors",
+      "gluteus_medius",
+      "gluteus_minimus"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Máquina de Adução do Quadril",
     "description": "Exercício de máquina que trabalha a parte interna das coxas aproximando as pernas.",
-    "exerciseIndex": 48
+    "exerciseIndex": 48,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "adductors"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Face Pull no Cabo",
     "description": "Exercício para ombros que trabalha os deltoides posteriores puxando um acessório de cabo em direção ao rosto.",
-    "exerciseIndex": 49
+    "exerciseIndex": 49,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Crucifixo Inclinado com Halteres",
     "description": "Exercício para o peitoral realizado em um banco inclinado que trabalha a parte superior do peitoral.",
-    "exerciseIndex": 50
+    "exerciseIndex": 50,
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.15
   },
   {
     "name": "Mergulho nas Barras",
     "description": "Exercício para o peitoral e tríceps onde você abaixa e eleva o corpo usando barras paralelas.",
-    "exerciseIndex": 51
+    "exerciseIndex": 51,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Flexão de Braços",
     "description": "Exercício para o peitoral, ombros e tríceps onde você empurra o corpo para cima a partir do chão.",
-    "exerciseIndex": 52
+    "exerciseIndex": 52,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Prancha",
     "description": "Exercício para o core onde você mantém a posição de flexão por um determinado período de tempo.",
-    "exerciseIndex": 53
+    "exerciseIndex": 53,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Rotação Russa",
     "description": "Exercício para os oblíquos onde você gira o tronco de lado a lado segurando um peso.",
-    "exerciseIndex": 54
+    "exerciseIndex": 54,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Elevação de Pernas Suspenso",
     "description": "Exercício abdominal onde você eleva as pernas enquanto fica suspenso em uma barra.",
-    "exerciseIndex": 55
+    "exerciseIndex": 55,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Escalada da Montanha",
     "description": "Exercício para o corpo todo onde você realiza um movimento de corrida na posição de prancha.",
-    "exerciseIndex": 56
+    "exerciseIndex": 56,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "hip_flexors",
+      "shoulders",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Burpees",
     "description": "Exercício para o corpo todo que envolve agachamento, salto e flexão de braços.",
-    "exerciseIndex": 57
+    "exerciseIndex": 57,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "rectus_abdominis",
+      "triceps",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Salto na Caixa",
     "description": "Exercício pliométrico para o corpo inferior onde você salta em uma plataforma elevada.",
-    "exerciseIndex": 58
+    "exerciseIndex": 58,
+    "muscleGroup": "legs",
+    "type": "plyometric",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Levantamento Turco",
     "description": "Exercício para o corpo todo que envolve a transição de deitado para de pé enquanto segura um peso acima da cabeça.",
-    "exerciseIndex": 59
+    "exerciseIndex": 59,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings",
+      "rectus_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Caminhada do Fazendeiro",
     "description": "Exercício onde você caminha segurando pesos pesados em cada mão.",
-    "exerciseIndex": 60
+    "exerciseIndex": 60,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "forearms",
+      "glutes",
+      "quadriceps",
+      "calves",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Arranco",
     "description": "Levantamento olímpico onde você eleva uma barra do chão até acima da cabeça em um único movimento.",
-    "exerciseIndex": 61
+    "exerciseIndex": 61,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Arranque e Arremesso",
     "description": "Levantamento olímpico onde você eleva uma barra do chão até os ombros e depois acima da cabeça.",
-    "exerciseIndex": 62
+    "exerciseIndex": 62,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Cordas de Batalha",
     "description": "Exercício onde você cria ondas com cordas pesadas para desenvolver força e resistência.",
-    "exerciseIndex": 63
+    "exerciseIndex": 63,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "biceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Máquina de Abdominal",
     "description": "Exercício de máquina que trabalha os músculos abdominais imitando o movimento de um abdominal.",
-    "exerciseIndex": 64
+    "exerciseIndex": 64,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Remada com Suporte de Peito na Máquina",
     "description": "Exercício para as costas realizado em uma máquina onde você rema com o peito apoiado em um suporte, trabalhando os músculos da parte superior e média das costas.",
-    "exerciseIndex": 65
+    "exerciseIndex": 65,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "traps",
+      "lats",
+      "biceps"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Remada com Barra",
     "description": "Exercício para as costas onde você puxa uma barra em direção ao tronco enquanto está inclinado.",
-    "exerciseIndex": 66
+    "exerciseIndex": 66,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "erector_spinae",
+      "biceps"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Tríceps Testa",
     "description": "Exercício para o tríceps onde você abaixa uma barra em direção à testa e estende de volta.",
-    "exerciseIndex": 67
+    "exerciseIndex": 67,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Agachamento Búlgaro",
     "description": "Exercício para o corpo inferior onde você realiza um agachamento dividido com o pé traseiro elevado em um banco.",
-    "exerciseIndex": 68
+    "exerciseIndex": 68,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Pallof Press",
     "description": "Exercício para o core que envolve empurrar um cabo ou faixa elástica para longe do corpo para resistir à rotação.",
-    "exerciseIndex": 69
+    "exerciseIndex": 69,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "internal_obliques",
+      "external_obliques",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Elevação de Joelhos Suspenso",
     "description": "Exercício abdominal onde você eleva os joelhos em direção ao peito enquanto fica suspenso em uma barra.",
-    "exerciseIndex": 70
+    "exerciseIndex": 70,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Desenvolvimento no Landmine",
     "description": "Exercício para ombros onde você empurra uma barra ancorada em uma extremidade no acessório landmine.",
-    "exerciseIndex": 71
+    "exerciseIndex": 71,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "upper_traps",
+      "triceps",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Remada no Landmine",
     "description": "Exercício para as costas onde você puxa uma barra ancorada em uma extremidade no acessório landmine em direção ao tronco.",
-    "exerciseIndex": 72
+    "exerciseIndex": 72,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Panturrilha no Burro",
     "description": "Exercício para a panturrilha onde você eleva os calcanhares enquanto está inclinado com peso na lombar.",
-    "exerciseIndex": 73
+    "exerciseIndex": 73,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "calves"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Corda de Pular",
     "description": "Exercício cardiovascular que envolve pular sobre uma corda à medida que ela passa sob seus pés e sobre a cabeça.",
-    "exerciseIndex": 74
+    "exerciseIndex": 74,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "calves",
+      "glutes",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Corrida",
     "description": "Exercício cardiovascular que envolve trotar ou correr em velocidade por uma distância.",
-    "exerciseIndex": 75
+    "exerciseIndex": 75,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Ciclismo",
     "description": "Exercício cardiovascular que envolve pedalar uma bicicleta, estacionária ou em movimento.",
-    "exerciseIndex": 76
+    "exerciseIndex": 76,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Máquina de Remo",
     "description": "Exercício cardiovascular que imita a ação de remar um barco usando uma máquina.",
-    "exerciseIndex": 77
+    "exerciseIndex": 77,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Elíptico",
     "description": "Exercício cardiovascular realizado em uma máquina que imita a caminhada ou corrida sem causar pressão excessiva nas articulações.",
-    "exerciseIndex": 78
+    "exerciseIndex": 78,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Treinamento Intervalado de Alta Intensidade (HIIT)",
     "description": "Uma forma de exercício cardiovascular que alterna curtos períodos de exercício anaeróbico intenso com períodos de recuperação menos intensos.",
-    "exerciseIndex": 79
+    "exerciseIndex": 79,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Escada de Exercício",
     "description": "Exercício cardiovascular realizado em uma máquina que imita o movimento de subir escadas.",
-    "exerciseIndex": 80
+    "exerciseIndex": 80,
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Aeróbica",
     "description": "Uma forma de exercício cardiovascular que inclui atividades rítmicas, geralmente realizadas ao som de música.",
-    "exerciseIndex": 81
+    "exerciseIndex": 81,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Cardio Dançante",
     "description": "Exercício cardiovascular que envolve vários movimentos e rotinas de dança para elevar a frequência cardíaca.",
-    "exerciseIndex": 82
+    "exerciseIndex": 82,
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Sombra",
     "description": "Exercício cardiovascular que envolve socar o ar para aumentar a frequência cardíaca e melhorar o condicionamento cardiovascular.",
-    "exerciseIndex": 83
+    "exerciseIndex": 83,
+    "muscleGroup": "cardio",
+    "type": "cardio",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "external_obliques",
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "biceps",
+      "triceps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Puxada Alta com Pegada Fechada",
     "description": "Variação da puxada alta onde você usa uma pegada fechada para trabalhar os músculos internos das costas.",
-    "exerciseIndex": 84
+    "exerciseIndex": 84,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Puxada Alta com Pegada Supinada",
     "description": "Variação da puxada alta onde você usa uma pegada supinada para trabalhar o bíceps e a parte superior das costas.",
-    "exerciseIndex": 85
+    "exerciseIndex": 85,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Pullover no Cabo",
     "description": "Exercício para as costas onde você puxa uma barra de cabo de acima da cabeça em direção ao quadril, focando nos latíssimos.",
-    "exerciseIndex": 86
+    "exerciseIndex": 86,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Pullover com Haltere",
     "description": "Exercício versátil que trabalha o peitoral e os latíssimos abaixando e levantando um haltere sobre a cabeça enquanto deita em um banco.",
-    "exerciseIndex": 87
+    "exerciseIndex": 87,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "lats",
+      "teres_major"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Supino com Pegada Invertida",
     "description": "Variação do supino onde você usa uma pegada invertida para enfatizar a parte superior do peitoral e o tríceps.",
-    "exerciseIndex": 88
+    "exerciseIndex": 88,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.8
   },
   {
     "name": "Supino no Cabo",
     "description": "Exercício para o peitoral onde você empurra um acessório de cabo para frente, semelhante ao supino, mas com tensão constante.",
-    "exerciseIndex": 89
+    "exerciseIndex": 89,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Elevação Frontal no Cabo",
     "description": "Exercício para ombros onde você eleva um acessório de cabo à frente, trabalhando os deltoides anteriores.",
-    "exerciseIndex": 90
+    "exerciseIndex": 90,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.08
   },
   {
     "name": "Elevação Lateral no Cabo",
     "description": "Exercício para ombros onde você eleva um acessório de cabo para o lado, trabalhando os deltoides laterais.",
-    "exerciseIndex": 91
+    "exerciseIndex": 91,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "lateral_deltoid",
+      "traps"
+    ],
+    "loadMultiplier": 0.1
   },
   {
     "name": "Remada Unilateral com Haltere",
     "description": "Exercício para as costas onde você rema um haltere em direção ao tronco enquanto está inclinado, focando em cada lado individualmente.",
-    "exerciseIndex": 92
+    "exerciseIndex": 92,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Encolhimento com Halteres",
     "description": "Exercício para ombros que trabalha o trapézio encolhendo os ombros enquanto segura halteres.",
-    "exerciseIndex": 93
+    "exerciseIndex": 93,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Flexora Deitado",
     "description": "Exercício de máquina que trabalha os isquiotibiais flexionando as pernas em direção aos glúteos enquanto está deitado de bruços.",
-    "exerciseIndex": 94
+    "exerciseIndex": 94,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Bom Dia",
     "description": "Exercício para o corpo inferior onde você dobra o quadril para baixar o tronco, trabalhando os isquiotibiais e glúteos.",
-    "exerciseIndex": 95
+    "exerciseIndex": 95,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "adductors"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Agachamento Zercher",
     "description": "Variação do agachamento onde você segura a barra na dobra dos cotovelos, enfatizando o quadríceps e o core.",
-    "exerciseIndex": 96
+    "exerciseIndex": 96,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Agachamento Sissy",
     "description": "Variação do agachamento focada no quadríceps realizada com um banco sissy ou inclinando-se para trás nas pontas dos pés.",
-    "exerciseIndex": 97
+    "exerciseIndex": 97,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "quadriceps",
+      "rectus_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Levantamento Terra Jefferson",
     "description": "Variação do levantamento terra onde você fica com as pernas em cada lado da barra, focando no quadríceps, glúteos e core.",
-    "exerciseIndex": 98
+    "exerciseIndex": 98,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "adductors",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.4
   },
   {
     "name": "Agachamento Cossaco",
     "description": "Exercício para o corpo inferior onde você realiza um avanço lateral profundo, trabalhando a parte interna das coxas e glúteos.",
-    "exerciseIndex": 99
+    "exerciseIndex": 99,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "adductors",
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Bandeira do Dragão",
     "description": "Exercício avançado para o core onde você abaixa e eleva o corpo em linha reta enquanto está deitado em um banco.",
-    "exerciseIndex": 100
+    "exerciseIndex": 100,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Posição Côncava",
     "description": "Exercício para o core onde você mantém uma posição côncava, com a lombar pressionada ao chão e os braços e pernas estendidos.",
-    "exerciseIndex": 101
+    "exerciseIndex": 101,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Abdominal Inverso",
     "description": "Exercício abdominal onde você curva o quadril em direção ao peito, focando nos abdominais inferiores.",
-    "exerciseIndex": 102
+    "exerciseIndex": 102,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Roda Abdominal",
     "description": "Exercício para o core que envolve rolar uma roda abdominal para longe do corpo enquanto mantém o core estável.",
-    "exerciseIndex": 103
+    "exerciseIndex": 103,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Flexão de Pique",
     "description": "Exercício para ombros onde você realiza uma flexão na posição de pique, enfatizando os ombros.",
-    "exerciseIndex": 104
+    "exerciseIndex": 104,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Abdominal no Cabo",
     "description": "Exercício abdominal onde você realiza o movimento de abdominal com um acessório de cabo para adicionar resistência.",
-    "exerciseIndex": 105
+    "exerciseIndex": 105,
+    "muscleGroup": "core",
+    "type": "isolation",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Tríceps Coice com Haltere",
     "description": "Exercício de isolamento para o tríceps onde você inclina para frente, mantém o braço superior fixo e estende o cotovelo para mover o haltere para trás.",
-    "exerciseIndex": 106
+    "exerciseIndex": 106,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Tríceps Coice Bilateral com Halteres",
     "description": "Variação do coice de tríceps usando um haltere em cada braço com o mesmo padrão de extensão de cotovelo inclinado.",
-    "exerciseIndex": 107
+    "exerciseIndex": 107,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Tríceps Coice Sentado Inclinado com Haltere",
     "description": "Coice de tríceps realizado sentado enquanto se inclina para frente para apoiar o tronco e isolar a extensão do cotovelo.",
-    "exerciseIndex": 108
+    "exerciseIndex": 108,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Tríceps Coice no Banco Inclinado com Haltere",
     "description": "Coice de tríceps realizado de bruços em um banco inclinado para apoiar o peito e reduzir o impulso.",
-    "exerciseIndex": 109
+    "exerciseIndex": 109,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Tríceps Coice no Cabo",
     "description": "Coice de tríceps usando um cabo baixo, mantendo o braço superior paralelo ao chão enquanto estende contra a linha de tração.",
-    "exerciseIndex": 110
+    "exerciseIndex": 110,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.28
   },
   {
     "name": "Tríceps Coice no Cabo com Polia Alta",
     "description": "Padrão de coice de tríceps com o cabo posicionado mais alto para que o ângulo de tração enfatize a cabeça longa de forma diferente.",
-    "exerciseIndex": 111
+    "exerciseIndex": 111,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.26
   },
   {
     "name": "Coice de Glúteos no Cabo",
     "description": "Exercício de extensão do quadril onde você move a perna de trabalho para trás contra um cabo baixo fixado no tornozelo ou na alça do pé.",
-    "exerciseIndex": 112
+    "exerciseIndex": 112,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Máquina de Coice de Glúteos",
     "description": "Coice de quadril guiado por máquina que carrega a extensão dos glúteos através de uma alavanca ou plataforma acolchoada.",
-    "exerciseIndex": 113
+    "exerciseIndex": 113,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.45
   },
   {
     "name": "Coice de Glúteos com Elástico",
     "description": "Coice de glúteos realizado com uma faixa elástica ancorada baixo ou enrolada nos pés para extensão do quadril.",
-    "exerciseIndex": 114
+    "exerciseIndex": 114,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.12
   },
   {
     "name": "Coice de Glúteos no Solo com Peso Corporal",
     "description": "Coice com peso corporal a partir das mãos e joelhos, estendendo um quadril para trás com uma contração controlada no topo.",
-    "exerciseIndex": 115
+    "exerciseIndex": 115,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Coice de Glúteos em Pé com Peso Corporal",
     "description": "Coice de quadril em pé estendendo a perna atrás do corpo sem equipamento, geralmente com uma leve inclinação para frente para equilíbrio.",
-    "exerciseIndex": 116
+    "exerciseIndex": 116,
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Rosca Concentrada",
     "description": "Rosca bíceps realizada sentado com o cotovelo apoiado na parte interna da coxa, curvando um haltere em direção ao ombro em um arco preciso.",
-    "exerciseIndex": 117
+    "exerciseIndex": 117,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Supino com Halteres",
     "description": "Supino horizontal deitado em um banco com halteres, permitindo trajetórias independentes dos braços e um alongamento profundo na posição mais baixa.",
-    "exerciseIndex": 118
+    "exerciseIndex": 118,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Supino Declinado com Halteres",
     "description": "Supino com halteres realizado em um banco declinado para enfatizar a parte inferior do peitoral com uma trajetória de braço neutra a angulada.",
-    "exerciseIndex": 119
+    "exerciseIndex": 119,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.32
   },
   {
     "name": "Supino com Pegada Fechada",
     "description": "Supino com pegada mais fechada para transferir mais carga para o tríceps enquanto ainda treina o peitoral e os deltoides anteriores.",
-    "exerciseIndex": 120
+    "exerciseIndex": 120,
+    "muscleGroup": "arms",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Arnold Press",
     "description": "Desenvolvimento com halteres sentado ou em pé que rotaciona das palmas voltadas para dentro na posição baixa até as palmas voltadas para frente acima da cabeça, trabalhando todas as cabeças do deltóide.",
-    "exerciseIndex": 121
+    "exerciseIndex": 121,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "posterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
+    "loadMultiplier": 0.22
   },
   {
     "name": "Press com Impulso",
     "description": "Desenvolvimento frontal que usa uma leve flexão e impulso das pernas para acelerar a barra, permitindo cargas mais pesadas que um desenvolvimento estrito.",
-    "exerciseIndex": 122
+    "exerciseIndex": 122,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 0.55
   },
   {
     "name": "Barra Supinada",
     "description": "Barra fixa com pegada supinada que aumenta o envolvimento do bíceps e braquial enquanto treina os latíssimos e a parte superior das costas.",
-    "exerciseIndex": 123
+    "exerciseIndex": 123,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "brachialis",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Puxada de Braço Estendido",
     "description": "Movimento de cabo com cotovelos quase bloqueados, puxando a barra em direção às coxas para isolar o engajamento dos latíssimos e a extensão do ombro.",
-    "exerciseIndex": 124
+    "exerciseIndex": 124,
+    "muscleGroup": "back",
+    "type": "isolation",
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "triceps"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Levantamento Terra Romeno com Halteres",
     "description": "Padrão de levantamento terra com dobradiça de quadril segurando halteres, enfatizando os isquiotibiais e glúteos com menos carga na lombar do que a versão com barra.",
-    "exerciseIndex": 125
+    "exerciseIndex": 125,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Levantamento Terra com Barra Hexagonal",
     "description": "Levantamento terra usando uma barra trap (hexagonal) com pegada neutra e alças mais altas, geralmente permitindo um tronco mais ereto e maior contribuição do quadríceps.",
-    "exerciseIndex": 126
+    "exerciseIndex": 126,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 1.45
   },
   {
     "name": "Puxada no Rack",
     "description": "Levantamento terra parcial a partir de pinos ou blocos abaixo do joelho, sobrecarregando a parte superior das costas, trapézio e pegada com menor amplitude das pernas.",
-    "exerciseIndex": 127
+    "exerciseIndex": 127,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "erector_spinae",
+      "rhomboids",
+      "lats",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
+    "loadMultiplier": 1.3
   },
   {
     "name": "Agachamento Frontal",
     "description": "Agachamento com a barra apoiada nos deltoides anteriores, exigindo tronco ereto e forte core com ênfase no quadríceps.",
-    "exerciseIndex": 128
+    "exerciseIndex": 128,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Avanço Caminhando",
     "description": "Padrão de avanço dinâmico avançando alternadamente, treinando força unilateral das pernas, equilíbrio e estabilidade do quadril e joelho sob carga.",
-    "exerciseIndex": 129
+    "exerciseIndex": 129,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Avanço para Frente",
     "description": "Variação do agachamento dividido dando um passo à frente em um avanço profundo e retornando, carregando intensamente a perna da frente através da extensão do joelho e quadril.",
-    "exerciseIndex": 130
+    "exerciseIndex": 130,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Cadeira na Parede",
     "description": "Sustentação isométrica com as costas contra a parede e as coxas paralelas ao chão, desenvolvendo resistência do quadríceps e resistência mental.",
-    "exerciseIndex": 131
+    "exerciseIndex": 131,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Agachamento Pistol",
     "description": "Agachamento unilateral até a profundidade total com a perna não ativa estendida, exigindo mobilidade, equilíbrio e força unilateral das pernas.",
-    "exerciseIndex": 132
+    "exerciseIndex": 132,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Curl Nórdico",
     "description": "Exercício para os isquiotibiais assistido por parceiro ou âncora, abaixando o corpo a partir da posição ajoelhada com o quadril estendido, enfatizando a força excêntrica.",
-    "exerciseIndex": 133
+    "exerciseIndex": 133,
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Elevação Glúteo-Posterior",
     "description": "Movimento no GHD combinando extensão do quadril e flexão do joelho para sobrecarregar intensamente os isquiotibiais, glúteos e lombar.",
-    "exerciseIndex": 134
+    "exerciseIndex": 134,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Remada Pendlay",
     "description": "Remada com barra inclinada onde cada repetição começa a partir de uma parada total no chão, priorizando a força explosiva de puxada da parte superior das costas.",
-    "exerciseIndex": 135
+    "exerciseIndex": 135,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Remada Invertida",
     "description": "Puxada horizontal sob uma barra fixa ou argolas com o corpo reto, ajustando a dificuldade pela posição dos pés e altura.",
-    "exerciseIndex": 136
+    "exerciseIndex": 136,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps",
+      "posterior_deltoid"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Rosca com Barra",
     "description": "Rosca em pé com pegada supinada na largura dos ombros em uma barra, permitindo cargas mais pesadas que a maioria das variações com haltere.",
-    "exerciseIndex": 137
+    "exerciseIndex": 137,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Rosca com Barra W",
     "description": "Rosca com barra usando uma barra W para reduzir a tensão no pulso enquanto trabalha o bíceps e braquial.",
-    "exerciseIndex": 138
+    "exerciseIndex": 138,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Rosca no Banco Inclinado com Haltere",
     "description": "Rosca realizada em um banco inclinado com os braços pendurados para trás, alongando a cabeça longa do bíceps através de uma longa amplitude de movimento.",
-    "exerciseIndex": 139
+    "exerciseIndex": 139,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.18
   },
   {
     "name": "Rosca Zottman",
     "description": "Rosca com haltere supinando na fase ascendente e rotacionando para pronada na descida lenta para trabalhar o braquiorradial e os extensores.",
-    "exerciseIndex": 140
+    "exerciseIndex": 140,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "biceps",
+      "brachialis",
+      "forearms"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Tríceps Francês no Cabo",
     "description": "Extensão de tríceps com o cabo direcionado acima da cabeça, cotovelos fixos, estendendo os antebraços para alinhar com a linha de tração alta.",
-    "exerciseIndex": 141
+    "exerciseIndex": 141,
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "loadMultiplier": 0.28
   },
   {
     "name": "Flexão Diamante",
     "description": "Flexão com as mãos próximas formando um losango, aumentando a demanda sobre o tríceps enquanto ainda treina o peitoral e os ombros.",
-    "exerciseIndex": 142
+    "exerciseIndex": 142,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Tríceps no Banco",
     "description": "Tríceps realizado com as mãos em um banco atrás de você e os pés no chão ou elevados, abaixando os quadris ao dobrar os cotovelos.",
-    "exerciseIndex": 143
+    "exerciseIndex": 143,
+    "muscleGroup": "arms",
+    "type": "compound",
+    "targetMuscles": [
+      "triceps",
+      "anterior_deltoid",
+      "pectoralis_major"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Elevação de Pernas Deitado",
     "description": "Exercício abdominal deitado de costas ou em um banco, elevando pernas estendidas ou dobradas em direção ao teto com flexão de quadril controlada.",
-    "exerciseIndex": 144
+    "exerciseIndex": 144,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Inseto Morto",
     "description": "Exercício de core em decúbito dorsal alternando extensões de braço e perna opostos enquanto mantém a lombar pressionada ao chão para controle anti-extensão.",
-    "exerciseIndex": 145
+    "exerciseIndex": 145,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Prancha Lateral",
     "description": "Sustentação isométrica lateral apoiada em um antebraço e no lado do pé, resistindo à flexão lateral e desenvolvendo a resistência dos oblíquos.",
-    "exerciseIndex": 146
+    "exerciseIndex": 146,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "transverse_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
   },
   {
     "name": "Corte de Lenha no Cabo",
     "description": "Corte diagonal no cabo de cima para baixo ou de baixo para cima cruzando o corpo, treinando potência rotacional e força dos oblíquos.",
-    "exerciseIndex": 147
+    "exerciseIndex": 147,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "shoulders"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Crucifixo Inverso Inclinado com Halteres",
     "description": "Crucifixo na posição inclinada com halteres, elevando os braços para os lados com leve dobra do cotovelo para trabalhar os deltoides posteriores e romboides.",
-    "exerciseIndex": 148
+    "exerciseIndex": 148,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
+    "loadMultiplier": 0.12
   },
   {
     "name": "Encolhimento com Barra",
     "description": "Exercício pesado para o trapézio superior elevando os ombros verticalmente contra uma barra segura na frente ou atrás do corpo.",
-    "exerciseIndex": 149
+    "exerciseIndex": 149,
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "targetMuscles": [
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Power Clean",
     "description": "Levantamento olímpico explosivo puxando a barra do chão até os ombros em um único movimento, treinando quadril, costas e força de recepção.",
-    "exerciseIndex": 150
+    "exerciseIndex": 150,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Clean and Press",
     "description": "Levantamento composto combinando um power clean até os ombros seguido de um desenvolvimento, trabalhando o corpo inteiro.",
-    "exerciseIndex": 151
+    "exerciseIndex": 151,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.65
   },
   {
     "name": "Hang Clean",
     "description": "Levantamento olímpico iniciando com a barra na altura do quadril, puxando-a explosivamente para os ombros na posição de front rack.",
-    "exerciseIndex": 152
+    "exerciseIndex": 152,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Power Snatch",
     "description": "Levantamento olímpico explosivo puxando a barra do chão até acima da cabeça em um movimento, recebendo em agachamento parcial.",
-    "exerciseIndex": 153
+    "exerciseIndex": 153,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.55
   },
   {
     "name": "Hang Snatch",
     "description": "Levantamento olímpico iniciando com a barra na altura do quadril, puxando-a explosivamente acima da cabeça em um movimento.",
-    "exerciseIndex": 154
+    "exerciseIndex": 154,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Squat Clean",
     "description": "Clean olímpico completo onde o atleta desce em agachamento profundo para receber a barra nos ombros.",
-    "exerciseIndex": 155
+    "exerciseIndex": 155,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.75
   },
   {
     "name": "Squat Snatch",
     "description": "Snatch completo onde o atleta desce em agachamento profundo para receber a barra acima da cabeça.",
-    "exerciseIndex": 156
+    "exerciseIndex": 156,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Push Jerk",
     "description": "Levantamento explosivo acima da cabeça iniciando dos ombros, usando flexão e impulso com queda rápida sob a barra.",
-    "exerciseIndex": 157
+    "exerciseIndex": 157,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.7
   },
   {
     "name": "Split Jerk",
     "description": "O jerk competitivo do levantamento olímpico onde o atleta desce em posição de afundo para receber a barra acima da cabeça.",
-    "exerciseIndex": 158
+    "exerciseIndex": 158,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.75
   },
   {
     "name": "Thruster",
     "description": "Movimento composto combinando um agachamento frontal com um desenvolvimento em um movimento contínuo.",
-    "exerciseIndex": 159
+    "exerciseIndex": 159,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Overhead Squat",
     "description": "Agachamento realizado com a barra segurada acima da cabeça, exigindo mobilidade excepcional dos ombros, estabilidade e força do core.",
-    "exerciseIndex": 160
+    "exerciseIndex": 160,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "traps",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Snatch Balance",
     "description": "Levantamento olímpico iniciando com a barra atrás do pescoço, descendo em agachamento enquanto pressiona a barra acima da cabeça.",
-    "exerciseIndex": 161
+    "exerciseIndex": 161,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.5
   },
   {
     "name": "Muscle Snatch",
     "description": "Variação de snatch onde a barra é puxada acima da cabeça sem descer em agachamento.",
-    "exerciseIndex": 162
+    "exerciseIndex": 162,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
+    "loadMultiplier": 0.45
   },
   {
     "name": "Clean Pull",
     "description": "Primeira e segunda fase do clean até a extensão completa sem receber a barra, focando na potência explosiva.",
-    "exerciseIndex": 163
+    "exerciseIndex": 163,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1.1
   },
   {
     "name": "Snatch Pull",
     "description": "Primeira e segunda fase do snatch até a extensão completa sem receber a barra, focando na extensão tripla explosiva.",
-    "exerciseIndex": 164
+    "exerciseIndex": 164,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "High Pull",
     "description": "Puxada explosiva da posição de chão ou hang, trazendo a barra à altura do peito com cotovelos altos.",
-    "exerciseIndex": 165
+    "exerciseIndex": 165,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "shoulders",
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.6
   },
   {
     "name": "Agachamento com Pausa",
     "description": "Agachamento com pausa deliberada no fundo para eliminar o reflexo de esticamento e construir força a partir da posição mais baixa.",
-    "exerciseIndex": 166
+    "exerciseIndex": 166,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Agachamento nos Pinos",
     "description": "Agachamento iniciando a partir de pinos em várias alturas, eliminando a fase excêntrica para construir força concêntrica.",
-    "exerciseIndex": 167
+    "exerciseIndex": 167,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Agachamento no Caixote",
     "description": "Agachamento realizado até um caixote ou banco, permitindo que o atleta se sente e desenvolva o engajamento da cadeia posterior.",
-    "exerciseIndex": 168
+    "exerciseIndex": 168,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae"
+    ],
+    "loadMultiplier": 0.95
   },
   {
     "name": "Agachamento com Barra de Segurança",
     "description": "Agachamento realizado com uma barra de segurança para reduzir o estresse nos ombros e enfatizar a força das costas superiores e quadríceps.",
-    "exerciseIndex": 169
+    "exerciseIndex": 169,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "upper_traps"
+    ],
+    "loadMultiplier": 1
   },
   {
     "name": "Supino com Pausa",
     "description": "Supino com pausa no peito para eliminar o momento e construir potência de pressão explosiva a partir de uma parada total.",
-    "exerciseIndex": 170
+    "exerciseIndex": 170,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Supino no Chão",
     "description": "Supino realizado deitado no chão com as pernas estendidas, limitando a amplitude de movimento e enfatizando a força de travamento.",
-    "exerciseIndex": 171
+    "exerciseIndex": 171,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
+    "loadMultiplier": 0.85
   },
   {
     "name": "Levantamento Terra Deficit",
     "description": "Levantamento terra realizado em pé sobre uma plataforma elevada para aumentar a amplitude de movimento e o impulso das pernas do chão.",
-    "exerciseIndex": 172
+    "exerciseIndex": 172,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "lats",
+      "forearms"
+    ],
+    "loadMultiplier": 0.9
   },
   {
     "name": "Puxada nos Blocos",
     "description": "Levantamento terra a partir de blocos ou pinos elevados, reduzindo a amplitude de movimento para sobrecarregar a fase de travamento.",
-    "exerciseIndex": 173
+    "exerciseIndex": 173,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "traps",
+      "lats",
+      "erector_spinae",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
+    "loadMultiplier": 1.6
   },
   {
     "name": "Snatch com Kettlebell de Um Braço",
     "description": "Levantamento explosivo de um braço balançando um kettlebell entre as pernas até acima da cabeça em um movimento fluido.",
-    "exerciseIndex": 174
+    "exerciseIndex": 174,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Clean and Press com Kettlebell",
     "description": "Movimento composto balançando um kettlebell até o ombro na posição de rack, depois pressionando acima da cabeça.",
-    "exerciseIndex": 175
+    "exerciseIndex": 175,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "triceps",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.4
   },
   {
     "name": "Snatch com Haltere",
     "description": "Levantamento explosivo de um braço puxando um haltere do chão até acima da cabeça em um movimento.",
-    "exerciseIndex": 176
+    "exerciseIndex": 176,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Desenvolvimento com Haltere de Um Braço",
     "description": "Desenvolvimento acima da cabeça realizado com um haltere, engajando o core para estabilidade e anti-rotação.",
-    "exerciseIndex": 177
+    "exerciseIndex": 177,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Step-Up com Halteres",
     "description": "Exercício para o corpo inferior subindo em uma plataforma elevada enquanto segura halteres nas laterais.",
-    "exerciseIndex": 178
+    "exerciseIndex": 178,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Levantamento Terra Romeno de Uma Perna",
     "description": "Exercício unilateral de dobradiça equilibrando em uma perna enquanto abaixa halteres em direção ao chão.",
-    "exerciseIndex": 179
+    "exerciseIndex": 179,
+    "muscleGroup": "legs",
+    "type": "compound",
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
+    "loadMultiplier": 0.35
   },
   {
     "name": "Remada Renegada",
     "description": "Remada na posição de prancha com halteres, alternando os braços enquanto mantém a estabilidade do core.",
-    "exerciseIndex": 180
+    "exerciseIndex": 180,
+    "muscleGroup": "back",
+    "type": "compound",
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "rectus_abdominis"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Thruster com Halteres",
     "description": "Combinação de um agachamento frontal com halteres e um desenvolvimento em um movimento contínuo.",
-    "exerciseIndex": 181
+    "exerciseIndex": 181,
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
+    "loadMultiplier": 0.25
   },
   {
     "name": "Caminhada do Garçom",
     "description": "Exercício de estabilidade do core segurando um haltere ou kettlebell acima da cabeça enquanto caminha.",
-    "exerciseIndex": 182
+    "exerciseIndex": 182,
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "targetMuscles": [
+      "shoulders",
+      "triceps",
+      "traps",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.2
   },
   {
     "name": "Caminhada de Mala",
     "description": "Exercício para o core segurando um haltere ou kettlebell de um lado enquanto caminha, resistindo à flexão lateral.",
-    "exerciseIndex": 183
+    "exerciseIndex": 183,
+    "muscleGroup": "core",
+    "type": "compound",
+    "targetMuscles": [
+      "transverse_abdominis",
+      "external_obliques",
+      "internal_obliques",
+      "quadratus_lumborum",
+      "forearms"
+    ],
+    "loadMultiplier": 0.3
   },
   {
     "name": "Máquina de Chest Press Sentado",
     "description": "Um exercício de chest press sentado realizado em uma máquina.",
-    "exerciseIndex": 184
+    "exerciseIndex": 184,
+    "muscleGroup": "chest",
+    "type": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
+    "loadMultiplier": 0.9
   }
 ]

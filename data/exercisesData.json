@@ -4,477 +4,727 @@
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Bench Press"
+    "__exerciseName": "Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 2,
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Inclined Bench Press"
+    "__exerciseName": "Inclined Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 3,
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "serratus_anterior"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 1.1,
-    "__exerciseName": "Declined Bench Press"
+    "__exerciseName": "Declined Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 4,
     "muscleGroup": "shoulders",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Overhead Shoulder Press"
+    "__exerciseName": "Overhead Shoulder Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 5,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "traps",
+      "quadriceps",
+      "forearms"
+    ],
     "loadMultiplier": 1.8,
-    "__exerciseName": "Deadlift"
+    "__exerciseName": "Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 6,
     "muscleGroup": "chest",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Pec Fly Machine"
+    "__exerciseName": "Pec Fly Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 7,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["quadriceps"],
+    "targetMuscles": [
+      "quadriceps"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Leg Extension Machine"
+    "__exerciseName": "Leg Extension Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 8,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 1.4,
-    "__exerciseName": "Squat"
+    "__exerciseName": "Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 9,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1.4,
-    "__exerciseName": "Barbell Back Squat"
+    "__exerciseName": "Barbell Back Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 10,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 3.5,
-    "__exerciseName": "Leg Press Machine"
+    "__exerciseName": "Leg Press Machine",
+    "type": "compound"
   },
   {
     "exerciseIndex": 11,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Lat Pulldown"
+    "__exerciseName": "Lat Pulldown",
+    "type": "compound"
   },
   {
     "exerciseIndex": 12,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Pull-Up"
+    "__exerciseName": "Pull-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 13,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Seated Row"
+    "__exerciseName": "Seated Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 14,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.35,
-    "__exerciseName": "Bicep Curl"
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.25,
+    "__exerciseName": "Bicep Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 15,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Tricep Overhead Extension"
+    "__exerciseName": "Tricep Overhead Extension",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 16,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["hamstrings"],
+    "targetMuscles": [
+      "hamstrings"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Leg Curl Machine"
+    "__exerciseName": "Leg Curl Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 17,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["lateral_deltoid"],
+    "targetMuscles": [
+      "lateral_deltoid"
+    ],
     "loadMultiplier": 0.1,
-    "__exerciseName": "Lateral Raise"
+    "__exerciseName": "Lateral Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 18,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["anterior_deltoid"],
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.08,
-    "__exerciseName": "Front Raise"
+    "__exerciseName": "Front Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 19,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["calves"],
+    "targetMuscles": [
+      "calves"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Calf Raise"
+    "__exerciseName": "Calf Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 20,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.18,
-    "__exerciseName": "Hammer Curl"
+    "__exerciseName": "Hammer Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 21,
     "muscleGroup": "arms",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Preacher Curl"
+    "__exerciseName": "Preacher Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 22,
     "muscleGroup": "arms",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "Cable Tricep Pushdown"
+    "__exerciseName": "Cable Tricep Pushdown",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 23,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Chest Press Machine"
+    "__exerciseName": "Chest Press Machine",
+    "type": "compound"
   },
   {
     "exerciseIndex": 24,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 1.3,
-    "__exerciseName": "Smith Machine Squat"
+    "__exerciseName": "Smith Machine Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 25,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "T-Bar Row"
+    "__exerciseName": "T-Bar Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 26,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.8,
-    "__exerciseName": "Bent Over Row"
+    "__exerciseName": "Bent Over Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 27,
     "muscleGroup": "shoulders",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
+    "targetMuscles": [
+      "upper_traps",
+      "lateral_deltoid"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Upright Row"
+    "__exerciseName": "Upright Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 28,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.15,
-    "__exerciseName": "Dumbbell Fly"
+    "__exerciseName": "Dumbbell Fly",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 29,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Incline Dumbbell Press"
+    "__exerciseName": "Incline Dumbbell Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 30,
     "muscleGroup": "shoulders",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Machine Shoulder Press"
+    "__exerciseName": "Machine Shoulder Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 31,
     "muscleGroup": "shoulders",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Reverse Pec Deck Fly"
+    "__exerciseName": "Reverse Pec Deck Fly",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 32,
     "muscleGroup": "chest",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Cable Crossover"
+    "__exerciseName": "Cable Crossover",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 33,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["calves"],
+    "targetMuscles": [
+      "calves"
+    ],
     "loadMultiplier": 0.8,
-    "__exerciseName": "Seated Calf Raise"
+    "__exerciseName": "Seated Calf Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 34,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["calves"],
+    "targetMuscles": [
+      "calves"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Standing Calf Raise"
+    "__exerciseName": "Standing Calf Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 35,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Romanian Deadlift"
+    "__exerciseName": "Romanian Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 36,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Glute Bridge"
+    "__exerciseName": "Glute Bridge",
+    "type": "compound"
   },
   {
     "exerciseIndex": 37,
     "muscleGroup": "glutes",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
     "loadMultiplier": 1.4,
-    "__exerciseName": "Hip Thrust"
+    "__exerciseName": "Hip Thrust",
+    "type": "compound"
   },
   {
     "exerciseIndex": 38,
     "muscleGroup": "arms",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Cable Bicep Curl"
+    "__exerciseName": "Cable Bicep Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 39,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Dumbbell Shoulder Press"
+    "__exerciseName": "Dumbbell Shoulder Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 40,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Smith Machine Bench Press"
+    "__exerciseName": "Smith Machine Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 41,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
     "loadMultiplier": 1.5,
-    "__exerciseName": "Hack Squat"
+    "__exerciseName": "Hack Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 42,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Reverse Lunge"
+    "__exerciseName": "Reverse Lunge",
+    "type": "compound"
   },
   {
     "exerciseIndex": 43,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Step-Up"
+    "__exerciseName": "Step-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 44,
     "muscleGroup": "full_body",
     "equipmentType": "kettlebell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Kettlebell Swing"
+    "__exerciseName": "Kettlebell Swing",
+    "type": "compound"
   },
   {
     "exerciseIndex": 45,
     "muscleGroup": "legs",
     "equipmentType": "kettlebell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Goblet Squat"
+    "__exerciseName": "Goblet Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 46,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "adductors",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1.8,
-    "__exerciseName": "Sumo Deadlift"
+    "__exerciseName": "Sumo Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 47,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
+    "targetMuscles": [
+      "abductors",
+      "gluteus_medius",
+      "gluteus_minimus"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Hip Abduction Machine"
+    "__exerciseName": "Hip Abduction Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 48,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["adductors"],
+    "targetMuscles": [
+      "adductors"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Hip Adduction Machine"
+    "__exerciseName": "Hip Adduction Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 49,
     "muscleGroup": "shoulders",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Cable Face Pull"
+    "__exerciseName": "Cable Face Pull",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 50,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.15,
-    "__exerciseName": "Incline Dumbbell Fly"
+    "__exerciseName": "Incline Dumbbell Fly",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 51,
-    "muscleGroup": "arms",
+    "muscleGroup": "chest",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Dips"
+    "__exerciseName": "Dips",
+    "type": "compound"
   },
   {
     "exerciseIndex": 52,
     "muscleGroup": "chest",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Push-Up"
+    "__exerciseName": "Push-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 53,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae",
+      "shoulders"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Plank"
+    "__exerciseName": "Plank",
+    "type": "compound"
   },
   {
     "exerciseIndex": 54,
@@ -488,25 +738,37 @@
       "transverse_abdominis"
     ],
     "loadMultiplier": 0.1,
-    "__exerciseName": "Russian Twist"
+    "__exerciseName": "Russian Twist",
+    "type": "compound"
   },
   {
     "exerciseIndex": 55,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Hanging Leg Raise"
+    "__exerciseName": "Hanging Leg Raise",
+    "type": "compound"
   },
   {
     "exerciseIndex": 56,
     "muscleGroup": "full_body",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "hip_flexors",
+      "shoulders",
+      "quadriceps"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Mountain Climbers"
+    "__exerciseName": "Mountain Climbers",
+    "type": "compound"
   },
   {
     "exerciseIndex": 57,
@@ -522,106 +784,171 @@
       "shoulders"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "Burpees"
+    "__exerciseName": "Burpees",
+    "type": "compound"
   },
   {
     "exerciseIndex": 58,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "plyometric",
-    "targetMuscles": ["quadriceps", "glutes", "calves"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "calves"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Box Jump"
+    "__exerciseName": "Box Jump",
+    "type": "plyometric"
   },
   {
     "exerciseIndex": 59,
     "muscleGroup": "full_body",
     "equipmentType": "kettlebell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings",
+      "rectus_abdominis",
+      "shoulders"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Turkish Get-Up"
+    "__exerciseName": "Turkish Get-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 60,
     "muscleGroup": "full_body",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
+    "targetMuscles": [
+      "forearms",
+      "glutes",
+      "quadriceps",
+      "calves",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Farmer's Walk"
+    "__exerciseName": "Farmer's Walk",
+    "type": "compound"
   },
   {
     "exerciseIndex": 61,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Snatch"
+    "__exerciseName": "Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 62,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Clean and Jerk"
+    "__exerciseName": "Clean and Jerk",
+    "type": "compound"
   },
   {
     "exerciseIndex": 63,
     "muscleGroup": "full_body",
     "equipmentType": "other",
     "mechanicType": "compound",
-    "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "biceps",
+      "forearms"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Battle Ropes"
+    "__exerciseName": "Battle Ropes",
+    "type": "compound"
   },
   {
     "exerciseIndex": 64,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Crunch Machine"
+    "__exerciseName": "Crunch Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 65,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
+    "targetMuscles": [
+      "rhomboids",
+      "traps",
+      "lats",
+      "biceps"
+    ],
     "loadMultiplier": 0.8,
-    "__exerciseName": "Chest Supported Row Machine"
+    "__exerciseName": "Chest Supported Row Machine",
+    "type": "compound"
   },
   {
     "exerciseIndex": 66,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "erector_spinae",
+      "biceps"
+    ],
     "loadMultiplier": 0.8,
-    "__exerciseName": "Barbell Row"
+    "__exerciseName": "Barbell Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 67,
     "muscleGroup": "arms",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Skull Crusher"
+    "__exerciseName": "Skull Crusher",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 68,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "quadriceps",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Bulgarian Split Squat"
+    "__exerciseName": "Bulgarian Split Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 69,
@@ -635,88 +962,142 @@
       "transverse_abdominis"
     ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Pallof Press"
+    "__exerciseName": "Pallof Press",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 70,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Hanging Knee Raise"
+    "__exerciseName": "Hanging Knee Raise",
+    "type": "compound"
   },
   {
     "exerciseIndex": 71,
     "muscleGroup": "shoulders",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectoralis_major"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "upper_traps",
+      "triceps",
+      "pectoralis_major"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Landmine Press"
+    "__exerciseName": "Landmine Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 72,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "biceps",
+      "traps"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Landmine Row"
+    "__exerciseName": "Landmine Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 73,
     "muscleGroup": "legs",
     "equipmentType": "other",
     "mechanicType": "isolation",
-    "targetMuscles": ["calves"],
+    "targetMuscles": [
+      "calves"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Donkey Calf Raise"
+    "__exerciseName": "Donkey Calf Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 74,
-    "muscleGroup": "full_body",
+    "muscleGroup": "cardio",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["calves", "glutes", "quadriceps"],
+    "targetMuscles": [
+      "calves",
+      "glutes",
+      "quadriceps"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Jump Rope"
+    "__exerciseName": "Jump Rope",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 75,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Running"
+    "__exerciseName": "Running",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 76,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Cycling"
+    "__exerciseName": "Cycling",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 77,
-    "muscleGroup": "full_body",
+    "muscleGroup": "cardio",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Rowing Machine"
+    "__exerciseName": "Rowing Machine",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 78,
     "muscleGroup": "full_body",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Elliptical Trainer"
+    "__exerciseName": "Elliptical Trainer",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 79,
@@ -732,16 +1113,23 @@
       "external_obliques"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "High-Intensity Interval Training (HIIT)"
+    "__exerciseName": "High-Intensity Interval Training (HIIT)",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 80,
     "muscleGroup": "legs",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Stair Climber"
+    "__exerciseName": "Stair Climber",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 81,
@@ -757,7 +1145,8 @@
       "external_obliques"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "Aerobics"
+    "__exerciseName": "Aerobics",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 82,
@@ -773,11 +1162,12 @@
       "external_obliques"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "Dance Cardio"
+    "__exerciseName": "Dance Cardio",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 83,
-    "muscleGroup": "full_body",
+    "muscleGroup": "cardio",
     "equipmentType": "cardio",
     "mechanicType": "cardio",
     "targetMuscles": [
@@ -789,340 +1179,511 @@
       "triceps"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "Shadow Boxing"
+    "__exerciseName": "Shadow Boxing",
+    "type": "cardio"
   },
   {
     "exerciseIndex": 84,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Narrow Grip Lat Pulldown"
+    "__exerciseName": "Narrow Grip Lat Pulldown",
+    "type": "compound"
   },
   {
     "exerciseIndex": 85,
     "muscleGroup": "back",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "biceps",
+      "traps"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Supinated Lat Pulldown"
+    "__exerciseName": "Supinated Lat Pulldown",
+    "type": "compound"
   },
   {
     "exerciseIndex": 86,
     "muscleGroup": "back",
     "equipmentType": "cable",
-    "mechanicType": "isolation",
-    "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
+    "mechanicType": "compound",
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "pectoralis_major"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Cable Pullover"
+    "__exerciseName": "Cable Pullover",
+    "type": "compound"
   },
   {
     "exerciseIndex": 87,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
-    "mechanicType": "isolation",
-    "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
+    "mechanicType": "compound",
+    "targetMuscles": [
+      "pectoralis_major",
+      "lats",
+      "teres_major"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Dumbbell Pullover"
+    "__exerciseName": "Dumbbell Pullover",
+    "type": "compound"
   },
   {
     "exerciseIndex": 88,
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.8,
-    "__exerciseName": "Reverse Grip Bench Press"
+    "__exerciseName": "Reverse Grip Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 89,
     "muscleGroup": "chest",
     "equipmentType": "cable",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Cable Chest Press"
+    "__exerciseName": "Cable Chest Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 90,
     "muscleGroup": "shoulders",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
+    "targetMuscles": [
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.08,
-    "__exerciseName": "Cable Front Raise"
+    "__exerciseName": "Cable Front Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 91,
     "muscleGroup": "shoulders",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["lateral_deltoid", "traps"],
+    "targetMuscles": [
+      "lateral_deltoid",
+      "traps"
+    ],
     "loadMultiplier": 0.1,
-    "__exerciseName": "Cable Lateral Raise"
+    "__exerciseName": "Cable Lateral Raise",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 92,
     "muscleGroup": "back",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Single-Arm Dumbbell Row"
+    "__exerciseName": "Single-Arm Dumbbell Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 93,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["traps"],
+    "targetMuscles": [
+      "traps"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Dumbbell Shrug"
+    "__exerciseName": "Dumbbell Shrug",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 94,
     "muscleGroup": "legs",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["hamstrings", "calves"],
+    "targetMuscles": [
+      "hamstrings",
+      "calves"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Lying Leg Curl"
+    "__exerciseName": "Lying Leg Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 95,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "adductors"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Good Morning"
+    "__exerciseName": "Good Morning",
+    "type": "compound"
   },
   {
     "exerciseIndex": 96,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Zercher Squat"
+    "__exerciseName": "Zercher Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 97,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
-    "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "quadriceps",
+      "rectus_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Sissy Squat"
+    "__exerciseName": "Sissy Squat",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 98,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "adductors",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1.4,
-    "__exerciseName": "Jefferson Deadlift"
+    "__exerciseName": "Jefferson Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 99,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
+    "targetMuscles": [
+      "adductors",
+      "glutes",
+      "hamstrings",
+      "quadriceps"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Cossack Squat"
+    "__exerciseName": "Cossack Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 100,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Dragon Flag"
+    "__exerciseName": "Dragon Flag",
+    "type": "compound"
   },
   {
     "exerciseIndex": 101,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Hollow Body Hold"
+    "__exerciseName": "Hollow Body Hold",
+    "type": "compound"
   },
   {
     "exerciseIndex": 102,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Reverse Crunch"
+    "__exerciseName": "Reverse Crunch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 103,
     "muscleGroup": "core",
     "equipmentType": "other",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Ab Wheel Rollout"
+    "__exerciseName": "Ab Wheel Rollout",
+    "type": "compound"
   },
   {
     "exerciseIndex": 104,
     "muscleGroup": "shoulders",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Pike Push-Up"
+    "__exerciseName": "Pike Push-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 105,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Cable Crunch"
+    "__exerciseName": "Cable Crunch",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 106,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Dumbbell Triceps Kickback"
+    "__exerciseName": "Dumbbell Triceps Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 107,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.22,
-    "__exerciseName": "Two-Arm Dumbbell Triceps Kickback"
+    "__exerciseName": "Two-Arm Dumbbell Triceps Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 108,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Seated Bent-Over Dumbbell Triceps Kickback"
+    "__exerciseName": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 109,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Incline Bench Dumbbell Triceps Kickback"
+    "__exerciseName": "Incline Bench Dumbbell Triceps Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 110,
     "muscleGroup": "arms",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.28,
-    "__exerciseName": "Cable Triceps Kickback"
+    "__exerciseName": "Cable Triceps Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 111,
     "muscleGroup": "arms",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.26,
-    "__exerciseName": "Cable Triceps Kickback from High Pulley"
+    "__exerciseName": "Cable Triceps Kickback from High Pulley",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 112,
     "muscleGroup": "glutes",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Cable Glute Kickback"
+    "__exerciseName": "Cable Glute Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 113,
     "muscleGroup": "glutes",
     "equipmentType": "plate_machine",
     "mechanicType": "isolation",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.45,
-    "__exerciseName": "Glute Kickback Machine"
+    "__exerciseName": "Glute Kickback Machine",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 114,
     "muscleGroup": "glutes",
     "equipmentType": "resistance_band",
     "mechanicType": "isolation",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.12,
-    "__exerciseName": "Banded Glute Kickback"
+    "__exerciseName": "Banded Glute Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 115,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Bodyweight Quadruped Glute Kickback"
+    "__exerciseName": "Bodyweight Quadruped Glute Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 116,
     "muscleGroup": "glutes",
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
-    "targetMuscles": ["glutes", "hamstrings"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Standing Bodyweight Glute Kickback"
+    "__exerciseName": "Standing Bodyweight Glute Kickback",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 117,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.22,
-    "__exerciseName": "Concentration Biceps"
+    "__exerciseName": "Concentration Biceps",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 118,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "Dumbbell Bench Press"
+    "__exerciseName": "Dumbbell Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 119,
     "muscleGroup": "chest",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
     "loadMultiplier": 0.32,
-    "__exerciseName": "Decline Dumbbell Bench Press"
+    "__exerciseName": "Decline Dumbbell Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 120,
-    "muscleGroup": "chest",
+    "muscleGroup": "arms",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Close-Grip Bench Press"
+    "__exerciseName": "Close-Grip Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 121,
@@ -1137,52 +1698,86 @@
       "upper_traps"
     ],
     "loadMultiplier": 0.22,
-    "__exerciseName": "Arnold Press"
+    "__exerciseName": "Arnold Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 122,
     "muscleGroup": "shoulders",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "quadriceps",
+      "glutes"
+    ],
     "loadMultiplier": 0.55,
-    "__exerciseName": "Push Press"
+    "__exerciseName": "Push Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 123,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "traps"],
+    "targetMuscles": [
+      "lats",
+      "biceps",
+      "brachialis",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Chin-Up"
+    "__exerciseName": "Chin-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 124,
     "muscleGroup": "back",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["lats", "teres_major", "triceps"],
+    "targetMuscles": [
+      "lats",
+      "teres_major",
+      "triceps"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Straight-Arm Pulldown"
+    "__exerciseName": "Straight-Arm Pulldown",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 125,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Dumbbell Romanian Deadlift"
+    "__exerciseName": "Dumbbell Romanian Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 126,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae",
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 1.45,
-    "__exerciseName": "Trap Bar Deadlift"
+    "__exerciseName": "Trap Bar Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 127,
@@ -1199,169 +1794,261 @@
       "forearms"
     ],
     "loadMultiplier": 1.3,
-    "__exerciseName": "Rack Pull"
+    "__exerciseName": "Rack Pull",
+    "type": "compound"
   },
   {
     "exerciseIndex": 128,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "erector_spinae",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Front Squat"
+    "__exerciseName": "Front Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 129,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Walking Lunge"
+    "__exerciseName": "Walking Lunge",
+    "type": "compound"
   },
   {
     "exerciseIndex": 130,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Forward Lunge"
+    "__exerciseName": "Forward Lunge",
+    "type": "compound"
   },
   {
     "exerciseIndex": 131,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Wall Sit"
+    "__exerciseName": "Wall Sit",
+    "type": "compound"
   },
   {
     "exerciseIndex": 132,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "calves"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Pistol Squat"
+    "__exerciseName": "Pistol Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 133,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
-    "targetMuscles": ["hamstrings", "glutes"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Nordic Hamstring Curl"
+    "__exerciseName": "Nordic Hamstring Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 134,
     "muscleGroup": "legs",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Glute-Ham Raise"
+    "__exerciseName": "Glute-Ham Raise",
+    "type": "compound"
   },
   {
     "exerciseIndex": 135,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Pendlay Row"
+    "__exerciseName": "Pendlay Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 136,
     "muscleGroup": "back",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
+    "targetMuscles": [
+      "rhomboids",
+      "lats",
+      "traps",
+      "biceps",
+      "posterior_deltoid"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Inverted Row"
+    "__exerciseName": "Inverted Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 137,
     "muscleGroup": "arms",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.42,
-    "__exerciseName": "Barbell Curl"
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
+    "loadMultiplier": 0.4,
+    "__exerciseName": "Barbell Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 138,
     "muscleGroup": "arms",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "EZ Bar Curl"
+    "__exerciseName": "EZ Bar Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 139,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis"
+    ],
     "loadMultiplier": 0.18,
-    "__exerciseName": "Incline Dumbbell Curl"
+    "__exerciseName": "Incline Dumbbell Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 140,
     "muscleGroup": "arms",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["biceps", "brachialis", "forearms"],
+    "targetMuscles": [
+      "biceps",
+      "brachialis",
+      "forearms"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Zottman Curl"
+    "__exerciseName": "Zottman Curl",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 141,
     "muscleGroup": "arms",
     "equipmentType": "cable",
     "mechanicType": "isolation",
-    "targetMuscles": ["triceps"],
+    "targetMuscles": [
+      "triceps"
+    ],
     "loadMultiplier": 0.28,
-    "__exerciseName": "Cable Overhead Tricep Extension"
+    "__exerciseName": "Cable Overhead Tricep Extension",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 142,
     "muscleGroup": "chest",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
+    "targetMuscles": [
+      "triceps",
+      "pectoralis_major",
+      "anterior_deltoid",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Diamond Push-Up"
+    "__exerciseName": "Diamond Push-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 143,
     "muscleGroup": "arms",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
+    "targetMuscles": [
+      "triceps",
+      "anterior_deltoid",
+      "pectoralis_major"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Bench Dip"
+    "__exerciseName": "Bench Dip",
+    "type": "compound"
   },
   {
     "exerciseIndex": 144,
-    "muscleGroup": "abdomen",
+    "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Lying Leg Raise"
+    "__exerciseName": "Lying Leg Raise",
+    "type": "compound"
   },
   {
     "exerciseIndex": 145,
     "muscleGroup": "core",
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
-    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "targetMuscles": [
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "hip_flexors"
+    ],
     "loadMultiplier": 0,
-    "__exerciseName": "Dead Bug"
+    "__exerciseName": "Dead Bug",
+    "type": "compound"
   },
   {
     "exerciseIndex": 146,
@@ -1375,7 +2062,8 @@
       "shoulders"
     ],
     "loadMultiplier": 0,
-    "__exerciseName": "Side Plank"
+    "__exerciseName": "Side Plank",
+    "type": "compound"
   },
   {
     "exerciseIndex": 147,
@@ -1390,34 +2078,52 @@
       "shoulders"
     ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "Cable Woodchopper"
+    "__exerciseName": "Cable Woodchopper",
+    "type": "compound"
   },
   {
     "exerciseIndex": 148,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "targetMuscles": [
+      "posterior_deltoid",
+      "rhomboids",
+      "traps"
+    ],
     "loadMultiplier": 0.12,
-    "__exerciseName": "Bent-Over Dumbbell Rear Delt Fly"
+    "__exerciseName": "Bent-Over Dumbbell Rear Delt Fly",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 149,
     "muscleGroup": "shoulders",
     "equipmentType": "barbell",
     "mechanicType": "isolation",
-    "targetMuscles": ["traps", "forearms"],
+    "targetMuscles": [
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Barbell Shrug"
+    "__exerciseName": "Barbell Shrug",
+    "type": "isolation"
   },
   {
     "exerciseIndex": 150,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Power Clean"
+    "__exerciseName": "Power Clean",
+    "type": "compound"
   },
   {
     "exerciseIndex": 151,
@@ -1434,79 +2140,142 @@
       "forearms"
     ],
     "loadMultiplier": 0.65,
-    "__exerciseName": "Clean and Press"
+    "__exerciseName": "Clean and Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 152,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Hang Clean"
+    "__exerciseName": "Hang Clean",
+    "type": "compound"
   },
   {
     "exerciseIndex": 153,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.55,
-    "__exerciseName": "Power Snatch"
+    "__exerciseName": "Power Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 154,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Hang Snatch"
+    "__exerciseName": "Hang Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 155,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.75,
-    "__exerciseName": "Squat Clean"
+    "__exerciseName": "Squat Clean",
+    "type": "compound"
   },
   {
     "exerciseIndex": 156,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "Squat Snatch"
+    "__exerciseName": "Squat Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 157,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
     "loadMultiplier": 0.7,
-    "__exerciseName": "Push Jerk"
+    "__exerciseName": "Push Jerk",
+    "type": "compound"
   },
   {
     "exerciseIndex": 158,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "shoulders", "triceps", "traps"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
     "loadMultiplier": 0.75,
-    "__exerciseName": "Split Jerk"
+    "__exerciseName": "Split Jerk",
+    "type": "compound"
   },
   {
     "exerciseIndex": 159,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Thruster"
+    "__exerciseName": "Thruster",
+    "type": "compound"
   },
   {
     "exerciseIndex": 160,
@@ -1523,106 +2292,182 @@
       "forearms"
     ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Overhead Squat"
+    "__exerciseName": "Overhead Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 161,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["shoulders", "traps", "quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "shoulders",
+      "traps",
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.5,
-    "__exerciseName": "Snatch Balance"
+    "__exerciseName": "Snatch Balance",
+    "type": "compound"
   },
   {
     "exerciseIndex": 162,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "shoulders",
+      "forearms"
+    ],
     "loadMultiplier": 0.45,
-    "__exerciseName": "Muscle Snatch"
+    "__exerciseName": "Muscle Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 163,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1.1,
-    "__exerciseName": "Clean Pull"
+    "__exerciseName": "Clean Pull",
+    "type": "compound"
   },
   {
     "exerciseIndex": 164,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "forearms", "erector_spinae"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "traps",
+      "forearms",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Snatch Pull"
+    "__exerciseName": "Snatch Pull",
+    "type": "compound"
   },
   {
     "exerciseIndex": 165,
     "muscleGroup": "full_body",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["traps", "shoulders", "glutes", "hamstrings", "quadriceps", "forearms"],
+    "targetMuscles": [
+      "traps",
+      "shoulders",
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "forearms"
+    ],
     "loadMultiplier": 0.6,
-    "__exerciseName": "High Pull"
+    "__exerciseName": "High Pull",
+    "type": "compound"
   },
   {
     "exerciseIndex": 166,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Pause Squat"
+    "__exerciseName": "Pause Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 167,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Pin Squat"
+    "__exerciseName": "Pin Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 168,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "erector_spinae"
+    ],
     "loadMultiplier": 0.95,
-    "__exerciseName": "Box Squat"
+    "__exerciseName": "Box Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 169,
     "muscleGroup": "legs",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae", "upper_traps"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "erector_spinae",
+      "upper_traps"
+    ],
     "loadMultiplier": 1,
-    "__exerciseName": "Safety Bar Squat"
+    "__exerciseName": "Safety Bar Squat",
+    "type": "compound"
   },
   {
     "exerciseIndex": 170,
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps",
+      "serratus_anterior"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Pause Bench Press"
+    "__exerciseName": "Pause Bench Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 171,
     "muscleGroup": "chest",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "anterior_deltoid",
+      "triceps"
+    ],
     "loadMultiplier": 0.85,
-    "__exerciseName": "Floor Press"
+    "__exerciseName": "Floor Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 172,
@@ -1639,25 +2484,42 @@
       "forearms"
     ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Deficit Deadlift"
+    "__exerciseName": "Deficit Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 173,
     "muscleGroup": "back",
     "equipmentType": "barbell",
     "mechanicType": "compound",
-    "targetMuscles": ["traps", "lats", "erector_spinae", "glutes", "hamstrings", "forearms"],
+    "targetMuscles": [
+      "traps",
+      "lats",
+      "erector_spinae",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
     "loadMultiplier": 1.6,
-    "__exerciseName": "Block Pull"
+    "__exerciseName": "Block Pull",
+    "type": "compound"
   },
   {
     "exerciseIndex": 174,
     "muscleGroup": "full_body",
     "equipmentType": "kettlebell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "One Arm Kettlebell Snatch"
+    "__exerciseName": "One Arm Kettlebell Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 175,
@@ -1674,70 +2536,118 @@
       "forearms"
     ],
     "loadMultiplier": 0.4,
-    "__exerciseName": "Kettlebell Clean and Press"
+    "__exerciseName": "Kettlebell Clean and Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 176,
     "muscleGroup": "full_body",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps", "forearms"],
+    "targetMuscles": [
+      "glutes",
+      "hamstrings",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "forearms"
+    ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Dumbbell Snatch"
+    "__exerciseName": "Dumbbell Snatch",
+    "type": "compound"
   },
   {
     "exerciseIndex": 177,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "rectus_abdominis"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "triceps",
+      "upper_traps",
+      "rectus_abdominis"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Single Arm Dumbbell Press"
+    "__exerciseName": "Single Arm Dumbbell Press",
+    "type": "compound"
   },
   {
     "exerciseIndex": 178,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings"
+    ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "Dumbbell Step-Up"
+    "__exerciseName": "Dumbbell Step-Up",
+    "type": "compound"
   },
   {
     "exerciseIndex": 179,
     "muscleGroup": "legs",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "targetMuscles": [
+      "hamstrings",
+      "glutes",
+      "erector_spinae",
+      "forearms"
+    ],
     "loadMultiplier": 0.35,
-    "__exerciseName": "Single Leg Romanian Deadlift"
+    "__exerciseName": "Single Leg Romanian Deadlift",
+    "type": "compound"
   },
   {
     "exerciseIndex": 180,
     "muscleGroup": "back",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "rectus_abdominis"],
+    "targetMuscles": [
+      "lats",
+      "rhomboids",
+      "traps",
+      "biceps",
+      "rectus_abdominis"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Renegade Row"
+    "__exerciseName": "Renegade Row",
+    "type": "compound"
   },
   {
     "exerciseIndex": 181,
     "muscleGroup": "full_body",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "shoulders", "triceps", "traps"],
+    "targetMuscles": [
+      "quadriceps",
+      "glutes",
+      "hamstrings",
+      "shoulders",
+      "triceps",
+      "traps"
+    ],
     "loadMultiplier": 0.25,
-    "__exerciseName": "Dumbbell Thruster"
+    "__exerciseName": "Dumbbell Thruster",
+    "type": "compound"
   },
   {
     "exerciseIndex": 182,
     "muscleGroup": "shoulders",
     "equipmentType": "dumbbell",
     "mechanicType": "compound",
-    "targetMuscles": ["shoulders", "triceps", "traps", "rectus_abdominis", "transverse_abdominis"],
+    "targetMuscles": [
+      "shoulders",
+      "triceps",
+      "traps",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
     "loadMultiplier": 0.2,
-    "__exerciseName": "Waiter's Carry"
+    "__exerciseName": "Waiter's Carry",
+    "type": "compound"
   },
   {
     "exerciseIndex": 183,
@@ -1752,15 +2662,21 @@
       "forearms"
     ],
     "loadMultiplier": 0.3,
-    "__exerciseName": "Suitcase Carry"
+    "__exerciseName": "Suitcase Carry",
+    "type": "compound"
   },
   {
     "exerciseIndex": 184,
     "muscleGroup": "chest",
     "equipmentType": "plate_machine",
     "mechanicType": "compound",
-    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "targetMuscles": [
+      "pectoralis_major",
+      "triceps",
+      "anterior_deltoid"
+    ],
     "loadMultiplier": 0.9,
-    "__exerciseName": "Seated Chest Press Machine"
+    "__exerciseName": "Seated Chest Press Machine",
+    "type": "compound"
   }
 ]
