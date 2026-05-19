@@ -1,18 +1,18 @@
-filename,rep_count,muscle_group,exercise_type,notes
-slow_reps.json,3,unknown,unknown,slow cadence — exercise not recorded
-normal_pace.json,10,unknown,unknown,normal cadence — exercise not recorded
-slow_fast_mixed.json,7,unknown,unknown,mixed cadence — exercise not recorded
-slow_fast_mixed_2.json,8,unknown,unknown,mixed cadence — exercise not recorded
-slow_fast_mixed_3.json,8,unknown,unknown,mixed cadence — exercise not recorded
-fast_paced.json,5,unknown,unknown,fast cadence — exercise not recorded
-pushups.json,10,chest,bodyweight,
-standing_shoulder_barbell_press.json,5,shoulders,compound,
-barbell_bicep_curls.json,13,arms,isolation,
-cable_lateral_raises.json,13,shoulders,isolation,cable stack
-bench_press.json,13,chest,compound,
-barbell_back_squat.json,10,legs,compound,
-deadlift.json,10,back,compound,strong gyro drift
-legpress.json,10,legs,machine,
-chest_supported_row.json,10,back,machine,
-machine_calf_raises.json,10,legs,machine,small range of motion
-machine_bench_press.json,10,chest,machine,
+filename,rep_count,muscle_group,equipment_type,mechanic_type,notes
+slow_reps.json,3,unknown,unknown,unknown,slow cadence — exercise not recorded
+normal_pace.json,10,unknown,unknown,unknown,normal cadence — exercise not recorded
+slow_fast_mixed.json,7,unknown,unknown,unknown,mixed cadence — exercise not recorded
+slow_fast_mixed_2.json,8,unknown,unknown,unknown,mixed cadence — exercise not recorded
+slow_fast_mixed_3.json,8,unknown,unknown,unknown,mixed cadence — exercise not recorded
+fast_paced.json,5,unknown,unknown,unknown,fast cadence — exercise not recorded
+pushups.json,10,chest,bodyweight,compound,
+standing_shoulder_barbell_press.json,5,shoulders,barbell,compound,
+barbell_bicep_curls.json,13,arms,barbell,isolation,
+cable_lateral_raises.json,13,shoulders,cable,isolation,cable stack
+bench_press.json,13,chest,barbell,compound,
+barbell_back_squat.json,10,legs,barbell,compound,
+deadlift.json,10,back,barbell,compound,strong gyro drift
+legpress.json,10,legs,plate_machine,compound,
+chest_supported_row.json,10,back,plate_machine,compound,
+machine_calf_raises.json,10,legs,plate_machine,isolation,small range of motion
+machine_bench_press.json,10,chest,plate_machine,compound,

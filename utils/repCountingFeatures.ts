@@ -4,7 +4,7 @@
  * Mirrors training-data/train.py extract_features() exactly so the input
  * vector fed to predictRepCount() matches what the model was trained on.
  *
- * Input order (32 features):
+ * Input order (45 features):
  *   0  duration_ms
  *   1  sample_rate_hz
  *   2  dominant_range_deg
@@ -30,19 +30,34 @@
  *  22  muscle_legs
  *  23  muscle_shoulders
  *  24  muscle_unknown
- *  25  type_bodyweight
- *  26  type_cardio
- *  27  type_compound
- *  28  type_isolation
- *  29  type_machine
- *  30  type_plyometric
- *  31  type_unknown
+ *  25  equip_barbell
+ *  26  equip_bodyweight
+ *  27  equip_cable
+ *  28  equip_cardio
+ *  29  equip_dumbbell
+ *  30  equip_kettlebell
+ *  31  equip_other
+ *  32  equip_plate_machine
+ *  33  equip_pneumatic_machine
+ *  34  equip_resistance_band
+ *  35  equip_smith_machine
+ *  36  equip_unknown
+ *  37  mechanic_cardio
+ *  38  mechanic_compound
+ *  39  mechanic_isolation
+ *  40  mechanic_mobility
+ *  41  mechanic_other
+ *  42  mechanic_plyometric
+ *  43  mechanic_stretching
+ *  44  mechanic_unknown
  */
 
 import mlMax from 'ml-array-max';
 import mlMin from 'ml-array-min';
 import { FFT } from 'ml-fft';
 import { median, standardDeviation } from 'simple-statistics';
+
+import type { EquipmentType, MechanicType, MuscleGroup } from '@/database/models/Exercise';
 
 const SMOOTH_ALPHA = 0.15;
 const PEAK_THRESHOLD_FRAC = 0.3;
@@ -63,22 +78,36 @@ const MUSCLE_GROUPS = [
   'unknown',
 ] as const;
 
-const EXERCISE_TYPES = [
+const EQUIPMENT_TYPES = [
+  'barbell',
   'bodyweight',
+  'cable',
   'cardio',
-  'compound',
-  'isolation',
-  'machine',
-  'plyometric',
+  'dumbbell',
+  'kettlebell',
+  'other',
+  'plate_machine',
+  'pneumatic_machine',
+  'resistance_band',
+  'smith_machine',
   'unknown',
 ] as const;
 
-type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
-type ExerciseType = (typeof EXERCISE_TYPES)[number];
+const MECHANIC_TYPES = [
+  'cardio',
+  'compound',
+  'isolation',
+  'mobility',
+  'other',
+  'plyometric',
+  'stretching',
+  'unknown',
+] as const;
 
 export interface RepCountingMetadata {
-  muscleGroup?: MuscleGroup;
-  exerciseType?: ExerciseType;
+  muscleGroup?: MuscleGroup | 'unknown';
+  equipmentType?: EquipmentType | 'unknown';
+  mechanicType?: MechanicType | 'unknown';
 }
 
 interface MotionSample {
@@ -255,10 +284,13 @@ export function extractRepCountingFeatures(
 
   // Categorical one-hot encoding
   const mg = (MUSCLE_GROUPS as readonly string[]).includes(metadata.muscleGroup ?? '')
-    ? (metadata.muscleGroup as MuscleGroup)
+    ? metadata.muscleGroup!
     : 'unknown';
-  const et = (EXERCISE_TYPES as readonly string[]).includes(metadata.exerciseType ?? '')
-    ? (metadata.exerciseType as ExerciseType)
+  const eq = (EQUIPMENT_TYPES as readonly string[]).includes(metadata.equipmentType ?? '')
+    ? metadata.equipmentType!
+    : 'unknown';
+  const mt = (MECHANIC_TYPES as readonly string[]).includes(metadata.mechanicType ?? '')
+    ? metadata.mechanicType!
     : 'unknown';
 
   return [
@@ -278,6 +310,7 @@ export function extractRepCountingFeatures(
     azPeakCount,
     dominantRange <= 5.0 ? 1 : 0,
     ...MUSCLE_GROUPS.map((g) => (g === mg ? 1 : 0)),
-    ...EXERCISE_TYPES.map((t) => (t === et ? 1 : 0)),
+    ...EQUIPMENT_TYPES.map((t) => (t === eq ? 1 : 0)),
+    ...MECHANIC_TYPES.map((t) => (t === mt ? 1 : 0)),
   ];
 }

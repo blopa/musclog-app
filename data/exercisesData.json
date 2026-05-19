@@ -209,7 +209,7 @@
   {
     "exerciseIndex": 24,
     "muscleGroup": "legs",
-    "equipmentType": "plate_machine",
+    "equipmentType": "smith_machine",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.3,
@@ -353,7 +353,7 @@
   {
     "exerciseIndex": 40,
     "muscleGroup": "chest",
-    "equipmentType": "plate_machine",
+    "equipmentType": "smith_machine",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1,

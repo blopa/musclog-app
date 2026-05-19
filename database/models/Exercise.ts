@@ -29,6 +29,7 @@ export type EquipmentType =
   | 'cable'
   | 'kettlebell'
   | 'smith_machine'
+  | 'pneumatic_machine'
   | 'cardio'
   | 'resistance_band'
   | 'other';
