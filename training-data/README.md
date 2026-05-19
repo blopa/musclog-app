@@ -38,11 +38,9 @@ python predict.py recordings/deadlift.json
 ## Adding new recordings
 
 1. Copy the JSON file into `recordings/`
-2. Add a row to `labels.csv`:
-   ```
-   my_exercise.json,12,squat,any notes here
-   ```
-3. Re-run `python train.py`
+2. Re-run `python train.py`
+
+The trainer reads `reps`, `muscleGroup`, `equipmentType`, and `mechanicType` directly from each JSON. No CSV needed. Files without a `reps` field are skipped with a warning.
 
 More recordings = better model. Aim for at least 5–10 per exercise type, with variety in cadence and rep count.
 

@@ -1,9 +1,9 @@
 Training summary
 ========================================
-Recordings:   17
-Best model:   Random Forest
-LOOCV MAE:    2.18
-Exact match:  2/17 (12%)
+Recordings:   12
+Best model:   Gradient Boosting
+LOOCV MAE:    1.00
+Exact match:  6/12 (50%)
 
 Feature order for inference (input array index → name):
    0: duration_ms
@@ -31,10 +31,24 @@ Feature order for inference (input array index → name):
   22: muscle_legs
   23: muscle_shoulders
   24: muscle_unknown
-  25: type_bodyweight
-  26: type_cardio
-  27: type_compound
-  28: type_isolation
-  29: type_machine
-  30: type_plyometric
-  31: type_unknown
+  25: equip_barbell
+  26: equip_bodyweight
+  27: equip_cable
+  28: equip_cardio
+  29: equip_dumbbell
+  30: equip_kettlebell
+  31: equip_machine
+  32: equip_other
+  33: equip_plate_machine
+  34: equip_pneumatic_machine
+  35: equip_resistance_band
+  36: equip_smith_machine
+  37: equip_unknown
+  38: mechanic_cardio
+  39: mechanic_compound
+  40: mechanic_isolation
+  41: mechanic_mobility
+  42: mechanic_other
+  43: mechanic_plyometric
+  44: mechanic_stretching
+  45: mechanic_unknown

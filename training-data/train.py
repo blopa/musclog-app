@@ -40,7 +40,6 @@ import m2cgen as m2c
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).parent
 RECORDINGS_DIR = ROOT / "recordings"
-LABELS_FILE = ROOT / "labels.csv"
 OUTPUT_DIR = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -64,7 +63,7 @@ MUSCLE_GROUPS = sorted([
 ])
 EQUIPMENT_TYPES = sorted([
     "barbell", "bodyweight", "cable", "cardio", "dumbbell", "kettlebell",
-    "other", "plate_machine", "pneumatic_machine", "resistance_band",
+    "machine", "other", "plate_machine", "pneumatic_machine", "resistance_band",
     "smith_machine", "unknown",
 ])
 MECHANIC_TYPES = sorted([
@@ -225,45 +224,51 @@ def extract_features(samples: list) -> dict:
 # ---------------------------------------------------------------------------
 # Dataset builder
 # ---------------------------------------------------------------------------
+def build_categorical_features(feats: dict, mg: str, eq: str, mt: str) -> None:
+    """Add one-hot categorical features to feats in-place."""
+    mg = mg.strip().lower() if mg else "unknown"
+    eq = eq.strip().lower() if eq else "unknown"
+    mt = mt.strip().lower() if mt else "unknown"
+
+    if mg not in MUSCLE_GROUPS:
+        mg = "unknown"
+    if eq not in EQUIPMENT_TYPES:
+        eq = "unknown"
+    if mt not in MECHANIC_TYPES:
+        mt = "unknown"
+
+    for g in MUSCLE_GROUPS:
+        feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
+    for t in EQUIPMENT_TYPES:
+        feats[f"equip_{t}"] = 1.0 if eq == t else 0.0
+    for t in MECHANIC_TYPES:
+        feats[f"mechanic_{t}"] = 1.0 if mt == t else 0.0
+
+
 def build_dataset() -> pd.DataFrame:
-    labels = pd.read_csv(LABELS_FILE)
     rows = []
 
-    for _, row in labels.iterrows():
-        path = RECORDINGS_DIR / row["filename"]
-        if not path.exists():
-            print(f"  WARNING: {path.name} not found — skipping")
-            continue
+    for path in sorted(RECORDINGS_DIR.glob("*.json")):
         with open(path) as f:
             data = json.load(f)
+
+        if "reps" not in data:
+            print(f"  WARNING: {path.name} has no 'reps' field — skipping")
+            continue
+
         try:
             feats = extract_features(data["samples"])
-
-            # One-hot encode categorical metadata.
-            # Falls back to "unknown" when the column is missing or blank.
-            mg = str(row.get("muscle_group", "unknown") or "unknown").strip().lower()
-            eq = str(row.get("equipment_type", "unknown") or "unknown").strip().lower()
-            mt = str(row.get("mechanic_type", "unknown") or "unknown").strip().lower()
-
-            if mg not in MUSCLE_GROUPS:
-                mg = "unknown"
-            if eq not in EQUIPMENT_TYPES:
-                eq = "unknown"
-            if mt not in MECHANIC_TYPES:
-                mt = "unknown"
-
-            for g in MUSCLE_GROUPS:
-                feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
-            for t in EQUIPMENT_TYPES:
-                feats[f"equip_{t}"] = 1.0 if eq == t else 0.0
-            for t in MECHANIC_TYPES:
-                feats[f"mechanic_{t}"] = 1.0 if mt == t else 0.0
-
-            feats["filename"]  = row["filename"]
-            feats["rep_count"] = int(row["rep_count"])
+            build_categorical_features(
+                feats,
+                str(data.get("muscleGroup") or "unknown"),
+                str(data.get("equipmentType") or "unknown"),
+                str(data.get("mechanicType") or "unknown"),
+            )
+            feats["filename"]  = path.name
+            feats["rep_count"] = int(data["reps"])
             rows.append(feats)
         except Exception as e:
-            print(f"  ERROR {row['filename']}: {e}")
+            print(f"  ERROR {path.name}: {e}")
 
     return pd.DataFrame(rows)
 
@@ -380,7 +385,16 @@ def main():
     print(f"\n── Saved → output/model.pkl")
 
     # ── Export to JavaScript (for future app integration) ───────────────────
-    raw_js = m2c.export_to_javascript(final, function_name="predictRepCount")
+    # m2cgen only supports Random Forest; fall back to it for the JS export
+    # when Gradient Boosting won the comparison.
+    js_model = final
+    js_model_name = best_name
+    if not use_rf:
+        js_model = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
+        js_model.fit(X_all, y_all)
+        js_model_name = f"Random Forest (JS fallback; pkl uses {best_name})"
+
+    raw_js = m2c.export_to_javascript(js_model, function_name="predictRepCount")
 
     # Minify: strip indentation + blank lines, collapse to a single line.
     # The output is treated like a binary — not meant to be edited by hand.
@@ -395,7 +409,7 @@ def main():
         + minified
         + "\nexport{predictRepCount};\n"
     )
-    print(f"── Saved → output/model.js")
+    print(f"── Saved → output/model.js  ({js_model_name})")
 
     # ── Summary report ──────────────────────────────────────────────────────
     best_mae   = min(mae_rf, mae_gb)

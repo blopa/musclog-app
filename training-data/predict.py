@@ -35,18 +35,24 @@ def main():
     model       = bundle["model"]
     feature_cols = bundle["feature_cols"]
 
-    # Load the recording and import the feature extractor from train.py
+    # Load the recording and import helpers from train.py
     sys.path.insert(0, str(ROOT))
-    from train import extract_features
+    from train import extract_features, build_categorical_features
 
     with open(recording_path) as f:
         data = json.load(f)
 
     samples = data["samples"]
     feats   = extract_features(samples)
+    build_categorical_features(
+        feats,
+        str(data.get("muscleGroup") or "unknown"),
+        str(data.get("equipmentType") or "unknown"),
+        str(data.get("mechanicType") or "unknown"),
+    )
 
-    # Build input vector in the correct order
-    x = [[feats[col] for col in feature_cols]]
+    # Build input vector in the correct order (default 0.0 for any unknown col)
+    x = [[feats.get(col, 0.0) for col in feature_cols]]
 
     raw_pred     = float(model.predict(x)[0])
     rounded_pred = round(raw_pred)
@@ -56,17 +62,10 @@ def main():
     print(f"Duration  : {feats['duration_ms'] / 1000:.1f}s")
     print(f"Prediction: {rounded_pred} reps  (raw: {raw_pred:.2f})")
 
-    # If the recording is in labels.csv, show the ground truth too
-    labels_file = ROOT / "labels.csv"
-    if labels_file.exists():
-        import csv
-        with open(labels_file) as f:
-            for row in csv.DictReader(f):
-                if row["filename"] == recording_path.name:
-                    true_count = int(row["rep_count"])
-                    err        = rounded_pred - true_count
-                    print(f"Ground truth: {true_count} reps  (error: {err:+d})")
-                    break
+    if "reps" in data:
+        true_count = int(data["reps"])
+        err        = rounded_pred - true_count
+        print(f"Ground truth: {true_count} reps  (error: {err:+d})")
 
     print()
 
