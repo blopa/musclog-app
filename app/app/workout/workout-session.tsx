@@ -7,6 +7,7 @@ import {
   Bluetooth,
   CheckCircle,
   ChevronLeft,
+  Circle,
   Clock,
   Dumbbell,
   Edit,
@@ -305,6 +306,7 @@ export default function WorkoutSessionScreen() {
   const wit = useWitMotion();
   const { showSnackbar } = useSnackbar();
   const [isTracking, setIsTracking] = useState(false);
+  const [isTrackingBlinkOn, setIsTrackingBlinkOn] = useState(true);
   const isTrackingRef = useRef(false);
   const samplesRef = useRef<BleWorkoutSample[]>([]);
   const trackingStartedAtRef = useRef<number | null>(null);
@@ -312,6 +314,21 @@ export default function WorkoutSessionScreen() {
   const hasAttemptedAutoConnect = useRef(false);
   // Initialize to current state so remounts while connected don't re-show the snackbar.
   const wasConnectedRef = useRef(wit.isConnected);
+
+  useEffect(() => {
+    if (!isTracking) {
+      setIsTrackingBlinkOn(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setIsTrackingBlinkOn((current) => !current);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isTracking]);
 
   // Load dismissed insights from storage
   useEffect(() => {
@@ -1208,27 +1225,23 @@ export default function WorkoutSessionScreen() {
 
             {/* Sensor tracking row — only visible when a BLE device is connected */}
             {wit.isConnected ? (
-              <View className="mb-4 flex-row items-center gap-3">
+              <View className="mb-4 gap-3">
                 {isTracking ? (
-                  <>
-                    <View
-                      className="rounded-full px-3 py-1.5"
-                      style={{ backgroundColor: theme.colors.accent.primary + '33' }}
-                    >
-                      <Text
-                        className="text-sm font-bold"
-                        style={{ color: theme.colors.accent.primary }}
-                      >
-                        {'● ' + t('workoutSession.tracking')}
-                      </Text>
-                    </View>
-                    <Button
-                      label={t('workoutSession.stopTracking')}
-                      size="sm"
-                      variant="secondary"
-                      onPress={() => void stopTrackingAndSave()}
-                    />
-                  </>
+                  <Button
+                    label={t('workoutSession.stopTracking')}
+                    icon={
+                      <Circle
+                        size={theme.iconSize.sm}
+                        color={theme.colors.rose.brand}
+                        fill={theme.colors.rose.brand}
+                        opacity={isTrackingBlinkOn ? 1 : 0.25}
+                      />
+                    }
+                    size="md"
+                    width="full"
+                    variant="secondary"
+                    onPress={() => void stopTrackingAndSave()}
+                  />
                 ) : (
                   <Button
                     label={t('workoutSession.startTracking')}
