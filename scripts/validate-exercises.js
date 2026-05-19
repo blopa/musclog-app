@@ -52,7 +52,7 @@ if (hasErrors) {
 
 // Compare fields by index
 const fieldsToCheck = ['muscleGroup', 'type', 'targetMuscles', 'loadMultiplier'];
-const referenceFile = exerciseFiles[0];
+const referenceFile = 'exercisesData.json';
 const referenceData = exerciseData[referenceFile];
 
 console.log(`Comparing fields using ${referenceFile} as reference:`);
@@ -61,21 +61,24 @@ for (let i = 0; i < totalExercises; i++) {
   const referenceExercise = referenceData[i];
   let exerciseHasErrors = false;
 
-  for (const file of exerciseFiles.slice(1)) {
+  for (const file of exerciseFiles) {
+    if (file === referenceFile) continue;
     const currentExercise = exerciseData[file][i];
 
     for (const field of fieldsToCheck) {
       const refValue = referenceExercise[field];
       const currentValue = currentExercise[field];
 
+      if (currentValue === undefined) continue;
+
       // Deep comparison for arrays
       const isEqual =
         Array.isArray(refValue) && Array.isArray(currentValue)
-          ? JSON.stringify(refValue.sort()) === JSON.stringify(currentValue.sort())
+          ? JSON.stringify([...refValue].sort()) === JSON.stringify([...currentValue].sort())
           : refValue === currentValue;
 
       if (!isEqual) {
-        console.error(`❌ Exercise ${i + 1} (${referenceExercise.name}) - ${field}:`);
+        console.error(`❌ Exercise ${i + 1} (${referenceExercise.__exerciseName}) - ${field}:`);
         console.error(`   ${referenceFile}: ${JSON.stringify(refValue)}`);
         console.error(`   ${file}: ${JSON.stringify(currentValue)}`);
         exerciseHasErrors = true;
@@ -93,5 +96,5 @@ if (hasErrors) {
 } else {
   console.log('✅ All validations passed!');
   console.log(`- All ${exerciseFiles.length} files have ${totalExercises} exercises`);
-  console.log(`- All fields match by index: ${fieldsToCheck.join(', ')}`);
+  console.log(`- All common fields match ${referenceFile} by index: ${fieldsToCheck.join(', ')}`);
 }

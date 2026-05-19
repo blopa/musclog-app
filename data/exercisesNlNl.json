@@ -913,5 +913,10 @@
     "name": "Suitcase Carry",
     "description": "Lopen met één gewicht aan je zijde om zijwaartse buiging te weerstaan.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Zittende Chest Press Machine",
+    "description": "Een zittende borstspieroefening uitgevoerd op een machine.",
+    "exerciseIndex": 184
   }
 ]

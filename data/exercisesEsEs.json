@@ -913,5 +913,10 @@
     "name": "Paseo de la maleta",
     "description": "Un ejercicio de núcleo sosteniendo una mancuerna o pesa rusa a un lado mientras se camina, resistiendo la flexión lateral.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Máquina de press de pecho sentado",
+    "description": "Un ejercicio de press de pecho sentado realizado en una máquina.",
+    "exerciseIndex": 184
   }
 ]

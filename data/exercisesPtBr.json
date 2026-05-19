@@ -913,5 +913,10 @@
     "name": "Caminhada de Mala",
     "description": "Exercício para o core segurando um haltere ou kettlebell de um lado enquanto caminha, resistindo à flexão lateral.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Máquina de Chest Press Sentado",
+    "description": "Um exercício de chest press sentado realizado em uma máquina.",
+    "exerciseIndex": 184
   }
 ]
