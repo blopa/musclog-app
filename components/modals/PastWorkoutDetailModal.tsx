@@ -578,10 +578,10 @@ export default function PastWorkoutDetailModal({
             (orderedHcIds.indexOf(b[0]) + 1 || Infinity)
         )
         .map(([exerciseId, exerciseSets]) => ({
-        exerciseName: exerciseMap.get(exerciseId)?.name ?? 'Exercise',
-        totalReps: exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0),
-        sets: exerciseSets.map((s) => ({ reps: s.reps ?? 0, weight: s.weight ?? 0 })),
-      }));
+          exerciseName: exerciseMap.get(exerciseId)?.name ?? t('bodyMetrics.metrics.exercise'),
+          totalReps: exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0),
+          sets: exerciseSets.map((s) => ({ reps: s.reps ?? 0, weight: s.weight ?? 0 })),
+        }));
 
       const hcRecordId = await writeWorkoutToHealthConnect({
         workoutName: log.workoutName,

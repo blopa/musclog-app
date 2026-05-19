@@ -299,7 +299,14 @@ export function WorkoutSessionHistoryModal({
       2,
       '0'
     )}:${String(sessionTime.seconds).padStart(2, '0')}`;
-  }, [isPreview, sessionTime.hours, sessionTime.minutes, sessionTime.seconds, workoutLog?.completedAt, workoutLog?.startedAt]);
+  }, [
+    isPreview,
+    sessionTime.hours,
+    sessionTime.minutes,
+    sessionTime.seconds,
+    workoutLog?.completedAt,
+    workoutLog?.startedAt,
+  ]);
 
   const shareMessage = useMemo(() => {
     const lines: string[] = [
@@ -341,7 +348,9 @@ export function WorkoutSessionHistoryModal({
     }
 
     if (exerciseDataList.length > 0) {
-      lines.push(t('workoutDetail.exercisesCount', { count: formatInteger(exerciseDataList.length) }));
+      lines.push(
+        t('workoutDetail.exercisesCount', { count: formatInteger(exerciseDataList.length) })
+      );
     }
 
     if (exerciseDataList.length > 0) {

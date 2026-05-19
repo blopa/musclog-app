@@ -3,6 +3,7 @@ import {
   cacheDirectory,
   deleteAsync,
   documentDirectory,
+  getInfoAsync,
   makeDirectoryAsync,
   readAsStringAsync,
   readDirectoryAsync,
@@ -49,6 +50,7 @@ export interface StoredBleWorkoutFile extends BleWorkoutFile {
 
 const BLE_WORKOUT_DATA_DIR = 'ble-workout-data';
 const BLE_WORKOUT_TRACKING_DIR = 'ble-workout-tracking';
+const BLE_WORKOUT_TRACKING_STALE_AFTER_MS = 6 * 60 * 60 * 1000;
 const NDJSON_DECODER = new TextDecoder();
 
 function getTrackingDirectoryUri(): string | null {
@@ -112,6 +114,10 @@ function getTrackingDirectoryFile(sessionId: string): Directory | null {
   return new Directory(dirUri, sessionId);
 }
 
+function joinUri(baseUri: string, childName: string): string {
+  return `${baseUri.replace(/\/?$/, '/')}${childName}`;
+}
+
 export function createBleWorkoutTrackingTempFile(sessionId: string): File {
   const dir = getTrackingDirectoryFile(sessionId);
   if (!dir) {
@@ -123,6 +129,50 @@ export function createBleWorkoutTrackingTempFile(sessionId: string): File {
   const tempFile = new File(dir, 'samples.ndjson');
   tempFile.write('', { append: false });
   return tempFile;
+}
+
+export async function cleanupStaleBleWorkoutTrackingFiles(
+  maxAgeMs: number = BLE_WORKOUT_TRACKING_STALE_AFTER_MS
+): Promise<void> {
+  const trackingDirUri = getTrackingDirectoryUri();
+  if (!trackingDirUri) {
+    return;
+  }
+
+  let sessionDirNames: string[];
+  try {
+    sessionDirNames = await readDirectoryAsync(trackingDirUri);
+  } catch {
+    return;
+  }
+
+  const now = Date.now();
+
+  await Promise.all(
+    sessionDirNames.map(async (sessionDirName) => {
+      const sessionDirUri = joinUri(trackingDirUri, sessionDirName);
+      const samplesUri = joinUri(sessionDirUri, 'samples.ndjson');
+
+      try {
+        const info = await getInfoAsync(samplesUri);
+        if (!info.exists) {
+          await deleteAsync(sessionDirUri, { idempotent: true });
+          return;
+        }
+
+        const modifiedAt = info.modificationTime ?? null;
+        if (modifiedAt !== null && now - modifiedAt >= maxAgeMs) {
+          await deleteAsync(sessionDirUri, { idempotent: true });
+        }
+      } catch {
+        try {
+          await deleteAsync(sessionDirUri, { idempotent: true });
+        } catch {
+          // Best-effort cleanup only.
+        }
+      }
+    })
+  );
 }
 
 function serializeSamplesAsNdjson(samples: BleWorkoutSample[]): string {
@@ -155,10 +205,7 @@ function serializeSamplesAsNdjson(samples: BleWorkoutSample[]): string {
   return output;
 }
 
-export function appendBleWorkoutSamplesToNdjsonFile(
-  file: File,
-  samples: BleWorkoutSample[]
-): void {
+export function appendBleWorkoutSamplesToNdjsonFile(file: File, samples: BleWorkoutSample[]): void {
   if (samples.length === 0) {
     return;
   }

@@ -6,7 +6,11 @@ import { ScrollView, Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import type { StoredBleWorkoutFile } from '@/utils/bleWorkoutDataStorage';
-import { deleteBleWorkoutFile, loadAllBleWorkoutFiles } from '@/utils/bleWorkoutDataStorage';
+import {
+  cleanupStaleBleWorkoutTrackingFiles,
+  deleteBleWorkoutFile,
+  loadAllBleWorkoutFiles,
+} from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -37,6 +41,9 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
   const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
+      await cleanupStaleBleWorkoutTrackingFiles().catch(() => {
+        // Silent best-effort cleanup.
+      });
       const loaded = await loadAllBleWorkoutFiles();
       setFiles(loaded);
     } catch (err) {

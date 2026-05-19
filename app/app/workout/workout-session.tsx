@@ -547,7 +547,15 @@ export default function WorkoutSessionScreen() {
     } catch (err) {
       handleError(err, 'workout-session.stopTrackingAndSave');
     }
-  }, [clearTrackingTempFile, currentSetData, workoutLog, reps, wit.connectedDevice, showSnackbar, t]);
+  }, [
+    clearTrackingTempFile,
+    currentSetData,
+    workoutLog,
+    reps,
+    wit.connectedDevice,
+    showSnackbar,
+    t,
+  ]);
 
   const handleStartTracking = useCallback(() => {
     if (isTrackingRef.current) {

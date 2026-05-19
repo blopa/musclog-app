@@ -242,44 +242,42 @@ export async function transformWorkoutToDetailData(
       )
     : [...setsByExercise.entries()];
 
-  const workoutExercises: WorkoutExercise[] = exerciseEntries.map(
-    ([exerciseId, exerciseSets]) => {
-      const exercise = exerciseMap.get(exerciseId);
-      if (!exercise) {
-        throw new Error(`Exercise ${exerciseId} not found`);
-      }
-
-      const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
-
-      const iconData = getWorkoutIcon(theme, exercise.name ?? '');
-      const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
-
-      const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
-        const isHighlighted = prSetIds.has(set.id);
-        return {
-          setNumber: index + 1,
-          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
-          reps: set.reps ?? 0,
-          partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
-          repsInReserve: set.repsInReserve ?? 0,
-          isHighlighted,
-        };
-      });
-
-      const timeSpent = exerciseSets.length * 2;
-
-      return {
-        id: exerciseId,
-        name: exercise.name ?? '',
-        muscleGroup: exercise.muscleGroup ?? null,
-        timeSpent,
-        iconColor: iconData.iconBgColor,
-        iconBgColor: iconData.iconBgOpacity,
-        icon: iconData.icon,
-        sets: workoutSets,
-      };
+  const workoutExercises: WorkoutExercise[] = exerciseEntries.map(([exerciseId, exerciseSets]) => {
+    const exercise = exerciseMap.get(exerciseId);
+    if (!exercise) {
+      throw new Error(`Exercise ${exerciseId} not found`);
     }
-  );
+
+    const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
+
+    const iconData = getWorkoutIcon(theme, exercise.name ?? '');
+    const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
+
+    const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
+      const isHighlighted = prSetIds.has(set.id);
+      return {
+        setNumber: index + 1,
+        weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
+        reps: set.reps ?? 0,
+        partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
+        repsInReserve: set.repsInReserve ?? 0,
+        isHighlighted,
+      };
+    });
+
+    const timeSpent = exerciseSets.length * 2;
+
+    return {
+      id: exerciseId,
+      name: exercise.name ?? '',
+      muscleGroup: exercise.muscleGroup ?? null,
+      timeSpent,
+      iconColor: iconData.iconBgColor,
+      iconBgColor: iconData.iconBgOpacity,
+      icon: iconData.icon,
+      sets: workoutSets,
+    };
+  });
 
   const durationMinutes =
     workoutLog.completedAt && workoutLog.startedAt
