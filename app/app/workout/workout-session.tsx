@@ -59,6 +59,7 @@ import { BleDeviceService } from '@/database/services/BleDeviceService';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
@@ -181,6 +182,7 @@ function BlankWorkoutStats({
 export default function WorkoutSessionScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  useKeepScreenAwake('workout-session');
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const params = useLocalSearchParams<{
@@ -1230,7 +1232,8 @@ export default function WorkoutSessionScreen() {
                   <Button
                     label={t('workoutSession.startTracking')}
                     icon={Bluetooth}
-                    size="sm"
+                    size="md"
+                    width="full"
                     variant="secondary"
                     onPress={handleStartTracking}
                   />

@@ -1,13 +1,13 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, Sparkles } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { type ChatHistoryEntry, generateWorkoutPlan } from '@/utils/coachAI';
@@ -27,18 +27,7 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Keep screen awake during AI workout generation
-  useEffect(() => {
-    if (isGenerating) {
-      activateKeepAwakeAsync('generate-workout-ai').catch(() => {});
-    } else {
-      deactivateKeepAwake('generate-workout-ai').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('generate-workout-ai').catch(() => {});
-    };
-  }, [isGenerating]);
+  useKeepScreenAwake('generate-workout-ai', isGenerating);
 
   const handleGenerate = useCallback(async () => {
     const aiConfig = await AiService.getAiConfig();

@@ -18,6 +18,7 @@ import { database } from '@/database';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { WorkoutService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
@@ -28,6 +29,7 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 export default function RestOverScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  useKeepScreenAwake('workout-rest-over');
   const router = useRouter();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);

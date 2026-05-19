@@ -1,4 +1,3 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +16,7 @@ import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
 import { FoodService, MealService, NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
@@ -141,18 +141,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     }
   }, [visible]);
 
-  // Keep screen awake during AI meal generation
-  useEffect(() => {
-    if (isGeneratingMealAI) {
-      activateKeepAwakeAsync('my-meals-ai-generation').catch(() => {});
-    } else {
-      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('my-meals-ai-generation').catch(() => {});
-    };
-  }, [isGeneratingMealAI]);
+  useKeepScreenAwake('my-meals-ai-generation', visible && isGeneratingMealAI);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({

@@ -1,5 +1,4 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
@@ -42,18 +42,7 @@ export function RetrospectiveNutritionModal({
   const [description, setDescription] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Keep screen awake during AI retrospective nutrition processing
-  useEffect(() => {
-    if (isProcessing) {
-      activateKeepAwakeAsync('retrospective-nutrition').catch(() => {});
-    } else {
-      deactivateKeepAwake('retrospective-nutrition').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('retrospective-nutrition').catch(() => {});
-    };
-  }, [isProcessing]);
+  useKeepScreenAwake('retrospective-nutrition', visible && isProcessing);
 
   const handleProcessDescription = useCallback(async () => {
     if (!description.trim()) {

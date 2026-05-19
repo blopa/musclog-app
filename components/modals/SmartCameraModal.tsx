@@ -1,7 +1,6 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
@@ -35,6 +34,7 @@ import { CameraView, useCameraPermissions } from '@/components/CameraView';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
@@ -400,19 +400,7 @@ export default function SmartCameraModal({
     return () => pulse.stop();
   }, [pulseAnim]);
 
-  // Keep screen awake during AI processing or barcode searching to prevent
-  // the phone from turning off the screen and killing network requests
-  useEffect(() => {
-    if (isProcessingAi || isSearchingBarcode) {
-      activateKeepAwakeAsync('smart-camera-processing').catch(() => {});
-    } else {
-      deactivateKeepAwake('smart-camera-processing').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('smart-camera-processing').catch(() => {});
-    };
-  }, [isProcessingAi, isSearchingBarcode]);
+  useKeepScreenAwake('smart-camera-processing', visible && (isProcessingAi || isSearchingBarcode));
 
   useEffect(() => {
     if (!visible) {

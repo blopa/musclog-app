@@ -14,6 +14,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -35,6 +36,7 @@ type NextExercisePayload = {
 export default function NewExerciseTransitionScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  useKeepScreenAwake('workout-exercise-transition');
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { locale } = useFormatAppNumber();
