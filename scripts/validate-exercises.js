@@ -59,17 +59,21 @@ console.log(`Comparing fields using ${referenceFile} as reference:`);
 
 for (let i = 0; i < totalExercises; i++) {
   const referenceExercise = referenceData[i];
-  let exerciseHasErrors = false;
 
   for (const file of exerciseFiles) {
-    if (file === referenceFile) continue;
+    if (file === referenceFile) {
+      continue;
+    }
+
     const currentExercise = exerciseData[file][i];
 
     for (const field of fieldsToCheck) {
       const refValue = referenceExercise[field];
       const currentValue = currentExercise[field];
 
-      if (currentValue === undefined) continue;
+      if (currentValue === undefined) {
+        continue;
+      }
 
       // Deep comparison for arrays
       const isEqual =
@@ -81,7 +85,6 @@ for (let i = 0; i < totalExercises; i++) {
         console.error(`❌ Exercise ${i + 1} (${referenceExercise.__exerciseName}) - ${field}:`);
         console.error(`   ${referenceFile}: ${JSON.stringify(refValue)}`);
         console.error(`   ${file}: ${JSON.stringify(currentValue)}`);
-        exerciseHasErrors = true;
         hasErrors = true;
       }
     }
