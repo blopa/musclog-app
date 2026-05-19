@@ -6,13 +6,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
-import enUSNames from '@/data/exercisesEnUS.json';
-import esESNames from '@/data/exercisesEsEs.json';
-import nlNLNames from '@/data/exercisesNlNl.json';
-import ptBRNames from '@/data/exercisesPtBr.json';
-import ruRUNames from '@/data/exercisesRuRu.json';
 import exercisesData from '@/data/exercisesData.json';
-import i18n from '@/lang/lang';
+import i18n, { EXERCISES_JSON } from '@/lang/lang';
 
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
@@ -43,21 +38,20 @@ const EXERCISE_IMAGE = (index: number) =>
 
 type LocaleExerciseEntry = { exerciseIndex: number; name: string; description: string };
 
-function buildLookup(entries: LocaleExerciseEntry[]): Record<number, LocaleExerciseEntry> {
-    return Object.fromEntries(entries.map((e) => [e.exerciseIndex, e]));
-}
+const LOCALE_NAMES: Record<string, Record<number, LocaleExerciseEntry>> = Object.fromEntries(
+    Object.entries(EXERCISES_JSON).map(([locale, entries]) => [
+        locale,
+        Object.fromEntries(
+            (entries as LocaleExerciseEntry[]).map((e) => [e.exerciseIndex, e])
+        ),
+    ])
+);
 
-const LOCALE_NAMES: Record<string, Record<number, LocaleExerciseEntry>> = {
-    'en-us': buildLookup(enUSNames as LocaleExerciseEntry[]),
-    'es-es': buildLookup(esESNames as LocaleExerciseEntry[]),
-    'nl-nl': buildLookup(nlNLNames as LocaleExerciseEntry[]),
-    'pt-br': buildLookup(ptBRNames as LocaleExerciseEntry[]),
-    'ru-ru': buildLookup(ruRUNames as LocaleExerciseEntry[]),
-};
+const EN_US_NAMES = LOCALE_NAMES['en-US'] ?? {};
 
 function getLocalizedName(exerciseIndex: number, locale: string, fallback: string): string {
-    const map = LOCALE_NAMES[locale] ?? LOCALE_NAMES['en-us'];
-    return map?.[exerciseIndex]?.name ?? LOCALE_NAMES['en-us']?.[exerciseIndex]?.name ?? fallback;
+    const map = LOCALE_NAMES[locale] ?? EN_US_NAMES;
+    return map?.[exerciseIndex]?.name ?? EN_US_NAMES?.[exerciseIndex]?.name ?? fallback;
 }
 
 const MUSCLE_GROUPS = [
@@ -223,7 +217,7 @@ function ExerciseCard({
 export default function ExercisesPage() {
     const { t } = useTranslation(undefined, { keyPrefix: 'website.exercises' });
     const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
-    const { t: tEx } = useTranslation('exercises');
+    const { t: tEx } = useTranslation();
 
     const locale = i18n.resolvedLanguage ?? i18n.language ?? 'en-us';
 
@@ -253,23 +247,25 @@ export default function ExercisesPage() {
     }
 
     function getMuscleGroupLabel(mg: string): string {
-        return tEx(`muscleGroups.${mg}`, { defaultValue: mg.replace(/_/g, ' ') });
+        return tEx(`exercises.muscleGroups.${mg}`, { defaultValue: mg.replace(/_/g, ' ') });
     }
 
     function getEquipmentLabel(eq: string): string {
-        return tEx(`equipmentTypes.${eq}`, {
+        return tEx(`exercises.equipmentTypes.${eq}`, {
             defaultValue: eq.charAt(0).toUpperCase() + eq.slice(1).replace(/_/g, ' '),
         });
     }
 
     function getMechanicLabel(m: string): string {
-        return tEx(`mechanicTypes.${m}`, {
+        return tEx(`exercises.mechanicTypes.${m}`, {
             defaultValue: m.charAt(0).toUpperCase() + m.slice(1),
         });
     }
 
     function getTargetMuscleLabels(muscles: string[]): string[] {
-        return muscles.map((m) => tEx(`muscleGroups.${m}`, { defaultValue: m.replace(/_/g, ' ') }));
+        return muscles.map((m) =>
+            tEx(`exercises.muscleGroups.${m}`, { defaultValue: m.replace(/_/g, ' ') })
+        );
     }
 
     const pageStats = [
