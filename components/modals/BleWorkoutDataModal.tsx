@@ -9,8 +9,8 @@ import type { StoredBleWorkoutFile } from '@/utils/bleWorkoutDataStorage';
 import {
   cleanupStaleBleWorkoutTrackingFiles,
   createBleWorkoutZipFile,
-  deleteBleWorkoutFile,
   deleteBleWorkoutArchiveFile,
+  deleteBleWorkoutFile,
   loadAllBleWorkoutFiles,
 } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
