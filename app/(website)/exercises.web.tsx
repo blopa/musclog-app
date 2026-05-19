@@ -366,6 +366,12 @@ export default function ExercisesPage() {
                         >
                             {t('pageDescription')}
                         </p>
+                        <p
+                            className="mx-auto mt-3 max-w-lg text-balance text-sm"
+                            style={{ color: BODY_TEXT_SOFT }}
+                        >
+                            {t('customNote')}
+                        </p>
 
                         <div className="mt-8 flex flex-wrap justify-center gap-8">
                             {pageStats.map((stat) => (

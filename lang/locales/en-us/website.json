@@ -812,6 +812,7 @@
       "eyebrow": "EXERCISE LIBRARY",
       "pageTitle": "Explore Every Exercise",
       "pageDescription": "Browse our full collection of exercises — filter by muscle group, mechanic, or search by name.",
+      "customNote": "These are the exercises bundled with the app. You can also create your own custom exercises directly inside Musclog.",
       "searchPlaceholder": "Search exercises...",
       "filterAll": "All",
       "clearFilters": "Clear filters",
