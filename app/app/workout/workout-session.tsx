@@ -212,6 +212,7 @@ export default function WorkoutSessionScreen() {
     workoutLog,
     sets,
     exercises,
+    logExercises: activeLogExercises,
     currentSetData,
     progress,
     isLoading,
@@ -1402,6 +1403,7 @@ export default function WorkoutSessionScreen() {
             workoutLog={workoutLog}
             sets={sets}
             exercises={exercises}
+            logExercises={activeLogExercises}
             currentSetOrder={progress.currentSetOrder}
           />
         ) : null}

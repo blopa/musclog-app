@@ -312,6 +312,7 @@ export default function WorkoutSessionOverviewModal({
     workoutLog,
     sets,
     exercises: dbExercises,
+    logExercises,
     progress,
     isLoading,
     error,
@@ -366,13 +367,12 @@ export default function WorkoutSessionOverviewModal({
       });
     });
 
-    // Sort by first appearance in workout (set_order)
-    return exerciseList.sort((a, b) => {
-      const aFirstSet = sets.find((set) => set.exerciseId === a.id);
-      const bFirstSet = sets.find((set) => set.exerciseId === b.id);
-      return (aFirstSet?.setOrder || 0) - (bFirstSet?.setOrder || 0);
-    });
-  }, [sets, dbExercises]);
+    const orderedIds = logExercises.map((le) => le.exerciseId);
+    return exerciseList.sort(
+      (a, b) =>
+        (orderedIds.indexOf(a.id) + 1 || Infinity) - (orderedIds.indexOf(b.id) + 1 || Infinity)
+    );
+  }, [sets, dbExercises, logExercises]);
 
   const menuItems: BottomPopUpMenuItem[] = [
     {

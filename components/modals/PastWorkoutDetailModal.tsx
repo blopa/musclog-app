@@ -499,6 +499,7 @@ export default function PastWorkoutDetailModal({
     workoutLog: WorkoutLog;
     sets: EnrichedWorkoutLogSet[];
     exercises: Exercise[];
+    logExercises: { exerciseId: string }[];
   } | null>(null);
 
   useEffect(() => {
@@ -557,6 +558,7 @@ export default function PastWorkoutDetailModal({
         workoutLog: log,
         sets,
         exercises,
+        logExercises: hcLogExercises,
       } = await WorkoutService.getWorkoutWithDetails(workoutId);
 
       const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
@@ -568,7 +570,14 @@ export default function PastWorkoutDetailModal({
         }
         byExercise.get(eid)!.push(set);
       }
-      const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => ({
+      const orderedHcIds = hcLogExercises.map((le) => le.exerciseId);
+      const segmentItems = [...byExercise.entries()]
+        .sort(
+          (a, b) =>
+            (orderedHcIds.indexOf(a[0]) + 1 || Infinity) -
+            (orderedHcIds.indexOf(b[0]) + 1 || Infinity)
+        )
+        .map(([exerciseId, exerciseSets]) => ({
         exerciseName: exerciseMap.get(exerciseId)?.name ?? 'Exercise',
         totalReps: exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0),
         sets: exerciseSets.map((s) => ({ reps: s.reps ?? 0, weight: s.weight ?? 0 })),
@@ -754,7 +763,12 @@ export default function PastWorkoutDetailModal({
 
           try {
             const data = await WorkoutService.getWorkoutWithDetails(workoutId);
-            setPreviewWorkoutData(data);
+            setPreviewWorkoutData({
+              workoutLog: data.workoutLog,
+              sets: data.sets,
+              exercises: data.exercises,
+              logExercises: data.logExercises.map((le) => ({ exerciseId: le.exerciseId })),
+            });
             console.log('ON PREVIEW CLICKED', data, 11, workoutId);
             setIsPreviewModalVisible(true);
           } catch (error) {
@@ -856,6 +870,7 @@ export default function PastWorkoutDetailModal({
           workoutLog={previewWorkoutData.workoutLog}
           sets={previewWorkoutData.sets}
           exercises={previewWorkoutData.exercises}
+          logExercises={previewWorkoutData.logExercises}
           shouldShowTimer={false}
         />
       ) : null}

@@ -39,6 +39,10 @@ export type WorkoutHistoryModalProps = {
   sets?: EnrichedWorkoutLogSet[];
   templateSets?: (WorkoutTemplateSet | EnrichedWorkoutTemplateSet)[];
   exercises?: Exercise[];
+  /** exercise_order-sorted log exercises — used to display exercises in correct order */
+  logExercises?: { exerciseId: string }[];
+  /** exercise_order-sorted template exercises — used to display exercises in correct order in preview mode */
+  templateExercises?: { exerciseId: string }[];
   currentSetOrder?: number | null;
   isPreview?: boolean;
   shouldShowTimer?: boolean;
@@ -53,6 +57,8 @@ export function WorkoutSessionHistoryModal({
   sets = [],
   templateSets = [],
   exercises = [],
+  logExercises,
+  templateExercises,
   currentSetOrder = null,
   isPreview = false,
   shouldShowTimer = true,
@@ -107,8 +113,10 @@ export function WorkoutSessionHistoryModal({
         exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
       });
 
-      // Create exercise data list
-      const exerciseOrder = Array.from(exerciseGroups.keys());
+      // Use templateExercises order when available, otherwise fall back to Map insertion order
+      const exerciseOrder = templateExercises
+        ? templateExercises.map((te) => te.exerciseId).filter((id) => exerciseGroups.has(id))
+        : Array.from(exerciseGroups.keys());
       const result: ExerciseData[] = [];
 
       exerciseOrder.forEach((exerciseId, index) => {
@@ -171,8 +179,10 @@ export function WorkoutSessionHistoryModal({
         exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
       });
 
-      // Create exercise data list
-      const exerciseOrder = Array.from(exerciseGroups.keys());
+      // Use logExercises order when available, otherwise fall back to Map insertion order
+      const exerciseOrder = logExercises
+        ? logExercises.map((le) => le.exerciseId).filter((id) => exerciseGroups.has(id))
+        : Array.from(exerciseGroups.keys());
       const result: ExerciseData[] = [];
 
       exerciseOrder.forEach((exerciseId, index) => {
