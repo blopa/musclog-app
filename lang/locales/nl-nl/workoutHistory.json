@@ -10,6 +10,9 @@
     "startThisWorkout": "Deze workout starten",
     "noExercisesYet": "Nog geen oefeningen",
     "exercise": "Oefening {{number}}",
-    "set": "Set {{number}}"
+    "set": "Set {{number}}",
+    "share": "Delen",
+    "shareDescription": "Deel deze workoutdetails",
+    "shareFailed": "Workoutdetails delen mislukt. Probeer het opnieuw."
   }
 }

@@ -10,6 +10,9 @@
     "startThisWorkout": "Start this workout",
     "noExercisesYet": "No exercises yet",
     "exercise": "Exercise {{number}}",
-    "set": "Set {{number}}"
+    "set": "Set {{number}}",
+    "share": "Share",
+    "shareDescription": "Share these workout details",
+    "shareFailed": "Failed to share workout details. Please try again."
   }
 }

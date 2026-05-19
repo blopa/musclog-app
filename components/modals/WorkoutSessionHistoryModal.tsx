@@ -1,5 +1,5 @@
 import { Dumbbell, Share2, Weight } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -12,11 +12,13 @@ import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import type { EnrichedWorkoutLogSet } from '@/database/services';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import {
   calculatePreviewVolumeFromTemplateSets,
@@ -59,8 +61,10 @@ export function WorkoutSessionHistoryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
-  const { locale } = useFormatAppNumber();
+  const { locale, formatInteger, formatNumber } = useFormatAppNumber();
+  const { shareText } = useNativeShareText();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const [isSharing, setIsSharing] = useState(false);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   useEffect(() => {
@@ -262,6 +266,125 @@ export function WorkoutSessionHistoryModal({
     return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
   }, [isPreview, sets]);
 
+  const shareDuration = useMemo(() => {
+    if (isPreview || !workoutLog?.startedAt) {
+      return null;
+    }
+
+    if (workoutLog.completedAt) {
+      const elapsedSeconds = Math.max(
+        0,
+        Math.floor((workoutLog.completedAt - workoutLog.startedAt) / 1000)
+      );
+      const hours = Math.floor(elapsedSeconds / 3600);
+      const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+      const seconds = elapsedSeconds % 60;
+
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
+        seconds
+      ).padStart(2, '0')}`;
+    }
+
+    return `${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(
+      2,
+      '0'
+    )}:${String(sessionTime.seconds).padStart(2, '0')}`;
+  }, [isPreview, sessionTime.hours, sessionTime.minutes, sessionTime.seconds, workoutLog?.completedAt, workoutLog?.startedAt]);
+
+  const shareMessage = useMemo(() => {
+    const lines: string[] = [
+      isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title'),
+      '',
+      workoutName,
+    ];
+
+    const previewDescription = isPreview ? workoutTemplate?.description?.trim() : null;
+    if (previewDescription) {
+      lines.push(previewDescription);
+      lines.push('');
+    }
+
+    if (workoutLog?.startedAt) {
+      const startedAt = new Intl.DateTimeFormat(locale, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(workoutLog.startedAt));
+      lines.push(`${t('workoutDetail.startTime')}: ${startedAt}`);
+    }
+
+    if (!isPreview && workoutLog?.completedAt) {
+      const completedAt = new Intl.DateTimeFormat(locale, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(workoutLog.completedAt));
+      lines.push(`${t('workoutDetail.endTime')}: ${completedAt}`);
+    }
+
+    if (shareDuration) {
+      lines.push(`${t('workoutHistory.duration')}: ${shareDuration}`);
+    }
+
+    lines.push(`${t('workoutDetail.volume')}: ${totalVolumeDisplay} ${t(weightUnitKey)}`);
+
+    if (!isPreview) {
+      lines.push(`${t('workoutHistory.setsDone')}: ${formatInteger(completedSetsCount)}`);
+    }
+
+    if (exerciseDataList.length > 0) {
+      lines.push(t('workoutDetail.exercisesCount', { count: formatInteger(exerciseDataList.length) }));
+    }
+
+    if (exerciseDataList.length > 0) {
+      lines.push('');
+      exerciseDataList.forEach((exercise) => {
+        lines.push(
+          `${t('workoutHistory.exercise', { number: exercise.exerciseNumber })}: ${exercise.name}`
+        );
+        exercise.sets.forEach((set) => {
+          lines.push(
+            `  ${t('workoutHistory.set', { number: set.setNumber })}: ${formatNumber(set.weight, {
+              maximumFractionDigits: 1,
+            })} ${t(weightUnitKey)} × ${formatInteger(set.reps)}`
+          );
+        });
+        lines.push('');
+      });
+    }
+
+    return lines.join('\n').trimEnd();
+  }, [
+    completedSetsCount,
+    exerciseDataList,
+    formatInteger,
+    formatNumber,
+    isPreview,
+    locale,
+    shareDuration,
+    t,
+    totalVolumeDisplay,
+    weightUnitKey,
+    workoutLog?.completedAt,
+    workoutLog?.startedAt,
+    workoutTemplate?.description,
+    workoutName,
+  ]);
+
+  const handleShare = useCallback(async () => {
+    if (isSharing) {
+      return;
+    }
+
+    setIsSharing(true);
+    try {
+      await shareText(shareMessage, { title: workoutName }, { subject: workoutName });
+    } catch (error) {
+      console.error('Failed to share workout session history:', error);
+      showSnackbar('error', t('workoutHistory.shareFailed'));
+    } finally {
+      setIsSharing(false);
+    }
+  }, [isSharing, shareMessage, shareText, t, workoutName]);
+
   // Prepare footer content for preview mode
   const footerContent = useMemo(() => {
     if (isPreview && onStartWorkout) {
@@ -284,7 +407,15 @@ export function WorkoutSessionHistoryModal({
       onClose={onClose}
       title={isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title')}
       headerRight={
-        <Pressable className="rounded-full p-2">
+        <Pressable
+          className="rounded-full p-2"
+          onPress={() => void handleShare()}
+          disabled={isSharing}
+          accessibilityRole="button"
+          accessibilityLabel={t('workoutHistory.share')}
+          accessibilityHint={t('workoutHistory.shareDescription')}
+          hitSlop={10}
+        >
           <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
       }
