@@ -1,14 +1,16 @@
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import type { StoredBleWorkoutFile } from '@/utils/bleWorkoutDataStorage';
 import {
   cleanupStaleBleWorkoutTrackingFiles,
+  createBleWorkoutZipFile,
   deleteBleWorkoutFile,
+  deleteBleWorkoutArchiveFile,
   loadAllBleWorkoutFiles,
 } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
@@ -35,9 +37,11 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
   const [isLoading, setIsLoading] = useState(false);
   const [isSharingAvailable, setIsSharingAvailable] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSharingAll, setIsSharingAll] = useState(false);
   const [fileToDelete, setFileToDelete] = useState<StoredBleWorkoutFile | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isDeleteAllModalVisible, setIsDeleteAllModalVisible] = useState(false);
+  const canShareAll = Platform.OS !== 'web' && isSharingAvailable && files.length > 0;
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
@@ -134,18 +138,52 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
     }
   }, [files, refresh, t]);
 
+  const handleShareAll = useCallback(async () => {
+    if (!canShareAll || isSharingAll) {
+      return;
+    }
+
+    setIsSharingAll(true);
+    let zipUri: string | null = null;
+    try {
+      zipUri = await createBleWorkoutZipFile(files.map((file) => file.uri));
+      await Sharing.shareAsync(zipUri, { mimeType: 'application/zip' });
+    } catch (err) {
+      handleError(err, 'BleWorkoutDataModal.handleShareAll', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      if (zipUri) {
+        await deleteBleWorkoutArchiveFile(zipUri).catch(() => {
+          // Best-effort cleanup only.
+        });
+      }
+      setIsSharingAll(false);
+    }
+  }, [canShareAll, files, isSharingAll, t]);
+
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title={t('bleWorkoutData.modalTitle')}
       headerRight={
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row flex-wrap items-center justify-end gap-2">
+          {canShareAll ? (
+            <Button
+              label={t('bleWorkoutData.shareAll')}
+              size="xs"
+              variant="secondary"
+              loading={isSharingAll}
+              disabled={isProcessing || isSharingAll}
+              onPress={() => void handleShareAll()}
+            />
+          ) : null}
           <Button
             label={t('bleWorkoutData.deleteAll')}
             size="xs"
             variant="discard"
-            disabled={isProcessing || files.length === 0}
+            disabled={isProcessing || isSharingAll || files.length === 0}
             onPress={handleRequestDeleteAll}
           />
           <Button
@@ -153,6 +191,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
             size="xs"
             variant="secondary"
             loading={isLoading}
+            disabled={isProcessing || isSharingAll}
             onPress={() => void refresh()}
           />
         </View>
@@ -191,7 +230,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
                         label={t('bleWorkoutData.share')}
                         size="xs"
                         variant="secondary"
-                        disabled={isProcessing}
+                        disabled={isProcessing || isSharingAll}
                         onPress={() => void handleShare(file)}
                       />
                     ) : null}
@@ -199,7 +238,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
                       label={t('bleWorkoutData.delete')}
                       size="xs"
                       variant="discard"
-                      disabled={isProcessing}
+                      disabled={isProcessing || isSharingAll}
                       onPress={() => handleRequestDelete(file)}
                     />
                   </View>

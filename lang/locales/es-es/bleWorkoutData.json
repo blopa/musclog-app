@@ -6,6 +6,7 @@
     "modalTitle": "Archivos BLE de Entrenamiento",
     "noFiles": "Aún no hay grabaciones del sensor",
     "noFilesHint": "Empieza a rastrear una serie durante un entrenamiento para crear grabaciones",
+    "shareAll": "Compartir Todo",
     "deleteAll": "Eliminar Todo",
     "deleteAllConfirmTitle": "Eliminar Todas las Grabaciones",
     "deleteAllConfirmMessage": "Esto eliminará permanentemente las {{count}} grabaciones.",

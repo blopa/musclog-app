@@ -6,6 +6,7 @@
     "modalTitle": "BLE Workout Files",
     "noFiles": "No sensor recordings yet",
     "noFilesHint": "Start tracking a set during a workout to create recordings",
+    "shareAll": "Share All",
     "deleteAll": "Delete All",
     "deleteAllConfirmTitle": "Delete All Recordings",
     "deleteAllConfirmMessage": "This will permanently delete all {{count}} recordings.",

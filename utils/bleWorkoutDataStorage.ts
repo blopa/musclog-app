@@ -10,6 +10,7 @@ import {
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
 import * as ndjson from 'ndjson';
+import { zip } from 'react-native-zip-archive';
 
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 
@@ -49,6 +50,7 @@ export interface StoredBleWorkoutFile extends BleWorkoutFile {
 }
 
 const BLE_WORKOUT_DATA_DIR = 'ble-workout-data';
+const BLE_WORKOUT_SHARE_DIR = 'ble-workout-share';
 const BLE_WORKOUT_TRACKING_DIR = 'ble-workout-tracking';
 const BLE_WORKOUT_TRACKING_STALE_AFTER_MS = 6 * 60 * 60 * 1000;
 const NDJSON_DECODER = new TextDecoder();
@@ -75,6 +77,11 @@ function randomSuffix(length: number): string {
 function getDataDirectoryUri(): string | null {
   const base = documentDirectory ?? cacheDirectory;
   return base ? `${base}${BLE_WORKOUT_DATA_DIR}/` : null;
+}
+
+function getShareDirectoryUri(): string | null {
+  const base = cacheDirectory ?? documentDirectory;
+  return base ? `${base}${BLE_WORKOUT_SHARE_DIR}/` : null;
 }
 
 function buildMetadataHeader(data: Omit<BleWorkoutFile, 'samples'>): string {
@@ -116,6 +123,12 @@ function getTrackingDirectoryFile(sessionId: string): Directory | null {
 
 function joinUri(baseUri: string, childName: string): string {
   return `${baseUri.replace(/\/?$/, '/')}${childName}`;
+}
+
+function buildBleWorkoutZipFileName(fileCount: number, startedAtMs: number): string {
+  const ts = new Date(startedAtMs).toISOString().replace(/[:.]/g, '-');
+  const suffix = randomSuffix(4);
+  return `ble_workout_files_${fileCount}_${ts}_${suffix}.zip`;
 }
 
 export function createBleWorkoutTrackingTempFile(sessionId: string): File {
@@ -276,6 +289,16 @@ export async function ensureBleWorkoutDataDir(): Promise<string | null> {
   return dir;
 }
 
+export async function ensureBleWorkoutShareDir(): Promise<string | null> {
+  const dir = getShareDirectoryUri();
+  if (!dir) {
+    return null;
+  }
+
+  await makeDirectoryAsync(dir, { intermediates: true });
+  return dir;
+}
+
 export function buildBleWorkoutFileName(
   exerciseName: string,
   setNumber: number,
@@ -285,6 +308,25 @@ export function buildBleWorkoutFileName(
   const ts = new Date(startedAtMs).toISOString().replace(/[:.]/g, '-');
   const suffix = randomSuffix(4);
   return `ble_${slug}_set${setNumber}_${ts}_${suffix}.json`;
+}
+
+export async function createBleWorkoutZipFile(fileUris: string[]): Promise<string> {
+  if (fileUris.length === 0) {
+    throw new Error('No BLE workout files available to zip');
+  }
+
+  const dir = await ensureBleWorkoutShareDir();
+  if (!dir) {
+    throw new Error('BLE workout share directory unavailable');
+  }
+
+  const outputFile = new File(dir, buildBleWorkoutZipFileName(fileUris.length, Date.now()));
+  await zip(fileUris, outputFile.uri);
+  return outputFile.uri;
+}
+
+export async function deleteBleWorkoutArchiveFile(uri: string): Promise<void> {
+  await deleteAsync(uri, { idempotent: true });
 }
 
 export async function saveBleWorkoutFile(data: BleWorkoutFileInput): Promise<string> {

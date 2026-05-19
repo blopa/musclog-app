@@ -6,6 +6,7 @@
     "modalTitle": "BLE Trainingsbestanden",
     "noFiles": "Nog geen sensoropnames",
     "noFilesHint": "Start tracking van een set tijdens een training om opnames te maken",
+    "shareAll": "Alles Delen",
     "deleteAll": "Alles Verwijderen",
     "deleteAllConfirmTitle": "Alle Opnames Verwijderen",
     "deleteAllConfirmMessage": "Dit verwijdert permanent alle {{count}} opnames.",
