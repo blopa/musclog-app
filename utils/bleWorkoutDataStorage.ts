@@ -9,7 +9,6 @@ import {
   readDirectoryAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
-import * as ndjson from 'ndjson';
 import { zip } from 'react-native-zip-archive';
 
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
@@ -53,7 +52,6 @@ const BLE_WORKOUT_DATA_DIR = 'ble-workout-data';
 const BLE_WORKOUT_SHARE_DIR = 'ble-workout-share';
 const BLE_WORKOUT_TRACKING_DIR = 'ble-workout-tracking';
 const BLE_WORKOUT_TRACKING_STALE_AFTER_MS = 6 * 60 * 60 * 1000;
-const NDJSON_DECODER = new TextDecoder();
 
 function getTrackingDirectoryUri(): string | null {
   const base = cacheDirectory ?? documentDirectory;
@@ -189,33 +187,7 @@ export async function cleanupStaleBleWorkoutTrackingFiles(
 }
 
 function serializeSamplesAsNdjson(samples: BleWorkoutSample[]): string {
-  if (samples.length === 0) {
-    return '';
-  }
-
-  const serializer = ndjson.stringify();
-  let output = '';
-
-  serializer.on('data', (chunk: unknown) => {
-    if (typeof chunk === 'string') {
-      output += chunk;
-      return;
-    }
-
-    if (chunk instanceof Uint8Array) {
-      output += NDJSON_DECODER.decode(chunk);
-      return;
-    }
-
-    output += String(chunk);
-  });
-
-  for (const sample of samples) {
-    serializer.write(sample);
-  }
-
-  serializer.end();
-  return output;
+  return samples.map((s) => `${JSON.stringify(s)}\n`).join('');
 }
 
 export function appendBleWorkoutSamplesToNdjsonFile(file: File, samples: BleWorkoutSample[]): void {
