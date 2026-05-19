@@ -1,4 +1,4 @@
-name: Jules PR Review
+name: Jules Github PR Review
 
 on:
   pull_request:
