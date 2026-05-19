@@ -29,6 +29,7 @@ const EXERCISE_JSON_MUSCLE_GROUPS = [
 type ExerciseJsonMuscleGroup = (typeof EXERCISE_JSON_MUSCLE_GROUPS)[number];
 
 interface ExerciseJsonData {
+  exerciseIndex: number;
   name: string;
   description: string;
   muscleGroup: ExerciseJsonMuscleGroup;
@@ -49,6 +50,7 @@ function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): Exercise
     }
 
     result.push({
+      exerciseIndex: localeEntry.exerciseIndex,
       name: localeEntry.name,
       description: localeEntry.description,
       muscleGroup: data.muscleGroup as ExerciseJsonMuscleGroup,
@@ -719,6 +721,7 @@ export class ExerciseService {
       const equipmentType = this.inferEquipmentFromName(data.name, data.equipmentType);
 
       return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+        exercise._raw.id = String(data.exerciseIndex);
         exercise.name = data.name;
         exercise.description = data.description;
         exercise.muscleGroup = data.muscleGroup as MuscleGroup;
