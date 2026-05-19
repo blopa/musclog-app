@@ -37,6 +37,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
   const [isProcessing, setIsProcessing] = useState(false);
   const [fileToDelete, setFileToDelete] = useState<StoredBleWorkoutFile | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isDeleteAllModalVisible, setIsDeleteAllModalVisible] = useState(false);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
@@ -105,19 +106,56 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
     }
   }, [fileToDelete, refresh, t]);
 
+  const handleRequestDeleteAll = useCallback(() => {
+    if (files.length === 0) {
+      return;
+    }
+
+    setIsDeleteAllModalVisible(true);
+  }, [files.length]);
+
+  const handleConfirmDeleteAll = useCallback(async () => {
+    if (files.length === 0) {
+      setIsDeleteAllModalVisible(false);
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await Promise.all(files.map((file) => deleteBleWorkoutFile(file.uri)));
+      setIsDeleteAllModalVisible(false);
+      await refresh();
+    } catch (err) {
+      handleError(err, 'BleWorkoutDataModal.handleConfirmDeleteAll', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [files, refresh, t]);
+
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title={t('bleWorkoutData.modalTitle')}
       headerRight={
-        <Button
-          label={t('bleWorkoutData.refresh')}
-          size="xs"
-          variant="secondary"
-          loading={isLoading}
-          onPress={() => void refresh()}
-        />
+        <View className="flex-row items-center gap-2">
+          <Button
+            label={t('bleWorkoutData.deleteAll')}
+            size="xs"
+            variant="discard"
+            disabled={isProcessing || files.length === 0}
+            onPress={handleRequestDeleteAll}
+          />
+          <Button
+            label={t('bleWorkoutData.refresh')}
+            size="xs"
+            variant="secondary"
+            loading={isLoading}
+            onPress={() => void refresh()}
+          />
+        </View>
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -186,6 +224,16 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
             : '',
         })}
         confirmLabel={t('bleWorkoutData.delete')}
+        isLoading={isProcessing}
+      />
+
+      <ConfirmationModal
+        visible={isDeleteAllModalVisible}
+        onClose={() => setIsDeleteAllModalVisible(false)}
+        onConfirm={() => void handleConfirmDeleteAll()}
+        title={t('bleWorkoutData.deleteAllConfirmTitle')}
+        message={t('bleWorkoutData.deleteAllConfirmMessage', { count: files.length })}
+        confirmLabel={t('bleWorkoutData.deleteAll')}
         isLoading={isProcessing}
       />
     </FullScreenModal>
