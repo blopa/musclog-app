@@ -74,6 +74,12 @@ const migrationV18 = {
 
     // --- Phase 3: Rebuild exercise_muscles pivot from exercisesData.json targetMuscles ---
     ...exerciseMuscleSteps,
+
+    // --- Phase 4: Update image URLs to musclog.app website ---
+    // After Phase 1 all app exercises have sequential integer IDs, so the URL is deterministic.
+    unsafeExecuteSql(
+      "UPDATE exercises SET image_url = 'http://musclog.app/images/exercises/' || id || '.png' WHERE source = 'app';"
+    ),
   ],
 };
 
