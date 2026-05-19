@@ -91,6 +91,7 @@ _SIGNAL_FEATURES = [
     "accel_z_range",         # range of vertical acceleration (important for cable machines)
     "accel_z_peak_count",    # peaks in vertical acceleration
     "is_angle_flat",         # 1 if angle barely moves (cable/stack machine indicator)
+    "set_number",            # which set in the exercise (higher → more fatigue → slower/fewer reps)
 ]
 _CATEGORICAL_FEATURES = (
     [f"muscle_{g}" for g in MUSCLE_GROUPS]      # one-hot: muscle group
@@ -258,6 +259,7 @@ def build_dataset() -> pd.DataFrame:
 
         try:
             feats = extract_features(data["samples"])
+            feats["set_number"] = float(data.get("setNumber") or 1)
             build_categorical_features(
                 feats,
                 str(data.get("muscleGroup") or "unknown"),

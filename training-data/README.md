@@ -74,5 +74,6 @@ Each JSON recording is summarized into 15 numbers (features):
 | `accel_z_range`         | Vertical acceleration range (key for cable machines) |
 | `accel_z_peak_count`    | Peaks in vertical acceleration                       |
 | `is_angle_flat`         | 1 if angle barely moves (cable/stack machine)        |
+| `set_number`            | Which set in the exercise (higher → more fatigue)    |
 
 A Random Forest or Gradient Boosting model (both are just decision trees under the hood) learns to map these features to a rep count. No GPU needed — training takes a few seconds on any laptop.

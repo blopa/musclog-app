@@ -44,6 +44,7 @@ def main():
 
     samples = data["samples"]
     feats   = extract_features(samples)
+    feats["set_number"] = float(data.get("setNumber") or 1)
     build_categorical_features(
         feats,
         str(data.get("muscleGroup") or "unknown"),
