@@ -2478,7 +2478,6 @@ export function FoodMealTrackingDetailsModal({
                     onIncrement={() => setServingSize((prev) => prev + 0.5)}
                     onDecrement={() => setServingSize((prev) => Math.max(0.5, prev - 0.5))}
                     onChangeValue={setServingSize}
-                    onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                     unit={servingUnitLabel || t('food.foodDetails.serving')}
                   />
                 </View>
@@ -2487,7 +2486,6 @@ export function FoodMealTrackingDetailsModal({
                   value={servingSize}
                   onChange={setServingSize}
                   food={food || localFood || undefined}
-                  onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                   productServingSize={parsedProductServingSize}
                   productMeasures={parsedProductMeasures}
                   showPortionSelector={Boolean(food || localFood)}
@@ -2503,7 +2501,6 @@ export function FoodMealTrackingDetailsModal({
                   onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
                   onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
                   onChangeValue={setMealAmountGrams}
-                  onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                   unit={servingUnitLabel || t('food.foodDetails.serving')}
                 />
               </View>
@@ -2511,7 +2508,6 @@ export function FoodMealTrackingDetailsModal({
               <ServingSizeSelector
                 value={mealAmountGrams}
                 onChange={(v) => setMealAmountGrams(Math.round(v))}
-                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 quickSizes={
                   totalMealGrams > 0
                     ? [
