@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 import { useCameraPermissions } from '@/components/CameraView';
+import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
 import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
 import type { MealType } from '@/database/models';
 import { useSettings } from '@/hooks/useSettings';
@@ -56,8 +57,8 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
 
   // Cached permission for optimistic rendering while the TurboModule is initializing
   // (permission === null). Once permission resolves, the live value always wins.
-  const [cachedPermissionGranted, setCachedPermissionGrantedState] = useState<boolean | null>(
-    () => getCachedCameraPermissionGranted()
+  const [cachedPermissionGranted, setCachedPermissionGrantedState] = useState<boolean | null>(() =>
+    getCachedCameraPermissionGranted()
   );
 
   // When the native check resolves, persist to AsyncStorage and update state.
@@ -103,7 +104,8 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   // Live native value wins over the cache. Fall back to cache only while the
   // TurboModule is still initializing (permission === null) so we can show an
   // optimistic UI instead of always blocking on the cold-start delay.
-  const effectivePermissionGranted = permission !== null ? permission.granted : cachedPermissionGranted;
+  const effectivePermissionGranted =
+    permission !== null ? permission.granted : cachedPermissionGranted;
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
@@ -135,19 +137,30 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   return (
     <SmartCameraContext.Provider value={value}>
       {children}
-      {isVisible ? (
+      {isVisible && onBarcodeScannedRef.current ? (
+        <BarcodeCameraModal
+          visible={isVisible}
+          onClose={handleCameraModalClose}
+          onBarcodeScanned={handleBarcodeScanned}
+          showBarcodeTextSearch={showBarcodeTextSearch}
+          logDate={logDate}
+          mealTypeForLog={mealTypeForLog}
+          permissionGranted={effectivePermissionGranted}
+          onRequestPermission={requestPermission}
+        />
+      ) : null}
+      {isVisible && !onBarcodeScannedRef.current ? (
         <SmartCameraModal
           visible={isVisible}
           onClose={handleCameraModalClose}
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
-          isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
+          isAiEnabled={isAiConfigured}
           isAIVisionEnabled={isAiMealPhotoEnabled}
           useOcrBeforeAi={useOcrBeforeAi}
           showBarcodeTextSearch={showBarcodeTextSearch}
           logDate={logDate}
           mealTypeForLog={mealTypeForLog}
-          onBarcodeScanned={onBarcodeScannedRef.current ? handleBarcodeScanned : undefined}
           permissionGranted={effectivePermissionGranted}
           onRequestPermission={requestPermission}
         />
@@ -161,5 +174,6 @@ export function useSmartCamera() {
   if (context === undefined) {
     throw new Error('useSmartCamera must be used within a SmartCameraProvider');
   }
+
   return context;
 }

@@ -36,8 +36,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { FilterTabs } from '@/components/FilterTabs';
 import { BarcodeInput } from '@/components/BarcodeInput';
+import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';

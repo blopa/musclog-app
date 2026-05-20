@@ -21,8 +21,8 @@ import {
   View,
 } from 'react-native';
 
-import { BottomPopUp } from '@/components/BottomPopUp';
 import { BarcodeInput } from '@/components/BarcodeInput';
+import { BottomPopUp } from '@/components/BottomPopUp';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,

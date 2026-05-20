@@ -1,0 +1,135 @@
+import * as Haptics from 'expo-haptics';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { detectBarcodes } from '@/utils/file';
+import { showSnackbar } from '@/utils/snackbarService';
+
+type UseBarcodeScanner = {
+  visible: boolean;
+  onBarcodeScanned?: (data: string) => void;
+  onClose: () => void;
+};
+
+export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBarcodeScanner) {
+  const { t } = useTranslation();
+  const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
+  const isSearchingBarcodeRef = useRef(false);
+  const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
+  const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
+  const [cameraResumeKey, setCameraResumeKey] = useState(0);
+
+  useEffect(() => {
+    if (!visible) {
+      setIsSearchingBarcode(false);
+      setDetectedBarcode(null);
+      setIsFoodNotFoundModalVisible(false);
+      isSearchingBarcodeRef.current = false;
+    }
+  }, [visible]);
+
+  const handleLiveBarcodeScanned = useCallback(
+    ({ data }: { data: string }) => {
+      if (isSearchingBarcodeRef.current) {
+        return;
+      }
+
+      isSearchingBarcodeRef.current = true;
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      if (onBarcodeScanned) {
+        onBarcodeScanned(data);
+        onClose();
+        return;
+      }
+
+      setIsSearchingBarcode(true);
+      setDetectedBarcode(data);
+    },
+    [onBarcodeScanned, onClose]
+  );
+
+  const handleBarcodeTextSearchSubmit = useCallback(
+    (barcode: string) => {
+      if (!barcode) {
+        showSnackbar('error', t('food.aiCamera.barcodeTextSearchRequired'));
+        return;
+      }
+
+      isSearchingBarcodeRef.current = true;
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      if (onBarcodeScanned) {
+        onBarcodeScanned(barcode);
+        onClose();
+        return;
+      }
+
+      setIsSearchingBarcode(true);
+      setDetectedBarcode(barcode);
+    },
+    [onBarcodeScanned, onClose, t]
+  );
+
+  const processBarcodeImage = useCallback(
+    async (fileUri: string) => {
+      setIsSearchingBarcode(true);
+      try {
+        const barcode = await detectBarcodes(fileUri);
+        if (barcode) {
+          if (onBarcodeScanned) {
+            onBarcodeScanned(barcode);
+            onClose();
+            return;
+          }
+
+          setDetectedBarcode(barcode);
+        } else {
+          showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+          isSearchingBarcodeRef.current = false;
+          setIsSearchingBarcode(false);
+          if (!onBarcodeScanned) {
+            setIsFoodNotFoundModalVisible(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error detecting barcode:', error);
+        showSnackbar('error', t('food.aiCamera.cameraError'));
+        isSearchingBarcodeRef.current = false;
+        setIsSearchingBarcode(false);
+      }
+    },
+    [t, onBarcodeScanned, onClose]
+  );
+
+  const handleBarcodeLookupComplete = useCallback(() => {
+    setIsSearchingBarcode(false);
+  }, []);
+
+  const handleFoodDetailsClose = useCallback(() => {
+    setDetectedBarcode(null);
+    isSearchingBarcodeRef.current = false;
+    setIsSearchingBarcode(false);
+    setCameraResumeKey((k) => k + 1);
+  }, []);
+
+  const handleFoodNotFoundClose = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+    setDetectedBarcode(null);
+    isSearchingBarcodeRef.current = false;
+    setIsSearchingBarcode(false);
+    setCameraResumeKey((k) => k + 1);
+  }, []);
+
+  return {
+    isSearchingBarcode,
+    isSearchingBarcodeRef,
+    detectedBarcode,
+    isFoodNotFoundModalVisible,
+    cameraResumeKey,
+    handleLiveBarcodeScanned,
+    handleBarcodeTextSearchSubmit,
+    processBarcodeImage,
+    handleBarcodeLookupComplete,
+    handleFoodDetailsClose,
+    handleFoodNotFoundClose,
+  };
+}
