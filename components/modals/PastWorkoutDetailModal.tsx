@@ -4,6 +4,7 @@ import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-na
 import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
@@ -435,7 +436,7 @@ export default function PastWorkoutDetailModal({
   const { units } = useSettings();
   const { formatInteger, locale } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
 
   const {
     workout,
