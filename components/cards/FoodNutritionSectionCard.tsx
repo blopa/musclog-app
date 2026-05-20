@@ -269,7 +269,7 @@ export function FoodNutritionSectionCard({
         </View>
       ) : null}
 
-      <View>
+      <View style={{ overflow: 'hidden' }}>
         <View
           style={
             effectivelyUseAccordion && !nutritionExpanded
