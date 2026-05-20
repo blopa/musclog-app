@@ -20,7 +20,6 @@ import {
   Plus,
   PlusCircle,
   Scale,
-  ScanLine,
   Shield,
   Sparkles,
   Stethoscope,
@@ -38,6 +37,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FilterTabs } from '@/components/FilterTabs';
+import { BarcodeInput } from '@/components/BarcodeInput';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
@@ -659,34 +659,13 @@ export default function CreateCustomFoodModal({
             required
           />
 
-          {/* Barcode */}
-          <View className="relative">
-            <TextInput
-              label={t('food.newCustomFood.barcode')}
-              value={barcode}
-              onChangeText={setBarcode}
-              placeholder={t('food.newCustomFood.barcodePlaceholder')}
-            />
-            <Pressable
-              className="absolute right-2 items-center justify-center"
-              style={{
-                ...(Platform.OS !== 'web'
-                  ? {
-                      top: theme.size['14'] / 2,
-                    }
-                  : {
-                      top: theme.size['18'] / 2,
-                    }),
-                width: theme.size['10'],
-                height: theme.size['10'],
-                backgroundColor: theme.colors.accent.primary10,
-                borderRadius: theme.borderRadius.sm,
-              }}
-              onPress={openBarcodeScanner}
-            >
-              <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-            </Pressable>
-          </View>
+          <BarcodeInput
+            label={t('food.newCustomFood.barcode')}
+            value={barcode}
+            onChangeText={setBarcode}
+            placeholder={t('food.newCustomFood.barcodePlaceholder')}
+            onScanPress={openBarcodeScanner}
+          />
 
           {/* Brand */}
           <TextInput

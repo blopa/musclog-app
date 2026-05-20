@@ -10,13 +10,13 @@ import {
   Pencil,
   PlusCircle,
   RefreshCcwDot,
-  ScanLine,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { BarcodeInput } from '@/components/BarcodeInput';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -2618,39 +2618,23 @@ export function FoodMealTrackingDetailsModal({
             />
 
             {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
-            <View className="relative">
-              <TextInput
-                label={t('food.foodDetails.barcode')}
-                value={editForm.barcode}
-                onChangeText={(text) =>
-                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
-                }
-                placeholder={t('food.foodDetails.barcodePlaceholder')}
-                keyboardType="numeric"
-              />
-              <Pressable
-                className="absolute right-2 items-center justify-center rounded-lg"
-                style={{
-                  ...(Platform.OS !== 'web'
-                    ? { top: theme.size['14'] / 2 }
-                    : { top: theme.size['18'] / 2 }),
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  backgroundColor: theme.colors.accent.primary10,
-                }}
-                onPress={() =>
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: true,
-                    showBarcodeTextSearch: true,
-                    onBarcodeScanned: (data) =>
-                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
-                  })
-                }
-              >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
-            </View>
+            <BarcodeInput
+              label={t('food.foodDetails.barcode')}
+              value={editForm.barcode}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
+              }
+              placeholder={t('food.foodDetails.barcodePlaceholder')}
+              onScanPress={() =>
+                openCamera({
+                  mode: 'barcode-scan',
+                  hideCameraModePicker: true,
+                  showBarcodeTextSearch: true,
+                  onBarcodeScanned: (data) =>
+                    setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
+                })
+              }
+            />
 
             {/* Description */}
             <TextInput
